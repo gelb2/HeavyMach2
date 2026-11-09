@@ -1,0 +1,397 @@
+{
+  "recorded_on": "2026-11-10",
+  "scope": "existing reference ports; simulator observation and read-only original IPA/executable analysis; restoration planning only",
+  "local_evidence_directory": ".local/evidence/reference-comparison-20261110",
+  "new_builds": 0,
+  "physical_device_installations": 0,
+  "references": [
+    {
+      "profile": "phone",
+      "version": "2.0.1",
+      "simulator": "iPhone Air / iOS 26.5",
+      "device_id": "97CA5646-36BB-47A9-919A-D78DD632A439",
+      "orientation": "landscape",
+      "bundle_id": "com.gelb2.heavymach2.reference.phone",
+      "ipa_sha256": "23ff9c74c7d890cc6f28952b4845f6c616bae4bb7207a393f80ed9ed76062d32",
+      "original_armv7_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+      "runtime": {
+        "profile": "phone",
+        "whole_sha256": "b9f84622cad4f7e70166a72d9e4ceb4fdbc38886a2d3db67f743c91fdfd69467",
+        "code_sections": [
+          {
+            "section": "__TEXT,__text",
+            "size": 7074320,
+            "sha256": "fb0a371a3daad3d605e0308537438af9bb21885e78d5428374c3fd6032bcfb39"
+          }
+        ]
+      }
+    },
+    {
+      "profile": "hd",
+      "version": "1.0.3",
+      "simulator": "iPad Air 11-inch (M4) / iPadOS 26.5",
+      "device_id": "A183AB56-8DD4-4DB1-AC4A-8180D026708B",
+      "orientation": "portrait",
+      "bundle_id": "com.gelb2.heavymach2.reference.hd",
+      "ipa_sha256": "7eeb36590b3c19a28741e21671379029d9023864ceb241a5b8560eef045112d2",
+      "original_armv7_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+      "runtime": {
+        "profile": "hd",
+        "whole_sha256": "8d76a37ff40bad552a15c84fc0d8a5bf67abdd8cfe62dde1832b58d5294218a0",
+        "code_sections": [
+          {
+            "section": "__TEXT,__text",
+            "size": 7050012,
+            "sha256": "4f9ff283a9386bf39c8d09c53e0bf4b71ea3465a3e3fe13e2c3af6062cb49cb6"
+          }
+        ]
+      }
+    }
+  ],
+  "observed_in_both": [
+    "field movement after touch",
+    "E_Tank_01 target label, HP bar and selection marker",
+    "tank defeated; mission 1/5",
+    "500 to 503 Cr and EXP increase"
+  ],
+  "phone_display_failure": "terrain intermittently black/partially drawn while units and HUD remain visible",
+  "hd_display_observation": "terrain visible during this first-field test; not a long-duration rendering pass",
+  "static_data": {
+    "WeaponInfo": {
+      "phone_rows": 213,
+      "hd_rows": 213,
+      "different_rows": 126,
+      "different_fields_overlapping_counts": {
+        "ShtRng": 113,
+        "AimRt": 86,
+        "Dmg": 4
+      }
+    },
+    "byte_identical": [
+      "MachList.tble",
+      "PartsList.tble",
+      "MachInfo.mcb",
+      "MapInfo.mcb",
+      "PartsInfo.mcb"
+    ],
+    "item10021_example": {
+      "weapon": "P_Wpn_Gun_201",
+      "same_fields": {
+        "Dmg": "8",
+        "ShtRng": "200",
+        "ShtCnt": "10",
+        "ShtDly": "0.14",
+        "RldDly": "2.5",
+        "Speed": "1"
+      },
+      "AimRt": {
+        "phone": "1",
+        "hd": "0.96"
+      },
+      "limitation": "not identified as actual equipped weapon in this live run; field units/formulas not established"
+    }
+  },
+  "hd_function_analysis": {
+    "provider": "Ghidra 12.1.4",
+    "functions": [
+      {
+        "name": "GobWorld::onTap_EasyMove:State:ID:",
+        "address": "0x12698",
+        "evidence_id": "ev_abd30b8bb14dc6c2f8e0659518501168735102a121f849759756a6017a0d2d31",
+        "observation": "camera-based input transform and radius-based enemy selection",
+        "local_evidence_file": "hm2_hd_tap.json"
+      },
+      {
+        "name": "GobWorld::checkBulletCollideX:Y:",
+        "address": "0x10ddc",
+        "evidence_id": "ev_f195a672983dde2464121edaa56d145d0728fd47f7afa5f904e19062458bfc9f",
+        "observation": "enemy iteration; hp>0; isInScreen; isInPtX:Y:",
+        "local_evidence_file": "hm2_hd_collision.json"
+      },
+      {
+        "name": "QobBase::isInPtX:Y:",
+        "address": "0x36a40",
+        "evidence_id": "ev_2380378e6077d06dbdad51fd93d4edbbfad45fc259225a6f198f7af602a8ad46",
+        "observation": "world position plus boundRect min/max point test",
+        "local_evidence_file": "hm2_hd_isinpt.json"
+      },
+      {
+        "name": "QobBase::tick",
+        "address": "0x36d98",
+        "evidence_id": "ev_6e62430a80c3d8d3dd364cab02b6fd3125cd69336e5853db888b05282f2fa7c1",
+        "observation": "conditional isInCam result stored to _isInScreen",
+        "local_evidence_file": "hm2_hd_qobtick.json"
+      },
+      {
+        "name": "QobBase::isInScreen",
+        "address": "0x3689c",
+        "evidence_id": "ev_13fdfd69cd4e89bc147d9e65d8cf9992e89c4926b98e94258ab08b01a686ed6b",
+        "observation": "_isInScreen getter",
+        "local_evidence_file": "hm2_hd_inscreen.json"
+      },
+      {
+        "name": "QobBase::isInCam",
+        "address": "0x37750",
+        "evidence_id": "ev_ea6f05063421e00a6254e003e68251f7ee0a548c70cd53981cfb8bfe9d864c2d",
+        "observation": "screen position/boundRect against camera size with margin 60",
+        "local_evidence_file": "hm2_hd_incam.json"
+      },
+      {
+        "name": "GobWorld::processCamera",
+        "address": "0x11cac",
+        "evidence_id": "ev_a446cc2bdf6c78a538ced1300188368477ef2802225d6e517a2ceb27720ea3c4",
+        "observation": "camera follows player, target, movement goal and clamps",
+        "local_evidence_file": "hm2_hd_camera.json"
+      }
+    ],
+    "objc_class_list_count": 80,
+    "observed_inheritance": [
+      "GobHvM_Enemy",
+      "GobHvMach",
+      "QobBase"
+    ],
+    "class_list_no_enemy_override_observed": [
+      "isInPtX:Y:",
+      "isInScreen",
+      "isInCam"
+    ],
+    "limitation": "dynamic dispatch/categories/runtime method changes and all weapon paths not fully resolved; float/CGPoint ABI recovery requires instruction verification"
+  },
+  "before_save_files": [
+    {
+      "profile": "phone",
+      "path": "Documents/touchHLE_sandbox/kr.indieapps.HeavyMach2/Documents/HeavyMach2.sav",
+      "size": 26344,
+      "sha256": "3e2dfad937139d6484a41bce25bc057d3ce1cf832132a6e1a66c4eeb2c696db0"
+    },
+    {
+      "profile": "hd",
+      "path": "Documents/touchHLE_sandbox/kr.indieapps.HvM2HD/Documents/HeavyMach2.sav",
+      "size": 28204,
+      "sha256": "a8462acb49bd84993ef5ce170e2a7460379d17c249528a60e4501c579df4fbf5"
+    }
+  ],
+  "after_save_files": [
+    {
+      "profile": "phone",
+      "path": "saves-after/phone/HeavyMach2.sav",
+      "size": 26344,
+      "sha256": "90f5ae0655f3daa69c5d390d656f936063535665176ffe59a20648abfc079064",
+      "note": "after simulator test; not decoded to assert saved progress"
+    },
+    {
+      "profile": "hd",
+      "path": "saves-after/hd/HeavyMach2.sav",
+      "size": 28204,
+      "sha256": "e66e194f40778b40870c7fa399b233c6d01180e7ffe649c2cf35d6f157e67ebe",
+      "note": "after simulator test; not decoded to assert saved progress"
+    }
+  ],
+  "limits": [
+    "not matched equipment IDs, world distances, camera zoom, ticks or RNG",
+    "no numeric HP or per-projectile damage measurement",
+    "selection, collision, range and camera-margin boundaries not runtime swept",
+    "different versions and runtime __text hashes confound direct behavior equivalence",
+    "phone equivalent combat functions not yet identified",
+    "no relaunch save restoration or audible sound validation in this run",
+    "screenshots ending target-selected were captured after the kill; use video frames for target state"
+  ],
+  "plan_documents": [
+    "../reference-comparison-results-20261110.md",
+    "../restoration-plan.md",
+    "../hd-landscape-plan.md",
+    "../todo.md"
+  ],
+  "artifacts": [
+    {
+      "file": "build-identities.json",
+      "bytes": 1553,
+      "sha256": "03c092fa341382d48c2384c62d8cb65ef0d0a6b0cff6c76d5af80f0b1ae8d404"
+    },
+    {
+      "file": "compare_data.py",
+      "bytes": 6086,
+      "sha256": "786df97c3a75fd6b65a4584c90218734b2a94e8609e52f43e15421b47606b35d"
+    },
+    {
+      "file": "data-comparison-notes.md",
+      "bytes": 1956,
+      "sha256": "712e61651f87aea7ec0ae78322025a087c966931eb9ee6c15d104a671e1c556b"
+    },
+    {
+      "file": "data-comparison-summary.json",
+      "bytes": 97378,
+      "sha256": "fc81cdfb840ca601ce507ee5968c26aa402eec57165e9d145326dd5389bcd8bb"
+    },
+    {
+      "file": "hd-analysis-snapshot-expanded.json",
+      "bytes": 11064383,
+      "sha256": "7b2044a439446bc9f4cd0b47c097ce707d0814448c1e080c15eeb0c065b64997"
+    },
+    {
+      "file": "hd-analysis-snapshot.json",
+      "bytes": 10605365,
+      "sha256": "1ed4141da71726a5fb10d0089e2b039c45fe960dc391d0c44ca6de6a6539fd51"
+    },
+    {
+      "file": "hd-attack-frame-100s.png",
+      "bytes": 5726418,
+      "sha256": "69b74ee1cea5278a113668ef7b6bf8be3145dd7341cf6a022d7f40d3b5f3443f"
+    },
+    {
+      "file": "hd-attack-frame-90s.png",
+      "bytes": 5730858,
+      "sha256": "8911ef833e358b367236a3ad79c3e5c05c9eedaf850f10f7a4f8e80159fec0a4"
+    },
+    {
+      "file": "hd-attack-frame-96s.png",
+      "bytes": 5723597,
+      "sha256": "506cd2780695d97481466775a55fb597fb9e3c8f94eb30484947ca7d1c356547"
+    },
+    {
+      "file": "hd-field-before-move.png",
+      "bytes": 4675676,
+      "sha256": "a5cf531298c20f144e8172388b955acd01af48613bbe738e16c7df27f971ad42"
+    },
+    {
+      "file": "hd-inventory.png",
+      "bytes": 4211742,
+      "sha256": "1071a87cfb308b01e48c8ece3db00633f396ed3a879410563f59900f526c8eb3"
+    },
+    {
+      "file": "hd-objc-method-inventory.json",
+      "bytes": 2096,
+      "sha256": "8dcc8355d120a96b91d6a83cd00298ca631ae2b38ddd48304a153398c200cfbd"
+    },
+    {
+      "file": "hd-run.log",
+      "bytes": 27463,
+      "sha256": "214e9f9d84fe42d2faf6f9c9d1fc939ec77077bf9fa1b811d2e8fc664e540666"
+    },
+    {
+      "file": "hd-target-later.png",
+      "bytes": 4642448,
+      "sha256": "045c7fa916151c19015dfe7c7688a9119e268a6f506faa142f9c67311bfffc36"
+    },
+    {
+      "file": "hd-target-selected.png",
+      "bytes": 4653353,
+      "sha256": "39af63b4ed573be49656eb3f521f2b03ebebc41eaa4d6e37cd21234c7e0f2dad"
+    },
+    {
+      "file": "hd-target.mp4",
+      "bytes": 382293293,
+      "sha256": "9dfb3950046373754d6fb9b15d93f036776c688acc56244ab09339785d8ff1b0"
+    },
+    {
+      "file": "hm2_hd_camera.json",
+      "bytes": 19370,
+      "sha256": "87550740062afdfe05f79de86d97af1067845bf1359c18023fd083338566fdbc"
+    },
+    {
+      "file": "hm2_hd_collision.json",
+      "bytes": 8153,
+      "sha256": "4d3ff3dc2431e7b8d16a9d2a7c5ac1ac4c8e0d5fcbd654f43529ceb5c9d9018e"
+    },
+    {
+      "file": "hm2_hd_incam.json",
+      "bytes": 7533,
+      "sha256": "97828047e799e682f21e9663f9d32df1fd93a664af3944e124cdccf65cfcbe76"
+    },
+    {
+      "file": "hm2_hd_inscreen.json",
+      "bytes": 4903,
+      "sha256": "e876061c218ebe374a5d7f99baf77cad4e1bade90956a649398a2c3b142dc814"
+    },
+    {
+      "file": "hm2_hd_isinpt.json",
+      "bytes": 8296,
+      "sha256": "126850bac61320a7ebeaeb35267f4e4fa18d3c5167969343bef5d662e40a1bf9"
+    },
+    {
+      "file": "hm2_hd_qobtick.json",
+      "bytes": 9442,
+      "sha256": "68135ee2fb3277b30bd9dc3450f699ad95ac64dd1794f104282c8079aff50675"
+    },
+    {
+      "file": "hm2_hd_tap.json",
+      "bytes": 51464,
+      "sha256": "84126295389fedfdd23f5c6cbb750ec3c8d02ba860db6897a328ca2554690e01"
+    },
+    {
+      "file": "phone-analysis-snapshot.json",
+      "bytes": 434354,
+      "sha256": "75b7d40ca8b0d4dcf0b8365a667b5ccdb0b27e70822c32fc844fa79ef5c392a5"
+    },
+    {
+      "file": "phone-attack-frame-10s.png",
+      "bytes": 2520708,
+      "sha256": "4182defaf36be24ca816c61730ca26c37624b3a989fc19b7b41679307284cfe8"
+    },
+    {
+      "file": "phone-attack-frame-20s.png",
+      "bytes": 1234041,
+      "sha256": "16d8bee422c8aa9e3b908eab1f7240ec40187856ce1beb413407a5b7ba26f8f1"
+    },
+    {
+      "file": "phone-attack-frame-27s.png",
+      "bytes": 1346083,
+      "sha256": "e15a6d7c3992614fff70f90e1fec51dce6e0f64d6266bd873b5d7bcfd6fcad13"
+    },
+    {
+      "file": "phone-field-before-move.png",
+      "bytes": 535830,
+      "sha256": "c25ab83031a54292da0af5848fe3f1b022afd63982b0d42391104efb1294adfe"
+    },
+    {
+      "file": "phone-move-marker.png",
+      "bytes": 559223,
+      "sha256": "46f25a16fcd92b5b22fa5a3a237b4ac0ce4823c841f9a2d634047a427d7334a0"
+    },
+    {
+      "file": "phone-run.log",
+      "bytes": 35500,
+      "sha256": "a13d2854fc295b694bba442a6e42469c6dbb5edd5812e1470076492899fbe3e6"
+    },
+    {
+      "file": "phone-slots.png",
+      "bytes": 1415891,
+      "sha256": "7448fde5c29eff9fbeac74b96a5c9701eb5921857fcec820f4275895f29c6a7b"
+    },
+    {
+      "file": "phone-target-later.png",
+      "bytes": 1025085,
+      "sha256": "18f9eb5abe27dad5922925ad9bf882d9144eb740feee7bfd600dfe06d135df12"
+    },
+    {
+      "file": "phone-target-selected.png",
+      "bytes": 1042883,
+      "sha256": "7e60e52fe6936b9ad62e6bbacf13d164eae7c479894457eeeb25f4d1c7e06e26"
+    },
+    {
+      "file": "phone-target.mp4",
+      "bytes": 113129862,
+      "sha256": "371ea5ede9440737354ba4083466f78c4985f79ffbe7797885f3f17f661ec976"
+    },
+    {
+      "file": "runtime-code-identities.json",
+      "bytes": 624,
+      "sha256": "eb52a325b1f9116cd18d1cee5d1db78330d45dab6d268f593a6647866191f1c9"
+    },
+    {
+      "file": "saves-after-manifest.json",
+      "bytes": 507,
+      "sha256": "7631dbfa365f199cccde3f040972c84166cea55514841389862ac235112ba914"
+    },
+    {
+      "file": "saves-before-manifest.json",
+      "bytes": 1815,
+      "sha256": "1ecf1a3a8fa8ebc736883b50905d434e58cecb0b043985ca0f6ba660046ab38b"
+    },
+    {
+      "file": "actions.json",
+      "bytes": 1214,
+      "sha256": "5db1b39cd347348c15fad1f87d93132bfb585173603d116f791074fe5df4ebfc"
+    }
+  ]
+}
