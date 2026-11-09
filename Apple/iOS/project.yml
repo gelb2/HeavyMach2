@@ -1,0 +1,80 @@
+name: HeavyMach2
+options:
+  deploymentTarget:
+    iOS: "15.0"
+settings:
+  base:
+    CLANG_CXX_LANGUAGE_STANDARD: c++20
+    CLANG_ENABLE_OBJC_ARC: YES
+    CLANG_ENABLE_MODULES: YES
+    ARCHS: arm64
+    TARGETED_DEVICE_FAMILY: "1,2"
+    SUPPORTS_MACCATALYST: NO
+    ENABLE_BITCODE: NO
+    HEADER_SEARCH_PATHS: ["$(SRCROOT)/../../Sources", "$(SRCROOT)/../../ThirdParty/stb"]
+    OTHER_CPLUSPLUSFLAGS: "$(inherited) -ffp-contract=off -fno-fast-math"
+    CODE_SIGN_STYLE: Automatic
+targetTemplates:
+  SourceApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: ../../Sources/Core
+      - path: ../../Sources/Assets
+      - path: ../../Sources/Platform/Apple
+      - path: ../../.local/prepared/HD
+        type: folder
+        buildPhase: resources
+    settings:
+      base:
+        INFOPLIST_FILE: Info.plist
+    dependencies:
+      - sdk: UIKit.framework
+      - sdk: QuartzCore.framework
+      - sdk: OpenGLES.framework
+      - sdk: CoreGraphics.framework
+targets:
+  HeavyMach2Source:
+    templates: [SourceApp]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.gelb2.heavymach2.restored
+        HM2_DISPLAY_NAME: HM2 Source Preview
+        GCC_PREPROCESSOR_DEFINITIONS: "$(inherited) HM2_VALIDATION=0"
+  HeavyMach2Validation:
+    templates: [SourceApp]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.gelb2.heavymach2.validation
+        HM2_DISPLAY_NAME: HM2 Validation
+        GCC_PREPROCESSOR_DEFINITIONS: "$(inherited) HM2_VALIDATION=1"
+  HeavyMach2AppleTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: ../Tests
+    dependencies:
+      - target: HeavyMach2Source
+      - sdk: UIKit.framework
+      - sdk: QuartzCore.framework
+      - sdk: OpenGLES.framework
+      - sdk: ImageIO.framework
+      - sdk: CoreGraphics.framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.gelb2.heavymach2.apple-tests
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/HeavyMach2Source.app/HeavyMach2Source"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+schemes:
+  HeavyMach2Source:
+    build:
+      targets:
+        HeavyMach2Source: all
+    test:
+      targets: [HeavyMach2AppleTests]
+  HeavyMach2Validation:
+    build:
+      targets:
+        HeavyMach2Validation: all

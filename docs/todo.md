@@ -42,6 +42,10 @@ HeavyMach 1·MachDefense 소스나 파일 변경은 이 작업에 포함하지 �
 
 ## HM2-STACK-ASSETS — 기술스택과 원작 에셋 절차
 
+- [x] 2026-11-10 C++20 QChunk/QTable reader·raw MCB3개 왕복·338파트/78모델 해석·77개 완전 모델 정적 pose·공통 stb2.28 decode 구현. 소수 소켓·기본 탱크 조립·135개 테이블·1276개 PNG/JPEG, C++7검사 병렬 실행. [첫 구현 범위](initial-source-restoration-20261110.md). 전체 게임/에셋 절차 완료가 아님.
+- [x] 같은 소스의 Apple Source/Validation 미리보기 빌드. iPhone 가로·iPad 세로 GPU 검사를 동시 실행하고8sprite·2texture 재사용·123출력·원본 body texture 일반/상하반전1:1 픽셀 비교 확인. 원작 POT/UV/linear/RGBA blend 대조. 전체 게임 치트·원작 atlas/그림자/다른 pixel format·최종 배율·성능 완료가 아님.
+- [ ] HM2-VALIDATION-COMBINED: [최신 치트 요구](validation-build.md)에 따라 모든 기능·버튼 목록, 경험치/장비/아이템/진척도 우회 조건과 실제 성장·전투 경로 연결. 한 전투의 복합 조건과 독립 인스턴스 병렬 검사. 초기 네 정적 조립 사례로 완료 처리 금지.
+- [ ] 원작 PartsManager atlas bake·그림자·Tile2D/forRetina 소비와 초기 Player setParts 장비 연결. DummyParts.png 누락·불완전 Dummy 모델의 원작 동작 확인. 개별 image fallback과 정적 Player 모델을 전체 게임 장비 조립으로 보고하지 않음.
 - [x] 2026-11-10 HM1 main bd0aa73a·MachDefense main0aa03aa7의 실제 코어·빌드·GPU·음향·저장 연결과 HM2 HD 원본 함수를 대조. [공통 스택 채택·재사용 범위](technology-stack-review-20261110.md)와 [실행 계약](runtime-contract.md) 확정. 새 복원 코어 구현·앱 검사 완료가 아님.
 - [ ] HM2-RUNTIME-IO: HD 저장 함수·모든 실제 호출 지점과 난수 영향을 연결. 연사·피격·드롭·전장/HUD 반복에서 새 DB/파일 쓰기0을 실제 플랫폼 I/O와 함께 검사. 원작 저장 사건·실패/재시도·재실행 복구 검사.
 - [ ] HM2-RUNTIME-AUDIO: HD PCM57개(8/16비트·모노/스테레오)와 MP3의 실제 사용 경로 연결. MD PCM/OpenAL 구조를 기준으로 준비·재생 분리, 예열 뒤 반복 사격에서 context/source/buffer 생성·해제/디코드/파일 로드 증가0 검사. 원본 루프 분기·BGM AudioQueue·중단/복귀·출력 지연·샘플 진행 확인. HM1 mono16 로더 복사 금지.

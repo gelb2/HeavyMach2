@@ -1,6 +1,6 @@
 # HeavyMach 2 Restoration
 
-HeavyMach 2의 독립 비공개 복원 저장소다. 현재 일반판·HD 원본 포팅 앱을 시뮬레이터에서 검증하며 데이터·표시·전투와 기술스택을 조사했다. 독립 C++ 복원 코어·복원 앱 구현은 아직 미완료다.
+HeavyMach 2의 독립 비공개 복원 저장소다. 원본 포팅판 대조 뒤 C++20 reader·원본 정적 파츠 조립·Apple GPU 출력의 첫 소스를 구현했다. iPhone·iPad 시뮬레이터의 현재 Source/Validation 앱은 조립 미리보기이며 게임 전체는 미완료다.
 
 ## 작업 경계
 
@@ -29,3 +29,5 @@ python3 tools/check_no_ipa.py --all
 [기술스택과 에셋 생성·저장·조립 규칙](docs/technology-and-assets.md)
 
 [세 작품의 실제 기술스택 대조](docs/technology-stack-review-20261110.md) · [시간·저장·음향·인게임 표시 계약](docs/runtime-contract.md)
+
+[iOS·iPadOS 첫 구현·검사](docs/initial-source-restoration-20261110.md) · [치트 앱·동시 검증](docs/validation-build.md) · [모델 사용 이력](docs/model-usage-history.md)

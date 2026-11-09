@@ -1,6 +1,6 @@
 # 기술스택과 에셋 절차
 
-상태: 사용자 요구와 [세 작품 기술스택 대조](technology-stack-review-20261110.md)를 반영한 구현 기준이다. HeavyMach 2의 독립 복원 코어·변환기·복원 앱 검증은 아직 없다. 기존 원본 포팅 앱의 관측과 구분한다. HeavyMach 1·MachDefense와 같은 스택으로 HeavyMach 2 원작의 데이터 저장·읽기·파츠 조립·게임 실행 절차를 복원한다.
+상태: 사용자 요구와 [세 작품 기술스택 대조](technology-stack-review-20261110.md)를 반영한 구현 기준이다. [첫 reader·정적 파츠 조립·Apple GPU 출력](initial-source-restoration-20261110.md)을 구현·시뮬레이터 검사했다. 전체 게임·원작 atlas/그림자·에셋 제작/패키징 절차의 복원 완료는 아니다. 기존 포팅 앱 관측과 새 소스 검사를 구분하며 HeavyMach 1·MachDefense와 같은 스택을 유지한다.
 
 ## 기술스택
 
@@ -58,4 +58,4 @@ HM1의 현행 `prepare_unit_data.md`는 원본 보존, 공통 reader가 읽는 �
 | R4 신규 유닛 검증 | 원작 유닛과 동일한 exporter·reader·조립·공격 경로를 통과하는지 검사. 예외 확장은 별도 표기 |
 | R6 독립 빌드 | 원본 IPA·ARM 실행파일·비교 실행기·타 게임 checkout 접근 없이 빌드/실행. 자원 명세와 실제 패키지 일치 |
 
-현재 완료한 것은 이 규칙의 문서화다. 형식 복원·변환기·공통 소비 코드·플랫폼 패키지·실기기 비교는 [TODO](todo.md)에 미완료로 관리한다. 구체적인 비교 장면과 통과 조건은 [원본 포팅 앱 검증 계획](reference-port-validation-plan.md)을 따른다.
+현재 reader·raw MCB 왕복·정적 파츠 조립·개별 이미지 fallback GPU 출력의 첫 범위를 검사했다. 전체 형식·변환/제작 도구·atlas·공통 게임 소비 코드·전체 패키지·실기기 비교는 [TODO](todo.md)에 미완료로 관리한다. 구체적인 장면과 통과 조건은 [원본 포팅 앱 검증 계획](reference-port-validation-plan.md)과 [동시 검증](validation-build.md)을 따른다.
