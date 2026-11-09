@@ -11,6 +11,11 @@ add_library(HeavyMach2Core STATIC
     Sources/Core/Data/Models.cpp
     Sources/Core/Data/Maps.cpp
     Sources/Core/Data/PlayerEquipment.cpp
+    Sources/Core/Data/Weapons.cpp
+    Sources/Core/Simulation/TerrainCollision.cpp
+    Sources/Core/Simulation/BipodMotion.cpp
+    Sources/Core/Simulation/WorldNavigation.cpp
+    Sources/Core/Simulation/LocomotionScene.cpp
     Sources/Core/Presentation/PartSprites.cpp
     Sources/Core/Presentation/PlayerMapPreview.cpp
     Sources/Core/Presentation/AssemblyPreview.cpp
@@ -30,6 +35,18 @@ if(BUILD_TESTING)
     target_link_libraries(MapTests PRIVATE HeavyMach2Core)
     target_compile_options(MapTests PRIVATE -UNDEBUG)
     add_test(NAME MapRecordsAndCamera COMMAND MapTests)
+    add_executable(TerrainTests tests/TerrainTests.cpp)
+    target_link_libraries(TerrainTests PRIVATE HeavyMach2Core)
+    target_compile_options(TerrainTests PRIVATE -UNDEBUG)
+    add_test(NAME TerrainCollisionRules COMMAND TerrainTests)
+    add_executable(LocomotionTests tests/LocomotionTests.cpp)
+    target_link_libraries(LocomotionTests PRIVATE HeavyMach2Core)
+    target_compile_options(LocomotionTests PRIVATE -UNDEBUG)
+    add_test(NAME BipodGaitAimAndNavigation COMMAND LocomotionTests)
+    add_executable(WeaponsTests tests/WeaponsTests.cpp)
+    target_link_libraries(WeaponsTests PRIVATE HeavyMach2Core)
+    target_compile_options(WeaponsTests PRIVATE -UNDEBUG)
+    add_test(NAME WeaponDataAndMuzzle COMMAND WeaponsTests)
     add_executable(OriginalAssetTests tests/OriginalAssetTests.cpp)
     target_link_libraries(OriginalAssetTests PRIVATE HeavyMach2Core)
     target_compile_options(OriginalAssetTests PRIVATE -UNDEBUG)
@@ -41,5 +58,7 @@ if(BUILD_TESTING)
         add_test(NAME OriginalImages COMMAND OriginalAssetTests "${HM2_HD_RESOURCES}" images)
         add_test(NAME OriginalMaps COMMAND OriginalAssetTests "${HM2_HD_RESOURCES}" maps)
         add_test(NAME OriginalPlayerEquipment COMMAND OriginalAssetTests "${HM2_HD_RESOURCES}" player)
+        add_test(NAME OriginalTerrainLocomotion COMMAND OriginalAssetTests "${HM2_HD_RESOURCES}" locomotion)
+        add_test(NAME OriginalWeapons COMMAND OriginalAssetTests "${HM2_HD_RESOURCES}" weapons)
     endif()
 endif()

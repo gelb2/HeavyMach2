@@ -13,9 +13,9 @@
 
 ## 현재 구현한 범위
 
-`HeavyMach2Source`와 `HeavyMach2Validation`은 같은 소스·자원을 사용하는 맵·장비 미리보기 타깃이다. bundle ID는 각각 `com.gelb2.heavymach2.restored`, `com.gelb2.heavymach2.validation`이다. [후속 구현](player-map-restoration-20261110.md)에서 Source는 Stage01_01 지형과 기본 장비 Player, Validation은 같은 지형에 장비와 절대각이 다른 Player 두 사례를 함께 표시한다. 이전 네 E_Tank_01 조립 사례는 별도 회귀 검사로 유지한다. 이동·게임·레벨업·아이템·진척도 치트는 아직 구현하지 않았다.
+`HeavyMach2Source`와 `HeavyMach2Validation`은 같은 소스·자원을 사용하는 보행 단계 타깃이다. bundle ID는 각각 `com.gelb2.heavymach2.restored`, `com.gelb2.heavymach2.validation`이다. [보행 구현](locomotion-restoration-20261110.md)에서 Source는 Stage01_01 지형의 기본 장비 Player를 실제 터치로 이동시킨다. Validation은 보행 Player와 다른 장비의 명시 조준 사례를 함께 표시한다. 이전 네 E_Tank_01 조립 사례는 별도 회귀 검사로 유지한다. 전투·레벨업·아이템·진척도 치트는 아직 구현하지 않았다.
 
-검증 소스는 원본 정의를 읽는 C++ 코어를 사용한다. 장비 두 조건과 지형, 이전 네 조립 조건을 각각 같은 Frame으로 합성하고 실제 GPU 출력·픽셀·텍스처/컨텍스트 재사용을 검사한다. 이것은 위 전체 게임 치트 요구의 완료가 아니다.
+검증 소스는 원본 정의를 읽는 C++ 코어를 사용한다. 실제 보행·별도 조준·지형을 함께 갱신하고 pause와 GPU 출력·픽셀·텍스처/컨텍스트 재사용을 검사한다. 독립 iPhone/iPad 인스턴스에서 실제 UIKit 터치도 병렬 검사한다. 무기 데이터·포구 계산은 소비 검사이며 실제 발사 검사는 아니다. 이것은 위 전체 게임 치트 요구의 완료가 아니다.
 
 `tools/test_apple_parallel.py`는 이미 빌드한 Apple 검사를 서로 다른 iPhone·iPad 시뮬레이터에서 동시에 실행한다. 각 실행의 로그·xcresult와 관측한 검사 시간 겹침을 저장한다. 실제 실행 근거는 [첫 구현 기록](initial-source-restoration-20261110.md)에 있다.
 

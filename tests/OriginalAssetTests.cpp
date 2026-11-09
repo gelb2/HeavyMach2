@@ -3,6 +3,8 @@
 #include "Core/Presentation/AssemblyPreview.hpp"
 #include "Core/Presentation/MapPreview.hpp"
 #include "Core/Presentation/PlayerMapPreview.hpp"
+#include "Core/Simulation/LocomotionScene.hpp"
+#include "Core/Data/Weapons.hpp"
 #include <cassert>
 #include <cmath>
 #include <filesystem>
@@ -43,6 +45,40 @@ int main(int argc,char** argv){assert(argc==3);Files files;files.root=argv[1];co
         const auto weapons=DataTable::parse(files.read("WeaponInfo.tble"));assert(weapons.rowCount()==213);
         const auto mach=DataTable::parse(files.read("MachList.tble"));assert(mach.rowCount()==78&&mach.value(*mach.findRow("E_Tank_01"),"HP")=="200");
         std::cout<<tables<<" original tables; "<<rows<<" rows preserved\n";
+    }else if(test=="weapons"){
+        const auto encoded=files.read("WeaponInfo.tble");const auto weapons=Weapons::parse(DataTable::parse(encoded));assert(weapons.all().size()==213&&weapons.raw().encoded()==encoded);
+        const auto& mg=weapons.weapon("P_Wpn_Gun_101");assert(mg.kind==WeaponKind::gun&&mg.damage==7&&mg.shotRange==400&&mg.shotCount==10&&mg.attackPoint==17&&mg.bulletImage.empty());same(mg.shotDelay,.16f);same(mg.reloadDelay,2.5f);
+        const auto& ml=weapons.weapon("P_Wpn_Msl_101");assert(ml.kind==WeaponKind::missile&&ml.damage==26&&ml.damageRange==60&&ml.shotRange==600&&ml.shotCount==2&&ml.attackPoint==17);same(ml.speed,.2f);same(ml.shotDelay,.5f);same(ml.reloadDelay,2.f);
+        unsigned missing=0;
+        for(const auto& [name,w]:weapons.all()){
+            assert(w.recognizedKind);for(const auto& image:{w.bulletImage,w.effectImage,w.explodeImage})if(!image.empty()&&!files.exists(image)){assert((name=="E_Turret17_Wpn_01"&&image=="Blt_Missile06.png")||(name=="Boss08_Wpn_01"&&image=="Blt_Missile07.png"));++missing;}
+            assert(files.exists(w.fireSound));
+        }assert(missing==2); // Confirmed absent in original IPA, no substitution.
+        const auto models=Models::parse(Chunk::parse(files.read("PartsInfo.mcb")),Chunk::parse(files.read("MachInfo.mcb")));
+        const auto equip=PlayerEquipment::parse(DataTable::parse(files.read("ItemInfo.tble")));const auto pose=models.mountedPose(equip.mounts(models));
+        const auto gun=Models::muzzlePosition(pose[4],1),missile=Models::muzzlePosition(pose[5],1);same(gun.x,38);same(gun.y,24.5);same(missile.x,27);same(missile.y,-26.5);
+        std::cout<<"213 original weapons, doubled runtime ranges, narrow types/effects/sounds; two original absent images retained as unresolved; original muzzle formula verified\n";
+    }else if(test=="locomotion"){
+        const auto maps=Maps::parse(Chunk::parse(files.read("MapInfo.mcb")));unsigned edges=0;
+        for(const auto& [id,map]:maps.all()){const TerrainCollision terrain(map);edges+=terrain.edges().size();}
+        assert(edges==1354);
+        const TerrainCollision firstTerrain(maps.map("Stage01_01"));const auto wall=firstTerrain.resolve({-45,130});
+        same(wall.position.x,-52.8894424438f);same(wall.position.y,130);assert(wall.current==62&&wall.corrections==1);
+        const LocomotionActor definitions[]={{PlayerEquipment::startingCodes,{},0,std::nullopt},{{"11002","12002","10012","10112"},{80,0},0,Vec2{80,200}}};
+        LocomotionScene phone(files,"Stage01_01",{480,320},definitions),ipad(files,"Stage01_01",{768,1024},definitions);
+        same(phone.camera().center.x,128);same(ipad.camera().center.x,128);
+        assert(phone.input(PointerPhase::begin,phone.camera().toScreen({100,0}),1));assert(ipad.input(PointerPhase::begin,ipad.camera().toScreen({100,0}),1));
+        phone.input(PointerPhase::end,phone.camera().toScreen({100,0}),1);ipad.input(PointerPhase::end,ipad.camera().toScreen({100,0}),1);
+        const auto before=files.reads;unsigned collisions=0;
+        for(int i=0;i<600;++i){phone.tick();ipad.tick();const auto& p=phone.actors().front().state();const auto& q=ipad.actors().front().state();same(p.position.x,q.position.x);same(p.position.y,q.position.y);same(p.angle,q.angle);assert(phone.frame().sprites.size()==11&&ipad.frame().sprites.size()==11);collisions+=phone.contacts().front().corrections;}
+        assert(phone.actors().front().state().position.x>5&&phone.actors()[1].state().weaponReady);
+        const auto state=phone.actors().front().state();const auto time=phone.time();const auto tick=phone.ticks();phone.setPaused(true);
+        for(int i=0;i<120;++i){phone.tick();assert(!phone.input(PointerPhase::begin,{300,160},1));}
+        same(phone.actors().front().state().position.x,state.position.x);assert(phone.time()==time&&phone.ticks()==tick);phone.setPaused(false);phone.tick();assert(phone.ticks()==tick+1);
+        assert(files.reads==before);
+        // Dynamic optional background uses the original .94 camera parallax.
+        LocomotionScene water(files,"Stage02_04",{768,1024},std::span(definitions).first(1));water.tick();const auto waterFrame=water.frame();const auto bg=water.camera().toScreen(water.camera().backgroundWorld);same(waterFrame.sprites[0].center.x,bg.x);same(waterFrame.sprites[0].center.y,bg.y);
+        std::cout<<"1354 original edges; identical world movement on two display configurations, 600 mixed walk/aim ticks, pause, warm reads0; corrections="<<collisions<<'\n';
     }else if(test=="player"){
         const auto models=Models::parse(Chunk::parse(files.read("PartsInfo.mcb")),Chunk::parse(files.read("MachInfo.mcb")));
         const auto equipment=PlayerEquipment::parse(DataTable::parse(files.read("ItemInfo.tble")));

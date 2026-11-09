@@ -37,6 +37,7 @@ struct PartMount {
     unsigned parentSocket=0,layer=0,zOrder=0;
     float angle=0;
     bool reverseY=false;
+    Vec2 addPosition;
 };
 class Models {
     std::map<std::string,Part,std::less<>> parts_;
@@ -51,5 +52,8 @@ public:
     // Machine and weapon directions can coexist in a single assembled model.
     [[nodiscard]] std::vector<PartPose> staticPose(std::string_view,float machineAngle=0,float weaponAngle=0)const;
     [[nodiscard]] std::vector<PartPose> mountedPose(std::span<const PartMount>,float machineAngle=0)const;
+    // Original getMuzzlePos0x1cc98: center + R(angle)*mirror(socket-current0).
+    // Invalid original sockets lead to undefined memory; fail explicitly here.
+    [[nodiscard]] static Vec2 muzzlePosition(const PartPose&,unsigned currentSocket);
 };
 }

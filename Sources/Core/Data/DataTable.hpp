@@ -24,6 +24,10 @@ public:
     [[nodiscard]] std::size_t rowCount()const{return rows_.size();}
     // nullopt (not present) differs from a stored empty string.
     [[nodiscard]] std::optional<std::string_view> value(std::size_t row,std::string_view column)const;
+    // Original getInt0x3e85c/getFloat0x3e7e8: missing0, remove commas,
+    // parse a numeric prefix. Reject original unterminated24-byte buffer inputs.
+    [[nodiscard]] std::int32_t integer(std::size_t row,std::string_view column)const;
+    [[nodiscard]] float real(std::size_t row,std::string_view column)const;
     // Inspection helper (first matching row), not an original QTable API.
     // Each original consumer builds its own ID dictionary when required.
     [[nodiscard]] std::optional<std::size_t> findRow(std::string_view key)const;

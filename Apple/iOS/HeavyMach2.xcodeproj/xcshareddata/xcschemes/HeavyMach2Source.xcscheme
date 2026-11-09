@@ -50,6 +50,17 @@
                ReferencedContainer = "container:HeavyMach2.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E4CD8557CA03F5B330C88564"
+               BuildableName = "HeavyMach2UITests.xctest"
+               BlueprintName = "HeavyMach2UITests"
+               ReferencedContainer = "container:HeavyMach2.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>

@@ -67,13 +67,28 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/HeavyMach2Source.app/HeavyMach2Source"
         BUNDLE_LOADER: "$(TEST_HOST)"
+  HeavyMach2UITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: ../UITests
+    dependencies:
+      - target: HeavyMach2Source
+      - sdk: UIKit.framework
+      - sdk: CoreGraphics.framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.gelb2.heavymach2.ui-tests
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: HeavyMach2Source
 schemes:
   HeavyMach2Source:
     build:
       targets:
         HeavyMach2Source: all
     test:
-      targets: [HeavyMach2AppleTests]
+      targets: [HeavyMach2AppleTests, HeavyMach2UITests]
   HeavyMach2Validation:
     build:
       targets:

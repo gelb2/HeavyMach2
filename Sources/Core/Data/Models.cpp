@@ -42,6 +42,11 @@ Models Models::parse(const Chunk& parts,const Chunk& machines) {
 }
 const Part& Models::part(std::string_view name)const {auto i=parts_.find(name);if(i==parts_.end())throw std::runtime_error("Unresolved HM2 part: "+std::string(name));return i->second;}
 const Model& Models::model(std::string_view name)const {auto i=models_.find(name);if(i==models_.end())throw std::runtime_error("Unresolved HM2 model: "+std::string(name));return i->second;}
+Vec2 Models::muzzlePosition(const PartPose& pose,unsigned socket){
+    if(!pose.part||pose.part->sockets.size()<2||socket<1||socket>=pose.part->sockets.size()||!std::isfinite(pose.angle))throw std::runtime_error("Invalid original muzzle socket");
+    auto relative=subtract(pose.part->sockets[socket],pose.part->sockets[0]);if(pose.reverseY)relative.y=-relative.y;
+    return add(pose.center,rotate(relative,pose.angle));
+}
 std::vector<PartPose> Models::staticPose(std::string_view name,float machineAngle,float weaponAngle)const {
     if(!std::isfinite(machineAngle)||!std::isfinite(weaponAngle))throw std::runtime_error("Nonfinite pose angle");
     const auto& m=model(name);
@@ -52,7 +57,7 @@ std::vector<PartPose> Models::staticPose(std::string_view name,float machineAngl
     std::function<void(const Assembly&,int,float)> visit=[&](const Assembly& a,int parent,float parentAngle){
         const auto& p=part(a.part);
         const float ownAngle=p.type==4?weaponAngle:p.type==7?0.f:parentAngle;
-        const auto index=int(mounts.size());mounts.push_back({a.part,parent,a.parentSocket,parent<0?0u:1u,a.zOrder,ownAngle,false});
+        const auto index=int(mounts.size());mounts.push_back({a.part,parent,a.parentSocket,parent<0?0u:1u,a.zOrder,ownAngle,false,{}});
         for(const auto& child:a.children)visit(child,index,ownAngle);
     };
     for(const auto& a:m.parts)visit(a,-1,machineAngle);
@@ -65,7 +70,7 @@ std::vector<PartPose> Models::mountedPose(std::span<const PartMount> mounts,floa
     // refreshRotationPos applies parent and own angles separately. Reverse2
     // mirrors socket Y as well as the image; neither socket is rounded.
     for(std::size_t i=0;i<mounts.size();++i){
-        const auto& m=mounts[i];if(m.parent< -1||m.parent>=int(i)||!std::isfinite(m.angle))throw std::runtime_error("Invalid HM2 mounted part");
+        const auto& m=mounts[i];if(m.parent< -1||m.parent>=int(i)||!std::isfinite(m.angle)||!std::isfinite(m.addPosition.x)||!std::isfinite(m.addPosition.y))throw std::runtime_error("Invalid HM2 mounted part");
         const auto& p=part(m.part);Vec2 base{};float parentAngle=machineAngle;
         if(m.parent>=0){
             const auto n=std::size_t(m.parent);const auto& parent=mounts[n];const auto& info=part(parent.part);base=bases[n];parentAngle=parent.angle;
@@ -75,7 +80,7 @@ std::vector<PartPose> Models::mountedPose(std::span<const PartMount> mounts,floa
             }
         }
         bases.push_back(base);Vec2 anchor=p.socket(0);if(m.reverseY)anchor.y=-anchor.y;
-        const auto center=subtract(rotate(base,parentAngle),rotate(anchor,m.angle));
+        const auto center=subtract(add(rotate(base,parentAngle),rotate(m.addPosition,machineAngle)),rotate(anchor,m.angle));
         result.push_back({&p,center,m.angle,m.layer,m.zOrder,m.reverseY});
     }
     std::stable_sort(result.begin(),result.end(),[](const auto& a,const auto& b){return a.layer==b.layer?a.zOrder<b.zOrder:a.layer<b.layer;});

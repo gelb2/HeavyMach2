@@ -22,7 +22,7 @@ MapPreview::MapPreview(ResourceAccess& r,std::string_view name):maps_(Maps::pars
 Frame MapPreview::compose(const MapCamera& camera)const{
     valid(camera);Frame frame;frame.width=camera.viewport.width;frame.height=camera.viewport.height;
     const auto p=camera.toScreen({});
-    if(!background_.empty())frame.sprites.push_back({background_,p,{backgroundSize_.width*2,backgroundSize_.height*2}});
+    if(!background_.empty())frame.sprites.push_back({background_,camera.toScreen(camera.backgroundWorld),{backgroundSize_.width*2,backgroundSize_.height*2}});
     // setFixedPos:YES on HD nonretina rounds the translated terrain center to
     // integral original coordinates. Background and other units remain unrounded.
     frame.sprites.push_back({foreground_,{std::round(p.x),std::round(p.y)},foregroundSize_});

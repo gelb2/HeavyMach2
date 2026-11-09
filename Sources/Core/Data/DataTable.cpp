@@ -1,4 +1,7 @@
 #include "Core/Data/DataTable.hpp"
+#include <cstdlib>
+#include <cerrno>
+#include <limits>
 #include "Core/Data/DarwinRandom.hpp"
 #include <algorithm>
 #include <stdexcept>
@@ -59,5 +62,20 @@ std::optional<std::string_view> DataTable::value(std::size_t row,std::string_vie
 std::optional<std::size_t> DataTable::findRow(std::string_view key)const {
     for(std::size_t i=0;i<rows_.size();++i)if(!rows_[i].empty()&&rows_[i][0]==key)return i;
     return std::nullopt;
+}
+namespace {
+std::string numeric(std::optional<std::string_view> value){
+    if(!value)return {};
+    if(value->size()>=24)throw std::runtime_error("Original numeric buffer would be unterminated");
+    std::string text(*value);text.erase(std::remove(text.begin(),text.end(),','),text.end());return text;
+}
+}
+std::int32_t DataTable::integer(std::size_t row,std::string_view key)const{
+    const auto text=numeric(value(row,key));errno=0;const long result=std::strtol(text.c_str(),nullptr,10);
+    if(errno==ERANGE||result<std::numeric_limits<std::int32_t>::min()||result>std::numeric_limits<std::int32_t>::max())throw std::runtime_error("Original integer outside defined32-bit input range");
+    return std::int32_t(result);
+}
+float DataTable::real(std::size_t row,std::string_view key)const{
+    const auto text=numeric(value(row,key));return float(std::strtod(text.c_str(),nullptr));
 }
 }

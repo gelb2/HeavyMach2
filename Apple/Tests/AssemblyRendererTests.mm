@@ -5,6 +5,8 @@
 #import "Platform/Apple/HM2Renderer.h"
 #include "Platform/Apple/HM2Resources.hpp"
 #include "Core/Presentation/PlayerMapPreview.hpp"
+#include "Core/Simulation/LocomotionScene.hpp"
+#include "Core/Data/Weapons.hpp"
 #include <chrono>
 #include <numbers>
 
@@ -15,6 +17,36 @@
 
 @interface AssemblyRendererTests:XCTestCase @end
 @implementation AssemblyRendererTests
+- (void)testOriginalWeaponDataAndMuzzleOnApple {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    hm2::apple::Files files(root.fileSystemRepresentation);
+    const auto weapons=hm2::Weapons::parse(hm2::DataTable::parse(files.read("WeaponInfo.tble")));XCTAssertEqual(weapons.all().size(),213u);
+    const auto& gun=weapons.weapon("P_Wpn_Gun_101");const auto& missile=weapons.weapon("P_Wpn_Msl_101");XCTAssertEqual(gun.shotRange,400);XCTAssertEqual(missile.shotRange,600);XCTAssertEqual(gun.shotCount,10);XCTAssertEqual(missile.shotCount,2);
+    const auto models=hm2::Models::parse(hm2::Chunk::parse(files.read("PartsInfo.mcb")),hm2::Chunk::parse(files.read("MachInfo.mcb")));const auto equipment=hm2::PlayerEquipment::parse(hm2::DataTable::parse(files.read("ItemInfo.tble")));const auto pose=models.mountedPose(equipment.mounts(models));
+    const auto mg=hm2::Models::muzzlePosition(pose[4],1),ml=hm2::Models::muzzlePosition(pose[5],1);XCTAssertEqualWithAccuracy(mg.x,38,.0001);XCTAssertEqualWithAccuracy(mg.y,24.5,.0001);XCTAssertEqualWithAccuracy(ml.x,27,.0001);XCTAssertEqualWithAccuracy(ml.y,-26.5,.0001);
+    NSLog(@"HM2_WEAPON_DATA records=213 mgRange=400 mlRange=600 mgMuzzle=38,24.5 mlMuzzle=27,-26.5 device=%@",UIDevice.currentDevice.model);
+}
+- (void)testWalkingAndAimingUsePreparedGPUResources {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    hm2::apple::Files files(root.fileSystemRepresentation);
+    hm2::LocomotionActor definitions[]={{hm2::PlayerEquipment::startingCodes,{-80,0},0,std::nullopt},{{"11002","12002","10012","10112"},{80,0},0,hm2::Vec2{80,200}}};
+    hm2::LocomotionScene scene(files,"Stage01_01",{480,320},definitions);
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];HM2TestSurface* surface=[[HM2TestSurface alloc]initWithFrame:window.bounds];surface.contentScaleFactor=UIScreen.mainScreen.scale;
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];[surface layoutIfNeeded];
+    HM2Renderer* renderer=[[HM2Renderer alloc]initWithResourceRoot:root];auto frame=scene.frame();[renderer prepareFrame:frame];
+    const auto uploads=renderer.textureUploads,context=renderer.contextIdentity;const auto before=files.reads;
+    [renderer captureNextFrame];[renderer drawFrame:frame layer:layer];NSData* first=renderer.readRGBA;
+    XCTAssertTrue(scene.input(hm2::PointerPhase::begin,scene.camera().toScreen({80,0}),1));scene.input(hm2::PointerPhase::end,scene.camera().toScreen({80,0}),1);
+    for(int i=0;i<180;++i){@autoreleasepool{scene.tick();frame=scene.frame();[renderer drawFrame:frame layer:layer];XCTAssertEqual(renderer.textureUploads,uploads);XCTAssertEqual(renderer.contextIdentity,context);}}
+    XCTAssertGreaterThan(scene.actors().front().state().position.x,-75.f);XCTAssertTrue(scene.actors()[1].state().weaponReady);XCTAssertEqual(frame.sprites.size(),11u);
+    [renderer captureNextFrame];[renderer drawFrame:frame layer:layer];NSData* after=renderer.readRGBA;XCTAssertEqual(first.length,after.length);
+    NSUInteger changes=0;const auto* a=static_cast<const unsigned char*>(first.bytes);const auto* b=static_cast<const unsigned char*>(after.bytes);if(first.length==after.length)for(NSUInteger i=0;i<first.length;i+=4)if(a[i]!=b[i]||a[i+1]!=b[i+1]||a[i+2]!=b[i+2])++changes;
+    XCTAssertGreaterThan(changes,100u);const auto time=scene.time();const auto ticks=scene.ticks();scene.setPaused(true);
+    for(int i=0;i<10;++i){scene.tick();[renderer drawFrame:scene.frame() layer:layer];}XCTAssertEqual(scene.time(),time);XCTAssertEqual(scene.ticks(),ticks);XCTAssertTrue(files.reads==before);
+    XCTAssertEqual(uploads,9u);XCTAssertEqual(renderer.presentedFrames,192u);XCTAssertEqual(surface.subviews.count,0u);
+    NSLog(@"HM2_LOCOMOTION_GPU ticks=%lu frames=%lu textures=%lu changedPixels=%lu playerX=%.6f playerY=%.6f device=%@",scene.ticks(),(unsigned long)renderer.presentedFrames,(unsigned long)uploads,(unsigned long)changes,scene.actors().front().state().position.x,scene.actors().front().state().position.y,UIDevice.currentDevice.model);
+    window.hidden=YES;window.rootViewController=nil;
+}
 - (void)testMapAndTwoEquippedPlayersRenderWithoutWarmFrameIO {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     hm2::apple::Files files(root.fileSystemRepresentation);

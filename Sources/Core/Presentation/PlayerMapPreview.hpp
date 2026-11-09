@@ -9,6 +9,7 @@ struct PlayerAssemblyCase {
     Vec2 position;
     float machineAngle=0;
     PlayerPartAngles angles;
+    PlayerPartOffsets offsets;
 };
 // Map and equipped Player snapshots; no AI, movement, combat or progression.
 class PlayerMapPreview {
@@ -20,6 +21,7 @@ public:
     PlayerMapPreview(ResourceAccess&,std::string_view map,std::span<const PlayerAssemblyCase> preparedCases);
     [[nodiscard]] const MapPreview& map()const{return map_;}
     [[nodiscard]] const Models& models()const{return models_;}
+    [[nodiscard]] const PlayerEquipment& equipment()const{return equipment_;}
     [[nodiscard]] Frame compose(const MapCamera&,std::span<const PlayerAssemblyCase>)const;
 };
 }

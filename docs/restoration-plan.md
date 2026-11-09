@@ -2,7 +2,7 @@
 
 ## 현재 상태
 
-독립 비공개 저장소 준비와 main 반영을 완료했다. 현재 작업 브랜치에서 원본 포팅판을 대조하고 [HD reader·원본 파츠 조립·Apple GPU 출력](initial-source-restoration-20261110.md)에 이어 [맵·기본 장비 Player](player-map-restoration-20261110.md)의 정적 표시를 구현했다. 시뮬레이터 Source/Validation 빌드는 맵과 장비 미리보기이며 게임 전체의 정상동작은 미완료다. 판본별 결과와 남은 오류는 [TODO](todo.md)에 기록한다.
+독립 비공개 저장소 준비와 main 반영을 완료했다. 현재 작업 브랜치에서 맵·장비 조립에 이어 [보행·조준·터치·지형 충돌](locomotion-restoration-20261110.md)을 구현·시뮬레이터 검사했다. 검증에서 발견한 차이를 고치고 [전투 복원 계획](combat-restoration-plan-20261110.md)을 기록한 뒤 [무기 데이터·포구 소비](weapon-data-restoration-20261110.md)를 구현했다. Source/Validation 앱은 현재 보행 단계이며 발사·피해·음향·진행 전체는 미완료다. 판본별 결과와 남은 오류는 [TODO](todo.md)에 기록한다.
 
 원본은 외부 Originals 폴더의 일반판4개·HD판2개다. 일반판2.0.1과 HD1.0.3 패키지 비교에서 MachInfo.mcb·MapInfo.mcb·PartsInfo.mcb 3개가 바이트 동일했다. 같은 이름의 PNG839개는 동일하고357개는 다르며 그중342개는 크기도 다르다. .tble135개 중59개가 다르다. 두 실행 파일의 코드 영역도 다르지만 함수별 의미와 실행 동등성은 미확인이다.
 

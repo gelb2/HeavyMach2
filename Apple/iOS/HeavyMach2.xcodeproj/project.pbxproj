@@ -7,14 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		016FCED80D64E201528A7AC2 /* LocomotionScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC4647D2C2976A4283A509AD /* LocomotionScene.cpp */; };
+		0170BE3B8C5BE0FBC7573BD3 /* Weapons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 613BC791A02B06C23C2A3BEA /* Weapons.cpp */; };
+		0BBB1602146211D4FF91D350 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBDDC303F0216E7A0DD6EC8E /* CoreGraphics.framework */; };
+		195674EAD113FFEE819CC98E /* BipodMotion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3B5DDD14331F36734F3DCB4D /* BipodMotion.cpp */; };
 		1AD6C3B63CFCB56B451574ED /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2687E7EBF6A21416BCF7CF7A /* ImageIO.framework */; };
 		1CC53F10967F4E1EE7C8EFBC /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 166C5DAA03A5A25AB8F316FB /* OpenGLES.framework */; };
+		1CC9F21951A68E0B3B09F393 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A65ABA6C2432182CCE9D /* UIKit.framework */; };
 		1E0C8FCB441FB91446662E25 /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 542A40B06A3F30BD8E8AA159 /* Image.cpp */; };
+		1EC744D2CC2083B2D591278B /* WorldInputTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 6EF888F31530F103B0D92304 /* WorldInputTests.mm */; };
+		1F1ECA94591A881354C64563 /* LocomotionScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC4647D2C2976A4283A509AD /* LocomotionScene.cpp */; };
+		21020EC8059D7AD8EAD1D0D3 /* WorldNavigation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CD30E2F586AFF16FF6573A6 /* WorldNavigation.cpp */; };
 		2306CDC6254A8F229C81D34B /* Models.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 535B6432C20438F381FE27A7 /* Models.cpp */; };
 		275B831E344F127FA86998E7 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BF9C424C63A4584046C92FF /* QuartzCore.framework */; };
 		2B96AA6175873EEFCE29700D /* PartSprites.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3808C2D095948480E45FC211 /* PartSprites.cpp */; };
 		3820DC5FCC549113D6B5D741 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBDDC303F0216E7A0DD6EC8E /* CoreGraphics.framework */; };
 		3921DB60E3679E6A4AAE199B /* HM2Renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 935D56609040C44D67B6E633 /* HM2Renderer.mm */; };
+		3B324FEEFE8BC704CA068A20 /* Weapons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 613BC791A02B06C23C2A3BEA /* Weapons.cpp */; };
 		44D93FE99F90A1B51DA9B553 /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 542A40B06A3F30BD8E8AA159 /* Image.cpp */; };
 		44E1C6D0FEC05F8851ABC63C /* AssemblyPreview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A11F90D201FE7265367DF16 /* AssemblyPreview.cpp */; };
 		537F320A7EBC85DA6F7E6269 /* AssemblyPreview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A11F90D201FE7265367DF16 /* AssemblyPreview.cpp */; };
@@ -22,8 +31,10 @@
 		605035B52E42330280D6D04D /* HM2Application.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91A0D30A250D4AE32CA30332 /* HM2Application.mm */; };
 		6841D1E20D22E3FD5F8ADDF3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A65ABA6C2432182CCE9D /* UIKit.framework */; };
 		6A2144F08253AD1701C3E63B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A65ABA6C2432182CCE9D /* UIKit.framework */; };
+		6DE885382225F1A1BBB2F607 /* WorldNavigation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CD30E2F586AFF16FF6573A6 /* WorldNavigation.cpp */; };
 		72394AE430AEC32F2A067AA6 /* PlayerEquipment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4B10E038B5329E8FCF91F5F1 /* PlayerEquipment.cpp */; };
 		7508D662CE3C94491BC3D84C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BF9C424C63A4584046C92FF /* QuartzCore.framework */; };
+		7AC368B9A5A8D7B3A50469FB /* TerrainCollision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB8957B62F2A77CCDA274CF1 /* TerrainCollision.cpp */; };
 		7BCE72340775660FF61E673F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBDDC303F0216E7A0DD6EC8E /* CoreGraphics.framework */; };
 		86E323A95C69015414D28E3F /* PlayerMapPreview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE355BDD1BADB44070C02205 /* PlayerMapPreview.cpp */; };
 		87E36D97DBE0C16AB3E344FC /* DataTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FE78763925867176049A3A8 /* DataTable.cpp */; };
@@ -37,6 +48,7 @@
 		B55DBA76AB9CAEBF69996475 /* Maps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8CF2FA140E7BCAEF006C920 /* Maps.cpp */; };
 		CDF27EC2507983C36B4ABDC7 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A65ABA6C2432182CCE9D /* UIKit.framework */; };
 		D722FE62895D7884C0557085 /* Maps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8CF2FA140E7BCAEF006C920 /* Maps.cpp */; };
+		D75FBB23AFC8B40CD5802479 /* TerrainCollision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB8957B62F2A77CCDA274CF1 /* TerrainCollision.cpp */; };
 		D7F5971512837EC1D3E3875D /* HD in Resources */ = {isa = PBXBuildFile; fileRef = 1AD56BEEAD2F8B2131068154 /* HD */; };
 		DBAAC4C753D58A698A24A022 /* PlayerMapPreview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE355BDD1BADB44070C02205 /* PlayerMapPreview.cpp */; };
 		E230B0A0B359B869241F532D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 166C5DAA03A5A25AB8F316FB /* OpenGLES.framework */; };
@@ -47,9 +59,17 @@
 		EAB680319EF4F6A3FBC22D64 /* AssemblyRendererTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = FDC2C3484F60AA6ACF7FDAFB /* AssemblyRendererTests.mm */; };
 		F873335146F655F169E93B99 /* PlayerEquipment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4B10E038B5329E8FCF91F5F1 /* PlayerEquipment.cpp */; };
 		FAE1591D671183370D6BBA7D /* HD in Resources */ = {isa = PBXBuildFile; fileRef = 1AD56BEEAD2F8B2131068154 /* HD */; };
+		FE90D06D25B782321989D29E /* BipodMotion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3B5DDD14331F36734F3DCB4D /* BipodMotion.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		58C6AA272CDC8E471AB60406 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F3793C7453D22C7B54A211B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 97A82EDF7C94187F2EF15504;
+			remoteInfo = HeavyMach2Source;
+		};
 		C1D4E0D9BDDA51FE9601AB90 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4F3793C7453D22C7B54A211B /* Project object */;
@@ -60,12 +80,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0FF8BAC3C7876510CE6DE649 /* HeavyMach2UITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = HeavyMach2UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		166C5DAA03A5A25AB8F316FB /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		1AD56BEEAD2F8B2131068154 /* HD */ = {isa = PBXFileReference; lastKnownFileType = folder; name = HD; path = ../../.local/prepared/HD; sourceTree = SOURCE_ROOT; };
+		23CC731FE52C2AD7E374728A /* LocomotionScene.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LocomotionScene.hpp; sourceTree = "<group>"; };
 		2687E7EBF6A21416BCF7CF7A /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		2839D5171319EDC977E0F09A /* WorldNavigation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WorldNavigation.hpp; sourceTree = "<group>"; };
 		29E3E3ED844116807B811834 /* Maps.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Maps.hpp; sourceTree = "<group>"; };
 		36461838BA6C5A6F8A670ACB /* DataTable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DataTable.hpp; sourceTree = "<group>"; };
 		3808C2D095948480E45FC211 /* PartSprites.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PartSprites.cpp; sourceTree = "<group>"; };
+		3B5DDD14331F36734F3DCB4D /* BipodMotion.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BipodMotion.cpp; sourceTree = "<group>"; };
 		445AC8953F5F5E2C23FC8379 /* PlayerMapPreview.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PlayerMapPreview.hpp; sourceTree = "<group>"; };
 		4A9AE12FE861C196B58943BF /* HeavyMach2Validation.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HeavyMach2Validation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B10E038B5329E8FCF91F5F1 /* PlayerEquipment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PlayerEquipment.cpp; sourceTree = "<group>"; };
@@ -74,16 +98,20 @@
 		535B6432C20438F381FE27A7 /* Models.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Models.cpp; sourceTree = "<group>"; };
 		542A40B06A3F30BD8E8AA159 /* Image.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Image.cpp; sourceTree = "<group>"; };
 		5BF9C424C63A4584046C92FF /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		613BC791A02B06C23C2A3BEA /* Weapons.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Weapons.cpp; sourceTree = "<group>"; };
 		67696AD5E96C7983E526B79E /* HM2Renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HM2Renderer.h; sourceTree = "<group>"; };
 		6992A65ABA6C2432182CCE9D /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		6EB37C5E8A7497296C78965E /* Chunk.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Chunk.hpp; sourceTree = "<group>"; };
+		6EF888F31530F103B0D92304 /* WorldInputTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = WorldInputTests.mm; sourceTree = "<group>"; };
 		786BEBFF9420C8B8450AEE47 /* HeavyMach2AppleTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = HeavyMach2AppleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		78D24A69AF7B3BB23FC0E7CD /* Models.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Models.hpp; sourceTree = "<group>"; };
 		8922EAAACBF2663C522B6F76 /* PartSprites.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PartSprites.hpp; sourceTree = "<group>"; };
 		8AABB23E0645C8060EA9C74D /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		8CB26FA4140DA936FCC5D9AB /* BipodMotion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BipodMotion.hpp; sourceTree = "<group>"; };
 		91A0D30A250D4AE32CA30332 /* HM2Application.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = HM2Application.mm; sourceTree = "<group>"; };
 		935D56609040C44D67B6E633 /* HM2Renderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = HM2Renderer.mm; sourceTree = "<group>"; };
 		9A11F90D201FE7265367DF16 /* AssemblyPreview.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AssemblyPreview.cpp; sourceTree = "<group>"; };
+		9CD30E2F586AFF16FF6573A6 /* WorldNavigation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WorldNavigation.cpp; sourceTree = "<group>"; };
 		9FE78763925867176049A3A8 /* DataTable.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DataTable.cpp; sourceTree = "<group>"; };
 		ADDEAEEA7BB8B54C41E3C295 /* AssemblyPreview.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AssemblyPreview.hpp; sourceTree = "<group>"; };
 		AE355BDD1BADB44070C02205 /* PlayerMapPreview.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PlayerMapPreview.cpp; sourceTree = "<group>"; };
@@ -91,16 +119,29 @@
 		B575182419C1FB3F7AF9E7D1 /* DarwinRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DarwinRandom.hpp; sourceTree = "<group>"; };
 		B61FDC38BFE7A6A2FE22F969 /* MapPreview.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MapPreview.hpp; sourceTree = "<group>"; };
 		B8CF2FA140E7BCAEF006C920 /* Maps.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Maps.cpp; sourceTree = "<group>"; };
+		BDE644B4E59C33D54692C40B /* TerrainCollision.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TerrainCollision.hpp; sourceTree = "<group>"; };
+		C530196FF2D99A1D04F34CB3 /* Weapons.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Weapons.hpp; sourceTree = "<group>"; };
 		D756CCC0C471868117741AC8 /* PlayerEquipment.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PlayerEquipment.hpp; sourceTree = "<group>"; };
+		DC4647D2C2976A4283A509AD /* LocomotionScene.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LocomotionScene.cpp; sourceTree = "<group>"; };
 		E03CEE9E63A54435B8540502 /* Chunk.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Chunk.cpp; sourceTree = "<group>"; };
 		E1A6C6E0D711E22B2F6CAE37 /* Image.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Image.hpp; sourceTree = "<group>"; };
 		E55A40FF267F407934E8B2C5 /* Resources.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Resources.hpp; sourceTree = "<group>"; };
 		E8FB007411CC043C0FAE3938 /* MapPreview.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MapPreview.cpp; sourceTree = "<group>"; };
+		EB8957B62F2A77CCDA274CF1 /* TerrainCollision.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TerrainCollision.cpp; sourceTree = "<group>"; };
 		EBDDC303F0216E7A0DD6EC8E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		FDC2C3484F60AA6ACF7FDAFB /* AssemblyRendererTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AssemblyRendererTests.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		02517A0A1D1E95EA2CDFEEB9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1CC9F21951A68E0B3B09F393 /* UIKit.framework in Frameworks */,
+				0BBB1602146211D4FF91D350 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		069549BF371D2E2BD3FB1F49 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -146,6 +187,7 @@
 				8D670C1C55DAD23A268E091E /* Assets */,
 				137BB4F5D7A56D396C5265D9 /* Core */,
 				7E2F8678EB52271266A153B3 /* Tests */,
+				C7545EAC592CFC4268A47A1C /* UITests */,
 				56B71E5C6B340BF89A7250F1 /* Frameworks */,
 				8DF47083CAC1A334C96D57A5 /* Products */,
 			);
@@ -166,6 +208,8 @@
 				4B10E038B5329E8FCF91F5F1 /* PlayerEquipment.cpp */,
 				D756CCC0C471868117741AC8 /* PlayerEquipment.hpp */,
 				E55A40FF267F407934E8B2C5 /* Resources.hpp */,
+				613BC791A02B06C23C2A3BEA /* Weapons.cpp */,
+				C530196FF2D99A1D04F34CB3 /* Weapons.hpp */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -177,6 +221,7 @@
 				5327E79C2AEBF7FB44D9FE35 /* Types.hpp */,
 				0D2B20BEAC0CC75EEEFD5BB2 /* Data */,
 				88715853EDD2FD80728A75C2 /* Presentation */,
+				BAD5D66F1208A181D69DEF80 /* Simulation */,
 			);
 			name = Core;
 			path = ../../Sources/Core;
@@ -245,9 +290,34 @@
 			children = (
 				786BEBFF9420C8B8450AEE47 /* HeavyMach2AppleTests.xctest */,
 				B43D62B2508FB7117CB0AF79 /* HeavyMach2Source.app */,
+				0FF8BAC3C7876510CE6DE649 /* HeavyMach2UITests.xctest */,
 				4A9AE12FE861C196B58943BF /* HeavyMach2Validation.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		BAD5D66F1208A181D69DEF80 /* Simulation */ = {
+			isa = PBXGroup;
+			children = (
+				3B5DDD14331F36734F3DCB4D /* BipodMotion.cpp */,
+				8CB26FA4140DA936FCC5D9AB /* BipodMotion.hpp */,
+				DC4647D2C2976A4283A509AD /* LocomotionScene.cpp */,
+				23CC731FE52C2AD7E374728A /* LocomotionScene.hpp */,
+				EB8957B62F2A77CCDA274CF1 /* TerrainCollision.cpp */,
+				BDE644B4E59C33D54692C40B /* TerrainCollision.hpp */,
+				9CD30E2F586AFF16FF6573A6 /* WorldNavigation.cpp */,
+				2839D5171319EDC977E0F09A /* WorldNavigation.hpp */,
+			);
+			path = Simulation;
+			sourceTree = "<group>";
+		};
+		C7545EAC592CFC4268A47A1C /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+				6EF888F31530F103B0D92304 /* WorldInputTests.mm */,
+			);
+			name = UITests;
+			path = ../UITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -310,6 +380,25 @@
 			productReference = B43D62B2508FB7117CB0AF79 /* HeavyMach2Source.app */;
 			productType = "com.apple.product-type.application";
 		};
+		E4CD8557CA03F5B330C88564 /* HeavyMach2UITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9D6F1FE997A434F7D151CA5A /* Build configuration list for PBXNativeTarget "HeavyMach2UITests" */;
+			buildPhases = (
+				53F38C536C68256E811C496E /* Sources */,
+				02517A0A1D1E95EA2CDFEEB9 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B83B1ED3645654A2AC0591BA /* PBXTargetDependency */,
+			);
+			name = HeavyMach2UITests;
+			packageProductDependencies = (
+			);
+			productName = HeavyMach2UITests;
+			productReference = 0FF8BAC3C7876510CE6DE649 /* HeavyMach2UITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -327,6 +416,10 @@
 					};
 					97A82EDF7C94187F2EF15504 = {
 						ProvisioningStyle = Automatic;
+					};
+					E4CD8557CA03F5B330C88564 = {
+						ProvisioningStyle = Automatic;
+						TestTargetID = 97A82EDF7C94187F2EF15504;
 					};
 				};
 			};
@@ -346,6 +439,7 @@
 			targets = (
 				5534F99D28D2F1A1932A2574 /* HeavyMach2AppleTests */,
 				97A82EDF7C94187F2EF15504 /* HeavyMach2Source */,
+				E4CD8557CA03F5B330C88564 /* HeavyMach2UITests */,
 				147099677CA3A55CBE94EF66 /* HeavyMach2Validation */,
 			);
 		};
@@ -376,17 +470,30 @@
 			buildActionMask = 2147483647;
 			files = (
 				537F320A7EBC85DA6F7E6269 /* AssemblyPreview.cpp in Sources */,
+				FE90D06D25B782321989D29E /* BipodMotion.cpp in Sources */,
 				AA6142C98549069CF77BCF61 /* Chunk.cpp in Sources */,
 				936C708FD04DAA8F6164D13B /* DataTable.cpp in Sources */,
 				605035B52E42330280D6D04D /* HM2Application.mm in Sources */,
 				E27800D0035BB86A39F74039 /* HM2Renderer.mm in Sources */,
 				1E0C8FCB441FB91446662E25 /* Image.cpp in Sources */,
+				016FCED80D64E201528A7AC2 /* LocomotionScene.cpp in Sources */,
 				E635ECE53DEA9C992CCBB976 /* MapPreview.cpp in Sources */,
 				D722FE62895D7884C0557085 /* Maps.cpp in Sources */,
 				2306CDC6254A8F229C81D34B /* Models.cpp in Sources */,
 				2B96AA6175873EEFCE29700D /* PartSprites.cpp in Sources */,
 				F873335146F655F169E93B99 /* PlayerEquipment.cpp in Sources */,
 				86E323A95C69015414D28E3F /* PlayerMapPreview.cpp in Sources */,
+				7AC368B9A5A8D7B3A50469FB /* TerrainCollision.cpp in Sources */,
+				0170BE3B8C5BE0FBC7573BD3 /* Weapons.cpp in Sources */,
+				21020EC8059D7AD8EAD1D0D3 /* WorldNavigation.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		53F38C536C68256E811C496E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1EC744D2CC2083B2D591278B /* WorldInputTests.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -395,17 +502,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				44E1C6D0FEC05F8851ABC63C /* AssemblyPreview.cpp in Sources */,
+				195674EAD113FFEE819CC98E /* BipodMotion.cpp in Sources */,
 				E68037BE7FF34C7A7977083F /* Chunk.cpp in Sources */,
 				87E36D97DBE0C16AB3E344FC /* DataTable.cpp in Sources */,
 				56FB9B2F1FB7306D55AEA10C /* HM2Application.mm in Sources */,
 				3921DB60E3679E6A4AAE199B /* HM2Renderer.mm in Sources */,
 				44D93FE99F90A1B51DA9B553 /* Image.cpp in Sources */,
+				1F1ECA94591A881354C64563 /* LocomotionScene.cpp in Sources */,
 				A404CF63D3AF1EFE21C0D8C1 /* MapPreview.cpp in Sources */,
 				B55DBA76AB9CAEBF69996475 /* Maps.cpp in Sources */,
 				AAD32C2AE1D4D4565F758A0F /* Models.cpp in Sources */,
 				B145A83EF1A5F4708DC53294 /* PartSprites.cpp in Sources */,
 				72394AE430AEC32F2A067AA6 /* PlayerEquipment.cpp in Sources */,
 				DBAAC4C753D58A698A24A022 /* PlayerMapPreview.cpp in Sources */,
+				D75FBB23AFC8B40CD5802479 /* TerrainCollision.cpp in Sources */,
+				3B324FEEFE8BC704CA068A20 /* Weapons.cpp in Sources */,
+				6DE885382225F1A1BBB2F607 /* WorldNavigation.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -424,6 +536,11 @@
 			isa = PBXTargetDependency;
 			target = 97A82EDF7C94187F2EF15504 /* HeavyMach2Source */;
 			targetProxy = C1D4E0D9BDDA51FE9601AB90 /* PBXContainerItemProxy */;
+		};
+		B83B1ED3645654A2AC0591BA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 97A82EDF7C94187F2EF15504 /* HeavyMach2Source */;
+			targetProxy = 58C6AA272CDC8E471AB60406 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -584,6 +701,42 @@
 			};
 			name = Release;
 		};
+		A82DAE6D4D14D4E802E47DA8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.gelb2.heavymach2.ui-tests";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = HeavyMach2Source;
+			};
+			name = Debug;
+		};
+		C3E6F9DB43554F54F25ECD2A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.gelb2.heavymach2.ui-tests";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = HeavyMach2Source;
+			};
+			name = Release;
+		};
 		D087E4D03270D4649F973FC9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -692,6 +845,15 @@
 			buildConfigurations = (
 				42C70BA843CF91AE7258DA2C /* Debug */,
 				9455C30C2090E6ABF901AC64 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9D6F1FE997A434F7D151CA5A /* Build configuration list for PBXNativeTarget "HeavyMach2UITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A82DAE6D4D14D4E802E47DA8 /* Debug */,
+				C3E6F9DB43554F54F25ECD2A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

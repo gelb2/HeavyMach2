@@ -4,9 +4,10 @@
 #include <array>
 
 namespace hm2 {
-struct EquipmentItem {std::string code,type,part;};
+struct EquipmentItem {std::string code,type,part;float parameter3=0;};
 using EquipmentCodes=std::array<std::string_view,4>;
 struct PlayerPartAngles {float base=0,footLeft=0,footRight=0,body=0,weaponLeft=0,weaponRight=0;};
+struct PlayerPartOffsets {Vec2 footLeft,footRight,body,weaponLeft,weaponRight;};
 // Current scope: mounting part equipment, not inventory/HP/save/progression.
 // initSlot 0x17e10 / addMyMach 0x11770 / Player::setParts 0xb7b4.
 class PlayerEquipment {
@@ -16,7 +17,7 @@ public:
     static PlayerEquipment parse(const DataTable&);
     // Slot order body/bottom/left/right; empty means unequipped. Numeric part types
     // reproduce the original mounting branches; IDs/images come from ItemInfo.
-    [[nodiscard]] std::vector<PartMount> mounts(const Models&,EquipmentCodes codes=startingCodes,PlayerPartAngles angles={})const;
+    [[nodiscard]] std::vector<PartMount> mounts(const Models&,EquipmentCodes codes=startingCodes,PlayerPartAngles angles={},PlayerPartOffsets offsets={})const;
     [[nodiscard]] const EquipmentItem& item(std::string_view code)const;
 };
 }
