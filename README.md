@@ -37,3 +37,5 @@ python3 tools/check_no_ipa.py --all
 [보행·조준·터치 검사](docs/locomotion-restoration-20261110.md) · [전투 복원 계획](docs/combat-restoration-plan-20261110.md) · [무기 데이터·포구 구현](docs/weapon-data-restoration-20261110.md)
 
 [전체 기능 치트 앱 개발·검증 계획](docs/full-validation-development-plan-20261110.md)
+
+[보고 사이트](docs/report-site.md) · [온라인 보행 검증 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/) · [온라인 전체 치트 앱 계획](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/plan.html) — 본인 계정 로그인 필요. 배포 응답은 succeeded지만 새 경로404로 실제 게시 확인은 미완료다.
