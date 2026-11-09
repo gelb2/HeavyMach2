@@ -35,3 +35,5 @@ python3 tools/check_no_ipa.py --all
 [맵·플레이어 장비 후속 구현](docs/player-map-restoration-20261110.md)
 
 [보행·조준·터치 검사](docs/locomotion-restoration-20261110.md) · [전투 복원 계획](docs/combat-restoration-plan-20261110.md) · [무기 데이터·포구 구현](docs/weapon-data-restoration-20261110.md)
+
+[전체 기능 치트 앱 개발·검증 계획](docs/full-validation-development-plan-20261110.md)
