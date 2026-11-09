@@ -1,0 +1,24 @@
+name: Repository checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  no-ipa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - run: python3 tools/check_no_ipa.py --all
+      - run: python3 -m unittest discover -s tests -p 'test_*.py'
+  develop-only:
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require develop from this repository
+        env:
+          HEAD_BRANCH: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPO: ${{ github.repository }}
+        run: test "$HEAD_BRANCH" = develop && test "$HEAD_REPO" = "$BASE_REPO"
