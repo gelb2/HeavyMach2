@@ -1,0 +1,36 @@
+{
+  "source_root": "/Users/sokol/Documents/Codex/Originals/HeavyMach/heavy-mach-archive_202406/Game IPAs/Heavy Mach 2",
+  "originals_must_stay_outside_repository": true,
+  "files": [
+    {
+      "relative_path": "Heavy Mach 2/HeavyMach2 v1.0.0 - (kr.indieapps.HeavyMach2).ipa",
+      "bytes": 46597712,
+      "sha256": "695df77db78b46dd6a42c58c923df4a3737f9637a96433c82650fb66a0e9ff60"
+    },
+    {
+      "relative_path": "Heavy Mach 2/HeavyMach2 v1.1.0 - (com.indiean.HeavyMach2).ipa",
+      "bytes": 46638849,
+      "sha256": "4223a877fae11da54b8cc7239ecb6ee22fc0bff53743a5e84abba53d18b9d251"
+    },
+    {
+      "relative_path": "Heavy Mach 2/HeavyMach2 v1.3.0 - (com.indiean.HeavyMach2).ipa",
+      "bytes": 52987116,
+      "sha256": "c446bab6bb022abc704ce0bad41e8b18e74cec2cec19861dcc630c53d1b1b56b"
+    },
+    {
+      "relative_path": "Heavy Mach 2/HeavyMach2 v2.0.1 - (com.indiean.HeavyMach2).ipa",
+      "bytes": 55854756,
+      "sha256": "23ff9c74c7d890cc6f28952b4845f6c616bae4bb7207a393f80ed9ed76062d32"
+    },
+    {
+      "relative_path": "Heavy Mach 2 HD/HeavyMach2HD v1.0.0 - (kr.indieapps.HvM2HD).ipa",
+      "bytes": 84574273,
+      "sha256": "31ebed81043fe9a7c5ab25a7adaf13eaa3629f885bce18c3793f5d78f571cc56"
+    },
+    {
+      "relative_path": "Heavy Mach 2 HD/HeavyMach2HD v1.0.3 - (kr.indieapps.HvM2HD).ipa",
+      "bytes": 69171560,
+      "sha256": "7eeb36590b3c19a28741e21671379029d9023864ceb241a5b8560eef045112d2"
+    }
+  ]
+}
