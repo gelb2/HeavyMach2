@@ -25,3 +25,5 @@ python3 tools/check_no_ipa.py --all
 [작업 지침](AGENTS.md) · [복원 계획](docs/restoration-plan.md) · [원본 위치와 해시](docs/source-provenance.json) · [TODO](docs/todo.md)
 
 [HeavyMach 1 초기 이력 검토](docs/heavymach1-history-review.md) · [일반판·HD판 포팅 앱 검증 계획](docs/reference-port-validation-plan.md)
+
+[기술스택과 에셋 생성·저장·조립 규칙](docs/technology-and-assets.md)

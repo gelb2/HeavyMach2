@@ -1,6 +1,6 @@
 # HeavyMach 2 작업 지침
 
-이 저장소는 HeavyMach 2 전용 독립 비공개 저장소다. `.agents/policy.md`, `.agents/project.md`, `docs/restoration-plan.md`, `docs/reference-port-validation-plan.md`, `docs/todo.md`를 읽는다.
+이 저장소는 HeavyMach 2 전용 독립 비공개 저장소다. `.agents/policy.md`, `.agents/project.md`, `docs/restoration-plan.md`, `docs/technology-and-assets.md`, `docs/reference-port-validation-plan.md`, `docs/todo.md`를 읽는다.
 
 1. HeavyMach 2의 모든 새 소스·도구·검사·파생 파일과 빌드 출력은 이 저장소 또는 이 저장소 전용 외부 작업 공간에 둔다.
 2. HeavyMach 1·MachDefense·분리 전 ProjectGameDev의 파일을 수정하지 않는다. 해당 폴더에 HeavyMach 2 코드를 만들지 않는다. 다른 게임의 소스나 출력 디렉터리를 쓰기 대상으로 연결하지 않는다.
@@ -11,6 +11,7 @@
 7. 일반판과 HD판을 각각 자기 원작에 대조한다. 에셋 픽셀 크기와 게임 표시 크기를 구분하며 원작 좌표·부품 조립·데이터 소비 절차를 따른다. 유닛마다 임의 C++ 이미지·조립 경로를 추가하지 않는다.
 8. 같은 데이터 파일만으로 전체 게임 로직 동일성을 주장하지 않는다. 정적 분석·추정·실행 결과·사용자 관측을 구분한다. 디컴파일 결과를 원본 소스라고 부르지 않는다.
 9. 광고를 표시하거나 요청하지 않는다. 원본·저장·실패 증거를 보존한다. 실패 기준을 낮춰 통과시키지 않는다.
-10. 한국어로 핵심부터 답하고, 실행한 결과만 완료로 보고한다. 질문·단순 문서 변경 때문에 앱 재빌드를 요구하지 않는다.
+10. HeavyMach 1과 같은 기술스택을 사용한다. `docs/technology-and-assets.md`의 에셋 생성·저장·형식·공통 reader·파츠 조립·패키징 규칙을 원본/신규 유닛 모두에 적용한다. 원작 제작 도구 미확보와 복원 엔진의 확장을 숨기지 않는다.
+11. 한국어로 핵심부터 답하고, 실행한 결과만 완료로 보고한다. 질문·단순 문서 변경 때문에 앱 재빌드를 요구하지 않는다.
 
 허브 등록·공통 지침 수정은 허브 작업 브랜치에서 한다. 이것이 다른 게임 저장소를 수정할 권한을 부여하지 않는다.

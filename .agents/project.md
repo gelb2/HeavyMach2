@@ -5,3 +5,5 @@ HeavyMach 2의 일반판과 HD판을 각각 보존 기준으로 삼는 독립 �
 공통 동작이 확인된 부분만 공유한다. 현재 비교한 일반판2.0.1과 HD1.0.3은 버전도 다르므로 차이를 전부 기기 차이로 취급하지 않는다. 기준 판본·좌표·원작 실행 검증은 아직 남아 있다.
 
 HeavyMach 1과 MachDefense의 파일은 변경하지 않는다. 모든 개발은 HeavyMach2 저장소에서 한다. 원본 IPA·사용자 저장·서명 비밀은 Git에 넣지 않는다. 광고는 표시하지 않는다.
+
+기술스택은 HeavyMach 1의 C++20 공통 코어, Objective-C++ Apple 연결, Kotlin/NDK Android, Emscripten/WebAssembly 웹, Tauri 2 구성을 따른다. 원본 비교 앱은 Rust·SDL 기반 실행기를 별도로 검증한다. [기술스택과 에셋 절차](../docs/technology-and-assets.md)에 따라 원작 파일 형식·저장·reader·파츠 조립을 복원하고 신규 유닛도 같은 경로에 넣는다. 현재는 계획 단계다.
