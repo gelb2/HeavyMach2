@@ -1,0 +1,18 @@
+# Original packages never enter Git or LFS, regardless of case.
+*.[iI][pP][aA]
+/Originals/
+/originals/
+/Analysis/
+/.local/
+/.internal/
+/build/
+/DerivedData/
+.env
+.env.*
+!.env.example
+*.p12
+*.mobileprovision
+*.key
+.DS_Store
+__pycache__/
+*.pyc
