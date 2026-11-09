@@ -16,4 +16,6 @@ HeavyMach 2의 일반판과 HD판을 각각 보존 기준으로 삼는 독립 �
 
 HeavyMach 1과 MachDefense의 파일은 변경하지 않는다. 모든 개발은 HeavyMach2 저장소에서 한다. 원본 IPA·사용자 저장·서명 비밀은 Git에 넣지 않는다. 광고는 표시하지 않는다.
 
-기술스택은 HeavyMach 1의 C++20 공통 코어, Objective-C++ Apple 연결, Kotlin/NDK Android, Emscripten/WebAssembly 웹, Tauri 2 구성을 따른다. 원본 비교 앱은 Rust·SDL 기반 실행기를 별도로 검증한다. [기술스택과 에셋 절차](../docs/technology-and-assets.md)에 따라 원작 파일 형식·저장·reader·파츠 조립을 복원하고 신규 유닛도 같은 경로에 넣는다. 현재는 계획 단계다.
+2026-11-10 사용자 최종 기술스택 요구: HeavyMach 1·MachDefense·HeavyMach 2는 같은 C++20 게임 코어·GPU 스프라이트·OpenAL 효과음·기존 플랫폼 어댑터 구성을 사용한다. Objective-C++ Apple, 기존 Kotlin/JNI·NDK Android, Emscripten/WebAssembly·WebGL2 웹/PWA, Tauri2 Rust 호스트를 따른다. Kotlin/JS/Rust는 기존 호스트 역할이며 게임을 별도 재개발하는 언어가 아니다. Python은 분석·오프라인 준비 도구에 한정한다. 임의 Python/Ruby 런타임·Three.js·새 게임 엔진을 추가하지 않는다. 원작 비교 앱의 Rust·SDL 실행기는 제품과 분리한다.
+
+[실제 코드·빌드 설정 대조](../docs/technology-stack-review-20261110.md)와 [실행 계약](../docs/runtime-contract.md)을 따른다. 사격마다 DB/파일 쓰기·오디오 context/source 생성·효과음의 AVAudioPlayer/AVAudioEngine 대체·UIKit 인게임 그래픽/버튼을 추가하지 않는다. 원작 BGM AudioQueue와 OS 장치 연결은 효과음 임의 대체와 구분한다. HM2 HD의 PCM 형식·게임 시간·저장 포맷은 HM2 근거로 복원한다. [에셋 절차](../docs/technology-and-assets.md)의 공통 reader·파츠 조립·패키징을 원본/신규 유닛 모두에 적용한다. 독립 복원 코어·앱 구현은 아직 미완료다.

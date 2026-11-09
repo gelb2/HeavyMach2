@@ -1,6 +1,6 @@
 # HeavyMach 2 Restoration
 
-HeavyMach 2의 독립 비공개 복원 저장소다. 현재는 저장소·원본 보존 규칙·조사 계획을 준비한 상태이며 게임 구현과 앱 빌드는 아직 없다.
+HeavyMach 2의 독립 비공개 복원 저장소다. 현재 일반판·HD 원본 포팅 앱을 시뮬레이터에서 검증하며 데이터·표시·전투와 기술스택을 조사했다. 독립 C++ 복원 코어·복원 앱 구현은 아직 미완료다.
 
 ## 작업 경계
 
@@ -27,3 +27,5 @@ python3 tools/check_no_ipa.py --all
 [HeavyMach 1 초기 이력 검토](docs/heavymach1-history-review.md) · [일반판·HD판 포팅 앱 검증 계획](docs/reference-port-validation-plan.md)
 
 [기술스택과 에셋 생성·저장·조립 규칙](docs/technology-and-assets.md)
+
+[세 작품의 실제 기술스택 대조](docs/technology-stack-review-20261110.md) · [시간·저장·음향·인게임 표시 계약](docs/runtime-contract.md)

@@ -1,25 +1,27 @@
 # 기술스택과 에셋 절차
 
-상태: 사용자 요구를 반영한 구현 계획이다. HeavyMach 2의 게임 구현·변환기·앱 검증은 아직 없다. HeavyMach 1과 같은 기술스택을 사용하며, HeavyMach 2 원작의 데이터 저장·읽기·파츠 조립·게임 실행 절차를 복원한다. 일반판과 HD판은 각각 자기 원작 포팅 앱과 비교한다.
+상태: 사용자 요구와 [세 작품 기술스택 대조](technology-stack-review-20261110.md)를 반영한 구현 기준이다. HeavyMach 2의 독립 복원 코어·변환기·복원 앱 검증은 아직 없다. 기존 원본 포팅 앱의 관측과 구분한다. HeavyMach 1·MachDefense와 같은 스택으로 HeavyMach 2 원작의 데이터 저장·읽기·파츠 조립·게임 실행 절차를 복원한다.
 
 ## 기술스택
 
-아래 HeavyMach 1 근거는 main의 `c604a8eab8aba24affd39c1fc74f79a1be38538e`에서 읽었다. 표의 HeavyMach 2 항목은 채택한 방향이며 구현 완료를 뜻하지 않는다.
+2026-11-10에 HeavyMach 1 main `bd0aa73a`, MachDefense main `0aa03aa7`의 빌드 설정과 소비 코드를 대조했다. [조사 명세](evidence/technology-stack-review-20261110.json)에 전체 커밋·파일·해시를 기록한다. 아래는 HM2 채택 기준이며 구현 완료가 아니다. 새 게임 엔진·런타임 언어를 추가하지 않는다.
 
-| 영역 | HeavyMach 2에 사용할 구성 | HeavyMach 1 확인 근거 |
+| 영역 | HeavyMach 2에 사용할 구성 | 기존 두 작품의 근거 |
 |---|---|---|
-| 공통 게임 코어 | C++20. 데이터 reader, 부품 트리, 전투·진행·저장을 공통 코어에 둔다 | `CMakeLists.txt:2–4` |
-| iPhone·iPad | Objective-C++ 플랫폼 연결, Xcode 빌드. 같은 소스의 유니버설 앱에 일반판/HD 표시 구성을 둔다 | `Sources/iOS/HMGLRenderer.mm`, `iOS/project.yml` |
-| 그래픽·음향 | 원작 그래픽 상태·좌표·알파·블렌딩을 보존하는 렌더러와 OpenAL 계열 음향. HM1의 GLES 1.1 구성부터 대조한다 | `Sources/iOS/HMGLRenderer.h`, `HMGLRenderer.mm`, `HMOpenALAudio.mm`; 후자는 OpenAL Soft 1.22.2 표기 |
-| Android | Kotlin 플랫폼 연결 + NDK C++ 공통 코어, CMake/Gradle. EGL/GLES 및 OpenAL 연결 | `Android/app/build.gradle.kts`, `Android/cmake/CMakeLists.txt` |
-| 웹·PWA | Emscripten으로 같은 C++ 코어를 WebAssembly로 빌드. JavaScript 호스트와 WebGL 2 렌더러 | `Web/CMakeLists.txt`, `Sources/Web/WebMain.cpp`, `WebGLRenderer.cpp` |
-| Tauri 데스크톱 | Tauri 2 Rust 호스트와 같은 웹 산출물. 게임 규칙은 C++ 코어에 유지 | `Desktop/Tauri/src-tauri/Cargo.toml` |
-| 원본 비교 앱 | Rust·SDL 기반 touchHLE 계열의 no-JIT 실행기. 일반판과 HD판 원본을 각각 실행 | `Compatibility/upstream.json`; HM2 ARMv7·iPad 지원 적합성은 R1에서 확인 |
-| 에셋 준비·검사 | Python 오프라인 도구, 필요한 이미지 디코딩 연결. 입력 해시·변환 설정·출력 목록을 기록 | `tools/prepare_unit_data.py`, `prepare_unit_data.md`, `prepare_unit_images.py`, `prepare_unit_images.mm` |
+| 공통 게임 코어 | C++20·CMake. reader·부품·전투·진행·저장과 메뉴·HUD를 공통 코어에 둔다 | 양쪽 `CMakeLists.txt`; MachDefense `Sources/Core/Presentation`·`Session` |
+| iPhone·iPad | Objective-C++·Xcode 유니버설 앱. UIKit은 OS 연결, 인게임 표시는 공통 GPU 경로 | HM1 `Sources/iOS/HMGLRenderer.mm`; MD `Sources/Platform/Apple/MDRenderer.mm`, 양쪽 Xcode 구성 |
+| 그래픽·음향 | OpenGL 계열 스프라이트와 OpenAL Soft1.22.2 효과음. Apple BGM은 HD 원본 AudioQueue 경로 | 양쪽 renderer·OpenAL 소비 코드. MD `MDAudio.mm`·`MDAudioQueueMusic.hpp`; HM2 원본 함수는 대조 보고서에 기록 |
+| Android | 기존 Kotlin Activity/JNI 호스트·NDK C++20·EGL/GLES·OpenAL. Kotlin으로 게임·HUD를 별도 구현하지 않음 | 양쪽 `Android/app/build.gradle.kts`, `Android/cmake/CMakeLists.txt`, GameActivity |
+| 웹·PWA | 같은 C++ 코어를 Emscripten/WebAssembly로 빌드. WebGL2·OpenAL API·JS 호스트. Three.js 추가 없음 | 양쪽 `Web/CMakeLists.txt`·웹 렌더/음향 코드 |
+| Tauri 데스크톱 | Tauri2 Rust 호스트·같은 웹 산출물. 게임 규칙은 C++에 유지 | 양쪽 `Desktop/Tauri/src-tauri/Cargo.toml` |
+| 원본 비교 앱 | 기존 Rust·SDL touchHLE 계열 no-JIT 실행기. 복원 제품과 분리 | HM2 `Compatibility/runtime.json`, 기존 포팅 앱·대조 로그. 전체 정상동작은 미완료 |
+| 에셋 준비·검사 | 기존 Python 오프라인 도구·셸 빌드/검사 역할만 유지. Python/Ruby를 게임 실행 의존성으로 추가하지 않음 | HM1 prepare 도구·MD 오프라인 자원 준비 구조. HM2 원작 형식에 맞춰 복원 |
 
 우선 구현 순서는 두 원본 비교 앱과 Apple 유니버설 앱이다. Android·웹/PWA·Tauri는 같은 코어를 사용하는 후속 대상이다. 플랫폼별 구현·검사는 각각 완료 여부를 기록한다. 의존성과 도구 버전은 실제 빌드가 확인된 버전 및 해시로 고정한다.
 
-HM2 원작의 실제 그래픽 API와 호출은 아직 확인하지 않았다. 셰이더 파일 존재만으로 ES 2 사용을 단정하거나 HM1의 ES 1.1 호출을 강제로 적용하지 않는다. R1에서 두 원작의 호출을 확인하고, 필요한 호환 처리를 같은 플랫폼 계층에 명시한다. 공통 코어의 언어·구조를 임의로 바꾸지 않는다.
+HD1.0.3의 EAGLView 초기화는 API1을 요청하며 기존 GLES1 출력 구성과 맞는다. 일반판 포팅 로그의 API2 요청 거절→API1 경로와 검은 지형 실패는 별도 조사한다. HD 기준 렌더러에 일반판 실패를 복제하지 않는다. 필요한 현대 출력 연결은 같은 플랫폼 경계 안에 둔다. 셰이더 파일만으로 새 엔진을 선택하지 않는다.
+
+[시간·저장·음향·인게임 표시 계약](runtime-contract.md)을 함께 따른다. 사격별 DB/파일 쓰기, 매번 context/source 생성, 효과음의 AVAudioPlayer/AVAudioEngine 대체, UIKit 인게임 버튼 구현을 추가하지 않는다. HM2 HD의8/16비트·모노/스테레오 PCM에 맞게 MachDefense 형식 처리를 재사용 기준으로 삼는다. HM1의 모노 PCM16 로더·게임 시간·저장 포맷을 그대로 복사하지 않는다.
 
 ## 원작 절차의 근거
 

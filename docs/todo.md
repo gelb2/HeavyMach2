@@ -42,6 +42,11 @@ HeavyMach 1·MachDefense 소스나 파일 변경은 이 작업에 포함하지 �
 
 ## HM2-STACK-ASSETS — 기술스택과 원작 에셋 절차
 
+- [x] 2026-11-10 HM1 main bd0aa73a·MachDefense main0aa03aa7의 실제 코어·빌드·GPU·음향·저장 연결과 HM2 HD 원본 함수를 대조. [공통 스택 채택·재사용 범위](technology-stack-review-20261110.md)와 [실행 계약](runtime-contract.md) 확정. 새 복원 코어 구현·앱 검사 완료가 아님.
+- [ ] HM2-RUNTIME-IO: HD 저장 함수·모든 실제 호출 지점과 난수 영향을 연결. 연사·피격·드롭·전장/HUD 반복에서 새 DB/파일 쓰기0을 실제 플랫폼 I/O와 함께 검사. 원작 저장 사건·실패/재시도·재실행 복구 검사.
+- [ ] HM2-RUNTIME-AUDIO: HD PCM57개(8/16비트·모노/스테레오)와 MP3의 실제 사용 경로 연결. MD PCM/OpenAL 구조를 기준으로 준비·재생 분리, 예열 뒤 반복 사격에서 context/source/buffer 생성·해제/디코드/파일 로드 증가0 검사. 원본 루프 분기·BGM AudioQueue·중단/복귀·출력 지연·샘플 진행 확인. HM1 mono16 로더 복사 금지.
+- [ ] HM2-RUNTIME-GPU: C++ 공통 메뉴/HUD·원작 에셋/글꼴·버튼 판정→GPU 출력 연결. UIKit/DOM/Android View의 별도 인게임 구현 없이 실제 뷰 계층·텍스처/뷰 생성 계수·프레임 시간·입력 대조. OS 텍스트 입력은 어댑터에서 처리.
+- [ ] HM2-RUNTIME-PARITY: 동일 C++ 코어의 일반/치트·플랫폼별 소스/자원 목록과 상태·음향·저장 비교. 기존 Kotlin/JS/Rust 호스트에 게임 수식 복제 금지. 원작 시간 자료형·상수·난수·저장 길이를 HM1/MD 값으로 대체하지 않음.
 - [ ] 2026-11-10 채택한 HD 그래픽 공통화: 일반판/HD 자원 ID·그림·여백·기준점·프레임·접합점 대응표 작성. 같은 조건의 포팅판 표시 기준에 연결하고, 공통 reader·조립 경로와 기기별 배율·카메라·HUD를 분리해 구현. 기존 표본값을 최종 상수로 고정하지 않음.
 - [x] HeavyMach 1 main의 실제 빌드/소비 코드와 exporter 문서를 읽고 [기술스택과 에셋 규칙](technology-and-assets.md)을 명시. 구현 완료가 아님.
 - [ ] R1: HM2 두 판본 그래픽·음향·실행기 적합성 확인과 도구/의존성 버전 고정.
