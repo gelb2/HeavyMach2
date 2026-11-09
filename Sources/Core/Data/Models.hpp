@@ -3,6 +3,7 @@
 #include "Core/Types.hpp"
 #include <map>
 #include <string_view>
+#include <span>
 
 namespace hm2 {
 struct Part {
@@ -26,6 +27,16 @@ struct PartPose {
     Vec2 center;
     float angle=0;
     unsigned layer=0,zOrder=0;
+    bool reverseY=false;
+};
+// Prepared by the original model decoder or equipment mounting rules. Angles
+// are absolute; controller-produced animation/addPosition/scale are not implied.
+struct PartMount {
+    std::string part;
+    int parent=-1;
+    unsigned parentSocket=0,layer=0,zOrder=0;
+    float angle=0;
+    bool reverseY=false;
 };
 class Models {
     std::map<std::string,Part,std::less<>> parts_;
@@ -39,5 +50,6 @@ public:
     // Verified static pose only: scale1/addPosition0/reverse0, no controller tick.
     // Machine and weapon directions can coexist in a single assembled model.
     [[nodiscard]] std::vector<PartPose> staticPose(std::string_view,float machineAngle=0,float weaponAngle=0)const;
+    [[nodiscard]] std::vector<PartPose> mountedPose(std::span<const PartMount>,float machineAngle=0)const;
 };
 }

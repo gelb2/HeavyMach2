@@ -46,22 +46,38 @@ std::vector<PartPose> Models::staticPose(std::string_view name,float machineAngl
     if(!std::isfinite(machineAngle)||!std::isfinite(weaponAngle))throw std::runtime_error("Nonfinite pose angle");
     const auto& m=model(name);
     if(!m.completeOriginalSlice)throw std::runtime_error("Original selected model slice is incomplete: "+m.name);
-    std::vector<PartPose> result;
+    std::vector<PartMount> mounts;
     // Every part is a direct machine child; connection ancestry is a separate
     // socket graph. GobMachParts setBaseParts/getSocketPos/refreshRotationPos.
-    std::function<void(const Assembly&,Vec2,float,bool)> visit=[&](const Assembly& a,Vec2 base,float parentAngle,bool connected){
-        const auto& p=part(a.part);const Vec2 anchor=p.socket(0);
+    std::function<void(const Assembly&,int,float)> visit=[&](const Assembly& a,int parent,float parentAngle){
+        const auto& p=part(a.part);
         const float ownAngle=p.type==4?weaponAngle:p.type==7?0.f:parentAngle;
-        const Vec2 center=subtract(rotate(base,parentAngle),rotate(anchor,ownAngle));
-        result.push_back({&p,center,ownAngle,connected?1u:0u,a.zOrder});
-        for(const auto& child:a.children){
-            // Missing nonzero socket returns the inherited base (0x1c7e4).
-            Vec2 socket=child.parentSocket==0?subtract(base,anchor):
-                child.parentSocket<p.sockets.size()?add(base,subtract(p.socket(child.parentSocket),anchor)):base;
-            visit(child,socket,ownAngle,true);
-        }
+        const auto index=int(mounts.size());mounts.push_back({a.part,parent,a.parentSocket,parent<0?0u:1u,a.zOrder,ownAngle,false});
+        for(const auto& child:a.children)visit(child,index,ownAngle);
     };
-    for(const auto& a:m.parts)visit(a,{},machineAngle,false);
+    for(const auto& a:m.parts)visit(a,-1,machineAngle);
+    return mountedPose(mounts,machineAngle);
+}
+std::vector<PartPose> Models::mountedPose(std::span<const PartMount> mounts,float machineAngle)const {
+    if(!std::isfinite(machineAngle))throw std::runtime_error("Nonfinite machine angle");
+    std::vector<PartPose> result;std::vector<Vec2> bases;result.reserve(mounts.size());bases.reserve(mounts.size());
+    // getSocketPos recursively returns unrotated connection coordinates.
+    // refreshRotationPos applies parent and own angles separately. Reverse2
+    // mirrors socket Y as well as the image; neither socket is rounded.
+    for(std::size_t i=0;i<mounts.size();++i){
+        const auto& m=mounts[i];if(m.parent< -1||m.parent>=int(i)||!std::isfinite(m.angle))throw std::runtime_error("Invalid HM2 mounted part");
+        const auto& p=part(m.part);Vec2 base{};float parentAngle=machineAngle;
+        if(m.parent>=0){
+            const auto n=std::size_t(m.parent);const auto& parent=mounts[n];const auto& info=part(parent.part);base=bases[n];parentAngle=parent.angle;
+            if(m.parentSocket==0||m.parentSocket<info.sockets.size()){
+                Vec2 delta=m.parentSocket==0?subtract({},info.socket(0)):subtract(info.socket(m.parentSocket),info.socket(0));
+                if(parent.reverseY)delta.y=-delta.y;base=add(base,delta);
+            }
+        }
+        bases.push_back(base);Vec2 anchor=p.socket(0);if(m.reverseY)anchor.y=-anchor.y;
+        const auto center=subtract(rotate(base,parentAngle),rotate(anchor,m.angle));
+        result.push_back({&p,center,m.angle,m.layer,m.zOrder,m.reverseY});
+    }
     std::stable_sort(result.begin(),result.end(),[](const auto& a,const auto& b){return a.layer==b.layer?a.zOrder<b.zOrder:a.layer<b.layer;});
     return result;
 }

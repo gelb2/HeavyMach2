@@ -3,6 +3,7 @@
 #import <OpenGLES/EAGL.h>
 #import "HM2Renderer.h"
 #include "HM2Resources.hpp"
+#include "Core/Presentation/PlayerMapPreview.hpp"
 #include <memory>
 #include <numbers>
 
@@ -10,8 +11,7 @@
 #define HM2_VALIDATION 0
 #endif
 
-// This first native target is an explicitly scoped assembly preview, not a
-// fabricated gameplay session. Progress, audio and gameplay are not simulated.
+// Map/equipment snapshots only. Progress, audio and gameplay are not simulated.
 @interface HM2PreviewView:UIView
 - (void)setActive:(BOOL)active;
 - (void)display:(CADisplayLink*)link;
@@ -27,7 +27,8 @@
     HM2Renderer* _renderer;
     CADisplayLink* _display;
     std::unique_ptr<hm2::apple::Files> _files;
-    std::unique_ptr<hm2::AssemblyPreview> _preview;
+    std::unique_ptr<hm2::PlayerMapPreview> _preview;
+    hm2::Frame _frame;
 }
 + (Class)layerClass{return CAEAGLLayer.class;}
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -39,22 +40,22 @@
     if(!root)throw std::runtime_error("Prepared original HD resources are missing from app");
     _files=std::make_unique<hm2::apple::Files>(root.fileSystemRepresentation);
     const hm2::Size viewport=UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPad?hm2::Size{768,1024}:hm2::Size{480,320};
-    std::vector<hm2::AssemblyCase> cases;
+    std::vector<hm2::PlayerAssemblyCase> cases;
 #if HM2_VALIDATION
-    const float dx=viewport.width/4,dy=viewport.height/4;
-    cases={{"E_Tank_01",{dx,dy},0,0},{"E_Tank_01",{dx*3,dy},std::numbers::pi_v<float>/2,0},
-           {"E_Tank_01",{dx,dy*3},0,std::numbers::pi_v<float>/2},{"E_Tank_01",{dx*3,dy*3},.7f,-.4f}};
+    const float q=std::numbers::pi_v<float>/2;
+    cases={{hm2::PlayerEquipment::startingCodes,{-80,0},0,{}},{{"11002","12002","10012","10112"},{80,0},q,{q,q,q,q,0,0}}};
 #else
-    cases={{"E_Tank_01",{viewport.width/2,viewport.height/2},0,0}};
+    cases={{hm2::PlayerEquipment::startingCodes,{},0,{}}};
 #endif
-    _preview=std::make_unique<hm2::AssemblyPreview>(*_files,cases,viewport);
-    _renderer=[[HM2Renderer alloc]initWithResourceRoot:root];[_renderer prepareFrame:_preview->frame()];
+    _preview=std::make_unique<hm2::PlayerMapPreview>(*_files,"Stage01_01",cases);
+    _frame=_preview->compose({{},{},viewport},cases);
+    _renderer=[[HM2Renderer alloc]initWithResourceRoot:root];[_renderer prepareFrame:_frame];
     HM2DisplayTarget* target=[HM2DisplayTarget new];target.view=self;
     _display=[CADisplayLink displayLinkWithTarget:target selector:@selector(display:)];
     _display.preferredFramesPerSecond=60;[_display addToRunLoop:NSRunLoop.mainRunLoop forMode:NSRunLoopCommonModes];
     return self;
 }
-- (void)display:(CADisplayLink*)link{if(self.window&&self.bounds.size.width>0&&self.bounds.size.height>0)[_renderer drawFrame:_preview->frame() layer:(CAEAGLLayer*)self.layer];}
+- (void)display:(CADisplayLink*)link{if(self.window&&self.bounds.size.width>0&&self.bounds.size.height>0)[_renderer drawFrame:_frame layer:(CAEAGLLayer*)self.layer];}
 - (void)setActive:(BOOL)active{_display.paused=!active;}
 - (void)dealloc{[_display invalidate];}
 @end

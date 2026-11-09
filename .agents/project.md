@@ -21,3 +21,5 @@ HeavyMach 1과 MachDefense의 파일은 변경하지 않는다. 모든 개발은
 [실제 코드·빌드 설정 대조](../docs/technology-stack-review-20261110.md)와 [실행 계약](../docs/runtime-contract.md)을 따른다. 사격마다 DB/파일 쓰기·오디오 context/source 생성·효과음의 AVAudioPlayer/AVAudioEngine 대체·UIKit 인게임 그래픽/버튼을 추가하지 않는다. 원작 BGM AudioQueue와 OS 장치 연결은 효과음 임의 대체와 구분한다. HM2 HD의 PCM 형식·게임 시간·저장 포맷은 HM2 근거로 복원한다. [에셋 절차](../docs/technology-and-assets.md)의 공통 reader·파츠 조립·패키징을 원본/신규 유닛 모두에 적용한다. [첫 reader·조립·GPU 구현](../docs/initial-source-restoration-20261110.md)을 시작했으며 게임·전투·진행 전체는 미완료다.
 
 2026-11-10 최신 치트 요구: 경험치·진척도·아이템 허들을 건너뛰고 모든 기능·버튼·레벨업을 여러 조건에서 동시에 검증한다. [동시 검증](../docs/validation-build.md)은 한 전투의 복합 조건과 독립된 시뮬레이터/상태/결과의 병렬 실행을 포함한다. 원작에서 배타적인 화면 상태를 강제로 동시에 활성화하지 않는다. 네 정적 조립 사례의 GPU 출력을 전체 치트 검사 완료로 쓰지 않는다. [모델 사용 이력](../docs/model-usage-history.md)은 사용자 제공 기록을 보존한다.
+
+2026-11-10 후속 구현: [맵·기본 장비 Player](../docs/player-map-restoration-20261110.md)의 공통 reader·소켓·정적 표시를 연결했다. Source는 지형+기본 Player, Validation은 지형+장비/절대각2조건이다. 실제 이동·전투·진행·전체 치트 검증은 아직 미완료다. 초기 Player는 MCB Player 그래프가 아닌 원본 addMyMach/setParts의 장비 경로를 따른다. 절대각 snapshot을 보행/조준 controller 복원으로 보고하지 않는다.

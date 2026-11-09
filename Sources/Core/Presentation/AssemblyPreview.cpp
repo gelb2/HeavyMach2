@@ -26,10 +26,7 @@ Size AssemblyPreview::pngSize(std::span<const std::uint8_t> bytes) {
 }
 AssemblyPreview::AssemblyPreview(ResourceAccess& r,std::span<const AssemblyCase> cases,Size viewport)
 :models_(Models::parse(Chunk::parse(r.read("PartsInfo.mcb")),Chunk::parse(r.read("MachInfo.mcb")))) {
-    for(const auto& c:cases)for(const auto& pose:models_.staticPose(c.model,c.machineAngle,c.weaponAngle)){
-        const auto& p=*pose.part;const auto name=p.tileCount?p.name+".png":"PartsDummy.png";
-        if(!imageSizes_.contains(name))imageSizes_.emplace(name,pngSize(r.read(name)));
-    }
+    for(const auto& c:cases)sprites_.prepare(r,models_.staticPose(c.model,c.machineAngle,c.weaponAngle));
     frame_=compose(cases,viewport);
 }
 Frame AssemblyPreview::compose(std::span<const AssemblyCase> cases,Size viewport)const {
@@ -37,16 +34,7 @@ Frame AssemblyPreview::compose(std::span<const AssemblyCase> cases,Size viewport
     Frame frame;frame.width=viewport.width;frame.height=viewport.height;
     for(const auto& c:cases){
         if(!std::isfinite(c.position.x)||!std::isfinite(c.position.y))throw std::runtime_error("Invalid preview position");
-        for(const auto& pose:models_.staticPose(c.model,c.machineAngle,c.weaponAngle)){
-            const auto& p=*pose.part;
-            const auto name=p.tileCount?p.name+".png":"PartsDummy.png";
-            const auto size=imageSizes_.find(name);
-            if(size==imageSizes_.end())throw std::runtime_error("Part texture was not prepared before frame composition: "+name);
-            const unsigned columns=std::max(1u,p.tileCount);
-            if(std::uint32_t(size->second.width)%columns)throw std::runtime_error("Original tile grid does not divide image");
-            frame.sprites.push_back({name,{c.position.x+pose.center.x,c.position.y+pose.center.y},
-                {size->second.width/float(columns),size->second.height},pose.angle,0,columns,false});
-        }
+        sprites_.append(frame,models_.staticPose(c.model,c.machineAngle,c.weaponAngle),c.position);
     }
     return frame;
 }

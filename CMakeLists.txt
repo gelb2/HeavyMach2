@@ -9,7 +9,12 @@ add_library(HeavyMach2Core STATIC
     Sources/Core/Data/Chunk.cpp
     Sources/Core/Data/DataTable.cpp
     Sources/Core/Data/Models.cpp
-    Sources/Core/Presentation/AssemblyPreview.cpp)
+    Sources/Core/Data/Maps.cpp
+    Sources/Core/Data/PlayerEquipment.cpp
+    Sources/Core/Presentation/PartSprites.cpp
+    Sources/Core/Presentation/PlayerMapPreview.cpp
+    Sources/Core/Presentation/AssemblyPreview.cpp
+    Sources/Core/Presentation/MapPreview.cpp)
 target_include_directories(HeavyMach2Core PUBLIC Sources PRIVATE ThirdParty/stb)
 target_compile_options(HeavyMach2Core PRIVATE -Wall -Wextra -Wpedantic -ffp-contract=off -fno-fast-math)
 
@@ -21,6 +26,10 @@ if(BUILD_TESTING)
     add_test(NAME ChunkRoundTripAndBoundaries COMMAND DataReaderTests chunk)
     add_test(NAME OriginalTableTokenRules COMMAND DataReaderTests table)
     add_test(NAME DarwinRandomCompatibility COMMAND DataReaderTests random)
+    add_executable(MapTests tests/MapTests.cpp)
+    target_link_libraries(MapTests PRIVATE HeavyMach2Core)
+    target_compile_options(MapTests PRIVATE -UNDEBUG)
+    add_test(NAME MapRecordsAndCamera COMMAND MapTests)
     add_executable(OriginalAssetTests tests/OriginalAssetTests.cpp)
     target_link_libraries(OriginalAssetTests PRIVATE HeavyMach2Core)
     target_compile_options(OriginalAssetTests PRIVATE -UNDEBUG)
@@ -30,5 +39,7 @@ if(BUILD_TESTING)
         add_test(NAME OriginalTables COMMAND OriginalAssetTests "${HM2_HD_RESOURCES}" tables)
         add_test(NAME OriginalAssemblyCombined COMMAND OriginalAssetTests "${HM2_HD_RESOURCES}" assembly)
         add_test(NAME OriginalImages COMMAND OriginalAssetTests "${HM2_HD_RESOURCES}" images)
+        add_test(NAME OriginalMaps COMMAND OriginalAssetTests "${HM2_HD_RESOURCES}" maps)
+        add_test(NAME OriginalPlayerEquipment COMMAND OriginalAssetTests "${HM2_HD_RESOURCES}" player)
     endif()
 endif()

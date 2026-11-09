@@ -4,6 +4,7 @@
 #import <ImageIO/ImageIO.h>
 #import "Platform/Apple/HM2Renderer.h"
 #include "Platform/Apple/HM2Resources.hpp"
+#include "Core/Presentation/PlayerMapPreview.hpp"
 #include <chrono>
 #include <numbers>
 
@@ -14,6 +15,40 @@
 
 @interface AssemblyRendererTests:XCTestCase @end
 @implementation AssemblyRendererTests
+- (void)testMapAndTwoEquippedPlayersRenderWithoutWarmFrameIO {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    hm2::apple::Files files(root.fileSystemRepresentation);
+    const float q=std::numbers::pi_v<float>/2;
+    hm2::PlayerAssemblyCase cases[]={{hm2::PlayerEquipment::startingCodes,{-80,0},0,{}},{{"11002","12002","10012","10112"},{80,0},q,{q,q,q,q,0,0}}};
+    const hm2::PlayerMapPreview preview(files,"Stage01_01",cases);const hm2::MapCamera camera{{},{},{480,320}};
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];
+    HM2TestSurface* surface=[[HM2TestSurface alloc]initWithFrame:window.bounds];surface.contentScaleFactor=UIScreen.mainScreen.scale;
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];[surface layoutIfNeeded];
+    HM2Renderer* renderer=[[HM2Renderer alloc]initWithResourceRoot:root];
+    auto frame=preview.compose(camera,cases);XCTAssertEqual(frame.sprites.size(),11u);
+    [renderer prepareFrame:frame];const auto uploads=renderer.textureUploads,context=renderer.contextIdentity;
+    XCTAssertEqual(uploads,9u);XCTAssertTrue(frame.sprites[5].reverseY);XCTAssertTrue(frame.sprites[10].reverseY);
+    const auto terrain=preview.map().compose(camera);[renderer captureNextFrame];[renderer drawFrame:terrain layer:layer];NSData* baseline=renderer.readRGBA;
+    [renderer captureNextFrame];[renderer drawFrame:frame layer:layer];NSData* mixed=renderer.readRGBA;
+    XCTAssertEqual(mixed.length,baseline.length);if(!mixed.length||mixed.length!=baseline.length)return;
+    const auto size=renderer.drawableSize;const auto* a=static_cast<const unsigned char*>(baseline.bytes);const auto* b=static_cast<const unsigned char*>(mixed.bytes);
+    NSUInteger changed[2]={};
+    for(NSUInteger i=0;i<mixed.length;i+=4)if(std::abs(int(a[i])-int(b[i]))>2||std::abs(int(a[i+1])-int(b[i+1]))>2||std::abs(int(a[i+2])-int(b[i+2]))>2)++changed[(i/4)%NSUInteger(size.width)>=NSUInteger(size.width)/2?1:0];
+    XCTAssertGreaterThan(changed[0],100u);XCTAssertGreaterThan(changed[1],100u);
+    // Terrain is a real original JPEG, not a black placeholder beneath parts.
+    NSUInteger terrainPixels=0;for(NSUInteger i=0;i<baseline.length;i+=4)if(a[i]||a[i+1]||a[i+2])++terrainPixels;
+    XCTAssertGreaterThan(terrainPixels,NSUInteger(size.width*size.height)/4);
+    const auto before=files.reads;
+    for(int i=0;i<120;++i){@autoreleasepool{
+        cases[1].angles.weaponLeft=float(i)*.01f;cases[1].angles.weaponRight=-float(i)*.02f;
+        frame=preview.compose({{float(i)/10,float(-i)/20},{},camera.viewport},cases);[renderer drawFrame:frame layer:layer];
+        XCTAssertEqual(frame.sprites.size(),11u);XCTAssertEqual(renderer.textureUploads,uploads);XCTAssertEqual(renderer.contextIdentity,context);
+    }}
+    XCTAssertTrue(files.reads==before);XCTAssertEqual(renderer.presentedFrames,122u);XCTAssertEqual(surface.subviews.count,0u);
+    NSLog(@"HM2_MAP_PLAYER_GPU frames=%lu textures=%lu terrainPixels=%lu leftChanged=%lu rightChanged=%lu device=%@",(unsigned long)renderer.presentedFrames,(unsigned long)uploads,(unsigned long)terrainPixels,(unsigned long)changed[0],(unsigned long)changed[1],UIDevice.currentDevice.model);
+    window.hidden=YES;window.rootViewController=nil;
+}
 - (void)testOriginalPartsRenderTogetherWithoutWarmFrameIO {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     hm2::apple::Files files(root.fileSystemRepresentation);

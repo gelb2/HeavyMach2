@@ -61,14 +61,14 @@ def main():
                 'start_epoch': start, 'end_epoch': end, 'returncode': result.returncode,
                 'test_interval_epoch': test_interval(text),
                 'success': result.returncode == 0 and '** TEST EXECUTE SUCCEEDED **' in text,
-                'metrics': re.findall(r'HM2_ASSEMBLY_GPU .*', text), 'command': command}
+                'metrics': re.findall(r'HM2_(?:ASSEMBLY|MAP_PLAYER)_GPU .*', text), 'command': command}
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
         futures = [pool.submit(execute, 'iphone', args.iphone), pool.submit(execute, 'ipad', args.ipad)]
         results = [future.result() for future in futures]
     intervals = [r['test_interval_epoch'] for r in results]
     overlap = max(0., min(v[1] for v in intervals) - max(v[0] for v in intervals)) if all(intervals) else None
-    summary = {'recorded_utc': datetime.now(timezone.utc).isoformat(), 'scope': 'first reader/static assembly/GPU component only; not complete game cheat coverage',
+    summary = {'recorded_utc': datetime.now(timezone.utc).isoformat(), 'scope': 'reader/static assembly/map/equipment GPU components only; not complete game cheat coverage',
                'shared_build': str(run), 'runs': results, 'observed_test_overlap_seconds': overlap,
                'success': all(r['success'] for r in results) and overlap is not None and overlap > 0}
     (output / 'summary.json').write_text(json.dumps(summary, ensure_ascii=False, indent=2) + '\n')

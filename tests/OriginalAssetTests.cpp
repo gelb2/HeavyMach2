@@ -1,6 +1,8 @@
 #include "Core/Data/DataTable.hpp"
 #include "Assets/Image.hpp"
 #include "Core/Presentation/AssemblyPreview.hpp"
+#include "Core/Presentation/MapPreview.hpp"
+#include "Core/Presentation/PlayerMapPreview.hpp"
 #include <cassert>
 #include <cmath>
 #include <filesystem>
@@ -14,6 +16,7 @@
 using namespace hm2;
 struct Files:ResourceAccess {
     std::filesystem::path root;std::map<std::string,unsigned> reads;
+    bool exists(std::string_view name)const override {if(std::filesystem::path(name).filename()!=name)throw std::runtime_error("Nonlocal resource name");return std::filesystem::is_regular_file(root/name);}
     Bytes read(std::string_view name)override {
         if(std::filesystem::path(name).filename()!=name)throw std::runtime_error("Nonlocal resource name");
         ++reads[std::string(name)];std::ifstream f(root/name,std::ios::binary);
@@ -40,6 +43,52 @@ int main(int argc,char** argv){assert(argc==3);Files files;files.root=argv[1];co
         const auto weapons=DataTable::parse(files.read("WeaponInfo.tble"));assert(weapons.rowCount()==213);
         const auto mach=DataTable::parse(files.read("MachList.tble"));assert(mach.rowCount()==78&&mach.value(*mach.findRow("E_Tank_01"),"HP")=="200");
         std::cout<<tables<<" original tables; "<<rows<<" rows preserved\n";
+    }else if(test=="player"){
+        const auto models=Models::parse(Chunk::parse(files.read("PartsInfo.mcb")),Chunk::parse(files.read("MachInfo.mcb")));
+        const auto equipment=PlayerEquipment::parse(DataTable::parse(files.read("ItemInfo.tble")));
+        auto mounts=equipment.mounts(models);assert(mounts.size()==6);
+        const auto initial=models.mountedPose(mounts);assert(initial.size()==6);
+        const Vec2 expected[]={{0,0},{7,9.5},{7.5,-10.5},{1,1.5},{12,21},{7,-22.5}};
+        for(unsigned i=0;i<6;++i){same(initial[i].center.x,expected[i].x);same(initial[i].center.y,expected[i].y);assert(initial[i].layer==3&&initial[i].zOrder==0&&initial[i].reverseY==(i==5));}
+        assert(initial[4].part->name=="P_Wpn_Gun_101"&&initial[5].part->name=="P_Wpn_Msl_101");
+        const float quarter=std::numbers::pi_v<float>/2;
+        const auto turned=models.mountedPose(equipment.mounts(models,PlayerEquipment::startingCodes,{quarter,quarter,quarter,quarter,0,0}),quarter);
+        same(turned[3].center.x,-1.5);same(turned[3].center.y,1);same(turned[4].center.x,-9);same(turned[4].center.y,6);same(turned[5].center.x,20.5);same(turned[5].center.y,-3);
+        const auto rotated=models.mountedPose(equipment.mounts(models,PlayerEquipment::startingCodes,{quarter,quarter,quarter,quarter,quarter,quarter}),quarter);
+        same(rotated[4].center.x,-21);same(rotated[4].center.y,12);same(rotated[5].center.x,22.5);same(rotated[5].center.y,7);
+        auto rejects=[](auto f){bool fail=false;try{f();}catch(const std::exception&){fail=true;}assert(fail);};
+        rejects([&]{(void)equipment.mounts(models,{"11001","12001","00001","10111"});});
+        rejects([&]{(void)equipment.mounts(models,{"","12001","10011","10111"});});
+        rejects([&]{(void)equipment.item("011001");}); // String IDs are not normalized to integers.
+        mounts[1].parent=1;rejects([&]{(void)models.mountedPose(mounts);});
+        struct Missing final:ResourceAccess {bool exists(std::string_view)const override{return false;}Bytes read(std::string_view)override{throw std::runtime_error("Missing resource");}} missing;
+        PartSprites connector;connector.prepare(missing,std::span(initial).first(1));Frame invisible;connector.append(invisible,std::span(initial).first(1),{});assert(invisible.sprites.empty());
+        rejects([&]{PartSprites required;required.prepare(missing,std::span(initial).subspan(1,1));});
+        PlayerAssemblyCase cases[]={{PlayerEquipment::startingCodes,{-80,0},0,{}},{{"11002","12002","10012","10112"},{80,0},quarter,{quarter,quarter,quarter,quarter,0,0}}};
+        const PlayerMapPreview preview(files,"Stage01_01",cases);const MapCamera camera{{},{},{480,320}};
+        const auto frame=preview.compose(camera,cases);assert(frame.sprites.size()==11&&frame.sprites[5].image=="P_Wpn_Msl_101.png"&&frame.sprites[5].reverseY);
+        const auto before=files.reads;
+        for(int i=0;i<1200;++i){cases[1].angles.weaponLeft=float(i)*.01f;cases[1].angles.weaponRight=-float(i)*.02f;const auto f=preview.compose({{float(i)/10,float(i)/20},{},{480,320}},cases);assert(f.sprites.size()==11);}
+        assert(files.reads==before);
+        unsigned count=0;const auto table=DataTable::parse(files.read("ItemInfo.tble"));
+        for(std::size_t row=0;row<table.rowCount();++row){const auto type=table.value(row,"Type");if(type!="PtBody"&&type!="PtBtm"&&type!="PtWpn")continue;const auto code=*table.value(row,"Code");auto codes=PlayerEquipment::startingCodes;codes[type=="PtBody"?0:type=="PtBtm"?1:2]=code;assert(equipment.mounts(models,codes).size()==6);++count;}
+        std::cout<<count<<" original part items resolve; default equipped Player 6 mounts/5 visible sprites, mirror/absolute angles, 2 equipment conditions together, 1200 warm frames without reads\n";
+    }else if(test=="maps"){
+        const auto raw=files.read("MapInfo.mcb");const auto maps=Maps::parse(Chunk::parse(raw));
+        assert(maps.all().size()==43&&maps.raw().encode()==raw);
+        unsigned gates=0,polygons=0,spawns=0;
+        for(const auto& [id,m]:maps.all()){gates+=m.gates.size();polygons+=m.collisionPolygons.size();spawns+=m.spawners.size();for(const auto& spawn:m.spawners)assert(!spawn.model.empty());}
+        assert(gates==90&&polygons==152&&spawns==695);
+        const auto& first=maps.map("Stage01_01");assert(first.gates.size()==3&&first.spawners.size()==16&&first.collisionPolygons.size()==7);
+        same(first.gates[0].position.x,-275);same(first.gates[0].position.y,-462);assert(first.gates[0].linkMap=="Base001");
+        same(first.spawners[0].position.x,-284);same(first.spawners[0].position.y,-79);
+        assert(maps.map("Stage03_07").spawners.size()==16); // Original stale size does not discard its final spawner.
+        same(maps.map("Stage03_07").spawners.back().position.x,187);same(maps.map("Stage03_07").spawners.back().position.y,-95);
+        MapPreview scene(files,"Stage01_01");const MapCamera camera{{-275,-462},{},{480,320}};
+        const auto frame=scene.compose(camera);assert(frame.sprites.size()==1&&frame.sprites[0].image=="Stage01_01.jpg");same(frame.sprites[0].size.width,1024);same(frame.sprites[0].center.x,515);same(frame.sprites[0].center.y,622);
+        MapPreview water(files,"Stage02_04");const auto waterFrame=water.compose({{.25f,-.75f},{},{768,1024}});assert(waterFrame.sprites.size()==2&&waterFrame.sprites[0].image=="Stage02_04BG.jpg"&&waterFrame.sprites[1].image=="Stage02_04.png");same(waterFrame.sprites[0].size.width,768);same(waterFrame.sprites[0].size.height,1024);same(waterFrame.sprites[0].center.x,383.75);same(waterFrame.sprites[1].center.x,384);same(waterFrame.sprites[1].center.y,513);
+        const auto before=files.reads;for(int i=0;i<1200;++i){const auto a=scene.compose({{float(i)/4,float(-i)/8},{},{480,320}});const auto b=water.compose({{float(i)/4,float(-i)/8},{},{768,1024}});assert(a.sprites.size()==1&&b.sprites.size()==2);}assert(files.reads==before);
+        std::cout<<"43 maps, 90 gates, 152 polygons, 695 spawners; JPEG/PNG fallback and optional 2x background, 2400 warm frames without reads\n";
     }else if(test=="images"){
         unsigned images=0,pngs=0;
         for(const auto& entry:std::filesystem::directory_iterator(files.root)){

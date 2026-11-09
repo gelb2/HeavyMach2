@@ -12,6 +12,10 @@ class Files final:public ResourceAccess {
 public:
     std::map<std::string,unsigned> reads;
     explicit Files(std::filesystem::path root):root_(std::move(root)){}
+    bool exists(std::string_view name)const override {
+        if(std::filesystem::path(name).filename()!=name)throw std::runtime_error("Invalid resource path");
+        return std::filesystem::is_regular_file(root_/name);
+    }
     Bytes read(std::string_view name)override {
         if(std::filesystem::path(name).filename()!=name)throw std::runtime_error("Invalid resource path");
         std::ifstream f(root_/name,std::ios::binary);
