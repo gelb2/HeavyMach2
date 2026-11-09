@@ -1,0 +1,178 @@
+{
+  "scope": "Prior local package inspection; no app execution or function equivalence proven",
+  "standard": {
+    "path": "/Users/sokol/Documents/Codex/Originals/HeavyMach/heavy-mach-archive_202406/Game IPAs/Heavy Mach 2/Heavy Mach 2/HeavyMach2 v2.0.1 - (com.indiean.HeavyMach2).ipa",
+    "ipa_sha256": "23ff9c74c7d890cc6f28952b4845f6c616bae4bb7207a393f80ed9ed76062d32",
+    "info": {
+      "CFBundleVersion": "2.0.1",
+      "CFBundleIdentifier": "kr.indieapps.HeavyMach2",
+      "UIDeviceFamily": [
+        1
+      ]
+    },
+    "binary": [
+      {
+        "cpu": 12,
+        "subtype": 6,
+        "size": 570864,
+        "encryption": [
+          [
+            4096,
+            528384,
+            0
+          ]
+        ],
+        "text": [
+          {
+            "size": 490140,
+            "sha256": "78a7e482c920aa7d6f94d368186cd82c930efa1797b4e290e8b5631ca6954ce7"
+          }
+        ]
+      },
+      {
+        "cpu": 12,
+        "subtype": 9,
+        "size": 447376,
+        "encryption": [
+          [
+            4096,
+            405504,
+            0
+          ]
+        ],
+        "text": [
+          {
+            "size": 367620,
+            "sha256": "2178a596c920d29cd51724afc3aa3302f56c20f5f4cd3438c141caec491a5d88"
+          }
+        ]
+      }
+    ],
+    "counts": {
+      "": 2,
+      ".png": 1236,
+      ".jpg": 60,
+      ".tble": 135,
+      ".wav": 56,
+      ".nib": 2,
+      ".plist": 1,
+      ".strings": 1,
+      ".mcb": 3,
+      ".mp3": 1,
+      ".fsh": 1,
+      ".vsh": 1
+    }
+  },
+  "hd": {
+    "path": "/Users/sokol/Documents/Codex/Originals/HeavyMach/heavy-mach-archive_202406/Game IPAs/Heavy Mach 2/Heavy Mach 2 HD/HeavyMach2HD v1.0.3 - (kr.indieapps.HvM2HD).ipa",
+    "ipa_sha256": "7eeb36590b3c19a28741e21671379029d9023864ceb241a5b8560eef045112d2",
+    "info": {
+      "CFBundleVersion": "1.0.3",
+      "CFBundleIdentifier": "kr.indieapps.HvM2HD",
+      "UIDeviceFamily": [
+        2
+      ]
+    },
+    "binary": [
+      {
+        "cpu": 12,
+        "subtype": 9,
+        "size": 414720,
+        "encryption": [
+          [
+            4096,
+            323584,
+            0
+          ]
+        ],
+        "text": [
+          {
+            "size": 272480,
+            "sha256": "dfeb3da1a2f1dd239ad2cdc48f68ab68b749415cf5278d278c2e0127383f29f0"
+          }
+        ]
+      }
+    ],
+    "counts": {
+      "": 2,
+      ".png": 1238,
+      ".tbl": 6,
+      ".tble": 135,
+      ".wav": 57,
+      ".plist": 1,
+      ".mcb": 3,
+      ".nib": 2,
+      ".mp3": 1,
+      ".jpg": 38
+    }
+  },
+  "stats": {
+    ".png": {
+      "standard": 1236,
+      "hd": 1238,
+      "identical": 839,
+      "changed": 357,
+      "only_standard": 40,
+      "only_hd": 42
+    },
+    ".jpg": {
+      "standard": 60,
+      "hd": 38,
+      "identical": 33,
+      "changed": 5,
+      "only_standard": 22,
+      "only_hd": 0
+    },
+    ".wav": {
+      "standard": 56,
+      "hd": 57,
+      "identical": 56,
+      "changed": 0,
+      "only_standard": 0,
+      "only_hd": 1
+    },
+    ".mp3": {
+      "standard": 1,
+      "hd": 1,
+      "identical": 1,
+      "changed": 0,
+      "only_standard": 0,
+      "only_hd": 0
+    },
+    ".mcb": {
+      "standard": 3,
+      "hd": 3,
+      "identical": 3,
+      "changed": 0,
+      "only_standard": 0,
+      "only_hd": 0
+    },
+    ".tble": {
+      "standard": 135,
+      "hd": 135,
+      "identical": 76,
+      "changed": 59,
+      "only_standard": 0,
+      "only_hd": 0
+    },
+    ".tbl": {
+      "standard": 0,
+      "hd": 6,
+      "identical": 0,
+      "changed": 0,
+      "only_standard": 0,
+      "only_hd": 6
+    }
+  },
+  "resized_count": 342,
+  "limitations": [
+    "Static package comparison, not runtime validation.",
+    "Compared standard 2.0.1 with HD 1.0.3; version differences cannot be attributed solely to device class.",
+    "Changed file bytes do not necessarily mean changed decoded pixels or game semantics.",
+    "Executable text differs; original source and function-level equivalence were not established."
+  ],
+  "rea_evidence": {
+    "standard": "ev_cfa4a710dd81b5b99cef76b1cb25e89faa8e30833b1cb128301c03c409430a71",
+    "hd": "ev_8d15b64efc6e87c82f95da74d8042b1da2a57c709337ec27f2982bd681045927"
+  }
+}
