@@ -2,7 +2,7 @@
 
 2026-11-10. 기존 포팅판의 첫 전장 캡처 4장을 측정했다. 새 빌드·게임 수정·실기기 설치는 하지 않았다. 모든 장비·적 종류의 전수 측정은 아니다.
 
-보고 페이지: [원본 캡처·측정 경계·전체 수치표](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-display-measurements-20261110/). 사용자 본인 전용 사이트다.
+보고 페이지는 로컬 `.local/report-site/.sites-checkout/dist/heavymach2-display-measurements-20261110/index.html`에 있다. 원본 캡처·측정 경계·전체 수치표를 포함하며 Safari에서 표·이미지 표시를 확인했다. 사이트 소스는 `4c3a87459327d8eb1f6695a11e4d3a333c7d8c52`로 저장했지만 온라인 게시에는 실패했다. 기존 사이트 전체 묶음이 256 MiB 제한을 넘었고 로컬 업로드와 서버 소스 배포 모두 같은 제한으로 실패했다. 기존 보고 자료는 삭제하지 않았다. 배포 ID는 `appgdep_6af205eb4f5c81919527917a8ecb395b`다.
 
 ## 측정 환경과 단위
 
