@@ -45,6 +45,8 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
     std::uint64_t presentationRevision=0;
     int loadedSlot=-1;std::string mapName,selectedMissionId;
     std::uint64_t gameOverToken=0;
+    int commandState=-1,commandCurState=-1;bool presentingCompletedMission=false;
+    std::vector<ui::ItemView> commandAvailableRows,commandAcceptedRows;
     int detailInventory=-1,tradePosition=-1;const progression::Item* tradeItem=nullptr;
     const ui::ScreenAction* activeAction=nullptr;
     static bool screenOwnsSound(const ui::ScreenAction& a,unsigned sound){
@@ -85,6 +87,36 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
     void soundID(unsigned id,Vec2 p)override{host.soundID(id,p);}
     void alert(std::string_view key)override{host.alert(key);}
     void alert(std::string_view key,std::string_view title)override{host.alert(key,title);}
+    void missionCompletionStarted(const progression::MissionDefinition& mission)override{
+        if(!presentingCompletedMission)return;
+        view.completedMission={mission.id,mission.name,{}};dirty=true;
+    }
+    void missionReward(const progression::MissionDefinition&,const progression::Action& action)override{
+        if(!presentingCompletedMission)return;
+        const auto image=action.type==0?"Icon00001.png":action.type==1?"Icon00010.png":"Icon"+action.item+".png";
+        view.completedMission.rewards.push_back({action.type,action.value,image});dirty=true;
+    }
+    void refreshCompletedMission(){
+        view.completedMission={};dirty=true;
+        std::string selected;const auto location=slot().string(0x2d,16);
+        for(const auto* mission:progress->missions.acceptedDefinitions()){
+            const auto* current=progress->missions.state(mission->id);
+            if(current&&current->requireComplete&&mission->completePlace==location){selected=mission->id;break;}
+        }
+        if(selected.empty()){commandState=1;return;}
+        presentingCompletedMission=true;
+        struct Reset {bool& flag;~Reset(){flag=false;}} reset{presentingCompletedMission};
+        if(!progress->claimMission(selected,location))throw std::logic_error("Original completed mission changed during presentation");
+    }
+    void tickCommand(){
+        if(view.screen!=ui::ScreenId::command||commandCurState==commandState)return;
+        commandCurState=commandState;
+        if(commandState==0)refreshCompletedMission();
+        else if(commandState==1){
+            view.commandListVisible=true;++view.commandListRevision;dirty=true;rebuild();
+            commandAvailableRows=view.availableMissions;commandAcceptedRows=view.acceptedMissions;
+        }
+    }
     void refreshHPGauge()override{} // HUD values consume the live slot in dynamicHUD.
     std::optional<progression::RepairTarget> player()const override{
         if(!scene)return std::nullopt;return progression::RepairTarget{1,true,scene->player().position,scene->playerHP(),playerMaximumHP(),-1};
@@ -186,6 +218,9 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         return true;
     }
     void screen(ui::ScreenId id){if(id!=ui::ScreenId::field)gameOverToken=0;if(view.screen!=id){view.message.clear();view.messageVisible=false;++view.messageRevision;}view.screen=id;if(progress)progress->screen(int(id));dirty=true;
+        view.completedMission={};view.commandListRevision=0;view.commandListVisible=id!=ui::ScreenId::command;
+        commandCurState=-1;commandState=id==ui::ScreenId::command?0:-1;
+        commandAvailableRows.clear();commandAcceptedRows.clear();
         if(id==ui::ScreenId::title&&scene){worldSaveAllowed=scene->isSave();quickItems.reset();scene.reset();drops.clear();worldTiles=nullptr;}
         if(id!=ui::ScreenId::field)closeDialogs();
         if(id==ui::ScreenId::slots){view.selectedSlot=-1;for(unsigned i=0;i<3;++i){Slot candidate(data.slot(i));if(candidate.byte(8)&&(view.selectedSlot<0||std::bit_cast<std::int32_t>(Slot(data.slot(unsigned(view.selectedSlot))).u32(4))<std::bit_cast<std::int32_t>(candidate.u32(4))))view.selectedSlot=int(i);}}
@@ -238,7 +273,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
             };
             for(const auto& d:definitions.missions())if(view.availableMissions.size()<5&&progress->missions.available(d.id,base(),s.level()))view.availableMissions.push_back(missionView(d,false));
             for(const auto* d:progress->missions.acceptedDefinitions())if(d)view.acceptedMissions.push_back(missionView(*d,true));
-            view.selectedMission=-1;view.missionBody.clear();view.missionTitle.clear();
+            view.selectedMission=-1;view.selectedMissionDataId=selectedMissionId;view.missionBody.clear();view.missionTitle.clear();
             auto select=[&](const std::vector<ui::ItemView>& list,int start){for(std::size_t i=0;i<list.size();++i)if(list[i].dataId==selectedMissionId){view.selectedMission=start+int(i);view.missionBody=list[i].description;view.missionTitle=list[i].name;}};
             if(view.screen==ui::ScreenId::command)select(view.availableMissions,0);
             select(view.acceptedMissions,view.screen==ui::ScreenId::command?int(view.availableMissions.size()):0);
@@ -401,6 +436,7 @@ void GameSession::tick(const std::function<void()>& tickGameUI){
         }else p.screen(ui::ScreenId(target));
     },[&p](std::string_view name){p.host.sound(name,{});}});
     if(p.scene){p.scene->tick();p.worldTime=p.scene->clock().worldTime();}
+    p.tickCommand();
     if(tickGameUI)tickGameUI();
     if(p.mapLoading){
         // GuiMapLoading is a later GameMain child. Its callbacks execute only
@@ -558,11 +594,11 @@ void GameSession::action(const ui::ScreenAction& a){
     if((a.screen==ui::ScreenId::command||a.screen==ui::ScreenId::maintenance||a.screen==ui::ScreenId::shop)&&event==ui::ButtonEventType::pop&&id==2100){p.requestScreen(ui::ScreenId::base);p.uiSound(0);return;}
     if((a.screen==ui::ScreenId::command||a.screen==ui::ScreenId::field)&&event==ui::ButtonEventType::pop){
         const bool command=a.screen==ui::ScreenId::command;
-        if((command&&id>=5100&&id<=5104)||(id>=5200&&id<=5204&&(!command?p.view.missionVisible:true))){
-            const auto& current=state();const auto& missions=id<5200?current.availableMissions:current.acceptedMissions;const auto index=std::size_t(id-(id<5200?5100:5200));
+        if((command&&p.view.commandListVisible&&id>=5100&&id<=5104)||(id>=5200&&id<=5204&&(command?p.view.commandListVisible:p.view.missionVisible))){
+            const auto& current=state();const auto& missions=command?(id<5200?p.commandAvailableRows:p.commandAcceptedRows):current.acceptedMissions;const auto index=std::size_t(id-(id<5200?5100:5200));
             if(index<missions.size()&&(a.button.key.dataId.empty()||a.button.key.dataId==missions[index].dataId)){p.selectedMissionId=missions[index].dataId;p.dirty=true;p.uiSound(0);}return;
         }
-        if(command&&id==5004){const auto id=p.selectedMissionId;if(!id.empty()&&(a.button.key.dataId.empty()||a.button.key.dataId==id))acceptMission(id);p.selectedMissionId.clear();p.view.selectedMission=-1;p.dirty=true;p.uiSound(0);return;}
+        if(command&&id==5004){if(!p.view.commandListVisible)return;const auto id=p.selectedMissionId;if(!id.empty()&&(a.button.key.dataId.empty()||a.button.key.dataId==id))acceptMission(id);p.selectedMissionId.clear();p.view.selectedMission=-1;p.commandCurState=-1;p.dirty=true;p.uiSound(0);return;}
         if(!command&&id==5000&&p.view.missionVisible){p.closeDialogs();p.dirty=true;p.uiSound(0);return;}
         if(!command&&id==5006&&p.view.missionVisible){p.uiSound(0);return;} // Original sound-only branch.
     }
@@ -596,7 +632,10 @@ void GameSession::action(const ui::ScreenAction& a){
         p.host.notice(p.displayLocale=="kr"?"랭킹":"Ranking",p.displayLocale=="kr"?"현재 랭킹 서비스를 이용할 수 없습니다.":"The ranking service is currently unavailable.");
         p.uiSound(0);return;
     }
-    if(a.screen==ui::ScreenId::command&&id==5007&&event==ui::ButtonEventType::pop){++p.metrics.unsupportedActions;return;}
+    if(a.screen==ui::ScreenId::command&&id==5007&&event==ui::ButtonEventType::pop){
+        if(p.presentingCompletedMission||p.view.completedMission.dataId.empty()||a.button.key.dataId!=p.view.completedMission.dataId)return;
+        p.refreshCompletedMission();p.uiSound(0);return;
+    }
     if(a.screen==ui::ScreenId::field&&id==1029&&event==ui::ButtonEventType::pop){p.closeDialogs();p.showHelp(true);p.uiSound(0);return;}
     if(a.screen==ui::ScreenId::field&&id>=6200&&id<=6204&&event==ui::ButtonEventType::push){
         if(p.quickItems&&p.scene&&!p.scene->isPaused()&&!p.view.inventoryVisible&&!p.view.missionVisible&&!p.view.airliftVisible&&!p.view.systemVisible){

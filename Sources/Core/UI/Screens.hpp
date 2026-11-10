@@ -31,6 +31,8 @@ struct EquipmentStatsView {
     int attackLeft=0,attackRight=0,baseHP=0,bonusHP=0,bodyDefense=0,armorDefense=0,stepSize=0;
     float boosterMaximum=0,boosterRegen=0;
 };
+struct MissionRewardView {int type=0,value=0;std::string image;};
+struct CompletedMissionView {std::string dataId,title;std::vector<MissionRewardView> rewards;};
 struct ScreensState {
     ScreenId screen=ScreenId::title;
     std::string locale="us",baseId="Base001";
@@ -53,7 +55,10 @@ struct ScreensState {
     bool outOfRangeLeft=false,outOfRangeRight=false;
     bool inventoryVisible=false,missionVisible=false,airliftVisible=false,systemVisible=false,tradeVisible=false;
     bool buyMode=false,pathMode=false;
-    std::string selectedWeaponLeft,selectedWeaponRight,message,missionTitle,missionBody;
+    bool commandListVisible=true;
+    std::uint64_t commandListRevision=0;
+    CompletedMissionView completedMission;
+    std::string selectedWeaponLeft,selectedWeaponRight,message,missionTitle,missionBody,selectedMissionDataId;
     // GuiGame setMessage/hideMessage calls have identity even when text repeats.
     std::uint64_t messageRevision=0;
     bool messageVisible=false,messageAutoHide=false;

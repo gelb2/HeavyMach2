@@ -11,7 +11,7 @@
 #include <vector>
 
 namespace hm2::validation {
-enum class ScenarioRole {combat,shop,mission,saveRestart,movementLoot,aidKit,airStrike,worldAudit,dash,botAttack,botPicker,help,gameOver,rankingUnavailable};
+enum class ScenarioRole {combat,shop,mission,saveRestart,movementLoot,aidKit,airStrike,worldAudit,dash,botAttack,botPicker,help,gameOver,rankingUnavailable,completedMissions};
 struct ScenarioDescription {std::string label;ScenarioRole role=ScenarioRole::combat;std::vector<std::string> weapons;std::string map{};};
 struct NavigationObservation {std::uint64_t frame=0;Vec2 player,world,screen;std::string lootCode;bool accepted=false,blocked=false;};
 struct PickupObservation {std::uint64_t frame=0;std::string code;int type=0,value=0;Vec2 player,item;int creditDelta=0;};
@@ -56,6 +56,14 @@ struct RankingObservation {
     std::string title,message;std::vector<std::string> events;
     bool slotUnchanged=false,savedBytesUnchanged=false,screenUnchanged=false,transitionUnchanged=false,unsupportedUnchanged=false;
 };
+struct CompletedMissionsObservation {
+    std::array<std::uint64_t,2> popupFrames{},okFrames{},popupSaves{};
+    std::array<std::string,2> ids{};std::array<int,2> credits{},experience{},levels{},rewardCounts{};
+    std::vector<unsigned> sounds;
+    std::uint64_t savesBefore=0,doorReadyFrame=0,listFrame=0,exitFrame=0,baseFrame=0,savesAfter=0;
+    int finalCredit=0,initialRepairItems=0,repairItems=0,remainingAccepted=0;
+    bool secondOKAccepted=false,finalOKAccepted=false,listImmediatelyAfterFinalOK=false,savedPayloadValid=false;
+};
 struct ScenarioObservation {
     std::uint64_t ticks=0,firstFrame=0,lastFrame=0,draws=0,sounds=0,saves=0;
     std::uint64_t buttonRequests=0,buttonFailures=0;
@@ -92,7 +100,7 @@ struct ScenarioObservation {
     Vec2 dashStartPosition;
     bool dashInputAccepted=false;
     std::array<WeaponSwapObservation,2> botWeaponSwaps{};
-    std::array<BotObservation,3> bots{};std::string botThreatName;std::uint64_t botThreatEmissions=0;HelpObservation help;GameOverObservation gameOver;RankingObservation ranking;
+    std::array<BotObservation,3> bots{};std::string botThreatName;std::uint64_t botThreatEmissions=0;HelpObservation help;GameOverObservation gameOver;RankingObservation ranking;CompletedMissionsObservation completedMissions;
 };
 struct ButtonActivity {unsigned scenario=0,id=0;int intData=0;bool delivered=false;};
 struct FrameActivity {
@@ -104,7 +112,7 @@ struct FrameActivity {
     bool saveRestart=false,movementLootMoving=false;
     std::uint64_t movementLootEmissions=0,movementLootPickups=0,movementLootInjury=0;
     int movementLootCreditGain=0;
-    std::uint64_t aidKitUses=0,airStrikeUses=0,botEmissions=0,botItemContacts=0,botRewardArrivals=0,botHPRemoved=0,botRepairs=0,helpInputRequests=0,gameOverEvents=0,rankingNotices=0;
+    std::uint64_t aidKitUses=0,airStrikeUses=0,botEmissions=0,botItemContacts=0,botRewardArrivals=0,botHPRemoved=0,botRepairs=0,helpInputRequests=0,gameOverEvents=0,rankingNotices=0,completedMissionEvents=0;
 };
 struct ConcurrentMetrics {
     std::uint64_t frames=0,drawFrames=0,underlyingReads=0,underlyingExists=0,warmReadMisses=0,warmExistsMisses=0;
@@ -115,7 +123,7 @@ struct ConcurrentMetrics {
     std::uint64_t menuActionFrames=0,menuFramesWithCombatActivity=0;
     std::uint64_t movementFramesWithCombatActivity=0,pickupFramesWithCombatActivity=0,injuryFramesWithCombatActivity=0;
     std::uint64_t movementEmissionFramesWithCombatActivity=0,aidKitFramesWithCombatActivity=0,airStrikeFramesWithCombatActivity=0;
-    std::uint64_t botFramesWithCombatActivity=0,helpFramesWithCombatActivity=0,gameOverFramesWithCombatActivity=0,rankingFramesWithCombatActivity=0;
+    std::uint64_t botFramesWithCombatActivity=0,helpFramesWithCombatActivity=0,gameOverFramesWithCombatActivity=0,rankingFramesWithCombatActivity=0,completedMissionFramesWithCombatActivity=0;
     std::vector<std::string> warmReadNames,warmExistsNames;
 };
 struct ValidationHost {

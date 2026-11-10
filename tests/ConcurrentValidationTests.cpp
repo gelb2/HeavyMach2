@@ -1,5 +1,6 @@
 #include "PreparedTextStub.hpp"
 #include "Core/Validation/ConcurrentValidation.hpp"
+#include "Core/Validation/SessionFixtures.hpp"
 #include "Core/Presentation/VisualLayer.hpp"
 #include <algorithm>
 #include <cassert>
@@ -60,6 +61,8 @@ struct Host final:validation::ValidationHost {
         state=base;state.screen=ui::ScreenId::shop;state.inventoryVisible=true;state.selectedShop=0;state.tradeVisible=true;state.tradeItemId="01001";state.tradeCount=1;state.tradePrice=10;screens.refresh(state);prepare(screens,temporary.tiles,0);
         for(unsigned i=0;i<runtime->scenarioCount();++i)if(runtime->scenarios()[i].role==validation::ScenarioRole::mission){state=runtime->session(i).state();state.screen=ui::ScreenId::command;state.selectedMission=0;if(!state.availableMissions.empty()){state.missionTitle=state.availableMissions[0].name;state.missionBody=state.availableMissions[0].description;}screens.refresh(state);prepare(screens,temporary.tiles,0);break;}
         MapLoading loading(runtime->cachedResources());(void)loading.preparationFrame();ui::Help help(runtime->cachedResources(),"kr",-1);(void)help.preparationFrame();
+        for(const auto& popup:validation::completedMissionPreparation(runtime->cachedResources())){state=runtime->session(114).state();state.screen=ui::ScreenId::command;state.commandListVisible=false;state.completedMission=popup;screens.refresh(state);prepare(screens,temporary.tiles,0);}
+        state=runtime->session(114).state();state.screen=ui::ScreenId::command;state.commandListVisible=true;screens.refresh(state);prepare(screens,temporary.tiles,0);
         preparing=false;
     }
     void tickScenarioUI(unsigned index,GameSession& game,WorldRandom& random)override{
@@ -91,6 +94,7 @@ struct Host final:validation::ValidationHost {
         if(id>=5100&&id<5105&&id-5100<state.availableMissions.size())item=state.availableMissions[id-5100].dataId;
         if(id>=2200&&id<2224&&id-2200<state.shopItems.size())item=state.shopItems[id-2200].dataId;
         if(id==5004&&state.selectedMission>=0&&std::size_t(state.selectedMission)<state.availableMissions.size())item=state.availableMissions[std::size_t(state.selectedMission)].dataId;
+        if(id==5007)item=state.completedMission.dataId;
         // CPU exercises the original GameSession action consumer. Native hosts
         // additionally execute Screens pointer begin/end at the real key center.
         for(const auto phase:{ui::ButtonEventType::push,ui::ButtonEventType::pop})session.action({state.screen,ui::Panel::root,{phase,{0,id,data,item},1,{}}});return true;
@@ -137,7 +141,7 @@ void printBotWeapons(Files& files){
 }
 int main(int argc,char** argv){
     if(argc<2)return 77;const auto begin=std::chrono::steady_clock::now();Files files(argv[1]);if(argc>2&&std::string_view(argv[2])=="--bot-weapons"){printBotWeapons(files);return 0;}if(argc>2&&std::string_view(argv[2])=="--case38-weapons"){printCase38Weapons(files);return 0;}Host host;host.nativeUI=argc>2&&std::string_view(argv[2])=="--native-ui";validation::ConcurrentValidation runtime(files,host);host.runtime=&runtime;if(host.nativeUI)host.prepareNativeUI();
-    assert(runtime.scenarioCount()==114&&runtime.metrics().combatScenarios==55);std::set<std::string> itemCodes;
+    assert(runtime.scenarioCount()==115&&runtime.metrics().combatScenarios==55);std::set<std::string> itemCodes;
     const auto originalItems=DataTable::parse(runtime.cachedResources().read("ItemInfo.tble"));std::vector<std::string> originalWeaponCodes;for(std::size_t row=0;row<originalItems.rowCount();++row)if(originalItems.value(row,"Type")=="PtWpn")originalWeaponCodes.emplace_back(originalItems.value(row,"Code").value());assert(originalWeaponCodes.size()==110);
     for(std::size_t i=0;i<55;++i){const auto& descriptor=runtime.scenarios()[i];assert(descriptor.role==validation::ScenarioRole::combat&&descriptor.weapons.size()==2);for(unsigned side=0;side<2;++side){const auto& code=descriptor.weapons[side];assert(code==originalWeaponCodes[i*2+side]);itemCodes.insert(code);assert(runtime.session(unsigned(i)).state().equipment[side+2].dataId==code);}assert(runtime.session(unsigned(i)).battle());}
     assert(itemCodes.size()==110);const auto warmReads=files.reads,warmProbes=files.probes;
@@ -167,7 +171,7 @@ int main(int argc,char** argv){
     assert(originalMenuFrames==11&&originalMenuOverlap==11&&metrics.menuActionFrames>=originalMenuFrames);
     assert(metrics.maxConcurrentWeaponKinds>=5&&metrics.framesWithFiveWeaponKinds>0);
     assert(metrics.maxConcurrentWeaponDefinitions>=5&&metrics.maxConcurrentEmittingScenarios>=5&&metrics.framesWithFiveWeaponDefinitions>0);
-    assert(runtime.frameActivity().size()==frames);for(const auto& activity:runtime.frameActivity()){assert(activity.tickedScenarios==114);std::cout<<"FRAME "<<activity.frame<<" ticked="<<activity.tickedScenarios<<" emittingScenarios="<<activity.emittingScenarios<<" weaponDefinitions="<<activity.emittedWeaponParts.size()<<" weaponKinds="<<activity.emittedWeaponKinds.size()<<" buttons="<<activity.buttons.size()<<" activeProjectiles="<<activity.activeProjectiles<<" combatProjectiles="<<activity.combatActiveProjectiles<<" combatEmit="<<activity.combatEmittingScenarios<<" combatDamage="<<activity.combatDamage<<" restart="<<activity.saveRestart<<" emissions="<<activity.emissions<<" damage="<<activity.damage<<" kills="<<activity.kills;for(const auto& part:activity.emittedWeaponParts)std::cout<<" "<<part;std::cout<<"\n";}
+    assert(runtime.frameActivity().size()==frames);for(const auto& activity:runtime.frameActivity()){assert(activity.tickedScenarios==115);std::cout<<"FRAME "<<activity.frame<<" ticked="<<activity.tickedScenarios<<" emittingScenarios="<<activity.emittingScenarios<<" weaponDefinitions="<<activity.emittedWeaponParts.size()<<" weaponKinds="<<activity.emittedWeaponKinds.size()<<" buttons="<<activity.buttons.size()<<" activeProjectiles="<<activity.activeProjectiles<<" combatProjectiles="<<activity.combatActiveProjectiles<<" combatEmit="<<activity.combatEmittingScenarios<<" combatDamage="<<activity.combatDamage<<" restart="<<activity.saveRestart<<" emissions="<<activity.emissions<<" damage="<<activity.damage<<" kills="<<activity.kills;for(const auto& part:activity.emittedWeaponParts)std::cout<<" "<<part;std::cout<<"\n";}
     for(std::size_t i=0;i<runtime.scenarioCount();++i)for(const auto& [part,count]:runtime.observations()[i].weaponEmissions)std::cout<<"WEAPON scenario="<<i<<" part="<<part<<" emissions="<<count<<"\n";
     assert(runtime.observations()[55].shopPurchased&&runtime.observations()[55].insufficientRejected);
     assert(runtime.observations()[56].missionAccepted&&runtime.observations()[56].missionComplete);
@@ -251,8 +255,16 @@ int main(int argc,char** argv){
     std::cout<<"RANKING_ACTUAL frame="<<ranking.frame<<" notices="<<ranking.notices<<" title="<<ranking.title<<" message="<<ranking.message<<" saves="<<ranking.savesBefore<<":"<<ranking.savesAfter<<" overlap="<<metrics.rankingFramesWithCombatActivity<<std::endl;
     assert(runtime.scenarios()[113].role==validation::ScenarioRole::rankingUnavailable&&ranking.notices==1&&ranking.title=="랭킹"&&ranking.message=="현재 랭킹 서비스를 이용할 수 없습니다.");
     assert(ranking.events==std::vector<std::string>({"notice","sfx0"})&&ranking.savesBefore==ranking.savesAfter&&ranking.slotUnchanged&&ranking.savedBytesUnchanged&&ranking.screenUnchanged&&ranking.transitionUnchanged&&ranking.unsupportedUnchanged&&metrics.rankingFramesWithCombatActivity==1);
+    const auto& completed=runtime.observations()[114].completedMissions;
+    std::cout<<"COMPLETED_ACTUAL popups="<<completed.popupFrames[0]<<':'<<completed.popupFrames[1]<<" ok="<<completed.okFrames[0]<<':'<<completed.okFrames[1]<<" list="<<completed.listFrame<<" base="<<completed.baseFrame<<" credit="<<completed.finalCredit<<" items="<<completed.repairItems<<" overlap="<<metrics.completedMissionFramesWithCombatActivity<<std::endl;
+    assert((runtime.scenarios()[114].role==validation::ScenarioRole::completedMissions&&completed.ids==std::array<std::string,2>({"M002010","M001010"})));
+    assert((completed.credits==std::array<int,2>({580,680})&&completed.experience==std::array<int,2>({200,400})&&completed.levels==std::array<int,2>({0,1})&&completed.rewardCounts==std::array<int,2>({2,3})));
+    assert(completed.popupFrames[0]>0&&completed.doorReadyFrame>completed.popupFrames[0]&&completed.popupFrames[1]==completed.okFrames[0]&&completed.okFrames[0]==completed.doorReadyFrame+8&&completed.okFrames[1]==completed.popupFrames[1]+8);
+    assert(completed.secondOKAccepted&&completed.finalOKAccepted&&!completed.listImmediatelyAfterFinalOK&&completed.listFrame==completed.okFrames[1]&&completed.baseFrame>completed.exitFrame&&completed.finalCredit==680&&completed.remainingAccepted==2&&completed.savedPayloadValid&&completed.repairItems==completed.initialRepairItems+3);
+    assert(completed.popupSaves[0]==completed.savesBefore&&completed.popupSaves[1]==completed.savesBefore&&completed.savesAfter==completed.savesBefore+1&&metrics.completedMissionFramesWithCombatActivity>=3);
+    assert(completed.sounds==std::vector<unsigned>({11,11,7,0,0,0}));
     const auto priorTicks=runtime.observations()[0].ticks;runtime.setActive(false);runtime.tick();assert(runtime.observations()[0].ticks==priorTicks&&runtime.metrics().frames==frames);runtime.setActive(true);
     const auto missing=runtime.missingFeatures();assert(std::find(missing.begin(),missing.end(),"quick-item actual use")==missing.end()&&std::find(missing.begin(),missing.end(),"dash execution")==missing.end());
     const double seconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-begin).count();
-    std::cout<<"HM2_CONCURRENT PASS frames="<<frames<<" scenarios=114 combat=55 originalPlayerWeapons=110 firedDefinitions="<<fired.size()<<" activeWeaponKinds="<<metrics.activeWeaponKinds<<" maxSameFrameDefinitions="<<metrics.maxConcurrentWeaponDefinitions<<" maxSameFrameKinds="<<metrics.maxConcurrentWeaponKinds<<" maxSameFrameScenarios="<<metrics.maxConcurrentEmittingScenarios<<" framesFiveDefinitions="<<metrics.framesWithFiveWeaponDefinitions<<" framesFiveKinds="<<metrics.framesWithFiveWeaponKinds<<" menuFrames="<<metrics.menuActionFrames<<" menuWithCombat="<<metrics.menuFramesWithCombatActivity<<" emittingScenariosEver="<<progressed<<" emissions="<<emissions<<" damage="<<damage<<" kills="<<kills<<" completedMissions="<<complete<<" levelUps="<<levelUps<<" warmReads="<<metrics.warmReadMisses<<" warmExists="<<metrics.warmExistsMisses<<" seconds="<<seconds<<"\n";
+    std::cout<<"HM2_CONCURRENT PASS frames="<<frames<<" scenarios=115 combat=55 originalPlayerWeapons=110 firedDefinitions="<<fired.size()<<" activeWeaponKinds="<<metrics.activeWeaponKinds<<" maxSameFrameDefinitions="<<metrics.maxConcurrentWeaponDefinitions<<" maxSameFrameKinds="<<metrics.maxConcurrentWeaponKinds<<" maxSameFrameScenarios="<<metrics.maxConcurrentEmittingScenarios<<" framesFiveDefinitions="<<metrics.framesWithFiveWeaponDefinitions<<" framesFiveKinds="<<metrics.framesWithFiveWeaponKinds<<" menuFrames="<<metrics.menuActionFrames<<" menuWithCombat="<<metrics.menuFramesWithCombatActivity<<" emittingScenariosEver="<<progressed<<" emissions="<<emissions<<" damage="<<damage<<" kills="<<kills<<" completedMissions="<<complete<<" levelUps="<<levelUps<<" warmReads="<<metrics.warmReadMisses<<" warmExists="<<metrics.warmExistsMisses<<" seconds="<<seconds<<"\n";
 }

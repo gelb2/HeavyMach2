@@ -249,6 +249,7 @@ bool Progression::acceptMission(std::string_view id,std::string_view base){
 bool Progression::claimMission(std::string_view id,std::string_view base){
     const auto* d=missions.definition(id);const auto* s=missions.state(id);if(!d||!s||!s->accepted||s->complete||!s->requireComplete||d->completePlace!=base)return false;
     events_.sound(11);
+    events_.missionCompletionStarted(*d);
     for(const auto& a:d->completeActions){if(a.type>=0&&a.type<=2)events_.missionReward(*d,a);
         if(a.type==0){slot_.credit(slot_.credit()+std::uint32_t(a.value));events_.changed(Change::credit);}
         else if(a.type==1)experience.add(a.value,screen_);

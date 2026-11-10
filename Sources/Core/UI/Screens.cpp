@@ -68,6 +68,14 @@ struct Screens::Impl {
         if(previous&&previous->state.screen==s.screen){title=previous->title;message=previous->message;layers=previous->layers;}
         else{title.start=time;layers=std::make_shared<std::array<VisualLayer,14>>();}
         if(previous)fieldPresentation=previous->fieldPresentation;
+        // accept5004 only invalidates Command.curState. Keep its existing rows
+        // until the following Command tick actually refreshes the list.
+        if(previous&&s.screen==ScreenId::command&&previous->state.screen==s.screen&&s.commandListRevision&&s.commandListRevision==previous->state.commandListRevision){
+            state.availableMissions=previous->state.availableMissions;state.acceptedMissions=previous->state.acceptedMissions;
+            state.selectedMission=-1;
+            const auto select=[&](const std::vector<ItemView>& list,int first){for(std::size_t i=0;i<list.size();++i)if(!s.selectedMissionDataId.empty()&&list[i].dataId==s.selectedMissionDataId&&state.selectedMission<0)state.selectedMission=first+int(i);};
+            select(state.availableMissions,0);select(state.acceptedMissions,int(state.availableMissions.size()));
+        }
         if(fieldPresentation.identity!=s.fieldUIRevision){fieldPresentation={};fieldPresentation.identity=s.fieldUIRevision;}
     }
     void hideMessage(){message.hiding=true;message.text.reset();}
@@ -285,6 +293,7 @@ struct Screens::Impl {
     void maintenance();
     void shop();
     void missionList(bool);
+    void completedMission();
     void system();
     void airlift();
     void trade();
@@ -527,6 +536,20 @@ void Screens::Impl::missionList(bool command){
     }
     if(!command)addButton(Panel::mission,5000,"Common_Btn_CLOSE.png",plus(root,{150,-half-16}),1,2,0,1,{},0,{}, {1,1},true,10);
 }
+void Screens::Impl::completedMission(){
+    const Vec2 root{384,512};const auto& mission=state.completedMission;
+    if(mission.dataId.empty())return;
+    image("MissionCompletedBG.png",root,1,1,0,{1,1},false,0,1,9);
+    const std::string prefix="Command.completed."+mission.dataId;
+    text(prefix+".title",mission.title,plus(root,{0,42}),{256,20},"TrebuchetMS-Bold",16,TextAlign::center,{100.f/255,240.f/255,1,1},9);
+    addButton(Panel::mission,5007,"Common_Btn_OK.png",plus(root,{62,-74}),1,2,0,1,{},0,mission.dataId,{1,1},true,9);
+    for(std::size_t k=0;k<mission.rewards.size();++k){
+        const auto& reward=mission.rewards[k];const Vec2 at=plus(root,{float(k%2)*100-84,float(k/2)*-52-10});
+        image(reward.image,reward.type==2?plus(at,{8,8}):at,1,1,0,{1,1},false,0,1,9);
+        const auto value=std::to_string(reward.value)+(reward.type==0?"Cr":"");
+        text(prefix+".reward"+std::to_string(k),value,plus(at,{reward.type==1?50.f:60.f,0}),{reward.type==0?100.f:60.f,14},"TrebuchetMS-Bold",13,TextAlign::left,{},9);
+    }
+}
 void Screens::Impl::airlift(){
     const Vec2 root{384,512};unsigned count=0;for(const auto& base:state.airlifts)if(!base.dataId.empty())++count;
     const float half=float(count)*22+20;image("MissionList_Mid.png",root,1,1,0,{1,half/32},false,0,1,10);
@@ -572,9 +595,11 @@ void Screens::Impl::build(){
         case ScreenId::maintenance:maintenance();break;
         case ScreenId::shop:shop();break;
         case ScreenId::command:
-            image("CmdCenterBG.png",{384,512});missionList(true);
+            image("CmdCenterBG.png",{384,512});
             addButton(Panel::root,5009,"Common_Btn_RANKING.png",{484,52});
-            addButton(Panel::root,2100,"Common_Btn_EXIT.png",{640,52});break;
+            addButton(Panel::root,2100,"Common_Btn_EXIT.png",{640,52});
+            if(state.commandListVisible)missionList(true);
+            completedMission();break;
         case ScreenId::field:{
             const int overlays=int(state.inventoryVisible)+int(state.missionVisible)+int(state.airliftVisible)+int(state.systemVisible);
             if(overlays>1)throw std::runtime_error("Original field dialogs are mutually exclusive");
@@ -807,7 +832,8 @@ std::vector<ScreenCoverage> Screens::coverage(){
         {ScreenId::field,Panel::airlift,"Visited-base rows4002..4007, OK4001, close4000","DlgAirlift0x1fbb0/0x1f5b8",true},
         {ScreenId::field,Panel::mission,"Accepted rows5200..5204, close5000, original text formatter","DlgMission0x22b1c/0x23678/0x23208",true},
         {ScreenId::command,Panel::mission,"Available5100..5104,accepted5200..5204,accept5004,ranking5009,exit2100","GuiCommandCenter0x2614c/0x2708c/0x26af8",true},
-        {ScreenId::command,Panel::mission,"Completed result5007/reward overlay and list expand animation","GuiCommandCenter0x279a8/0x26558",false},
+        {ScreenId::command,Panel::mission,"Completed result5007/reward overlay","GuiCommandCenter0x279a8/0x269ac",true},
+        {ScreenId::command,Panel::mission,"Mission list expand animation","GuiCommandCenter0x26558",false},
         {ScreenId::maintenance,Panel::inventory,"25 cells6000..6024,pages6090/6091,arrange6093","WndInven0x34918/GuiMaintenance0x2bbb0",true},
         {ScreenId::maintenance,Panel::equipment,"Six equipment targets6100..6105 and actual item identities","WndEquip0x33c5c",true},
         {ScreenId::maintenance,Panel::bot,"Three bot targets6300..6302,disarm6310","WndBotSlot0x33300/GuiMaintenance.handleButton",true},

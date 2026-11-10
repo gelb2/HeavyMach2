@@ -114,4 +114,27 @@
     XCTAssertEqualObjects([self state:world][@"location"],@"Base002");XCTAssertEqual([[self state:world][@"workingHP"] intValue],[[self state:world][@"maximumHP"] intValue]);XCTAssertFalse(destroyed.exists);[app terminate];
 }
 
+- (void)testCompletedMissionWindowsAndSavedRewards {
+    self.continueAfterFailure=NO;XCUIApplication* app=[[XCUIApplication alloc]initWithBundleIdentifier:@"com.gelb2.heavymach2.restored"];
+    NSString* run=NSUUID.UUID.UUIDString;app.launchEnvironment=@{@"HM2_UI_TESTING":@"1",@"HM2_UI_TEST_RUN":run,@"HM2_UI_TEST_FIXTURE":@"completedMissions"};[app launch];
+    XCUIElement* world=app.otherElements[@"hm2.world"];XCTAssertTrue([world waitForExistenceWithTimeout:15]);[self titleToSlots:world];[self tapButton:1001 data:0 world:world];
+    [self wait:^BOOL{const auto s=[self state:world];return [s[@"screen"] intValue]==3&&[s[@"doorPhase"] intValue]==8;} description:@"original-format completed-mission start reaches Base001" timeout:60];
+    const auto base=[self state:world];const int saves=[base[@"saves"] intValue],items=[base[@"repairItems"] intValue];XCTAssertEqual([base[@"credits"] intValue],500);
+    [self tapButton:2001 data:0 world:world];[self tapButton:2001 data:0 world:world];
+    [self wait:^BOOL{const auto s=[self state:world];return [s[@"completedMission"] isEqualToString:@"M002010"]&&[s[@"doorPhase"] intValue]==8;} description:@"first completed window awards first accepted eligible mission" timeout:60];
+    NSDictionary* first=[self state:world];XCTAssertEqual([first[@"credits"] intValue],580);XCTAssertEqual([first[@"experience"] intValue],200);XCTAssertEqual([first[@"completedRewardCount"] intValue],2);XCTAssertEqual([first[@"saves"] intValue],saves);XCTAssertEqual([first[@"commandListVisible"] intValue],0);[self capture:@"completed-first-M002010-rewards"];
+    [self tapButton:5009 data:0 world:world];XCUIElement* notice=app.alerts[@"랭킹"];XCTAssertTrue([notice waitForExistenceWithTimeout:10]);XCTAssertTrue(notice.staticTexts[@"현재 랭킹 서비스를 이용할 수 없습니다."].exists);[notice.buttons[@"OK"] tap];
+    XCTAssertEqualObjects([self state:world][@"completedMission"],@"M002010");
+    [self tapButton:5007 data:0 world:world];[self wait:^BOOL{return [[self state:world][@"completedMission"] isEqualToString:@"M001010"];} description:@"actual result OK advances once to second eligible mission"];
+    NSDictionary* second=[self state:world];XCTAssertEqual([second[@"credits"] intValue],680);XCTAssertEqual([second[@"experience"] intValue],400);XCTAssertEqual([second[@"level"] intValue],1);XCTAssertEqual([second[@"repairItems"] intValue],items+3);XCTAssertEqual([second[@"completedRewardCount"] intValue],3);XCTAssertEqual([second[@"saves"] intValue],saves);[self capture:@"completed-second-M001010-rewards"];
+    [self tapButton:5007 data:0 world:world];[self wait:^BOOL{const auto s=[self state:world];return [s[@"completedMission"] length]==0&&[s[@"commandListVisible"] intValue]==1;} description:@"last OK removes result and next Command tick displays remaining missions"];
+    NSDictionary* list=[self state:world];XCTAssertEqual([list[@"credits"] intValue],680);XCTAssertEqual([list[@"acceptedCount"] intValue],2);XCTAssertEqual([list[@"saves"] intValue],saves);[self capture:@"completed-remaining-mission-list"];
+    [self tapButton:2100 data:0 world:world];[self wait:^BOOL{const auto s=[self state:world];return [s[@"screen"] intValue]==3&&[s[@"doorPhase"] intValue]==8;} description:@"original doors return to Base and save rewards once" timeout:60];XCTAssertEqual([[self state:world][@"saves"] intValue],saves+1);
+    [app terminate];[app launch];world=app.otherElements[@"hm2.world"];XCTAssertTrue([world waitForExistenceWithTimeout:15]);[self titleToSlots:world];[self tapButton:1001 data:0 world:world];
+    [self wait:^BOOL{const auto s=[self state:world];return [s[@"screen"] intValue]==3&&[s[@"doorPhase"] intValue]==8;} description:@"restart decodes completed progress" timeout:60];
+    [self tapButton:2001 data:0 world:world];[self tapButton:2001 data:0 world:world];[self wait:^BOOL{const auto s=[self state:world];return [s[@"screen"] intValue]==4&&[s[@"doorPhase"] intValue]==8&&[s[@"commandListVisible"] intValue]==1;} description:@"restart does not award completed missions again" timeout:60];
+    NSDictionary* restarted=[self state:world];XCTAssertEqual([restarted[@"credits"] intValue],680);XCTAssertEqual([restarted[@"experience"] intValue],400);XCTAssertEqual([restarted[@"repairItems"] intValue],items+3);XCTAssertEqual([restarted[@"completedMission"] length],0u);XCTAssertEqual([restarted[@"unsupported"] intValue],0);
+    NSData* data=[NSJSONSerialization dataWithJSONObject:@{@"first":first,@"second":second,@"list":list,@"restarted":restarted} options:NSJSONWritingPrettyPrinted error:nil];XCTAttachment* a=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];a.name=@"Completed mission actual Source UI and restart";a.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:a];[app terminate];
+}
+
 @end

@@ -1,0 +1,492 @@
+{
+  "date": "2026-11-11",
+  "environment": "Debug O2 iOS/iPadOS Simulators; no physical device install",
+  "baseCommit": "80c6af446d4d1a807cdea2e65729f7fccc5aafc3",
+  "sourceManifest": {
+    "baseCommit": "80c6af446d4d1a807cdea2e65729f7fccc5aafc3",
+    "files": {
+      "CMakeLists.txt": "c410af3b5f88d5eef42c11b2ae9aaa54499909155cfc6832119211635d0db667",
+      "Sources/Core/Progression/Progression.cpp": "d85621e2840aa3b40472aeb7aac497ad67d17831457ac4cb3e4de4f9ab8bd34f",
+      "Sources/Core/Progression/Progression.hpp": "9a39f2c8b227018dd4190fa0f2ab43d37eb331bc1b286a01046325a87a341261",
+      "Sources/Core/Session/GameSession.cpp": "b77f52c84b094baf9e3ea8c05d36e049dda63586bc844ce04c661f9c61c4f05b",
+      "Sources/Core/UI/Screens.cpp": "2d4d09dd55828ab627dd4cb51b6bb51620b3387d3e7cbe1ae6520b2907e57e53",
+      "Sources/Core/UI/Screens.hpp": "a7345bb005abf791e64e517a36474689570b8b9ac480fd5191e144cfeeba50ae",
+      "Sources/Core/Validation/ConcurrentValidation.cpp": "c0117c2c8622025464bd38958a1adcd89b89e5f4440ed852fac05e3fa5260f1f",
+      "Sources/Core/Validation/ConcurrentValidation.hpp": "5adf31c38999e4fe800e916abf1250a187255986004c6eabefc9e4414e98ed51",
+      "Sources/Core/Validation/SessionFixtures.hpp": "820097673734867a7f355259d64be0d92bbf6e8c92f3132118d5cbab3e48021c",
+      "Sources/Platform/Apple/HM2ConcurrentRuntime.mm": "aceb4b1c9171ef023ac836a77a5689b5023d9c704b5b58d2868d407c75e3fe1a",
+      "Sources/Platform/Apple/HM2SourceView.mm": "1b354700e5a6cbc9a62ecbbc68963c2b45fbefb34b9ecae76cb80d440522cf12",
+      "Apple/Tests/ConcurrentValidationTests.mm": "d889bc91655aff3ed1273423d31b9f4019b41c9582aba942e20f4d678dc7550a",
+      "Apple/UITests/WorldInputTests.mm": "f226733af990f7a94d4390f60326c2d033914df44d443007ff96f8ab824da069",
+      "tests/CompletedMissionSessionTests.cpp": "404502366f9e92305a4df0f195cafa167fcbf46285307dfbe58255032b201c54",
+      "tests/ConcurrentValidationTests.cpp": "0d4f12af9444dfec6f277901009e296bce3873bac644664486b4f0cc0fb4b229"
+    },
+    "previousManifest": "build-source-manifest.json",
+    "changedSinceInitialBuild": [
+      "Sources/Core/Validation/ConcurrentValidation.cpp",
+      "Sources/Core/Validation/ConcurrentValidation.hpp",
+      "Sources/Platform/Apple/HM2ConcurrentRuntime.mm",
+      "Apple/Tests/ConcurrentValidationTests.mm",
+      "tests/CompletedMissionSessionTests.cpp",
+      "tests/ConcurrentValidationTests.cpp"
+    ],
+    "nativeBuild": "ipad-visible-native115.log; iphone test-without-building reuses same build/apple outputs",
+    "sourceUIReuse": "Product Session/UI/Progression and normal Source UI test hashes unchanged; latest changes only validation timing/label/capture assertions and extra CPU acceptance failure test."
+  },
+  "core": {
+    "core-final-tests.log": {
+      "passed": 70,
+      "sha256": "01fee23985bf6ad38b876cb396e60e83b8bcfcc1f1dbe133cabca70601932212"
+    },
+    "asan-tests.log": {
+      "passed": 68,
+      "sha256": "566f358f2497ccca88313eb5459098d49332875a895b13d88b4d93fdd0e474f0"
+    },
+    "visible-popup-tests.log": {
+      "passed": 2,
+      "sha256": "d4030467e4ef2ce17e0fe41e1906c9b313e1fd58e5da4b6bfd4cc01b33b625a1"
+    },
+    "visible-popup-asan-tests.log": {
+      "passed": 2,
+      "sha256": "b8e23ebefb96eefd9a575f47477c3b6c81445071e07ae8bd4185bf37d93562fa"
+    },
+    "full-accept-test.log": {
+      "passed": 1,
+      "sha256": "2ce8bd76eb1df52a25b022422b1293120fa82a47a4b50acb3bab4bdf41de9656"
+    },
+    "full-accept-asan-test.log": {
+      "passed": 1,
+      "sha256": "d25bdd523b007345e50edfb196814c1f3db87ca55ef1927c0160f01e08c71d17"
+    }
+  },
+  "native": {
+    "ipad": {
+      "source": ".local/evidence/completed-missions-restoration-20261111/ipad-visible-json/DA6E7132-18D1-4F9B-889A-801A4B6C9904.json",
+      "sha256": "0c530c8c8b2c0a3423358affa09e3b9bb7995b1b20e1c4105d0e157cbd590d53",
+      "logSHA256": "f78b4e7e693e8155a3b52192529cea2583b2a2286f37554faf0a2ae693fcc85f",
+      "frames": 1200,
+      "scenarios": 115,
+      "combatScenarios": 55,
+      "activeWeaponDefinitions": 110,
+      "activeWeaponKinds": 5,
+      "maxProgressingEffects": 28,
+      "completedMissionFramesWithCombatActivity": 4,
+      "completedMissions": {
+        "baseFrame": 442,
+        "credits": [
+          580,
+          680
+        ],
+        "doorReadyFrame": 347,
+        "exitFrame": 371,
+        "experience": [
+          200,
+          400
+        ],
+        "finalCredit": 680,
+        "finalOKAccepted": true,
+        "ids": [
+          "M002010",
+          "M001010"
+        ],
+        "initialRepairItems": 5,
+        "levels": [
+          0,
+          1
+        ],
+        "listFrame": 363,
+        "listImmediatelyAfterFinalOK": false,
+        "okFrames": [
+          355,
+          363
+        ],
+        "popupFrames": [
+          253,
+          355
+        ],
+        "popupSaves": [
+          2,
+          2
+        ],
+        "remainingAccepted": 2,
+        "repairItems": 8,
+        "rewardCounts": [
+          2,
+          3
+        ],
+        "savedPayloadValid": true,
+        "savesAfter": 3,
+        "savesBefore": 2,
+        "secondOKAccepted": true,
+        "sounds": [
+          11,
+          11,
+          7,
+          0,
+          0,
+          0
+        ]
+      },
+      "captures": [
+        {
+          "botBodies": 0,
+          "botRotors": 0,
+          "completedBackgrounds": 1,
+          "dashQuads": 0,
+          "frame": 348,
+          "helpGuides": 0,
+          "helpImage": "",
+          "helpPages": 0,
+          "loadingPictures": 0,
+          "markers": 0,
+          "messageBackgrounds": 0,
+          "planes": 0,
+          "playerHPGaugeQuads": 0,
+          "scenario": 114
+        },
+        {
+          "botBodies": 0,
+          "botRotors": 0,
+          "completedBackgrounds": 1,
+          "dashQuads": 0,
+          "frame": 356,
+          "helpGuides": 0,
+          "helpImage": "",
+          "helpPages": 0,
+          "loadingPictures": 0,
+          "markers": 0,
+          "messageBackgrounds": 0,
+          "planes": 0,
+          "playerHPGaugeQuads": 0,
+          "scenario": 114
+        },
+        {
+          "botBodies": 0,
+          "botRotors": 0,
+          "completedBackgrounds": 0,
+          "dashQuads": 0,
+          "frame": 364,
+          "helpGuides": 0,
+          "helpImage": "",
+          "helpPages": 0,
+          "loadingPictures": 0,
+          "markers": 0,
+          "messageBackgrounds": 0,
+          "planes": 0,
+          "playerHPGaugeQuads": 0,
+          "scenario": 114
+        }
+      ],
+      "renderComparison": {
+        "comparedPixels": 3870400,
+        "differentRGBPixels": 0,
+        "experimentalBatchingAdopted": false,
+        "firstDrawCalls": 7276,
+        "maxRGBDifference": 0,
+        "renderPath": "originalOrderedScissor",
+        "repeatDrawCalls": 7276,
+        "sameCachedFrame": true,
+        "sourceSprites": 7276
+      },
+      "warmReadMisses": 0,
+      "warmExistsMisses": 0,
+      "imageTextureUploadsAfterPreparation": 0,
+      "contextsCreated": 1,
+      "cpuAndSubmissionP95ms": 72.45649900000001,
+      "testDurations": [
+        "93.596",
+        "32.555"
+      ],
+      "menu360": {
+        "frames": 360,
+        "source": ".local/evidence/completed-missions-restoration-20261111/ipad-visible-json/97E98D3B-6D82-4B9F-BE1D-CB5171B05387.json",
+        "sha256": "26deb0849b509610fc4b5ba2297010654d512a61ee1f6f23b22c9faba01822bd",
+        "scope": "menu preparation with battles; completed mission return-to-base not yet reached"
+      }
+    },
+    "iphone": {
+      "source": ".local/evidence/completed-missions-restoration-20261111/iphone-visible-json/A0E250A4-0E44-45C0-88F1-9D244D860CFC.json",
+      "sha256": "191f097e2e03829d3d347b80733a70f286559fe2e5b823689d791495d76c6edb",
+      "logSHA256": "8508053771b1aaf6de8bbbdd04b14cbc298af98892c4038ab47add99bf583f21",
+      "frames": 1200,
+      "scenarios": 115,
+      "combatScenarios": 55,
+      "activeWeaponDefinitions": 110,
+      "activeWeaponKinds": 5,
+      "maxProgressingEffects": 29,
+      "completedMissionFramesWithCombatActivity": 4,
+      "completedMissions": {
+        "baseFrame": 442,
+        "credits": [
+          580,
+          680
+        ],
+        "doorReadyFrame": 347,
+        "exitFrame": 371,
+        "experience": [
+          200,
+          400
+        ],
+        "finalCredit": 680,
+        "finalOKAccepted": true,
+        "ids": [
+          "M002010",
+          "M001010"
+        ],
+        "initialRepairItems": 5,
+        "levels": [
+          0,
+          1
+        ],
+        "listFrame": 363,
+        "listImmediatelyAfterFinalOK": false,
+        "okFrames": [
+          355,
+          363
+        ],
+        "popupFrames": [
+          253,
+          355
+        ],
+        "popupSaves": [
+          2,
+          2
+        ],
+        "remainingAccepted": 2,
+        "repairItems": 8,
+        "rewardCounts": [
+          2,
+          3
+        ],
+        "savedPayloadValid": true,
+        "savesAfter": 3,
+        "savesBefore": 2,
+        "secondOKAccepted": true,
+        "sounds": [
+          11,
+          11,
+          7,
+          0,
+          0,
+          0
+        ]
+      },
+      "captures": [
+        {
+          "botBodies": 0,
+          "botRotors": 0,
+          "completedBackgrounds": 1,
+          "dashQuads": 0,
+          "frame": 348,
+          "helpGuides": 0,
+          "helpImage": "",
+          "helpPages": 0,
+          "loadingPictures": 0,
+          "markers": 0,
+          "messageBackgrounds": 0,
+          "planes": 0,
+          "playerHPGaugeQuads": 0,
+          "scenario": 114
+        },
+        {
+          "botBodies": 0,
+          "botRotors": 0,
+          "completedBackgrounds": 1,
+          "dashQuads": 0,
+          "frame": 356,
+          "helpGuides": 0,
+          "helpImage": "",
+          "helpPages": 0,
+          "loadingPictures": 0,
+          "markers": 0,
+          "messageBackgrounds": 0,
+          "planes": 0,
+          "playerHPGaugeQuads": 0,
+          "scenario": 114
+        },
+        {
+          "botBodies": 0,
+          "botRotors": 0,
+          "completedBackgrounds": 0,
+          "dashQuads": 0,
+          "frame": 364,
+          "helpGuides": 0,
+          "helpImage": "",
+          "helpPages": 0,
+          "loadingPictures": 0,
+          "markers": 0,
+          "messageBackgrounds": 0,
+          "planes": 0,
+          "playerHPGaugeQuads": 0,
+          "scenario": 114
+        }
+      ],
+      "renderComparison": {
+        "comparedPixels": 2843532,
+        "differentRGBPixels": 0,
+        "experimentalBatchingAdopted": false,
+        "firstDrawCalls": 7276,
+        "maxRGBDifference": 0,
+        "renderPath": "originalOrderedScissor",
+        "repeatDrawCalls": 7276,
+        "sameCachedFrame": true,
+        "sourceSprites": 7276
+      },
+      "warmReadMisses": 0,
+      "warmExistsMisses": 0,
+      "imageTextureUploadsAfterPreparation": 0,
+      "contextsCreated": 1,
+      "cpuAndSubmissionP95ms": 59.9515,
+      "testDurations": [
+        "87.964",
+        "31.498"
+      ],
+      "menu360": {
+        "frames": 360,
+        "source": ".local/evidence/completed-missions-restoration-20261111/iphone-visible-json/51B41147-7785-4B86-9405-3B1CDD15834C.json",
+        "sha256": "0ad48f1afdbceafe81e3c2d239fc75ec220b4b0c2513353b5e2a80d39ea88b44",
+        "scope": "menu preparation with battles; completed mission return-to-base not yet reached"
+      }
+    }
+  },
+  "sourceUI": {
+    "ipad": {
+      "source": ".local/evidence/completed-missions-restoration-20261111/ipad-json/48125F25-32B8-4A6C-A1A2-45110DED347E.json",
+      "sha256": "b2457601e246a647cca9e36c048935aea5161eff89a1485fe8441f1b95c79271",
+      "durationSeconds": 142.711,
+      "states": {
+        "first": {
+          "completedMission": "M002010",
+          "completedRewardCount": "2",
+          "credits": "580",
+          "experience": "200",
+          "level": "0",
+          "repairItems": "5",
+          "acceptedCount": "3",
+          "saves": "2",
+          "saveCompletions": "2",
+          "doorPhase": "8",
+          "unsupported": "0"
+        },
+        "list": {
+          "completedMission": "",
+          "completedRewardCount": "0",
+          "credits": "680",
+          "experience": "400",
+          "level": "1",
+          "repairItems": "8",
+          "acceptedCount": "2",
+          "saves": "2",
+          "saveCompletions": "2",
+          "doorPhase": "8",
+          "unsupported": "0"
+        },
+        "restarted": {
+          "completedMission": "",
+          "completedRewardCount": "0",
+          "credits": "680",
+          "experience": "400",
+          "level": "1",
+          "repairItems": "8",
+          "acceptedCount": "2",
+          "saves": "2",
+          "saveCompletions": "2",
+          "doorPhase": "8",
+          "unsupported": "0"
+        },
+        "second": {
+          "completedMission": "M001010",
+          "completedRewardCount": "3",
+          "credits": "680",
+          "experience": "400",
+          "level": "1",
+          "repairItems": "8",
+          "acceptedCount": "2",
+          "saves": "2",
+          "saveCompletions": "2",
+          "doorPhase": "8",
+          "unsupported": "0"
+        }
+      }
+    },
+    "iphone": {
+      "source": ".local/evidence/completed-missions-restoration-20261111/iphone-json/CCFA52B0-01FC-4319-BABD-8752EBDFF8A1.json",
+      "sha256": "1388b12b2521eba2dc927d60b0ddd62ccf1c860487529432753fe7560e8a3c1b",
+      "durationSeconds": 98.752,
+      "states": {
+        "first": {
+          "completedMission": "M002010",
+          "completedRewardCount": "2",
+          "credits": "580",
+          "experience": "200",
+          "level": "0",
+          "repairItems": "5",
+          "acceptedCount": "3",
+          "saves": "2",
+          "saveCompletions": "2",
+          "doorPhase": "8",
+          "unsupported": "0"
+        },
+        "list": {
+          "completedMission": "",
+          "completedRewardCount": "0",
+          "credits": "680",
+          "experience": "400",
+          "level": "1",
+          "repairItems": "8",
+          "acceptedCount": "2",
+          "saves": "2",
+          "saveCompletions": "2",
+          "doorPhase": "8",
+          "unsupported": "0"
+        },
+        "restarted": {
+          "completedMission": "",
+          "completedRewardCount": "0",
+          "credits": "680",
+          "experience": "400",
+          "level": "1",
+          "repairItems": "8",
+          "acceptedCount": "2",
+          "saves": "2",
+          "saveCompletions": "2",
+          "doorPhase": "8",
+          "unsupported": "0"
+        },
+        "second": {
+          "completedMission": "M001010",
+          "completedRewardCount": "3",
+          "credits": "680",
+          "experience": "400",
+          "level": "1",
+          "repairItems": "8",
+          "acceptedCount": "2",
+          "saves": "2",
+          "saveCompletions": "2",
+          "doorPhase": "8",
+          "unsupported": "0"
+        }
+      }
+    }
+  },
+  "scope": {
+    "completeGameCoverage": false,
+    "originalRuntimePopupComparison": false,
+    "finalPhoneLandscape": false,
+    "commandListExpansion": false,
+    "deviceDelivery": false,
+    "developMainRelease": false,
+    "ipad15SecondPerformanceCriterion": "previous failure remains unresolved"
+  },
+  "evidence": {
+    ".local/evidence/completed-missions-restoration-20261111/baseline-order-red.log": "f6074d3bc5fd8e783eba898d3ecfefe5d2cf431e2a072290ded0db75060cf46a",
+    ".local/evidence/completed-missions-restoration-20261111/baseline-green.log": "42ca728687d23074b433d6345dcfa580d418a8ba01088e1e5fb6ffc62e086d22",
+    ".local/evidence/completed-missions-restoration-20261111/retained-row-red.log": "7bac4f6c49a9ac5aec40f600a3526d389c69632edaad169b4b3068150a9b88cc",
+    ".local/evidence/completed-missions-restoration-20261111/retained-row-green.log": "7e5389a48f039a3afe09744e67aa980947aa56ead27f01c8460d4596a821eb80",
+    ".local/evidence/completed-missions-restoration-20261111/reference-followup/contract.md": "62da27a53dfbdaa8b88f199db3855f88744f042a1190ff01d745a03ab450804b",
+    ".local/evidence/completed-missions-restoration-20261111/reference-followup/implementation-review.md": "82df402f5a0bfb62f64516d9529ebcfa472a54c440dbdedbe2c7cbeaea9dbbb9",
+    ".local/evidence/completed-missions-restoration-20261111/reference-followup/report-draft-review.md": "b73aaf7cde0980faee40a736e877378d7827461deeb515c965278ba075f72897",
+    ".local/evidence/completed-missions-restoration-20261111/reference-followup/validation-review.md": "7f3261048cf01c4c462d5c9ea0d9b9867a0a2c30089f762f7a5e113111030b55",
+    ".local/evidence/completed-missions-restoration-20261111/reference-followup/visible-popup-review.md": "230329974681e2be0a41e50a7e0d877b8e677f6309fbb202767f6a65cecb0f41"
+  }
+}

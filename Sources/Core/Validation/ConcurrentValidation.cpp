@@ -82,7 +82,7 @@ struct ConcurrentValidation::Impl {
         Impl& owner;unsigned index;Bytes saved;std::vector<std::string> alerts;
         Adapter(Impl& o,unsigned i):owner(o),index(i){}
         void sound(std::string_view name,Vec2 p)override{++owner.observations[index].sounds;owner.host.sound(index,name,p);}
-        void soundID(unsigned id,Vec2 p)override{++owner.observations[index].sounds;if(index==owner.rankingIndex)owner.observations[index].ranking.events.push_back("sfx"+std::to_string(id));if(id==13)++owner.observations[index].repairSounds;if(id==14)++owner.observations[index].dashSounds;owner.host.soundID(index,id,p);}
+        void soundID(unsigned id,Vec2 p)override{++owner.observations[index].sounds;if(index==owner.rankingIndex)owner.observations[index].ranking.events.push_back("sfx"+std::to_string(id));if(index==owner.completedMissionIndex)owner.observations[index].completedMissions.sounds.push_back(id);if(id==13)++owner.observations[index].repairSounds;if(id==14)++owner.observations[index].dashSounds;owner.host.soundID(index,id,p);}
         void alert(std::string_view key)override{alerts.emplace_back(key);}
         void requestName(unsigned)override{}void requestDelete(unsigned)override{}
         void requestGameOver(std::uint64_t token)override{
@@ -116,14 +116,14 @@ struct ConcurrentValidation::Impl {
     std::vector<std::unique_ptr<Case>> cases;ConcurrentMetrics counters;
     bool active=true;std::uint64_t sourceFrameNumber=std::numeric_limits<std::uint64_t>::max();
     std::vector<Frame> sourceFrames;std::vector<FrameActivity> activity;std::vector<ButtonActivity> pendingButtons;std::size_t shopIndex=0,missionIndex=0,restartIndex=0,movementIndex=0;
-    std::vector<std::size_t> aidKitIndices,airStrikeIndices,worldIndices,botIndices,helpIndices;std::size_t dashIndex=0,gameOverIndex=112,rankingIndex=113;std::uint64_t pendingAidKitUses=0,pendingAirStrikeUses=0,pendingBotRepairs=0,pendingHelpInputs=0;
+    std::vector<std::size_t> aidKitIndices,airStrikeIndices,worldIndices,botIndices,helpIndices;std::size_t dashIndex=0,gameOverIndex=112,rankingIndex=113,completedMissionIndex=114;std::uint64_t pendingAidKitUses=0,pendingAirStrikeUses=0,pendingBotRepairs=0,pendingHelpInputs=0;
     int shopCreditBefore=0,shopItemsBefore=0,shopCreditAfter=0,shopItemsAfter=0;unsigned repairButton=0;
     static int repairCount(GameSession& game){int count=0;for(const auto& item:game.state().inventory)if(item.dataId=="01001")count+=item.count;return count;}
     explicit Impl(ResourceAccess& source,ValidationHost& sink):resources(source),host(sink),catalog(Weapons::parse(DataTable::parse(resources.read("WeaponInfo.tble")))){
         const auto items=DataTable::parse(resources.read("ItemInfo.tble"));std::vector<WeaponStart> weapons;
         for(std::size_t row=0;row<items.rowCount();++row)if(items.value(row,"Type")=="PtWpn")weapons.push_back({std::string(items.value(row,"Code").value_or("")),std::string(items.value(row,"strParam").value_or("")),items.integer(row,"Lv")});
         if(weapons.size()!=110)throw std::runtime_error("Expected original HD110 player-weapon items; no enemy weapons may be substituted");
-        descriptions.reserve(114);observations.resize(114);cases.reserve(114);
+        descriptions.reserve(115);observations.resize(115);cases.reserve(115);
         for(std::size_t i=0;i<weapons.size();i+=2){const std::span pair(weapons.data()+i,std::size_t(2));
             add({"combat "+pair[0].code+" + "+pair[1].code,ScenarioRole::combat,{pair[0].code,pair[1].code}},startSave(pair,host.unixTime()),true);
         }
@@ -210,6 +210,10 @@ struct ConcurrentValidation::Impl {
         {auto& o=observations[gameOverIndex].gameOver;o.initialHP=cases[gameOverIndex]->game->battle()->playerHP();o.savesBefore=observations[gameOverIndex].saves;}
         rankingIndex=cases.size();
         add({"Command5009 / Korean ranking unavailable notice",ScenarioRole::rankingUnavailable,{}},gameOverFixture(host.unixTime()),false);
+        completedMissionIndex=cases.size();
+        add({"Command ordered completion / rewards / 5007 / saved payload restore",ScenarioRole::completedMissions,{}},completedMissionFixture(resources,host.unixTime()),false);
+        observations[completedMissionIndex].completedMissions.savesBefore=observations[completedMissionIndex].saves;
+        observations[completedMissionIndex].completedMissions.initialRepairItems=repairCount(*cases[completedMissionIndex]->game);
         // Pre-read the actual future Base002 consumer using an independent
         // preparation session. Its state, RNG, writes and HP never enter cases.
         struct PreparationHost final:SessionHost {
@@ -259,7 +263,7 @@ struct ConcurrentValidation::Impl {
         ++observed.navigationRequests;if(!begin)++observed.navigationRejected;
         observed.navigation.push_back({counters.frames,player,requested,screen,nearest?nearest->code:"",begin,scene->player().blocked});
     }
-    void press(std::size_t index,unsigned id,int data=0){++observations[index].buttonRequests;const bool delivered=host.pressButton(unsigned(index),id,data);if(!delivered)++observations[index].buttonFailures;pendingButtons.push_back({unsigned(index),id,data,delivered});}
+    bool press(std::size_t index,unsigned id,int data=0){++observations[index].buttonRequests;const bool delivered=host.pressButton(unsigned(index),id,data);if(!delivered)++observations[index].buttonFailures;pendingButtons.push_back({unsigned(index),id,data,delivered});return delivered;}
     void worldQuick(std::size_t index,unsigned slot,Vec2 target){
         auto& game=*cases[index]->game;press(index,6200+slot);const auto screen=game.battle()->camera().toScreen(target);
         constexpr std::uintptr_t pointer=0x574f524c;if(game.inputWorld(PointerPhase::begin,screen,pointer))++observations[index].worldQuickUses;
@@ -416,8 +420,15 @@ struct ConcurrentValidation::Impl {
         o.slotUnchanged=std::equal(slot.begin(),slot.end(),game.workingSlot().begin());o.savedBytesUnchanged=disk==cases[rankingIndex]->adapter.saved;
         o.screenUnchanged=screen==game.state().screen;o.transitionUnchanged=transition==game.screenTransition().phase;o.unsupportedUnchanged=unsupported==game.metrics().unsupportedActions;
     }
+    void guideCompletedMissions(){
+        auto& game=*cases[completedMissionIndex]->game;auto& o=observations[completedMissionIndex].completedMissions;
+        if(counters.frames==181||counters.frames==182)press(completedMissionIndex,2001);
+        if(o.doorReadyFrame&&!o.okFrames[0]&&counters.frames>=o.doorReadyFrame+8){o.okFrames[0]=counters.frames;o.secondOKAccepted=press(completedMissionIndex,5007);}
+        else if(o.popupFrames[1]&&!o.okFrames[1]&&counters.frames>=o.popupFrames[1]+8){o.okFrames[1]=counters.frames;o.finalOKAccepted=press(completedMissionIndex,5007);o.listImmediatelyAfterFinalOK=game.state().commandListVisible;}
+        else if(o.listFrame&&!o.exitFrame&&counters.frames>=o.listFrame+8){o.exitFrame=counters.frames;press(completedMissionIndex,2100);}
+    }
     void schedule(){
-        for(const auto index:worldIndices)guideWorld(index);guideDash();guideBots();guideHelp();guideGameOver();guideRanking();
+        for(const auto index:worldIndices)guideWorld(index);guideDash();guideBots();guideHelp();guideGameOver();guideRanking();guideCompletedMissions();
         auto& shop=*cases[shopIndex]->game;const auto menuFrame=counters.frames>180?counters.frames-180:0;
         // The second Base tap requests original doors. Run all other worlds
         // while these real menu sessions close, replace at phase4, and reopen.
@@ -466,6 +477,19 @@ struct ConcurrentValidation::Impl {
     void observe(std::size_t i){
         auto& value=*cases[i];auto& game=*value.game;auto& observed=observations[i];const auto& state=game.state();
         observed.level=state.level;observed.credit=state.credits;observed.experience=raw32(game.workingSlot(),0x70);
+        if(descriptions[i].role==ScenarioRole::completedMissions){
+            auto& o=observed.completedMissions;
+            if(!o.doorReadyFrame&&state.screen==ui::ScreenId::command&&game.screenTransition().phase==8)o.doorReadyFrame=counters.frames;
+            for(unsigned k=0;k<2;++k)if(!o.popupFrames[k]&&state.completedMission.dataId==(k==0?"M002010":"M001010")){
+                o.popupFrames[k]=counters.frames;o.ids[k]=state.completedMission.dataId;o.credits[k]=state.credits;o.experience[k]=int(observed.experience);o.levels[k]=state.level;o.rewardCounts[k]=int(state.completedMission.rewards.size());o.popupSaves[k]=observed.saves;
+            }
+            if(o.okFrames[1]&&!o.listFrame&&state.screen==ui::ScreenId::command&&state.commandListVisible){o.listFrame=counters.frames;o.finalCredit=state.credits;o.remainingAccepted=int(state.acceptedMissions.size());}
+            if(o.exitFrame&&!o.baseFrame&&state.screen==ui::ScreenId::base){
+                o.baseFrame=counters.frames;o.savesAfter=observed.saves;DarwinWorldRandom rng(1);auto saved=SaveData::decode(value.adapter.saved,rng,false);progression::SlotView slot(saved.slot(0));const auto defs=missionFixtureDefinitions(resources);progression::Events events;progression::Progression restored(slot,defs,events);restored.restore();
+                o.repairItems=restored.inventory.count(*defs.findItem("01001"));
+                o.savedPayloadValid=slot.credit()==680&&slot.experience()==400&&restored.missions.state("M002010")->complete&&restored.missions.state("M001010")->complete&&!restored.missions.state("M001080")->complete&&restored.missions.acceptedCount()==2;
+            }
+        }
         for(const auto& mission:state.acceptedMissions)if(mission.dataId=="M001010")observed.missionComplete=mission.complete;
         if(descriptions[i].role==ScenarioRole::gameOver){
             auto& o=observed.gameOver;
@@ -548,6 +572,7 @@ void ConcurrentValidation::tick(){auto& p=*impl_;if(!p.active)return;p.resources
         c.game->tick([&p,&c,i]{p.host.tickScenarioUI(unsigned(i),*c.game,c.random);});if(observed.ticks==0)observed.firstFrame=p.counters.frames;observed.lastFrame=p.counters.frames;++observed.ticks;++activity.tickedScenarios;p.observe(i);
         if(p.descriptions[i].role==ScenarioRole::gameOver){const auto& o=observed.gameOver;activity.gameOverEvents+=(o.deathFrame==p.counters.frames)+(o.requestFrame==p.counters.frames)+(o.confirmFrame==p.counters.frames)+(o.baseFrame==p.counters.frames);}
         if(p.descriptions[i].role==ScenarioRole::rankingUnavailable&&observed.ranking.frame==p.counters.frames)activity.rankingNotices=observed.ranking.notices;
+        if(p.descriptions[i].role==ScenarioRole::completedMissions){const auto& o=observed.completedMissions;activity.completedMissionEvents+=(o.popupFrames[0]==p.counters.frames)+(o.popupFrames[1]==p.counters.frames)+(o.okFrames[1]==p.counters.frames)+(o.baseFrame==p.counters.frames);}
         if(movement){const auto* scene=c.game->battle();const auto position=scene->player().position;
             const float dx=position.x-beforePosition.x,dy=position.y-beforePosition.y,step=std::sqrt(dx*dx+dy*dy);
             observed.distanceMoved+=step;observed.lastPosition=position;
@@ -575,7 +600,7 @@ void ConcurrentValidation::tick(){auto& p=*impl_;if(!p.active)return;p.resources
         if(const auto* scene=c.game->battle())for(const auto& [part,count]:scene->metrics().playerWeaponEmissions){auto [old,inserted]=c.lastWeaponCounts.try_emplace(part,0);(void)inserted;const auto previousCount=old->second;if(count>previousCount){frameWeapons.insert(part);observed.weaponEmissions[part]+=count-previousCount;}old->second=count;}
     }
     const bool otherCombat=activity.combatEmittingScenarios||activity.combatActiveProjectiles||activity.combatDamage;
-    if(otherCombat){if(activity.gameOverEvents)++p.counters.gameOverFramesWithCombatActivity;if(activity.rankingNotices)++p.counters.rankingFramesWithCombatActivity;if(activity.botEmissions||activity.botItemContacts||activity.botRewardArrivals||activity.botHPRemoved||activity.botRepairs)++p.counters.botFramesWithCombatActivity;if(activity.helpInputRequests||std::any_of(activity.buttons.begin(),activity.buttons.end(),[&p](const auto& b){return p.descriptions.at(b.scenario).role==ScenarioRole::help;}))++p.counters.helpFramesWithCombatActivity;if(activity.airStrikeUses)++p.counters.airStrikeFramesWithCombatActivity;if(activity.aidKitUses)++p.counters.aidKitFramesWithCombatActivity;if(activity.movementLootMoving)++p.counters.movementFramesWithCombatActivity;if(activity.movementLootPickups)++p.counters.pickupFramesWithCombatActivity;if(activity.movementLootInjury)++p.counters.injuryFramesWithCombatActivity;if(activity.movementLootMoving&&activity.movementLootEmissions)++p.counters.movementEmissionFramesWithCombatActivity;}
+    if(otherCombat){if(activity.completedMissionEvents)++p.counters.completedMissionFramesWithCombatActivity;if(activity.gameOverEvents)++p.counters.gameOverFramesWithCombatActivity;if(activity.rankingNotices)++p.counters.rankingFramesWithCombatActivity;if(activity.botEmissions||activity.botItemContacts||activity.botRewardArrivals||activity.botHPRemoved||activity.botRepairs)++p.counters.botFramesWithCombatActivity;if(activity.helpInputRequests||std::any_of(activity.buttons.begin(),activity.buttons.end(),[&p](const auto& b){return p.descriptions.at(b.scenario).role==ScenarioRole::help;}))++p.counters.helpFramesWithCombatActivity;if(activity.airStrikeUses)++p.counters.airStrikeFramesWithCombatActivity;if(activity.aidKitUses)++p.counters.aidKitFramesWithCombatActivity;if(activity.movementLootMoving)++p.counters.movementFramesWithCombatActivity;if(activity.movementLootPickups)++p.counters.pickupFramesWithCombatActivity;if(activity.movementLootInjury)++p.counters.injuryFramesWithCombatActivity;if(activity.movementLootMoving&&activity.movementLootEmissions)++p.counters.movementEmissionFramesWithCombatActivity;}
     if(!activity.buttons.empty()){++p.counters.menuActionFrames;if(activity.combatEmittingScenarios||activity.combatActiveProjectiles||activity.combatDamage)++p.counters.menuFramesWithCombatActivity;}
     std::set<WeaponKind> kinds;for(const auto& part:frameWeapons)kinds.insert(p.catalog.weapon(part).kind);activity.emittedWeaponKinds.assign(kinds.begin(),kinds.end());
     activity.emittedWeaponParts.assign(frameWeapons.begin(),frameWeapons.end());p.counters.maxConcurrentEmittingScenarios=std::max(p.counters.maxConcurrentEmittingScenarios,activity.emittingScenarios);p.counters.maxConcurrentWeaponDefinitions=std::max(p.counters.maxConcurrentWeaponDefinitions,std::uint64_t(frameWeapons.size()));p.counters.maxConcurrentWeaponKinds=std::max(p.counters.maxConcurrentWeaponKinds,std::uint64_t(kinds.size()));if(frameWeapons.size()>=5)++p.counters.framesWithFiveWeaponDefinitions;if(kinds.size()>=5)++p.counters.framesWithFiveWeaponKinds;p.activity.push_back(std::move(activity));

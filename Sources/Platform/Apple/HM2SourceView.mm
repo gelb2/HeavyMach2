@@ -5,6 +5,7 @@
 #if DEBUG
 #include "Core/Validation/SessionFixtures.hpp"
 #include "Core/Simulation/DarwinWorldRandom.hpp"
+#include "Platform/Apple/HM2Resources.hpp"
 #endif
 
 @interface HM2SourceDisplayTarget:NSObject
@@ -54,10 +55,15 @@
 #if DEBUG
     // Only a fresh UUID-isolated UI-test save can receive a starting fixture.
     // Production saves and existing test saves are never replaced here.
-    if(_uiTesting&&!_startupError&&![manager fileExistsAtPath:_saveFile.path]&&[NSProcessInfo.processInfo.environment[@"HM2_UI_TEST_FIXTURE"] isEqualToString:@"gameOver"]){
-        auto fixture=hm2::validation::gameOverFixture(1794268800);hm2::DarwinWorldRandom random(1);const auto bytes=fixture.encode(random,1);
-        NSData* data=[NSData dataWithBytes:bytes.data() length:bytes.size()];
-        if(![data writeToURL:_saveFile options:NSDataWritingAtomic error:&error])_startupError=error.localizedDescription?:@"Cannot create isolated UI fixture.";
+    NSString* fixtureName=NSProcessInfo.processInfo.environment[@"HM2_UI_TEST_FIXTURE"];
+    if(_uiTesting&&!_startupError&&![manager fileExistsAtPath:_saveFile.path]&&([fixtureName isEqualToString:@"gameOver"]||[fixtureName isEqualToString:@"completedMissions"])){
+        try{
+            hm2::SaveData fixture;
+            if([fixtureName isEqualToString:@"gameOver"])fixture=hm2::validation::gameOverFixture(1794268800);
+            else{if(!_resourceRoot)throw std::runtime_error("Missing completed-mission UI fixture resources");hm2::apple::Files files(_resourceRoot.fileSystemRepresentation);fixture=hm2::validation::completedMissionFixture(files,1794268800);}
+            hm2::DarwinWorldRandom random(1);const auto bytes=fixture.encode(random,1);NSData* data=[NSData dataWithBytes:bytes.data() length:bytes.size()];
+            if(![data writeToURL:_saveFile options:NSDataWritingAtomic error:&error])_startupError=error.localizedDescription?:@"Cannot create isolated UI fixture.";
+        }catch(const std::exception& e){_startupError=[NSString stringWithUTF8String:e.what()];}
     }
 #endif
     [self startRuntime];
@@ -73,7 +79,7 @@
 #if DEBUG
     // Reuse the original World.setStage/save clock seam. Fix only the input
     // seed in the isolated fixture; damage, RNG calls and outcomes stay live.
-    if(_uiTesting&&[NSProcessInfo.processInfo.environment[@"HM2_UI_TEST_FIXTURE"] isEqualToString:@"gameOver"])testTime=[] {return 1u;};
+    if(_uiTesting&&([NSProcessInfo.processInfo.environment[@"HM2_UI_TEST_FIXTURE"] isEqualToString:@"gameOver"]||[NSProcessInfo.processInfo.environment[@"HM2_UI_TEST_FIXTURE"] isEqualToString:@"completedMissions"]))testTime=[] {return 1u;};
 #endif
     try{_runtime=std::make_unique<hm2::apple::GameRuntime>(_resourceRoot,_saveFile,[weakSelf](const hm2::apple::NativeRequest& request){[weakSelf enqueueRequest:request];},std::move(testTime));}
     catch(const std::exception& e){_startupError=[NSString stringWithUTF8String:e.what()];}
@@ -159,6 +165,8 @@
     const auto stringAt=[&](unsigned at,unsigned size){unsigned length=0;while(length<size&&working[at+length])++length;return std::string_view(reinterpret_cast<const char*>(working.data()+at),length);};
     const auto place=stringAt(0x2d,16),base=stringAt(0x55,16);
     [value appendFormat:@";workingHP=%u;maximumHP=%u;location=%.*s;lastBase=%.*s;gameOverToken=%llu",word(0x7c),word(0x80),int(place.size()),place.data(),int(base.size()),base.data(),game.pendingGameOver()];
+    int repairItems=0;for(const auto& item:state.inventory)if(item.dataId=="01001")repairItems+=item.count;
+    [value appendFormat:@";completedMission=%s;completedRewardCount=%lu;commandListVisible=%d;commandListRevision=%llu;credits=%d;experience=%u;level=%d;repairItems=%d;acceptedCount=%lu",state.completedMission.dataId.c_str(),state.completedMission.rewards.size(),state.commandListVisible,state.commandListRevision,state.credits,word(0x70),state.level,repairItems,state.acceptedMissions.size()];
     if(const auto* scene=game.battle()){const auto& p=scene->player();const auto& m=scene->metrics();[value appendFormat:@";x=%.6f;y=%.6f;destX=%.6f;destY=%.6f;playerHP=%d;emissions=%llu;damage=%llu;kills=%llu;selectedEnemy=%llu;paused=%d;worldTime=%.9f",p.position.x,p.position.y,p.destination.x,p.destination.y,scene->playerHP(),m.playerEmissions,m.damageCalls,m.kills,scene->selectedEnemy(),scene->isPaused(),scene->clock().worldTime()];
         [value appendFormat:@";actorState=%d;gameState=%d;enemyEmissions=%llu",p.state,scene->gameState(),m.enemyEmissions];
         const auto playerScreen=scene->camera().toScreen(p.position);[value appendFormat:@";playerScreenX=%.6f;playerScreenY=%.6f",playerScreen.x,playerScreen.y];

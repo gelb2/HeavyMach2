@@ -65,6 +65,9 @@ struct Events {
     virtual void quickItemChanged(const Item&){}
     virtual void alert(std::string_view /*original description key*/){}
     virtual void alert(std::string_view key,std::string_view){alert(key);}
+    // GuiCommandCenter creates its result window after SFX11, before applying
+    // the ordered actions. Other Progression consumers need no presentation.
+    virtual void missionCompletionStarted(const MissionDefinition&){}
 };
 struct ExperienceBounds {std::uint32_t previous=0,next=0;int baseMaxHP=0,levelStat=0;};
 class Experience {
