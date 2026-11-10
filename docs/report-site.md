@@ -8,7 +8,7 @@
 - [전체 기능 치트 앱 개발·검증 계획](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/plan.html).
 - 현재 사이트 소스: `.local/report-site/.sites-checkout`. 독립된 Sites 소스 저장소다. 게임 저장소의 main/develop과 혼동하지 않는다.
 
-현행 확인: 2026-11-10 보고서·계획과 이미지4개가 실제 서비스에서 열린다. HTTP200, 보고서·계획의 표시 본문/링크 일치, PNG4개 바이트 일치를 확인했다. 본인 로그인 Safari에서도 본문 이미지4장이 보인다. 현재 소스는 `473d78fc1b67e1491f1a68cf7411727ffb10dcbc`, 버전267이며 접근 범위는 본인 한 명이다.
+보행 보고 확인: 2026-11-10 보고서·계획과 이미지4개가 실제 서비스에서 열렸다. HTTP200, 보고서·계획의 표시 본문/링크 일치, PNG4개 바이트 일치를 확인했다. 본인 로그인 Safari에서도 본문 이미지4장이 보인다. 당시 소스는 `473d78fc1b67e1491f1a68cf7411727ffb10dcbc`, 버전267이며 접근 범위는 본인 한 명이다.
 
 초기 실패 기록: 사이트 소스 `8d65f7eec8c0a714c7600444b76531a5381f322a`, 버전266. 배포 `appgdep_6af24a7457808191ba8d3e4d43568d82`와 재배포 `appgdep_6af24b40f4188191bb488b87933243a0`는 succeeded였지만 당시 실제 경로는404였다. 본인 로그인 Safari와 인증 HTTP에서 재현했다. 이후 같은266의 실제 경로가200으로 바뀐 것을 확인했다. 전환 원인은 확인하지 못했다. 당시 실패 증거는 보존한다.
 
@@ -39,3 +39,14 @@ Sites 스킬로 현재 접근 범위와 원격 소스를 확인한 뒤 같은 pr
 266의 경로가200으로 바뀐 뒤에도 Safari 본문에서 lazy 이미지 높이가 잡히지 않아 캡션만 표시되는 문제를 확인했다. 원본 PNG를 유지하고 HTML에 이미지의 실제 표시 폭·높이와 비동기 디코드를 명시했다. 첫 캡처는 EXIF 방향8이므로 저장 픽셀1260×2736과 화면 표시2736×1260을 구분했다. 수정한 소스473d78f를 버전267로 저장·배포했고 Safari에서4장이 본문에 표시되는 것을 확인했다. 배포ID는 `appgdep_6af25be02a84819199b06f79fbf450a8`, 버전ID는 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_c3efc9fba1a481918943bfc18fa8bd47`다. project ID·URL·접근 범위는 유지했다.
 
 후속 근거: `.local/evidence/combat-runtime-20261110/site-current-http-check.json`, `site-html-content-check.json`, `report-image-dimensions.json`. 이미지 원본과 실패 기록은 보존한다.
+
+
+## 59조건 동시 검증 보고 — 버전271
+
+[동시 검증 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/concurrent.html)를 추가했다. 게임 구현 기준은 `6f58835741e6c614efaf041041b70ae3cd846ff5`이며, C++46개와 Apple iPhone/iPad 각각59조건·1,200프레임의 결과를 담는다. 전체 기능 미완료와 다음 퀵 아이템 연결을 명시한다. 이전 보행 보고와 계획·기존 모든 자료는 유지했다.
+
+사이트 소스는 `c0671615dde61667626eac6ee938214ce2dc0f06`, 버전271, 배포는 `appgdep_6af27c1f3adc8191a2f494fa3b9e04bf`다. 공식 결과는 succeeded다. 본인 한 명의 비공개 접근을 유지했다. 게시 HTML의 실제 HTTP200·표시 본문/링크 일치, 결과JSON·PNG의 전체 바이트 일치를 확인했다. IAB는 unavailable이었고 Safari 화면 읽기는 시간 초과여서 이번 새 페이지의 브라우저 시각 검수를 완료했다고 쓰지 않는다.
+
+초기 묶음은 압축 해제 후268,571,648바이트로 제한을 넘었다. 모든 파일에 붙은 macOS provenance 확장 속성을 포함한 값이다. 공식 Sites helper의 tar 호출에 시스템 tar의 `--no-xattrs --no-acls --no-fflags --no-mac-metadata` 생성 옵션을 적용했다. 목록 검사는 일반 시스템 tar로 유지했다. 사이트 파일은 모두 보존했고 최종 묶음과 소스의 모든 파일 바이트가 같음을 검사했다. 최종 압축 해제 크기는267,089,920바이트다. 이미지의 내용·해상도·색은 바꾸지 않았다.
+
+근거: `.local/evidence/combat-runtime-20261110/site-concurrent-deployment.json`, `site-concurrent-published-http.json`, `site-concurrent-metadata-free-check.json`. 토큰은 저장하지 않았다. 빌드 검증 뒤 쓰지 않는 임시 산출물116,789,617바이트를 정리했고 소스·실패 로그·캡처·원본·저장은 유지했다.

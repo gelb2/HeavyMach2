@@ -39,3 +39,5 @@ python3 tools/check_no_ipa.py --all
 [전체 기능 치트 앱 개발·검증 계획](docs/full-validation-development-plan-20261110.md)
 
 [보고 사이트](docs/report-site.md) · [온라인 보행 검증 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/) · [온라인 전체 치트 앱 계획](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/plan.html) — 본인 계정 로그인 필요. 보고서·계획·이미지4장의 실제 서비스 표시를 확인했다.
+
+[온라인 59조건 동시 검증 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/concurrent.html) — C++46개와 iPhone/iPad 각각1,200프레임 결과. 본인 계정 로그인 필요. 게시 본문·링크·결과JSON·이미지의 서비스 응답을 확인했다.

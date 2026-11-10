@@ -13,6 +13,8 @@
 - [ ] 단계5: 복합 전투와 독립 인스턴스 A~H 병렬 검사, 전체 데이터/버튼 전수, 원작 대조, 실패 수정·재검사.
 - [ ] 단계6: 최초 iPhone 가로·iPad 세로 완료 후 추가 방향·플랫폼 확장과 회귀.
 
+- [x] [59조건 실제 동시 검증 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/concurrent.html) 비공개 게시271. 본문/링크·JSON·PNG의 실제 서비스 일치 확인. 새 페이지 브라우저 시각 검수 미완료.
+
 ## 실제 동시 검증 후속
 
 - [x] 59개 Session을 같은 프레임에 갱신. Player 장비110개 실제 발사, 거래·임무·저장 재시작·자연 이동/드롭 획득 연결. 1,200프레임 normal·ASan/UBSan 통과. [결과](concurrent-validation-20261110.md).
