@@ -94,14 +94,29 @@
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations{return UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPad?UIInterfaceOrientationMaskPortrait:UIInterfaceOrientationMaskLandscape;}
 @end
 
-@interface HM2AppDelegate:UIResponder<UIApplicationDelegate>
+@interface HM2SceneDelegate:UIResponder<UIWindowSceneDelegate>
 @property(nonatomic,strong)UIWindow* window;
 @end
-@implementation HM2AppDelegate
-- (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)options {
-    self.window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];self.window.rootViewController=[HM2Controller new];[self.window makeKeyAndVisible];return YES;
+@implementation HM2SceneDelegate
+- (void)scene:(UIScene*)scene willConnectToSession:(UISceneSession*)session options:(UISceneConnectionOptions*)options {
+    if(![scene isKindOfClass:UIWindowScene.class])return;
+    self.window=[[UIWindow alloc]initWithWindowScene:(UIWindowScene*)scene];
+    self.window.rootViewController=[HM2Controller new];[self.window makeKeyAndVisible];
 }
-- (void)applicationWillResignActive:(UIApplication*)app{UIView* view=self.window.rootViewController.view;if([view respondsToSelector:@selector(setActive:)])[(HM2SourceView*)view setActive:NO];}
-- (void)applicationDidBecomeActive:(UIApplication*)app{UIView* view=self.window.rootViewController.view;if([view respondsToSelector:@selector(setActive:)])[(HM2SourceView*)view setActive:YES];}
+- (void)setGameActive:(BOOL)active {
+    UIView* view=self.window.rootViewController.view;
+    if([view respondsToSelector:@selector(setActive:)])[(HM2SourceView*)view setActive:active];
+}
+- (void)sceneWillResignActive:(UIScene*)scene{[self setGameActive:NO];}
+- (void)sceneDidEnterBackground:(UIScene*)scene{[self setGameActive:NO];}
+- (void)sceneDidBecomeActive:(UIScene*)scene{[self setGameActive:YES];}
+- (void)sceneDidDisconnect:(UIScene*)scene{[self setGameActive:NO];self.window=nil;}
+@end
+@interface HM2AppDelegate:UIResponder<UIApplicationDelegate> @end
+@implementation HM2AppDelegate
+- (UISceneConfiguration*)application:(UIApplication*)application configurationForConnectingSceneSession:(UISceneSession*)session options:(UISceneConnectionOptions*)options {
+    UISceneConfiguration* config=[[UISceneConfiguration alloc]initWithName:@"Game" sessionRole:session.role];
+    config.sceneClass=UIWindowScene.class;config.delegateClass=HM2SceneDelegate.class;return config;
+}
 @end
 int main(int argc,char** argv){@autoreleasepool{return UIApplicationMain(argc,argv,nil,NSStringFromClass(HM2AppDelegate.class));}}
