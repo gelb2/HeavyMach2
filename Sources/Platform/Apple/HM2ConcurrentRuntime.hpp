@@ -1,0 +1,28 @@
+#pragma once
+#import <Foundation/Foundation.h>
+#import <QuartzCore/QuartzCore.h>
+#include "Core/Validation/ConcurrentValidation.hpp"
+
+namespace hm2::apple {
+// One renderer/output device. Independent original game states advance on
+// every display callback; menu scenarios never stop the other battle cases.
+class ConcurrentRuntime {
+    struct Impl;std::unique_ptr<Impl> impl_;
+public:
+    ConcurrentRuntime(NSURL* resourceRoot,NSURL* validationSaveDirectory);
+    ~ConcurrentRuntime();
+    ConcurrentRuntime(const ConcurrentRuntime&)=delete;
+    void tick();
+    void draw(CAEAGLLayer*,Size viewport);
+    void setActive(bool);
+    [[nodiscard]] NSDictionary* verifyInactiveInputDiscard();
+    [[nodiscard]] NSDictionary* report()const;
+    [[nodiscard]] validation::ConcurrentValidation& validation();
+    // Same cached frame, one renderer/context, no simulation/UI/VFX advance.
+    [[nodiscard]] NSDictionary* verifyRepeatedRendering(CAEAGLLayer*,Size viewport);
+    void captureNextFrame();
+    [[nodiscard]] NSData* pixels()const;
+    [[nodiscard]] NSData* legacyComparisonPixels()const;
+    [[nodiscard]] CGSize drawableSize()const;
+};
+}

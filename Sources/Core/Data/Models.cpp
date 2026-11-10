@@ -48,6 +48,9 @@ Vec2 Models::muzzlePosition(const PartPose& pose,unsigned socket){
     return add(pose.center,rotate(relative,pose.angle));
 }
 std::vector<PartPose> Models::staticPose(std::string_view name,float machineAngle,float weaponAngle)const {
+    return mountedPose(modelMounts(name,machineAngle,weaponAngle),machineAngle);
+}
+std::vector<PartMount> Models::modelMounts(std::string_view name,float machineAngle,float weaponAngle)const {
     if(!std::isfinite(machineAngle)||!std::isfinite(weaponAngle))throw std::runtime_error("Nonfinite pose angle");
     const auto& m=model(name);
     if(!m.completeOriginalSlice)throw std::runtime_error("Original selected model slice is incomplete: "+m.name);
@@ -61,7 +64,7 @@ std::vector<PartPose> Models::staticPose(std::string_view name,float machineAngl
         for(const auto& child:a.children)visit(child,index,ownAngle);
     };
     for(const auto& a:m.parts)visit(a,-1,machineAngle);
-    return mountedPose(mounts,machineAngle);
+    return mounts;
 }
 std::vector<PartPose> Models::mountedPose(std::span<const PartMount> mounts,float machineAngle)const {
     if(!std::isfinite(machineAngle))throw std::runtime_error("Nonfinite machine angle");
@@ -81,7 +84,7 @@ std::vector<PartPose> Models::mountedPose(std::span<const PartMount> mounts,floa
         }
         bases.push_back(base);Vec2 anchor=p.socket(0);if(m.reverseY)anchor.y=-anchor.y;
         const auto center=subtract(add(rotate(base,parentAngle),rotate(m.addPosition,machineAngle)),rotate(anchor,m.angle));
-        result.push_back({&p,center,m.angle,m.layer,m.zOrder,m.reverseY});
+        result.push_back({&p,center,m.angle,m.layer,m.zOrder,m.reverseY,i});
     }
     std::stable_sort(result.begin(),result.end(),[](const auto& a,const auto& b){return a.layer==b.layer?a.zOrder<b.zOrder:a.layer<b.layer;});
     return result;

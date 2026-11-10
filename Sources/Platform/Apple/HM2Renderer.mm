@@ -3,19 +3,32 @@
 #import <OpenGLES/ES1/glext.h>
 #import <OpenGLES/EAGL.h>
 #include "Assets/Image.hpp"
+#include "Core/Presentation/VisualLayer.hpp"
 #include <algorithm>
 #include <cmath>
 #include <map>
 #include <stdexcept>
+#include <type_traits>
 #include <vector>
 
-namespace {struct Texture{GLuint id=0;GLsizei width=0,height=0,storageWidth=1,storageHeight=1;};}
+namespace {
+struct Texture{GLuint id=0;GLsizei width=0,height=0,storageWidth=1,storageHeight=1;};
+GLenum factor(hm2::BlendFactor value){
+    switch(value){
+        case hm2::BlendFactor::zero:return GL_ZERO;
+        case hm2::BlendFactor::one:return GL_ONE;
+        case hm2::BlendFactor::sourceAlpha:return GL_SRC_ALPHA;
+        case hm2::BlendFactor::oneMinusSourceAlpha:return GL_ONE_MINUS_SRC_ALPHA;
+        case hm2::BlendFactor::sourceColor:return GL_SRC_COLOR;
+    }throw std::runtime_error("Invalid original blend factor");
+}
+}
 @implementation HM2Renderer {
     NSURL* _root;
     EAGLContext* _context;
     GLuint _framebuffer,_colorbuffer;
     std::map<std::string,Texture> _textures;
-    NSUInteger _textureUploads,_presentedFrames;
+    NSUInteger _textureUploads,_imageTextureUploads,_textTextureUploads,_presentedFrames,_drawCalls,_atlasDrawCalls;
     GLsizei _width,_height;
     CGFloat _surfaceWidth,_surfaceHeight;
     CGFloat _pointWidth,_pointHeight;
@@ -65,8 +78,32 @@ namespace {struct Texture{GLuint id=0;GLsizei width=0,height=0,storageWidth=1,st
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
         glPixelStorei(GL_UNPACK_ALIGNMENT,1);glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,texture.storageWidth,texture.storageHeight,0,GL_RGBA,GL_UNSIGNED_BYTE,pixels.data());
         if(glGetError()!=GL_NO_ERROR){glDeleteTextures(1,&texture.id);throw std::runtime_error("Cannot upload original PNG texture");}
-        _textures.emplace(sprite.image,texture);++_textureUploads;
+        _textures.emplace(sprite.image,texture);++_textureUploads;++_imageTextureUploads;
     }}catch(...){[EAGLContext setCurrentContext:previous];throw;}
+    [EAGLContext setCurrentContext:previous];
+}
+- (void)prepareText:(const hm2::ui::TextBitmap&)bitmap identifier:(const std::string&)identifier {
+    const auto& layout=bitmap.layout;
+    if(!identifier.starts_with("@text/")||!layout.width||!layout.height||
+       bitmap.alpha.size()!=std::size_t(layout.width)*layout.height)
+        throw std::runtime_error("Invalid prepared A8 text resource");
+    EAGLContext* previous=EAGLContext.currentContext;
+    if(![EAGLContext setCurrentContext:_context])throw std::runtime_error("Cannot activate HM2 text preparation");
+    try {
+        GLint maximum=0;glGetIntegerv(GL_MAX_TEXTURE_SIZE,&maximum);
+        if(layout.width>unsigned(maximum)||layout.height>unsigned(maximum))throw std::runtime_error("Text exceeds GPU texture limit");
+        Texture texture;texture.width=texture.storageWidth=GLsizei(layout.width);texture.height=texture.storageHeight=GLsizei(layout.height);
+        const auto old=_textures.find(identifier);
+        if(old==_textures.end())glGenTextures(1,&texture.id);else texture.id=old->second.id;
+        glBindTexture(GL_TEXTURE_2D,texture.id);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+        // Original GL_ALPHA returns (1,1,1,A). Preserve that sampling contract;
+        // callers use SRC_ALPHA/ONE_MINUS_SRC_ALPHA and prepare on text change.
+        glPixelStorei(GL_UNPACK_ALIGNMENT,1);glTexImage2D(GL_TEXTURE_2D,0,GL_ALPHA,texture.width,texture.height,0,GL_ALPHA,GL_UNSIGNED_BYTE,bitmap.alpha.data());
+        if(glGetError()!=GL_NO_ERROR){if(old==_textures.end())glDeleteTextures(1,&texture.id);throw std::runtime_error("Cannot upload original A8 text");}
+        _textures.insert_or_assign(identifier,texture);++_textureUploads;++_textTextureUploads;
+    }catch(...){[EAGLContext setCurrentContext:previous];throw;}
     [EAGLContext setCurrentContext:previous];
 }
 - (void)allocate:(CAEAGLLayer*)layer {
@@ -93,18 +130,56 @@ namespace {struct Texture{GLuint id=0;GLsizei width=0,height=0,storageWidth=1,st
         glMatrixMode(GL_PROJECTION);glLoadIdentity();glOrthof(0,frame.width,0,frame.height,-1,1);glMatrixMode(GL_MODELVIEW);glLoadIdentity();
         glDisable(GL_DEPTH_TEST);glDisable(GL_CULL_FACE);glEnable(GL_TEXTURE_2D);glEnable(GL_BLEND);glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
         glColor4f(1,1,1,1);glEnableClientState(GL_VERTEX_ARRAY);glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        std::optional<hm2::ClipRect> currentClip;
         for(const auto& s:frame.sprites){
+            if(s.clip!=currentClip){
+                currentClip=s.clip;
+                if(currentClip){const auto r=*currentClip;
+                    if(!std::isfinite(r.x)||!std::isfinite(r.y)||!std::isfinite(r.width)||!std::isfinite(r.height)||r.width<0||r.height<0)throw std::runtime_error("Invalid validation viewport clip");
+                    const GLint left=std::max(x,GLint(std::floor(x+r.x*scale))),bottom=std::max(y,GLint(std::floor(y+r.y*scale)));
+                    const GLint right=std::min(x+w,GLint(std::ceil(x+(r.x+r.width)*scale))),top=std::min(y+h,GLint(std::ceil(y+(r.y+r.height)*scale)));
+                    glEnable(GL_SCISSOR_TEST);glScissor(left,bottom,std::max(0,right-left),std::max(0,top-bottom));
+                }else glDisable(GL_SCISSOR_TEST);
+            }
             const auto found=_textures.find(s.image);if(found==_textures.end())throw std::runtime_error("Frame uses unprepared original texture");
-            if(s.columns==0||s.tile>=s.columns)throw std::runtime_error("Invalid original tile index");
+            glBlendFunc(factor(s.blend.source),factor(s.blend.destination));
+            glColor4f(s.color.r,s.color.g,s.color.b,s.color.a);
+            const auto& texture=found->second;
+            if(s.atlasBatch){
+                const auto& batch=*s.atlasBatch;if(batch.quads.empty())continue;
+                if(batch.image!=s.image||batch.storage.width!=texture.storageWidth||batch.storage.height!=texture.storageHeight||batch.indices.size()!=batch.quads.size()*6)
+                    throw std::runtime_error("Invalid prepared atlas batch");
+                const auto* vertices=batch.quads.front().vertices.data();
+                glBlendFunc(factor(batch.blend.source),factor(batch.blend.destination));
+                glMatrixMode(GL_TEXTURE);glLoadIdentity();glMatrixMode(GL_MODELVIEW);
+                glEnableClientState(GL_COLOR_ARRAY);glBindTexture(GL_TEXTURE_2D,texture.id);
+                glVertexPointer(2,GL_FLOAT,sizeof(hm2::AtlasVertex),&vertices->position);
+                glColorPointer(4,GL_UNSIGNED_BYTE,sizeof(hm2::AtlasVertex),&vertices->color);
+                glTexCoordPointer(2,GL_FLOAT,sizeof(hm2::AtlasVertex),&vertices->uv);
+                glDrawElements(GL_TRIANGLES,GLsizei(batch.indices.size()),GL_UNSIGNED_SHORT,batch.indices.data());
+                ++_drawCalls;++_atlasDrawCalls;
+                glDisableClientState(GL_COLOR_ARRAY);continue;
+            }
+            const float contentU=float(texture.width)/texture.storageWidth,contentV=float(texture.height)/texture.storageHeight;
+            if(!s.strip.empty()){
+                if(s.strip.size()<3)throw std::runtime_error("Invalid original trail triangle strip");
+                static_assert(std::is_standard_layout_v<hm2::StripVertex>);
+                const auto* first=s.strip.data();
+                glMatrixMode(GL_TEXTURE);glLoadIdentity();glScalef(contentU,contentV,1);glMatrixMode(GL_MODELVIEW);
+                glEnableClientState(GL_COLOR_ARRAY);glBindTexture(GL_TEXTURE_2D,texture.id);
+                glVertexPointer(2,GL_FLOAT,sizeof(hm2::StripVertex),&first->position);glTexCoordPointer(2,GL_FLOAT,sizeof(hm2::StripVertex),&first->uv);glColorPointer(4,GL_FLOAT,sizeof(hm2::StripVertex),&first->color);glDrawArrays(GL_TRIANGLE_STRIP,0,GLsizei(s.strip.size()));++_drawCalls;glDisableClientState(GL_COLOR_ARRAY);
+                glMatrixMode(GL_TEXTURE);glLoadIdentity();glMatrixMode(GL_MODELVIEW);continue;
+            }
+            if(s.columns==0||s.rows==0||s.tile/std::uint64_t(s.columns)>=s.rows)throw std::runtime_error("Invalid original tile index");
             const float hx=s.size.width/2,hy=s.size.height/2,c=std::cos(s.angle),sin=std::sin(s.angle);
             const float local[]={-hx,-hy,hx,-hy,-hx,hy,hx,hy};GLfloat vertices[8];
             for(int i=0;i<4;++i){vertices[i*2]=s.center.x+local[i*2]*c-local[i*2+1]*sin;vertices[i*2+1]=s.center.y+local[i*2]*sin+local[i*2+1]*c;}
-            const auto& texture=found->second;
-            const float contentU=float(texture.width)/texture.storageWidth,contentV=float(texture.height)/texture.storageHeight;
-            const float u0=float(s.tile)/s.columns*contentU,u1=float(s.tile+1)/s.columns*contentU;
-            const GLfloat uv[]={u0,s.reverseY?0.f:contentV,u1,s.reverseY?0.f:contentV,u0,s.reverseY?contentV:0.f,u1,s.reverseY?contentV:0.f};
-            glBindTexture(GL_TEXTURE_2D,found->second.id);glVertexPointer(2,GL_FLOAT,0,vertices);glTexCoordPointer(2,GL_FLOAT,0,uv);glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+            const float u0=float(s.tile%s.columns)/s.columns*contentU,u1=float(s.tile%s.columns+1)/s.columns*contentU;
+            const float v0=float(s.tile/s.columns)/s.rows*contentV,v1=float(s.tile/s.columns+1)/s.rows*contentV;
+            const GLfloat uv[]={u0,s.reverseY?v0:v1,u1,s.reverseY?v0:v1,u0,s.reverseY?v1:v0,u1,s.reverseY?v1:v0};
+            glBindTexture(GL_TEXTURE_2D,found->second.id);glVertexPointer(2,GL_FLOAT,0,vertices);glTexCoordPointer(2,GL_FLOAT,0,uv);glDrawArrays(GL_TRIANGLE_STRIP,0,4);++_drawCalls;
         }
+        glDisable(GL_SCISSOR_TEST);
         if(glGetError()!=GL_NO_ERROR)throw std::runtime_error("HM2 GLES1 submission failed");
         if(_captureNext){
             NSMutableData* bytes=[NSMutableData dataWithLength:NSUInteger(_width)*_height*4];
@@ -127,7 +202,11 @@ namespace {struct Texture{GLuint id=0;GLsizei width=0,height=0,storageWidth=1,st
 }
 - (void)captureNextFrame{_captureNext=YES;}
 - (NSUInteger)textureUploads{return _textureUploads;}
+- (NSUInteger)imageTextureUploads{return _imageTextureUploads;}
+- (NSUInteger)textTextureUploads{return _textTextureUploads;}
 - (NSUInteger)presentedFrames{return _presentedFrames;}
+- (NSUInteger)drawCalls{return _drawCalls;}
+- (NSUInteger)atlasDrawCalls{return _atlasDrawCalls;}
 - (NSUInteger)contextIdentity{return reinterpret_cast<NSUInteger>((__bridge void*)_context);}
 - (CGSize)drawableSize{return CGSizeMake(_width,_height);}
 @end

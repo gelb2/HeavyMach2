@@ -27,3 +27,6 @@ HeavyMach 1과 MachDefense의 파일은 변경하지 않는다. 모든 개발은
 2026-11-10 보행 후속: [보행·조준·터치·지형 충돌](../docs/locomotion-restoration-20261110.md)을 실제 시뮬레이터 입력까지 검사했다. 검증 차이/오류 수정 후 [전투 계획](../docs/combat-restoration-plan-20261110.md)을 기록하고 [무기 데이터213개·포구](../docs/weapon-data-restoration-20261110.md)를 공통 reader에 연결했다. C++15개·Apple기기별unit4개/UI1개 검사를 통과했다. 실제 발사·직접피해·GobBullet·음향·성장·저장은 미완료다. 원본 Gun의 직접피해와Missile의고정목적점 경로를 구분하고, 원본에 없는 탄환그림2개를 임의대체하지 않는다.
 
 2026-11-10 보고·계획 후속: [전체 기능 치트 앱 계획](../docs/full-validation-development-plan-20261110.md)과 데이터 ID 목록을1a14e65로 기록했다. [기존 보고 사이트](../docs/report-site.md)의 버전266 저장/배포는 succeeded지만 새 보고서·계획·이미지 URL은404다. 본인 로그인 Safari와 서비스 인증 HTTP에서 확인했으며 같은 버전 재배포도 실제 반영을 해결하지 못했다. 전체 치트 계획 완료와 사이트 실제 게시 미완료를 구분한다.
+
+
+2026-11-10 현행 후속: 과거 보행/사이트404 항목은 당시 기록이다. 보고서·계획·이미지는 서비스에서 열리는 것을 확인했다. [전투·진행·저장](../docs/combat-runtime-restoration-20261110.md)과 [59조건 동시 검증](../docs/concurrent-validation-20261110.md)을 구현했다. C++46개, iPhone/iPad각각1,200프레임을 통과했다. 실제 모든59상태의 월드·GPU메뉴·단일OpenAL을 같은 display callback에서 갱신한다. 110장비발사·효과음23개동시진행·자연이동/코인/아이템획득·레벨업·상점/임무/저장재시작을 확인했다. 선택적 GPU배치 최적화는 픽셀 차이로 미채택했고 기존순서/scissor를 유지한다. 설치Source 시작점은 보행 단계이며 전체게임·전체치트기능·원작대조·최종iPhone표시는 미완료다. 별도Validation 앱을iPad시뮬레이터에서1,200프레임 실행했고59조건·warm0 결과 파일과 종료를 확인했다. 보고사이트후속갱신을 진행한다.

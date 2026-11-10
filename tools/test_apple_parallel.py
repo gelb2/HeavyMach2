@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_interval(text):
     values = []
     for label in ['started', 'passed']:
-        match = re.search(r"Test Suite 'All tests' " + label + r" at ([0-9 :.-]+)\.", text)
+        match = re.search(r"Test Suite '(?:All tests|Selected tests)' " + label + r" at ([0-9 :.-]+)\.", text)
         if not match:
             return None
         values.append(datetime.strptime(match[1], '%Y-%m-%d %H:%M:%S.%f').timestamp())
@@ -63,14 +63,14 @@ def main():
                 'start_epoch': start, 'end_epoch': end, 'returncode': result.returncode,
                 'test_interval_epoch': test_interval(text),
                 'success': result.returncode == 0 and '** TEST EXECUTE SUCCEEDED **' in text,
-                'metrics': re.findall(r'HM2_(?:ASSEMBLY|MAP_PLAYER|LOCOMOTION)_GPU .*|HM2_WORLD_TOUCH .*|HM2_WEAPON_DATA .*', text), 'command': command}
+                'metrics': re.findall(r'HM2_[A-Z_]+ .*', text), 'command': command}
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
         futures = [pool.submit(execute, 'iphone', args.iphone), pool.submit(execute, 'ipad', args.ipad)]
         results = [future.result() for future in futures]
     intervals = [r['test_interval_epoch'] for r in results]
     overlap = max(0., min(v[1] for v in intervals) - max(v[0] for v in intervals)) if all(intervals) else None
-    summary = {'recorded_utc': datetime.now(timezone.utc).isoformat(), 'scope': 'reader/assembly/map/equipment/walking/aim/terrain/real touch components only; not complete game cheat coverage',
+    summary = {'recorded_utc': datetime.now(timezone.utc).isoformat(), 'scope': 'selected Apple component tests only; not complete game cheat coverage',
                'shared_build': str(run), 'selected_tests': args.only_testing or ['all'], 'runs': results, 'observed_test_overlap_seconds': overlap,
                'success': all(r['success'] for r in results) and overlap is not None and overlap > 0}
     (output / 'summary.json').write_text(json.dumps(summary, ensure_ascii=False, indent=2) + '\n')

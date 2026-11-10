@@ -12,11 +12,35 @@ add_library(HeavyMach2Core STATIC
     Sources/Core/Data/Maps.cpp
     Sources/Core/Data/PlayerEquipment.cpp
     Sources/Core/Data/Weapons.cpp
+    Sources/Core/Data/Machines.cpp
+    Sources/Core/Data/SaveData.cpp
+    Sources/Core/Progression/Progression.cpp
+    Sources/Core/Progression/Equipment.cpp
+    Sources/Core/Session/GameSession.cpp
+    Sources/Core/Validation/ConcurrentValidation.cpp
     Sources/Core/Simulation/TerrainCollision.cpp
     Sources/Core/Simulation/BipodMotion.cpp
     Sources/Core/Simulation/WorldNavigation.cpp
     Sources/Core/Simulation/LocomotionScene.cpp
+    Sources/Core/Simulation/WeaponController.cpp
+    Sources/Core/Simulation/ProjectileMotion.cpp
+    Sources/Core/Simulation/Particles.cpp
+    Sources/Core/UI/Button.cpp
+    Sources/Core/Simulation/EnemySpawner.cpp
+    Sources/Core/Simulation/Trail.cpp
+    Sources/Core/Simulation/VehicleMotion.cpp
+    Sources/Core/Simulation/ProjectileImpact.cpp
+    Sources/Core/Simulation/WeaponEffects.cpp
+    Sources/Core/Simulation/ProjectileVisual.cpp
+    Sources/Core/Simulation/EnemyActors.cpp
+    Sources/Core/Simulation/EnemyVehicle.cpp
+    Sources/Core/Simulation/CombatScene.cpp
+    Sources/Core/Simulation/ObjectCollision.cpp
+    Sources/Core/UI/Text.cpp
+    Sources/Core/UI/Screens.cpp
     Sources/Core/Presentation/PartSprites.cpp
+    Sources/Core/Presentation/VisualLayer.cpp
+    Sources/Core/Presentation/PreparedTiles.cpp
     Sources/Core/Presentation/PlayerMapPreview.cpp
     Sources/Core/Presentation/AssemblyPreview.cpp
     Sources/Core/Presentation/MapPreview.cpp)
@@ -47,11 +71,123 @@ if(BUILD_TESTING)
     target_link_libraries(WeaponsTests PRIVATE HeavyMach2Core)
     target_compile_options(WeaponsTests PRIVATE -UNDEBUG)
     add_test(NAME WeaponDataAndMuzzle COMMAND WeaponsTests)
+    add_executable(WeaponControllerTests tests/WeaponControllerTests.cpp)
+    target_link_libraries(WeaponControllerTests PRIVATE HeavyMach2Core)
+    target_compile_options(WeaponControllerTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalWeaponControllerRules COMMAND WeaponControllerTests)
+    add_executable(ProjectileTests tests/ProjectileTests.cpp)
+    target_link_libraries(ProjectileTests PRIVATE HeavyMach2Core)
+    target_compile_options(ProjectileTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalProjectileMotion COMMAND ProjectileTests)
+    add_executable(ParticleTests tests/ParticleTests.cpp)
+    target_link_libraries(ParticleTests PRIVATE HeavyMach2Core)
+    target_compile_options(ParticleTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalParticlePoolAndMotion COMMAND ParticleTests)
+    add_executable(ButtonTests tests/ButtonTests.cpp)
+    target_link_libraries(ButtonTests PRIVATE HeavyMach2Core)
+    target_compile_options(ButtonTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalGPUButtons COMMAND ButtonTests)
+    add_executable(SpawnerTests tests/SpawnerTests.cpp)
+    target_link_libraries(SpawnerTests PRIVATE HeavyMach2Core)
+    target_compile_options(SpawnerTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalSpawnerAndClocks COMMAND SpawnerTests)
+    add_executable(TrailTests tests/TrailTests.cpp)
+    target_link_libraries(TrailTests PRIVATE HeavyMach2Core)
+    target_compile_options(TrailTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalTrailGeometryAndFade COMMAND TrailTests)
+    add_executable(MachineTests tests/MachineTests.cpp)
+    target_link_libraries(MachineTests PRIVATE HeavyMach2Core)
+    target_compile_options(MachineTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalMachineTableRules COMMAND MachineTests)
+    add_executable(VehicleTests tests/VehicleTests.cpp)
+    target_link_libraries(VehicleTests PRIVATE HeavyMach2Core)
+    target_compile_options(VehicleTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalVehicleAndWeaponAim COMMAND VehicleTests)
+    add_executable(TextTests tests/TextTests.cpp)
+    target_link_libraries(TextTests PRIVATE HeavyMach2Core)
+    target_compile_options(TextTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalGPUText COMMAND TextTests)
+    add_executable(ImpactTests tests/ImpactTests.cpp)
+    target_link_libraries(ImpactTests PRIVATE HeavyMach2Core)
+    target_compile_options(ImpactTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalProjectileImpact COMMAND ImpactTests)
+    add_executable(WeaponEffectsTests tests/WeaponEffectsTests.cpp)
+    target_link_libraries(WeaponEffectsTests PRIVATE HeavyMach2Core)
+    target_compile_options(WeaponEffectsTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalWeaponEmissionConsumers COMMAND WeaponEffectsTests)
+    add_executable(VisualLayerTests tests/VisualLayerTests.cpp)
+    target_link_libraries(VisualLayerTests PRIVATE HeavyMach2Core)
+    target_compile_options(VisualLayerTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalVisualLayersAndAtlases COMMAND VisualLayerTests)
+    add_executable(ObjectCollisionTests tests/ObjectCollisionTests.cpp)
+    target_link_libraries(ObjectCollisionTests PRIVATE HeavyMach2Core)
+    target_compile_options(ObjectCollisionTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalObjectCollision COMMAND ObjectCollisionTests)
+    add_executable(VisibilityTests tests/VisibilityTests.cpp)
+    target_link_libraries(VisibilityTests PRIVATE HeavyMach2Core)
+    target_compile_options(VisibilityTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalCameraVisibility COMMAND VisibilityTests)
+    add_executable(PreparedTileTests tests/PreparedTileTests.cpp)
+    target_link_libraries(PreparedTileTests PRIVATE HeavyMach2Core)
+    target_compile_options(PreparedTileTests PRIVATE -UNDEBUG)
+    add_test(NAME PreparedOriginalTileCache COMMAND PreparedTileTests)
+    add_executable(ProjectileVisualTests tests/ProjectileVisualTests.cpp)
+    target_link_libraries(ProjectileVisualTests PRIVATE HeavyMach2Core)
+    target_compile_options(ProjectileVisualTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalProjectileVisuals COMMAND ProjectileVisualTests)
+    add_executable(EnemyActorsTests tests/EnemyActorsTests.cpp)
+    target_link_libraries(EnemyActorsTests PRIVATE HeavyMach2Core)
+    target_compile_options(EnemyActorsTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalTurretAircraftActors COMMAND EnemyActorsTests)
+    if(HM2_HD_RESOURCES)
+        add_test(NAME Original695SpawnerActors COMMAND EnemyActorsTests "${HM2_HD_RESOURCES}")
+    endif()
+    add_executable(EnemyVehicleTests tests/EnemyVehicleTests.cpp)
+    target_link_libraries(EnemyVehicleTests PRIVATE HeavyMach2Core)
+    target_compile_options(EnemyVehicleTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalEnemyVehicleAI COMMAND EnemyVehicleTests)
+    add_executable(SaveTests tests/SaveTests.cpp)
+    target_link_libraries(SaveTests PRIVATE HeavyMach2Core)
+    target_compile_options(SaveTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalHDSaveEnvelope COMMAND SaveTests)
+    add_executable(CombatSceneTests tests/CombatSceneTests.cpp)
+    target_link_libraries(CombatSceneTests PRIVATE HeavyMach2Core)
+    target_compile_options(CombatSceneTests PRIVATE -UNDEBUG)
+    if(HM2_HD_RESOURCES)
+        add_test(NAME OriginalBattleRuntime COMMAND CombatSceneTests "${HM2_HD_RESOURCES}")
+        add_executable(SessionTests tests/SessionTests.cpp)
+        target_link_libraries(SessionTests PRIVATE HeavyMach2Core)
+        target_compile_options(SessionTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalSessionTransitions COMMAND SessionTests "${HM2_HD_RESOURCES}")
+    endif()
+    add_executable(ProgressionTests tests/ProgressionTests.cpp)
+    target_link_libraries(ProgressionTests PRIVATE HeavyMach2Core)
+    target_compile_options(ProgressionTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalExperienceRules COMMAND ProgressionTests)
+    if(HM2_HD_RESOURCES)
+        add_test(NAME OriginalInventoryMissionsAndDrops COMMAND ProgressionTests "${HM2_HD_RESOURCES}")
+        add_executable(EquipmentTests tests/EquipmentTests.cpp)
+        target_link_libraries(EquipmentTests PRIVATE HeavyMach2Core)
+        target_compile_options(EquipmentTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalEquipmentTradeAndBots COMMAND EquipmentTests "${HM2_HD_RESOURCES}")
+        add_executable(ScreensTests tests/ScreensTests.cpp)
+        target_link_libraries(ScreensTests PRIVATE HeavyMach2Core)
+        target_compile_options(ScreensTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalScreensAndHUD COMMAND ScreensTests "${HM2_HD_RESOURCES}")
+        add_executable(ConcurrentValidationTests tests/ConcurrentValidationTests.cpp)
+        target_link_libraries(ConcurrentValidationTests PRIVATE HeavyMach2Core)
+        target_compile_options(ConcurrentValidationTests PRIVATE -UNDEBUG)
+        add_test(NAME ConcurrentOriginalGameScenarios COMMAND ConcurrentValidationTests "${HM2_HD_RESOURCES}")
+    endif()
+    if(HM2_HD_RESOURCES)
+        add_test(NAME OriginalStageVehicleEncounters COMMAND EnemyVehicleTests "${HM2_HD_RESOURCES}")
+    endif()
     add_executable(OriginalAssetTests tests/OriginalAssetTests.cpp)
     target_link_libraries(OriginalAssetTests PRIVATE HeavyMach2Core)
     target_compile_options(OriginalAssetTests PRIVATE -UNDEBUG)
     set(HM2_HD_RESOURCES "" CACHE PATH "Local prepared original HD resources (not required by synthetic tests)")
     if(HM2_HD_RESOURCES)
+        add_test(NAME OriginalMachines COMMAND MachineTests "${HM2_HD_RESOURCES}/MachList.tble")
         add_test(NAME OriginalMCBRoundTrip COMMAND OriginalAssetTests "${HM2_HD_RESOURCES}" roundtrip)
         add_test(NAME OriginalTables COMMAND OriginalAssetTests "${HM2_HD_RESOURCES}" tables)
         add_test(NAME OriginalAssemblyCombined COMMAND OriginalAssetTests "${HM2_HD_RESOURCES}" assembly)
@@ -60,5 +196,27 @@ if(BUILD_TESTING)
         add_test(NAME OriginalPlayerEquipment COMMAND OriginalAssetTests "${HM2_HD_RESOURCES}" player)
         add_test(NAME OriginalTerrainLocomotion COMMAND OriginalAssetTests "${HM2_HD_RESOURCES}" locomotion)
         add_test(NAME OriginalWeapons COMMAND OriginalAssetTests "${HM2_HD_RESOURCES}" weapons)
+    endif()
+endif()
+
+# Keep the platform audio backend separate from the portable simulation core.
+# Build this repository's library with tools/build_openal.py before enabling.
+set(HM2_OPENAL_LIBRARY "" CACHE FILEPATH "HM2-owned OpenAL Soft static library for this host")
+if(HM2_OPENAL_LIBRARY)
+    add_library(HeavyMach2Audio STATIC Sources/Core/Audio/PCM.cpp Sources/Core/Audio/OpenALEffects.cpp)
+    target_include_directories(HeavyMach2Audio PUBLIC Sources PRIVATE ThirdParty/OpenALSoft/include)
+    target_compile_options(HeavyMach2Audio PRIVATE -Wall -Wextra -Wpedantic -ffp-contract=off -fno-fast-math)
+    target_link_libraries(HeavyMach2Audio PUBLIC "${HM2_OPENAL_LIBRARY}")
+    if(APPLE)
+        target_link_libraries(HeavyMach2Audio PUBLIC "-framework AudioToolbox" "-framework CoreAudio" "-framework CoreFoundation")
+    endif()
+    if(BUILD_TESTING)
+        add_executable(AudioTests tests/AudioTests.cpp)
+        target_link_libraries(AudioTests PRIVATE HeavyMach2Audio)
+        target_compile_options(AudioTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalAudioPCMAndMusicBuffers COMMAND AudioTests)
+        if(HM2_HD_RESOURCES)
+            add_test(NAME OriginalAudioLoopback COMMAND AudioTests "${HM2_HD_RESOURCES}")
+        endif()
     endif()
 endif()

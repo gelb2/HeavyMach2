@@ -11,17 +11,23 @@ settings:
     TARGETED_DEVICE_FAMILY: "1,2"
     SUPPORTS_MACCATALYST: NO
     ENABLE_BITCODE: NO
-    HEADER_SEARCH_PATHS: ["$(SRCROOT)/../../Sources", "$(SRCROOT)/../../ThirdParty/stb"]
+    HEADER_SEARCH_PATHS: ["$(SRCROOT)/../../Sources", "$(SRCROOT)/../../ThirdParty/stb", "$(SRCROOT)/../../ThirdParty/OpenALSoft/include"]
     OTHER_CPLUSPLUSFLAGS: "$(inherited) -ffp-contract=off -fno-fast-math"
     CODE_SIGN_STYLE: Automatic
+    HM2_OPENAL_DIR: "$(SRCROOT)/../../build/audio-device-openal"
+    "HM2_OPENAL_DIR[sdk=iphonesimulator*]": "$(SRCROOT)/../../build/audio-simulator-openal"
+    LIBRARY_SEARCH_PATHS: ["$(inherited)", "$(HM2_OPENAL_DIR)"]
+    OTHER_LDFLAGS: "$(inherited) -lopenal"
 targetTemplates:
   SourceApp:
     type: application
     platform: iOS
     sources:
       - path: ../../Sources/Core
+        excludes: [Validation/**]
       - path: ../../Sources/Assets
       - path: ../../Sources/Platform/Apple
+        excludes: [HM2ConcurrentRuntime.mm]
       - path: ../../.local/prepared/HD
         type: folder
         buildPhase: resources
@@ -33,6 +39,10 @@ targetTemplates:
       - sdk: QuartzCore.framework
       - sdk: OpenGLES.framework
       - sdk: CoreGraphics.framework
+      - sdk: CoreText.framework
+      - sdk: AudioToolbox.framework
+      - sdk: CoreAudio.framework
+      - sdk: CoreFoundation.framework
 targets:
   HeavyMach2Source:
     templates: [SourceApp]
@@ -43,6 +53,9 @@ targets:
         GCC_PREPROCESSOR_DEFINITIONS: "$(inherited) HM2_VALIDATION=0"
   HeavyMach2Validation:
     templates: [SourceApp]
+    sources:
+      - path: ../../Sources/Core/Validation
+      - path: ../../Sources/Platform/Apple/HM2ConcurrentRuntime.mm
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.gelb2.heavymach2.validation
@@ -53,6 +66,8 @@ targets:
     platform: iOS
     sources:
       - path: ../Tests
+      - path: ../../Sources/Core/Validation
+      - path: ../../Sources/Platform/Apple/HM2ConcurrentRuntime.mm
     dependencies:
       - target: HeavyMach2Source
       - sdk: UIKit.framework
@@ -60,6 +75,9 @@ targets:
       - sdk: OpenGLES.framework
       - sdk: ImageIO.framework
       - sdk: CoreGraphics.framework
+      - sdk: AudioToolbox.framework
+      - sdk: CoreAudio.framework
+      - sdk: CoreText.framework
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.gelb2.heavymach2.apple-tests

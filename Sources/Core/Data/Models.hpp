@@ -28,6 +28,7 @@ struct PartPose {
     float angle=0;
     unsigned layer=0,zOrder=0;
     bool reverseY=false;
+    std::size_t mountIndex=0;
 };
 // Prepared by the original model decoder or equipment mounting rules. Angles
 // are absolute; controller-produced animation/addPosition/scale are not implied.
@@ -51,6 +52,7 @@ public:
     // Verified static pose only: scale1/addPosition0/reverse0, no controller tick.
     // Machine and weapon directions can coexist in a single assembled model.
     [[nodiscard]] std::vector<PartPose> staticPose(std::string_view,float machineAngle=0,float weaponAngle=0)const;
+    [[nodiscard]] std::vector<PartMount> modelMounts(std::string_view,float machineAngle=0,float weaponAngle=0)const;
     [[nodiscard]] std::vector<PartPose> mountedPose(std::span<const PartMount>,float machineAngle=0)const;
     // Original getMuzzlePos0x1cc98: center + R(angle)*mirror(socket-current0).
     // Invalid original sockets lead to undefined memory; fail explicitly here.
