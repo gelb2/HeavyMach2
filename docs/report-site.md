@@ -74,3 +74,19 @@ Sites 스킬로 현재 접근 범위와 원격 소스를 확인한 뒤 같은 pr
 공식archive의 압축해제크기는267,224,064바이트다. 사이트1330파일과 hosting metadata1개의바이트일치, 기존1326개파일보존을 확인했다. 게시후 이전274archive와 쓰지않는 재현실행파일3개를 lsof미사용확인후 정리했다. 현재275archive·빌드후보·원본·저장·소스·실패로그·캡처는유지한다.
 
 근거: `.local/evidence/source-entry-20261110/site-deployment.json`, `site-published-http.json`, `site-local-check.json`, `site-archive-check.json`, `png-optimization/final-verification.json`, `superseded-output-cleanup.json`. 인증토큰은파일에저장하지않았다.
+
+## UI·BOT·맵 전환과 그래픽·음향 대조 — 2026-11-10
+
+[UI·BOT·맵 전환 복원](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/ui-feedback.html), [그래픽·음향 원본 절차 대조](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/graphics-audio-fidelity.html), [게임오버·임무·점수 계획](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/gameover-missions-score-plan.html), [GameCenter 원본 계약](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/gamecenter-reference-contract.html)을 버전276으로 비공개 게시했다. 첫 화면의 전체 보고서에도 연결했다. Markdown은 선택적 다운로드다.
+
+게임 수정은 작업 브랜치 `feat/reference-ports`의 `9f50fe9050c35fa1d69bd315e7f519892d7e260c`에 커밋·푸시했다. Core68개·ASan/UBSan66개, iPhone/iPad Native 관련각7개와 이전 정상 입력·음향 검사의 범위를 구분했다. 초기 동일Frame의1-LSB 변동과 실패한 진단을 남겼으며, 예열 후 슬롯 동일Frame16회·예상Frame·그림자 가림 비교는 오차0이다. 전체 게임·develop/main 배포·물리 iPad 갱신 완료가 아니다.
+
+사이트 소스는 `426e69fa6b5a6741adf83bbc9c4d980e2838f025`, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_0d366d21bf6481919456c0c408891fc6`, 배포는 `appgdep_6af2ea2a064881919dd66952cf941f87`다. 공식 succeeded와 본인1명/그룹0/외부0 접근을 확인했다. 실제15경로의HTTP200, HTML 표시본문/링크와 원문·JSON·이미지 바이트 일치를 확인했다. 로컬 Safari에서 본문·표·상점 이미지2장을 확인했다. 게시 후 Safari 재연결은 cgWindowNotFound로 실패해 온라인 브라우저 시각 검수는 미완료다.
+
+보고서의 기존 PNG1장과 새 상점 PNG2장은 RGBA16 픽셀과 모든 부가chunk를 보존한 인코딩이다. 원본 파일·Git 이력과 원본/게시 해시를 유지했다. 기존 측정 페이지에 추가 인코딩 명세를 연결했다. 새 상점 캡처의 해상도는 원본1640×2360·복원 GPU384×512이며 전체 화면 픽셀 동등성의 근거로 쓰지 않는다.
+
+최초 게시 archive는 확장 스트림269,223,936바이트로 서버256MiB 한도를 초과했다. 파일 내용 합계만 확인한 검사 오류를 고쳤다. 공식 Sites workflow가 호출하는 시스템 tar에 `--format=ustar --no-xattrs --no-acls --no-fflags --no-mac-metadata`와 `COPYFILE_DISABLE=1`을 적용했다. tar 컨테이너의 확장헤더를 제외했으며 PNG 안의 색상·방향 메타데이터와 모든 파일 내용은 유지한다. 최종 확장 스트림은267,721,728바이트다. 콘텐츠1342개와 생성 hosting manifest1개의 바이트 일치를 확인했다. 원본 IPA·ARM·저장·비밀은 포함하지 않았다.
+
+최신 후보 검증 후 쓰지 않는 이전 시뮬레이터 DerivedData `build/apple-device`를 lsof 미사용 확인 후 정리했다. 논리118,236,875바이트이며 실제 기기 빌드가 아니다. 재현용 명세·현재 build/apple·소스·저장·검증 로그·화면은 보존했다.
+
+로컬 근거: `.local/evidence/ipad-ui-feedback-20261110/`의 `final-results.json`, `site-deployment.json`, `site-published-http.json`, `site-archive-check.json`, `report-png/final-images-verification.json`, `old-simulator-build-cleanup/receipt.json`, `review/final-graphics-*`. 게시용 tar 설정은 `site-tar-bin/tar`에 기록했다. 인증토큰은 파일에 저장하지 않았다.

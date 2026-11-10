@@ -2,6 +2,8 @@
 
 ## iPad 사용자 피드백 — 2026-11-10
 
+- [x] UI·BOT·맵 전환과 그래픽·음향 대조·다음 계획을 기존 비공개 보고 사이트276에 HTML로 게시. 실제15경로HTTP·원문/JSON/이미지 일치 확인. [게시 기록](report-site.md). 온라인 브라우저 시각 검수와 물리 iPad 반영은 별도.
+
 - [x] [그래픽·음향 원본 절차 대조](graphics-audio-fidelity-20261110.md)의 수정판 검증: 효과음 context 유지/문자열 bridge는 수정·iPhone 검사 통과. 슬롯 preview 좌표/원본 layer, Player direct·Enemy/BOT atlas/cull, 항공기 shadow offset을 공통 helper로 수정했고 Core68·ASan66·양 시뮬 슬롯 GPU 예열 후 검사를 통과했다. 전체 Native 관련7개를 양 시뮬레이터에서 각각 통과했고 독립 검토도 마쳤다. 초기 동일Frame1-LSB 변동의 원인은 미확정으로 남긴다.
 - [ ] 원본 PartsManager/ImageAttacher packed PartsTile의 실제 활성/반환 관측. 정적 분석은 정상 경로의 빈 dictionary→개별 PNG fallback을 지지하며 bake 활성 caller는 찾지 못했다. packer 미구현과 원본 정상 경로 누락을 구분하고 강제 bake로 활성 결과를 만들지 않는다. 슬롯 동일 texture의 전역 batch 병합/drawcall 동등성도 미완료다.
 
