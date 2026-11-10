@@ -17,6 +17,7 @@ struct SessionHost {
     virtual void alert(std::string_view originalKey,std::string_view){alert(originalKey);}
     virtual void requestName(unsigned slot)=0;
     virtual void requestDelete(unsigned slot)=0;
+    virtual void requestGameOver(std::uint64_t){alert("DestroyMach","Destroy Your Mach.");}
     // Called only at confirmed original save events. The platform adapter owns
     // atomic replacement and must report failure instead of claiming a save.
     virtual bool writeSave(std::span<const std::uint8_t>,SaveReason)=0;
@@ -50,6 +51,8 @@ public:
     bool inputWorld(PointerPhase,Vec2,std::uintptr_t);
     bool createSlot(unsigned,std::string_view name,std::string_view country);
     bool deleteSlot(unsigned); // Caller supplies the original confirmation UI.
+    bool confirmGameOver(std::uint64_t token);
+    [[nodiscard]] std::uint64_t pendingGameOver()const;
     bool selectSlot(unsigned);
     void enterBase();
     bool enterField(std::string_view map,int gate);

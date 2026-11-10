@@ -79,6 +79,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
     int hp=256;
     bool saveAllowed=false;
     int gameState=0;
+    float stateChangeTime=0;
     MachineKind playerKind=MachineKind::bipod;
     WorldNavigation navigation;
     MovementPathVisual movementVisual;
@@ -117,6 +118,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
      machines(Machines::parse(DataTable::parse(r.read("MachList.tble")))),
      equipment(PlayerEquipment::parse(DataTable::parse(r.read("ItemInfo.tble")))),
      weapons(Weapons::parse(DataTable::parse(r.read("WeaponInfo.tble")))),terrain(map.map()),clock(setup.initialRenderTime,setup.initialWorldTime),hp(setup.playerHP),saveAllowed(setup.isSave),pool(setup.initialRenderTime,static_cast<EnemyActorHost&>(*this)){
+        stateChangeTime=setup.initialRenderTime;
         const auto gate=std::find_if(map.map().gates.begin(),map.map().gates.end(),[&](const auto& g){return g.number==setup.gate;});
         if(gate==map.map().gates.end())throw std::runtime_error("Original map gate is missing");
         for(std::size_t i=0;i<4;++i)equipmentCodes[i]=setup.equipment[i];
@@ -529,6 +531,16 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
             ++hp;hpRefreshTime=float(clock.worldTime());refreshPlayerHPGauge();
         }
         hooks.playerProgressTick();
+        // Player HP/SP processing precedes GobHvMach.tick. That superclass
+        // skips its child pass when hidden, and processCrash while paused.
+        if(!playerRoot.show)return;
+        if(!paused&&playerMotion.state().state==2){
+            playerMotion.setState(3); // Player.onDestroy0xb024; no corpse/drop.
+            if(gameState!=3){
+                gameState=3;stateChangeTime=clock.renderTime();
+                hooks.playerDestroyed();
+            }
+        }
         if(!paused&&(playerMotion.state().state==0||playerMotion.state().state==1)&&playerRoot.inScreen){
             const auto* target=selectedTarget();std::optional<Vec2> aim;if(target)aim=target->position;
             const int wall=playerContact.current;playerMotion.tick(wall<0?nullptr:&terrain.edges().at(std::size_t(wall)),aim);
@@ -749,8 +761,9 @@ void CombatScene::setPlayerHP(int hp){impl_->hp=hp;}
 void CombatScene::setIsSave(bool value){impl_->saveAllowed=value;}
 bool CombatScene::isSave()const{return impl_->saveAllowed;}
 void CombatScene::setPaused(bool p){impl_->paused=p;}
-void CombatScene::setGameState(int value){impl_->gameState=value;}
+void CombatScene::setGameState(int value){impl_->gameState=value;impl_->stateChangeTime=impl_->clock.renderTime();}
 int CombatScene::gameState()const{return impl_->gameState;}
+float CombatScene::gameStateChangeTime()const{return impl_->stateChangeTime;}
 void CombatScene::setActive(bool a){impl_->active=a;if(!a){impl_->navigation.cancel();impl_->targetPointer=0;impl_->leftFire=impl_->rightFire=false;}}
 const GameClock& CombatScene::clock()const{return impl_->clock;}
 const BipodState& CombatScene::player()const{return impl_->playerMotion.state();}

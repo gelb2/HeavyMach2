@@ -5,6 +5,7 @@
 #include "Core/Presentation/PartSprites.hpp"
 #include "Core/Presentation/Visibility.hpp"
 #include <algorithm>
+#include <atomic>
 #include <bit>
 #include <cmath>
 #include <cstdio>
@@ -15,6 +16,9 @@
 namespace hm2 {
 namespace {
 using Slot=progression::SlotView;
+// Original OS alert callbacks check object identity. Tokens preserve that
+// identity across delayed callbacks without retaining a raw Scene pointer.
+std::atomic_uint64_t nextGameOverToken{1};
 DataTable table(ResourceAccess& r,std::string_view name){return DataTable::parse(r.read(name));}
 std::string originalDisplayLocale(std::string_view value){
     if(value!="kr"&&value!="us")throw std::runtime_error("Unsupported original UI locale");
@@ -40,6 +44,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
     GameClock clock;double worldTime=0;bool active=true,dirty=true,worldSaveAllowed=false;
     std::uint64_t presentationRevision=0;
     int loadedSlot=-1;std::string mapName,selectedMissionId;
+    std::uint64_t gameOverToken=0;
     int detailInventory=-1,tradePosition=-1;const progression::Item* tradeItem=nullptr;
     const ui::ScreenAction* activeAction=nullptr;
     static bool screenOwnsSound(const ui::ScreenAction& a,unsigned sound){
@@ -122,6 +127,11 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         }
     }
     void playerDied()override{dirty=true;}
+    void playerDestroyed()override{
+        if(gameOverToken)return;
+        do{gameOverToken=nextGameOverToken.fetch_add(1,std::memory_order_relaxed);}while(!gameOverToken);
+        dirty=true;host.requestGameOver(gameOverToken);
+    }
     ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest& r)override{return host.prepareWorldText(r);}
     int playerDamage(int value,WorldRandom& rng)override{return equipment->stats().playerDamage(value,rng);}
     int damageBonus()const override{return equipment?equipment->stats().damageBonus:0;}
@@ -174,7 +184,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         if(progress)progress->screen(int(id));
         return true;
     }
-    void screen(ui::ScreenId id){if(view.screen!=id){view.message.clear();view.messageVisible=false;++view.messageRevision;}view.screen=id;if(progress)progress->screen(int(id));dirty=true;
+    void screen(ui::ScreenId id){if(id!=ui::ScreenId::field)gameOverToken=0;if(view.screen!=id){view.message.clear();view.messageVisible=false;++view.messageRevision;}view.screen=id;if(progress)progress->screen(int(id));dirty=true;
         if(id==ui::ScreenId::title&&scene){worldSaveAllowed=scene->isSave();quickItems.reset();scene.reset();drops.clear();worldTiles=nullptr;}
         if(id!=ui::ScreenId::field)closeDialogs();
         if(id==ui::ScreenId::slots){view.selectedSlot=-1;for(unsigned i=0;i<3;++i){Slot candidate(data.slot(i));if(candidate.byte(8)&&(view.selectedSlot<0||std::bit_cast<std::int32_t>(Slot(data.slot(unsigned(view.selectedSlot))).u32(4))<std::bit_cast<std::int32_t>(candidate.u32(4))))view.selectedSlot=int(i);}}
@@ -416,6 +426,7 @@ bool GameSession::createSlot(unsigned index,std::string_view name,std::string_vi
 bool GameSession::deleteSlot(unsigned index){if(index>=3)return false;auto& p=*impl_;p.data.slot(index)[8]=0;p.dirty=true;return save(SaveReason::deleteSlot);}
 bool GameSession::selectSlot(unsigned index){
     auto& p=*impl_;if(index>=3||!p.data.slot(index)[8])return false;
+    p.gameOverToken=0;
     const auto previousStats=p.equipment?p.equipment->stats():progression::EquipStats{};
     p.quickItems.reset();p.scene.reset();p.drops.clear();p.worldTiles=nullptr;p.equipment.reset();p.progress.reset();
     std::copy(p.data.slot(index).begin(),p.data.slot(index).end(),p.working.begin());p.loadedSlot=int(index);p.view.selectedSlot=int(index);
@@ -426,6 +437,7 @@ bool GameSession::selectSlot(unsigned index){
 }
 void GameSession::enterBase(){
     auto& p=*impl_;if(!p.progress)throw std::logic_error("No original working slot selected");if(p.scene){p.worldSaveAllowed=p.scene->isSave();p.worldTime=p.scene->clock().worldTime();}p.quickItems.reset();p.scene.reset();p.drops.clear();p.worldTiles=nullptr;
+    p.gameOverToken=0;
     auto s=p.slot();auto current=s.string(0x2d,16);if(!current.starts_with("Base")){current="Base001";s.string(0x2d,16,current);}s.string(0x55,16,current);
     s.hp(p.equipment->stats().maximumHP());for(unsigned i=0;i<3;++i)s.u32(0x64c+i*4,0);
     if(const auto map=p.maps.all().find(current);map!=p.maps.all().end())s.string(0x3d,24,map->second.description);else s.string(0x3d,24,""); // Original nil map name; no invented Base004 definition.
@@ -435,6 +447,7 @@ void GameSession::enterBase(){
 }
 bool GameSession::enterField(std::string_view map,int gate){
     auto& p=*impl_;if(!p.progress)return false;
+    p.gameOverToken=0;
     // World.setStage reseeds from mach_absolute_time before creating its pool.
     p.slot().string(0x2d,16,map);p.slot().u32(0x68,std::uint32_t(gate));
     if(p.scene){p.worldSaveAllowed=p.scene->isSave();p.worldTime=p.scene->clock().worldTime();}
@@ -466,6 +479,14 @@ bool GameSession::save(SaveReason reason){
 }
 const ui::ScreensState& GameSession::state(){if(impl_->dirty)impl_->rebuild();impl_->dynamicHUD();return impl_->view;}
 const SessionMetrics& GameSession::metrics()const{return impl_->metrics;}
+std::uint64_t GameSession::pendingGameOver()const{return impl_->gameOverToken;}
+bool GameSession::confirmGameOver(std::uint64_t token){
+    auto& p=*impl_;
+    if(!token||p.gameOverToken!=token||!p.scene||p.scene->gameState()!=3||p.loadedSlot<0||p.view.screen!=ui::ScreenId::field)return false;
+    p.slot().string(0x2d,16,p.base());
+    p.requestScreen(ui::ScreenId::base);p.gameOverToken=0;p.dirty=true;
+    return true;
+}
 const SaveData& GameSession::envelope()const{return impl_->data;}
 std::string GameSession::originalText(std::string_view key)const{return std::string(impl_->descriptions.lookup(key).value_or(""));}
 std::span<const std::uint8_t> GameSession::workingSlot()const{return impl_->working;}

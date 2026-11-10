@@ -59,6 +59,8 @@ struct CombatSceneHooks {
     virtual void setPlayerSpecial(float); // Unsupported host fails instead of fake consumption.
     virtual void playerHPChanged(int){}
     virtual void playerDied(){}
+    // Player.onDestroy follows the unpaused state2 processCrash actor tick.
+    virtual void playerDestroyed(){}
     virtual void outOfRange(bool /* left */){}
     virtual void enemyTargetChanged(std::string_view /* original machine name */){}
     // Original listItem slot precedes pool/spawners/Player. External progression
@@ -119,6 +121,7 @@ public:
     void setPaused(bool);
     void setGameState(int);
     [[nodiscard]] int gameState()const;
+    [[nodiscard]] float gameStateChangeTime()const;
     void setActive(bool);
     [[nodiscard]] const GameClock& clock()const;
     [[nodiscard]] const BipodState& player()const;

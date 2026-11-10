@@ -73,6 +73,8 @@
         [self.controller presentViewController:alert animated:YES completion:nil];return;
     }
     if(!_runtime||_requests.empty())return;
+    while(!_requests.empty()&&_requests.front().kind==hm2::apple::NativeRequest::Kind::gameOver&&_requests.front().token!=_runtime->session().pendingGameOver())_requests.pop_front();
+    if(_requests.empty())return;
     const auto request=_requests.front();_requests.pop_front();_requestInFlight=YES;
     NSString* key=[NSString stringWithUTF8String:request.text.c_str()];
     NSString* message=request.kind==hm2::apple::NativeRequest::Kind::saveError?key:[NSString stringWithUTF8String:_runtime->nativeText(request.text).c_str()];
@@ -92,6 +94,10 @@
         [self.controller presentViewController:alert animated:YES completion:nil];return;
     }
     UIAlertController* alert=[UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+    if(request.kind==hm2::apple::NativeRequest::Kind::gameOver){
+        [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){HM2SourceView* view=weakSelf;if(view&&view->_runtime){try{view->_runtime->confirmGameOver(request.token);}catch(const std::exception& e){[view failRuntime:[NSString stringWithUTF8String:e.what()]];}view->_requestInFlight=NO;[view updateTestState];}}]];
+        [self.controller presentViewController:alert animated:YES completion:nil];return;
+    }
     if(request.text=="VisitIndiean"){
         [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction* action){[weakSelf completeNativeRequest];}]];
         [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){[weakSelf completeNativeRequest];[UIApplication.sharedApplication openURL:[NSURL URLWithString:@"http://www.indieapps.kr"] options:@{} completionHandler:nil];}]];

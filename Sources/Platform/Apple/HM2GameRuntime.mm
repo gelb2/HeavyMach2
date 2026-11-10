@@ -43,6 +43,7 @@ struct GameRuntime::Impl:SessionHost,ui::ScreensHost {
     void alert(std::string_view key,std::string_view title)override{notify({NativeRequest::Kind::alert,0,std::string(key),std::string(title)});}
     void requestName(unsigned slot)override{notify({NativeRequest::Kind::name,slot,{},"New User"});}
     void requestDelete(unsigned slot)override{notify({NativeRequest::Kind::deleteSlot,slot,"DeleteSlot","Delete Slot"});}
+    void requestGameOver(std::uint64_t token)override{notify({NativeRequest::Kind::gameOver,0,"DestroyMach","Destroy Your Mach.",token});}
     bool writeSave(std::span<const std::uint8_t> bytes,SaveReason)override{
         NSData* contents=[NSData dataWithBytes:bytes.data() length:bytes.size()];NSError* error=nil;
         const BOOL success=[contents writeToURL:saveURL options:NSDataWritingAtomic error:&error];
@@ -78,6 +79,7 @@ bool GameRuntime::provideName(unsigned slot,std::string_view name,std::string_vi
     const bool result=impl_->game->createSlot(slot,name,country);impl_->synchronize();return result;
 }
 bool GameRuntime::confirmDelete(unsigned slot){const bool result=impl_->game->deleteSlot(slot);impl_->synchronize();return result;}
+bool GameRuntime::confirmGameOver(std::uint64_t token){const bool result=impl_->game->confirmGameOver(token);impl_->synchronize();return result;}
 bool GameRuntime::logicalPoint(CGPoint point,Vec2& logical)const{return [impl_->renderer logicalPoint:point result:&logical];}
 std::string GameRuntime::nativeText(std::string_view key)const{return impl_->game->originalText(key);}
 void GameRuntime::setActive(bool active){if(!active)impl_->ui->discardInputs();impl_->active=active;impl_->game->setActive(active);[impl_->audio setActive:active];}
