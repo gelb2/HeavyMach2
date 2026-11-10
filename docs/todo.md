@@ -192,3 +192,5 @@ HD 1.0.3을 iPhone Air / iOS 26.5 시뮬레이터(97CA5646-36BB-47A9-919A-D78DD6
 - [x] C++51개·전체Core ASan/UBSan106조건·양 시뮬레이터106조건1,200프레임 및 PNG/raw RGB8장 일치.
 - [ ] 정상 Source 시작을 보행 preview에서 실제 메뉴/전투 Session으로 연결.
 - [ ] bot 전장 AI/공격/획득과23개 하체 장비 대조를 원본 근거로 구현·동시 검증.
+- [x] 별도Validation106 앱을 양 시뮬레이터에 설치·실행하고 자동1,200프레임 종료·결과저장·warmIO/PNG0 확인. 실기기 설치 아님.
+- [x] [전장·대시106조건 HTML 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/fields-dash.html) 버전274 비공개 게시. 실제8경로HTTP200·본문/링크·JSON/PNG일치 확인. 브라우저 시각검수는미완료.

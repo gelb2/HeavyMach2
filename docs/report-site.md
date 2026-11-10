@@ -50,3 +50,15 @@ Sites 스킬로 현재 접근 범위와 원격 소스를 확인한 뒤 같은 pr
 초기 묶음은 압축 해제 후268,571,648바이트로 제한을 넘었다. 모든 파일에 붙은 macOS provenance 확장 속성을 포함한 값이다. 공식 Sites helper의 tar 호출에 시스템 tar의 `--no-xattrs --no-acls --no-fflags --no-mac-metadata` 생성 옵션을 적용했다. 목록 검사는 일반 시스템 tar로 유지했다. 사이트 파일은 모두 보존했고 최종 묶음과 소스의 모든 파일 바이트가 같음을 검사했다. 최종 압축 해제 크기는267,089,920바이트다. 이미지의 내용·해상도·색은 바꾸지 않았다.
 
 근거: `.local/evidence/combat-runtime-20261110/site-concurrent-deployment.json`, `site-concurrent-published-http.json`, `site-concurrent-metadata-free-check.json`. 토큰은 저장하지 않았다. 빌드 검증 뒤 쓰지 않는 임시 산출물116,789,617바이트를 정리했고 소스·실패 로그·캡처·원본·저장은 유지했다.
+
+## 38개 전장·대시106조건 보고 — 버전274
+
+[전장·대시 검증 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/fields-dash.html)를 추가했다. 게임 구현은 `342cf15e72ad7c3dd81ae7d7e51d9e386919208f`다. C++51개, 전체Core ASan/UBSan106조건, iPhone/iPad 시뮬레이터 각각106조건·1,200프레임을 통과했다. 두 시뮬레이터의 별도Validation 앱도106조건으로 갱신했고 자동 종료와 결과 저장을 확인했다. 정상Source 시작은 보행이며 전체게임·전체치트·원작동등성·실기기·develop/main은 미완료다.
+
+현재 보고서는38개field 최초생성695대와 대표 포탑/항공기 전투, 실제두탭/SP100 대시·효과·SFX14, 구급상자6종·공습3종·동시음향·기존메뉴11/11 겹침을 다룬다. 이전59조건 보고와 모든 기존파일은 유지했다. 캡처PNG의 opaqueRGB export를 고쳤고 양 기기의 개별sourceFrame8장을 원시GPU RGB와 대조해 차이0을 확인했다. 보고에 사용한 대시/공습PNG2장은 검증된 원본바이트 그대로 올렸다.
+
+사이트 소스는 `397d771e0ed8f1ca5fe51831d06ddabe872fa09f`, 버전274, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_1908fdd59ee88191bd2e24425884a310`, 배포는 `appgdep_6af294c320688191bd7ca04ccbd70b3f`다. 공식 상태succeeded를 확인했다. 본인1명·그룹0의 비공개 접근을 유지했다. 새HTML/결과JSON/PNG2장과 수정한이전페이지·전체목록 총8경로의 실제HTTP200, 표시본문/링크 일치, JSON/PNG 전체바이트 일치를 확인했다. 브라우저 시각검수는 기존CUA 연결실패 때문에 완료하지 못했다.
+
+공식 helper로 만든 archive는 확장속성·AppleDouble없이268,212,224바이트이며256MiB 제한 이하다. 현재사이트 소스1326파일과 hosting metadata1개의 바이트 일치를 확인했다. 새버전의실제서비스 확인후 재생성가능한 이전271archive를 정리했다. 현재274archive·원본·캡처·실패로그·배포증거는 보존한다. 사용하지 않는 공습검사 scratch빌드83,020,518바이트도 현재51개검사/Apple106성공과lsof미사용 확인후 정리했다.
+
+근거: `.local/evidence/combat-runtime-20261110/site-fields-deployment.json`, `site-fields-published-http.json`, `site-fields-local-check.json`, `site-fields-archive-check.json`, `capture106-rgb-verification.json`, `standalone106-verification.json`, `build-cleanup-after106.json`, `archive-cleanup-after274.json`. 토큰은 파일에 저장하지 않았다.

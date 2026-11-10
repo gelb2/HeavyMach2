@@ -43,3 +43,5 @@ python3 tools/check_no_ipa.py --all
 [온라인 59조건 동시 검증 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/concurrent.html) — C++46개와 iPhone/iPad 각각1,200프레임 결과. 본인 계정 로그인 필요. 게시 본문·링크·결과JSON·이미지의 서비스 응답을 확인했다.
 
 [구급상자·공습·메시지와68조건 검증](docs/quick-items-restoration-20261110.md) — C++48개·양 시뮬레이터1,200프레임. 차량 외 Scene 연결과37개field 진입은 다음 과제다.
+
+[온라인 38개 전장·대시106조건 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/fields-dash.html) — C++51개·양 시뮬레이터 각각1,200프레임, 최초695대 생성·대표 포탑/항공기 전투·대시·구급상자/공습 결과. 본인 계정 로그인이 필요하다. 실제HTTP 본문/링크·결과JSON·PNG 일치를 확인했다. 전체게임·Source정상시작·원작대조는 미완료다.
