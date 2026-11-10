@@ -1,5 +1,11 @@
 # HeavyMach 2 보고 사이트
 
+## 사령부 보상창 배경과 완료 표시 — 2026-11-11
+
+[사령부 보상창 배경과 완료 표시](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/command-panel.html)를 기존 본인 전용 비공개 사이트에 게시했다. 구현과 검사 기록은 `f20a8b8`이다. iPad 시뮬레이터의 복원판 GPU 캡처384×512를 연결했다. 원본 포팅판 캡처와 영상·저장은 로컬에 보존한다.
+
+사이트 소스는 `480c1ec0d7bc72382eb7b851429a436a1f772443`, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_77e3b413cf6481918895bd7289570950`, 배포는 `appgdep_6af3a38d8b908191910423e192b87329`다. 실제6경로 HTTP200, 표시 본문·링크와 Markdown·JSON·PNG 바이트를 확인했다. 브라우저 시각 검사는 이번 단계에서 실행하지 않았다. 로컬 근거는 `.local/evidence/command-panel-restoration-20261111/site-published-http.json`에 있다.
+
 ## 사령부 임무 상세창과 iPad 원본 대조 — 2026-11-11
 
 [사령부 임무 상세창 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/command-detail.html)를 기존 본인 전용 비공개 사이트에 게시했다. 구현은 `f210d72`, 원본 대조 기록은 `5895234`다. 같은 iPad에서 슬롯 OK만 눌러 두 판의 보상 순서를 확인했다. 게시 자료는 보고 본문·원문 다운로드·검사 수치다. 원본 실행 캡처와 영상 및 저장은 로컬에 보존한다.
