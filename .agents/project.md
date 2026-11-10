@@ -36,3 +36,6 @@ HeavyMach 1과 MachDefense의 파일은 변경하지 않는다. 모든 개발은
 
 
 2026-11-10 전장·대시 후속: 위68조건 시점의 차량전용Scene 병목을 해소했다. [공통EnemyActor와Dash](../docs/enemy-dash-restoration-20261110.md)를 연결했고38개field 최초생성695대(차량385·포탑307·항공기3)를 확인했다. 기존68+추가37field+Dash1=106조건을 같은clock/GPU/OpenAL로갱신한다. C++51개·전체Core ASan/UBSan106조건·iPhone/iPad각1,200프레임,기기별PNG4장/rawRGB일치를통과했다. 원본PtBtm23개는같은Player/발소켓계열이며별도controller23개가있다고가정하지않는다. 정상Source는아직보행시작이며bot실제행동·23장비동작대조·모든임무/캠페인·포팅판동등성·기기별최종표시·실기기는남는다.
+
+
+2026-11-10 Goal후속: 사용자가[전체행동복원Goal](../docs/restoration-goal.md)을active등록하고계속진행하도록지시했다. Source를[정상메뉴/전투](../docs/source-entry-restoration-20261110.md)에연결했고 Core55/ASan6/양시뮬실제UIKit·이름경계검사를통과했다. 앞선보행시작점기록은당시상태다. 현재HDcanvas/영어locale이며BOT/Help/GameOver·전체임무/캠페인·최종기기표시·포팅판대조는남는다. 다음은기본Picker04201의실제Scene소비이며독립Bot3파일검사와원본후속분석근거를재사용한다.

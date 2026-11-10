@@ -28,6 +28,27 @@ UIImage* image(NSData* rgba,CGSize size){
 }
 @interface SessionRendererTests:XCTestCase @end
 @implementation SessionRendererTests
+- (void)testOriginalNameLengthCountryAndNoFallback {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];NSError* error=nil;
+    XCTAssertTrue([NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:&error]);NSURL* save=[directory URLByAppendingPathComponent:@"HeavyMach2.sav"];
+    std::vector<hm2::apple::NativeRequest> requests;
+    try{
+        auto runtime=std::make_unique<hm2::apple::GameRuntime>(root,save,[&](const auto& r){requests.push_back(r);});
+        for(unsigned i=0;i<2;++i){runtime->input(hm2::PointerPhase::begin,{384,512},1);runtime->input(hm2::PointerPhase::end,{384,512},1);}
+        XCTAssertEqual(runtime->session().state().screen,hm2::ui::ScreenId::slots);
+        XCTAssertTrue(runtime->provideName(0," ","zz"));XCTAssertEqual(runtime->session().state().slots[0].name,std::string(" "));XCTAssertEqual(runtime->session().state().slots[0].country,std::string("zz"));
+        NSString* five=@"😀😀😀😀😀";XCTAssertEqual(five.length,10u);XCTAssertTrue(runtime->provideName(1,five.UTF8String,"kr"));
+        XCTAssertEqual(runtime->session().state().slots[1].name,std::string(five.UTF8String));XCTAssertEqual(runtime->session().state().slots[1].country,std::string("kr"));
+        const auto writes=runtime->session().metrics().saveRequests;NSData* before=[NSData dataWithContentsOfURL:save];
+        NSString* six=@"😀😀😀😀😀😀";XCTAssertEqual(six.length,12u);XCTAssertFalse(runtime->provideName(2,six.UTF8String,"us"));XCTAssertFalse(runtime->provideName(2,"","us"));XCTAssertFalse(runtime->provideName(2,std::string_view("\xff",1),"us"));
+        XCTAssertEqual(runtime->session().metrics().saveRequests,writes);XCTAssertFalse(runtime->session().state().slots[2].used);XCTAssertEqualObjects([NSData dataWithContentsOfURL:save],before);
+        XCTAssertEqual(requests.size(),3u);for(const auto& r:requests){XCTAssertEqual(r.kind,hm2::apple::NativeRequest::Kind::alert);XCTAssertEqual(r.text,std::string("IncorrectName"));XCTAssertEqual(r.title,std::string("Incorrect Name"));}
+        XCTAssertTrue(runtime->nativeText("MissingDescription").empty());
+        NSLog(@"HM2_NAME_RULES UTF16space1/fiveEmoji10accepted sixEmoji12/empty/invalidUTF8rejected countryZZpreserved noExtraSave=1");runtime.reset();
+    }catch(const std::exception& e){XCTFail(@"Original native name rules failed: %s",e.what());}
+    XCTAssertTrue([NSFileManager.defaultManager removeItemAtURL:directory error:&error]);
+}
 - (void)testGPUMenuBattleAndAtomicSaveRestart {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];NSError* error=nil;
@@ -48,7 +69,7 @@ UIImage* image(NSData* rgba,CGSize size){
         }
         XCTAssertTrue(tap(*runtime,1009));XCTAssertTrue(tap(*runtime,1001));XCTAssertEqual(requestedNames,1u);
         XCTAssertFalse(runtime->provideName(0,"01234567890","us"));XCTAssertTrue(runtime->provideName(0,"MACH","us"));XCTAssertTrue(tap(*runtime,1001));runtime->tick();runtime->draw(layer);
-        XCTAssertEqual(runtime->session().state().screen,hm2::ui::ScreenId::base);XCTAssertEqual(runtime->session().metrics().saveCompletions,2u);
+        XCTAssertEqual(runtime->session().state().screen,hm2::ui::ScreenId::base);XCTAssertEqual(runtime->session().metrics().saveCompletions,3u);
         NSData* saved=[NSData dataWithContentsOfURL:save];XCTAssertEqual(saved.length,hm2::SaveData::byteCount);
         XCTAssertTrue(tap(*runtime,2005));XCTAssertTrue(tap(*runtime,2005));runtime->tick();runtime->draw(layer);
         XCTAssertEqual(runtime->session().state().screen,hm2::ui::ScreenId::field);XCTAssertNotEqual(runtime->session().battle(),nullptr);

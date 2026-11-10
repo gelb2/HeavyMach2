@@ -5,12 +5,13 @@
 #include <memory>
 
 namespace hm2 {
-enum class SaveReason {selectSlot,enterBase,stageTransition,saveAndExit};
+enum class SaveReason {selectSlot,enterBase,stageTransition,saveAndExit,deleteSlot};
 struct SessionHost {
     virtual ~SessionHost()=default;
     virtual void sound(std::string_view,Vec2)=0;
     virtual void soundID(unsigned,Vec2)=0;
     virtual void alert(std::string_view originalKey)=0;
+    virtual void alert(std::string_view originalKey,std::string_view){alert(originalKey);}
     virtual void requestName(unsigned slot)=0;
     virtual void requestDelete(unsigned slot)=0;
     // Called only at confirmed original save events. The platform adapter owns
@@ -48,6 +49,7 @@ public:
     [[nodiscard]] const ui::ScreensState& state();
     [[nodiscard]] const SessionMetrics& metrics()const;
     [[nodiscard]] const SaveData& envelope()const;
+    [[nodiscard]] std::string originalText(std::string_view key)const;
     [[nodiscard]] std::span<const std::uint8_t> workingSlot()const;
     [[nodiscard]] CombatScene* battle();
     [[nodiscard]] float renderTime()const;

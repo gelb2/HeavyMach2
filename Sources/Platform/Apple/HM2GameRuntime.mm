@@ -39,9 +39,10 @@ struct GameRuntime::Impl:SessionHost,ui::ScreensHost {
     void sound(std::string_view n)override{sound(n,{});}
     void sfx(unsigned id)override{soundID(id,{});}
     void bgm(std::string_view n)override{if(![audio playMusic:string(n)])throw std::runtime_error(audio.lastError.UTF8String);}
-    void alert(std::string_view key)override{notify({NativeRequest::Kind::alert,0,std::string(key)});}
-    void requestName(unsigned slot)override{notify({NativeRequest::Kind::name,slot,{}});}
-    void requestDelete(unsigned slot)override{notify({NativeRequest::Kind::deleteSlot,slot,{}});}
+    void alert(std::string_view key)override{notify({NativeRequest::Kind::alert,0,std::string(key),key=="IncorrectName"?"Incorrect Name":"Alert!"});}
+    void alert(std::string_view key,std::string_view title)override{notify({NativeRequest::Kind::alert,0,std::string(key),std::string(title)});}
+    void requestName(unsigned slot)override{notify({NativeRequest::Kind::name,slot,{},"New User"});}
+    void requestDelete(unsigned slot)override{notify({NativeRequest::Kind::deleteSlot,slot,"DeleteSlot","Delete Slot"});}
     bool writeSave(std::span<const std::uint8_t> bytes,SaveReason)override{
         NSData* contents=[NSData dataWithBytes:bytes.data() length:bytes.size()];NSError* error=nil;
         const BOOL success=[contents writeToURL:saveURL options:NSDataWritingAtomic error:&error];
@@ -70,11 +71,14 @@ GameRuntime::GameRuntime(NSURL* root,NSURL* save,std::function<void(const Native
 GameRuntime::~GameRuntime()=default;
 void GameRuntime::tick(){auto& p=*impl_;if(!p.active)return;p.game->tick();p.synchronize();p.ui->tick(p.game->renderTime(),p.random);}
 void GameRuntime::draw(CAEAGLLayer* layer){auto& p=*impl_;Frame frame=p.game->drawWorld();p.ui->append(frame,p.game->renderTime());[p.renderer drawFrame:frame layer:layer];}
-bool GameRuntime::input(PointerPhase phase,Vec2 point,std::uintptr_t id){auto& p=*impl_;if(!p.active)return false;const bool used=p.ui->input(phase,point,id,p.game->renderTime());if(!used)p.game->inputWorld(phase,point,id);p.synchronize();return used;}
+bool GameRuntime::input(PointerPhase phase,Vec2 point,std::uintptr_t id){auto& p=*impl_;if(!p.active)return false;bool used=p.ui->input(phase,point,id,p.game->renderTime());if(!used)used=p.game->inputWorld(phase,point,id);p.synchronize();return used;}
 bool GameRuntime::provideName(unsigned slot,std::string_view name,std::string_view country){
     NSString* value=string(name);if(!value||value.length<1||value.length>10){impl_->alert("IncorrectName");return false;}
     const bool result=impl_->game->createSlot(slot,name,country);impl_->synchronize();return result;
 }
+bool GameRuntime::confirmDelete(unsigned slot){const bool result=impl_->game->deleteSlot(slot);impl_->synchronize();return result;}
+bool GameRuntime::logicalPoint(CGPoint point,Vec2& logical)const{return [impl_->renderer logicalPoint:point result:&logical];}
+std::string GameRuntime::nativeText(std::string_view key)const{return impl_->game->originalText(key);}
 void GameRuntime::setActive(bool active){if(!active)impl_->ui->discardInputs();impl_->active=active;impl_->game->setActive(active);[impl_->audio setActive:active];}
 void GameRuntime::synchronize(){impl_->synchronize();}
 GameSession& GameRuntime::session(){return *impl_->game;}

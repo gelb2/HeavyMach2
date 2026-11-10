@@ -1,6 +1,6 @@
 # HeavyMach 2 Restoration
 
-HeavyMach 2의 독립 비공개 복원 저장소다. REA/Ghidra로 HD 원본을 분석하고 C++ 공통 코어에 맵·보행·조준·대시·발사·피해·차량/포탑/항공기·음향·진행·장비·저장 모듈을 연결하고 있다. Apple GPU 통합 검사에서 타이틀·슬롯·기지·전투와 저장 후 재실행을 확인했다. Source 앱의 시작 장면은 보행이다. Validation은 구급상자6종·공습3종·38개 전장·대시를 포함한106조건을 함께 실행한다. 정상 게임 전체와 전체 치트 앱은 아직 미완료다. [현재 구현·검증 범위](docs/combat-runtime-restoration-20261110.md)와 [106조건 전장·대시 검증](docs/enemy-dash-restoration-20261110.md)을 따른다.
+HeavyMach 2의 독립 비공개 복원 저장소다. REA/Ghidra로 HD 원본을 분석하고 C++ 공통 코어에 맵·보행·조준·대시·발사·피해·차량/포탑/항공기·음향·진행·장비·저장 모듈을 연결하고 있다. Apple GPU 통합 검사에서 타이틀·슬롯·기지·전투와 저장 후 재실행을 확인했다. Source 앱은 타이틀·슬롯·이름 입력/저장·기지·전장과 실제 터치 이동/발사에 연결했다. 기기별 최종 표시와 전체 게임은 미완료다. Validation은 구급상자6종·공습3종·38개 전장·대시를 포함한106조건을 함께 실행한다. 정상 게임 전체와 전체 치트 앱은 아직 미완료다. [현재 구현·검증 범위](docs/combat-runtime-restoration-20261110.md)와 [106조건 전장·대시 검증](docs/enemy-dash-restoration-20261110.md)을 따른다.
 
 ## 작업 경계
 
@@ -45,3 +45,5 @@ python3 tools/check_no_ipa.py --all
 [구급상자·공습·메시지와68조건 검증](docs/quick-items-restoration-20261110.md) — C++48개·양 시뮬레이터1,200프레임. 차량 외 Scene 연결과37개field 진입은 다음 과제다.
 
 [온라인 38개 전장·대시106조건 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/fields-dash.html) — C++51개·양 시뮬레이터 각각1,200프레임, 최초695대 생성·대표 포탑/항공기 전투·대시·구급상자/공습 결과. 본인 계정 로그인이 필요하다. 실제HTTP 본문/링크·결과JSON·PNG 일치를 확인했다. 전체게임·Source정상시작·원작대조는 미완료다.
+
+[정상 앱 진입·슬롯/저장/입력 검증](docs/source-entry-restoration-20261110.md) · [등록한 복원 Goal](docs/restoration-goal.md)

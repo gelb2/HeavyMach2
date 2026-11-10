@@ -190,7 +190,15 @@ HD 1.0.3을 iPhone Air / iOS 26.5 시뮬레이터(97CA5646-36BB-47A9-919A-D78DD6
 - [x] 차량만 허용하던 Scene을 공통EnemyActor로 바꿔37개field 추가 검증. 전체38개field·695대 최초 생성과 대표3전투를 실제106조건에 연결.
 - [x] 원본 지면double-tap/SP100의 Dash 연결과 별도 동시 조건. 독립 보행 조건은31tick 간격·dashStarts0, 별도 대시는 실제 SP차감·이동·VFX·SFX14를 확인.
 - [x] C++51개·전체Core ASan/UBSan106조건·양 시뮬레이터106조건1,200프레임 및 PNG/raw RGB8장 일치.
-- [ ] 정상 Source 시작을 보행 preview에서 실제 메뉴/전투 Session으로 연결.
+- [x] [정상 Source를 실제 메뉴/전투 Session에 연결](source-entry-restoration-20261110.md). Core55·ASan6·양 시뮬레이터 실제 UIKit/Native 이름 경계 검증 완료. HD canvas/영어 locale 범위.
 - [ ] bot 전장 AI/공격/획득과23개 하체 장비 대조를 원본 근거로 구현·동시 검증.
 - [x] 별도Validation106 앱을 양 시뮬레이터에 설치·실행하고 자동1,200프레임 종료·결과저장·warmIO/PNG0 확인. 실기기 설치 아님.
 - [x] [전장·대시106조건 HTML 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/fields-dash.html) 버전274 비공개 게시. 실제8경로HTTP200·본문/링크·JSON/PNG일치 확인. 브라우저 시각검수는미완료.
+
+## 등록한 Goal의 후속
+
+- [x] [복원 Goal](restoration-goal.md) 실제 active 등록. 현재 TODO와 발견되는 다음 작업을 포함해 계속 진행.
+- [x] 원본 이름 생성 select/save·삭제 used-only/save·저장 전장 재개·0x1b5c 시작 증가·설명문 변환 수정.
+- [ ] loaded working 슬롯 삭제의 원본 포팅판 실행 대조. 정적 덮어쓰기 후보를 임의 nil reset으로 숨기지 않음.
+- [ ] 기본 Picker04201 실제 전장 생성/획득·Attacker·수리·HP/사망·저장·GPU 그림자 연결. 독립 Bot actor 검사는 완료됐으나 Scene 통합은 남음.
+- [ ] 최초 도움말/시스템 Help·GameOver·완료 임무 창/5007·Game Center5009 소비 연결. 원본 분석 확보.

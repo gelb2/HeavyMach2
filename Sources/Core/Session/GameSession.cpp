@@ -1,5 +1,6 @@
 #include "Core/Session/GameSession.hpp"
 #include "Core/Progression/Equipment.hpp"
+#include "Core/Data/Descriptions.hpp"
 #include "Core/Progression/QuickItems.hpp"
 #include "Core/Presentation/PartSprites.hpp"
 #include "Core/Presentation/Visibility.hpp"
@@ -19,7 +20,7 @@ DataTable table(ResourceAccess& r,std::string_view name){return DataTable::parse
 struct GameSession::Impl:progression::Events,progression::EquipmentEvents,CombatSceneHooks,progression::QuickItemsHost {
     ResourceAccess& resources;SessionHost& host;WorldRandom& random;
     SaveData data;std::array<std::uint8_t,SaveData::slotSize> working{};
-    DataTable itemTable,descriptions;progression::Definitions definitions;
+    DataTable itemTable;Descriptions descriptions;progression::Definitions definitions;
     Weapons weapons;Models models;PlayerEquipment parts;
     Maps maps;Machines machines;
     std::unique_ptr<progression::Progression> progress;
@@ -55,7 +56,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
     PreparedTiles* worldTiles=nullptr;
 
     Impl(ResourceAccess& r,SessionHost& h,WorldRandom& rng,std::optional<SaveData> initial)
-    :resources(r),host(h),random(rng),data(initial?std::move(*initial):SaveData{}),itemTable(table(r,"ItemInfo.tble")),descriptions(table(r,"Description_us.tble")),
+    :resources(r),host(h),random(rng),data(initial?std::move(*initial):SaveData{}),itemTable(table(r,"ItemInfo.tble")),descriptions(Descriptions::parse(table(r,"Description_us.tble"))),
     definitions(progression::Definitions::parse(itemTable,table(r,"ItemRegen.tble"),table(r,"MissionList.tble"),[&r](std::string_view n){return table(r,n);},"us")),
     weapons(Weapons::parse(table(r,"WeaponInfo.tble"))),models(Models::parse(Chunk::parse(r.read("PartsInfo.mcb")),Chunk::parse(r.read("MachInfo.mcb")))),parts(PlayerEquipment::parse(itemTable)),maps(Maps::parse(Chunk::parse(r.read("MapInfo.mcb")))),machines(Machines::parse(table(r,"MachList.tble"))){}
     Slot slot(){return Slot(working);}
@@ -70,6 +71,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
     void sound(std::string_view n,Vec2 p)override{host.sound(n,p);}
     void soundID(unsigned id,Vec2 p)override{host.soundID(id,p);}
     void alert(std::string_view key)override{host.alert(key);}
+    void alert(std::string_view key,std::string_view title)override{host.alert(key,title);}
     void refreshHPGauge()override{} // HUD values consume the live slot in dynamicHUD.
     std::optional<progression::RepairTarget> player()const override{
         if(!scene)return std::nullopt;return progression::RepairTarget{1,true,scene->player().position,scene->playerHP(),playerMaximumHP(),-1};
@@ -81,7 +83,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
     Particle* allocateParticle(float)override{return scene?scene->allocateParticle():nullptr;}
     const TileImage* preparedTile(std::string_view name)override{return scene?scene->preparedTile(name):nullptr;}
     void selectQuick(int selected)override{view.selectedQuick=selected;dirty=true;}
-    void message(std::string_view key,int background,bool autoHide)override{view.messageVisible=true;view.messageBackground=background;view.messageAutoHide=autoHide;view.messageWorldTime=scene?scene->clock().worldTime():view.messageWorldTime;++view.messageRevision;view.message.clear();if(const auto row=descriptions.findRow(key))view.message=descriptions.value(*row,"Value").value_or("");dirty=true;}
+    void message(std::string_view key,int background,bool autoHide)override{view.messageVisible=true;view.messageBackground=background;view.messageAutoHide=autoHide;view.messageWorldTime=scene?scene->clock().worldTime():view.messageWorldTime;++view.messageRevision;view.message.clear();view.message=descriptions.lookup(key).value_or("");dirty=true;}
     void hideMessage()override{view.messageVisible=false;view.messageWorldTime=scene?scene->clock().worldTime():view.messageWorldTime;++view.messageRevision;view.message.clear();dirty=true;}
     void refreshQuickItem(const progression::Item& item,int count)override{for(unsigned i=0;i<5;++i)if(progress->inventory.quickSlots()[i]==&item)view.quick[i].count=count;dirty=true;}
     void startAirStrike(const progression::AirStrikeRequest& request)override{if(!scene)throw std::logic_error("Missing live AirStrike world");scene->startAirStrike(request.weapon,request.fireDelay,request.position);}
@@ -337,9 +339,12 @@ void GameSession::setActive(bool active){
     if(p.scene)p.scene->setActive(active);
 }
 bool GameSession::createSlot(unsigned index,std::string_view name,std::string_view country){
-    if(index>=3||name.empty())return false;auto& p=*impl_;p.data.initializeSlot(index,name,country,p.host.unixTime());p.dirty=true;return true;
+    if(index>=3||name.empty())return false;auto& p=*impl_;p.data.initializeSlot(index,name,country,p.host.unixTime());p.dirty=true;
+    // GlobalInfo.initSlot finishes with selectSlot/save. The name callback
+    // refreshes the slots screen; it does not enter the Base automatically.
+    return selectSlot(index);
 }
-bool GameSession::deleteSlot(unsigned index){if(index>=3)return false;auto& p=*impl_;auto bytes=p.data.slot(index);std::fill(bytes.begin(),bytes.end(),0);p.dirty=true;return true;}
+bool GameSession::deleteSlot(unsigned index){if(index>=3)return false;auto& p=*impl_;p.data.slot(index)[8]=0;p.dirty=true;return save(SaveReason::deleteSlot);}
 bool GameSession::selectSlot(unsigned index){
     auto& p=*impl_;if(index>=3||!p.data.slot(index)[8])return false;
     const auto previousStats=p.equipment?p.equipment->stats():progression::EquipStats{};
@@ -378,6 +383,7 @@ bool GameSession::save(SaveReason reason){
 const ui::ScreensState& GameSession::state(){if(impl_->dirty)impl_->rebuild();impl_->dynamicHUD();return impl_->view;}
 const SessionMetrics& GameSession::metrics()const{return impl_->metrics;}
 const SaveData& GameSession::envelope()const{return impl_->data;}
+std::string GameSession::originalText(std::string_view key)const{return std::string(impl_->descriptions.lookup(key).value_or(""));}
 std::span<const std::uint8_t> GameSession::workingSlot()const{return impl_->working;}
 CombatScene* GameSession::battle(){return impl_->scene.get();}
 float GameSession::renderTime()const{return impl_->clock.renderTime();}
@@ -401,7 +407,7 @@ void GameSession::action(const ui::ScreenAction& a){
     const auto id=a.button.key.id;const auto event=a.button.type;
     if(event==ui::ButtonEventType::release)return; // Not an original subscribed action.
     if(a.screen==ui::ScreenId::slots){
-        auto start=[&]{const int selected=p.view.selectedSlot;if(selected>=0&&selected<3){if(p.data.slot(unsigned(selected))[8]){if(selectSlot(unsigned(selected)))enterBase();}else p.host.requestName(unsigned(selected));}};
+        auto start=[&]{const int selected=p.view.selectedSlot;if(selected>=0&&selected<3){if(p.data.slot(unsigned(selected))[8]){if(selectSlot(unsigned(selected))){auto slot=p.slot();slot.u32(0x1b5c,slot.u32(0x1b5c)+1u);const auto location=slot.string(0x2d,16);if(location.starts_with("Base"))enterBase();else enterField(location,std::bit_cast<std::int32_t>(p.slot().u32(0x68)));}}else p.host.requestName(unsigned(selected));}};
         if(id==1009&&event==ui::ButtonEventType::push){const int selected=a.button.key.intData;if(selected<0||selected>=3)return;if(p.view.selectedSlot!=selected){p.view.selectedSlot=selected;p.dirty=true;}else start();return;}
         if(event==ui::ButtonEventType::pop&&id==1001){start();return;}
         if(event==ui::ButtonEventType::pop&&id==1010){if(p.view.selectedSlot>=0&&p.view.selectedSlot<3&&p.data.slot(unsigned(p.view.selectedSlot))[8])p.host.requestDelete(unsigned(p.view.selectedSlot));return;}
@@ -452,7 +458,7 @@ void GameSession::action(const ui::ScreenAction& a){
             if(id==1031){p.closeDialogs();p.scene->setPaused(true);p.uiSound(0);
                 if(p.scene->isSave()){save(SaveReason::saveAndExit);const auto score=p.slot().u32(0x70);if(std::bit_cast<std::int32_t>(p.slot().u32(0x74))<std::bit_cast<std::int32_t>(score)){p.slot().u32(0x74,score);++p.metrics.unsupportedActions; /* reportScore platform consumer pending */}}
                 p.screen(ui::ScreenId::title);return;}
-            if(id==1032){p.closeDialogs();p.uiSound(0);p.host.alert("VisitIndiean");p.dirty=true;return;}
+            if(id==1032){p.closeDialogs();p.uiSound(0);p.host.alert("VisitIndiean","More Games");p.dirty=true;return;}
             if(p.view.airliftVisible&&id>=4002&&id<=4007){const auto& current=state();const int index=int(id)-4002;const auto& item=current.airlifts[std::size_t(index)];
                 if(!item.dataId.empty()&&(a.button.key.dataId.empty()||a.button.key.dataId==item.dataId)){p.view.selectedAirlift=index;p.dirty=true;p.uiSound(0);}return;}
             if(p.view.airliftVisible&&id==4000){p.closeDialogs();p.dirty=true;p.uiSound(0);return;}

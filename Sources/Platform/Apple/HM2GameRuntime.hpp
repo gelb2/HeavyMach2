@@ -7,7 +7,7 @@
 namespace hm2::apple {
 struct NativeRequest {
     enum class Kind {name,deleteSlot,alert,saveError};
-    Kind kind;unsigned slot=0;std::string text;
+    Kind kind;unsigned slot=0;std::string text;std::string title{};
 };
 // Apple adapter for the restored HD game canvas. Device-specific canvas/HUD
 // adaptation remains a separate task; this is also the GPU integration harness.
@@ -21,6 +21,9 @@ public:
     void draw(CAEAGLLayer*);
     bool input(PointerPhase,Vec2,std::uintptr_t);
     bool provideName(unsigned,std::string_view,std::string_view country);
+    bool confirmDelete(unsigned);
+    bool logicalPoint(CGPoint,Vec2&)const;
+    [[nodiscard]] std::string nativeText(std::string_view)const;
     void setActive(bool);
     void synchronize();
     GameSession& session();

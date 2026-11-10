@@ -58,9 +58,9 @@ ui::ButtonKey key(ui::Screens& screens,unsigned id,int data=0){for(const auto& k
 int main(int argc,char** argv){
     if(argc<2)return 77;Files files(argv[1]);Host host;DarwinWorldRandom rng(77);GameSession session(files,host,rng);
     titleToSlots(session);const auto initialUnsupported=session.metrics().unsupportedActions;action(session,1001,ui::ButtonEventType::push);assert(session.metrics().unsupportedActions==initialUnsupported);action(session,99999);assert(session.metrics().unsupportedActions==initialUnsupported+1);button(session,ui::ScreenId::slots,1009,ui::ButtonEventType::push,0);button(session,ui::ScreenId::slots,1001);
-    assert(host.names==1&&host.writes.empty());assert(!session.createSlot(3,"MACH","us"));assert(session.createSlot(0,"MACH","us"));assert(host.writes.empty());
+    assert(host.names==1&&host.writes.empty());assert(!session.createSlot(3,"MACH","us"));assert(session.createSlot(0,"MACH","us"));assert((host.writes==std::vector<SaveReason>{SaveReason::selectSlot}));
     button(session,ui::ScreenId::slots,1001);assert(session.state().screen==ui::ScreenId::base);
-    assert((host.writes==std::vector<SaveReason>{SaveReason::selectSlot,SaveReason::enterBase}));assert(session.metrics().saveCompletions==2);
+    assert((host.writes==std::vector<SaveReason>{SaveReason::selectSlot,SaveReason::selectSlot,SaveReason::enterBase}));assert(session.metrics().saveCompletions==3);
     const auto saved=host.stored;DarwinWorldRandom loadRng(4);const auto decoded=SaveData::decode(saved,loadRng,false);
     assert(std::equal(decoded.slot(0).begin(),decoded.slot(0).end(),session.workingSlot().begin()));
     assert(session.state().slots[0].used&&session.state().slots[0].name=="MACH");assert(session.state().inventory[0].equipped&&session.state().inventory[2].equipped);
@@ -83,17 +83,17 @@ int main(int argc,char** argv){
     // A second independent game uses a separate envelope and Darwin stream.
     // Original GimmeCr is an original-name cheat, not an invented fake award.
     Files secondFiles(argv[1]);Host secondHost;DarwinWorldRandom secondRng(99);GameSession second(secondFiles,secondHost,secondRng);
-    assert(second.createSlot(1,"GimmeCr","us"));assert(second.envelope().slot(1)[0x6c]==50);
+    assert(second.createSlot(1,"GimmeCr","us"));assert(second.envelope().slot(1)[0x6c]==51);
     assert(second.selectSlot(1));second.enterBase();
-    // initSlot creates level50/EXP100m. selectSlot's original addExp(0)
-    // advances exactly once because that stored EXP exceeds level50's bound.
-    assert(second.state().level==51&&second.state().credits==100000000);
+    // initSlot creates level50/EXP100m and selects once (level51).
+    // The subsequent explicit start selects again, advancing once to52.
+    assert(second.state().level==52&&second.state().credits==100000000);
     progression::SlotView secondSlot(std::span(const_cast<std::uint8_t*>(second.workingSlot().data()),second.workingSlot().size()));
-    assert(secondSlot.hp()==secondSlot.maxHP()&&secondSlot.maxHP()==1276);
+    assert(secondSlot.hp()==secondSlot.maxHP()&&secondSlot.maxHP()==1296);
     const auto firstRng=rng.calls();const auto firstState=session.workingSlot();const Bytes firstBytes(firstState.begin(),firstState.end());
     assert(second.enterField("Stage01_01",0));for(unsigned i=0;i<360;++i){second.tick();if(!second.battle()->selectedEnemy())for(const auto& e:second.battle()->enemies())if(e.hp>0){second.battle()->selectEnemy(e.id);break;}second.drawWorld();}
     assert(rng.calls()==firstRng&&std::equal(firstBytes.begin(),firstBytes.end(),session.workingSlot().begin()));
-    assert(secondHost.writes.size()==2&&second.battle()->metrics().kills>0);
+    assert(secondHost.writes.size()==3&&second.battle()->metrics().kills>0);
 
     // Real menu action phases operate on original progression/equipment state.
     Files menuFiles(argv[1]);Host menuHost;DarwinWorldRandom menuRng(3);GameSession menus(menuFiles,menuHost,menuRng,fixture());

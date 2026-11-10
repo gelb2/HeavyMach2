@@ -1,0 +1,166 @@
+{
+  "scope": "Normal Source entry and original slot/native dialog procedures; HD canvas and English data; not full game",
+  "completeGameCoverage": false,
+  "coreTests": 55,
+  "sanitizerTests": 6,
+  "devices": {
+    "ipad": {
+      "uiTests": 1,
+      "nativeNameTests": 1,
+      "result": "passed",
+      "sourceLogSHA256": "60d79a3a721474de5ccdffd642c4d8872c4525df7dfc5b3d0751c05921a46863",
+      "screenshots": {
+        "source-slot-after-confirmed-delete": {
+          "file": "source-final-ipad-attachments/4B6B89E8-29AD-4665-925F-C81669292BF3.png",
+          "sha256": "78370511e7ece15ad315dee01598d1162eab814c447a02bbd602c442aa48a3f6",
+          "bytes": 2877038
+        },
+        "source-field-after-real-touch": {
+          "file": "source-final-ipad-attachments/F57E9ACA-BD8D-40B7-B91E-2207E0CC90E4.png",
+          "sha256": "7cecd4b4c54dcc73b5b583db401c680815735d125a8725f3113a2c4780fd8259",
+          "bytes": 5593927
+        },
+        "source-base-created-save": {
+          "file": "source-final-ipad-attachments/00D02D25-3AF3-410B-A4D9-8318681C6A83.png",
+          "sha256": "aabbc2dd150e8a2d53be4fad680c9df57c2c316eceb81e29d103e3afb9028f1b",
+          "bytes": 2564866
+        },
+        "source-slots-before-create": {
+          "file": "source-final-ipad-attachments/4209E359-FB5F-42A5-AFDA-8664E73932EF.png",
+          "sha256": "4aeb5c40e66f2830ce426364280629e3a4b0d983a9fd2e9fcf274617e6fda7a3",
+          "bytes": 2863510
+        }
+      },
+      "originalDialogNames": [
+        "New User",
+        "Incorrect Name",
+        "Delete Slot"
+      ],
+      "checked": [
+        "native name cancel/invalid/valid",
+        "initSlot/select/save, still slots",
+        "explicit start/base and3writes",
+        "base gate/field",
+        "real touch movement",
+        "enemy ID selected by actual begin and additional weapon emissions",
+        "GPU system pause/resume",
+        "relaunch save persistence",
+        "delete cancel",
+        "confirmed unloaded-slot deletion and relaunch"
+      ],
+      "gpuRuntimeTest": "passed; 180frames warm resource/texture/audio allocation0; atomic save/restart; corrupt save preserved",
+      "observed": {
+        "before": {
+          "x": "-275.000000",
+          "y": "-412.000000",
+          "emissions": "0",
+          "selectedEnemy": "0",
+          "selectionTouches": "0",
+          "saves": "3"
+        },
+        "after": {
+          "x": "-177.913483",
+          "y": "-411.697876",
+          "emissions": "5",
+          "selectedEnemy": "2",
+          "selectionTouches": "1",
+          "touchSelectedEnemy": "2",
+          "saves": "3",
+          "unsupported": "0"
+        }
+      }
+    },
+    "iphone": {
+      "uiTests": 1,
+      "nativeNameTests": 1,
+      "result": "passed",
+      "sourceLogSHA256": "529c028f3b474a67fcc1439ed537f05b263f80e775a693db8de258d3f8bba34f",
+      "screenshots": {
+        "source-slot-after-confirmed-delete": {
+          "file": "source-final-iphone-attachments/44520D0D-143C-45B5-B138-6BD19B7006AD.png",
+          "sha256": "07b66078f4a1762b002833506cd53d0d00c9e537dc2030bff214eee049302818",
+          "bytes": 1225636
+        },
+        "source-field-after-real-touch": {
+          "file": "source-final-iphone-attachments/6630760D-2DE2-40DF-AAC5-E4678B304570.png",
+          "sha256": "166e701dd11498465900316019be46edf60fadf4e4495062f722911f6c23e320",
+          "bytes": 2281565
+        },
+        "source-base-created-save": {
+          "file": "source-final-iphone-attachments/1758473A-9042-4604-A57B-9974A62DC107.png",
+          "sha256": "499d4d4bf130419c21bcc737325662927a3867495bfc2fe004620f516864bd54",
+          "bytes": 1170572
+        },
+        "source-slots-before-create": {
+          "file": "source-final-iphone-attachments/91FDBBB9-9E71-4354-8BEB-0B3EADCDBC37.png",
+          "sha256": "a3e23ca89031ec3b111918ad274aa8cfd225ea4fb9ba33a29223c4187fb5d9a7",
+          "bytes": 1217062
+        }
+      },
+      "originalDialogNames": [
+        "New User",
+        "Incorrect Name",
+        "Delete Slot"
+      ],
+      "checked": [
+        "native name cancel/invalid/valid",
+        "initSlot/select/save, still slots",
+        "explicit start/base and3writes",
+        "base gate/field",
+        "real touch movement",
+        "enemy ID selected by actual begin and additional weapon emissions",
+        "GPU system pause/resume",
+        "relaunch save persistence",
+        "delete cancel",
+        "confirmed unloaded-slot deletion and relaunch"
+      ],
+      "gpuRuntimeTest": "passed; 180frames warm resource/texture/audio allocation0; atomic save/restart; corrupt save preserved",
+      "observed": {
+        "before": {
+          "x": "-275.000000",
+          "y": "-412.000000",
+          "emissions": "0",
+          "selectedEnemy": "0",
+          "selectionTouches": "0",
+          "saves": "3"
+        },
+        "after": {
+          "x": "-175.607315",
+          "y": "-411.767212",
+          "emissions": "13",
+          "selectedEnemy": "2",
+          "selectionTouches": "1",
+          "touchSelectedEnemy": "2",
+          "saves": "3",
+          "unsupported": "0"
+        }
+      }
+    }
+  },
+  "sourceSHA256": {
+    "Sources/Core/Data/Descriptions.hpp": "b2a6572f09b09002303748adc8e59a89fbda2186a114c939b49c01e5a30f2595",
+    "Sources/Core/Session/GameSession.cpp": "89053106f6654e73f5072d4f659de441bc30d20f697fb44ecd3a6aee61392bdd",
+    "Sources/Core/Session/GameSession.hpp": "0f24f72a18ce898dc0d7d0d9a82deea0fab450ffa65ab9ca236f21648b3a45a4",
+    "Sources/Core/Progression/Progression.hpp": "05befabc90f14f12a15130601f3d099bcd372b78749b52417b36fb34ea2fe2a7",
+    "Sources/Core/Progression/Equipment.cpp": "01357ad5a961523c35dd6a78cb87e6695d0a3bb5365935f40223261677fe5d52",
+    "Sources/Platform/Apple/HM2Application.mm": "9dfbea8a6f1ccb11c2ac3d649b9ffdf59808737fb34bc4870190d01acc05bd24",
+    "Sources/Platform/Apple/HM2SourceView.h": "84cf98626d67487518dff10c2ca889253047e8c7e6f7d6deeec32f4cefc471c5",
+    "Sources/Platform/Apple/HM2SourceView.mm": "545c929c5c6792b307cb96efbe235c4fc9ad6844b41599e489ee24ea1406d828",
+    "Sources/Platform/Apple/HM2GameRuntime.hpp": "1ee3f8cc09d21eed3e8ed22afc3f3124fdd9167176bfb5d2e4ce4a2e1d9638f4",
+    "Sources/Platform/Apple/HM2GameRuntime.mm": "5825798447371e3b1ab951f50b31f1c13b664abf63192616ebee3cde5f18ba80",
+    "tests/SessionEntryTests.cpp": "a58b6999f2dfe93dceef23d4de7ea7192f12bbf40762f5fa671e13dca6cd334c",
+    "tests/SessionTests.cpp": "33ca3a7bd96e284b87e00bf9988045514b0e15d07e8aa6d14e3e9d3445285b22",
+    "Apple/Tests/SessionRendererTests.mm": "68adbc98baf7006b6fb0bc8f26864e3190c7eab1304d750bca1d6be74042f9c3",
+    "Apple/UITests/WorldInputTests.mm": "40c37a06ecb53d282a38691e3c1a6285d201340b8e87112236baf7ff5887c15b"
+  },
+  "remaining": [
+    "default BOT Scene integration and GPU shadows",
+    "Help/GameOver and original command completion/score actions",
+    "all23 bottom equipment movement/GPU/reference comparison",
+    "all60 missions and full campaign/gate transitions",
+    "locale selection and KR game UI",
+    "iPhone landscape/iPad portrait final size/camera/HUD/reference equivalence",
+    "other directions/platforms/device validation",
+    "loaded-slot deletion original port runtime comparison"
+  ]
+}

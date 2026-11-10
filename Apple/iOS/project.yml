@@ -49,7 +49,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.gelb2.heavymach2.restored
-        HM2_DISPLAY_NAME: HM2 Source Preview
+        HM2_DISPLAY_NAME: HM2 Source
         GCC_PREPROCESSOR_DEFINITIONS: "$(inherited) HM2_VALIDATION=0"
   HeavyMach2Validation:
     templates: [SourceApp]

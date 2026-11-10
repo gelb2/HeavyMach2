@@ -56,7 +56,7 @@ bool Equipment::equip(int position,unsigned slot,bool inField){
     if(entry->flags){failure_=EquipmentFailure::alreadyEquipped;return false;}
     if(entry->item->type!=slotTypes[slot]){failure_=EquipmentFailure::wrongType;return false;}
     if(inField&&slot!=2&&slot!=3){
-        failure_=EquipmentFailure::fieldRestricted;if(slot==0||slot==1)events_.alert("EquipParts");events_.sound(4);return false;
+        failure_=EquipmentFailure::fieldRestricted;if(slot==0||slot==1)events_.alert("EquipParts",slot==0?"BODY parts":"FOOT parts");events_.sound(4);return false;
     }
     const auto* item=entry->item;const bool ok=inventory_.setEquip(position,slot,[&](const Item& equipped,unsigned s){apply(equipped,s);});
     if(ok){if(inField&&ui_)ui_->setParts(item->stringParameter,slot==2?5:6);events_.changed(Change::inventory);events_.sound(4);}return ok;
@@ -73,7 +73,7 @@ const Item* Equipment::bot(unsigned slot)const{if(slot>=3)throw std::out_of_rang
 void Equipment::setBot(unsigned slot,const Item* item){slot_.string(0x63a+slot*6,6,item?item->code:"");slot_.u32(0x64c+slot*4,0);if(ui_)ui_->botChanged(slot,item);events_.changed(Change::inventory);}
 BotChange Equipment::registerBot(unsigned slot,int position,bool inField){
     failure_=EquipmentFailure::none;if(slot>=3){failure_=EquipmentFailure::invalidPosition;return {};}
-    if(inField){failure_=EquipmentFailure::fieldRestricted;events_.alert("EquipParts");return {};}
+    if(inField){failure_=EquipmentFailure::fieldRestricted;events_.alert("EquipParts","BOT");return {};}
     const auto* entry=inventory_.entry(position);if(!entry||!entry->item||entry->count<1){failure_=EquipmentFailure::invalidPosition;return {};}
     if(entry->item->type!=4){failure_=EquipmentFailure::wrongType;return {};}
     const Item* item=entry->item;const Item* old=bot(slot);events_.sound(4);setBot(slot,item);inventory_.subtractFrom(position,1);
