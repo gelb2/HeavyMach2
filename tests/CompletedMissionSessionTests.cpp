@@ -78,10 +78,17 @@ void click(ui::Screens& ui,unsigned id,float now){auto b=ui.button(key(ui,id));a
 const Sprite& sprite(const Frame& frame,std::string_view image){for(const auto& s:frame.sprites)if(s.image==image)return s;assert(false);std::abort();}
 Size dimensions(const Sprite& sprite){if(sprite.strip.empty())return sprite.size;float left=sprite.strip[0].position.x,right=left,bottom=sprite.strip[0].position.y,top=bottom;for(const auto& vertex:sprite.strip){left=std::min(left,vertex.position.x);right=std::max(right,vertex.position.x);bottom=std::min(bottom,vertex.position.y);top=std::max(top,vertex.position.y);}return {right-left,top-bottom};}
 void popupInputAndGeometry(Files& files){
-    Host host;DarwinWorldRandom random(1);GameSession game(files,host,random,twoReady(files,false));assert(game.selectSlot(0));game.enterBase();command(game);
+    Host host;DarwinWorldRandom random(1);GameSession game(files,host,random,twoReady(files));assert(game.selectSlot(0));game.enterBase();command(game);
     UIHost bridge(game,host);PreparedTiles tiles("completed-test");ui::Screens screens(files,tiles,bridge);bridge.screens=&screens;bridge.sync();const auto saves=host.writes.size();
     auto ok=screens.button(key(screens,5007));assert(ok->position.x==446&&ok->position.y==438&&ok->pushDepth==0&&ok->pushDelay==0&&ok->releaseHeight==0&&ok->releaseDelay==0&&ok->key().dataId=="M002010");
     Frame first;screens.append(first,game.renderTime());const auto& bg=sprite(first,"MissionCompletedBG.png");assert(bg.center.x==384&&bg.center.y==512&&dimensions(bg).width==512&&dimensions(bg).height==256);
+    const auto& middle=sprite(first,"MissionList_Mid.png");
+    const auto& bottom=sprite(first,"MissionList_Btm.png");
+    const auto& top=sprite(first,"NewMissionList_Top.png");
+    assert(middle.center.y==512&&dimensions(middle).height==64);
+    assert(bottom.center.y==480&&top.center.y==544&&&middle<&bottom&&&bottom<&top&&&top<&bg);
+    const auto collapsed=screens.buttons();
+    assert(std::none_of(collapsed.begin(),collapsed.end(),[](const auto& k){return k.id>=5100&&k.id<=5204;}));
     const auto& cr=sprite(first,"Icon00001.png");const auto& exp=sprite(first,"Icon00010.png");assert(cr.center.x==300&&cr.center.y==502&&exp.center.x==400&&exp.center.y==502);
     const auto& button=sprite(first,"Common_Btn_OK.png");assert(button.columns==1&&button.rows==2&&button.tile==0);
     assert(&sprite(first,"Common_Btn_EXIT.png")<&bg&&&bg<&button&&&button<&cr&&&cr<&exp); // Actual painter order, not optional provenance metadata.
@@ -94,6 +101,18 @@ void popupInputAndGeometry(Files& files){
     click(screens,5007,1);assert(game.state().completedMission.dataId=="M001010"&&game.state().credits==680&&!screens.button(ok->key()));
     Frame second;screens.append(second,game.renderTime());const auto& item=sprite(second,"Icon01001.png");assert(item.center.x==308&&item.center.y==458&&request(".reward2").text=="3"&&request(".reward2").dimensions.width==60);
     click(screens,2100,2);settle(game);assert(game.state().screen==ui::ScreenId::base&&host.writes.size()==saves+1&&game.state().completedMission.dataId.empty());
+    command(game);
+    bridge.sync();
+    Frame list;screens.append(list,game.renderTime());
+    const auto state=game.state();
+    assert(std::any_of(state.acceptedMissions.begin(),state.acceptedMissions.end(),[](const auto& item){return item.complete;}));
+    assert(std::none_of(list.sprites.begin(),list.sprites.end(),[](const auto& s){return s.image=="CompleteMark.png";}));
+    auto field=state;
+    field.screen=ui::ScreenId::field;
+    field.missionVisible=true;
+    screens.refresh(field);
+    Frame fieldFrame;screens.append(fieldFrame,game.renderTime());
+    assert(std::count_if(fieldFrame.sprites.begin(),fieldFrame.sprites.end(),[](const auto& s){return s.image=="CompleteMark.png";})==1);
     std::cout<<"COMPLETED actualScreensPointer/synchronousReplacement/ExitAndRankingRemainActive/popupPainterOrderAndRewardGeometry PASS\n";
 }
 void acceptRefreshOnly(Files& files){

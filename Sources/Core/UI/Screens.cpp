@@ -565,7 +565,7 @@ void Screens::Impl::missionList(bool command){
         addButton(Panel::mission,id,"Btn_Mission.png",at,1,2,0,1,isAccepted?std::optional<Size>(Size{420,44}):std::nullopt,0,entry.dataId,{1,1},entry.enabled,10);
         std::string label=entry.name;if(isAccepted)label+=" ["+std::to_string(entry.did)+"/"+std::to_string(entry.total)+"]";
         text("MissionList."+entry.dataId,std::move(label),at,{376,command?16.f:20.f},command?"Copperplate-Bold":"TrebuchetMS-Bold",command?18.f:17.f,TextAlign::left,{240.f/255,240.f/255,1,1},10);
-        if(entry.complete)image("CompleteMark.png",plus(at,{136,0}),1,1,0,{1,1},false,0,1,10);
+        if(!command&&entry.complete)image("CompleteMark.png",plus(at,{136,0}),1,1,0,{1,1},false,0,1,10);
         if(state.selectedMission==int(index))image("SelMission.png",at,1,1,0,{1,1},false,2,1,10);
         remember(first,CommandPart::row,at.y,int(index));
         if(command&&state.selectedMission==int(index))commandSelectedRowY=at.y;
@@ -703,6 +703,13 @@ void Screens::Impl::build(){
         case ScreenId::shop:shop();break;
         case ScreenId::command:
             image("CmdCenterBG.png",{384,512});
+            // GuiCommandCenter creates these tiles before populating its rows.
+            // The completion popup is painted over the collapsed background.
+            if(!state.commandListVisible){
+                image("MissionList_Mid.png",{384,512});
+                image("MissionList_Btm.png",{384,480});
+                image("NewMissionList_Top.png",{384,544});
+            }
             addButton(Panel::root,5009,"Common_Btn_RANKING.png",{484,52});
             addButton(Panel::root,2100,"Common_Btn_EXIT.png",{640,52});
             if(state.commandListVisible)missionList(true);
