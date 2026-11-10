@@ -35,6 +35,17 @@ struct FieldPresentation {
     std::uint64_t identity=0,enemyRevision=0;bool range[2]={false,false};
     std::shared_ptr<Text> enemyName;
 };
+enum class CommandPart {middle,top,bottom,row,detail,accept};
+struct CommandNode {
+    std::size_t index;
+    CommandPart part;
+    float baseY;
+    int row;
+};
+struct CommandPresentation {
+    float size=0,displayedSize=0,detailY=0;
+    int displayedSelection=-1,detailSelection=-1;
+};
 using Node=std::variant<ImageNode,ButtonNode,TextNode,NumberNode,PreviewNode,DetailNode>;
 struct MessagePresentation {
     VisualImage background;
@@ -63,6 +74,9 @@ struct Screens::Impl {
     std::vector<std::pair<std::shared_ptr<Button>,Vec2>> chooserMoves;
     float now=0;
     std::shared_ptr<DetailPresentation> detail;FieldPresentation fieldPresentation;
+    CommandPresentation command;
+    std::vector<CommandNode> commandNodes;
+    float commandSelectedRowY=0;
     Impl(ResourceAccess& r,PreparedTiles& t,ScreensHost& h,const ScreensState& s,float time,std::shared_ptr<Impl> old)
         :resources(r),tiles(t),host(h),state(s),previous(std::move(old)),now(time){
         if(previous&&previous->state.screen==s.screen){title=previous->title;message=previous->message;layers=previous->layers;}
@@ -293,6 +307,8 @@ struct Screens::Impl {
     void maintenance();
     void shop();
     void missionList(bool);
+    void positionCommandList();
+    void tickCommandList();
     void completedMission();
     void system();
     void airlift();
@@ -506,35 +522,126 @@ void Screens::Impl::missionList(bool command){
     const auto available=command?std::min<std::size_t>(5,state.availableMissions.size()):0;
     const auto accepted=std::min<std::size_t>(5,state.acceptedMissions.size());
     const float header=command&&accepted?64.f:0.f;
-    const float detail=state.selectedMission>=0?256.f:0.f;
+    const float detail=!command&&state.selectedMission>=0?256.f:0.f;
     const float length=float(available+accepted)*44+header+(command?0.f:40.f);
     const float half=(length+detail)*.5f;
+    int detailSelection=state.selectedMission;
+    if(command){
+        const bool sameList=previous&&previous->state.screen==state.screen
+            &&previous->state.commandListRevision==state.commandListRevision;
+        if(sameList)this->command=previous->command;
+        if(state.selectedMission>=0){
+            this->command.detailSelection=state.selectedMission;
+            if(!sameList||previous->state.selectedMission!=state.selectedMission
+                ||previous->state.commandSelectionRevision!=state.commandSelectionRevision){
+                this->command.size=0;
+                this->command.detailY=root.y+half-32-44.f*float(state.selectedMission)
+                    -146+this->command.displayedSize;
+            }
+        }else if(sameList){
+            // ACCEPT clears the selection immediately. The old detail and
+            // positions survive until Command.tick replaces the list.
+            detailSelection=this->command.detailSelection;
+            state.missionBody=previous->state.missionBody;
+        }
+    }
+    auto remember=[&](std::size_t first,CommandPart part,float y,int row=-1){
+        if(command)for(auto i=first;i<nodes.size();++i)commandNodes.push_back({i,part,y,row});
+    };
+    auto first=nodes.size();
     image("MissionList_Mid.png",root,1,1,0,{1,half/32},false,0,1,10);
+    remember(first,CommandPart::middle,half);
+    first=nodes.size();
     image("MissionList_Btm.png",plus(root,{0,-half-32}),1,1,0,{1,1},false,0,1,10);
+    remember(first,CommandPart::bottom,root.y-half-32);
+    first=nodes.size();
     image(command?"NewMissionList_Top.png":"MissionList_Top.png",plus(root,{0,half+32}),1,1,0,{1,1},false,0,1,10);
+    remember(first,CommandPart::top,root.y+half+32);
     const Vec2 list=plus(root,{0,half-32});
     auto row=[&](const ItemView& entry,unsigned id,unsigned index,float y,bool isAccepted){
-        if(state.selectedMission>=0&&int(index)>state.selectedMission)y-=256;
+        if(!command&&state.selectedMission>=0&&int(index)>state.selectedMission)y-=256;
         const auto at=plus(list,{0,y});
+        const auto first=nodes.size();
         addButton(Panel::mission,id,"Btn_Mission.png",at,1,2,0,1,isAccepted?std::optional<Size>(Size{420,44}):std::nullopt,0,entry.dataId,{1,1},entry.enabled,10);
         std::string label=entry.name;if(isAccepted)label+=" ["+std::to_string(entry.did)+"/"+std::to_string(entry.total)+"]";
         text("MissionList."+entry.dataId,std::move(label),at,{376,command?16.f:20.f},command?"Copperplate-Bold":"TrebuchetMS-Bold",command?18.f:17.f,TextAlign::left,{240.f/255,240.f/255,1,1},10);
         if(entry.complete)image("CompleteMark.png",plus(at,{136,0}),1,1,0,{1,1},false,0,1,10);
         if(state.selectedMission==int(index))image("SelMission.png",at,1,1,0,{1,1},false,2,1,10);
+        remember(first,CommandPart::row,at.y,int(index));
+        if(command&&state.selectedMission==int(index))commandSelectedRowY=at.y;
     };
     for(unsigned i=0;i<available;++i)row(state.availableMissions[i],5100+i,i,-44.f*float(i),false);
-    if(command&&available==0)text("Command.noNewMission","There is not a new mission.",list,{384,24},"Copperplate-Bold",20,TextAlign::center,{140.f/255,240.f/255,1,1},10);
+    if(command&&available==0){
+        first=nodes.size();
+        text("Command.noNewMission","There is not a new mission.",list,{384,24},"Copperplate-Bold",20,TextAlign::center,{140.f/255,240.f/255,1,1},10);
+        remember(first,CommandPart::row,list.y);
+    }
     const float acceptedY=-float(available)*44-header;
-    if(command&&accepted)image("MyMissions.png",plus(list,{0,-float(available)*44-10}),1,1,0,{1,1},false,0,1,10);
+    if(command&&accepted){
+        const auto at=plus(list,{0,-float(available)*44-10});
+        first=nodes.size();
+        image("MyMissions.png",at,1,1,0,{1,1},false,0,1,10);
+        remember(first,CommandPart::row,at.y,int(available));
+    }
     for(unsigned i=0;i<accepted;++i)row(state.acceptedMissions[i],5200+i,unsigned(available)+i,acceptedY-44.f*float(i),true);
-    if(state.selectedMission>=0&&std::size_t(state.selectedMission)<available+accepted){
-        const Vec2 info=plus(list,{0,-44.f*float(state.selectedMission)-146});
+    if(detailSelection>=0&&std::size_t(detailSelection)<available+accepted){
+        const Vec2 info=plus(list,{0,-44.f*float(detailSelection)-146});
+        first=nodes.size();
         image("MissionInfo.png",info,1,1,0,{1,1},false,0,1,10);
         text("MissionInfo.body",state.missionBody,plus(info,{-6,0}),{378,224},"Helvetica Neue",command?18.f:16.f,TextAlign::left,{100.f/255,240.f/255,240.f/255,1},10);
-        if(command&&std::size_t(state.selectedMission)<available){const auto& selected=state.availableMissions[std::size_t(state.selectedMission)];
-            addButton(Panel::mission,5004,"Common_Btn_ACCEPT.png",plus(info,{122,-84}),1,2,0,1,{},0,selected.dataId,{1,1},selected.enabled,10);}
+        remember(first,CommandPart::detail,0);
+        if(command&&std::size_t(detailSelection)<available){const auto& selected=state.availableMissions[std::size_t(detailSelection)];
+            first=nodes.size();
+            const auto button=addButton(Panel::mission,5004,"Common_Btn_ACCEPT.png",plus(info,{122,-84}),1,2,0,1,{},0,selected.dataId,{1,1},selected.enabled,10);
+            button->pushDepth=0;
+            button->releaseHeight=0;
+            button->releaseDelay=0;
+            remember(first,CommandPart::accept,0);
+        }
     }
+    if(command)positionCommandList();
     if(!command)addButton(Panel::mission,5000,"Common_Btn_CLOSE.png",plus(root,{150,-half-16}),1,2,0,1,{},0,{}, {1,1},true,10);
+}
+void Screens::Impl::positionCommandList(){
+    for(const auto& entry:commandNodes){
+        auto& node=nodes[entry.index];
+        float y=entry.baseY;
+        float scale=-1;
+        switch(entry.part){
+            case CommandPart::middle:
+                std::get<ImageNode>(node).image.scale.y=(entry.baseY+command.displayedSize)/32;
+                continue;
+            case CommandPart::top: y+=command.displayedSize;break;
+            case CommandPart::bottom: y-=command.displayedSize;break;
+            case CommandPart::row:
+                y+=command.displayedSize;
+                if(entry.row>command.displayedSelection)y-=2*command.displayedSize;
+                break;
+            case CommandPart::detail: y=command.detailY;scale=command.size/128;break;
+            case CommandPart::accept: y=command.detailY-84;break;
+        }
+        if(auto* image=std::get_if<ImageNode>(&node)){
+            image->image.screenPosition.y=y;
+            if(scale>=0)image->image.scale.y=scale;
+        }else if(auto* text=std::get_if<TextNode>(&node)){
+            text->text->position.y=y;
+            if(scale>=0)text->text->scale.y=scale;
+        }else if(auto* button=std::get_if<ButtonNode>(&node)){
+            button->button->position.y=y;
+        }
+    }
+}
+void Screens::Impl::tickCommandList(){
+    constexpr float destination=128;
+    if(state.selectedMission<0||command.size==destination)return;
+    const float remaining=destination-command.size;
+    command.size=remaining<=.1f?destination:command.size+remaining*.25f;
+    command.displayedSize=command.size;
+    command.displayedSelection=state.selectedMission;
+    // The list follows the top cap. The selected row rises by wndSize
+    // while the detail center sits wndSize + 24 below that row.
+    command.detailY=commandSelectedRowY-24;
+    positionCommandList();
 }
 void Screens::Impl::completedMission(){
     const Vec2 root{384,512};const auto& mission=state.completedMission;
@@ -633,6 +740,7 @@ void Screens::Impl::build(){
 void Screens::Impl::tick(float time,WorldRandom& random){
     if(!std::isfinite(time))throw std::runtime_error("Nonfinite original UI clock");now=time;
     if(state.screen==ScreenId::field)tickMessage();
+    if(state.screen==ScreenId::command&&state.commandListVisible)tickCommandList();
     tickRange(random);tickDetail();
     if(state.screen==ScreenId::title){
         auto& t=title;
@@ -833,7 +941,7 @@ std::vector<ScreenCoverage> Screens::coverage(){
         {ScreenId::field,Panel::mission,"Accepted rows5200..5204, close5000, original text formatter","DlgMission0x22b1c/0x23678/0x23208",true},
         {ScreenId::command,Panel::mission,"Available5100..5104,accepted5200..5204,accept5004,ranking5009,exit2100","GuiCommandCenter0x2614c/0x2708c/0x26af8",true},
         {ScreenId::command,Panel::mission,"Completed result5007/reward overlay","GuiCommandCenter0x279a8/0x269ac",true},
-        {ScreenId::command,Panel::mission,"Mission list expand animation","GuiCommandCenter0x26558",false},
+        {ScreenId::command,Panel::mission,"Mission detail expand animation","GuiCommandCenter0x26558/0x26af8",true},
         {ScreenId::maintenance,Panel::inventory,"25 cells6000..6024,pages6090/6091,arrange6093","WndInven0x34918/GuiMaintenance0x2bbb0",true},
         {ScreenId::maintenance,Panel::equipment,"Six equipment targets6100..6105 and actual item identities","WndEquip0x33c5c",true},
         {ScreenId::maintenance,Panel::bot,"Three bot targets6300..6302,disarm6310","WndBotSlot0x33300/GuiMaintenance.handleButton",true},

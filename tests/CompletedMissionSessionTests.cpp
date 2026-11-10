@@ -135,6 +135,79 @@ void failedAcceptanceRefresh(Files& files){
     game.tick();bridge.sync();assert(game.state().commandListRevision==revision+1&&game.state().credits==500&&game.state().completedMission.dataId.empty()&&host.writes.size()==saves);
     std::cout<<"COMPLETED failedSixthAcceptance/MissionFull/clearSelection/nextTickListOnly/noSave PASS\n";
 }
+void commandDetailExpansion(Files& files){
+    Host host;
+    DarwinWorldRandom random(1);
+    GameSession game(files,host,random,initial());
+    assert(game.selectSlot(0));
+    game.enterBase();
+    command(game);
+    UIHost bridge(game,host);
+    PreparedTiles tiles("command-detail");
+    ui::Screens screens(files,tiles,bridge);
+    bridge.screens=&screens;
+    bridge.sync();
+    const auto saves=host.writes.size();
+    const float rowY=screens.button(key(screens,5100))->position.y;
+    const float secondY=screens.button(key(screens,5101))->position.y;
+    const auto draw=[&]{
+        Frame frame;
+        screens.append(frame,game.renderTime());
+        return frame;
+    };
+    const auto tick=[&]{
+        game.tick([&]{
+            screens.tick(game.renderTime(),random);
+        });
+    };
+    click(screens,5100,0);
+    auto frame=draw();
+    assert(dimensions(sprite(frame,"MissionInfo.png")).height==0);
+    assert(screens.button(key(screens,5100))->position.y==rowY);
+    auto accept=screens.button(key(screens,5004));
+    assert(accept->position.y==rowY-146-84&&accept->scale.y==1);
+    tick();
+    frame=draw();
+    assert(dimensions(sprite(frame,"MissionInfo.png")).height==64);
+    assert(screens.button(key(screens,5100))->position.y==rowY+32);
+    assert(screens.button(key(screens,5101))->position.y==secondY-32);
+    assert(accept->position.y==rowY-24-84&&accept->scale.y==1);
+    bridge.sync(); // Unrelated presentation refresh preserves progress.
+    tick();
+    frame=draw();
+    assert(dimensions(sprite(frame,"MissionInfo.png")).height==112);
+    for(unsigned i=2;i<25;++i)tick();
+    frame=draw();
+    assert(dimensions(sprite(frame,"MissionInfo.png")).height<256);
+    tick();
+    frame=draw();
+    assert(dimensions(sprite(frame,"MissionInfo.png")).height==256);
+    click(screens,5100,1);
+    frame=draw();
+    assert(dimensions(sprite(frame,"MissionInfo.png")).height==0);
+    assert(screens.button(key(screens,5100))->position.y==rowY+128);
+    tick();
+    assert(screens.button(key(screens,5100))->position.y==rowY+32);
+    click(screens,5004,2);
+    assert(game.state().acceptedMissions.size()==1&&host.writes.size()==saves);
+    frame=draw();
+    assert(dimensions(sprite(frame,"MissionInfo.png")).height==64);
+    assert(screens.button(key(screens,5100))->position.y==rowY+32);
+    assert(key(screens,5004).dataId=="M001010");
+    assert(std::none_of(frame.sprites.begin(),frame.sprites.end(),[](const auto& s){return s.image=="SelMission.png";}));
+    game.tick();
+    bridge.sync();
+    frame=draw();
+    assert(std::none_of(frame.sprites.begin(),frame.sprites.end(),[](const auto& s){return s.image=="MissionInfo.png";}));
+    click(screens,5200,3);
+    const float acceptedY=screens.button(key(screens,5200))->position.y;
+    tick();
+    frame=draw();
+    assert(sprite(frame,"MissionInfo.png").center.y==acceptedY-24);
+    const auto buttons=screens.buttons();
+    assert(std::none_of(buttons.begin(),buttons.end(),[](const auto& k){return k.id==5004;}));
+    std::cout<<"COMMAND detail expansion/reselection/row and button geometry/early acceptance PASS\n";
+}
 void partialInventoryFailure(const char* root){
     Files files(root);
     // Synthetic original-format action order covers the original executor's
@@ -149,4 +222,4 @@ void partialInventoryFailure(const char* root){
     std::cout<<"COMPLETED partialItemFailureKeepsAddedItems/remainingActionsContinue/takeNotDisplayed/noRetryOrSave/reentrant5007Rejected PASS\n";
 }
 }
-int main(int argc,char** argv){if(argc<2)return 77;Files files(argv[1]);orderedSweep(files);popupInputAndGeometry(files);acceptRefreshOnly(files);retainedRowSelection(files);failedAcceptanceRefresh(files);partialInventoryFailure(argv[1]);}
+int main(int argc,char** argv){if(argc<2)return 77;Files files(argv[1]);orderedSweep(files);popupInputAndGeometry(files);acceptRefreshOnly(files);retainedRowSelection(files);failedAcceptanceRefresh(files);commandDetailExpansion(files);partialInventoryFailure(argv[1]);}

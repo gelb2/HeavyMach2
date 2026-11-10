@@ -57,6 +57,7 @@ struct ScreensState {
     bool buyMode=false,pathMode=false;
     bool commandListVisible=true;
     std::uint64_t commandListRevision=0;
+    std::uint64_t commandSelectionRevision=0; // Each original row Pop rebuilds the detail, including reselection.
     CompletedMissionView completedMission;
     std::string selectedWeaponLeft,selectedWeaponRight,message,missionTitle,missionBody,selectedMissionDataId;
     // GuiGame setMessage/hideMessage calls have identity even when text repeats.

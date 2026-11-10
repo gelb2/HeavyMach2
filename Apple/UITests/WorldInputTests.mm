@@ -129,12 +129,30 @@
     NSDictionary* second=[self state:world];XCTAssertEqual([second[@"credits"] intValue],680);XCTAssertEqual([second[@"experience"] intValue],400);XCTAssertEqual([second[@"level"] intValue],1);XCTAssertEqual([second[@"repairItems"] intValue],items+3);XCTAssertEqual([second[@"completedRewardCount"] intValue],3);XCTAssertEqual([second[@"saves"] intValue],saves);[self capture:@"completed-second-M001010-rewards"];
     [self tapButton:5007 data:0 world:world];[self wait:^BOOL{const auto s=[self state:world];return [s[@"completedMission"] length]==0&&[s[@"commandListVisible"] intValue]==1;} description:@"last OK removes result and next Command tick displays remaining missions"];
     NSDictionary* list=[self state:world];XCTAssertEqual([list[@"credits"] intValue],680);XCTAssertEqual([list[@"acceptedCount"] intValue],2);XCTAssertEqual([list[@"saves"] intValue],saves);[self capture:@"completed-remaining-mission-list"];
+    const float acceptedY=[list[@"b5200_0_y"] floatValue];
+    const float newY=[list[@"b5100_0_y"] floatValue];
+    [self tapButton:5200 data:0 world:world];
+    [self wait:^BOOL{
+        const auto s=[self state:world];
+        return [s[@"b5200_0_y"] floatValue]==acceptedY+128&&s[@"b5004_0_y"]==nil;
+    } description:@"accepted mission opens its detail without an ACCEPT button"];
+    [self capture:@"command-accepted-mission-detail"];
+    [self tapButton:5100 data:0 world:world];
+    [self wait:^BOOL{
+        const auto s=[self state:world];
+        return [s[@"b5100_0_y"] floatValue]==newY+128
+            &&[s[@"b5200_0_y"] floatValue]==acceptedY-128
+            &&[s[@"b5004_0_y"] floatValue]==newY-24-84;
+    } description:@"new mission opens its detail, moves the accepted rows, and positions ACCEPT"];
+    NSDictionary* expanded=[self state:world];
+    XCTAssertEqual([expanded[@"saves"] intValue],saves);
+    [self capture:@"command-new-mission-detail"];
     [self tapButton:2100 data:0 world:world];[self wait:^BOOL{const auto s=[self state:world];return [s[@"screen"] intValue]==3&&[s[@"doorPhase"] intValue]==8;} description:@"original doors return to Base and save rewards once" timeout:60];XCTAssertEqual([[self state:world][@"saves"] intValue],saves+1);
     [app terminate];[app launch];world=app.otherElements[@"hm2.world"];XCTAssertTrue([world waitForExistenceWithTimeout:15]);[self titleToSlots:world];[self tapButton:1001 data:0 world:world];
     [self wait:^BOOL{const auto s=[self state:world];return [s[@"screen"] intValue]==3&&[s[@"doorPhase"] intValue]==8;} description:@"restart decodes completed progress" timeout:60];
     [self tapButton:2001 data:0 world:world];[self tapButton:2001 data:0 world:world];[self wait:^BOOL{const auto s=[self state:world];return [s[@"screen"] intValue]==4&&[s[@"doorPhase"] intValue]==8&&[s[@"commandListVisible"] intValue]==1;} description:@"restart does not award completed missions again" timeout:60];
     NSDictionary* restarted=[self state:world];XCTAssertEqual([restarted[@"credits"] intValue],680);XCTAssertEqual([restarted[@"experience"] intValue],400);XCTAssertEqual([restarted[@"repairItems"] intValue],items+3);XCTAssertEqual([restarted[@"completedMission"] length],0u);XCTAssertEqual([restarted[@"unsupported"] intValue],0);
-    NSData* data=[NSJSONSerialization dataWithJSONObject:@{@"first":first,@"second":second,@"list":list,@"restarted":restarted} options:NSJSONWritingPrettyPrinted error:nil];XCTAttachment* a=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];a.name=@"Completed mission actual Source UI and restart";a.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:a];[app terminate];
+    NSData* data=[NSJSONSerialization dataWithJSONObject:@{@"first":first,@"second":second,@"list":list,@"expanded":expanded,@"restarted":restarted} options:NSJSONWritingPrettyPrinted error:nil];XCTAttachment* a=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];a.name=@"Completed mission actual Source UI and restart";a.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:a];[app terminate];
 }
 
 @end

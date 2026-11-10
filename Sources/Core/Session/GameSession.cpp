@@ -596,7 +596,13 @@ void GameSession::action(const ui::ScreenAction& a){
         const bool command=a.screen==ui::ScreenId::command;
         if((command&&p.view.commandListVisible&&id>=5100&&id<=5104)||(id>=5200&&id<=5204&&(command?p.view.commandListVisible:p.view.missionVisible))){
             const auto& current=state();const auto& missions=command?(id<5200?p.commandAvailableRows:p.commandAcceptedRows):current.acceptedMissions;const auto index=std::size_t(id-(id<5200?5100:5200));
-            if(index<missions.size()&&(a.button.key.dataId.empty()||a.button.key.dataId==missions[index].dataId)){p.selectedMissionId=missions[index].dataId;p.dirty=true;p.uiSound(0);}return;
+            if(index<missions.size()&&(a.button.key.dataId.empty()||a.button.key.dataId==missions[index].dataId)){
+                p.selectedMissionId=missions[index].dataId;
+                if(command)++p.view.commandSelectionRevision;
+                p.dirty=true;
+                p.uiSound(0);
+            }
+            return;
         }
         if(command&&id==5004){if(!p.view.commandListVisible)return;const auto id=p.selectedMissionId;if(!id.empty()&&(a.button.key.dataId.empty()||a.button.key.dataId==id))acceptMission(id);p.selectedMissionId.clear();p.view.selectedMission=-1;p.commandCurState=-1;p.dirty=true;p.uiSound(0);return;}
         if(!command&&id==5000&&p.view.missionVisible){p.closeDialogs();p.dirty=true;p.uiSound(0);return;}
