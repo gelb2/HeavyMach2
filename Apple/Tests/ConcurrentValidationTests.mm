@@ -1,13 +1,20 @@
 #import <XCTest/XCTest.h>
 #import <UIKit/UIKit.h>
 #include "Platform/Apple/HM2ConcurrentRuntime.hpp"
+#include <algorithm>
 
 namespace {
 void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
-    CGDataProviderRef provider=CGDataProviderCreateWithCFData((__bridge CFDataRef)rgba);CGColorSpaceRef color=CGColorSpaceCreateDeviceRGB();
-    CGImageRef image=CGImageCreate(size.width,size.height,8,32,size.width*4,color,kCGImageAlphaPremultipliedLast|kCGBitmapByteOrderDefault,provider,nullptr,false,kCGRenderingIntentDefault);
-    UIImage* picture=[UIImage imageWithCGImage:image scale:1 orientation:UIImageOrientationDownMirrored];
+    const auto width=std::size_t(size.width),height=std::size_t(size.height),stride=width*4;
+    NSMutableData* topDown=[NSMutableData dataWithLength:rgba.length];const auto* source=static_cast<const std::uint8_t*>(rgba.bytes);auto* destination=static_cast<std::uint8_t*>(topDown.mutableBytes);
+    for(std::size_t y=0;y<height;++y)std::copy_n(source+(height-1-y)*stride,stride,destination+y*stride);
+    // CAEAGLLayer is opaque. Framebuffer alpha is not display opacity; export
+    // its exact RGB bytes, without premultiplying/unpremultiplying them.
+    CGDataProviderRef provider=CGDataProviderCreateWithCFData((__bridge CFDataRef)topDown);CGColorSpaceRef color=CGColorSpaceCreateDeviceRGB();
+    CGImageRef image=CGImageCreate(width,height,8,32,stride,color,kCGImageAlphaNoneSkipLast|kCGBitmapByteOrderDefault,provider,nullptr,false,kCGRenderingIntentDefault);
+    UIImage* picture=[UIImage imageWithCGImage:image];
     NSData* png=UIImagePNGRepresentation(picture);XCTAttachment* a=[XCTAttachment attachmentWithData:png uniformTypeIdentifier:@"public.png"];a.name=name;a.lifetime=XCTAttachmentLifetimeKeepAlways;[test addAttachment:a];
+    if([name containsString:@"source frame"]){XCTAttachment* raw=[XCTAttachment attachmentWithData:rgba uniformTypeIdentifier:@"public.data"];raw.name=[name stringByAppendingString:@" rawRGBA"];raw.lifetime=XCTAttachmentLifetimeKeepAlways;[test addAttachment:raw];}
     CGImageRelease(image);CGColorSpaceRelease(color);CGDataProviderRelease(provider);
 }
 }
@@ -49,7 +56,7 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
         }catch(const std::exception& e){failure=[NSString stringWithUTF8String:e.what()];[link invalidate];[completed fulfill];}
     }};
     CADisplayLink* display=[CADisplayLink displayLinkWithTarget:timer selector:@selector(frame:)];display.preferredFramesPerSecond=60;[display addToRunLoop:NSRunLoop.mainRunLoop forMode:NSRunLoopCommonModes];
-    [self waitForExpectations:@[completed] timeout:240];[display invalidate];timer.callback=nil;
+    [self waitForExpectations:@[completed] timeout:600];[display invalidate];timer.callback=nil;
     XCTAssertNil(failure,@"Concurrent frame failed: %@",failure);
     NSDictionary* comparison=runtime->verifyRepeatedRendering(layer,viewport);
     attachPixels(self,runtime->legacyComparisonPixels(),runtime->drawableSize(),@"Same-frame original scissor GPU");
@@ -58,7 +65,7 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
     XCTAssertEqualObjects(comparison[@"repeatDrawCalls"],comparison[@"firstDrawCalls"]);
     NSMutableDictionary* report=[runtime->report() mutableCopy];report[@"renderComparison"]=comparison;NSError* error=nil;NSData* data=[NSJSONSerialization dataWithJSONObject:report options:NSJSONWritingPrettyPrinted|NSJSONWritingSortedKeys error:&error];XCTAssertNotNil(data);
     if(data){XCTAttachment* attachment=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];attachment.name=@"HM2 real display-clock concurrent report";attachment.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:attachment];}
-    XCTAssertEqual(frames,targetFrames);XCTAssertEqual([report[@"scenarios"] unsignedIntegerValue],68u);XCTAssertEqual([report[@"combatScenarios"] unsignedIntegerValue],55u);
+    XCTAssertEqual(frames,targetFrames);XCTAssertEqual([report[@"scenarios"] unsignedIntegerValue],106u);XCTAssertEqual([report[@"combatScenarios"] unsignedIntegerValue],55u);
     XCTAssertTrue([report[@"commonFrameInterval"] boolValue]);
     if(fullCoverage){XCTAssertEqual([report[@"activeWeaponDefinitions"] unsignedIntegerValue],110u);XCTAssertEqual([report[@"activeWeaponKinds"] unsignedIntegerValue],5u);XCTAssertGreaterThanOrEqual([report[@"maxConcurrentWeaponKinds"] unsignedIntegerValue],5u);}
     XCTAssertGreaterThanOrEqual([report[@"maxProgressingEffects"] unsignedIntegerValue],2u);
@@ -82,9 +89,20 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
             XCTAssertEqual([row[@"strikeProjectiles"] unsignedIntegerValue],[row[@"strikeItemCode"] isEqualToString:@"02007"]?1u:10u);XCTAssertGreaterThan([row[@"strikeEnemyHPRemoved"] unsignedIntegerValue],0u);XCTAssertEqual([row[@"activeStrikes"] unsignedIntegerValue],0u);
         }XCTAssertEqual(strikes,3u);XCTAssertGreaterThan([report[@"airStrikeFramesWithCombatActivity"] unsignedIntegerValue],0u);
         XCTAssertGreaterThan([report[@"messageFonts"] count],0u);for(NSDictionary* font in report[@"messageFonts"]){XCTAssertEqualObjects(font[@"font"],@"TrebuchetMS-Bold");XCTAssertGreaterThan([font[@"inkPixels"] unsignedIntegerValue],20u);XCTAssertEqual([font[@"size"] intValue],16);XCTAssertEqual([font[@"width"] intValue],512);XCTAssertEqual([font[@"height"] intValue],24);XCTAssertFalse([font[@"retina"] boolValue]);}
-        XCTAssertEqual([report[@"capturedSourceFrames"] count],3u);for(NSDictionary* capture in report[@"capturedSourceFrames"]){if([capture[@"frame"] intValue]==240)XCTAssertEqual([capture[@"messageBackgrounds"] intValue],1);if([capture[@"frame"] intValue]==241)XCTAssertEqual([capture[@"messageBackgrounds"] intValue],1);if([capture[@"frame"] intValue]==381){XCTAssertGreaterThan([capture[@"planes"] intValue],0);XCTAssertGreaterThan([capture[@"markers"] intValue],0);}}
+        XCTAssertEqual([report[@"capturedSourceFrames"] count],4u);for(NSDictionary* capture in report[@"capturedSourceFrames"]){if([capture[@"frame"] intValue]==112)XCTAssertGreaterThan([capture[@"dashQuads"] intValue],0);if([capture[@"frame"] intValue]==240)XCTAssertEqual([capture[@"messageBackgrounds"] intValue],1);if([capture[@"frame"] intValue]==241)XCTAssertEqual([capture[@"messageBackgrounds"] intValue],1);if([capture[@"frame"] intValue]==381){XCTAssertGreaterThan([capture[@"planes"] intValue],0);XCTAssertGreaterThan([capture[@"markers"] intValue],0);}}
+        unsigned baselineMenuFrames=0,baselineMenuOverlap=0;for(NSDictionary* frame in report[@"frameActivity"]){XCTAssertEqual([frame[@"tickedScenarios"] intValue],106);bool baseline=false;for(NSDictionary* b in frame[@"buttons"])if([b[@"scenario"] intValue]<68)baseline=true;
+            if(baseline){++baselineMenuFrames;if([frame[@"combatActiveProjectiles"] unsignedIntegerValue]||[frame[@"combatEmittingScenarios"] unsignedIntegerValue]||[frame[@"combatDamage"] unsignedIntegerValue])++baselineMenuOverlap;}}
+        XCTAssertEqual(baselineMenuFrames,11u);XCTAssertEqual(baselineMenuOverlap,11u);
+        NSArray* cases=report[@"cases"];NSMutableSet* fields=[NSMutableSet setWithObject:@"Stage01_01"];unsigned long long spawns[3]={0,0,0};
+        for(unsigned k=0;k<3;++k)spawns[k]=[cases[0][@"firstSpawns"][k] unsignedLongLongValue];
+        for(unsigned i=68;i<105;++i){NSDictionary* row=cases[i];XCTAssertEqual([row[@"role"] intValue],7);XCTAssertFalse([fields containsObject:row[@"map"]]);[fields addObject:row[@"map"]];for(unsigned k=0;k<3;++k)spawns[k]+=[row[@"firstSpawns"][k] unsignedLongLongValue];
+            NSString* map=row[@"map"];if([map isEqualToString:@"Stage01_02"]||[map isEqualToString:@"Stage02_07"]||[map isEqualToString:@"Stage03_04"]){const unsigned kind=[map isEqualToString:@"Stage01_02"]?1:2;for(NSString* key in @[@"enemyEmissions",@"enemyDamage",@"enemyKills",@"enemyRemovals"])XCTAssertGreaterThan([row[key][kind] unsignedLongLongValue],0ull);}}
+        XCTAssertEqual(fields.count,38u);XCTAssertEqual(spawns[0],385ull);XCTAssertEqual(spawns[1],307ull);XCTAssertEqual(spawns[2],3ull);
+        NSDictionary* dash=cases[105];XCTAssertTrue([dash[@"dashInputAccepted"] boolValue]);XCTAssertEqual([dash[@"dashInputFrame"] intValue],110);XCTAssertEqual([dash[@"dashStarts"] unsignedIntegerValue],1u);
+        XCTAssertEqualWithAccuracy([dash[@"dashSPBefore"] doubleValue]-[dash[@"dashSPAfter"] doubleValue],100,0.0001);XCTAssertEqual([dash[@"dashSounds"] intValue],1);
+        XCTAssertGreaterThan([dash[@"dashMoveTicks"] unsignedIntegerValue],0u);XCTAssertGreaterThan([dash[@"dashParticles"] unsignedIntegerValue],0u);XCTAssertEqualObjects(dash[@"dashParticles"],dash[@"dashRandomCalls"]);XCTAssertGreaterThan([dash[@"dashMaxDisplacement"] doubleValue],30);
         NSDictionary* interruption=report[@"inputInterruption"];for(NSString* key in @[@"capturedBefore",@"discardedAfter",@"beginReachedRealHandler",@"cleanupSentNoAction",@"noExtraTick",@"noSave",@"creditPreserved",@"screenPreserved"])XCTAssertTrue([interruption[key] boolValue],@"Interruption %@ failed",key);
-        NSDictionary* moving=report[@"cases"][58];XCTAssertGreaterThan([moving[@"distanceMoved"] doubleValue],100.0);
+        NSDictionary* moving=report[@"cases"][58];XCTAssertEqual([moving[@"dashStarts"] unsignedIntegerValue],0u);XCTAssertGreaterThan([moving[@"distanceMoved"] doubleValue],100.0);
         XCTAssertGreaterThan([moving[@"coinPickups"] unsignedIntegerValue],0u);XCTAssertGreaterThan([moving[@"itemPickups"] unsignedIntegerValue],0u);
         XCTAssertGreaterThan([moving[@"pickupCreditGain"] intValue],0);
         XCTAssertEqual([moving[@"credit"] intValue],[moving[@"initialCredit"] intValue]+[moving[@"pickupCreditGain"] intValue]);XCTAssertGreaterThan([moving[@"inventoryGain"] intValue],0);
@@ -98,7 +116,7 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
     surface.frame=CGRectMake(0,0,384,512);surface.contentScaleFactor=1;
     runtime->captureNextFrame();runtime->draw(layer,{384,512});
     attachPixels(self,runtime->pixels(),runtime->drawableSize(),@"Concurrent GPU preview384x512");
-    if(fullCoverage)for(unsigned number:{240u,241u,381u}){XCTAssertTrue(runtime->captureStoredFrame(number,layer));attachPixels(self,runtime->pixels(),runtime->drawableSize(),[NSString stringWithFormat:@"Original GPU source frame%u preview384x512",number]);}
+    if(fullCoverage)for(unsigned number:{112u,240u,241u,381u}){XCTAssertTrue(runtime->captureStoredFrame(number,layer));attachPixels(self,runtime->pixels(),runtime->drawableSize(),[NSString stringWithFormat:@"Original GPU source frame%u preview384x512",number]);}
     runtime->setActive(false);runtime.reset();window.hidden=YES;window.rootViewController=nil;
     XCTAssertTrue([NSFileManager.defaultManager removeItemAtURL:directory error:&error]);
 }

@@ -33,3 +33,6 @@ HeavyMach 1과 MachDefense의 파일은 변경하지 않는다. 모든 개발은
 
 
 2026-11-10 최신: [퀵아이템·공습·메시지68조건](../docs/quick-items-restoration-20261110.md)을 실제 Session/Scene/공통탄환/공통pool/GPU에 연결했다. C++48개, 전체Core ASan/UBSan, 양 시뮬레이터각1,200프레임과 독립앱68결과 저장을 확인했다. 현재 캠페인 병목은 차량만 허용하는 Scene으로, 포탑 포함37개field에 진입하지 못한다. EnemyActors 통합과 Dash를 다음 과제로 조사 중이며 아직 Source 앱 시작은 보행이다. 전체게임·모든맵·전체치트·실기기·develop/main 완료로 취급하지 않는다.
+
+
+2026-11-10 전장·대시 후속: 위68조건 시점의 차량전용Scene 병목을 해소했다. [공통EnemyActor와Dash](../docs/enemy-dash-restoration-20261110.md)를 연결했고38개field 최초생성695대(차량385·포탑307·항공기3)를 확인했다. 기존68+추가37field+Dash1=106조건을 같은clock/GPU/OpenAL로갱신한다. C++51개·전체Core ASan/UBSan106조건·iPhone/iPad각1,200프레임,기기별PNG4장/rawRGB일치를통과했다. 원본PtBtm23개는같은Player/발소켓계열이며별도controller23개가있다고가정하지않는다. 정상Source는아직보행시작이며bot실제행동·23장비동작대조·모든임무/캠페인·포팅판동등성·기기별최종표시·실기기는남는다.

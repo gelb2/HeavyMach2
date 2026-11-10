@@ -21,6 +21,7 @@ add_library(HeavyMach2Core STATIC
     Sources/Core/Validation/ConcurrentValidation.cpp
     Sources/Core/Simulation/TerrainCollision.cpp
     Sources/Core/Simulation/BipodMotion.cpp
+    Sources/Core/Simulation/Dash.cpp
     Sources/Core/Simulation/WorldNavigation.cpp
     Sources/Core/Simulation/LocomotionScene.cpp
     Sources/Core/Simulation/WeaponController.cpp
@@ -163,6 +164,18 @@ if(BUILD_TESTING)
     target_compile_options(CombatSceneTests PRIVATE -UNDEBUG)
     if(HM2_HD_RESOURCES)
         add_test(NAME OriginalBattleRuntime COMMAND CombatSceneTests "${HM2_HD_RESOURCES}")
+        add_executable(DashTests tests/DashTests.cpp)
+        target_link_libraries(DashTests PRIVATE HeavyMach2Core)
+        target_compile_options(DashTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalDashMotion COMMAND DashTests "${HM2_HD_RESOURCES}")
+        add_executable(DashSessionTests tests/DashSessionTests.cpp)
+        target_link_libraries(DashSessionTests PRIVATE HeavyMach2Core)
+        target_compile_options(DashSessionTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalDashSession COMMAND DashSessionTests "${HM2_HD_RESOURCES}")
+        add_executable(EnemyActorSceneTests tests/EnemyActorSceneTests.cpp)
+        target_link_libraries(EnemyActorSceneTests PRIVATE HeavyMach2Core)
+        target_compile_options(EnemyActorSceneTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalEnemyActorScene COMMAND EnemyActorSceneTests "${HM2_HD_RESOURCES}")
         add_executable(SessionTests tests/SessionTests.cpp)
         target_link_libraries(SessionTests PRIVATE HeavyMach2Core)
         target_compile_options(SessionTests PRIVATE -UNDEBUG)

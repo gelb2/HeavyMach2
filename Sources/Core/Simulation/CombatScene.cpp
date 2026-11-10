@@ -4,12 +4,13 @@
 #include "Core/Presentation/PreparedTiles.hpp"
 #include "Core/Presentation/Visibility.hpp"
 #include "Core/Simulation/EnemySpawner.hpp"
-#include "Core/Simulation/EnemyVehicle.hpp"
+#include "Core/Simulation/EnemyActors.hpp"
 #include "Core/Simulation/ObjectCollision.hpp"
 #include "Core/Simulation/ProjectileImpact.hpp"
 #include "Core/Simulation/ProjectileVisual.hpp"
 #include "Core/Simulation/WeaponEffects.hpp"
 #include "Core/Simulation/AirStrike.hpp"
+#include "Core/Simulation/Dash.hpp"
 #include <algorithm>
 #include <array>
 #include <bit>
@@ -29,9 +30,9 @@ VisibilityState imageVisibility(const TileImage* tile){
     return out;
 }
 }
-struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost,AirStrikeHost {
+struct CombatScene::Impl:EnemyActorHost,EnemySpawnerHost,AirStrikeHost,DashStartHost,DashMotionHost {
     struct Enemy {
-        std::uint64_t id=0;std::size_t spawner=0;EnemyVehicle actor;
+        std::uint64_t id=0;std::size_t spawner=0;EnemyActor actor;
         VisibilityState root;
         std::vector<VisibilityState> parts;
         float crashTime=0,targetScale=1,targetAlpha=1,targetAngle=0;bool removed=false,removePending=false,targetShow=false;
@@ -67,6 +68,7 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost,AirStrikeHost {
     GameClock clock;
     MapCamera camera;
     BipodMotion playerMotion;
+    DashGesture dashGesture;DashMotion dashMotion;
     TerrainContact playerContact;
     int hp=256;
     bool saveAllowed=false;
@@ -102,7 +104,7 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost,AirStrikeHost {
      models(Models::parse(Chunk::parse(r.read("PartsInfo.mcb")),Chunk::parse(r.read("MachInfo.mcb")))),
      machines(Machines::parse(DataTable::parse(r.read("MachList.tble")))),
      equipment(PlayerEquipment::parse(DataTable::parse(r.read("ItemInfo.tble")))),
-     weapons(Weapons::parse(DataTable::parse(r.read("WeaponInfo.tble")))),terrain(map.map()),clock(setup.initialRenderTime),hp(setup.playerHP),saveAllowed(setup.isSave),pool(setup.initialRenderTime,static_cast<EnemyVehicleHost&>(*this)){
+     weapons(Weapons::parse(DataTable::parse(r.read("WeaponInfo.tble")))),terrain(map.map()),clock(setup.initialRenderTime),hp(setup.playerHP),saveAllowed(setup.isSave),pool(setup.initialRenderTime,static_cast<EnemyActorHost&>(*this)){
         const auto gate=std::find_if(map.map().gates.begin(),map.map().gates.end(),[&](const auto& g){return g.number==setup.gate;});
         if(gate==map.map().gates.end())throw std::runtime_error("Original map gate is missing");
         for(std::size_t i=0;i<4;++i)equipmentCodes[i]=setup.equipment[i];
@@ -120,7 +122,7 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost,AirStrikeHost {
         for(std::size_t i=0;i<playerMounts.size();++i)playerAnimationSlots.push_back(i);
         tiles.prepareWorldEffects(r);
         if(auto* t=tiles.prepare(r,"Target.png")){t->columns=2;t->rows=1;}
-        for(const auto* name:{"Airplane.png","BulletShell.png","Efx_Trail04.png","Efx_Trail02.png","Efx_Nuclear.png"})tiles.prepare(r,name);
+        for(const auto* name:{"Efx_Dash.png","Airplane.png","BulletShell.png","Efx_Trail04.png","Efx_Trail02.png","Efx_Nuclear.png"})tiles.prepare(r,name);
         for(const auto& [name,w]:weapons.all()){
             metrics.playerWeaponEmissions.emplace(name,0);metrics.enemyWeaponEmissions.emplace(name,0);
             if(!w.bulletImage.empty())tiles.prepare(r,w.bulletImage);
@@ -146,9 +148,10 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost,AirStrikeHost {
                 if(w!=weapons.all().end())playerWeapons.push_back({i,&w->second,WeaponController(0),1,m.parentSocket==1});
             }
         }
+        for(const auto kind:{MachineKind::vehicle,MachineKind::turret,MachineKind::aircraft}){metrics.enemySpawnsByKind.emplace(kind,0);metrics.enemyEmissionsByKind.emplace(kind,0);metrics.enemyDamageCallsByKind.emplace(kind,0);metrics.enemyKillsByKind.emplace(kind,0);metrics.enemyRemovalsByKind.emplace(kind,0);}
         for(const auto& s:map.map().spawners){
             const auto& info=machines.machine(s.model);
-            if(info.kind!=MachineKind::vehicle)throw std::runtime_error("CombatScene currently restores vehicle map enemies only");
+            if(!EnemyActor::supports(info.kind))throw std::runtime_error("Original map enemy kind has no restored consumer");
             spawners.emplace_back(s,info.attack!=0);
             const auto mounts=models.modelMounts(s.model);std::vector<VisibilityState> unused(mounts.size());prepareParts(r,mounts,unused);
         }
@@ -158,7 +161,7 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost,AirStrikeHost {
         camera.center={gate->position.x+140,gate->position.y};
         processCamera(camera,playerMotion.state().position,navigation);
     }
-    WorldRandom& rng(){return static_cast<EnemyVehicleHost&>(*this);}
+    WorldRandom& rng(){return static_cast<EnemyActorHost&>(*this);}
     std::uint32_t random()override{++metrics.randomCalls;return externalRandom?externalRandom->random():ownRandom.random();}
     void reseed(std::uint32_t seed)override{if(externalRandom)externalRandom->reseed(seed);else ownRandom.reseed(seed);}
     void prepareParts(ResourceAccess& r,std::span<const PartMount> mounts,std::vector<VisibilityState>& visibility){
@@ -177,8 +180,9 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost,AirStrikeHost {
     }
     const WeaponTarget* player()const override{playerScratch={1,playerMotion.state().position,hp};return &playerScratch;}
     bool inCamera(Vec2 position)const override{return hm2::inCamera(VisibilityState{},position,&camera);}
-    bool spawn(const MapSpawner& s,bool)override{
+    bool spawn(const MapSpawner& s,bool boss)override{
         auto e=std::make_unique<Enemy>(nextID++,spawning,models,weapons,machines.machine(s.model),s.position,clock.worldTime(),rng());
+        e->actor.setBoss(boss);++metrics.enemySpawnsByKind.at(e->actor.info().kind);
         for(std::size_t i=0;i<e->parts.size();++i)e->parts[i]=imageVisibility(tiles.lookup(partImage(models.part(e->actor.mounts()[i].part))));
         e->targetVisibility=imageVisibility(tiles.lookup("Target.png"));
         actors.push_back(std::move(e));return true;
@@ -250,9 +254,10 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost,AirStrikeHost {
             soundID(15+random()%3,damageSoundPosition(playerMotion.state().position));hooks.playerHPChanged(hp);refreshPlayerHPGauge();return;
         }
         auto* e=enemy(id);if(!e)return;
+        ++metrics.enemyDamageCallsByKind.at(e->actor.info().kind);
         auto& state=e->actor.state();state.hp=std::bit_cast<std::int32_t>(std::uint32_t(state.hp)-std::uint32_t(amount));
         if(state.hp<1){
-            state.hp=0;++metrics.kills;baseCrash(e->actor.motion().position);
+            state.hp=0;++metrics.kills;++metrics.enemyKillsByKind.at(e->actor.info().kind);baseCrash(e->actor.motion().position);
             const bool wasFirst=!selection.empty()&&selection.front()==id;
             if(targetID==id){clearPlayerTarget();if(navigation.count())playerMotion.setDestination(navigation.point(0));}
             state.targetPlayer=false;state.moveToTarget=false;e->actor.setMachineState(2);
@@ -267,7 +272,7 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost,AirStrikeHost {
         soundID(15+random()%3,damageSoundPosition(e->actor.motion().position));
         // Enemy::onDamage resumes after super/onCrash and may retarget even
         // after its parts have been removed. Controllers are removed separately.
-        state.targetPlayer=true;state.moveToTarget=true;
+        e->actor.retargetAfterDamage();
     }
     struct EffectsHost:WeaponEffectsHost {
         Impl& scene;bool hostile;std::uint64_t owner;
@@ -295,23 +300,29 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost,AirStrikeHost {
         auto actor=std::make_shared<AirStrike>(weapon,delay,target,playerMotion.state().position,clock.worldTime(),clock.renderTime(),*this,rng());
         dynamic.push_back({{},{},{},false,std::move(actor)});++metrics.airStrikeRequests;
     }
+    void setDashVelocity(Vec2 value)override{dashMotion.setVelocity(value);++metrics.dashStarts;}
+    void clearMovePointer()override{navigation.cancel();}
+    void setSpecial(float value)override{hooks.setPlayerSpecial(value);}
+    Vec2 position()const override{return playerMotion.state().position;}
+    void addPosition(Vec2 delta)override{const auto p=playerMotion.state().position;playerMotion.applyContact({p.x+delta.x,p.y+delta.y});}
     void emitWeapon(const WeaponInfo& w,const WeaponEmission& shot,WeaponEffectInput input,std::uint64_t owner){
         ++metrics.emissions;if(input.hostile)++metrics.enemyEmissions;else ++metrics.playerEmissions;
         ++(input.hostile?metrics.enemyWeaponEmissions:metrics.playerWeaponEmissions).at(w.part);
         EffectsHost host(*this,input.hostile,owner);effects->emit(w,shot,input,rng(),host);
     }
-    void emit(const WeaponInfo& w,const WeaponEmission& shot,const EnemyVehicleEmission& input)override{
+    void emit(const WeaponInfo& w,const WeaponEmission& shot,const EnemyActorEmission& input)override{
+        ++metrics.enemyEmissionsByKind.at(input.owner->info().kind);
         WeaponEffectInput effect;effect.worldTime=clock.worldTime();effect.renderTime=clock.renderTime();
         effect.machinePosition=input.machinePosition;effect.partCenter=input.partCenter;effect.playerPosition=playerMotion.state().position;effect.hostile=true;
         emitWeapon(w,shot,effect,0);
     }
-    void objectContacts(EnemyVehicle& actor)override{
+    void objectContacts(EnemyActor& actor)override{
         VisibilityState root;root.show=actor.state().show;
         if(!hm2::inCamera(root,actor.motion().position,&camera))return;
         ObjectBody self{actor.motion().position,actor.info().radius,actor.info().kind};
         for(auto& e:actors){
             if(&e->actor==&actor)break;
-            if(e->removed||!hm2::inCamera(e->root,e->actor.motion().position,&camera))continue;
+            if(e->removed||e->actor.info().kind==MachineKind::aircraft||!hm2::inCamera(e->root,e->actor.motion().position,&camera))continue;
             ObjectBody other{e->actor.motion().position,e->actor.info().radius,e->actor.info().kind};
             if(resolveObjectCollision(self,other))e->actor.applyContact(other.position);
         }
@@ -463,6 +474,10 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost,AirStrikeHost {
         if(!paused&&(playerMotion.state().state==0||playerMotion.state().state==1)&&playerRoot.inScreen){
             const auto* target=selectedTarget();std::optional<Vec2> aim;if(target)aim=target->position;
             const int wall=playerContact.current;playerMotion.tick(wall<0?nullptr:&terrain.edges().at(std::size_t(wall)),aim);
+            const auto allocations=pool.allocations();const auto randomCalls=metrics.randomCalls;
+            if(dashMotion.tick(clock.renderTime(),{true,paused,playerRoot.inScreen,playerMotion.state().state,0},*this))++metrics.dashMoveTicks;
+            metrics.dashParticleAllocations+=pool.allocations()-allocations;metrics.dashRandomCalls+=metrics.randomCalls-randomCalls;
+            // The common collision pass also runs when Dash returned false.
             playerContact=terrain.resolve(playerMotion.state().position,playerContact.previous);playerMotion.applyContact(playerContact.position);
             if(target&&double(targetCheckTime+.5f)<clock.worldTime()){
                 if(moveToTarget)playerMotion.setDestination(distance2(playerMotion.state().position,target->position)<40000.f?playerMotion.state().position:target->position);
@@ -570,7 +585,7 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost,AirStrikeHost {
         processCamera(camera,playerMotion.state().position,navigation,target);
         // listEnemy is visited before map spawners append new actors to it.
         const auto priorEnemies=actors.size();
-        for(std::size_t i=0;i<priorEnemies;++i){auto& e=*actors[i];if(e.removed)continue;if(e.removePending){e.removed=true;continue;}
+        for(std::size_t i=0;i<priorEnemies;++i){auto& e=*actors[i];if(e.removed)continue;if(e.removePending){e.removed=true;++metrics.enemyRemovalsByKind.at(e.actor.info().kind);continue;}
             ++metrics.enemyTicks;if(!paused&&e.actor.motion().state==2)tickCorpse(e);
             advanceTarget(e);const bool targetShowAtChildTick=e.targetShow;
             e.actor.tick({clock.worldTime(),paused,e.root.inScreen},terrain,*this);
@@ -599,17 +614,25 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost,AirStrikeHost {
         if(paused||!active||hp<1)return false;
         if(!id||!std::isfinite(screen.x)||!std::isfinite(screen.y)||screen.y<100)return false;
         if(phase==PointerPhase::cancel){const bool was=targetPointer==id;if(was)targetPointer=0;return navigation.input(phase,screen,id,camera,playerMotion)||was;}
-        const auto world=camera.toWorld(screen);std::uint64_t found=0;float best=10000;
+        // Original EasyMove0x12698, scoped here. Do not reassociate the
+        // float operations or globally change the other camera consumers.
+        const Vec2 base{camera.center.x-camera.viewport.width*.5f,camera.center.y-camera.viewport.height*.5f};
+        const Vec2 shifted{base.x+camera.offset.x,base.y+camera.offset.y};
+        const Vec2 world{shifted.x+screen.x,shifted.y+screen.y};std::uint64_t found=0;float best=10000;
         for(const auto& e:actors)if(!e->removed&&e->actor.state().hp>0){const auto d=distance2(world,e->actor.motion().position);const float radius=float(e->actor.info().radius);if(d<radius*radius&&d<best){best=d;found=e->id;}}
         if(phase==PointerPhase::begin){
             if(navigation.pointer())return true;
-            if(distance2(world,playerMotion.state().position)<900)return navigation.input(phase,screen,id,camera,playerMotion);
+            if(distance2(world,playerMotion.state().position)<900)return navigation.inputWorld(phase,world,id,playerMotion);
             if(found){targetPointer=id;return select(found,false);}
-            moveToTarget=false;
+            moveToTarget=false;playerMotion.setState(1);
+            const bool handled=navigation.inputWorld(phase,world,id,playerMotion);
+            dashGesture.groundBegin(world,playerMotion.state().position,clock.worldTime(),hooks.playerSpecial(),*this);
+            return handled;
         }
+        if(phase==PointerPhase::move){dashGesture.pathDrag(navigation.pointer()==id,navigation.count());}
         if(phase==PointerPhase::move&&targetPointer==id){if(found)select(found,true);return true;}
-        if(phase==PointerPhase::end){const bool hadTargetPointer=targetPointer!=0;targetPointer=0;const bool moved=navigation.input(phase,screen,id,camera,playerMotion);return hadTargetPointer||moved;}
-        return navigation.input(phase,screen,id,camera,playerMotion);
+        if(phase==PointerPhase::end){const bool hadTargetPointer=targetPointer!=0;targetPointer=0;const bool moved=navigation.inputWorld(phase,world,id,playerMotion);return hadTargetPointer||moved;}
+        return navigation.inputWorld(phase,world,id,playerMotion);
     }
     Frame draw(){
         ++metrics.drawCalls;Frame frame=map.compose(camera);
@@ -627,6 +650,7 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost,AirStrikeHost {
         metrics.particleAllocations=pool.allocations();return frame;
     }
 };
+void CombatSceneHooks::setPlayerSpecial(float){throw std::logic_error("Missing actual Player SP consumer");}
 CombatScene::CombatScene(ResourceAccess& r,CombatSceneHooks& h,CombatSetup setup):impl_(std::make_unique<Impl>(r,h,setup)){}
 CombatScene::~CombatScene()=default;
 void CombatScene::tick(){impl_->tick();}
@@ -651,11 +675,12 @@ int CombatScene::playerHP()const{return impl_->hp;}
 const MapCamera& CombatScene::camera()const{return impl_->camera;}
 const TerrainCollision& CombatScene::terrain()const{return impl_->terrain;}
 const CombatMetrics& CombatScene::metrics()const{return impl_->metrics;}
+CombatDashSnapshot CombatScene::dashState()const{return {impl_->dashMotion.velocity(),impl_->dashMotion.lastEffectPosition(),impl_->dashGesture.tapTime(),impl_->hooks.playerSpecial(),impl_->navigation.pointer(),impl_->navigation.count(),impl_->playerContact.current};}
 std::vector<CombatEnemySnapshot> CombatScene::enemies()const{
     std::vector<CombatEnemySnapshot> out;
     for(const auto& e:impl_->actors)if(!e->removed){
         std::size_t parts=0;for(std::size_t i=0;i<e->actor.mounts().size();++i)if(e->actor.partActive(i))++parts;
-        out.push_back({e->id,e->actor.info().name,e->actor.motion().position,e->actor.state().hp,e->actor.state().targetPlayer,e->actor.motion().state==2,parts});
+        out.push_back({e->id,e->actor.info().name,e->actor.motion().position,e->actor.state().hp,e->actor.state().targetPlayer,e->actor.motion().state==2,parts,e->actor.info().kind,e->actor.isBoss(),e->actor.state().moveToTarget});
     }
     return out;
 }

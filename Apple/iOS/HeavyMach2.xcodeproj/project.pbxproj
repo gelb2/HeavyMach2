@@ -45,6 +45,7 @@
 		386D1AAF9F37C0B12E1AB22C /* AudioTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1513B2C669AEC2A9D67D68B0 /* AudioTests.mm */; };
 		3921DB60E3679E6A4AAE199B /* HM2Renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 935D56609040C44D67B6E633 /* HM2Renderer.mm */; };
 		3B324FEEFE8BC704CA068A20 /* Weapons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 613BC791A02B06C23C2A3BEA /* Weapons.cpp */; };
+		3D25EBB05635C26601A47106 /* Dash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20E224574929641709B8F31A /* Dash.cpp */; };
 		3D97B3FE86B21785EBF28B69 /* GameSession.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 35BF49C2F8BB97B6CC5E2E31 /* GameSession.cpp */; };
 		3FD37EAC61995CF489BFE8DB /* ProjectileImpact.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDF2A274205C68B542F02369 /* ProjectileImpact.cpp */; };
 		44D93FE99F90A1B51DA9B553 /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 542A40B06A3F30BD8E8AA159 /* Image.cpp */; };
@@ -58,6 +59,7 @@
 		5D77814575C3B341EA5C6C09 /* ObjectCollision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BE1BFC1F95048CCAA58E882 /* ObjectCollision.cpp */; };
 		5E0EF47EAD0E072F57E90B5C /* EffectsRendererTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 88E1135DA084FC8CAE56AB66 /* EffectsRendererTests.mm */; };
 		605035B52E42330280D6D04D /* HM2Application.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91A0D30A250D4AE32CA30332 /* HM2Application.mm */; };
+		63983B9254B17B90537EAEFB /* Dash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20E224574929641709B8F31A /* Dash.cpp */; };
 		642AB1E11994A1F388304C25 /* HM2GameRuntime.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A72523C693BCCDC6274159F /* HM2GameRuntime.mm */; };
 		6841D1E20D22E3FD5F8ADDF3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A65ABA6C2432182CCE9D /* UIKit.framework */; };
 		69471B6AD198FEC5767862D4 /* Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AADB2E30563D23861736C5F1 /* Button.cpp */; };
@@ -171,6 +173,7 @@
 		1AD56BEEAD2F8B2131068154 /* HD */ = {isa = PBXFileReference; lastKnownFileType = folder; name = HD; path = ../../.local/prepared/HD; sourceTree = SOURCE_ROOT; };
 		1C6BBD07C4A45A179689E68C /* SoundIDs.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SoundIDs.hpp; sourceTree = "<group>"; };
 		1E5451F715CD842FE04E2462 /* Button.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Button.hpp; sourceTree = "<group>"; };
+		20E224574929641709B8F31A /* Dash.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Dash.cpp; sourceTree = "<group>"; };
 		23CC731FE52C2AD7E374728A /* LocomotionScene.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LocomotionScene.hpp; sourceTree = "<group>"; };
 		255E2EE555D425F8664C2EC9 /* ConcurrentValidation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ConcurrentValidation.hpp; sourceTree = "<group>"; };
 		2687E7EBF6A21416BCF7CF7A /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
@@ -259,6 +262,7 @@
 		BDE644B4E59C33D54692C40B /* TerrainCollision.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TerrainCollision.hpp; sourceTree = "<group>"; };
 		BDF2A274205C68B542F02369 /* ProjectileImpact.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ProjectileImpact.cpp; sourceTree = "<group>"; };
 		BEFE1C8B1BF5723BE376301A /* CombatScene.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CombatScene.hpp; sourceTree = "<group>"; };
+		C19B65BC5F5988B1D1F3CDC4 /* Dash.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Dash.hpp; sourceTree = "<group>"; };
 		C410C05D7AB8CDFB4CC8EF7F /* Progression.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Progression.hpp; sourceTree = "<group>"; };
 		C414272E8429546DA101F9E9 /* Machines.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Machines.cpp; sourceTree = "<group>"; };
 		C476A681B159BDC1743B96DD /* ProjectileMotion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ProjectileMotion.hpp; sourceTree = "<group>"; };
@@ -566,6 +570,8 @@
 				A165999C6469516FFE74F603 /* CombatScene.cpp */,
 				BEFE1C8B1BF5723BE376301A /* CombatScene.hpp */,
 				8448BA399A121536EBF3DF4D /* DarwinWorldRandom.hpp */,
+				20E224574929641709B8F31A /* Dash.cpp */,
+				C19B65BC5F5988B1D1F3CDC4 /* Dash.hpp */,
 				416AAC22FB1E6768D92EEC07 /* EnemyActors.cpp */,
 				A25F6E2BB4E11ABB4FF5561B /* EnemyActors.hpp */,
 				809917EBA6022B9ADE3A61E5 /* EnemySpawner.cpp */,
@@ -766,6 +772,7 @@
 				69471B6AD198FEC5767862D4 /* Button.cpp in Sources */,
 				AA6142C98549069CF77BCF61 /* Chunk.cpp in Sources */,
 				AAE2C97ABEE691B01335359A /* CombatScene.cpp in Sources */,
+				3D25EBB05635C26601A47106 /* Dash.cpp in Sources */,
 				936C708FD04DAA8F6164D13B /* DataTable.cpp in Sources */,
 				86F46E67BA5856322CF8C0E4 /* EnemyActors.cpp in Sources */,
 				7BAB3CBC95A28A51C3EE2E16 /* EnemySpawner.cpp in Sources */,
@@ -829,6 +836,7 @@
 				E68037BE7FF34C7A7977083F /* Chunk.cpp in Sources */,
 				C2DC456C6186E0607C055BC9 /* CombatScene.cpp in Sources */,
 				B56F79F1D8121F0408543154 /* ConcurrentValidation.cpp in Sources */,
+				63983B9254B17B90537EAEFB /* Dash.cpp in Sources */,
 				87E36D97DBE0C16AB3E344FC /* DataTable.cpp in Sources */,
 				96017CD8E417490E92DF73E1 /* EnemyActors.cpp in Sources */,
 				F0576F911A458759C1C4614E /* EnemySpawner.cpp in Sources */,

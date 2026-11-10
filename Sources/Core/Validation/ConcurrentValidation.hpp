@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/Session/GameSession.hpp"
 #include <cstdint>
+#include <array>
 #include <memory>
 #include <map>
 #include <span>
@@ -9,8 +10,8 @@
 #include <vector>
 
 namespace hm2::validation {
-enum class ScenarioRole {combat,shop,mission,saveRestart,movementLoot,aidKit,airStrike};
-struct ScenarioDescription {std::string label;ScenarioRole role=ScenarioRole::combat;std::vector<std::string> weapons;};
+enum class ScenarioRole {combat,shop,mission,saveRestart,movementLoot,aidKit,airStrike,worldAudit,dash};
+struct ScenarioDescription {std::string label;ScenarioRole role=ScenarioRole::combat;std::vector<std::string> weapons;std::string map{};};
 struct NavigationObservation {std::uint64_t frame=0;Vec2 player,world,screen;std::string lootCode;bool accepted=false,blocked=false;};
 struct PickupObservation {std::uint64_t frame=0;std::string code;int type=0,value=0;Vec2 player,item;int creditDelta=0;};
 struct ScenarioObservation {
@@ -40,6 +41,14 @@ struct ScenarioObservation {
     std::size_t activeStrikes=0;
     Vec2 strikeTarget;
     bool strikeTapAccepted=false,strikeTargetVisibleEnemy=false;
+    // The first tick is the real spawner pass, before newly appended actors tick.
+    // Later totals can include legitimate respawns and must not replace it.
+    std::array<std::uint64_t,3> firstSpawns{},enemySpawns{},enemyEmissions{},enemyDamage{},enemyKills{},enemyRemovals{};
+    std::uint64_t bossSpawns=0,worldQuickUses=0;
+    std::uint64_t dashStarts=0,dashMoveTicks=0,dashParticles=0,dashRandomCalls=0,dashSounds=0,dashInputFrame=0;
+    float dashSPBefore=0,dashSPAfter=0,dashMaxDisplacement=0;
+    Vec2 dashStartPosition;
+    bool dashInputAccepted=false;
 };
 struct ButtonActivity {unsigned scenario=0,id=0;int intData=0;bool delivered=false;};
 struct FrameActivity {

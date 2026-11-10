@@ -14,7 +14,7 @@ class VisualLayer;
 struct WeaponInfo;
 class Particle;
 struct TileImage;
-struct CombatEnemySnapshot {std::uint64_t id=0;std::string name;Vec2 position;int hp=0;bool targetingPlayer=false,corpse=false;std::size_t activeParts=0;};
+struct CombatEnemySnapshot {std::uint64_t id=0;std::string name;Vec2 position;int hp=0;bool targetingPlayer=false,corpse=false;std::size_t activeParts=0;MachineKind kind=MachineKind::bipod;bool boss=false,moveToTarget=false;};
 struct CombatPlayerWeaponSnapshot {
     unsigned inventoryEquipSlot=0,currentMuzzle=1,parentSocket=0;
     std::size_t insertionIndex=0;
@@ -24,12 +24,16 @@ struct CombatPlayerWeaponSnapshot {
     int fireLeft=0;
     float fireTime=0,fireBound=0;
 };
+struct CombatDashSnapshot {Vec2 velocity,lastEffectPosition;float tapTime=0,special=0;std::uintptr_t movePointer=0;unsigned pathCount=0;int currentTerrain=-1;};
 struct CombatMetrics {
+    std::uint64_t dashStarts=0,dashMoveTicks=0,dashParticleAllocations=0,dashRandomCalls=0;
     std::uint64_t airStrikeRequests=0,airStrikeProjectiles=0,airStrikeDamageCalls=0,airStrikeTicks=0,airStrikeEnemyHPRemoved=0;
     std::uint64_t randomCalls=0,emissions=0,damageCalls=0,projectilesCreated=0,projectilesRemoved=0,soundRequests=0;
     std::uint64_t playerEmissions=0,enemyEmissions=0,enemyTicks=0,projectileTicks=0,drawCalls=0,kills=0;
     unsigned long particleAllocations=0;
     std::map<std::string,std::uint64_t,std::less<>> playerWeaponEmissions,enemyWeaponEmissions;
+    // Observations at actual spawn/emission/damage/death/removal consumers.
+    std::map<MachineKind,std::uint64_t> enemySpawnsByKind,enemyEmissionsByKind,enemyDamageCallsByKind,enemyKillsByKind,enemyRemovalsByKind;
 };
 struct CombatSceneHooks {
     virtual ~CombatSceneHooks()=default;
@@ -44,6 +48,8 @@ struct CombatSceneHooks {
     virtual int playerMaximumHP()const{return 256;}
     // Player.tick0xc028: after HP regeneration, before GobHvMach.tick.
     virtual void playerProgressTick(){}
+    virtual float playerSpecial()const{return 0;}
+    virtual void setPlayerSpecial(float); // Unsupported host fails instead of fake consumption.
     virtual void playerHPChanged(int){}
     virtual void playerDied(){}
     virtual void outOfRange(bool /* left */){}
@@ -96,6 +102,7 @@ public:
     [[nodiscard]] const MapCamera& camera()const;
     [[nodiscard]] const TerrainCollision& terrain()const;
     [[nodiscard]] const CombatMetrics& metrics()const;
+    [[nodiscard]] CombatDashSnapshot dashState()const;
     [[nodiscard]] std::vector<CombatEnemySnapshot> enemies()const;
     [[nodiscard]] std::vector<CombatPlayerWeaponSnapshot> playerWeapons()const;
     [[nodiscard]] std::uint64_t selectedEnemy()const;

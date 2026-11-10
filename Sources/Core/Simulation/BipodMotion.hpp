@@ -24,6 +24,7 @@ public:
     explicit BipodMotion(BipodState snapshot);
     [[nodiscard]] const BipodState& state()const{return s_;}
     void setDestination(Vec2);
+    void setState(int value){s_.state=value;} // Original raw setState0xc5e0.
     void tick(const TerrainEdge* currentWall=nullptr,std::optional<Vec2> aimTarget=std::nullopt);
     void applyContact(Vec2 correctedPosition);
     [[nodiscard]] PlayerPartAngles angles()const;

@@ -94,6 +94,8 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
     }
     void playerHPChanged(int hp)override{slot().hp(hp);}
     void playerProgressTick()override{if(equipment)equipment->tickSpecial();}
+    float playerSpecial()const override{return equipment?equipment->stats().specialCurrent:0;}
+    void setPlayerSpecial(float value)override{if(!equipment)throw std::logic_error("Missing original Player equipment SP");equipment->specialCurrent(value);}
     void playerDied()override{dirty=true;}
     int playerDamage(int value,WorldRandom& rng)override{return equipment->stats().playerDamage(value,rng);}
     int damageBonus()const override{return equipment?equipment->stats().damageBonus:0;}

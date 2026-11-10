@@ -6,8 +6,8 @@
 
 namespace hm2 {
 enum class PointerPhase {begin,move,end,cancel};
-// EasyMove's unoccupied-ground waypoint path. Enemy/item/dash interactions are
-// pending separate game consumers; this class does not fake their outcomes.
+// EasyMove's unoccupied-ground waypoint path. Enemy/item/Dash consumers run
+// beside it at their original input branches.
 class WorldNavigation {
     std::array<Vec2,12> points_{};
     unsigned start_=0,count_=0;
@@ -18,6 +18,8 @@ public:
     [[nodiscard]] Vec2 point(unsigned logicalIndex)const;
     [[nodiscard]] std::uintptr_t pointer()const{return pointer_;}
     bool input(PointerPhase,Vec2 logical,std::uintptr_t,const MapCamera&,BipodMotion&);
+    // Scene EasyMove already applied its original camera arithmetic/gates.
+    bool inputWorld(PointerPhase,Vec2 world,std::uintptr_t,BipodMotion&);
     void process(BipodMotion&);
     void cancel(){pointer_=0;}
 };

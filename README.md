@@ -1,6 +1,6 @@
 # HeavyMach 2 Restoration
 
-HeavyMach 2의 독립 비공개 복원 저장소다. REA/Ghidra로 HD 원본을 분석하고 C++ 공통 코어에 맵·보행·조준·발사·피해·적 차량·음향·진행·장비·저장 모듈을 연결하고 있다. Apple GPU 통합 검사에서 타이틀·슬롯·기지·전투와 저장 후 재실행을 확인했다. Source 앱의 시작 장면은 보행이다. Validation은 구급상자6종·공습3종을 포함한68조건을 함께 실행한다. 정상 게임 전체와 전체 치트 앱은 아직 미완료다. [현재 구현·검증 범위](docs/combat-runtime-restoration-20261110.md)와 [59조건 동시 치트 검증](docs/concurrent-validation-20261110.md)을 따른다.
+HeavyMach 2의 독립 비공개 복원 저장소다. REA/Ghidra로 HD 원본을 분석하고 C++ 공통 코어에 맵·보행·조준·대시·발사·피해·차량/포탑/항공기·음향·진행·장비·저장 모듈을 연결하고 있다. Apple GPU 통합 검사에서 타이틀·슬롯·기지·전투와 저장 후 재실행을 확인했다. Source 앱의 시작 장면은 보행이다. Validation은 구급상자6종·공습3종·38개 전장·대시를 포함한106조건을 함께 실행한다. 정상 게임 전체와 전체 치트 앱은 아직 미완료다. [현재 구현·검증 범위](docs/combat-runtime-restoration-20261110.md)와 [106조건 전장·대시 검증](docs/enemy-dash-restoration-20261110.md)을 따른다.
 
 ## 작업 경계
 
