@@ -2,6 +2,9 @@
 #include "Core/Data/SaveData.hpp"
 #include "Core/Simulation/CombatScene.hpp"
 #include "Core/UI/Screens.hpp"
+#include "Core/UI/Help.hpp"
+#include "Core/Presentation/ScreenTransition.hpp"
+#include "Core/Presentation/MapLoading.hpp"
 #include <memory>
 
 namespace hm2 {
@@ -17,6 +20,7 @@ struct SessionHost {
     // Called only at confirmed original save events. The platform adapter owns
     // atomic replacement and must report failure instead of claiming a save.
     virtual bool writeSave(std::span<const std::uint8_t>,SaveReason)=0;
+    virtual ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest&);
     virtual std::uint32_t absoluteTimeLow()=0;
     virtual std::uint32_t unixTime()=0;
 };
@@ -29,13 +33,20 @@ struct SessionMetrics {
 class GameSession {
     struct Impl;std::unique_ptr<Impl> impl_;
 public:
-    GameSession(ResourceAccess&,SessionHost&,WorldRandom&,std::optional<SaveData> =std::nullopt);
+    GameSession(ResourceAccess&,SessionHost&,WorldRandom&,std::optional<SaveData> =std::nullopt,std::string_view displayLocale="kr");
     ~GameSession();
     GameSession(const GameSession&)=delete;
     GameSession& operator=(const GameSession&)=delete;
-    void tick();
+    // GameMain children tick World, GuiGame, then late GuiMapLoading.
+    void tick(const std::function<void()>& tickGameUI={});
     void setActive(bool);
     void action(const ui::ScreenAction&);
+    // Original GuiGame child receivers run before its HUD/world receivers.
+    bool inputOverlay(PointerPhase,Vec2,std::uintptr_t);
+    void appendOverlays(Frame&)const;
+    [[nodiscard]] const ui::Help* help()const;
+    [[nodiscard]] const ScreenTransitionState& screenTransition()const;
+    [[nodiscard]] const MapLoading* mapLoading()const;
     bool inputWorld(PointerPhase,Vec2,std::uintptr_t);
     bool createSlot(unsigned,std::string_view name,std::string_view country);
     bool deleteSlot(unsigned); // Caller supplies the original confirmation UI.

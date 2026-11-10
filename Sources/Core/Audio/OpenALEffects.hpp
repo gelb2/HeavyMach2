@@ -13,6 +13,8 @@ enum class Output {device,loopback};
 struct AudioMetrics {
     std::uint64_t devicesOpened=0,contextsCreated=0,buffersCreated=0,sourcesCreated=0;
     std::uint64_t buffersDeleted=0,sourcesDeleted=0,playRequests=0,positionRequests=0,stopRequests=0,positionErrors=0;
+    // Count actual alcMakeContextCurrent calls, not saved-pointer changes.
+    std::uint64_t contextBindCalls=0,contextClearCalls=0,contextBindFailures=0;
 };
 struct EffectPlayback {std::string name;bool valid=false,playing=false;int sampleOffset=-1;};
 // The one-shot path actually used by HD SoundManager::getSound0x423a8.
@@ -34,7 +36,8 @@ public:
     void setActive(bool);
     std::size_t loaded()const;
     AudioMetrics metrics()const;
-    std::uintptr_t contextIdentity()const;
+    std::uintptr_t contextIdentity()const; // Owned context, not proof it is current.
+    std::uintptr_t actualContextIdentity()const; // Read alcGetCurrentContext only.
     std::uint32_t sourceIdentity(std::string_view)const;
     int sampleOffset(std::string_view)const;
     float playbackTime(std::string_view)const;

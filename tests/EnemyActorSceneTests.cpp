@@ -1,3 +1,4 @@
+#include "PreparedTextStub.hpp"
 #include "Core/Simulation/CombatScene.hpp"
 #include "Core/Session/GameSession.hpp"
 #include "Core/Data/Weapons.hpp"
@@ -19,6 +20,7 @@ struct Files:ResourceAccess {
     bool exists(std::string_view name)const override{++probes;return cache.find(name)!=cache.end()||std::filesystem::exists(root/std::string(name));}
 };
 struct Hooks:CombatSceneHooks {
+    ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest& r)override{return test::preparedTextStub(r);}
     void sound(std::string_view,Vec2)override{}void soundID(unsigned,Vec2)override{}
     void dropEnemyLoot(const MachineInfo&,Vec2,double,float,WorldRandom&)override{}
     void rewardEnemyKill(const MachineInfo&,Vec2,double,float,WorldRandom&)override{}
@@ -41,6 +43,7 @@ void allFields(Files& files,const Maps& maps,const Machines& machines){
     std::cout<<"FIELDS PASS actualEntries="<<fields<<" mapDefinitions=43 spawnerDefinitions="<<definitions<<" actualSpawns="<<actualSpawns<<" vehicle385/turret307/aircraft3\n";
 }
 struct Host:SessionHost {
+    ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest& r)override{return test::preparedTextStub(r);}
     std::vector<std::string> sounds,alerts;unsigned writes=0;
     void sound(std::string_view n,Vec2)override{sounds.emplace_back(n);}void soundID(unsigned id,Vec2)override{sounds.push_back("sfx:"+std::to_string(id));}
     void alert(std::string_view n)override{alerts.emplace_back(n);}void requestName(unsigned)override{}void requestDelete(unsigned)override{}
@@ -69,18 +72,24 @@ void battle(Files& files,const DataTable& items,const Weapons& weapons,std::stri
         const auto point=scene->camera().toScreen({target.position.x+65,target.position.y});assert(game.inputWorld(PointerPhase::begin,point,220));(void)game.inputWorld(PointerPhase::end,point,220);
     }
     bool enemyFired=false,retargetObserved=false;unsigned frames=1;std::uint64_t playerHPLost=0;
+    // The original default Picker can deliver a drop before corpse removal.
+    // Observe creation throughout the battle, independently of its lifetime.
+    std::size_t maximumDrops=game.fieldItems().size();
     for(;frames<3000&&!enemyFired;++frames){heal(game);const int hp=scene->playerHP();game.tick();game.drawWorld();if(hp>scene->playerHP())playerHPLost+=std::uint64_t(hp-scene->playerHP());assert(scene->playerHP()>0);
+        maximumDrops=std::max(maximumDrops,game.fieldItems().size());
         for(const auto& e:scene->enemies())if(e.id==target.id&&e.targetingPlayer){if(aircraft)assert(!e.moveToTarget);retargetObserved=true;}
         enemyFired=scene->metrics().enemyEmissionsByKind.at(required)>0;
     }
     std::cout<<"BATTLE acquire "<<map<<" frames="<<frames<<" enemyFired="<<enemyFired<<" playerHP="<<scene->playerHP()<<" target="<<target.name<<" kind="<<int(required)<<"\n";assert(enemyFired&&retargetObserved);
     assert(scene->selectEnemy(target.id)&&scene->selectEnemy(target.id));bool corpse=false,removed=false;std::uint64_t removedID=target.id;
     for(;frames<9000&&!removed;++frames){heal(game);const int hp=scene->playerHP();game.tick();const auto frame=game.drawWorld();assert(!frame.sprites.empty());if(hp>scene->playerHP())playerHPLost+=std::uint64_t(hp-scene->playerHP());assert(scene->playerHP()>0);
+        maximumDrops=std::max(maximumDrops,game.fieldItems().size());
         bool found=false;for(const auto& e:scene->enemies())if(e.id==removedID){found=true;if(e.hp==0){corpse=true;assert(e.corpse&&e.activeParts==1&&e.targetingPlayer);if(aircraft)assert(!e.moveToTarget);else assert(e.moveToTarget);}}
         if(corpse&&!found)removed=true;
     }
     const auto& m=scene->metrics();std::cout<<"BATTLE final "<<map<<" frames="<<frames<<" enemyEmissions="<<m.enemyEmissionsByKind.at(required)<<" damage="<<m.enemyDamageCallsByKind.at(required)<<" kills="<<m.enemyKillsByKind.at(required)<<" removed="<<m.enemyRemovalsByKind.at(required)<<" bullets="<<m.projectilesCreated<<" playerHPLost="<<playerHPLost<<" corpse="<<corpse<<" xp="<<xpAt()<<" drops="<<game.fieldItems().size()<<std::endl;
-    assert(corpse&&removed&&m.enemyDamageCallsByKind.at(required)>0&&m.enemyKillsByKind.at(required)>0&&m.enemyRemovalsByKind.at(required)>0&&m.projectilesCreated>0&&m.playerEmissions>0&&xpAt()>xpBefore&&!game.fieldItems().empty());
+    std::cout<<"BATTLE drops maxObserved="<<maximumDrops<<" botCaptures="<<m.botItemCaptures<<"\n";
+    assert(corpse&&removed&&m.enemyDamageCallsByKind.at(required)>0&&m.enemyKillsByKind.at(required)>0&&m.enemyRemovalsByKind.at(required)>0&&m.projectilesCreated>0&&m.playerEmissions>0&&xpAt()>xpBefore&&maximumDrops>0);
     std::cout<<"BATTLE warm "<<map<<" readDelta="<<files.reads-reads<<" existsDelta="<<files.probes-probes<<" saveDelta="<<host.writes-writes<<std::endl;assert(files.reads==reads&&files.probes==probes&&host.writes==writes);
 }
 }

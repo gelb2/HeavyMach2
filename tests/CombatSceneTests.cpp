@@ -1,3 +1,4 @@
+#include "PreparedTextStub.hpp"
 #include "Core/Simulation/CombatScene.hpp"
 #include "Core/Simulation/DarwinWorldRandom.hpp"
 #include "Core/Presentation/VisualLayer.hpp"
@@ -17,6 +18,7 @@ struct Files:ResourceAccess {
     bool exists(std::string_view name)const override{++probes;return std::filesystem::exists(root/std::string(name));}
 };
 struct Hooks:CombatSceneHooks {
+    ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest& r)override{return test::preparedTextStub(r);}
     CombatScene* scene=nullptr;int bonus=0,reduction=0,maxHP=256;
     unsigned drops=0,rewards=0,deaths=0,playerHits=0,itemTicks=0;
     std::vector<std::string> events;std::vector<unsigned> sounds;
@@ -52,6 +54,14 @@ int main(int argc,char** argv){
     scene.tick();assert(!scene.enemies().empty());assert(scene.metrics().enemyTicks==0); // spawned behind listEnemy's slot
     const auto spawned=scene.enemies().size();assert(spawned==16);assert(scene.metrics().randomCalls==64+spawned*3);
     scene.tick();assert(scene.metrics().enemyTicks==spawned);
+    const auto callsBeforeBodyDraw=scene.metrics().randomCalls;const auto partFrame=scene.drawFrame();bool directPlayer=false;
+    for(const auto& sprite:partFrame.sprites)if(sprite.image=="P_Body_01.png"){
+        assert(!sprite.atlasBatch&&sprite.strip.size()==4);directPlayer=true;
+        assert(sprite.strip[0].uv.x==0&&sprite.strip[0].uv.y==0&&sprite.strip[3].uv.x==1&&sprite.strip[3].uv.y==1);
+        assert(sprite.blend.source==BlendFactor::one&&sprite.blend.destination==BlendFactor::oneMinusSourceAlpha);
+        for(const auto& v:sprite.strip)assert(v.color.r==1&&v.color.g==1&&v.color.b==1&&v.color.a==1);
+    }
+    assert(directPlayer&&scene.metrics().randomCalls==callsBeforeBodyDraw);
     const auto id=firstLiving(scene);assert(id&&scene.selectEnemy(id));
     const auto first=scene.enemies().front();const auto p=scene.camera().toScreen(first.position);
     assert(scene.input(PointerPhase::begin,p,9));assert(scene.selectedEnemy()==first.id);assert(scene.input(PointerPhase::end,p,9));
@@ -151,17 +161,16 @@ int main(int argc,char** argv){
     assert(leftNew.part=="P_Wpn_Msl_101"&&leftNew.fireTime==swapTime&&leftNew.fireLeft==0&&leftNew.fireBound==0&&leftNew.currentMuzzle==1);
     assert(leftNew.parentSocket==1&&!leftNew.reverseY&&rightAfter.parentSocket==2&&rightAfter.reverseY);
     swapped.tick();const auto swapFrame=swapped.drawFrame();
-    std::size_t missileParts=0;bool oldGun=false,orderedMirrors=false;
+    std::size_t missileParts=0;bool oldGun=false,orderedMirrors=false;std::vector<float> mirrorWinding;
     for(const auto& sprite:swapFrame.sprites){
         oldGun=oldGun||sprite.image=="P_Wpn_Gun_101.png";
-        if(sprite.image=="P_Wpn_Msl_101.png"&&sprite.atlasBatch){
-            missileParts+=sprite.atlasBatch->quads.size();
-            if(sprite.atlasBatch->quads.size()==2){
-                const auto winding=[](const AtlasQuad& quad){const auto a=quad.vertices[0].position,b=quad.vertices[1].position,c=quad.vertices[2].position;return (b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);};
-                orderedMirrors=winding(sprite.atlasBatch->quads[0])<0&&winding(sprite.atlasBatch->quads[1])>0;
-            }
+        if(sprite.image=="P_Wpn_Msl_101.png"){
+            assert(!sprite.atlasBatch&&sprite.strip.size()==4);++missileParts;
+            const auto a=sprite.strip[0].position,b=sprite.strip[1].position,c=sprite.strip[2].position;
+            mirrorWinding.push_back((b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x));
         }
     }
+    orderedMirrors=mirrorWinding.size()==2&&mirrorWinding[0]<0&&mirrorWinding[1]>0;
     assert(!oldGun&&missileParts==2&&orderedMirrors);
     bool rightContinued=false,leftFired=false;
     for(unsigned i=0;i<200&&!leftFired;++i){

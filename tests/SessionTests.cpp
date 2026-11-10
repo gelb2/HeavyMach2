@@ -1,3 +1,4 @@
+#include "PreparedTextStub.hpp"
 #include "Core/Session/GameSession.hpp"
 #include "Core/Progression/Progression.hpp"
 #include "Core/Simulation/DarwinWorldRandom.hpp"
@@ -17,6 +18,7 @@ struct Files:ResourceAccess {
     bool exists(std::string_view name)const override{++probes;return std::filesystem::exists(root/std::string(name));}
 };
 struct Host:SessionHost {
+    ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest& r)override{return test::preparedTextStub(r);}
     Bytes stored;std::vector<SaveReason> writes;std::vector<unsigned> sounds;
     unsigned names=0,deletes=0;bool fail=false;std::vector<std::string> alerts,namedSounds;
     void sound(std::string_view name,Vec2)override{namedSounds.emplace_back(name);}
@@ -28,13 +30,14 @@ struct Host:SessionHost {
     std::uint32_t absoluteTimeLow()override{return 1;}
     std::uint32_t unixTime()override{return 1794268800;}
 };
-void button(GameSession& session,ui::ScreenId screen,unsigned id,ui::ButtonEventType type=ui::ButtonEventType::pop,int data=0){session.action({screen,ui::Panel::root,{type,{0,id,data},1,{}}});}
+void settle(GameSession& session){unsigned ticks=0;while(session.screenTransition().phase!=8&&ticks++<200){session.tick();session.drawWorld();(void)session.state();}assert(session.screenTransition().phase==8);}
+void button(GameSession& session,ui::ScreenId screen,unsigned id,ui::ButtonEventType type=ui::ButtonEventType::pop,int data=0){session.action({screen,ui::Panel::root,{type,{0,id,data},1,{}}});settle(session);}
 void titleToSlots(GameSession& session){
     assert(session.state().screen==ui::ScreenId::title);
     session.action({ui::ScreenId::title,ui::Panel::root,{ui::ButtonEventType::pop,{},0,{}},true,false});assert(session.state().screen==ui::ScreenId::title);
-    session.action({ui::ScreenId::title,ui::Panel::root,{ui::ButtonEventType::pop,{},0,{}},true,true});assert(session.state().screen==ui::ScreenId::slots);
+    session.action({ui::ScreenId::title,ui::Panel::root,{ui::ButtonEventType::pop,{},0,{}},true,true});settle(session);assert(session.state().screen==ui::ScreenId::slots);
 }
-void action(GameSession& session,unsigned id,ui::ButtonEventType phase=ui::ButtonEventType::pop,std::string dataId={},Vec2 point={},int data=0,ui::Panel panel=ui::Panel::root){session.action({session.state().screen,panel,{phase,{0,id,data,std::move(dataId)},1,point}});}
+void action(GameSession& session,unsigned id,ui::ButtonEventType phase=ui::ButtonEventType::pop,std::string dataId={},Vec2 point={},int data=0,ui::Panel panel=ui::Panel::root){session.action({session.state().screen,panel,{phase,{0,id,data,std::move(dataId)},1,point}});settle(session);}
 void drag(GameSession& session,int cell,Vec2 destination){const auto code=session.state().inventory[std::size_t(session.state().inventoryPage*25+cell)].dataId;action(session,6000+unsigned(cell),ui::ButtonEventType::push,code);action(session,6000+unsigned(cell),ui::ButtonEventType::move,code,destination);action(session,6000+unsigned(cell),ui::ButtonEventType::cancel,code,destination);}
 int countItem(GameSession& session,std::string_view code){int total=0;for(const auto& item:session.state().inventory)if(item.dataId==code)total+=item.count;return total;}
 std::size_t imageCount(const Frame& frame,std::string_view name){std::size_t result=0;for(const auto& sprite:frame.sprites)if(sprite.image==name)result+=sprite.atlasBatch?sprite.atlasBatch->quads.size():1;return result;}
@@ -195,13 +198,30 @@ int main(int argc,char** argv){
         assert(battle->metrics().particleAllocations==allocations+1&&aidRng.calls()==randomCalls+1);
         assert(std::count(aidHost.sounds.begin(),aidHost.sounds.end(),13u)==repairs+1);
         assert(aidHost.writes.size()==writes&&aidFiles.reads==reads&&aidFiles.probes==probes);
-        aid.tick();const auto frame=aid.drawWorld();assert(imageCount(frame,"HPGauge.png")==2&&imageCount(frame,std::string("Icon")+aidCodes[kit]+".png")==1);
+        aid.tick();const auto frame=aid.drawWorld();
+        const auto bots=battle->bots();assert(bots.size()==1&&bots.front().name=="Bot_P01");
+        assert(imageCount(frame,"HPGauge.png")==2+2*bots.size()&&imageCount(frame,std::string("Icon")+aidCodes[kit]+".png")==1);
+        std::size_t playerGauges=0,botGauges=0;
         for(const auto& command:frame.sprites)if(command.image=="HPGauge.png"){
-            assert(command.atlasBatch&&command.atlasBatch->quads.size()==2);const auto& quads=command.atlasBatch->quads;
+            assert(command.atlasBatch);const auto& quads=command.atlasBatch->quads;assert(quads.size()%2==0);
             const float ratio=float(battle->playerHP())/float(maximum);const auto position=battle->camera().toScreen(battle->player().position);
-            const auto& fg=quads[1].vertices;assert(std::abs((fg[2].position.x-fg[0].position.x)-42.f*ratio)<.0002f);
-            assert(std::abs((fg[2].position.x+fg[0].position.x)*.5f-(position.x+ratio*21.f-21.f))<.0002f);
+            for(std::size_t pair=0;pair<quads.size();pair+=2){const auto& bg=quads[pair].vertices;const auto& fg=quads[pair+1].vertices;
+                const float width=bg[2].position.x-bg[0].position.x;
+                if(std::abs(width-42.f)<.0002f){++playerGauges;
+                    assert(std::abs((fg[2].position.x-fg[0].position.x)-42.f*ratio)<.0002f);
+                    assert(std::abs((fg[2].position.x+fg[0].position.x)*.5f-(position.x+ratio*21.f-21.f))<.0002f);
+                    assert(std::abs((bg[0].position.y+bg[1].position.y)*.5f-(position.y+30.f))<.0002f);
+                    assert(std::abs((fg[0].position.y+fg[1].position.y)*.5f-(position.y+31.f))<.0002f);
+                }else{++botGauges;assert(std::abs(width-21.f)<.0002f);const auto& bot=bots.front();const auto point=battle->camera().toScreen(bot.position);
+                    assert(std::abs((bg[2].position.x+bg[0].position.x)*.5f-point.x)<.0002f);
+                    assert(std::abs((bg[0].position.y+bg[1].position.y)*.5f-(point.y+20.f))<.0002f);
+                    assert(std::abs((fg[2].position.x-fg[0].position.x)-42.f*bot.gauge.scaleX)<.0002f);
+                    assert(std::abs((fg[2].position.x+fg[0].position.x)*.5f-(point.x+bot.gauge.x))<.0002f);
+                    assert(std::abs((fg[0].position.y+fg[1].position.y)*.5f-(point.y+21.f))<.0002f);
+                }
+            }
         }
+        assert(playerGauges==1&&botGauges==bots.size());
         // Arm/toggle the actual AirStrike selector without a world target.
         const int airCount=countItem(aid,"02004");const auto unsupported=aid.metrics().unsupportedActions;
         action(aid,6201,ui::ButtonEventType::push);assert(countItem(aid,"02004")==airCount&&aid.state().selectedQuick==1&&aid.metrics().unsupportedActions==unsupported);

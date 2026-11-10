@@ -18,6 +18,7 @@ struct ItemView {
     unsigned iconTile=0,iconColumns=1,iconRows=1;
     int count=0,price=0,level=0,position=-1,did=0,total=0,attackPoint=0,attackDelta=0;
     bool enabled=true,selected=false,countable=false,equipped=false,complete=false;
+    int originalType=-1; // Exact ItemInfo.type; IconB only for10/11/12.
 };
 struct SlotView {
     bool used=false;
@@ -61,6 +62,20 @@ struct ScreensState {
     std::string tradeItemId;
     int tradeCount=0,tradePrice=0;
     Frame machPreview; // Actual equipped Player assembly, no stand-in artwork.
+    // viewItemInfo uses an absolute slot inventory position, not page cell.
+    int detailInventory=-1;
+    ItemView detailItem; // Actual selected entry, makeItemDesc mode2.
+    std::uint64_t detailRevision=0; // Original create/hide calls, even same item.
+    std::string enemyName;
+    std::uint64_t enemyNameRevision=0; // Original setEnemyName calls.
+    double fieldWorldTime=0;
+    float outOfRangeTimeLeft=0,outOfRangeTimeRight=0;
+    // GuiGame persists through hide/Base/field reentry. Only actual allocation
+    // changes this identity;0 means no original GuiGame has been constructed.
+    std::uint64_t fieldUIRevision=0;
+    bool hasWorkingSlot=false;
+    bool shopDetailVisible=false; // _itemDesc can be removed while selection stays.
+    int inventoryPages=3; // Actual Inventory.pages(), not vector capacity/item count.
 };
 struct PreparedScreenText {std::string image;std::shared_ptr<const TextBitmap> bitmap;};
 struct ScreenAction {
@@ -109,8 +124,10 @@ public:
     void refresh(const ScreensState&,float renderTime=0);
     // Original presentation tick (Title timeline/RNG), separate from draw.
     void tick(float renderTime,WorldRandom&);
-    // Existing field HUD nodes only: no asset reads, text bake or button rebuild.
-    // Call refresh for screen, inventory, selection or panel changes.
+    // Update existing scalar HUD and persistent hidden GuiGame clock/stamps.
+    // Stable values do not reload assets, bake text or rebuild buttons. An actual
+    // enemyNameRevision prepares its new original QobText once. Call refresh
+    // for screen, inventory, selection or panel changes.
     bool updateHUD(const ScreensState&);
     bool input(PointerPhase,Vec2,std::uintptr_t,float renderTime);
     void discardInputs();

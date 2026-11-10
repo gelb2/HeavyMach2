@@ -22,15 +22,11 @@ void validTile(const ButtonTile& t){
 }
 Button::Button(ButtonKey key,std::optional<ButtonTile> tile,unsigned tileNo):key_(key),defaultTile_(tileNo){
     setTile(std::move(tile));
-    validateTile(tileNo);
-    releaseTile_=tile_&&tileCount(*tile_)>tileNo+1?tileNo+1:tileNo;
+    releaseTile_=tile_&&std::uint64_t(tileCount(*tile_))>std::uint64_t(tileNo)+1?tileNo+1:tileNo;
     deactiveTile_=tileNo;
 }
-void Button::validateTile(unsigned tile)const{
-    if(tile_&&tile>=tileCount(*tile_))throw std::runtime_error("Button tile index outside atlas");
-}
 void Button::setTile(std::optional<ButtonTile> tile){
-    if(tile){validTile(*tile);if(defaultTile_>=tileCount(*tile))throw std::runtime_error("Button default tile outside atlas");}
+    if(tile)validTile(*tile);
     tile_=std::move(tile);
     if(!tile_)return; // Original setTile:nil preserves the previous bounds.
     const float factor=tile_->forRetina?.25f:.5f;
@@ -44,9 +40,9 @@ void Button::setBoundWidthHeight(float width,float height){
     bounds_={(-.5f*width)*scale.x,(-.5f*height)*scale.x,
              (.5f*width)*scale.y,(.5f*height)*scale.y};
 }
-void Button::setDefaultTile(unsigned n){validateTile(n);defaultTile_=n;}
-void Button::setReleaseTile(unsigned n){validateTile(n);releaseTile_=n;}
-void Button::setDeactiveTile(unsigned n){validateTile(n);deactiveTile_=n;}
+void Button::setDefaultTile(unsigned n){defaultTile_=n;}
+void Button::setReleaseTile(unsigned n){releaseTile_=n;}
+void Button::setDeactiveTile(unsigned n){deactiveTile_=n;}
 Vec2 Button::screenPosition()const{
     finite(position.x);finite(position.y);Vec2 p=position;
     if(positionSnap==PositionSnap::half){p.x=std::round(p.x*2)*.5f;p.y=std::round(p.y*2)*.5f;}
@@ -120,7 +116,9 @@ void Button::append(Frame& frame,float now){
     }
     unsigned tile=defaultTile_;
     if(!active)tile=deactiveTile_;else if(pressed_)tile=releaseTile_;
-    validateTile(tile);
+    // QobButton retains its raw index. Original non-atlas Tile2D draw clamps
+    // only the sampled index (e.g. DlgInven's single-tile Arrange uses index1).
+    tile=std::min(tile,tileCount(*tile_)-1);
     auto center=screenPosition();center.y+=(!active||pressed_)?-shift:shift;
     const float retina=tile_->forRetina?.5f:1.f;
     Sprite sprite;

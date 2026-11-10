@@ -34,7 +34,7 @@ struct GameRuntime::Impl:SessionHost,ui::ScreensHost {
         game=std::make_unique<GameSession>(files,*this,random,std::move(data));ui=std::make_unique<ui::Screens>(files,tiles,*this);synchronize();
     }
     void notify(NativeRequest value){if(request)request(value);}
-    void sound(std::string_view n,Vec2 p)override{if(!n.empty()&&![audio play:string(n) x:p.x y:p.y])throw std::runtime_error(audio.lastError.UTF8String);}
+    void sound(std::string_view n,Vec2 p)override{if(!n.empty()&&![audio playEffect:n x:p.x y:p.y])throw std::runtime_error(audio.lastError.UTF8String);}
     void soundID(unsigned id,Vec2 p)override{sound(audio::soundFilename(id),p);}
     void sound(std::string_view n)override{sound(n,{});}
     void sfx(unsigned id)override{soundID(id,{});}
@@ -51,6 +51,7 @@ struct GameRuntime::Impl:SessionHost,ui::ScreensHost {
     }
     std::uint32_t absoluteTimeLow()override{return std::uint32_t(mach_absolute_time());}
     std::uint32_t unixTime()override{return std::uint32_t(std::time(nullptr));}
+    ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest& request)override{return prepareText(request);}
     ui::PreparedScreenText prepareText(const ui::TextRasterRequest& request)override{
         const auto bitmap=textCache.prepare(*rasterizer,request);auto i=textNames.find(bitmap.get());
         if(i==textNames.end()){
@@ -64,14 +65,14 @@ struct GameRuntime::Impl:SessionHost,ui::ScreensHost {
         if(rebuilt){
             ui->refresh(state,game->renderTime());revision=game->presentationRevision();Frame prepared;ui->append(prepared,game->renderTime());tiles.appendPreparation(prepared);[renderer prepareFrame:prepared];
         }else ui->updateHUD(state);
-        if(rebuilt||game->battle()!=preparedWorld){preparedWorld=game->battle();if(preparedWorld){const auto prepared=game->preparationFrame();[renderer prepareFrame:prepared];}}
+        if(rebuilt||game->battle()!=preparedWorld){preparedWorld=game->battle();const auto prepared=game->preparationFrame();[renderer prepareFrame:prepared];}
     }
 };
 GameRuntime::GameRuntime(NSURL* root,NSURL* save,std::function<void(const NativeRequest&)> callback):impl_(std::make_unique<Impl>(root,save,std::move(callback))){}
 GameRuntime::~GameRuntime()=default;
-void GameRuntime::tick(){auto& p=*impl_;if(!p.active)return;p.game->tick();p.synchronize();p.ui->tick(p.game->renderTime(),p.random);}
-void GameRuntime::draw(CAEAGLLayer* layer){auto& p=*impl_;Frame frame=p.game->drawWorld();p.ui->append(frame,p.game->renderTime());[p.renderer drawFrame:frame layer:layer];}
-bool GameRuntime::input(PointerPhase phase,Vec2 point,std::uintptr_t id){auto& p=*impl_;if(!p.active)return false;bool used=p.ui->input(phase,point,id,p.game->renderTime());if(!used)used=p.game->inputWorld(phase,point,id);p.synchronize();return used;}
+void GameRuntime::tick(){auto& p=*impl_;if(!p.active)return;p.game->tick([&p]{p.synchronize();p.ui->tick(p.game->renderTime(),p.random);});p.synchronize();}
+void GameRuntime::draw(CAEAGLLayer* layer){auto& p=*impl_;Frame frame=p.game->drawWorld();p.ui->append(frame,p.game->renderTime());p.game->appendOverlays(frame);[p.renderer drawFrame:frame layer:layer];}
+bool GameRuntime::input(PointerPhase phase,Vec2 point,std::uintptr_t id){auto& p=*impl_;if(!p.active)return false;bool used=p.game->inputOverlay(phase,point,id);if(!used)used=p.ui->input(phase,point,id,p.game->renderTime());if(!used)used=p.game->inputWorld(phase,point,id);p.synchronize();return used;}
 bool GameRuntime::provideName(unsigned slot,std::string_view name,std::string_view country){
     NSString* value=string(name);if(!value||value.length<1||value.length>10){impl_->alert("IncorrectName");return false;}
     const bool result=impl_->game->createSlot(slot,name,country);impl_->synchronize();return result;

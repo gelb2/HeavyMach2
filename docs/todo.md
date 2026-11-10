@@ -2,7 +2,12 @@
 
 ## iPad 사용자 피드백 — 2026-11-10
 
+- [x] [그래픽·음향 원본 절차 대조](graphics-audio-fidelity-20261110.md)의 수정판 검증: 효과음 context 유지/문자열 bridge는 수정·iPhone 검사 통과. 슬롯 preview 좌표/원본 layer, Player direct·Enemy/BOT atlas/cull, 항공기 shadow offset을 공통 helper로 수정했고 Core68·ASan66·양 시뮬 슬롯 GPU 예열 후 검사를 통과했다. 전체 Native 관련7개를 양 시뮬레이터에서 각각 통과했고 독립 검토도 마쳤다. 초기 동일Frame1-LSB 변동의 원인은 미확정으로 남긴다.
+- [ ] 원본 PartsManager/ImageAttacher packed PartsTile의 실제 활성/반환 관측. 정적 분석은 정상 경로의 빈 dictionary→개별 PNG fallback을 지지하며 bake 활성 caller는 찾지 못했다. packer 미구현과 원본 정상 경로 누락을 구분하고 강제 bake로 활성 결과를 만들지 않는다. 슬롯 동일 texture의 전역 batch 병합/drawcall 동등성도 미완료다.
+
 사용자가 현재 설치된 `HM2 Source` 정상 Release에서 관측했다. 첫 피드백 시점에는 스테이지에 들어가지 않았고, 후속 피드백에서는 스테이지 진입과 파괴를 확인했다. 아래 현상의 원인과 HD 포팅판과의 차이는 아직 확인하지 않았다. 기존 메뉴 입력 검사 통과를 해당 화면의 시각 대조 완료로 취급하지 않는다.
+
+후속 작업 후보의 구현·검사 상태는 [UI·BOT·맵 전환 복원](ipad-ui-restoration-20261110.md)에 기록한다. 실제 UI tick/입력 차이로 실패했던112조건은 자동 입력 수정 뒤 양 시뮬레이터에서 통과했다. 공통 코드68개·ASan/UBSan 구성66개와 정상 Source 실제 입력도 통과했다. 이후 발견한 그래픽·음향 차이는 별도로 수정·검증 중이다. 물리 iPad 설치와 전체 원작 대조가 남으므로 아래 전달·대조 항목은 완료로 바꾸지 않는다.
 
 > sell 버튼 이라던지, 인게임 ui가 겹친다던지 하는 그런게 보인다 스테이지는 아직 안 들어갔다 / 상점에서 클릭한 아이템들이 안 보인다던가 하는 문제가 있다 니가 포팅판에서 점검 제대로 안한듯 한데
 
@@ -243,5 +248,7 @@ HD 1.0.3을 iPhone Air / iOS 26.5 시뮬레이터(97CA5646-36BB-47A9-919A-D78DD6
 - [ ] loaded working 슬롯 삭제의 원본 포팅판 실행 대조. 정적 덮어쓰기 후보를 임의 nil reset으로 숨기지 않음.
 - [ ] 기본 Picker04201 실제 전장 생성/획득·Attacker·수리·HP/사망·저장·GPU 그림자 연결. 독립 Bot actor 검사는 완료됐으나 Scene 통합은 남음.
 - [ ] 최초 도움말/시스템 Help·GameOver·완료 임무 창/5007·Game Center5009 소비 연결. 원본 분석 확보.
+- [x] [게임오버·완료 임무·점수의 다음 구현 계획](gameover-missions-score-plan-20261110.md): 원본 트리거/프레임·보상 시점·버튼/저장/음향 순서, 현재 누락과 실제 검사 조건을 기록. 원본 근거25개·현재 소스9개의 해시를 로컬에 보존. 기능 구현·OS 인증/서버 제출 완료가 아님.
+- [x] [GameCenter 후속 원본 계약](gamecenter-reference-contract-20261110.md): 점수 gate가 인증 flag가 아닌 cryptid 조건임을 확인하고 계획 정정. 별도 OS 가용성/인증 notification·빈 completion의 근거와59개 산출물 해시/REA 종료를 보존. 실제 OS 화면·서버 성공은 미확인.
 - [ ] 사용자 직접 플레이·테스트 전달: 정상 앱과 치트 앱 실행 빌드·설치/실행 위치·사용 방법 제공. 치트의 자동 동시 검증과 조건 선택/직접 조작을 구분하고 수동 개입 실행을 자동 PASS로 보고하지 않음.
 - [x] [정상 Source 연결 HTML 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/source-entry.html) 버전275 비공개 게시. 실제HTTP12경로·본문/링크·JSON/PNG일치 확인. 기존 이미지2장 무손실 인코딩과RGBA16/부가chunk보존 증거 기록. 브라우저 시각검수는미완료.

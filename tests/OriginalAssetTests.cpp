@@ -4,6 +4,7 @@
 #include "Core/Presentation/MapPreview.hpp"
 #include "Core/Presentation/PlayerMapPreview.hpp"
 #include "Core/Simulation/LocomotionScene.hpp"
+#include "Core/Presentation/VisualLayer.hpp"
 #include "Core/Data/Weapons.hpp"
 #include <cassert>
 #include <cmath>
@@ -27,6 +28,17 @@ struct Files:ResourceAccess {
     }
 };
 void same(float actual,float expected){assert(std::abs(actual-expected)<.0001f);}
+Frame originalBodies(const Frame& source,std::size_t expectedShadows){
+    Frame result;result.width=source.width;result.height=source.height;std::size_t shadows=0;
+    for(const auto& s:source.sprites){
+        if(s.textureSource.variant==TextureVariant::rgba){result.sprites.push_back(s);continue;}
+        assert(s.textureSource.variant==TextureVariant::originalHalfAlpha&&s.visualLayer==0);
+        assert(s.image==s.textureSource.image+"~shd"&&s.atlasBatch&&s.atlasBatch->pixelFormat==3);
+        assert(s.atlasBatch->textureSource==s.textureSource);
+        shadows+=s.atlasBatch->quads.size();
+    }
+    assert(shadows==expectedShadows);return result;
+}
 int main(int argc,char** argv){assert(argc==3);Files files;files.root=argv[1];const std::string_view test=argv[2];
     if(test=="roundtrip"){
         for(const auto* name:{"PartsInfo.mcb","MachInfo.mcb","MapInfo.mcb"}){
@@ -70,7 +82,7 @@ int main(int argc,char** argv){assert(argc==3);Files files;files.root=argv[1];co
         assert(phone.input(PointerPhase::begin,phone.camera().toScreen({100,0}),1));assert(ipad.input(PointerPhase::begin,ipad.camera().toScreen({100,0}),1));
         phone.input(PointerPhase::end,phone.camera().toScreen({100,0}),1);ipad.input(PointerPhase::end,ipad.camera().toScreen({100,0}),1);
         const auto before=files.reads;unsigned collisions=0;
-        for(int i=0;i<600;++i){phone.tick();ipad.tick();const auto& p=phone.actors().front().state();const auto& q=ipad.actors().front().state();same(p.position.x,q.position.x);same(p.position.y,q.position.y);same(p.angle,q.angle);assert(phone.frame().sprites.size()==11&&ipad.frame().sprites.size()==11);collisions+=phone.contacts().front().corrections;}
+        for(int i=0;i<600;++i){phone.tick();ipad.tick();const auto& p=phone.actors().front().state();const auto& q=ipad.actors().front().state();same(p.position.x,q.position.x);same(p.position.y,q.position.y);same(p.angle,q.angle);assert(originalBodies(phone.frame(),10).sprites.size()==11&&originalBodies(ipad.frame(),10).sprites.size()==11);collisions+=phone.contacts().front().corrections;}
         assert(phone.actors().front().state().position.x>5&&phone.actors()[1].state().weaponReady);
         const auto state=phone.actors().front().state();const auto time=phone.time();const auto tick=phone.ticks();phone.setPaused(true);
         for(int i=0;i<120;++i){phone.tick();assert(!phone.input(PointerPhase::begin,{300,160},1));}
@@ -102,9 +114,9 @@ int main(int argc,char** argv){assert(argc==3);Files files;files.root=argv[1];co
         rejects([&]{PartSprites required;required.prepare(missing,std::span(initial).subspan(1,1));});
         PlayerAssemblyCase cases[]={{PlayerEquipment::startingCodes,{-80,0},0,{}},{{"11002","12002","10012","10112"},{80,0},quarter,{quarter,quarter,quarter,quarter,0,0}}};
         const PlayerMapPreview preview(files,"Stage01_01",cases);const MapCamera camera{{},{},{480,320}};
-        const auto frame=preview.compose(camera,cases);assert(frame.sprites.size()==11&&frame.sprites[5].image=="P_Wpn_Msl_101.png"&&frame.sprites[5].reverseY);
+        const auto frame=originalBodies(preview.compose(camera,cases),10);assert(frame.sprites.size()==11&&frame.sprites[5].image=="P_Wpn_Msl_101.png"&&frame.sprites[5].reverseY);
         const auto before=files.reads;
-        for(int i=0;i<1200;++i){cases[1].angles.weaponLeft=float(i)*.01f;cases[1].angles.weaponRight=-float(i)*.02f;const auto f=preview.compose({{float(i)/10,float(i)/20},{},{480,320}},cases);assert(f.sprites.size()==11);}
+        for(int i=0;i<1200;++i){cases[1].angles.weaponLeft=float(i)*.01f;cases[1].angles.weaponRight=-float(i)*.02f;const auto f=originalBodies(preview.compose({{float(i)/10,float(i)/20},{},{480,320}},cases),10);assert(f.sprites.size()==11);}
         assert(files.reads==before);
         unsigned count=0;const auto table=DataTable::parse(files.read("ItemInfo.tble"));
         for(std::size_t row=0;row<table.rowCount();++row){const auto type=table.value(row,"Type");if(type!="PtBody"&&type!="PtBtm"&&type!="PtWpn")continue;const auto code=*table.value(row,"Code");auto codes=PlayerEquipment::startingCodes;codes[type=="PtBody"?0:type=="PtBtm"?1:2]=code;assert(equipment.mounts(models,codes).size()==6);++count;}
@@ -154,11 +166,11 @@ int main(int argc,char** argv){assert(argc==3);Files files;files.root=argv[1];co
         assert(complete==77&&incomplete==1);
         // Multiple model/direction conditions coexist in one actual frame.
         AssemblyCase combined[]={{"E_Tank_01",{100,100},0,0},{"E_Tank_01",{200,100},std::numbers::pi_v<float>/2,0},{"E_Tank_01",{100,200},0,std::numbers::pi_v<float>/2},{"E_Tank_01",{200,200},.7f,-.4f}};
-        const AssemblyPreview scene(files,combined,{320,320});assert(scene.frame().sprites.size()==8);
-        same(scene.frame().sprites[3].center.x,205.5);same(scene.frame().sprites[3].center.y,108.5);
-        same(scene.frame().sprites[5].center.x,109.5);same(scene.frame().sprites[5].center.y,203.5);
+        const AssemblyPreview scene(files,combined,{320,320});const auto bodies=originalBodies(scene.frame(),8);assert(bodies.sprites.size()==8);
+        same(bodies.sprites[3].center.x,205.5);same(bodies.sprites[3].center.y,108.5);
+        same(bodies.sprites[5].center.x,109.5);same(bodies.sprites[5].center.y,203.5);
         const auto before=files.reads;
-        for(int i=0;i<1200;++i){combined[1].machineAngle=float(i)*.01f;combined[2].weaponAngle=float(i)*-.02f;const auto f=scene.compose(combined,{320,320});assert(f.sprites.size()==8);for(const auto& s:f.sprites)assert(s.size.width>0&&s.size.height>0&&std::isfinite(s.center.x)&&std::isfinite(s.center.y));}
+        for(int i=0;i<1200;++i){combined[1].machineAngle=float(i)*.01f;combined[2].weaponAngle=float(i)*-.02f;const auto f=originalBodies(scene.compose(combined,{320,320}),8);assert(f.sprites.size()==8);for(const auto& s:f.sprites)assert(s.size.width>0&&s.size.height>0&&std::isfinite(s.center.x)&&std::isfinite(s.center.y));}
         assert(files.reads==before);
         std::cout<<"338 parts, 77 complete models, 1 incomplete original slice rejected; simultaneous assembly cases, 1200 frames without reads\n";
     }else throw std::runtime_error("Unknown original-resource test");

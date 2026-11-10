@@ -114,7 +114,7 @@ public:
     void checkItemCount(const Item&,int screen);
     void importSlot(SlotView);void exportSlot(SlotView)const;
 };
-struct PickupBot {int referenceType=0;Vec2 position;};
+struct PickupBot {int referenceType=0;Vec2 position;std::uint64_t id=0;};
 struct FieldItem {
     const Item* item=nullptr;int value=0;Vec2 position,velocity;float checkTime=0,speed=0,angle=0,scale=1,alpha=1;
     bool pickerBot=false,removed=false,rootUsesAtlas=false;

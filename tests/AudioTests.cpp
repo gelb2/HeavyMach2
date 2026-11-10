@@ -60,6 +60,7 @@ int main(int argc,char** argv){
     assert((formats[std::tuple{8u,2u,22050u}]==3));assert((formats[std::tuple{16u,1u,48000u}]==3));
     OpenALEffects effects(Output::loopback);if(!effects.valid())std::cerr<<effects.error()<<'\n';assert(effects.valid());
     for(const auto& [name,pcm]:originals)assert(effects.prepare(name,pcm));
+    assert(effects.actualContextIdentity()==effects.contextIdentity());
     assert(effects.loaded()==57);assert(effects.metrics().sourcesCreated==57&&effects.metrics().buffersCreated==57);
     std::array<std::int16_t,4096> samples{};unsigned audibleResources=0;
     for(const auto& [name,pcm]:originals){
@@ -78,11 +79,26 @@ int main(int argc,char** argv){
     for(unsigned i=0;i<200;++i){
         assert(effects.prepare("Wpn_Gun01.wav",{})); // Cached name retains PCM.
         assert(effects.play("Wpn_Gun01.wav",float(int(i%7)-3)*.01f,.02f));assert(effects.renderLoopback(samples));
-        assert(effects.sourceIdentity("Wpn_Gun01.wav")==source);assert(effects.contextIdentity()==identity);
+        assert(effects.sourceIdentity("Wpn_Gun01.wav")==source);assert(effects.contextIdentity()==identity);assert(effects.actualContextIdentity()==identity);
+        assert(effects.metrics().contextBindCalls==before.contextBindCalls&&effects.metrics().contextClearCalls==before.contextClearCalls);
     }
     assert(effects.play("Wpn_Gun01.wav",std::numeric_limits<float>::quiet_NaN(),0));assert(effects.metrics().positionErrors==1);
     effects.setActive(false);const auto count=effects.metrics().playRequests;assert(!effects.play("Wpn_Gun01.wav"));assert(effects.metrics().playRequests==count);
     effects.setActive(true);assert(effects.play("Wpn_Gun01.wav"));assert(effects.renderLoopback(samples));assert(effects.sampleOffset("Wpn_Gun01.wav")>0);
     const auto after=effects.metrics();assert(after.sourcesCreated==before.sourcesCreated&&after.buffersCreated==before.buffersCreated&&after.contextsCreated==before.contextsCreated&&after.devicesOpened==before.devicesOpened);assert(after.sourcesDeleted==0&&after.buffersDeleted==0);
-    std::cout<<"HM2_AUDIO loopback originals="<<effects.loaded()<<" mixer="<<effects.mixerRate()<<" requests="<<after.playRequests<<" sampleOffset="<<effects.sampleOffset("Wpn_Gun01.wav")<<" sources="<<after.sourcesCreated<<" buffers="<<after.buffersCreated<<" contexts="<<after.contextsCreated<<" devices="<<after.devicesOpened<<"\n";
+    assert(after.contextBindCalls==1&&after.contextClearCalls==0&&after.contextBindFailures==0);
+    assert(effects.actualContextIdentity()==identity);
+    // A different runtime needs one ownership switch; subsequent warm calls
+    // do not restore that runtime or clear the selected context.
+    {
+        OpenALEffects other(Output::loopback);assert(other.valid());const auto otherIdentity=other.contextIdentity();assert(otherIdentity!=identity&&other.actualContextIdentity()==otherIdentity);
+        assert(other.prepare("Wpn_Gun01.wav",originals.at("Wpn_Gun01.wav")));
+        const auto beforeSwitch=effects.metrics();assert(effects.play("Wpn_Gun01.wav"));assert(effects.actualContextIdentity()==identity);
+        assert(effects.metrics().contextBindCalls==beforeSwitch.contextBindCalls+1&&effects.metrics().contextClearCalls==beforeSwitch.contextClearCalls);
+        const auto held=effects.metrics();assert(effects.play("Wpn_Gun01.wav"));(void)effects.sampleOffset("Wpn_Gun01.wav");(void)effects.playbackTime("Wpn_Gun01.wav");assert(!effects.playbackSnapshot().empty());assert(effects.prepare("Wpn_Gun01.wav",{}));
+        assert(effects.metrics().contextBindCalls==held.contextBindCalls&&effects.metrics().contextClearCalls==held.contextClearCalls&&effects.actualContextIdentity()==identity);
+        // Teardown of other restores the still-live current first owner.
+    }
+    assert(effects.actualContextIdentity()==identity);
+    std::cout<<"HM2_AUDIO loopback originals="<<effects.loaded()<<" mixer="<<effects.mixerRate()<<" requests="<<after.playRequests<<" sampleOffset="<<effects.sampleOffset("Wpn_Gun01.wav")<<" sources="<<after.sourcesCreated<<" buffers="<<after.buffersCreated<<" contexts="<<after.contextsCreated<<" devices="<<after.devicesOpened<<" warmBindCalls="<<(after.contextBindCalls-before.contextBindCalls)<<" warmClearCalls="<<(after.contextClearCalls-before.contextClearCalls)<<"\n";
 }

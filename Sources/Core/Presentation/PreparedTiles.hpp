@@ -13,6 +13,8 @@ class PreparedTiles {
 public:
     explicit PreparedTiles(std::string identity="shared"):identity_(std::move(identity)){}
     TileImage* prepare(ResourceAccess&,std::string_view);
+    TileImage* prepareShadow(ResourceAccess&,std::string_view originalImage);
+    const TileImage* lookupShadow(std::string_view originalImage)const;
     TileImage* lookup(std::string_view);
     const TileImage* lookup(std::string_view)const;
     [[nodiscard]] VisualTile visual(const TileImage&)const;

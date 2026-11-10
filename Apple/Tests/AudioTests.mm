@@ -24,18 +24,28 @@ NSData* shortWave(){
 - (void)testOriginalAudioFilesAndWarmEffectResources{
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     HM2Audio* audio=[[HM2Audio alloc]initWithResourceRoot:root];XCTAssertTrue([audio prepareSounds],@"%@",audio.lastError);
-    XCTAssertEqual(audio.loadedSounds,57u);const auto context=audio.currentContextIdentity;XCTAssertNotEqual(context,0u);
+    XCTAssertEqual(audio.loadedSounds,57u);const auto context=audio.currentContextIdentity;XCTAssertNotEqual(context,0u);XCTAssertEqual(context,audio.ownerContextIdentity);
     NSDictionary* before=audio.metrics;XCTAssertEqual([before[@"effectFileReads"] unsignedIntegerValue],57u);XCTAssertEqual([before[@"effectDecodes"] unsignedIntegerValue],57u);
-    XCTAssertTrue([audio play:@"Wpn_Gun01.wav" x:0 y:0]);
+    XCTAssertTrue([audio playEffect:std::string_view("Wpn_Gun01.wav") x:0 y:0]);
     NSInteger sampleOffset=-1;XCTAssertTrue(waitFor([&]{sampleOffset=[audio effectSampleOffset:@"Wpn_Gun01.wav"];return sampleOffset>0;},1.));
-    for(int i=0;i<200;++i){XCTAssertTrue([audio prepareSound:@"Wpn_Gun01.wav"]);XCTAssertTrue([audio play:@"Wpn_Gun01.wav" x:.01f y:-.02f]);}
-    [audio setActive:NO];XCTAssertFalse([audio play:@"Wpn_Gun01.wav" x:0 y:0]);[audio setActive:YES];XCTAssertTrue([audio play:@"Wpn_Gun01.wav" x:0 y:0]);
+    for(int i=0;i<200;++i){XCTAssertTrue([audio prepareSound:@"Wpn_Gun01.wav"]);XCTAssertTrue([audio playEffect:std::string_view("Wpn_Gun01.wav") x:.01f y:-.02f]);}
+    [audio setActive:NO];XCTAssertFalse([audio playEffect:std::string_view("Wpn_Gun01.wav") x:0 y:0]);[audio setActive:YES];XCTAssertTrue([audio playEffect:std::string_view("Wpn_Gun01.wav") x:0 y:0]);
     XCTAssertTrue(waitFor([&]{return [audio effectSampleOffset:@"Wpn_Gun01.wav"]>0;},1.));
     NSDictionary* after=audio.metrics;
-    for(NSString* key in @[@"devicesOpened",@"contextsCreated",@"sourcesCreated",@"buffersCreated",@"effectFileReads",@"effectDecodes"])XCTAssertEqualObjects(before[key],after[key],@"Resource changed during warm play: %@",key);
+    for(NSString* key in @[@"devicesOpened",@"contextsCreated",@"sourcesCreated",@"buffersCreated",@"effectFileReads",@"effectDecodes",@"contextBindCalls",@"contextClearCalls",@"contextBindFailures",@"effectNameConversions"])XCTAssertEqualObjects(before[key],after[key],@"Resource changed during warm play: %@",key);
+    XCTAssertEqualObjects(after[@"currentContext"],after[@"ownerContext"]);XCTAssertEqual([after[@"contextBindCalls"] unsignedIntegerValue],1u);XCTAssertEqual([after[@"contextClearCalls"] unsignedIntegerValue],0u);XCTAssertEqual([after[@"contextBindFailures"] unsignedIntegerValue],0u);XCTAssertEqual([after[@"effectNameConversions"] unsignedIntegerValue],0u);XCTAssertGreaterThan([after[@"effectByteNameRequests"] unsignedIntegerValue],200u);
     XCTAssertEqual(audio.currentContextIdentity,context);XCTAssertEqual([after[@"contextsCreated"] unsignedIntegerValue],1u);XCTAssertEqual([after[@"sourcesCreated"] unsignedIntegerValue],57u);XCTAssertEqual([after[@"buffersCreated"] unsignedIntegerValue],57u);
     XCTAssertEqual([after[@"sourcesDeleted"] unsignedIntegerValue],0u);XCTAssertEqual([after[@"buffersDeleted"] unsignedIntegerValue],0u);
     NSLog(@"HM2_AUDIO_APPLE sampleOffset=%ld metrics=%@",(long)sampleOffset,after);
+}
+- (void)testCurrentContextOwnershipAcrossAudioInstances{
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    HM2Audio* first=[[HM2Audio alloc]initWithResourceRoot:root];XCTAssertTrue([first prepareSound:@"Wpn_Gun01.wav"]);const auto firstOwner=first.ownerContextIdentity;
+    @autoreleasepool{HM2Audio* second=[[HM2Audio alloc]initWithResourceRoot:root];XCTAssertTrue([second prepareSound:@"Wpn_Gun01.wav"]);XCTAssertEqual(second.currentContextIdentity,second.ownerContextIdentity);XCTAssertNotEqual(second.currentContextIdentity,firstOwner);
+        const auto before=[first.metrics[@"contextBindCalls"] unsignedIntegerValue];XCTAssertTrue([first playEffect:std::string_view("Wpn_Gun01.wav") x:0 y:0]);XCTAssertEqual(first.currentContextIdentity,firstOwner);XCTAssertEqual([first.metrics[@"contextBindCalls"] unsignedIntegerValue],before+1);
+        const auto held=first.metrics;XCTAssertTrue([first playEffect:std::string_view("Wpn_Gun01.wav") x:0 y:0]);(void)[first effectSampleOffset:@"Wpn_Gun01.wav"];(void)first.playbackSnapshot;XCTAssertEqualObjects(held[@"contextBindCalls"],first.metrics[@"contextBindCalls"]);XCTAssertEqualObjects(held[@"contextClearCalls"],first.metrics[@"contextClearCalls"]);
+    }
+    XCTAssertEqual(first.currentContextIdentity,firstOwner);
 }
 - (void)testOriginalMusicRestartsAndWholeFileLoop{
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;

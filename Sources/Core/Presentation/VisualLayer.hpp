@@ -16,6 +16,7 @@ struct VisualTile {
     bool forRetina=false;
     Vec2 origin{};
     Color color{};
+    TextureSource textureSource={};
 };
 struct VisualImage {
     VisualTile tile;
@@ -40,6 +41,7 @@ struct AtlasBatch {
     Blend blend;
     std::vector<AtlasQuad> quads;
     std::vector<std::uint16_t> indices; // Six indices per live quad.
+    TextureSource textureSource={};
 };
 struct VisualLayerFrame {
     std::vector<Sprite> nonAtlas;

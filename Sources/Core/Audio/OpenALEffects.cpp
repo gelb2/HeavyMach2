@@ -7,11 +7,6 @@
 
 namespace hm2::audio {
 namespace {
-struct Scope {
-    ALCcontext* previous=alcGetCurrentContext();ALCcontext* current=nullptr;bool valid=false;
-    explicit Scope(ALCcontext* c):current(c){valid=c&&(previous==c||alcMakeContextCurrent(c));}
-    ~Scope(){if(valid&&previous!=current)alcMakeContextCurrent(previous);}
-};
 struct Sound{ALuint source=0,buffer=0;};
 }
 struct OpenALEffects::Impl {
@@ -20,6 +15,11 @@ struct OpenALEffects::Impl {
     LPALCRENDERSAMPLESSOFT renderSamples=nullptr;
     std::map<std::string,Sound,std::less<>> sounds;
     AudioMetrics metrics;bool active=true,initialized=false,loopback=false;unsigned rate=0;std::string error;
+    bool bind(ALCcontext* value){
+        if(value)++metrics.contextBindCalls;else ++metrics.contextClearCalls;
+        const bool ok=alcMakeContextCurrent(value);if(!ok)++metrics.contextBindFailures;return ok;
+    }
+    bool ensureCurrent(){return context&&(alcGetCurrentContext()==context||bind(context));}
     explicit Impl(Output output,unsigned mixerRate){
         loopback=output==Output::loopback;
         if(mixerRate<8000||mixerRate>192000){error="Invalid mixer rate";return;}
@@ -30,10 +30,9 @@ struct OpenALEffects::Impl {
         if(!device){error="Cannot open OpenAL Soft output device";return;}++metrics.devicesOpened;
         const ALCint normal[]={ALC_FREQUENCY,ALCint(mixerRate),0};
         const ALCint loopback[]={ALC_FREQUENCY,ALCint(mixerRate),ALC_FORMAT_CHANNELS_SOFT,ALC_STEREO_SOFT,ALC_FORMAT_TYPE_SOFT,ALC_SHORT_SOFT,0};
-        const auto previous=alcGetCurrentContext();
         context=alcCreateContext(device,output==Output::loopback?loopback:normal);
         if(!context){error="Cannot create OpenAL Soft context";return;}++metrics.contextsCreated;
-        if(!alcMakeContextCurrent(context)){error="Cannot select OpenAL Soft context";return;}
+        if(!ensureCurrent()){error="Cannot select OpenAL Soft context";return;}
         // Original SoundManager.init0x4229c sets listener position(0,0,0).
         // Keep the original/default distance model and gain instead of copying
         // another game's positional attenuation or gain policy.
@@ -44,13 +43,17 @@ struct OpenALEffects::Impl {
         ALCint actual=0;alcGetIntegerv(device,ALC_FREQUENCY,1,&actual);rate=unsigned(actual);
         if(alGetError()!=AL_NO_ERROR||alcGetError(device)!=ALC_NO_ERROR||!pauseDevice||!resumeDevice||(output==Output::loopback&&!renderSamples))error="OpenAL Soft initialization failed";
         initialized=error.empty();
-        alcMakeContextCurrent(previous);
+        // HD0x412d0 leaves its context current after initialization. A single
+        // active runtime retains ownership through prepare/play/observation;
+        // do not bind and clear it around every sound request.
     }
     ~Impl(){
         const auto previous=alcGetCurrentContext();
-        if(context&&alcMakeContextCurrent(context)){
+        if(context&&ensureCurrent()){
             for(auto& [name,s]:sounds){alSourceStop(s.source);alDeleteSources(1,&s.source);++metrics.sourcesDeleted;alDeleteBuffers(1,&s.buffer);++metrics.buffersDeleted;}
-            alcMakeContextCurrent(previous==context?nullptr:previous);
+            // Teardown alone restores another live owner, or clears this
+            // context before destroying it. Ordinary requests never restore.
+            bind(previous==context?nullptr:previous);
         }
         if(context)alcDestroyContext(context);if(device)alcCloseDevice(device);
     }
@@ -62,7 +65,7 @@ bool OpenALEffects::contains(std::string_view name)const{return impl_->sounds.co
 bool OpenALEffects::prepare(std::string name,const PCM& pcm){
     if(contains(name))return true;
     if(!valid()||name.empty()||pcm.bytes.empty()||pcm.bytes.size()>64*1024*1024||pcm.sampleRate<1||pcm.sampleRate>192000||pcm.channels<1||pcm.channels>2||(pcm.bitsPerSample!=8&&pcm.bitsPerSample!=16)||pcm.bytes.size()%(pcm.channels*pcm.bitsPerSample/8))return false;
-    Scope scope(impl_->context);if(!scope.valid)return false;
+    if(!impl_->ensureCurrent())return false;
     Sound sound;alGenSources(1,&sound.source);if(sound.source)++impl_->metrics.sourcesCreated;
     alGenBuffers(1,&sound.buffer);if(sound.buffer)++impl_->metrics.buffersCreated;
     const ALenum format=pcm.bitsPerSample==8?(pcm.channels==1?AL_FORMAT_MONO8:AL_FORMAT_STEREO8):(pcm.channels==1?AL_FORMAT_MONO16:AL_FORMAT_STEREO16);
@@ -78,7 +81,7 @@ bool OpenALEffects::prepare(std::string name,const PCM& pcm){
 bool OpenALEffects::play(std::string_view name,float x,float y){
     if(!impl_->active||!valid())return false;
     const auto i=impl_->sounds.find(name);if(i==impl_->sounds.end()){impl_->error="Effect was not prepared before play";return false;}
-    Scope scope(impl_->context);if(!scope.valid)return false;
+    if(!impl_->ensureCurrent())return false;
     const auto source=i->second.source;
     // HD0x42494->0x407e4 sets position and clears its error before stop/play.
     // An invalid coordinate therefore retains AL's previous position but does
@@ -92,7 +95,7 @@ bool OpenALEffects::play(std::string_view name,float x,float y){
     ++impl_->metrics.playRequests;return true;
 }
 void OpenALEffects::stop(){
-    Scope scope(impl_->context);if(!scope.valid)return;
+    if(!impl_->ensureCurrent())return;
     for(const auto& [name,s]:impl_->sounds){alSourceStop(s.source);++impl_->metrics.stopRequests;}
 }
 void OpenALEffects::setActive(bool active){
@@ -109,19 +112,20 @@ void OpenALEffects::setActive(bool active){
 std::size_t OpenALEffects::loaded()const{return impl_->sounds.size();}
 AudioMetrics OpenALEffects::metrics()const{return impl_->metrics;}
 std::uintptr_t OpenALEffects::contextIdentity()const{return reinterpret_cast<std::uintptr_t>(impl_->context);}
+std::uintptr_t OpenALEffects::actualContextIdentity()const{return reinterpret_cast<std::uintptr_t>(alcGetCurrentContext());}
 std::uint32_t OpenALEffects::sourceIdentity(std::string_view name)const{const auto i=impl_->sounds.find(name);return i==impl_->sounds.end()?0:i->second.source;}
 int OpenALEffects::sampleOffset(std::string_view name)const{
-    Scope scope(impl_->context);if(!scope.valid)return -1;const auto i=impl_->sounds.find(name);if(i==impl_->sounds.end())return -1;
+    if(!impl_->ensureCurrent())return -1;const auto i=impl_->sounds.find(name);if(i==impl_->sounds.end())return -1;
     ALint offset=0;alGetSourcei(i->second.source,AL_SAMPLE_OFFSET,&offset);return alGetError()==AL_NO_ERROR?offset:-1;
 }
 float OpenALEffects::playbackTime(std::string_view name)const{
-    Scope scope(impl_->context);if(!scope.valid)return -1;const auto i=impl_->sounds.find(name);if(i==impl_->sounds.end())return -1;
+    if(!impl_->ensureCurrent())return -1;const auto i=impl_->sounds.find(name);if(i==impl_->sounds.end())return -1;
     ALfloat offset=0;alGetSourcef(i->second.source,AL_SEC_OFFSET,&offset);return alGetError()==AL_NO_ERROR?offset:-1;
 }
 unsigned OpenALEffects::mixerRate()const{return impl_->rate;}
 std::vector<EffectPlayback> OpenALEffects::playbackSnapshot()const{
     std::vector<EffectPlayback> result;result.reserve(impl_->sounds.size());
-    Scope scope(impl_->context);if(!scope.valid)return result;
+    if(!impl_->ensureCurrent())return result;
     for(const auto& [name,sound]:impl_->sounds){
         ALint state=0,offset=-1;alGetSourcei(sound.source,AL_SOURCE_STATE,&state);alGetSourcei(sound.source,AL_SAMPLE_OFFSET,&offset);
         const bool valid=alGetError()==AL_NO_ERROR;result.push_back({name,valid,valid&&state==AL_PLAYING,valid?offset:-1});

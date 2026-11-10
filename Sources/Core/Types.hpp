@@ -10,6 +10,14 @@ struct AtlasBatch;
 struct Vec2 {float x=0,y=0;};
 struct Size {float width=0,height=0;};
 struct Color {float r=1,g=1,b=1,a=1;};
+enum class TextureVariant {rgba,originalHalfAlpha};
+// Runtime cache identity and original resource filename are distinct. The
+// original ~shd entry is prepared from PNG alpha; it is never a new disk file.
+struct TextureSource {
+    std::string image;
+    TextureVariant variant=TextureVariant::rgba;
+    bool operator==(const TextureSource&)const=default;
+};
 // Compositor viewport for independent validation scenes. Normal game sprites
 // leave this empty. Coordinates use the containing Frame's positive-Y-up space.
 struct ClipRect {float x=0,y=0,width=0,height=0;bool operator==(const ClipRect&)const=default;};
@@ -33,6 +41,10 @@ struct Sprite {
     std::vector<StripVertex> strip={};
     std::shared_ptr<const AtlasBatch> atlasBatch={};
     std::optional<ClipRect> clip={};
+    TextureSource textureSource={};
+    // Optional provenance for CPU frame composition. The ordered Sprite list
+    // remains the renderer's painter order; terrain need not provide a layer.
+    std::optional<unsigned> visualLayer={};
 };
 struct Frame {
     float width=768,height=1024;

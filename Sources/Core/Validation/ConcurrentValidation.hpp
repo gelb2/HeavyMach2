@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <array>
 #include <memory>
+#include <stdexcept>
 #include <map>
 #include <span>
 #include <string>
@@ -10,10 +11,36 @@
 #include <vector>
 
 namespace hm2::validation {
-enum class ScenarioRole {combat,shop,mission,saveRestart,movementLoot,aidKit,airStrike,worldAudit,dash};
+enum class ScenarioRole {combat,shop,mission,saveRestart,movementLoot,aidKit,airStrike,worldAudit,dash,botAttack,botPicker,help};
 struct ScenarioDescription {std::string label;ScenarioRole role=ScenarioRole::combat;std::vector<std::string> weapons;std::string map{};};
 struct NavigationObservation {std::uint64_t frame=0;Vec2 player,world,screen;std::string lootCode;bool accepted=false,blocked=false;};
 struct PickupObservation {std::uint64_t frame=0;std::string code;int type=0,value=0;Vec2 player,item;int creditDelta=0;};
+struct BotObservation {
+    std::string code,machine;unsigned slot=0;std::uint64_t id=0;
+    bool spawned=false,removed=false;std::uint64_t lastObservedFrame=0;int initialHP=0,hp=0,maximumHP=0;
+    std::uint64_t ticks=0,rotorFrames=0,emissions=0,enemyHPRemoved=0,itemCaptures=0,damageCalls=0,hpRemoved=0,regeneratedHP=0;
+    float lastRotor=0;
+    std::uint64_t repairFrame=0,repairParticles=0,repairSounds=0;int repairBefore=0,repairAfter=0,repairCountBefore=0,repairCountAfter=0;bool repairAccepted=false;
+};
+struct HelpInputObservation {
+    std::uint64_t frame=0;float x=0;int beforePage=-1,afterPage=-1;
+    bool accepted=false,beforeGuide=false,afterGuide=false,closed=false,paused=false;
+};
+struct HelpObservation {
+    std::uint32_t initialCounter=0,resultingCounter=0;
+    bool initialPresent=false,initialPaused=false,initialGuide=false,initialChangePages=false;
+    int initialPage=-1;unsigned initialLayer=0;
+    bool menuOpened=false,menuPaused=false,menuGuide=false;int menuPage=-1;unsigned menuLayer=0;
+    std::uint64_t pausedFrames=0,runningFrames=0,closedFrame=0,drawFrames=0,guideDrawFrames=0;
+    double timeAtMenu=0,timeAtClose=0,lastWorldTime=0;
+    std::string lastImage;std::vector<HelpInputObservation> inputs;
+};
+struct WeaponSwapObservation {
+    std::string code,part,oldCode;unsigned inventoryPosition=0;
+    std::uint64_t chooserFrame=0,equipFrame=0,firstEmissionFrame=0,savesBefore=0,savesAfter=0;
+    int countBefore=0,countAfter=0,oldCountAfter=0;
+    bool ownedBefore=false,equippedBefore=false,ownedAfter=false,equippedAfter=false,oldEquippedAfter=false,chooserShown=false,equipped=false,pausedBefore=false,pausedAfter=false;
+};
 struct ScenarioObservation {
     std::uint64_t ticks=0,firstFrame=0,lastFrame=0,draws=0,sounds=0,saves=0;
     std::uint64_t buttonRequests=0,buttonFailures=0;
@@ -49,6 +76,8 @@ struct ScenarioObservation {
     float dashSPBefore=0,dashSPAfter=0,dashMaxDisplacement=0;
     Vec2 dashStartPosition;
     bool dashInputAccepted=false;
+    std::array<WeaponSwapObservation,2> botWeaponSwaps{};
+    std::array<BotObservation,3> bots{};std::string botThreatName;std::uint64_t botThreatEmissions=0;HelpObservation help;
 };
 struct ButtonActivity {unsigned scenario=0,id=0;int intData=0;bool delivered=false;};
 struct FrameActivity {
@@ -60,7 +89,7 @@ struct FrameActivity {
     bool saveRestart=false,movementLootMoving=false;
     std::uint64_t movementLootEmissions=0,movementLootPickups=0,movementLootInjury=0;
     int movementLootCreditGain=0;
-    std::uint64_t aidKitUses=0,airStrikeUses=0;
+    std::uint64_t aidKitUses=0,airStrikeUses=0,botEmissions=0,botItemContacts=0,botRewardArrivals=0,botHPRemoved=0,botRepairs=0,helpInputRequests=0;
 };
 struct ConcurrentMetrics {
     std::uint64_t frames=0,drawFrames=0,underlyingReads=0,underlyingExists=0,warmReadMisses=0,warmExistsMisses=0;
@@ -71,6 +100,7 @@ struct ConcurrentMetrics {
     std::uint64_t menuActionFrames=0,menuFramesWithCombatActivity=0;
     std::uint64_t movementFramesWithCombatActivity=0,pickupFramesWithCombatActivity=0,injuryFramesWithCombatActivity=0;
     std::uint64_t movementEmissionFramesWithCombatActivity=0,aidKitFramesWithCombatActivity=0,airStrikeFramesWithCombatActivity=0;
+    std::uint64_t botFramesWithCombatActivity=0,helpFramesWithCombatActivity=0;
     std::vector<std::string> warmReadNames,warmExistsNames;
 };
 struct ValidationHost {
@@ -78,6 +108,7 @@ struct ValidationHost {
     virtual void sound(unsigned scenario,std::string_view file,Vec2)=0;
     virtual void soundID(unsigned scenario,unsigned id,Vec2)=0;
     virtual bool writeSave(unsigned scenario,std::span<const std::uint8_t>,SaveReason)=0;
+    virtual ui::PreparedScreenText prepareWorldText(unsigned,const ui::TextRasterRequest&){throw std::logic_error("Missing validation world text host");}
     virtual std::uint32_t absoluteTimeLow(unsigned scenario)=0;
     virtual std::uint32_t unixTime()=0;
     // Called once on the source frame, before pane coordinate conversion.

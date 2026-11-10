@@ -48,7 +48,6 @@ class Button {
     bool pressed_=false;
     float clickTime_=0,releaseTime_=0;
     Vec2 tapPosition_;
-    void validateTile(unsigned)const;
     void notify(ButtonEventType,std::uintptr_t,Vec2,const ButtonHandler&);
 public:
     // Position is QobBase's resolved screen position, in the same positive-Y-up

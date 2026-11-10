@@ -10,6 +10,18 @@
 #include <string>
 
 namespace hm2 {
+PreparedAlphaImage prepareOriginalPartAlpha(const DecodedImage& image){
+    if(!image.width||!image.height||image.width>1024||image.height>1024||
+       image.rgba.size()!=std::size_t(image.width)*image.height*4)
+        throw std::runtime_error("Unsupported original part alpha image dimensions");
+    PreparedAlphaImage out{image.width,image.height,1,1,{}};
+    while(out.storageWidth<out.width)out.storageWidth*=2;
+    while(out.storageHeight<out.height)out.storageHeight*=2;
+    out.alpha.resize(std::size_t(out.storageWidth)*out.storageHeight,0);
+    for(unsigned y=0;y<out.height;++y)for(unsigned x=0;x<out.width;++x)
+        out.alpha[std::size_t(y)*out.storageWidth+x]=image.rgba[(std::size_t(y)*out.width+x)*4+3]>>1;
+    return out;
+}
 DecodedImage decodeImage(std::span<const std::uint8_t> encoded) {
     if(encoded.empty()||encoded.size()>std::size_t(std::numeric_limits<int>::max()))throw std::runtime_error("Invalid encoded image size");
     const int bytes=int(encoded.size());int width=0,height=0,channels=0;

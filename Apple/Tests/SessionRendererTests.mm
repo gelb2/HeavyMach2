@@ -3,6 +3,7 @@
 #include "Platform/Apple/HM2GameRuntime.hpp"
 #import "Platform/Apple/HM2Renderer.h"
 #include "Assets/Image.hpp"
+#include "Core/Presentation/VisualLayer.hpp"
 #include <algorithm>
 
 @interface HM2SessionSurface:UIView @end
@@ -10,10 +11,11 @@
 + (Class)layerClass{return CAEAGLLayer.class;}
 @end
 namespace {
-bool tap(hm2::apple::GameRuntime& runtime,unsigned id){
+void settle(hm2::apple::GameRuntime& runtime,CAEAGLLayer* layer=nullptr){unsigned ticks=0;while(runtime.session().screenTransition().phase!=8&&ticks++<200){runtime.tick();if(layer)runtime.draw(layer);}if(runtime.session().screenTransition().phase!=8)throw std::runtime_error("Original loading doors did not finish");}
+bool tap(hm2::apple::GameRuntime& runtime,unsigned id,CAEAGLLayer* layer=nullptr){
     for(const auto& key:runtime.screens().buttons())if(key.id==id){
         const auto button=runtime.screens().button(key);if(!button||!button->visible||!button->active)continue;
-        const auto point=button->screenPosition();runtime.input(hm2::PointerPhase::begin,point,100);runtime.input(hm2::PointerPhase::end,point,100);return true;
+        const auto point=button->screenPosition();runtime.input(hm2::PointerPhase::begin,point,100);runtime.input(hm2::PointerPhase::end,point,100);settle(runtime,layer);return true;
     }return false;
 }
 UIImage* image(NSData* rgba,CGSize size){
@@ -35,7 +37,7 @@ UIImage* image(NSData* rgba,CGSize size){
     std::vector<hm2::apple::NativeRequest> requests;
     try{
         auto runtime=std::make_unique<hm2::apple::GameRuntime>(root,save,[&](const auto& r){requests.push_back(r);});
-        for(unsigned i=0;i<2;++i){runtime->input(hm2::PointerPhase::begin,{384,512},1);runtime->input(hm2::PointerPhase::end,{384,512},1);}
+        for(unsigned i=0;i<2;++i){runtime->input(hm2::PointerPhase::begin,{384,512},1);runtime->input(hm2::PointerPhase::end,{384,512},1);}settle(*runtime);
         XCTAssertEqual(runtime->session().state().screen,hm2::ui::ScreenId::slots);
         XCTAssertTrue(runtime->provideName(0," ","zz"));XCTAssertEqual(runtime->session().state().slots[0].name,std::string(" "));XCTAssertEqual(runtime->session().state().slots[0].country,std::string("zz"));
         NSString* five=@"😀😀😀😀😀";XCTAssertEqual(five.length,10u);XCTAssertTrue(runtime->provideName(1,five.UTF8String,"kr"));
@@ -60,18 +62,18 @@ UIImage* image(NSData* rgba,CGSize size){
     try{
         auto runtime=std::make_unique<hm2::apple::GameRuntime>(root,save,[&](const auto& request){requests.push_back(request);if(request.kind==hm2::apple::NativeRequest::Kind::name)++requestedNames;});
         runtime->draw(layer);runtime->input(hm2::PointerPhase::begin,{384,512},1);runtime->input(hm2::PointerPhase::end,{384,512},1);runtime->tick();
-        runtime->input(hm2::PointerPhase::begin,{384,512},2);runtime->input(hm2::PointerPhase::end,{384,512},2);runtime->tick();
+        runtime->input(hm2::PointerPhase::begin,{384,512},2);runtime->input(hm2::PointerPhase::end,{384,512},2);runtime->tick();settle(*runtime,layer);
         XCTAssertEqual(runtime->session().state().screen,hm2::ui::ScreenId::slots);
         for(const auto& key:runtime->screens().buttons())if(key.id==1001){
             const auto held=runtime->screens().button(key);const auto point=held->screenPosition();runtime->input(hm2::PointerPhase::begin,point,900);
             XCTAssertEqual(held->capturedPointer(),900u);runtime->setActive(false);runtime->input(hm2::PointerPhase::cancel,point,900);
             XCTAssertEqual(held->capturedPointer(),0u);XCTAssertFalse(held->pressed());runtime->setActive(true);break;
         }
-        XCTAssertTrue(tap(*runtime,1009));XCTAssertTrue(tap(*runtime,1001));XCTAssertEqual(requestedNames,1u);
-        XCTAssertFalse(runtime->provideName(0,"01234567890","us"));XCTAssertTrue(runtime->provideName(0,"MACH","us"));XCTAssertTrue(tap(*runtime,1001));runtime->tick();runtime->draw(layer);
+        XCTAssertTrue(tap(*runtime,1009,layer));XCTAssertTrue(tap(*runtime,1001,layer));XCTAssertEqual(requestedNames,1u);
+        XCTAssertFalse(runtime->provideName(0,"01234567890","us"));XCTAssertTrue(runtime->provideName(0,"MACH","us"));XCTAssertTrue(tap(*runtime,1001,layer));runtime->tick();runtime->draw(layer);
         XCTAssertEqual(runtime->session().state().screen,hm2::ui::ScreenId::base);XCTAssertEqual(runtime->session().metrics().saveCompletions,3u);
         NSData* saved=[NSData dataWithContentsOfURL:save];XCTAssertEqual(saved.length,hm2::SaveData::byteCount);
-        XCTAssertTrue(tap(*runtime,2005));XCTAssertTrue(tap(*runtime,2005));runtime->tick();runtime->draw(layer);
+        XCTAssertTrue(tap(*runtime,2005,layer));XCTAssertTrue(tap(*runtime,2005,layer));if(runtime->session().help()){runtime->input(hm2::PointerPhase::begin,{700,512},101);runtime->input(hm2::PointerPhase::end,{700,512},101);}runtime->tick();runtime->draw(layer);
         XCTAssertEqual(runtime->session().state().screen,hm2::ui::ScreenId::field);XCTAssertNotEqual(runtime->session().battle(),nullptr);
         if(!runtime->session().battle())return;
         for(const auto& enemy:runtime->session().battle()->enemies())if(enemy.hp>0){
@@ -126,6 +128,149 @@ UIImage* image(NSData* rgba,CGSize size){
         XCTAssertTrue(rejected);XCTAssertEqualObjects([NSData dataWithContentsOfURL:save],corrupt);
         NSLog(@"HM2_SESSION_GPU titleSlotsBaseField=1 warmResourceReads=0 warmTextureUploads=0 warmAudioAllocations=0 atomicSaveRestart=1 corruptPreserved=1 quickIconPixels=%u quickIconDifferences=%u coloredPixels=%u device=%@",iconPixels,iconDifferences,colored,UIDevice.currentDevice.model);
     }catch(const std::exception& e){XCTFail(@"Restored GPU session failed: %s",e.what());}
+    window.hidden=YES;window.rootViewController=nil;XCTAssertTrue([NSFileManager.defaultManager removeItemAtURL:directory error:&error]);
+}
+- (void)testOriginalSlotPreviewShadowParentTranslation {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];NSError* error=nil;
+    XCTAssertTrue([NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:&error]);
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];
+    HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,384,512)];surface.contentScaleFactor=1;
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];surface.frame=CGRectMake(0,0,384,512);[surface layoutIfNeeded];
+    try{
+        hm2::apple::GameRuntime runtime(root,[directory URLByAppendingPathComponent:@"HeavyMach2.sav"],{});
+        for(unsigned n=0;n<2;++n){runtime.input(hm2::PointerPhase::begin,{384,512},1);runtime.input(hm2::PointerPhase::end,{384,512},1);}settle(runtime,layer);
+        for(unsigned slot=0;slot<3;++slot)XCTAssertTrue(runtime.provideName(slot,"MACH"+std::to_string(slot),"kr"));
+        XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::slots);
+        // The actual Session producer supplies local original part frames.
+        // Build an independent expected parent translation from those inputs,
+        // rather than moving the already emitted (possibly incorrect) quads.
+        std::vector<hm2::Sprite> oracleShadows;std::vector<std::string> bodyImages;
+        for(unsigned slot=0;slot<3;++slot){
+            const auto& source=runtime.session().state().slots[slot].machPreview;XCTAssertFalse(source.sprites.empty());
+            const hm2::Vec2 origin{214,794.f-240.f*slot};unsigned count=0;
+            for(const auto& sprite:source.sprites)if(sprite.textureSource.variant==hm2::TextureVariant::originalHalfAlpha){
+                XCTAssertEqual(sprite.visualLayer.value_or(99),0u);
+                XCTAssertTrue(bool(sprite.atlasBatch));if(!sprite.atlasBatch)continue;
+                hm2::Sprite expected=sprite;auto batch=std::make_shared<hm2::AtlasBatch>(*sprite.atlasBatch);
+                for(auto& quad:batch->quads)for(auto& vertex:quad.vertices){vertex.position.x+=origin.x;vertex.position.y+=origin.y;}
+                expected.atlasBatch=std::move(batch);oracleShadows.push_back(std::move(expected));++count;
+            }else{XCTAssertFalse(bool(sprite.atlasBatch));XCTAssertEqual(sprite.visualLayer.value_or(99),3u);bodyImages.push_back(sprite.image);}
+            XCTAssertGreaterThan(count,0u);
+        }
+        hm2::Frame commands;runtime.screens().append(commands,runtime.session().renderTime());
+        hm2::Frame actual;for(const auto& sprite:commands.sprites)if(!sprite.image.starts_with("@text/"))actual.sprites.push_back(sprite);
+        // Keep every original PNG-backed slot command. Dynamic OS text is
+        // excluded from both pixel-oracle frames; the full real slot screen is
+        // captured separately below, including its actual prepared text.
+        std::size_t index=0;
+        std::vector<const hm2::AtlasBatch*> stable;
+        for(const auto& sprite:actual.sprites)if(sprite.textureSource.variant==hm2::TextureVariant::originalHalfAlpha){
+            XCTAssertLessThan(index,oracleShadows.size());if(index>=oracleShadows.size())continue;
+            const auto& oracle=oracleShadows[index++];XCTAssertEqual(sprite.image,oracle.image);XCTAssertTrue(bool(sprite.atlasBatch));
+            if(sprite.atlasBatch){stable.push_back(sprite.atlasBatch.get());XCTAssertEqual(sprite.atlasBatch->quads.size(),oracle.atlasBatch->quads.size());
+                for(std::size_t q=0;q<std::min(sprite.atlasBatch->quads.size(),oracle.atlasBatch->quads.size());++q)for(unsigned v=0;v<4;++v){
+                    XCTAssertEqual(sprite.atlasBatch->quads[q].vertices[v].position.x,oracle.atlasBatch->quads[q].vertices[v].position.x);
+                    XCTAssertEqual(sprite.atlasBatch->quads[q].vertices[v].position.y,oracle.atlasBatch->quads[q].vertices[v].position.y);
+                }}
+        }
+        XCTAssertEqual(index,oracleShadows.size());XCTAssertGreaterThan(index,0u);
+        // Independent original global order: explicit shadow0, then opaque
+        // SelSlot_BG on inherited3, followed by type0 direct body visuals3.
+        // The former visible-shadow>0 assertion was wrong for this UI: the
+        // original full-screen background intentionally covers those shadows.
+        hm2::Frame expected;expected.sprites=oracleShadows;
+        for(const auto& sprite:actual.sprites)if(sprite.textureSource.variant!=hm2::TextureVariant::originalHalfAlpha)expected.sprites.push_back(sprite);
+        NSData* backgroundData=[NSData dataWithContentsOfURL:[root URLByAppendingPathComponent:@"SelSlot_BG.png"]];XCTAssertNotNil(backgroundData);
+        if(backgroundData){const auto bg=hm2::decodeImage({static_cast<const std::uint8_t*>(backgroundData.bytes),backgroundData.length});XCTAssertEqual(bg.width,768u);XCTAssertEqual(bg.height,1024u);
+            bool opaque=true;for(std::size_t i=3;i<bg.rgba.size();i+=4)opaque&=bg.rgba[i]==255;XCTAssertTrue(opaque);}
+        runtime.captureNextFrame();runtime.draw(layer);UIImage* full=image(runtime.pixels(),runtime.drawableSize());XCTAssertNotNil(full);
+        if(full){XCTAttachment* a=[XCTAttachment attachmentWithImage:full];a.name=@"original-slot-three-previews-with-parent-shadows";a.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:a];}
+        HM2SessionSurface* referenceSurface=[[HM2SessionSurface alloc]initWithFrame:surface.bounds];referenceSurface.contentScaleFactor=1;
+        CAEAGLLayer* referenceLayer=(CAEAGLLayer*)referenceSurface.layer;referenceLayer.opaque=YES;referenceLayer.drawableProperties=layer.drawableProperties;[surface addSubview:referenceSurface];[referenceSurface layoutIfNeeded];
+        HM2Renderer* renderer=[[HM2Renderer alloc]initWithResourceRoot:root];[renderer prepareFrame:expected];
+        // Observe prepared output separately from the recorded cold-frame
+        // variation. No pixel tolerance or production GL state is changed.
+        hm2::Frame warmNoShadow=expected;std::erase_if(warmNoShadow.sprites,[](const auto& sprite){return sprite.textureSource.variant==hm2::TextureVariant::originalHalfAlpha;});
+        hm2::Frame warmNoBody=expected;std::erase_if(warmNoBody.sprites,[&](const auto& sprite){return std::find(bodyImages.begin(),bodyImages.end(),sprite.image)!=bodyImages.end();});
+        for(unsigned warm=0;warm<30;++warm)for(const auto* prepared:{&actual,&expected,&warmNoShadow,&warmNoBody})[renderer drawFrame:*prepared layer:referenceLayer];
+        [renderer captureNextFrame];[renderer drawFrame:actual layer:referenceLayer];NSData* preparedBaseline=renderer.readRGBA;
+        NSMutableArray* preparedRepeat=[NSMutableArray array];
+        for(unsigned replay=0;replay<16;++replay){[renderer captureNextFrame];[renderer drawFrame:actual layer:referenceLayer];NSData* pixels=renderer.readRGBA;
+            XCTAssertEqual(pixels.length,preparedBaseline.length);NSUInteger differences=0;const auto* left=static_cast<const std::uint8_t*>(preparedBaseline.bytes);const auto* right=static_cast<const std::uint8_t*>(pixels.bytes);
+            for(NSUInteger i=0;i<std::min(pixels.length,preparedBaseline.length);++i)differences+=left[i]!=right[i];
+            [preparedRepeat addObject:@(differences)];XCTAssertEqual(differences,0u);
+        }
+        NSData* diagnostic=[NSJSONSerialization dataWithJSONObject:@{@"warmDraws":@120,@"preparedIdenticalFrameDifferenceBytes":preparedRepeat,@"pixelTolerance":@0} options:NSJSONWritingPrettyPrinted error:&error];
+        if(diagnostic){XCTAttachment* attachment=[XCTAttachment attachmentWithData:diagnostic uniformTypeIdentifier:@"public.json"];attachment.name=@"slot-gpu-prepared-repeatability";attachment.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:attachment];}
+        [renderer captureNextFrame];[renderer drawFrame:actual layer:referenceLayer];NSData* actualPixels=renderer.readRGBA;
+        [renderer captureNextFrame];[renderer drawFrame:expected layer:referenceLayer];NSData* expectedPixels=renderer.readRGBA;
+        XCTAssertEqual(renderer.drawableSize.width,384);XCTAssertEqual(renderer.drawableSize.height,512);
+        XCTAssertEqual(actualPixels.length,expectedPixels.length);std::size_t differences=0;
+        const auto* a=static_cast<const std::uint8_t*>(actualPixels.bytes);const auto* b=static_cast<const std::uint8_t*>(expectedPixels.bytes);
+        for(NSUInteger i=0;i<std::min(actualPixels.length,expectedPixels.length);++i)if(a[i]!=b[i])++differences;
+        XCTAssertEqual(differences,0u);
+        hm2::Frame noShadow=expected;std::erase_if(noShadow.sprites,[](const auto& s){return s.textureSource.variant==hm2::TextureVariant::originalHalfAlpha;});
+        [renderer captureNextFrame];[renderer drawFrame:noShadow layer:referenceLayer];NSData* noShadowPixels=renderer.readRGBA;
+        std::size_t occludedShadowDifferences=0;const auto* clear=static_cast<const std::uint8_t*>(noShadowPixels.bytes);
+        XCTAssertEqual(noShadowPixels.length,expectedPixels.length);
+        for(NSUInteger i=0;i<std::min(noShadowPixels.length,expectedPixels.length);++i)if(b[i]!=clear[i])++occludedShadowDifferences;
+        XCTAssertEqual(occludedShadowDifferences,0u);
+        hm2::Frame noBody=expected;std::erase_if(noBody.sprites,[&](const auto& s){return std::find(bodyImages.begin(),bodyImages.end(),s.image)!=bodyImages.end();});
+        [renderer captureNextFrame];[renderer drawFrame:noBody layer:referenceLayer];NSData* noBodyPixels=renderer.readRGBA;
+        unsigned visibleBodies[3]={};const auto* noBodyBytes=static_cast<const std::uint8_t*>(noBodyPixels.bytes);XCTAssertEqual(noBodyPixels.length,expectedPixels.length);
+        if(noBodyPixels.length==expectedPixels.length)for(unsigned slot=0;slot<3;++slot){
+            const unsigned centerY=397-120*slot;for(unsigned y=centerY-55;y<centerY+55;++y)for(unsigned x=60;x<155;++x){
+                const auto i=(std::size_t(y)*384+x)*4;if(i+3>=expectedPixels.length)continue;
+                if(b[i]!=noBodyBytes[i]||b[i+1]!=noBodyBytes[i+1]||b[i+2]!=noBodyBytes[i+2])++visibleBodies[slot];
+            }XCTAssertGreaterThan(visibleBodies[slot],0u);
+        }
+        [referenceSurface removeFromSuperview];renderer=nil;
+        const auto reads=runtime.resourceReads();const auto uploads=runtime.textureUploads();const auto texts=runtime.preparedTextCount();
+        for(unsigned frame=0;frame<120;++frame){runtime.draw(layer);hm2::Frame emitted;runtime.screens().append(emitted,runtime.session().renderTime());std::size_t next=0;
+            for(const auto& sprite:emitted.sprites)if(sprite.textureSource.variant==hm2::TextureVariant::originalHalfAlpha){XCTAssertLessThan(next,stable.size());if(next<stable.size())XCTAssertEqual(sprite.atlasBatch.get(),stable[next]);++next;}
+            XCTAssertEqual(next,stable.size());
+        }
+        XCTAssertEqual(runtime.resourceReads(),reads);XCTAssertEqual(runtime.textureUploads(),uploads);XCTAssertEqual(runtime.preparedTextCount(),texts);
+        NSLog(@"HM2_SLOT_PREVIEW_GPU slots=3 translatedShadowBatches=%zu comparedBytes=%lu differentBytes=%zu occludedShadowDifferenceBytes=%zu visibleBodyPixels=%u/%u/%u stablePayload120=1 warmReads0Upload0Text0=1",index,(unsigned long)actualPixels.length,differences,occludedShadowDifferences,visibleBodies[0],visibleBodies[1],visibleBodies[2]);
+    }catch(const std::exception& e){XCTFail(@"Original slot preview shadow failed: %s",e.what());}
+    window.hidden=YES;window.rootViewController=nil;XCTAssertTrue([NSFileManager.defaultManager removeItemAtURL:directory error:&error]);
+}
+- (void)testOriginalShopItemDetailsAndSellPosition {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];NSError* error=nil;
+    XCTAssertTrue([NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:&error]);
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];
+    HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,384,512)];surface.contentScaleFactor=1;
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];surface.frame=CGRectMake(0,0,384,512);[surface layoutIfNeeded];
+    try{
+        hm2::apple::GameRuntime runtime(root,[directory URLByAppendingPathComponent:@"HeavyMach2.sav"],{});
+        for(unsigned n=0;n<2;++n){runtime.input(hm2::PointerPhase::begin,{384,512},1);runtime.input(hm2::PointerPhase::end,{384,512},1);}settle(runtime,layer);
+        XCTAssertTrue(runtime.provideName(0,"MACH","kr"));XCTAssertTrue(tap(runtime,1001,layer));
+        XCTAssertTrue(tap(runtime,2002,layer));XCTAssertTrue(tap(runtime,2002,layer));XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::shop);
+        const auto writes=runtime.session().metrics().saveRequests;
+        auto inspect=[&](NSString* label,const std::string& largeIcon,bool popup){
+            for(unsigned n=0;n<90;++n){runtime.tick();runtime.draw(layer);}
+            hm2::Frame commands;runtime.screens().append(commands,runtime.session().renderTime());
+            const auto large=std::find_if(commands.sprites.begin(),commands.sprites.end(),[&](const auto& v){return v.image==largeIcon;});
+            XCTAssertTrue(large!=commands.sprites.end());if(large!=commands.sprites.end()){XCTAssertEqual(large->angle,0.f);XCTAssertFalse(large->strip.empty());}
+            XCTAssertEqual(std::any_of(commands.sprites.begin(),commands.sprites.end(),[](const auto& v){return v.image=="ItemDesc.png";}),popup);
+            const auto reads=runtime.resourceReads();const auto texts=runtime.preparedTextCount();const auto uploads=runtime.textureUploads();const auto audio=runtime.audioMetrics();
+            for(unsigned n=0;n<60;++n){runtime.tick();runtime.draw(layer);}XCTAssertEqual(runtime.resourceReads(),reads);XCTAssertEqual(runtime.preparedTextCount(),texts);XCTAssertEqual(runtime.textureUploads(),uploads);XCTAssertEqual(runtime.session().metrics().saveRequests,writes);
+            const auto after=runtime.audioMetrics();for(NSString* key in @[@"contextsCreated",@"sourcesCreated",@"buffersCreated",@"effectFileReads",@"effectDecodes"])XCTAssertEqualObjects(audio[key],after[key]);
+            runtime.captureNextFrame();runtime.draw(layer);UIImage* capture=image(runtime.pixels(),runtime.drawableSize());XCTAssertNotNil(capture);
+            if(capture){XCTAttachment* a=[XCTAttachment attachmentWithImage:capture];a.name=label;a.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:a];}
+        };
+        XCTAssertTrue(tap(runtime,2200,layer));XCTAssertTrue(runtime.session().state().shopDetailVisible);XCTAssertEqual(runtime.session().state().selectedShop,0);inspect(@"shop-original-weapon-large-detail",runtime.session().state().shopItems[0].largeIcon,false);
+        XCTAssertTrue(tap(runtime,6002,layer));XCTAssertEqual(runtime.session().state().detailInventory,2);XCTAssertFalse(runtime.session().state().shopDetailVisible);inspect(@"shop-original-inventory-popup",runtime.session().state().detailItem.largeIcon,true);
+        XCTAssertTrue(tap(runtime,2112,layer));XCTAssertEqual(runtime.session().state().detailInventory,-1);
+        XCTAssertTrue(tap(runtime,6005,layer));bool foundSell=false;
+        for(const auto& key:runtime.screens().buttons())if(key.id==2103){const auto b=runtime.screens().button(key);XCTAssertTrue(bool(b));if(b){XCTAssertEqual(b->screenPosition().x,384.f);XCTAssertEqual(b->screenPosition().y,552.f);foundSell=true;}}
+        XCTAssertTrue(foundSell);XCTAssertEqual(runtime.session().metrics().unsupportedActions,0u);
+        NSLog(@"HM2_SHOP_GPU actualButtons/KoreanSession/largeIcon/detailPopup/Sell384,552/warm60IO0Texture0AudioAlloc0/save0");
+    }catch(const std::exception& e){XCTFail(@"Original shop detail failed: %s",e.what());}
     window.hidden=YES;window.rootViewController=nil;XCTAssertTrue([NSFileManager.defaultManager removeItemAtURL:directory error:&error]);
 }
 @end

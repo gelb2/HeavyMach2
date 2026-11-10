@@ -7,7 +7,7 @@ class GameClock {
     float render_=0;
     std::uint64_t frames_=0,ticks_=0;
 public:
-    explicit GameClock(float initialRenderTime=0):render_(initialRenderTime){}
+    explicit GameClock(float initialRenderTime=0,double initialWorldTime=0):world_(initialWorldTime),render_(initialRenderTime){}
     static constexpr float increment=std::bit_cast<float>(0x3c87fcb9u);
     bool step(bool worldPaused=false,bool appActive=true){
         if(!appActive)return false;

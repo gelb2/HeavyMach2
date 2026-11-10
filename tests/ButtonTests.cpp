@@ -148,6 +148,13 @@ int main(){
     payloads.input(PointerPhase::begin,{0,0},1,60);assert(chosen=="M001020");
     fails([&]{payloads.add(std::make_shared<Button>(missionB,tile()));});
     fails([&]{Button bad({1,1,0},ButtonTile{"x",{2,2},0,1,false,{}});});
-    fails([&]{button.setReleaseTile(3);});fails([&]{button.setBoundWidthHeight(-1,2);});
+    // Original DlgInven's one-tile Arrange stores normal/release index1.
+    // Button state retains raw indices; only the drawn Tile2D sample clamps.
+    Button one({30,6093,0},ButtonTile{"arrange.png",{120,42},1,1,false,{}},1);
+    one.setReleaseTile(1);frame.sprites.clear();one.append(frame,70);
+    assert(frame.sprites.back().tile==0&&frame.sprites.back().size.width==120&&frame.sprites.back().size.height==42);
+    assert(one.input(PointerPhase::begin,{0,0},71,71,sink));frame.sprites.clear();one.append(frame,71);assert(frame.sprites.back().tile==0);
+    one.input(PointerPhase::end,{0,0},71,72,sink);one.setDefaultTile(99);one.setTile(tile());frame.sprites.clear();one.append(frame,73);assert(frame.sprites.back().tile==2);
+    fails([&]{button.setBoundWidthHeight(-1,2);});
     fails([&]{button.input(PointerPhase::begin,{},1,-1,sink);});
 }

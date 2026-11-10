@@ -10,5 +10,7 @@ struct TileImage {
     Vec2 origin;
     bool forRetina=false;
     unsigned pixelFormat=1;
+    TextureSource textureSource={};
+    Color color={};
 };
 }

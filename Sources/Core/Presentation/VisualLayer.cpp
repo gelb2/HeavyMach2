@@ -45,7 +45,7 @@ Vec2 rotated(Vec2 local,float c,float s,Vec2 origin){
 }
 Sprite nonAtlasImage(const VisualImage& image){
     const auto g=geometry(image);const auto uv=tileUV(image,g);
-    Sprite out;out.image=image.tile.image;out.center=image.screenPosition;
+    Sprite out;out.image=image.tile.image;out.center=image.screenPosition;out.textureSource=image.tile.textureSource;
     out.color={image.tile.color.r,image.tile.color.g,image.tile.color.b,image.alpha};
     out.blend=originalTileBlend(image.blendType,image.tile.pixelFormat);
     const float ox=image.tile.origin.x*g.xScale,oy=image.tile.origin.y*g.yScale;
@@ -60,7 +60,7 @@ Sprite nonAtlasImage(const VisualImage& image){
     return out;
 }
 bool sameStorage(const VisualTile& a,const VisualTile& b){
-    return a.image==b.image&&a.pixelFormat==b.pixelFormat&&
+    return a.image==b.image&&a.pixelFormat==b.pixelFormat&&a.textureSource==b.textureSource&&
         a.content.width==b.content.width&&a.content.height==b.content.height&&
         a.storage.width==b.storage.width&&a.storage.height==b.storage.height;
 }
@@ -108,7 +108,7 @@ void VisualLayerFrame::append(Frame& frame)const{
     for(const auto& batch:atlases){
         const float maxS=batch.content.width/batch.storage.width,maxT=batch.content.height/batch.storage.height;
         for(const auto& quad:batch.quads){
-            Sprite sprite;sprite.image=batch.image;sprite.blend=batch.blend;
+            Sprite sprite;sprite.image=batch.image;sprite.blend=batch.blend;sprite.textureSource=batch.textureSource;
             for(const auto& v:quad.vertices)sprite.strip.push_back({v.position,{v.uv.x/maxS,v.uv.y/maxT},
                 {float(v.color.r)/255.f,float(v.color.g)/255.f,float(v.color.b)/255.f,float(v.color.a)/255.f}});
             frame.sprites.push_back(std::move(sprite));
@@ -119,7 +119,7 @@ void VisualLayerFrame::appendBatches(Frame& frame)const &{
     frame.sprites.insert(frame.sprites.end(),nonAtlas.begin(),nonAtlas.end());
     for(const auto& batch:atlases){
         if(batch.quads.empty())continue;
-        Sprite command;command.image=batch.image;command.blend=batch.blend;
+        Sprite command;command.image=batch.image;command.blend=batch.blend;command.textureSource=batch.textureSource;
         command.atlasBatch=std::make_shared<const AtlasBatch>(batch);
         frame.sprites.push_back(std::move(command));
     }
@@ -128,7 +128,7 @@ void VisualLayerFrame::appendBatches(Frame& frame)&&{
     frame.sprites.insert(frame.sprites.end(),std::make_move_iterator(nonAtlas.begin()),std::make_move_iterator(nonAtlas.end()));
     for(auto& batch:atlases){
         if(batch.quads.empty())continue;
-        Sprite command;command.image=batch.image;command.blend=batch.blend;
+        Sprite command;command.image=batch.image;command.blend=batch.blend;command.textureSource=batch.textureSource;
         command.atlasBatch=std::make_shared<const AtlasBatch>(std::move(batch));
         frame.sprites.push_back(std::move(command));
     }
@@ -178,7 +178,7 @@ VisualLayerFrame VisualLayer::drain(){
     for(auto& g:groups_){
         if(g.quads.empty())continue; // drawNumberOfQuads:0 performs no GL draw.
         AtlasBatch b;b.tileIdentity=g.tile.identity;b.image=g.tile.image;b.blendType=g.blendType;
-        b.pixelFormat=g.tile.pixelFormat;b.capacity=g.capacity;b.content=g.tile.content;b.storage=g.tile.storage;
+        b.textureSource=g.tile.textureSource;b.pixelFormat=g.tile.pixelFormat;b.capacity=g.capacity;b.content=g.tile.content;b.storage=g.tile.storage;
         b.blend=originalAtlasBlend(g.blendType,g.tile.pixelFormat);b.quads=g.quads;
         b.indices.reserve(g.quads.size()*6);
         for(std::size_t i=0;i<g.quads.size();++i){const auto n=static_cast<std::uint16_t>(i*4);

@@ -14,6 +14,9 @@
 @property(nonatomic,readonly) NSUInteger textureUploads;
 @property(nonatomic,readonly) NSUInteger imageTextureUploads;
 @property(nonatomic,readonly) NSUInteger textTextureUploads;
+@property(nonatomic,readonly) NSUInteger alphaTextureUploads;
+@property(nonatomic,readonly) NSUInteger imageResourceReads;
+@property(nonatomic,readonly) NSUInteger imageDecodeCalls;
 @property(nonatomic,readonly) NSUInteger presentedFrames;
 @property(nonatomic,readonly) NSUInteger drawCalls;
 @property(nonatomic,readonly) NSUInteger atlasDrawCalls;

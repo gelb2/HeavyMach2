@@ -23,6 +23,7 @@ add_library(HeavyMach2Core STATIC
     Sources/Core/Simulation/BipodMotion.cpp
     Sources/Core/Simulation/Dash.cpp
     Sources/Core/Simulation/WorldNavigation.cpp
+    Sources/Core/Simulation/WorldGates.cpp
     Sources/Core/Simulation/LocomotionScene.cpp
     Sources/Core/Simulation/WeaponController.cpp
     Sources/Core/Simulation/ProjectileMotion.cpp
@@ -35,13 +36,18 @@ add_library(HeavyMach2Core STATIC
     Sources/Core/Simulation/WeaponEffects.cpp
     Sources/Core/Simulation/ProjectileVisual.cpp
     Sources/Core/Simulation/EnemyActors.cpp
+    Sources/Core/Simulation/Bot.cpp
     Sources/Core/Simulation/EnemyVehicle.cpp
     Sources/Core/Simulation/CombatScene.cpp
     Sources/Core/Simulation/AirStrike.cpp
     Sources/Core/Simulation/ObjectCollision.cpp
     Sources/Core/UI/Text.cpp
+    Sources/Core/UI/Help.cpp
     Sources/Core/UI/Screens.cpp
     Sources/Core/Presentation/PartSprites.cpp
+    Sources/Core/Presentation/MovementPathVisual.cpp
+    Sources/Core/Presentation/ScreenTransition.cpp
+    Sources/Core/Presentation/MapLoading.cpp
     Sources/Core/Presentation/VisualLayer.cpp
     Sources/Core/Presentation/PreparedTiles.cpp
     Sources/Core/Presentation/PlayerMapPreview.cpp
@@ -177,9 +183,54 @@ if(BUILD_TESTING)
         target_compile_options(EnemyActorSceneTests PRIVATE -UNDEBUG)
         add_test(NAME OriginalEnemyActorScene COMMAND EnemyActorSceneTests "${HM2_HD_RESOURCES}")
         add_executable(SessionEntryTests tests/SessionEntryTests.cpp)
+        add_executable(BotTests tests/BotTests.cpp)
+        target_link_libraries(BotTests PRIVATE HeavyMach2Core)
+        target_compile_options(BotTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalBotActor COMMAND BotTests "${HM2_HD_RESOURCES}")
+        add_executable(BotSceneTests tests/BotSceneTests.cpp)
+        target_link_libraries(BotSceneTests PRIVATE HeavyMach2Core)
+        target_compile_options(BotSceneTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalBotScene COMMAND BotSceneTests "${HM2_HD_RESOURCES}")
+        add_executable(MapLoadingTests tests/MapLoadingTests.cpp)
+        target_link_libraries(MapLoadingTests PRIVATE HeavyMach2Core)
+        target_compile_options(MapLoadingTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalMapLoading COMMAND MapLoadingTests "${HM2_HD_RESOURCES}")
+        add_executable(ScreenTransitionSessionTests tests/ScreenTransitionSessionTests.cpp)
+        target_link_libraries(ScreenTransitionSessionTests PRIVATE HeavyMach2Core)
+        target_compile_options(ScreenTransitionSessionTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalScreenTransitionSession COMMAND ScreenTransitionSessionTests "${HM2_HD_RESOURCES}")
+        add_executable(GateSessionTests tests/GateSessionTests.cpp)
+        target_link_libraries(GateSessionTests PRIVATE HeavyMach2Core)
+        target_compile_options(GateSessionTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalGateSession COMMAND GateSessionTests "${HM2_HD_RESOURCES}")
+        add_executable(WorldGatesTests tests/WorldGatesTests.cpp)
+        target_link_libraries(WorldGatesTests PRIVATE HeavyMach2Core)
+        target_compile_options(WorldGatesTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalWorldGates COMMAND WorldGatesTests "${HM2_HD_RESOURCES}")
+        add_executable(HelpSessionTests tests/HelpSessionTests.cpp)
+        target_link_libraries(HelpSessionTests PRIVATE HeavyMach2Core)
+        target_compile_options(HelpSessionTests PRIVATE -UNDEBUG)
+        add_executable(HelpTests tests/HelpTests.cpp)
+        target_link_libraries(HelpTests PRIVATE HeavyMach2Core)
+        target_compile_options(HelpTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalHelpSession COMMAND HelpSessionTests "${HM2_HD_RESOURCES}")
+        add_test(NAME OriginalHelpPagesAndInput COMMAND HelpTests "${HM2_HD_RESOURCES}")
+        add_executable(PartShadowTests tests/PartShadowTests.cpp)
+        target_link_libraries(PartShadowTests PRIVATE HeavyMach2Core)
+        target_compile_options(PartShadowTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalPartShadows COMMAND PartShadowTests "${HM2_HD_RESOURCES}")
+        add_executable(MovementPathVisualTests tests/MovementPathVisualTests.cpp)
+        target_link_libraries(MovementPathVisualTests PRIVATE HeavyMach2Core)
+        target_compile_options(MovementPathVisualTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalMovementPathVisual COMMAND MovementPathVisualTests "${HM2_HD_RESOURCES}")
+        add_executable(ScreenTransitionTests tests/ScreenTransitionTests.cpp)
+        target_link_libraries(ScreenTransitionTests PRIVATE HeavyMach2Core)
+        target_compile_options(ScreenTransitionTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalScreenTransition COMMAND ScreenTransitionTests "${HM2_HD_RESOURCES}")
         target_link_libraries(SessionEntryTests PRIVATE HeavyMach2Core)
         target_compile_options(SessionEntryTests PRIVATE -UNDEBUG)
         add_test(NAME OriginalDescriptionDictionary COMMAND SessionEntryTests "${HM2_HD_RESOURCES}" descriptions)
+        add_test(NAME OriginalKoreanSessionLocale COMMAND SessionEntryTests "${HM2_HD_RESOURCES}" locale)
         add_test(NAME OriginalNameSelectSave COMMAND SessionEntryTests "${HM2_HD_RESOURCES}" create)
         add_test(NAME OriginalDeleteSlotBytes COMMAND SessionEntryTests "${HM2_HD_RESOURCES}" delete)
         add_test(NAME OriginalResumeSavedField COMMAND SessionEntryTests "${HM2_HD_RESOURCES}" resume)
@@ -210,6 +261,7 @@ if(BUILD_TESTING)
         target_link_libraries(ConcurrentValidationTests PRIVATE HeavyMach2Core)
         target_compile_options(ConcurrentValidationTests PRIVATE -UNDEBUG)
         add_test(NAME ConcurrentOriginalGameScenarios COMMAND ConcurrentValidationTests "${HM2_HD_RESOURCES}")
+        add_test(NAME ConcurrentOriginalGameWithUI COMMAND ConcurrentValidationTests "${HM2_HD_RESOURCES}" --native-ui 1200)
     endif()
     if(HM2_HD_RESOURCES)
         add_test(NAME OriginalStageVehicleEncounters COMMAND EnemyVehicleTests "${HM2_HD_RESOURCES}")

@@ -1,3 +1,4 @@
+#include "PreparedTextStub.hpp"
 #include "Core/Session/GameSession.hpp"
 #include "Core/Progression/Progression.hpp"
 #include "Core/Simulation/DarwinWorldRandom.hpp"
@@ -20,6 +21,7 @@ struct Files:ResourceAccess {
     bool exists(std::string_view name)const override{++probes;return cache.contains(name)||std::filesystem::exists(root/std::string(name));}
 };
 struct Host:SessionHost {
+    ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest& r)override{return test::preparedTextStub(r);}
     unsigned saves=0;std::vector<unsigned> sounds;
     void sound(std::string_view,Vec2)override{}void soundID(unsigned id,Vec2)override{sounds.push_back(id);}
     void alert(std::string_view)override{}void requestName(unsigned)override{}void requestDelete(unsigned)override{}

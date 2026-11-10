@@ -9,6 +9,20 @@
 #include "Core/Data/Weapons.hpp"
 #include <chrono>
 #include <numbers>
+#include <stdexcept>
+
+namespace {
+hm2::Frame bodyFrame(const hm2::Frame& source,std::size_t expectedShadows){
+    hm2::Frame bodies;bodies.width=source.width;bodies.height=source.height;std::size_t shadows=0;
+    for(const auto& sprite:source.sprites){
+        if(sprite.textureSource.variant==hm2::TextureVariant::rgba){bodies.sprites.push_back(sprite);continue;}
+        if(sprite.textureSource.variant!=hm2::TextureVariant::originalHalfAlpha||sprite.visualLayer!=0||sprite.image!=sprite.textureSource.image+"~shd"||!sprite.atlasBatch||sprite.atlasBatch->pixelFormat!=3||sprite.atlasBatch->textureSource!=sprite.textureSource)throw std::runtime_error("Invalid original shadow descriptor");
+        shadows+=sprite.atlasBatch->quads.size();
+    }
+    if(shadows!=expectedShadows)throw std::runtime_error("Missing original shadow quads");return bodies;
+}
+}
+
 
 @interface HM2TestSurface:UIView @end
 @implementation HM2TestSurface
@@ -38,12 +52,12 @@
     [renderer captureNextFrame];[renderer drawFrame:frame layer:layer];NSData* first=renderer.readRGBA;
     XCTAssertTrue(scene.input(hm2::PointerPhase::begin,scene.camera().toScreen({80,0}),1));scene.input(hm2::PointerPhase::end,scene.camera().toScreen({80,0}),1);
     for(int i=0;i<180;++i){@autoreleasepool{scene.tick();frame=scene.frame();[renderer drawFrame:frame layer:layer];XCTAssertEqual(renderer.textureUploads,uploads);XCTAssertEqual(renderer.contextIdentity,context);}}
-    XCTAssertGreaterThan(scene.actors().front().state().position.x,-75.f);XCTAssertTrue(scene.actors()[1].state().weaponReady);XCTAssertEqual(frame.sprites.size(),11u);
+    XCTAssertGreaterThan(scene.actors().front().state().position.x,-75.f);XCTAssertTrue(scene.actors()[1].state().weaponReady);XCTAssertEqual(bodyFrame(frame,10).sprites.size(),11u);
     [renderer captureNextFrame];[renderer drawFrame:frame layer:layer];NSData* after=renderer.readRGBA;XCTAssertEqual(first.length,after.length);
     NSUInteger changes=0;const auto* a=static_cast<const unsigned char*>(first.bytes);const auto* b=static_cast<const unsigned char*>(after.bytes);if(first.length==after.length)for(NSUInteger i=0;i<first.length;i+=4)if(a[i]!=b[i]||a[i+1]!=b[i+1]||a[i+2]!=b[i+2])++changes;
     XCTAssertGreaterThan(changes,100u);const auto time=scene.time();const auto ticks=scene.ticks();scene.setPaused(true);
     for(int i=0;i<10;++i){scene.tick();[renderer drawFrame:scene.frame() layer:layer];}XCTAssertEqual(scene.time(),time);XCTAssertEqual(scene.ticks(),ticks);XCTAssertTrue(files.reads==before);
-    XCTAssertEqual(uploads,9u);XCTAssertEqual(renderer.presentedFrames,192u);XCTAssertEqual(surface.subviews.count,0u);
+    XCTAssertEqual(uploads,17u);XCTAssertEqual(renderer.presentedFrames,192u);XCTAssertEqual(surface.subviews.count,0u);
     NSLog(@"HM2_LOCOMOTION_GPU ticks=%lu frames=%lu textures=%lu changedPixels=%lu playerX=%.6f playerY=%.6f device=%@",scene.ticks(),(unsigned long)renderer.presentedFrames,(unsigned long)uploads,(unsigned long)changes,scene.actors().front().state().position.x,scene.actors().front().state().position.y,UIDevice.currentDevice.model);
     window.hidden=YES;window.rootViewController=nil;
 }
@@ -58,9 +72,9 @@
     CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
     controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];[surface layoutIfNeeded];
     HM2Renderer* renderer=[[HM2Renderer alloc]initWithResourceRoot:root];
-    auto frame=preview.compose(camera,cases);XCTAssertEqual(frame.sprites.size(),11u);
+    auto frame=preview.compose(camera,cases);XCTAssertEqual(bodyFrame(frame,10).sprites.size(),11u);
     [renderer prepareFrame:frame];const auto uploads=renderer.textureUploads,context=renderer.contextIdentity;
-    XCTAssertEqual(uploads,9u);XCTAssertTrue(frame.sprites[5].reverseY);XCTAssertTrue(frame.sprites[10].reverseY);
+    XCTAssertEqual(uploads,17u);const auto bodies=bodyFrame(frame,10);XCTAssertTrue(bodies.sprites[5].reverseY);XCTAssertTrue(bodies.sprites[10].reverseY);
     const auto terrain=preview.map().compose(camera);[renderer captureNextFrame];[renderer drawFrame:terrain layer:layer];NSData* baseline=renderer.readRGBA;
     [renderer captureNextFrame];[renderer drawFrame:frame layer:layer];NSData* mixed=renderer.readRGBA;
     XCTAssertEqual(mixed.length,baseline.length);if(!mixed.length||mixed.length!=baseline.length)return;
@@ -75,7 +89,7 @@
     for(int i=0;i<120;++i){@autoreleasepool{
         cases[1].angles.weaponLeft=float(i)*.01f;cases[1].angles.weaponRight=-float(i)*.02f;
         frame=preview.compose({{float(i)/10,float(-i)/20},{},camera.viewport},cases);[renderer drawFrame:frame layer:layer];
-        XCTAssertEqual(frame.sprites.size(),11u);XCTAssertEqual(renderer.textureUploads,uploads);XCTAssertEqual(renderer.contextIdentity,context);
+        XCTAssertEqual(bodyFrame(frame,10).sprites.size(),11u);XCTAssertEqual(renderer.textureUploads,uploads);XCTAssertEqual(renderer.contextIdentity,context);
     }}
     XCTAssertTrue(files.reads==before);XCTAssertEqual(renderer.presentedFrames,122u);XCTAssertEqual(surface.subviews.count,0u);
     NSLog(@"HM2_MAP_PLAYER_GPU frames=%lu textures=%lu terrainPixels=%lu leftChanged=%lu rightChanged=%lu device=%@",(unsigned long)renderer.presentedFrames,(unsigned long)uploads,(unsigned long)terrainPixels,(unsigned long)changed[0],(unsigned long)changed[1],UIDevice.currentDevice.model);
@@ -87,7 +101,7 @@
     hm2::AssemblyCase cases[]={{"E_Tank_01",{80,80},0,0},{"E_Tank_01",{240,80},std::numbers::pi_v<float>/2,0},
         {"E_Tank_01",{80,240},0,std::numbers::pi_v<float>/2},{"E_Tank_01",{240,240},.7f,-.4f}};
     const hm2::AssemblyPreview preview(files,cases,{320,320});
-    XCTAssertEqual(preview.models().parts().size(),338u);XCTAssertEqual(preview.frame().sprites.size(),8u);
+    XCTAssertEqual(preview.models().parts().size(),338u);XCTAssertEqual(bodyFrame(preview.frame(),8).sprites.size(),8u);
     UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];
     UIViewController* controller=[UIViewController new];HM2TestSurface* surface=[[HM2TestSurface alloc]initWithFrame:window.bounds];
     surface.contentScaleFactor=UIScreen.mainScreen.scale;
@@ -96,7 +110,7 @@
     controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];[surface layoutIfNeeded];
     HM2Renderer* renderer=[[HM2Renderer alloc]initWithResourceRoot:root];[renderer prepareFrame:preview.frame()];
     const auto uploads=renderer.textureUploads,context=renderer.contextIdentity;
-    XCTAssertEqual(uploads,2u);XCTAssertNotEqual(context,0u);
+    XCTAssertEqual(uploads,4u);XCTAssertNotEqual(context,0u);
     [renderer captureNextFrame];[renderer drawFrame:preview.frame() layer:layer];
     NSData* rgba=renderer.readRGBA;const auto size=renderer.drawableSize;
     XCTAssertEqual(rgba.length,NSUInteger(size.width*size.height*4));
@@ -137,12 +151,12 @@
         const auto start=std::chrono::steady_clock::now();
         const auto frame=preview.compose(cases,{320,320});[renderer drawFrame:frame layer:layer];
         const double ms=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();worst=std::max(worst,ms);total+=ms;
-        XCTAssertEqual(frame.sprites.size(),8u);XCTAssertEqual(renderer.contextIdentity,context);XCTAssertEqual(renderer.textureUploads,uploads);
+        XCTAssertEqual(bodyFrame(frame,8).sprites.size(),8u);XCTAssertEqual(renderer.contextIdentity,context);XCTAssertEqual(renderer.textureUploads,uploads);
     }}
     XCTAssertTrue(files.reads==before);XCTAssertEqual(renderer.presentedFrames,123u);
     // No platform controls exist in this first common GPU assembly surface.
     XCTAssertEqual(surface.subviews.count,0u);
-    NSLog(@"HM2_ASSEMBLY_GPU sprites=8 frames=%lu textures=%lu coloredPixels=%lu pixelMismatches=%lu meanMs=%.3f worstMs=%.3f device=%@ bounds=%@",(unsigned long)renderer.presentedFrames,(unsigned long)uploads,(unsigned long)nonblack,(unsigned long)mismatches,total/120,worst,UIDevice.currentDevice.model,NSStringFromCGRect(surface.bounds));
+    NSLog(@"HM2_ASSEMBLY_GPU bodySprites=8 shadowQuads=8 frames=%lu textures=%lu coloredPixels=%lu pixelMismatches=%lu meanMs=%.3f worstMs=%.3f device=%@ bounds=%@",(unsigned long)renderer.presentedFrames,(unsigned long)uploads,(unsigned long)nonblack,(unsigned long)mismatches,total/120,worst,UIDevice.currentDevice.model,NSStringFromCGRect(surface.bounds));
     window.hidden=YES;window.rootViewController=nil;
 }
 @end

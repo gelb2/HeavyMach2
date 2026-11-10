@@ -1,10 +1,13 @@
 #pragma once
 #include "Core/Simulation/BipodMotion.hpp"
+#include "Core/Simulation/Bot.hpp"
 #include "Core/Simulation/GameClock.hpp"
 #include "Core/Simulation/WorldNavigation.hpp"
 #include "Core/Simulation/WorldRandom.hpp"
 #include "Core/Data/Machines.hpp"
 #include "Core/Data/Resources.hpp"
+#include "Core/Simulation/WorldGates.hpp"
+#include "Core/UI/Screens.hpp"
 #include <memory>
 #include <map>
 
@@ -15,6 +18,8 @@ struct WeaponInfo;
 class Particle;
 struct TileImage;
 struct CombatEnemySnapshot {std::uint64_t id=0;std::string name;Vec2 position;int hp=0;bool targetingPlayer=false,corpse=false;std::size_t activeParts=0;MachineKind kind=MachineKind::bipod;bool boss=false,moveToTarget=false;};
+struct CombatBotSetup {std::string machine;int savedHP=0;};
+struct CombatBotSnapshot {std::uint64_t id=0;std::string name;unsigned slot=0;Vec2 position;int hp=0,maximumHP=0,referenceType=0;bool removed=false;std::uint64_t target=0,pickItem=0;float rotorAngle=0;BotGauge gauge;BotMetrics metrics;std::uint64_t itemCaptures=0,hpRemoved=0,enemyHPRemoved=0;};
 struct CombatPlayerWeaponSnapshot {
     unsigned inventoryEquipSlot=0,currentMuzzle=1,parentSocket=0;
     std::size_t insertionIndex=0;
@@ -26,6 +31,8 @@ struct CombatPlayerWeaponSnapshot {
 };
 struct CombatDashSnapshot {Vec2 velocity,lastEffectPosition;float tapTime=0,special=0;std::uintptr_t movePointer=0;unsigned pathCount=0;int currentTerrain=-1;};
 struct CombatMetrics {
+    std::uint64_t levelUpEffectRequests=0,levelUpEffectsCreated=0;
+    std::uint64_t botSpawns=0,botTicks=0,botEmissions=0,botDamageCalls=0,botHPRemoved=0,botDeaths=0,botRemovals=0,botItemCaptures=0,botEnemyHPRemoved=0;
     std::uint64_t dashStarts=0,dashMoveTicks=0,dashParticleAllocations=0,dashRandomCalls=0;
     std::uint64_t airStrikeRequests=0,airStrikeProjectiles=0,airStrikeDamageCalls=0,airStrikeTicks=0,airStrikeEnemyHPRemoved=0;
     std::uint64_t randomCalls=0,emissions=0,damageCalls=0,projectilesCreated=0,projectilesRemoved=0,soundRequests=0;
@@ -53,11 +60,17 @@ struct CombatSceneHooks {
     virtual void playerHPChanged(int){}
     virtual void playerDied(){}
     virtual void outOfRange(bool /* left */){}
+    virtual void enemyTargetChanged(std::string_view /* original machine name */){}
     // Original listItem slot precedes pool/spawners/Player. External progression
     // may synchronously pick up items here using the same world stream.
     virtual void tickItems(double,float,Vec2,WorldRandom&){}
+    virtual std::vector<BotItemTarget> botItems()const{return {};}
+    virtual void botHPChanged(unsigned,int){}
+    virtual void botDestroyed(unsigned){}
     virtual void prepareTiles(ResourceAccess&,PreparedTiles&){}
     virtual void collectItems(VisualLayer&,const MapCamera&,const PreparedTiles&){}
+    virtual ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest&);
+    virtual void linkGate(const MapGate&){}
 };
 struct CombatSetup {
     std::string map="Stage01_01";
@@ -66,9 +79,12 @@ struct CombatSetup {
     // GobWorld.setStage_LinkGate0x13778 offsets the Player50 units inward.
     // False retains the existing isolated gate-position comparison fixture.
     bool offsetInsideGate=false;
+    bool openEventGate=false;
+    std::array<CombatBotSetup,3> botSlots{};
     EquipmentCodes equipment=PlayerEquipment::startingCodes;
     std::uint32_t randomSeed=1;
     float initialRenderTime=0;
+    double initialWorldTime=0; // World.gameTime survives map/base hide and setStage.
     WorldRandom* random=nullptr; // If supplied, must outlive this scene.
 };
 // Restored HD battle consumer. Platform display adaptation, menus, persistence
@@ -86,6 +102,12 @@ public:
     void setFiring(bool left,bool right);
     void equipWeapon(EquipmentCodes,unsigned inventoryEquipSlot); // Only2/3.
     void refreshPlayerHPGauge();
+    void showLevelUpEffect(); // Original shared pool, before HP/gauge refresh.
+    [[nodiscard]] std::vector<CombatBotSnapshot> bots()const;
+    void setBotHP(std::uint64_t,int); // Raw setter; repair owns slot write.
+    void refreshBotHPGauge(std::uint64_t); // Visual only for QuickItems.
+    void restoreBotsHP(); // Player.levelUp raw full HP then gauge/slot.
+    void botPickedItem(std::uint64_t bot,std::uint64_t item);
     Particle* allocateParticle(); // Existing world pool/reset/RNG only.
     [[nodiscard]] const TileImage* preparedTile(std::string_view)const;
     [[nodiscard]] bool isPaused()const;
@@ -95,6 +117,8 @@ public:
     void setIsSave(bool); // Original0xfea0 field writer, independent of HP.
     [[nodiscard]] bool isSave()const;
     void setPaused(bool);
+    void setGameState(int);
+    [[nodiscard]] int gameState()const;
     void setActive(bool);
     [[nodiscard]] const GameClock& clock()const;
     [[nodiscard]] const BipodState& player()const;
@@ -102,6 +126,7 @@ public:
     [[nodiscard]] const MapCamera& camera()const;
     [[nodiscard]] const TerrainCollision& terrain()const;
     [[nodiscard]] const CombatMetrics& metrics()const;
+    [[nodiscard]] std::span<const WorldGateSnapshot> gates()const;
     [[nodiscard]] CombatDashSnapshot dashState()const;
     [[nodiscard]] std::vector<CombatEnemySnapshot> enemies()const;
     [[nodiscard]] std::vector<CombatPlayerWeaponSnapshot> playerWeapons()const;

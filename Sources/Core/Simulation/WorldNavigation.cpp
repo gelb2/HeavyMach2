@@ -10,9 +10,15 @@ float ease(float from,float to){return std::abs(from-to)>.5f?from+(to-from)/50:t
 }
 Vec2 WorldNavigation::point(unsigned i)const{if(i>=count_)throw std::out_of_range("Waypoint outside active path");return points_[(start_+i)%12];}
 void WorldNavigation::append(Vec2 p,bool add,BipodMotion& actor){
-    if(!add||count_==0){start_=0;count_=0;actor.setDestination(p);}
+    const bool reset=!add||count_==0;
+    if(reset){start_=0;count_=0;actor.setDestination(p);}
     else if(count_>11)count_=11;
     points_[(start_+count_)%12]=p;++count_;
+    if(events_)events_->acceptedMovePath(*this,actor.state().position,reset);
+}
+void WorldNavigation::clearPath(){
+    if(events_)events_->clearedMovePath(start_,12);
+    points_={};start_=count_=0;pointer_=0;
 }
 bool WorldNavigation::input(PointerPhase phase,Vec2 screen,std::uintptr_t id,const MapCamera& camera,BipodMotion& actor){
     if(phase==PointerPhase::cancel)return inputWorld(phase,{},id,actor);
@@ -28,7 +34,7 @@ bool WorldNavigation::inputWorld(PointerPhase phase,Vec2 world,std::uintptr_t id
         int closest=-1;float best=900;
         for(unsigned i=0;i<count_;++i){const float d=distance2(world,point(i));if(d<best){best=d;closest=int(i);}}
         if(closest<=0)append(world,false,actor);
-        else {const auto retained=point(unsigned(closest));count_=unsigned(closest);append(retained,true,actor);}
+        else {const auto retained=point(unsigned(closest));if(events_)events_->clearedMovePath((start_+unsigned(closest))%12,count_-unsigned(closest));count_=unsigned(closest);append(retained,true,actor);}
         return true;
     }
     if(phase==PointerPhase::end){

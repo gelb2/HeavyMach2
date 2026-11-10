@@ -22,8 +22,20 @@ struct ImageNode {VisualImage image;unsigned layer=7;std::string tag;std::shared
 struct ButtonNode {std::shared_ptr<Button> button;unsigned layer=7;};
 struct TextNode {std::shared_ptr<Text> text;unsigned layer=7;std::shared_ptr<Button> parent{};Vec2 local{};};
 struct NumberNode {std::shared_ptr<ImageFont> font;TileImage* tile;unsigned layer=7;std::string tag;};
-struct PreviewNode {Frame frame;Vec2 origin;unsigned layer=7;};
-using Node=std::variant<ImageNode,ButtonNode,TextNode,NumberNode,PreviewNode>;
+struct PreviewNode {Frame frame;unsigned layer=7;};
+enum class DetailKind {shop,inventory,maintenance};
+struct DetailPresentation {
+    DetailKind kind=DetailKind::shop;std::uint64_t revision=0;int absolute=-1;
+    ItemView entry;Vec2 origin,descPos;float x=.01f,y=.01f;bool vertical=false,up=false;
+    unsigned layer=9;std::shared_ptr<Button> background;
+    std::shared_ptr<Text> title,description;std::optional<VisualImage> large;
+};
+struct DetailNode {std::shared_ptr<DetailPresentation> detail;unsigned layer=9;};
+struct FieldPresentation {
+    std::uint64_t identity=0,enemyRevision=0;bool range[2]={false,false};
+    std::shared_ptr<Text> enemyName;
+};
+using Node=std::variant<ImageNode,ButtonNode,TextNode,NumberNode,PreviewNode,DetailNode>;
 struct MessagePresentation {
     VisualImage background;
     std::shared_ptr<Text> text;
@@ -50,10 +62,13 @@ struct Screens::Impl {
     MessagePresentation message;
     std::vector<std::pair<std::shared_ptr<Button>,Vec2>> chooserMoves;
     float now=0;
+    std::shared_ptr<DetailPresentation> detail;FieldPresentation fieldPresentation;
     Impl(ResourceAccess& r,PreparedTiles& t,ScreensHost& h,const ScreensState& s,float time,std::shared_ptr<Impl> old)
         :resources(r),tiles(t),host(h),state(s),previous(std::move(old)),now(time){
         if(previous&&previous->state.screen==s.screen){title=previous->title;message=previous->message;layers=previous->layers;}
         else{title.start=time;layers=std::make_shared<std::array<VisualLayer,14>>();}
+        if(previous)fieldPresentation=previous->fieldPresentation;
+        if(fieldPresentation.identity!=s.fieldUIRevision){fieldPresentation={};fieldPresentation.identity=s.fieldUIRevision;}
     }
     void hideMessage(){message.hiding=true;message.text.reset();}
     void syncMessage(){
@@ -94,12 +109,12 @@ struct Screens::Impl {
     }
     std::shared_ptr<Button> addButton(Panel panel,unsigned id,std::string_view name,Vec2 position,
         unsigned columns=1,unsigned rows=2,unsigned normal=0,unsigned pressed=1,std::optional<Size> bounds={},
-        int intData=0,std::string dataId={},Vec2 scale={1,1},bool enabled=true,unsigned layer=9,bool scaleBeforeBounds=true){
+        int intData=0,std::string dataId={},Vec2 scale={1,1},bool enabled=true,unsigned layer=9,bool scaleBeforeBounds=true,bool reuse=true){
         ButtonKey key{owner(state.screen,panel),id,intData,std::move(dataId)};
         std::optional<ButtonTile> buttonTile;
         if(auto* t=tile(name,columns,rows))buttonTile=ButtonTile{t->name,t->pixels,t->columns,t->rows,t->forRetina,originalTileBlend(0,t->pixelFormat)};
         std::shared_ptr<Button> button;
-        if(previous)button=previous->dispatcher.find(key);
+        if(reuse&&previous)button=previous->dispatcher.find(key);
         if(!button)button=std::make_shared<Button>(key,buttonTile,normal);
         else{button->setDefaultTile(0);button->setTile(buttonTile);}
         button->setDefaultTile(normal);button->setReleaseTile(pressed);button->setDeactiveTile(normal);
@@ -131,11 +146,29 @@ struct Screens::Impl {
         font->position=at;font->setPitch(pitch);font->setAlignRate(align);font->setText(value);font->tick();
         nodes.push_back(NumberNode{std::move(font),t,9,{}});
     }
-    void preview(const Frame& frame,Vec2 origin,unsigned layer=7){if(!frame.sprites.empty())nodes.push_back(PreviewNode{frame,origin,layer});}
+    void preview(const Frame& frame,Vec2 origin,unsigned layer=7){
+        if(frame.sprites.empty())return;
+        // QobBase child world position is local+parent. Freeze that translation
+        // once at preparation, including absolute atlas vertices. The source
+        // frame may be shared by several slots and remains immutable.
+        Frame prepared=frame;
+        for(auto& sprite:prepared.sprites){
+            sprite.center=plus(sprite.center,origin);
+            for(auto& vertex:sprite.strip)vertex.position=plus(vertex.position,origin);
+            if(sprite.atlasBatch){
+                auto translated=std::make_shared<AtlasBatch>(*sprite.atlasBatch);
+                for(auto& quad:translated->quads)for(auto& vertex:quad.vertices)
+                    vertex.position=plus(vertex.position,origin);
+                sprite.atlasBatch=std::move(translated);
+            }
+        }
+        nodes.push_back(PreviewNode{std::move(prepared),layer});
+    }
     void icon(const ItemView& item,Vec2 position,unsigned layer=9){
         if(!item.icon.empty())image(item.icon,position,item.iconColumns,item.iconRows,item.iconTile,{1,1},false,0,1,layer);
     }
     void slots(){
+        const auto firstNode=nodes.size();
         image("SelSlot_BG.png",{384,512});
         addButton(Panel::root,1010,"Common_Btn_DEL.png",{224,80},1,2,0,1,Size{80,40});
         addButton(Panel::root,1004,"Common_Btn_BACK.png",{384,80},1,2,0,1,Size{80,40});
@@ -159,6 +192,9 @@ struct Screens::Impl {
             number("NumSet_Cr.png",slot.credits,plus(origin,{180,-69}),11,1);
             preview(slot.machPreview,plus(origin,{-170,34}));
         }
+        // GameMain layer3 is inherited through GuiSelectSlot/slotBase.
+        // Explicit part child layers (notably shadow0) remain on each Sprite.
+        for(std::size_t i=firstNode;i<nodes.size();++i)std::visit([](auto& node){node.layer=3;},nodes[i]);
     }
     void base(){
         const auto name=state.baseId+".tble";
@@ -237,8 +273,13 @@ struct Screens::Impl {
     }
     void updateHUD(const ScreensState&);
     void build();
+    void buildDetail(DetailKind,const ItemView&,Vec2,int=-1);
+    void layoutDetail();
+    void tickDetail();
+    void syncEnemyName();
+    void tickRange(WorldRandom&);
     void inventory(Vec2,bool=false);
-    void equip(Vec2);
+    void equip(Vec2,unsigned=9);
     void bots(Vec2);
     void inventoryDialog(Vec2,bool=false);
     void maintenance();
@@ -252,11 +293,82 @@ struct Screens::Impl {
     void append(Frame& out,float time);
 };
 
+void Screens::Impl::buildDetail(DetailKind kind,const ItemView& entry,Vec2 origin,int absolute){
+    const bool reuse=previous&&previous->detail&&previous->detail->kind==kind&&previous->detail->revision==state.detailRevision&&previous->detail->absolute==absolute&&previous->detail->entry.dataId==entry.dataId;
+    detail=reuse?std::make_shared<DetailPresentation>(*previous->detail):std::make_shared<DetailPresentation>();
+    auto& d=*detail;d.kind=kind;d.revision=state.detailRevision;d.absolute=absolute;d.origin=origin;
+    if(!reuse){d.entry=entry;
+        if(kind==DetailKind::shop)d.descPos={184,340};
+        else if(kind==DetailKind::inventory){const int cell=absolute%25;d.descPos={float((cell%5)*60),float(96-(cell/5)*60)};}
+        else{const int cell=absolute%25;d.up=cell>9;d.descPos={108,float(61-(cell/5)*40+(d.up?20:-21))};}
+    }
+    d.layer=kind==DetailKind::inventory?13u:kind==DetailKind::shop?3u:9u;
+    if(kind!=DetailKind::shop){
+        d.background=addButton(kind==DetailKind::maintenance?Panel::root:Panel::inventory,2112,"ItemDesc.png",plus(origin,d.descPos),1,1,0,0,Size{206,128},0,{}, {d.x,d.y},true,d.layer,false,reuse);
+    }
+    if(!reuse){
+        const bool maintenance=kind==DetailKind::maintenance;
+        const char* font=maintenance?"Arial":"TrebuchetMS-Bold";
+        const std::string source=kind==DetailKind::shop?"GuiShop.item":maintenance?"GuiMaintenance.item":"DlgInven.item";
+        auto label=[&](std::string id,const std::string& value,Size size,float fontSize,TextAlign align,Color color){
+            const auto count=nodes.size();text(std::move(id),value,{},size,font,fontSize,align,color,d.layer);
+            if(nodes.size()==count)return std::shared_ptr<Text>{};auto result=std::get<TextNode>(nodes.back()).text;nodes.pop_back();return result;
+        };
+        d.title=label(source+".title",entry.name,maintenance?Size{128,16}:Size{160,24},maintenance?12.f:16.f,TextAlign::center,{});
+        d.description=label(source+".description",entry.description,{160,90},12,TextAlign::left,kind==DetailKind::shop?Color{120.f/255,240.f/255,240.f/255,1}:Color{});
+        if(entry.originalType==10||entry.originalType==11||entry.originalType==12)if(auto* t=tile(entry.largeIcon)){
+            VisualImage image;image.tile=tiles.visual(*t);image.tileNo=0;image.useAtlas=false;d.large=std::move(image);
+        }
+    }
+    nodes.push_back(DetailNode{detail,d.layer});layoutDetail();
+}
+void Screens::Impl::layoutDetail(){
+    if(!detail)return;auto& d=*detail;const bool shop=d.kind==DetailKind::shop,maintenance=d.kind==DetailKind::maintenance;
+    float parentY=d.descPos.y;if(d.vertical)parentY+=(shop?-62.f:maintenance?(d.up?62.f:-62.f):-96.f)*d.y;
+    const Vec2 parent=plus(d.origin,{d.descPos.x,parentY});
+    if(d.background){d.background->position=parent;d.background->scale={d.x,d.y};}
+    const bool hasLarge=d.large.has_value();const bool weapon=d.entry.originalType==10;
+    if(d.title){d.title->position=plus(parent,{0,d.vertical?(shop?40.f:maintenance?47.f:62.f)*d.y:0});d.title->scale={d.x,d.y};d.title->visible=d.vertical;}
+    if(d.description){d.description->position=plus(parent,{hasLarge?(weapon?32.f:76.f):0,d.vertical?(shop?-36.f:-12.f)*d.y:0});d.description->scale={d.x,d.y};d.description->visible=d.vertical;}
+    if(d.large){d.large->screenPosition=plus(parent,{weapon?-76.f:-52.f,d.vertical?(shop?-36.f:-10.f)*d.y:0});d.large->scale={1,d.vertical?d.y:1};d.large->show=d.vertical;}
+}
+void Screens::Impl::tickDetail(){
+    if(!detail)return;auto& d=*detail;
+    if(d.x<1){d.x+=(1-d.x)*.5f;if(d.x>.99f)d.x=1;}
+    else if(d.y<1){d.y+=(1-d.y)*.5f;if(d.y>.99f)d.y=1;d.vertical=true;}
+    layoutDetail();
+}
+void Screens::Impl::syncEnemyName(){
+    if(state.screen!=ScreenId::field)return;
+    if(fieldPresentation.enemyRevision!=state.enemyNameRevision||(!fieldPresentation.enemyName&&!state.enemyName.empty())){
+        const auto old=fieldPresentation.enemyName;std::erase_if(nodes,[&](const Node& node){const auto* n=std::get_if<TextNode>(&node);return n&&n->text==old;});
+        fieldPresentation.enemyName.reset();fieldPresentation.enemyRevision=state.enemyNameRevision;
+        if(!state.enemyName.empty()){const auto count=nodes.size();text("GuiGame.enemyName",state.enemyName,{384,956},{256,18},"Arial-BoldMT",12,TextAlign::center,{},9);if(nodes.size()!=count)fieldPresentation.enemyName=std::get<TextNode>(nodes.back()).text;}
+    }else if(fieldPresentation.enemyName&&std::none_of(nodes.begin(),nodes.end(),[&](const Node& node){const auto* n=std::get_if<TextNode>(&node);return n&&n->text==fieldPresentation.enemyName;}))nodes.push_back(TextNode{fieldPresentation.enemyName,9});
+    if(fieldPresentation.enemyName)fieldPresentation.enemyName->visible=state.enemyHpRate!=0;
+}
+void Screens::Impl::tickRange(WorldRandom& random){
+    if(state.fieldUIRevision&&state.hasWorkingSlot){const float stamps[]={state.outOfRangeTimeLeft,state.outOfRangeTimeRight};
+        for(unsigned i=0;i<2;++i){const float age=float(state.fieldWorldTime-double(stamps[i]));
+            if(age>0&&age<1.5f){if(age<.2f){if(random.random()%10<=5)fieldPresentation.range[i]=((random.random()^1)&1)!=0;}
+                else if(age<1.2f)fieldPresentation.range[i]=true;else fieldPresentation.range[i]=false;}
+        }
+    }
+    for(auto& node:nodes)if(auto* n=std::get_if<ImageNode>(&node)){if(n->tag=="hud.rangeLeft")n->image.show=fieldPresentation.range[0];else if(n->tag=="hud.rangeRight")n->image.show=fieldPresentation.range[1];}
+}
+
 void Screens::Impl::inventory(Vec2 origin,bool shopMode){
     (void)shopMode;
     for(unsigned i=0;i<25;++i){const auto& entry=itemAt(state.inventory,std::size_t(std::max(0,state.inventoryPage))*25+i);
         if(!entry.dataId.empty()&&entry.count>0){const auto at=plus(origin,{60.f*float(i%5),-60.f*float(i/5)});
             image("ItemBox.png",at,1,1,0,{1,1},false,0,1,9);icon(entry,at);}
+    }
+    // WndInven.draw0x34218 draws these through Tile2D before its child
+    // buttons. pages() is the actual saved inventory capacity, not item count.
+    tile("InvenPage.png",2,1);
+    for(int page=0;page<state.inventoryPages;++page){
+        float x=float(state.inventoryPages)*-.5f;x=float(page)+x;x*=12.f;x=origin.x+x;x+=86.f;
+        image("InvenPage.png",{x,origin.y-290.f},2,1,page==state.inventoryPage?1u:0u,{1,1},false,0,1,9);
     }
     for(unsigned i=0;i<25;++i){
         const auto& entry=itemAt(state.inventory,std::size_t(std::max(0,state.inventoryPage))*25+i);
@@ -269,13 +381,13 @@ void Screens::Impl::inventory(Vec2 origin,bool shopMode){
     addButton(Panel::inventory,6090,"Btn_InvenPage.png",plus(origin,{-2,-290}),2,1,0,0,Size{80,40});
     addButton(Panel::inventory,6091,"Btn_InvenPage.png",plus(origin,{161,-290}),2,1,1,1,Size{80,40});
 }
-void Screens::Impl::equip(Vec2 origin){
+void Screens::Impl::equip(Vec2 origin,unsigned inheritedLayer){
     constexpr Vec2 positions[]={{0,0},{0,-74},{-56,-9},{56,-9},{56,-74},{-56,-74}};
     constexpr const char* icons[]={"EquipBtn_Body.png","EquipBtn_Btm.png","EquipBtn_Wpn.png","EquipBtn_Wpn.png","EquipBtn_Armor.png","EquipBtn_Sp.png"};
     for(unsigned i=0;i<6;++i)if(!state.equipment[i].dataId.empty()&&state.equipment[i].count>0){
-        const auto at=plus(origin,positions[i]);image("ItemBox.png",at,1,1,0,{1,1},false,0,1,9);icon(state.equipment[i],at);}
+        const auto at=plus(origin,positions[i]);image("ItemBox.png",at,1,1,0,{1,1},false,0,1,inheritedLayer);icon(state.equipment[i],at,inheritedLayer);}
     for(unsigned i=0;i<6;++i){const auto& entry=state.equipment[i];const auto at=plus(origin,positions[i]);
-        addButton(Panel::equipment,6100+i,icons[i],at,1,1,0,0,Size{36,36},0,entry.dataId);
+        addButton(Panel::equipment,6100+i,icons[i],at,1,1,0,0,Size{36,36},0,entry.dataId,{1,1},true,inheritedLayer);
         if(state.selectedEquipment==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.8f,9);
         if(state.extEquipment==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.5f,9);
     }
@@ -297,45 +409,62 @@ void Screens::Impl::bots(Vec2 origin){
 void Screens::Impl::inventoryDialog(Vec2 origin,bool shopMode){
     image("InvenBG.png",origin,1,1,0,{1,1},false,0,1,9);
     inventory(plus(origin,{24,120}),shopMode);equip(plus(origin,{-196,76}));bots(plus(origin,{-58,78}));
-    if(!shopMode)addButton(Panel::inventory,6092,"Btn_CloseX.png",plus(origin,{274,174}),2,1,0,0,Size{42,42});
-    // The wide arrangement button is the visible common DlgInven path. A
-    // second hidden Btn_CloseX variant shares ID6093 in the original init.
-    addButton(Panel::inventory,6093,"Btn_ArrangeItem.png",plus(origin,{240,174}),2,1,1,1,Size{120,42});
-    if(shopMode&&state.selectedBot>=0)addButton(Panel::inventory,6310,"Btn_Disarm.png",plus(origin,{-57,-92}),1,2);
+    if(shopMode){
+        // The original stores tile1 even for this one-tile image; draw clamps
+        // the sampled index to0. Its wide hit area belongs only to shop mode.
+        addButton(Panel::inventory,6093,"Btn_ArrangeItem.png",plus(origin,{240,174}),1,1,1,1,Size{120,42});
+    }else{
+        addButton(Panel::inventory,6092,"Btn_CloseX.png",plus(origin,{274,174}),2,1,0,1,Size{42,42});
+        addButton(Panel::inventory,6093,"Btn_CloseX.png",plus(origin,{226,174}),2,1,1,1,Size{42,42});
+    }
+    if(shopMode&&state.selectedBot>=0)addButton(Panel::inventory,6310,"Btn_Disarm.png",plus(origin,{-57,-92}),2,1);
     number("NumSet_Cr.png",state.credits,plus(origin,{-76,-151}),12,1,9,false,"hud.credits");
+    if(!shopMode&&state.detailInventory>=0&&!state.detailItem.dataId.empty())buildDetail(DetailKind::inventory,state.detailItem,origin,state.detailInventory);
 }
 void Screens::Impl::maintenance(){
-    const Vec2 root{384,512};image("MaintenanceBG.png",root);
-    inventory(plus(root,{27,63}));equip(plus(root,{-148,52}));bots(plus(root,{-47,52}));
-    number("NumTile04.png",state.credits,plus(root,{38,-126}),0,0);
-    addButton(Panel::root,6093,"Btn_ArrangeItem.png",plus(root,{170,94}),2,1,0,0);
-    if(state.selectedBot>=0)addButton(Panel::root,6310,"Btn_Disarm.png",plus(root,{-46,-83}),1,2);
-    addButton(Panel::root,2100,"Btn_CmdCenterExit.png",plus(root,{186,-140}),1,2);
-    preview(state.machPreview,root);
+    const Vec2 root{384,512};image("MaintenanceBG.png",root,1,1,0,{1,1},false,0,1,3);
+    inventory(plus(root,{27,63}));equip(plus(root,{-148,52}),3);bots(plus(root,{-47,52}));
+    number("NumTile04.png",state.credits,plus(root,{38,-126}),0,0,3);
+    addButton(Panel::root,6093,"Btn_ArrangeItem.png",plus(root,{170,94}),1,1,0,0,{},0,{}, {1,1},true,3);
+    if(state.selectedBot>=0)addButton(Panel::root,6310,"Btn_Disarm.png",plus(root,{-46,-83}),2,1,0,1,{},0,{}, {1,1},true,3);
+    addButton(Panel::root,2100,"Btn_CmdCenterExit.png",plus(root,{186,-140}),2,1,0,1,{},0,{}, {1,1},true,3);
+    if(state.detailInventory>=0&&!state.detailItem.dataId.empty())buildDetail(DetailKind::maintenance,state.detailItem,root,state.detailInventory);
 }
 void Screens::Impl::shop(){
-    const Vec2 root{384,512};image("ShopBG.png",root);
+    const Vec2 root{384,512};image("ShopBG.png",root,1,1,0,{1,1},false,0,1,3);
     if(state.inventoryVisible)inventoryDialog(plus(root,{0,-200}),true);
-    addButton(Panel::root,2100,"Common_Btn_EXIT.png",plus(root,{256,-460}));
-    if(state.selectedShop>=0)addButton(Panel::root,2102,"Common_Btn_BUY.png",plus(root,{182,120}));
-    if(state.inventoryVisible&&state.selectedInventory>=0&&itemAt(state.inventory,std::size_t(std::max(0,state.inventoryPage))*25+std::size_t(state.selectedInventory)).enabled)addButton(Panel::root,2103,"Common_Btn_SELL.png",plus(root,{0,-160}));
+    addButton(Panel::root,2100,"Common_Btn_EXIT.png",plus(root,{256,-460}),1,2,0,1,{},0,{}, {1,1},true,3);
+    if(state.selectedShop>=0)addButton(Panel::root,2102,"Common_Btn_BUY.png",plus(root,{182,120}),1,2,0,1,{},0,{}, {1,1},true,3);
+    if(state.inventoryVisible&&state.selectedInventory>=0&&itemAt(state.inventory,std::size_t(std::max(0,state.inventoryPage))*25+std::size_t(state.selectedInventory)).enabled)addButton(Panel::root,2103,"Common_Btn_SELL.png",plus(root,{0,40}),1,2,0,1,{},0,{}, {1,1},true,3);
     constexpr const char* categories[]={"ShopBtn_Weapon.png","ShopBtn_Parts.png","ShopBtn_Bot.png","ShopBtn_Attack.png","ShopBtn_Etc.png"};
     int categoryX=-204;
     for(int i=0;i<5;++i){const bool selected=state.shopCategory==i;
         addButton(Panel::root,2104,categories[i],plus(root,{float(categoryX+(selected?15:0)),selected?395.f:390.f}),1,2,selected?1:0,1,
-            Size{80,48},i,{},selected?Vec2{1,1}:Vec2{.75f,.75f},true,9,false);
+            Size{80,48},i,{},selected?Vec2{1,1}:Vec2{.75f,.75f},true,3,false);
         categoryX+=selected?126:96;
     }
     const Vec2 grid=plus(root,{-256,334});
     for(unsigned i=0;i<24;++i){const auto index=std::size_t(std::max(0,state.shopPage))*24+i;if(index>=state.shopItems.size())break;
         const auto& entry=state.shopItems[index];const Vec2 at=plus(grid,{60.f*float(i%6),-60.f*float(i/6)});
-        image("ItemBox.png",at,1,1,0,{1,1},false,0,1,9);
+        image("ItemBox.png",at,1,1,0,{1,1},false,0,1,3);
         addButton(Panel::root,2200+i,entry.icon,at,entry.iconColumns,entry.iconRows,entry.iconTile,entry.iconTile,
-            Size{60,60},0,entry.dataId,{1,1},entry.enabled);
-        if(state.selectedShop==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,1,9);
+            Size{60,60},0,entry.dataId,{1,1},entry.enabled,3);
+        if(state.selectedShop==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.8f,3);
     }
-    addButton(Panel::root,2105,"Btn_InvenPage.png",plus(grid,{-5,-234}),2,1,0,0,Size{80,40});
-    addButton(Panel::root,2106,"Btn_InvenPage.png",plus(grid,{124,-234}),2,1,1,1,Size{80,40});
+    // GuiShop.refreshShopItem0x30260 deliberately keeps one extra page at
+    // exact multiples of24, including the empty category's first page.
+    const auto pages=state.shopItems.size()/24+1;
+    for(std::size_t page=0;page<pages;++page){
+        float x=float(pages)*-.5f;x=float(page)+x;x*=12.f;x+=66.f;
+        image("InvenPage.png",plus(grid,{x,-234.f}),2,1,page==std::size_t(state.shopPage)?1u:0u,{1,1},false,0,1,3);
+    }
+    addButton(Panel::root,2105,"Btn_InvenPage.png",plus(grid,{-5,-234}),2,1,0,0,Size{80,40},0,{}, {1,1},true,3);
+    addButton(Panel::root,2106,"Btn_InvenPage.png",plus(grid,{124,-234}),2,1,1,1,Size{80,40},0,{}, {1,1},true,3);
+    if(state.shopDetailVisible&&state.selectedShop>=0){const auto index=std::size_t(std::max(0,state.shopPage))*24+std::size_t(state.selectedShop);if(index<state.shopItems.size())buildDetail(DetailKind::shop,state.shopItems[index],root);}
+    // viewItemInfo creates this receiver after the existing shop controls.
+    // Keep that dynamic registration order when reconstructing a snapshot:
+    // the layer13 popup must precede older root buttons in reverse hit testing.
+    if(state.inventoryVisible&&state.detailInventory>=0&&!state.detailItem.dataId.empty())buildDetail(DetailKind::inventory,state.detailItem,plus(root,{0,-200}),state.detailInventory);
     if(state.tradeVisible)trade();
 }
 void Screens::Impl::system(){
@@ -351,17 +480,17 @@ void Screens::Impl::system(){
 }
 void Screens::Impl::trade(){
     const Vec2 root{384,512};
-    addButton(Panel::trade,0,"TradeItemBG.png",root,1,1,0,0,Size{768,1024},0,state.tradeItemId,{1,1},true,12);
+    addButton(Panel::trade,0,"TradeItemBG.png",root,1,1,0,0,Size{768,1024},0,state.tradeItemId,{1,1},true,13);
     const auto found=std::find_if(state.shopItems.begin(),state.shopItems.end(),[&](const auto& i){return i.dataId==state.tradeItemId;});
     const ItemView* entry=found==state.shopItems.end()?nullptr:&*found;
     if(!entry){const auto f=std::find_if(state.inventory.begin(),state.inventory.end(),[&](const auto& i){return i.dataId==state.tradeItemId;});if(f!=state.inventory.end())entry=&*f;}
-    if(entry){icon(*entry,plus(root,{-98,66}),12);text("GuiShop.trade.name",entry->name,plus(root,{10,68}),{160,24},"TrebuchetMS-Bold",18,TextAlign::left,{},12);}
-    number("NumTile01.png",state.tradeCount,plus(root,{-58,18}),0,.5f,12,false,{},10);
-    addButton(Panel::trade,2110,"Common_Btn_DEC.png",plus(root,{8,19}),1,2,0,1,Size{51,40},0,state.tradeItemId,{1,1},true,12);
-    addButton(Panel::trade,2111,"Common_Btn_INC.png",plus(root,{59,19}),1,2,0,1,Size{51,40},0,state.tradeItemId,{1,1},true,12);
-    number("NumSet_Cr.png",state.tradePrice,plus(root,{52,-23}),12,1,12);
-    addButton(Panel::trade,2107,"Common_Btn_CANCEL.png",plus(root,{-63,-62}),1,2,0,1,Size{100,40},0,state.tradeItemId,{1,1},true,12);
-    addButton(Panel::trade,state.buyMode?2108:2109,state.buyMode?"Common_Btn_BUY.png":"Common_Btn_SELL.png",plus(root,{63,-62}),1,2,0,1,Size{100,40},0,state.tradeItemId,{1,1},true,12);
+    if(entry){icon(*entry,plus(root,{-98,66}),13);text("GuiShop.trade.name",entry->name,plus(root,{10,68}),{160,24},"TrebuchetMS-Bold",18,TextAlign::left,{},13);}
+    number("NumTile01.png",state.tradeCount,plus(root,{-58,18}),0,.5f,13,false,{},10);
+    addButton(Panel::trade,2110,"Common_Btn_DEC.png",plus(root,{8,19}),1,2,0,1,Size{51,40},0,state.tradeItemId,{1,1},true,13);
+    addButton(Panel::trade,2111,"Common_Btn_INC.png",plus(root,{59,19}),1,2,0,1,Size{51,40},0,state.tradeItemId,{1,1},true,13);
+    number("NumSet_Cr.png",state.tradePrice,plus(root,{52,-23}),12,1,13);
+    addButton(Panel::trade,2107,"Common_Btn_CANCEL.png",plus(root,{-63,-62}),1,2,0,1,Size{100,40},0,state.tradeItemId,{1,1},true,13);
+    addButton(Panel::trade,state.buyMode?2108:2109,state.buyMode?"Common_Btn_BUY.png":"Common_Btn_SELL.png",plus(root,{63,-62}),1,2,0,1,Size{100,40},0,state.tradeItemId,{1,1},true,13);
 }
 void Screens::Impl::missionList(bool command){
     const Vec2 root{384,512};
@@ -479,6 +608,7 @@ void Screens::Impl::build(){
 void Screens::Impl::tick(float time,WorldRandom& random){
     if(!std::isfinite(time))throw std::runtime_error("Nonfinite original UI clock");now=time;
     if(state.screen==ScreenId::field)tickMessage();
+    tickRange(random);tickDetail();
     if(state.screen==ScreenId::title){
         auto& t=title;
         t.bgRotate=t.bgRotate<0?t.bgRotate+(.01f-t.bgRotate)/60.f:0;
@@ -525,8 +655,12 @@ void Screens::Impl::append(Frame& frame,float time){
         else if constexpr(std::is_same_v<T,ButtonNode>){Frame f;n.button->append(f,time);for(auto& s:f.sprites)layer.submitNonAtlas(std::move(s));}
         else if constexpr(std::is_same_v<T,TextNode>){Frame f;if(n.parent)n.text->position=plus(n.parent->screenPosition(),n.local);n.text->append(f);for(auto& s:f.sprites)layer.submitNonAtlas(std::move(s));}
         else if constexpr(std::is_same_v<T,NumberNode>)n.font->append(layer,tiles.visual(*n.tile));
-        else if constexpr(std::is_same_v<T,PreviewNode>)for(auto s:n.frame.sprites){s.center=plus(s.center,n.origin);
-            for(auto& v:s.strip)v.position=plus(v.position,n.origin);layer.submitNonAtlas(std::move(s));}
+        else if constexpr(std::is_same_v<T,PreviewNode>)for(const auto& sprite:n.frame.sprites)
+            layers->at(sprite.visualLayer.value_or(n.layer)).submitNonAtlas(sprite);
+        else if constexpr(std::is_same_v<T,DetailNode>){const auto& d=*n.detail;
+            for(const auto& label:{d.title,d.description})if(label){Frame textFrame;label->append(textFrame);for(auto& sprite:textFrame.sprites)layer.submitNonAtlas(std::move(sprite));}
+            if(d.large){auto image=*d.large;layer.submitImage(image);}
+        }
     },node);
     if(state.screen==ScreenId::field&&message.initialized){auto& layer=layers->at(9);layer.submitImage(message.background);if(message.text){Frame textFrame;message.text->append(textFrame);for(auto& s:textFrame.sprites)layer.submitNonAtlas(std::move(s));}}
     for(auto& layer:*layers)layer.drain().appendBatches(frame);
@@ -538,7 +672,11 @@ void Screens::Impl::updateHUD(const ScreensState& next){
     state.spBarWidth=next.spBarWidth;state.spBarFilled=next.spBarFilled;state.boosterReady=next.boosterReady;
     state.experienceRate=next.experienceRate;state.enemyHpRate=next.enemyHpRate;
     state.level=next.level;state.credits=next.credits;state.hpRate=next.hpRate;state.spRate=next.spRate;
-    state.outOfRangeLeft=next.outOfRangeLeft;state.outOfRangeRight=next.outOfRangeRight;
+    state.fieldWorldTime=next.fieldWorldTime;state.fieldUIRevision=next.fieldUIRevision;state.hasWorkingSlot=next.hasWorkingSlot;
+    state.outOfRangeTimeLeft=next.outOfRangeTimeLeft;state.outOfRangeTimeRight=next.outOfRangeTimeRight;
+    state.enemyName=next.enemyName;state.enemyNameRevision=next.enemyNameRevision;
+    if(fieldPresentation.identity!=next.fieldUIRevision){const auto oldName=fieldPresentation.enemyName;std::erase_if(nodes,[&](const Node& node){const auto* n=std::get_if<TextNode>(&node);return n&&n->text==oldName;});fieldPresentation={};fieldPresentation.identity=next.fieldUIRevision;}
+    syncEnemyName();
     for(auto& node:nodes){
         if(auto* n=std::get_if<ImageNode>(&node)){auto& v=n->image;
             if(n->tag=="hud.hpBack")v.screenPosition.x=384+float(next.hpBarWidth)-398;
@@ -548,8 +686,8 @@ void Screens::Impl::updateHUD(const ScreensState& next){
             else if(n->tag=="hud.exp"){v.screenPosition.x=384+115*next.experienceRate-343;v.scale.x=next.experienceRate;}
             else if(n->tag=="hud.enemyBack")v.show=next.enemyHpRate!=0;
             else if(n->tag=="hud.enemy"){v.show=next.enemyHpRate!=0;v.screenPosition.x=384-128*(1-next.enemyHpRate);v.scale.x=next.enemyHpRate;}
-            else if(n->tag=="hud.rangeLeft")v.show=next.outOfRangeLeft;
-            else if(n->tag=="hud.rangeRight")v.show=next.outOfRangeRight;
+            else if(n->tag=="hud.rangeLeft")v.show=fieldPresentation.range[0];
+            else if(n->tag=="hud.rangeRight")v.show=fieldPresentation.range[1];
         }else if(auto* n=std::get_if<NumberNode>(&node)){
             if(n->tag=="hud.level")n->font->setNumber(std::bit_cast<std::int32_t>(std::uint32_t(next.level)+1));
             else if(n->tag=="hud.credits")n->font->setNumber(next.credits);
@@ -558,7 +696,7 @@ void Screens::Impl::updateHUD(const ScreensState& next){
 }
 Screens::Screens(ResourceAccess& r,PreparedTiles& t,ScreensHost& h):resources_(r),tiles_(t),host_(h){}
 bool Screens::updateHUD(const ScreensState& state){
-    if(!impl_||impl_->state.screen!=ScreenId::field||state.screen!=ScreenId::field)return false;
+    if(!impl_||impl_->state.screen!=state.screen)return false;
     impl_->updateHUD(state);return true;
 }
 void Screens::refresh(const ScreensState& state,float time){

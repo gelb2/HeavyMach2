@@ -32,6 +32,7 @@
 		21020EC8059D7AD8EAD1D0D3 /* WorldNavigation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CD30E2F586AFF16FF6573A6 /* WorldNavigation.cpp */; };
 		21A22C8903D2FDD4E36A855A /* HM2TextRasterizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4C8284C6796F6A4F01CE879 /* HM2TextRasterizer.mm */; };
 		2306CDC6254A8F229C81D34B /* Models.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 535B6432C20438F381FE27A7 /* Models.cpp */; };
+		267F3AAC04407C8C3299C84D /* MovementPathVisual.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4B3FC619F66EED86AE7208E8 /* MovementPathVisual.cpp */; };
 		275B831E344F127FA86998E7 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BF9C424C63A4584046C92FF /* QuartzCore.framework */; };
 		2968C592533C4052CC64A532 /* ProjectileVisual.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 178929D99CCF1A53F011DD11 /* ProjectileVisual.cpp */; };
 		298A63C6BFBE0DD9F1224D2D /* HM2SourceView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53644980D69E07491B00CCE9 /* HM2SourceView.mm */; };
@@ -46,11 +47,14 @@
 		386D1AAF9F37C0B12E1AB22C /* AudioTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1513B2C669AEC2A9D67D68B0 /* AudioTests.mm */; };
 		3921DB60E3679E6A4AAE199B /* HM2Renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 935D56609040C44D67B6E633 /* HM2Renderer.mm */; };
 		3B324FEEFE8BC704CA068A20 /* Weapons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 613BC791A02B06C23C2A3BEA /* Weapons.cpp */; };
+		3CE7746E88497D016AFB2751 /* Help.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAA6D7EF912AEED66DE5FAA9 /* Help.cpp */; };
 		3D25EBB05635C26601A47106 /* Dash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20E224574929641709B8F31A /* Dash.cpp */; };
 		3D97B3FE86B21785EBF28B69 /* GameSession.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 35BF49C2F8BB97B6CC5E2E31 /* GameSession.cpp */; };
 		3FD37EAC61995CF489BFE8DB /* ProjectileImpact.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDF2A274205C68B542F02369 /* ProjectileImpact.cpp */; };
+		44494A26EC6F85C45CE0649F /* MapLoading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4163E84CEB915EA2E9F7435D /* MapLoading.cpp */; };
 		44D93FE99F90A1B51DA9B553 /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 542A40B06A3F30BD8E8AA159 /* Image.cpp */; };
 		44E1C6D0FEC05F8851ABC63C /* AssemblyPreview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A11F90D201FE7265367DF16 /* AssemblyPreview.cpp */; };
+		4DBF65A30F1DC29CEEFB0BED /* WorldGates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F071AEBA5BB177C63D5366D /* WorldGates.cpp */; };
 		537F320A7EBC85DA6F7E6269 /* AssemblyPreview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A11F90D201FE7265367DF16 /* AssemblyPreview.cpp */; };
 		539F818AD98E185E3AFB9183 /* HM2SourceView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53644980D69E07491B00CCE9 /* HM2SourceView.mm */; };
 		56F559115560A66CB1741AEA /* Text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3C4E2A19033D475AE403AD78 /* Text.cpp */; };
@@ -61,8 +65,10 @@
 		5D77814575C3B341EA5C6C09 /* ObjectCollision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BE1BFC1F95048CCAA58E882 /* ObjectCollision.cpp */; };
 		5E0EF47EAD0E072F57E90B5C /* EffectsRendererTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 88E1135DA084FC8CAE56AB66 /* EffectsRendererTests.mm */; };
 		605035B52E42330280D6D04D /* HM2Application.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91A0D30A250D4AE32CA30332 /* HM2Application.mm */; };
+		62FFBD3FCED58ACE00AE54F5 /* WorldGates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F071AEBA5BB177C63D5366D /* WorldGates.cpp */; };
 		63983B9254B17B90537EAEFB /* Dash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20E224574929641709B8F31A /* Dash.cpp */; };
 		642AB1E11994A1F388304C25 /* HM2GameRuntime.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A72523C693BCCDC6274159F /* HM2GameRuntime.mm */; };
+		648786FBD9FF809B64114CCF /* MovementPathVisual.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4B3FC619F66EED86AE7208E8 /* MovementPathVisual.cpp */; };
 		6841D1E20D22E3FD5F8ADDF3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A65ABA6C2432182CCE9D /* UIKit.framework */; };
 		69471B6AD198FEC5767862D4 /* Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AADB2E30563D23861736C5F1 /* Button.cpp */; };
 		6989E7CC1B208B86829C8887 /* PreparedTiles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAC82761A678F6C913ED94C8 /* PreparedTiles.cpp */; };
@@ -84,6 +90,7 @@
 		7F7978A56D4EF13502A2EC5C /* Particles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C104D835D6C387F27F4E88 /* Particles.cpp */; };
 		815C659B73EC996455B835E4 /* VisualLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 833F297FD115FDEE8272AB80 /* VisualLayer.cpp */; };
 		826B3F7504A8CD1A4F5E14CD /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55C044B22D2A7D002C584381 /* CoreText.framework */; };
+		83E0F96694142DBED7D3AA43 /* ScreenTransition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BC4A48ECC028DFAA80002E16 /* ScreenTransition.cpp */; };
 		862275C00B9A9D36C92556C2 /* WeaponController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DBD0C33C8ED85FD493AF2BE9 /* WeaponController.cpp */; };
 		86BBB273335B11135F8D960A /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7F50A2A20F66D0A8B046783 /* CoreFoundation.framework */; };
 		86E323A95C69015414D28E3F /* PlayerMapPreview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE355BDD1BADB44070C02205 /* PlayerMapPreview.cpp */; };
@@ -96,6 +103,7 @@
 		92A36F4478D9831F1CB24EF9 /* WeaponController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DBD0C33C8ED85FD493AF2BE9 /* WeaponController.cpp */; };
 		93005232F9E488B45504871F /* HM2Audio.mm in Sources */ = {isa = PBXBuildFile; fileRef = F25E088ABE6949017001368D /* HM2Audio.mm */; };
 		936C708FD04DAA8F6164D13B /* DataTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FE78763925867176049A3A8 /* DataTable.cpp */; };
+		954EB5404919273080ACAB1F /* MapLoading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4163E84CEB915EA2E9F7435D /* MapLoading.cpp */; };
 		96017CD8E417490E92DF73E1 /* EnemyActors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 416AAC22FB1E6768D92EEC07 /* EnemyActors.cpp */; };
 		9D42E4CE751ECAF6682A28EF /* EnemyVehicle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A0589CBBBD075AA1E71A2FC3 /* EnemyVehicle.cpp */; };
 		A28B69205773A5BB334AE13B /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7149A414519B3C306D9E88E5 /* CoreAudio.framework */; };
@@ -103,15 +111,19 @@
 		AA6142C98549069CF77BCF61 /* Chunk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03CEE9E63A54435B8540502 /* Chunk.cpp */; };
 		AAD32C2AE1D4D4565F758A0F /* Models.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 535B6432C20438F381FE27A7 /* Models.cpp */; };
 		AAE2C97ABEE691B01335359A /* CombatScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A165999C6469516FFE74F603 /* CombatScene.cpp */; };
+		ADC1B26F610D15F8145AD2F5 /* Help.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAA6D7EF912AEED66DE5FAA9 /* Help.cpp */; };
 		B145A83EF1A5F4708DC53294 /* PartSprites.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3808C2D095948480E45FC211 /* PartSprites.cpp */; };
 		B21CC3A3CA6688971CF2BB85 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BF9C424C63A4584046C92FF /* QuartzCore.framework */; };
 		B4407F73DBB9F251AC49C077 /* Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AADB2E30563D23861736C5F1 /* Button.cpp */; };
 		B55DBA76AB9CAEBF69996475 /* Maps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8CF2FA140E7BCAEF006C920 /* Maps.cpp */; };
 		B56F79F1D8121F0408543154 /* ConcurrentValidation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84F4667C6A29DF3870939245 /* ConcurrentValidation.cpp */; };
 		BEFD5B9E80BF8AA447F28364 /* ObjectCollision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BE1BFC1F95048CCAA58E882 /* ObjectCollision.cpp */; };
+		BFDDB89E3C0B7F7482A6322F /* Bot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3860234029AE25DDBB2EE099 /* Bot.cpp */; };
 		C2DC456C6186E0607C055BC9 /* CombatScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A165999C6469516FFE74F603 /* CombatScene.cpp */; };
 		C39C49DECE0DD248053B44F6 /* WeaponEffects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E8E0A4D6617AEE0B46ADD8D /* WeaponEffects.cpp */; };
 		C3DCF63995527AE94D81B4FC /* PCM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ADD6FC1C62A0BFF2942FA01C /* PCM.cpp */; };
+		C6438322527E1C2FEF8CE5CF /* PartShadowRendererTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C7F133A700775D4A6288358A /* PartShadowRendererTests.mm */; };
+		C6C7867954D869883A3F5391 /* Bot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3860234029AE25DDBB2EE099 /* Bot.cpp */; };
 		C9BEB11232CBA399E9E3B607 /* ConcurrentValidationTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = E9025E84BFBEFA09CD09EC56 /* ConcurrentValidationTests.mm */; };
 		CDF27EC2507983C36B4ABDC7 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A65ABA6C2432182CCE9D /* UIKit.framework */; };
 		D20C2BC15BB9F15F1E365F65 /* HM2ConcurrentRuntime.mm in Sources */ = {isa = PBXBuildFile; fileRef = F140813C1815FA9B07E0F84D /* HM2ConcurrentRuntime.mm */; };
@@ -137,6 +149,7 @@
 		EF017519A7789F3ADB19EC64 /* OpenALEffects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D1534F6A7B6C3CA04D2DE0E /* OpenALEffects.cpp */; };
 		F0576F911A458759C1C4614E /* EnemySpawner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 809917EBA6022B9ADE3A61E5 /* EnemySpawner.cpp */; };
 		F14FB2C3C5D946185BB6927B /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 043AD228C3E3A40192B65C5E /* AudioToolbox.framework */; };
+		F381815D0C73B8B861BDA729 /* ScreenTransition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BC4A48ECC028DFAA80002E16 /* ScreenTransition.cpp */; };
 		F714C619530EFB46DEECD6ED /* HM2GameRuntime.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A72523C693BCCDC6274159F /* HM2GameRuntime.mm */; };
 		F7B625BDDD934A5C197A62C8 /* WeaponEffects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E8E0A4D6617AEE0B46ADD8D /* WeaponEffects.cpp */; };
 		F873335146F655F169E93B99 /* PlayerEquipment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4B10E038B5329E8FCF91F5F1 /* PlayerEquipment.cpp */; };
@@ -164,8 +177,10 @@
 
 /* Begin PBXFileReference section */
 		043AD228C3E3A40192B65C5E /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		0578E11DBD56762668331013 /* ScreenTransition.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ScreenTransition.hpp; sourceTree = "<group>"; };
 		05AEE99550ACD829E3D48476 /* QuickItems.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = QuickItems.hpp; sourceTree = "<group>"; };
 		06200A559171D46B2481B76F /* AirStrike.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AirStrike.hpp; sourceTree = "<group>"; };
+		0A5576257104A81917B5DC14 /* MovementPathVisual.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MovementPathVisual.hpp; sourceTree = "<group>"; };
 		0FF8BAC3C7876510CE6DE649 /* HeavyMach2UITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = HeavyMach2UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1067084EC32A5AE2FBE15D98 /* HM2SourceView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HM2SourceView.h; sourceTree = "<group>"; };
 		1124C71EDFD2EB2281DC160D /* HM2GameRuntime.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HM2GameRuntime.hpp; sourceTree = "<group>"; };
@@ -191,11 +206,13 @@
 		35BF49C2F8BB97B6CC5E2E31 /* GameSession.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GameSession.cpp; sourceTree = "<group>"; };
 		36461838BA6C5A6F8A670ACB /* DataTable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DataTable.hpp; sourceTree = "<group>"; };
 		3808C2D095948480E45FC211 /* PartSprites.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PartSprites.cpp; sourceTree = "<group>"; };
+		3860234029AE25DDBB2EE099 /* Bot.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Bot.cpp; sourceTree = "<group>"; };
 		3B5DDD14331F36734F3DCB4D /* BipodMotion.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BipodMotion.cpp; sourceTree = "<group>"; };
 		3C4E2A19033D475AE403AD78 /* Text.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Text.cpp; sourceTree = "<group>"; };
 		3D1534F6A7B6C3CA04D2DE0E /* OpenALEffects.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OpenALEffects.cpp; sourceTree = "<group>"; };
 		3F82504D465F1950E748EAD6 /* WeaponEffects.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WeaponEffects.hpp; sourceTree = "<group>"; };
 		400FD741C53C96962D944954 /* Text.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Text.hpp; sourceTree = "<group>"; };
+		4163E84CEB915EA2E9F7435D /* MapLoading.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MapLoading.cpp; sourceTree = "<group>"; };
 		416AAC22FB1E6768D92EEC07 /* EnemyActors.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EnemyActors.cpp; sourceTree = "<group>"; };
 		41C788845693E4ACD8070AAE /* SessionRendererTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SessionRendererTests.mm; sourceTree = "<group>"; };
 		41FE054D095EED8F45207257 /* SaveData.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SaveData.cpp; sourceTree = "<group>"; };
@@ -205,6 +222,8 @@
 		49C104D835D6C387F27F4E88 /* Particles.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Particles.cpp; sourceTree = "<group>"; };
 		4A9AE12FE861C196B58943BF /* HeavyMach2Validation.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HeavyMach2Validation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B10E038B5329E8FCF91F5F1 /* PlayerEquipment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PlayerEquipment.cpp; sourceTree = "<group>"; };
+		4B3FC619F66EED86AE7208E8 /* MovementPathVisual.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MovementPathVisual.cpp; sourceTree = "<group>"; };
+		4F071AEBA5BB177C63D5366D /* WorldGates.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WorldGates.cpp; sourceTree = "<group>"; };
 		4FDA58E90BE2E2C87100F8E7 /* HM2Resources.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HM2Resources.hpp; sourceTree = "<group>"; };
 		5327E79C2AEBF7FB44D9FE35 /* Types.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Types.hpp; sourceTree = "<group>"; };
 		535B6432C20438F381FE27A7 /* Models.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Models.cpp; sourceTree = "<group>"; };
@@ -218,6 +237,7 @@
 		5BF9C424C63A4584046C92FF /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		5F5C2BE8EAAE9B25BF8FACBF /* ProjectileImpact.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ProjectileImpact.hpp; sourceTree = "<group>"; };
 		613BC791A02B06C23C2A3BEA /* Weapons.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Weapons.cpp; sourceTree = "<group>"; };
+		64F853F472810DD8824250E3 /* Help.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Help.hpp; sourceTree = "<group>"; };
 		657FC22FCF40C8DCFD2C5DF1 /* PreparedTiles.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PreparedTiles.hpp; sourceTree = "<group>"; };
 		67696AD5E96C7983E526B79E /* HM2Renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HM2Renderer.h; sourceTree = "<group>"; };
 		68FE8721C5BB680AFE6731E1 /* WorldRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WorldRandom.hpp; sourceTree = "<group>"; };
@@ -234,6 +254,7 @@
 		833F297FD115FDEE8272AB80 /* VisualLayer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VisualLayer.cpp; sourceTree = "<group>"; };
 		8448BA399A121536EBF3DF4D /* DarwinWorldRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DarwinWorldRandom.hpp; sourceTree = "<group>"; };
 		84F4667C6A29DF3870939245 /* ConcurrentValidation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ConcurrentValidation.cpp; sourceTree = "<group>"; };
+		86DED0BA017FEFB8B559DCB6 /* MapLoading.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MapLoading.hpp; sourceTree = "<group>"; };
 		88E1135DA084FC8CAE56AB66 /* EffectsRendererTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EffectsRendererTests.mm; sourceTree = "<group>"; };
 		8922EAAACBF2663C522B6F76 /* PartSprites.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PartSprites.hpp; sourceTree = "<group>"; };
 		8AABB23E0645C8060EA9C74D /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
@@ -253,6 +274,7 @@
 		A0589CBBBD075AA1E71A2FC3 /* EnemyVehicle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EnemyVehicle.cpp; sourceTree = "<group>"; };
 		A165999C6469516FFE74F603 /* CombatScene.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CombatScene.cpp; sourceTree = "<group>"; };
 		A25F6E2BB4E11ABB4FF5561B /* EnemyActors.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = EnemyActors.hpp; sourceTree = "<group>"; };
+		AA86D0A34F79009CF2357F30 /* WorldGates.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WorldGates.hpp; sourceTree = "<group>"; };
 		AADB2E30563D23861736C5F1 /* Button.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Button.cpp; sourceTree = "<group>"; };
 		AB99442F94F11D7964A77D4A /* Trail.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Trail.cpp; sourceTree = "<group>"; };
 		AC368970A575F53DCD8A1755 /* HM2ConcurrentRuntime.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HM2ConcurrentRuntime.hpp; sourceTree = "<group>"; };
@@ -262,8 +284,10 @@
 		B43D62B2508FB7117CB0AF79 /* HeavyMach2Source.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HeavyMach2Source.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B575182419C1FB3F7AF9E7D1 /* DarwinRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DarwinRandom.hpp; sourceTree = "<group>"; };
 		B61FDC38BFE7A6A2FE22F969 /* MapPreview.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MapPreview.hpp; sourceTree = "<group>"; };
+		B86295E6394B282CE3E6C6B3 /* Bot.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bot.hpp; sourceTree = "<group>"; };
 		B86D52DDA92BBBB46585E535 /* ObjectCollision.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ObjectCollision.hpp; sourceTree = "<group>"; };
 		B8CF2FA140E7BCAEF006C920 /* Maps.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Maps.cpp; sourceTree = "<group>"; };
+		BC4A48ECC028DFAA80002E16 /* ScreenTransition.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ScreenTransition.cpp; sourceTree = "<group>"; };
 		BDE644B4E59C33D54692C40B /* TerrainCollision.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TerrainCollision.hpp; sourceTree = "<group>"; };
 		BDF2A274205C68B542F02369 /* ProjectileImpact.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ProjectileImpact.cpp; sourceTree = "<group>"; };
 		BEFE1C8B1BF5723BE376301A /* CombatScene.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CombatScene.hpp; sourceTree = "<group>"; };
@@ -272,6 +296,7 @@
 		C414272E8429546DA101F9E9 /* Machines.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Machines.cpp; sourceTree = "<group>"; };
 		C476A681B159BDC1743B96DD /* ProjectileMotion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ProjectileMotion.hpp; sourceTree = "<group>"; };
 		C530196FF2D99A1D04F34CB3 /* Weapons.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Weapons.hpp; sourceTree = "<group>"; };
+		C7F133A700775D4A6288358A /* PartShadowRendererTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PartShadowRendererTests.mm; sourceTree = "<group>"; };
 		D20A52335CC38B671CC4932C /* MusicBufferPolicy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MusicBufferPolicy.hpp; sourceTree = "<group>"; };
 		D4C8284C6796F6A4F01CE879 /* HM2TextRasterizer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = HM2TextRasterizer.mm; sourceTree = "<group>"; };
 		D6E5F7305A80A92CD84797AB /* HM2AudioQueueMusic.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HM2AudioQueueMusic.hpp; sourceTree = "<group>"; };
@@ -289,6 +314,7 @@
 		E8FB007411CC043C0FAE3938 /* MapPreview.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MapPreview.cpp; sourceTree = "<group>"; };
 		E9025E84BFBEFA09CD09EC56 /* ConcurrentValidationTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ConcurrentValidationTests.mm; sourceTree = "<group>"; };
 		E912C42E5F26AE8E9AC3D5C2 /* TileImage.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TileImage.hpp; sourceTree = "<group>"; };
+		EAA6D7EF912AEED66DE5FAA9 /* Help.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Help.cpp; sourceTree = "<group>"; };
 		EAC82761A678F6C913ED94C8 /* PreparedTiles.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PreparedTiles.cpp; sourceTree = "<group>"; };
 		EB8957B62F2A77CCDA274CF1 /* TerrainCollision.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TerrainCollision.cpp; sourceTree = "<group>"; };
 		EBDDC303F0216E7A0DD6EC8E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -467,6 +493,8 @@
 			children = (
 				AADB2E30563D23861736C5F1 /* Button.cpp */,
 				1E5451F715CD842FE04E2462 /* Button.hpp */,
+				EAA6D7EF912AEED66DE5FAA9 /* Help.cpp */,
+				64F853F472810DD8824250E3 /* Help.hpp */,
 				EFA851BB9990AA00129E04AC /* Screens.cpp */,
 				DA0EE1911B27B17EAD4FE4B6 /* Screens.hpp */,
 				3C4E2A19033D475AE403AD78 /* Text.cpp */,
@@ -511,6 +539,7 @@
 				1513B2C669AEC2A9D67D68B0 /* AudioTests.mm */,
 				E9025E84BFBEFA09CD09EC56 /* ConcurrentValidationTests.mm */,
 				88E1135DA084FC8CAE56AB66 /* EffectsRendererTests.mm */,
+				C7F133A700775D4A6288358A /* PartShadowRendererTests.mm */,
 				41C788845693E4ACD8070AAE /* SessionRendererTests.mm */,
 			);
 			name = Tests;
@@ -522,14 +551,20 @@
 			children = (
 				9A11F90D201FE7265367DF16 /* AssemblyPreview.cpp */,
 				ADDEAEEA7BB8B54C41E3C295 /* AssemblyPreview.hpp */,
+				4163E84CEB915EA2E9F7435D /* MapLoading.cpp */,
+				86DED0BA017FEFB8B559DCB6 /* MapLoading.hpp */,
 				E8FB007411CC043C0FAE3938 /* MapPreview.cpp */,
 				B61FDC38BFE7A6A2FE22F969 /* MapPreview.hpp */,
+				4B3FC619F66EED86AE7208E8 /* MovementPathVisual.cpp */,
+				0A5576257104A81917B5DC14 /* MovementPathVisual.hpp */,
 				3808C2D095948480E45FC211 /* PartSprites.cpp */,
 				8922EAAACBF2663C522B6F76 /* PartSprites.hpp */,
 				AE355BDD1BADB44070C02205 /* PlayerMapPreview.cpp */,
 				445AC8953F5F5E2C23FC8379 /* PlayerMapPreview.hpp */,
 				EAC82761A678F6C913ED94C8 /* PreparedTiles.cpp */,
 				657FC22FCF40C8DCFD2C5DF1 /* PreparedTiles.hpp */,
+				BC4A48ECC028DFAA80002E16 /* ScreenTransition.cpp */,
+				0578E11DBD56762668331013 /* ScreenTransition.hpp */,
 				E912C42E5F26AE8E9AC3D5C2 /* TileImage.hpp */,
 				31DF313CD8F7488B86EB0BE4 /* Visibility.hpp */,
 				833F297FD115FDEE8272AB80 /* VisualLayer.cpp */,
@@ -575,6 +610,8 @@
 				06200A559171D46B2481B76F /* AirStrike.hpp */,
 				3B5DDD14331F36734F3DCB4D /* BipodMotion.cpp */,
 				8CB26FA4140DA936FCC5D9AB /* BipodMotion.hpp */,
+				3860234029AE25DDBB2EE099 /* Bot.cpp */,
+				B86295E6394B282CE3E6C6B3 /* Bot.hpp */,
 				A165999C6469516FFE74F603 /* CombatScene.cpp */,
 				BEFE1C8B1BF5723BE376301A /* CombatScene.hpp */,
 				8448BA399A121536EBF3DF4D /* DarwinWorldRandom.hpp */,
@@ -609,6 +646,8 @@
 				98FD21A2735AF92691E370B2 /* WeaponController.hpp */,
 				2E8E0A4D6617AEE0B46ADD8D /* WeaponEffects.cpp */,
 				3F82504D465F1950E748EAD6 /* WeaponEffects.hpp */,
+				4F071AEBA5BB177C63D5366D /* WorldGates.cpp */,
+				AA86D0A34F79009CF2357F30 /* WorldGates.hpp */,
 				9CD30E2F586AFF16FF6573A6 /* WorldNavigation.cpp */,
 				2839D5171319EDC977E0F09A /* WorldNavigation.hpp */,
 				68FE8721C5BB680AFE6731E1 /* WorldRandom.hpp */,
@@ -777,6 +816,7 @@
 				0E00FEA3E3EB3551CB639C58 /* AirStrike.cpp in Sources */,
 				537F320A7EBC85DA6F7E6269 /* AssemblyPreview.cpp in Sources */,
 				FE90D06D25B782321989D29E /* BipodMotion.cpp in Sources */,
+				C6C7867954D869883A3F5391 /* Bot.cpp in Sources */,
 				69471B6AD198FEC5767862D4 /* Button.cpp in Sources */,
 				AA6142C98549069CF77BCF61 /* Chunk.cpp in Sources */,
 				AAE2C97ABEE691B01335359A /* CombatScene.cpp in Sources */,
@@ -793,12 +833,15 @@
 				E27800D0035BB86A39F74039 /* HM2Renderer.mm in Sources */,
 				298A63C6BFBE0DD9F1224D2D /* HM2SourceView.mm in Sources */,
 				21A22C8903D2FDD4E36A855A /* HM2TextRasterizer.mm in Sources */,
+				ADC1B26F610D15F8145AD2F5 /* Help.cpp in Sources */,
 				1E0C8FCB441FB91446662E25 /* Image.cpp in Sources */,
 				016FCED80D64E201528A7AC2 /* LocomotionScene.cpp in Sources */,
 				E766623A82F973CA3778A13A /* Machines.cpp in Sources */,
+				44494A26EC6F85C45CE0649F /* MapLoading.cpp in Sources */,
 				E635ECE53DEA9C992CCBB976 /* MapPreview.cpp in Sources */,
 				D722FE62895D7884C0557085 /* Maps.cpp in Sources */,
 				2306CDC6254A8F229C81D34B /* Models.cpp in Sources */,
+				267F3AAC04407C8C3299C84D /* MovementPathVisual.cpp in Sources */,
 				5D77814575C3B341EA5C6C09 /* ObjectCollision.cpp in Sources */,
 				59A34F3AC923188042B1E5BC /* OpenALEffects.cpp in Sources */,
 				6D1D9E9823E441D32ACE177D /* PCM.cpp in Sources */,
@@ -813,6 +856,7 @@
 				197CFCB86B163A1A52F174A6 /* ProjectileVisual.cpp in Sources */,
 				11A985DC61C755C3298C0C2B /* QuickItems.cpp in Sources */,
 				358FCC7660FFE2C0F37C644B /* SaveData.cpp in Sources */,
+				F381815D0C73B8B861BDA729 /* ScreenTransition.cpp in Sources */,
 				0766EDE5469E68F0A94467F1 /* Screens.cpp in Sources */,
 				7AC368B9A5A8D7B3A50469FB /* TerrainCollision.cpp in Sources */,
 				378D05941566273B35377EC5 /* Text.cpp in Sources */,
@@ -822,6 +866,7 @@
 				862275C00B9A9D36C92556C2 /* WeaponController.cpp in Sources */,
 				C39C49DECE0DD248053B44F6 /* WeaponEffects.cpp in Sources */,
 				0170BE3B8C5BE0FBC7573BD3 /* Weapons.cpp in Sources */,
+				4DBF65A30F1DC29CEEFB0BED /* WorldGates.cpp in Sources */,
 				21020EC8059D7AD8EAD1D0D3 /* WorldNavigation.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -841,6 +886,7 @@
 				144B38D097D5557D205FF074 /* AirStrike.cpp in Sources */,
 				44E1C6D0FEC05F8851ABC63C /* AssemblyPreview.cpp in Sources */,
 				195674EAD113FFEE819CC98E /* BipodMotion.cpp in Sources */,
+				BFDDB89E3C0B7F7482A6322F /* Bot.cpp in Sources */,
 				B4407F73DBB9F251AC49C077 /* Button.cpp in Sources */,
 				E68037BE7FF34C7A7977083F /* Chunk.cpp in Sources */,
 				C2DC456C6186E0607C055BC9 /* CombatScene.cpp in Sources */,
@@ -859,12 +905,15 @@
 				3921DB60E3679E6A4AAE199B /* HM2Renderer.mm in Sources */,
 				539F818AD98E185E3AFB9183 /* HM2SourceView.mm in Sources */,
 				DA5DE08EABB37EB1E6EA00BF /* HM2TextRasterizer.mm in Sources */,
+				3CE7746E88497D016AFB2751 /* Help.cpp in Sources */,
 				44D93FE99F90A1B51DA9B553 /* Image.cpp in Sources */,
 				1F1ECA94591A881354C64563 /* LocomotionScene.cpp in Sources */,
 				0B2EF24C8FBAFF38763843FC /* Machines.cpp in Sources */,
+				954EB5404919273080ACAB1F /* MapLoading.cpp in Sources */,
 				A404CF63D3AF1EFE21C0D8C1 /* MapPreview.cpp in Sources */,
 				B55DBA76AB9CAEBF69996475 /* Maps.cpp in Sources */,
 				AAD32C2AE1D4D4565F758A0F /* Models.cpp in Sources */,
+				648786FBD9FF809B64114CCF /* MovementPathVisual.cpp in Sources */,
 				BEFD5B9E80BF8AA447F28364 /* ObjectCollision.cpp in Sources */,
 				EF017519A7789F3ADB19EC64 /* OpenALEffects.cpp in Sources */,
 				C3DCF63995527AE94D81B4FC /* PCM.cpp in Sources */,
@@ -879,6 +928,7 @@
 				2968C592533C4052CC64A532 /* ProjectileVisual.cpp in Sources */,
 				FBDB445ABA0D715C6BDC3D56 /* QuickItems.cpp in Sources */,
 				33728F73BFCAF4E06F1A9AC5 /* SaveData.cpp in Sources */,
+				83E0F96694142DBED7D3AA43 /* ScreenTransition.cpp in Sources */,
 				6FCECE1B484A5F02EA2B3B5D /* Screens.cpp in Sources */,
 				D75FBB23AFC8B40CD5802479 /* TerrainCollision.cpp in Sources */,
 				56F559115560A66CB1741AEA /* Text.cpp in Sources */,
@@ -888,6 +938,7 @@
 				92A36F4478D9831F1CB24EF9 /* WeaponController.cpp in Sources */,
 				F7B625BDDD934A5C197A62C8 /* WeaponEffects.cpp in Sources */,
 				3B324FEEFE8BC704CA068A20 /* Weapons.cpp in Sources */,
+				62FFBD3FCED58ACE00AE54F5 /* WorldGates.cpp in Sources */,
 				6DE885382225F1A1BBB2F607 /* WorldNavigation.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -902,6 +953,7 @@
 				C9BEB11232CBA399E9E3B607 /* ConcurrentValidationTests.mm in Sources */,
 				5E0EF47EAD0E072F57E90B5C /* EffectsRendererTests.mm in Sources */,
 				8E46962CAF530D818CC38862 /* HM2ConcurrentRuntime.mm in Sources */,
+				C6438322527E1C2FEF8CE5CF /* PartShadowRendererTests.mm in Sources */,
 				16427FF19B8BAF387985188B /* SessionRendererTests.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

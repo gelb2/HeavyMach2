@@ -27,7 +27,7 @@ bool fileName(NSString* name){return name.length&&[name.lastPathComponent isEqua
 }
 @implementation HM2Audio {
     NSURL* _root;hm2::audio::OpenALEffects _effects;hm2::audio::AudioQueueMusic _music;
-    BOOL _active;NSUInteger _effectFileReads,_effectDecodes;NSString* _musicName;NSString* _lastError;
+    BOOL _active;NSUInteger _effectFileReads,_effectDecodes,_effectNameConversions,_effectByteNameRequests;NSString* _musicName;NSString* _lastError;
 }
 - (instancetype)initWithResourceRoot:(NSURL*)root{
     if(!(self=[super init]))return nil;_root=[root copy];_active=YES;
@@ -46,7 +46,12 @@ bool fileName(NSString* name){return name.length&&[name.lastPathComponent isEqua
     if(!_effects.prepare(name.UTF8String,pcm)){_lastError=[NSString stringWithUTF8String:_effects.error().c_str()];return NO;}return YES;
 }
 - (BOOL)play:(NSString*)name x:(float)x y:(float)y{
-    if(!name.length)return NO;const BOOL ok=_effects.play(name.UTF8String,x,y);
+    if(!name.length)return NO;++_effectNameConversions;
+    return [self playEffect:std::string_view(name.UTF8String) x:x y:y];
+}
+- (BOOL)playEffect:(std::string_view)name x:(float)x y:(float)y{
+    if(name.empty())return NO;++_effectByteNameRequests;
+    const BOOL ok=_effects.play(name,x,y);
     if(!ok&&!_effects.error().empty())_lastError=[NSString stringWithUTF8String:_effects.error().c_str()];return ok;
 }
 - (void)stopEffects{_effects.stop();}
@@ -66,7 +71,8 @@ bool fileName(NSString* name){return name.length&&[name.lastPathComponent isEqua
 - (void)stopMusic{_music.close();_musicName=nil;}
 - (float)effectPlaybackTime:(NSString*)name{return name.length?_effects.playbackTime(name.UTF8String):-1;}
 - (NSInteger)effectSampleOffset:(NSString*)name{return name.length?_effects.sampleOffset(name.UTF8String):-1;}
-- (NSUInteger)currentContextIdentity{return _effects.contextIdentity();}
+- (NSUInteger)currentContextIdentity{return _effects.actualContextIdentity();}
+- (NSUInteger)ownerContextIdentity{return _effects.contextIdentity();}
 - (NSUInteger)loadedSounds{return _effects.loaded();}
 - (NSString*)lastError{return _lastError;}
 - (NSString*)musicName{return _musicName;}
@@ -75,7 +81,7 @@ bool fileName(NSString* name){return name.length&&[name.lastPathComponent isEqua
 - (float)musicPlaybackTime{return _music.time();}
 - (NSDictionary<NSString*,NSNumber*>*)metrics{
     const auto m=_effects.metrics();const auto p=_music.policy();
-    return @{@"devicesOpened":@(m.devicesOpened),@"contextsCreated":@(m.contextsCreated),@"sourcesCreated":@(m.sourcesCreated),@"buffersCreated":@(m.buffersCreated),@"sourcesDeleted":@(m.sourcesDeleted),@"buffersDeleted":@(m.buffersDeleted),@"effectPlayRequests":@(m.playRequests),@"effectPositionRequests":@(m.positionRequests),@"effectStopRequests":@(m.stopRequests),@"effectPositionErrors":@(m.positionErrors),@"effectFileReads":@(_effectFileReads),@"effectDecodes":@(_effectDecodes),@"mixerRate":@(_effects.mixerRate()),@"musicQueuesCreated":@(_music.queuesCreated()),@"musicBuffersAllocated":@(_music.buffersAllocated()),@"musicPacketReads":@(_music.packetReads()),@"musicEnqueues":@(_music.enqueues()),@"musicLoops":@(_music.loops()),@"musicPrimes":@(_music.primes()),@"musicStarts":@(_music.starts()),@"musicBufferBytes":@(p.bytes),@"musicBufferCount":@(p.buffers),@"musicWholeFile":@(p.wholeFile)};
+    return @{@"devicesOpened":@(m.devicesOpened),@"contextsCreated":@(m.contextsCreated),@"sourcesCreated":@(m.sourcesCreated),@"buffersCreated":@(m.buffersCreated),@"sourcesDeleted":@(m.sourcesDeleted),@"buffersDeleted":@(m.buffersDeleted),@"effectPlayRequests":@(m.playRequests),@"effectPositionRequests":@(m.positionRequests),@"effectStopRequests":@(m.stopRequests),@"effectPositionErrors":@(m.positionErrors),@"contextBindCalls":@(m.contextBindCalls),@"contextClearCalls":@(m.contextClearCalls),@"contextBindFailures":@(m.contextBindFailures),@"currentContext":@(_effects.actualContextIdentity()),@"ownerContext":@(_effects.contextIdentity()),@"effectNameConversions":@(_effectNameConversions),@"effectByteNameRequests":@(_effectByteNameRequests),@"effectFileReads":@(_effectFileReads),@"effectDecodes":@(_effectDecodes),@"mixerRate":@(_effects.mixerRate()),@"musicQueuesCreated":@(_music.queuesCreated()),@"musicBuffersAllocated":@(_music.buffersAllocated()),@"musicPacketReads":@(_music.packetReads()),@"musicEnqueues":@(_music.enqueues()),@"musicLoops":@(_music.loops()),@"musicPrimes":@(_music.primes()),@"musicStarts":@(_music.starts()),@"musicBufferBytes":@(p.bytes),@"musicBufferCount":@(p.buffers),@"musicWholeFile":@(p.wholeFile)};
 }
 - (NSArray<NSDictionary*>*)playbackSnapshot{
     NSMutableArray<NSDictionary*>* result=[NSMutableArray array];
