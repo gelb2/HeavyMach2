@@ -50,4 +50,4 @@ HeavyMach 1과 MachDefense의 파일은 변경하지 않는다. 모든 개발은
 
 2026-11-11 후속: [게임오버·랭킹 안내](../docs/gameover-restoration-20261111.md)의 Core69/ASan67·양 시뮬 Native114조건과 실제 OS 알림·기지 복귀·저장 재시작을 확인했다. Source UI의 실제 confirm 수락 marker부터 완료 관측까지 iPhone167/iPad181프레임이다. iPad의15초 성능 기준은16.07초로 실패하며 미해결이다. 원본 포팅판 GameOver/lifecycle 실제 대조·전체임무/하체23/캠페인과 최종 기기별 표시는 남는다. 다음 Command 완료임무 자동 보상·5007 누락은 원본형식 시작 저장으로 RED 재현했고 아직 구현하지 않았다. 설치/다른 플랫폼/배포 제외는 유지한다.
 
-2026-11-11 완료 임무 후속: [자동 보상·결과창·5007](../docs/completed-missions-restoration-20261111.md)을 공통 Progression/Session/Screens에 연결했다. Core70·ASan68 및 양 Simulator의 Debug Source 실제 입력/저장 재시작을 통과했다. 기존 완료 임무 미구현 문장은 당시 상태다. 동시115조건의 최종 화면 검사·원본 포팅판 대조·목록 펼침과 전체 캠페인은 진행 중이며 설치/배포 보류를 유지한다.
+2026-11-11 완료 임무 후속: [자동 보상·결과창·5007](../docs/completed-missions-restoration-20261111.md)을 공통 Progression/Session/Screens에 연결했다. Core70·ASan68 및 양 Simulator의 Debug Source 실제 입력/저장 재시작을 통과했다. 기존 완료 임무 미구현 문장은 당시 상태다. 동시115조건의 양 Simulator 최종 화면 검사·HTML 보고·작업 브랜치15d44e0 커밋/푸시까지 마쳤다. 원본 포팅판 대조·임무 상세창 펼침과 전체 캠페인은 남으며 설치/배포 보류를 유지한다.

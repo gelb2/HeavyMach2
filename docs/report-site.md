@@ -1,5 +1,16 @@
 # HeavyMach 2 보고 사이트
 
+## 완료 임무 보상·결과창 — 2026-11-11
+
+[완료 임무 복원 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/completed-missions.html)를 기존 본인 전용 비공개 사이트에 게시했다. 원문·결과 JSON·실제 동시 치트 PNG384×512 한 장을 연결했다. 다른 보고서·앵커·파일은 보존했다. 원본 IPA·ARM·저장 파일은 포함하지 않았다.
+
+게임 구현은 작업 브랜치 `15d44e0`에 커밋·푸시했다. Core70/ASan68과 이후 관련 검사, Debug 정상 Source·Native115조건의 양 Simulator 결과를 구분했다. 각1,200프레임·메뉴360프레임, 보상·저장 재실행과 완료창 가시성을 확인했다. 원본 실행 대조·임무 상세창 펼침·전체 게임·최종 기기별 비례·실기기 전달·develop/main은 완료하지 않았다.
+
+사이트 소스는 `866187dcaa112500f877d6978ba18cc27ed937af`, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_a34e3e4651ec8191b21a3a40e704c475`, 배포는 `appgdep_6af3990d65bc8191a1233fa13714e90e`다. 공식 succeeded, 본인1명/그룹0/외부0을 확인했다. 실제7경로 HTTP200, HTML 표시본문·링크와 JSON·원문·이미지 바이트 일치를 확인했다. Safari 연결은 `Sky Computer Use native pipe startup failed`로 실패했다. 이번 페이지의 브라우저 시각 검수는 미완료다.
+
+공식 helper로 만든 archive의 확장 크기는268,065,280바이트로256MiB 이하이며 콘텐츠1350개를 소스와 대조했다. 이전 보고 자산을 삭제하거나 게임 캡처를 수정하지 않았다. 로컬 근거는 `.local/evidence/completed-missions-restoration-20261111/`의 `site-deployment.json`, `site-archive-check.json`, `site-local-check.json`, `site-published-http.json`, `final-source-manifest.json`이다.
+
+
 ## 게임오버·랭킹 안내와114조건 — 2026-11-11
 
 [게임오버와 랭킹 안내 복원](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/gameover.html)을 기존 비공개 사이트에 게시했다. 첫 화면의 전체 보고서에 연결했고 기존 계획 두 페이지에는 현재 iOS·iPadOS 범위와 후속 보고 링크만 추가했다. 기존 본문·앵커·자료 URL을 보존했다. 새 보고는 Core69/ASan67·양 시뮬 Native114조건과 실제 OS 알림·기지 복귀·저장 재시작을 다룬다. iPad15초 성능 실패와 원본 포팅판 GameOver/lifecycle 대조 미완료도 명시한다. 게임 구현은 작업 브랜치 `feat/reference-ports`의 `6f17a24842f4101d427aca5cc25b29d27697a266`에 커밋·푸시했다. 설치 전달·다른 플랫폼·develop/main 배포는 수행하지 않았다.

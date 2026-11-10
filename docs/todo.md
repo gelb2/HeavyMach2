@@ -22,7 +22,7 @@
 - [x] 완료 조건·현재 기지·수락 순서로 한 건씩 자동 보상하고 원본 결과창·5007을 연결했다. 수락5004는 다음 tick 목록 갱신만 수행하며, 창 자체에서 저장하지 않는다.
 - [x] 실제 Screens 입력의 남아 있는 목록 행 선택 오류를 RED→GREEN으로 수정했다. 원본형식 저장·부분 아이템 지급·잘못된 OK·임무5개 수락 실패·중복 보상 방지를 공통 검사했다.
 - [x] Core70개·ASan/UBSan68개와 이후 관련 검사 재통과. Debug 정상 Source의 iPhone/iPad Simulator에서 두 창·목록·실제 종료/재실행을 확인했다.
-- [ ] 최신 동시115조건 양 Simulator 화면 검사·결과 기록·보고 사이트 게시·작업 브랜치 커밋을 마감한다. [완료 임무 보고](completed-missions-restoration-20261111.md).
+- [x] 동시115조건 양 Simulator 각1,200프레임·메뉴360프레임과 실제348/356/364 화면을 확인했다. 구현15d44e0을 작업 브랜치에 커밋·푸시했고 [완료 임무 HTML 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/completed-missions.html)를 게시했다. 실제7경로 HTTP·본문/링크·JSON/원문/PNG 일치를 확인했다. Safari native pipe 시작 실패로 이번 보고 페이지 브라우저 시각 검수는 미완료다.
 - [ ] HD 원본 포팅판의 완료창/OK/EXIT/저장 재시작을 같은 조건에서 대조한다. 원본 저장 백업과 판본 구분을 유지한다.
 - [ ] 사령부에서 임무 선택 시 상세창이 펼쳐지는 애니메이션을 원본 tick/좌표/입력 계약으로 복원하고 동시 검사에 연결한다.
 
