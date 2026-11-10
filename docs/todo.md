@@ -202,3 +202,5 @@ HD 1.0.3을 iPhone Air / iOS 26.5 시뮬레이터(97CA5646-36BB-47A9-919A-D78DD6
 - [ ] loaded working 슬롯 삭제의 원본 포팅판 실행 대조. 정적 덮어쓰기 후보를 임의 nil reset으로 숨기지 않음.
 - [ ] 기본 Picker04201 실제 전장 생성/획득·Attacker·수리·HP/사망·저장·GPU 그림자 연결. 독립 Bot actor 검사는 완료됐으나 Scene 통합은 남음.
 - [ ] 최초 도움말/시스템 Help·GameOver·완료 임무 창/5007·Game Center5009 소비 연결. 원본 분석 확보.
+- [ ] 사용자 직접 플레이·테스트 전달: 정상 앱과 치트 앱 실행 빌드·설치/실행 위치·사용 방법 제공. 치트의 자동 동시 검증과 조건 선택/직접 조작을 구분하고 수동 개입 실행을 자동 PASS로 보고하지 않음.
+- [x] [정상 Source 연결 HTML 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/source-entry.html) 버전275 비공개 게시. 실제HTTP12경로·본문/링크·JSON/PNG일치 확인. 기존 이미지2장 무손실 인코딩과RGBA16/부가chunk보존 증거 기록. 브라우저 시각검수는미완료.

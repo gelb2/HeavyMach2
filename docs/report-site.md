@@ -62,3 +62,15 @@ Sites 스킬로 현재 접근 범위와 원격 소스를 확인한 뒤 같은 pr
 공식 helper로 만든 archive는 확장속성·AppleDouble없이268,212,224바이트이며256MiB 제한 이하다. 현재사이트 소스1326파일과 hosting metadata1개의 바이트 일치를 확인했다. 새버전의실제서비스 확인후 재생성가능한 이전271archive를 정리했다. 현재274archive·원본·캡처·실패로그·배포증거는 보존한다. 사용하지 않는 공습검사 scratch빌드83,020,518바이트도 현재51개검사/Apple106성공과lsof미사용 확인후 정리했다.
 
 근거: `.local/evidence/combat-runtime-20261110/site-fields-deployment.json`, `site-fields-published-http.json`, `site-fields-local-check.json`, `site-fields-archive-check.json`, `capture106-rgb-verification.json`, `standalone106-verification.json`, `build-cleanup-after106.json`, `archive-cleanup-after274.json`. 토큰은 파일에 저장하지 않았다.
+
+## 정상 앱 연결 보고 — 버전275
+
+[정상 앱 메뉴·전투 연결](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/source-entry.html)을 게시했다. 구현은 `206b063`이며 Source의 실제 타이틀/슬롯/이름·저장/기지/전장/터치 이동·적 선택·발사/일시정지·재개/재실행·삭제를 양 시뮬레이터에서 확인했다. C++55개·전체Core ASan/UBSan 관련6개(106조건1,200프레임 포함)·기기별UIKit/Native이름경계 검사 결과와 실제 iPhone 전체화면을 제공한다. HD canvas·영어 locale 범위이며 iPhone 최종 가로 배치와 전체 게임·치트는 미완료다. Goal은 active이고 다음은 기본BOT의 Scene 통합이다.
+
+사이트 소스는 `d15661ab6f64112b4c0713950d87111e1d871185`, 버전275, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_4b7a09876da881919b0f9deb9c25da54`, 배포는 `appgdep_6af2a27b5654819194ef87d899b48b9c`다. 공식succeeded와 본인1명/그룹0 접근을 확인했다. 실제12경로의HTTP200·표시본문/링크 일치·JSON/PNG전체바이트 일치를 통과했다. 브라우저 시각검수는미완료다.
+
+기존HD 포팅판 측정PNG2장을 oxipng로 무손실 압축해3,126,197바이트를 확보했다. 원본캡처·Git이력·URL을 보존했고 입력/출력을 RGBA16으로 decode해 모든값이같음, 모든부가chunk(색상/방향 포함)의바이트같음을 확인했다. 새Source캡처도같은검사를통과했다. 원시PNG와 인코딩PNG의 SHA를 구분하고 이전측정보고에 후속설명과 [인코딩명세](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/png-encoding-20261110.json)를 연결했다. 새이미지는자르거나리사이즈하지않았다. 래스터1260×2736,EXIF8이므로 HTML표시는2736×1260이다.
+
+공식archive의 압축해제크기는267,224,064바이트다. 사이트1330파일과 hosting metadata1개의바이트일치, 기존1326개파일보존을 확인했다. 게시후 이전274archive와 쓰지않는 재현실행파일3개를 lsof미사용확인후 정리했다. 현재275archive·빌드후보·원본·저장·소스·실패로그·캡처는유지한다.
+
+근거: `.local/evidence/source-entry-20261110/site-deployment.json`, `site-published-http.json`, `site-local-check.json`, `site-archive-check.json`, `png-optimization/final-verification.json`, `superseded-output-cleanup.json`. 인증토큰은파일에저장하지않았다.
