@@ -1,5 +1,15 @@
 # HeavyMach 2 보고 사이트
 
+## 게임오버·랭킹 안내와114조건 — 2026-11-11
+
+[게임오버와 랭킹 안내 복원](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/gameover.html)을 기존 비공개 사이트에 게시했다. 첫 화면의 전체 보고서에 연결했고 기존 계획 두 페이지에는 현재 iOS·iPadOS 범위와 후속 보고 링크만 추가했다. 기존 본문·앵커·자료 URL을 보존했다. 새 보고는 Core69/ASan67·양 시뮬 Native114조건과 실제 OS 알림·기지 복귀·저장 재시작을 다룬다. iPad15초 성능 실패와 원본 포팅판 GameOver/lifecycle 대조 미완료도 명시한다. 게임 구현은 작업 브랜치 `feat/reference-ports`의 `6f17a24842f4101d427aca5cc25b29d27697a266`에 커밋·푸시했다. 설치 전달·다른 플랫폼·develop/main 배포는 수행하지 않았다.
+
+사이트 소스는 `f1a3f62a096014c64c49a45c9ae9c202a60dc318`, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_7e70a19c0ab88191ad96ba8ba13efc8a`, 배포는 `appgdep_6af38c3e95e08191972262455c97ff9f`다. 공식 succeeded와 본인1명/그룹0/외부0 접근을 확인했다. 실제8경로HTTP200, HTML 본문/링크 일치와 JSON·원문 바이트 일치를 확인했다. Safari에서 로컬 본문·표의 시각 배치와 게시된 본문·표 접근성 정보를 확인했다. 모바일 브라우저 시각 검수는 수행하지 않았다.
+
+공식 archive의 압축 해제 스트림은267,759,616바이트다. 기존 ustar 설정으로 컨테이너 확장 메타데이터만 제외했고 콘텐츠1345개와 생성 hosting manifest1개의 바이트 일치를 확인했다. IPA·원본 실행파일 검사는 위반0이다. 새 게시의 서비스 바이트 확인 뒤 이전276 묶음과 쓰지 않는 분석 실행파일을 lsof 미사용 확인 후 정리했다. 합계261,575,498바이트이며 소스·저장·원본·실패 로그·xcresult·현재 묶음/빌드는 보존했다.
+
+근거: `.local/evidence/gameover-restoration-20261110/`의 `site-local-check.json`, `site-archive-check.json`, `site-deployment.json`, `site-published-http.json`, `unused-output-cleanup.json`. 인증정보는 기록하지 않았다.
+
 보고서는 기존 HeavyMach·MachDefense 개발 보고 사이트에 HTML 페이지로 게시한다. 로컬 HTML 파일이나 Markdown 링크만 전달한 상태를 게시 완료로 쓰지 않는다. 원본 IPA·ARM 실행파일·개인 저장·비밀정보는 올리지 않는다.
 
 - Site: `appgprj_6addbf55aea081918d3d182d7e496e88`.

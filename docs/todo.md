@@ -13,14 +13,14 @@
 - [x] 기존 Debug 정상 Source UI의 이동·적 선택·사격·일시정지·Help·한국어 랭킹 알림·저장 재시작/삭제를 양 시뮬레이터에서 확인했다. iPhone은 실제 GameOver 알림→기지 복귀·저장·재시작도 확인했다.
 - [x] 양 기기 Source GameOver OS UI의 실제 파괴 알림→OK→Base002·HP256·저장1회 추가·재시작. 실제 confirm marker부터 첫 phase8 관측까지 iPhone167/iPad181프레임을 확인했다. 원본166 tick과 UI 관측 상한300을 구분한다. 실제 적 두 대 선택·반격 조건을 사용하며 결과를 주입하지 않는다.
 - [ ] iPad 시뮬레이터의15초 벽시계 성능 실패. 최종 predicate 대기16.07초이며 O2도 해결하지 못했다. main thread sample의 glDrawArrays/GLRendererFloat456/629와 전장7~8tick/s를 보존한다. 기능 검사60초·166~300 tick 통과를 성능 통과로 취급하지 않는다. 원본 포팅판 GameOver/lifecycle의 실제 대조도 남는다.
-- [ ] 새 O2 Apple 후보의 관련 회귀·독립 검토·최종 결과·HTML 보고·작업 브랜치 커밋을 마친다. [진행 기록](gameover-restoration-20261111.md).
+- [x] 관련 Core/ASan/Apple 회귀·독립 검토·결과 기록·HTML 보고와 작업 브랜치 커밋/푸시. 구현은6f17a24이며 [게임오버·랭킹 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/gameover.html)를 게시했다. 실제8경로HTTP·본문/링크·JSON/원문 바이트와 Safari 온라인 본문을 확인했다. 성능·원작 대조 미완료는 위 항목을 따른다.
 - [x] 다음 완료 임무 누락의 RED 재현. 원본형식 저장의 M002010/M001010 수락 순서·조건을 준비한 뒤 실제 Command 진입에서500→500Cr를 확인했다. 기대하는 첫80Cr 자동 지급과5007 popup은 아직 구현하지 않았다.
 
 
 ## 사용자 중지 요청의 중간 저장 — 2026-11-10
 
 - [x] [게임오버 연결 중간 기록](gameover-checkpoint-20261110.md): 실제 전투 RED→같은 probe GREEN과 공통 코어 빌드 확인. 원본 계약·미검증 범위를 기록하고 사용자 지시에 따라 중간 커밋.
-- [ ] 재개 시 게임오버의 정식 회귀·기지 복귀/저장·token 경계·Apple 빌드/OS 알림·동시 치트·전체 회귀·구현 독립 검토·HTML 보고를 마친다. 현재 상태를 게임오버 전체 완료로 사용하지 않는다.
+- [x] 재개 후 공통 회귀·기지 복귀/저장·token 경계·Apple OS 알림·동시114조건·구현 독립 검토·HTML 보고를 마쳤다. 현행 결과는 위2026-11-11 항목을 따른다. 원본 포팅판 GameOver 실행 대조와 시뮬레이터 성능 문제는 별도로 남는다.
 
 ## iPad 사용자 피드백 — 2026-11-10
 
