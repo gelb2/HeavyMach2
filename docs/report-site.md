@@ -1,5 +1,11 @@
 # HeavyMach 2 보고 사이트
 
+## 사령부 임무 상세창과 iPad 원본 대조 — 2026-11-11
+
+[사령부 임무 상세창 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/command-detail.html)를 기존 본인 전용 비공개 사이트에 게시했다. 구현은 `f210d72`, 원본 대조 기록은 `5895234`다. 같은 iPad에서 슬롯 OK만 눌러 두 판의 보상 순서를 확인했다. 게시 자료는 보고 본문·원문 다운로드·검사 수치다. 원본 실행 캡처와 영상 및 저장은 로컬에 보존한다.
+
+사이트 소스는 `39605c8fdfe759312e216211b3abea3a985b7e63`, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_a512ade898c8819181a526426277dc4d`, 배포는 `appgdep_6af3a0c9b69c8191afbeaa7a48740be5`다. 실제 5경로 HTTP200, 표시 본문·링크, Markdown·JSON의 바이트를 확인했다. 브라우저 시각 검사는 이번 단계에서 실행하지 않았다. 로컬 근거는 `.local/evidence/command-detail-restoration-20261111/site-published-http.json`에 있다.
+
 ## 완료 임무 보상·결과창 — 2026-11-11
 
 [완료 임무 복원 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/completed-missions.html)를 기존 본인 전용 비공개 사이트에 게시했다. 원문·결과 JSON·실제 동시 치트 PNG384×512 한 장을 연결했다. 다른 보고서·앵커·파일은 보존했다. 원본 IPA·ARM·저장 파일은 포함하지 않았다.
