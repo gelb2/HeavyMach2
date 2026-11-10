@@ -10,9 +10,12 @@
     return result;
 }
 - (void)wait:(BOOL(^)(void))condition description:(NSString*)description {
+    [self wait:condition description:description timeout:15];
+}
+- (void)wait:(BOOL(^)(void))condition description:(NSString*)description timeout:(NSTimeInterval)timeout {
     NSPredicate* predicate=[NSPredicate predicateWithBlock:^BOOL(id object,NSDictionary* bindings){return condition();}];
     XCTestExpectation* expectation=[[XCTNSPredicateExpectation alloc]initWithPredicate:predicate object:nil];expectation.expectationDescription=description;
-    [self waitForExpectations:@[expectation] timeout:15];
+    [self waitForExpectations:@[expectation] timeout:timeout];
 }
 - (void)tapLogical:(CGPoint)logical world:(XCUIElement*)world {
     const auto state=[self state:world];const CGRect bounds=world.frame;const CGFloat width=[state[@"canvasWidth"] doubleValue],height=[state[@"canvasHeight"] doubleValue];
@@ -47,6 +50,10 @@
     [self wait:^BOOL{return world.exists&&[[self state:world][@"slot0Used"] intValue]==1;} description:@"original initSlot selected and saved"];
     XCTAssertEqual([[self state:world][@"screen"] intValue],2);XCTAssertEqual([[self state:world][@"saves"] intValue],1);XCTAssertEqualObjects([self state:world][@"slot0Name"],@"MACH");
     [self tapButton:1001 data:0 world:world];[self wait:^BOOL{return [[self state:world][@"screen"] intValue]==3;} description:@"explicit start enters base"];XCTAssertEqual([[self state:world][@"saves"] intValue],3);[self capture:@"source-base-created-save"];
+    [self tapButton:2001 data:0 world:world];[self tapButton:2001 data:0 world:world];[self wait:^BOOL{return [[self state:world][@"screen"] intValue]==4;} description:@"command center opens"];
+    const int rankingSaves=[[self state:world][@"saves"] intValue];[self tapButton:5009 data:0 world:world];
+    XCUIElement* ranking=app.alerts[@"랭킹"];XCTAssertTrue([ranking waitForExistenceWithTimeout:10]);XCTAssertTrue(ranking.staticTexts[@"현재 랭킹 서비스를 이용할 수 없습니다."].exists);XCTAssertEqual(ranking.buttons.count,1u);[self capture:@"ranking-service-unavailable"];[ranking.buttons[@"OK"] tap];
+    XCTAssertEqual([[self state:world][@"screen"] intValue],4);XCTAssertEqual([[self state:world][@"saves"] intValue],rankingSaves);[self tapButton:2100 data:0 world:world];[self wait:^BOOL{return [[self state:world][@"screen"] intValue]==3;} description:@"ranking notice closes without leaving command; exit returns to base"];
     [self tapButton:2005 data:0 world:world];[self tapButton:2005 data:0 world:world];[self wait:^BOOL{return [[self state:world][@"screen"] intValue]==7&&[[self state:world][@"enemyCount"] intValue]>0;} description:@"real base gate enters original field"];
     [self wait:^BOOL{return [[self state:world][@"doorPhase"] intValue]==8;} description:@"field opening completes while original world advances"];
     XCTAssertEqual([[self state:world][@"helpVisible"] intValue],1);XCTAssertEqual([[self state:world][@"helpPage"] intValue],2);XCTAssertEqual([[self state:world][@"helpGuidance"] intValue],0);
@@ -58,7 +65,7 @@
     XCTAssertTrue(found);[self tapLogical:destination world:world];
     [self wait:^BOOL{const auto now=[self state:world];return hypot([now[@"x"] doubleValue]-[before[@"x"] doubleValue],[now[@"y"] doubleValue]-[before[@"y"] doubleValue])>5;} description:@"real UIKit touch moves Player on original terrain"];
     NSDictionary* moving=[self state:world];XCTAssertGreaterThan([moving[@"ticks"] doubleValue],[before[@"ticks"] doubleValue]);[self capture:@"source-field-after-real-touch"];
-    found=NO;unsigned long long targetID=0;const auto targets=[self state:world];for(int i=0;i<[targets[@"enemyCount"] intValue];++i){const CGFloat x=[targets[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],y=[targets[[NSString stringWithFormat:@"e%d_y",i]] doubleValue];if(x>32&&x<736&&y>180&&y<980){destination=CGPointMake(x,y);targetID=[targets[[NSString stringWithFormat:@"e%d_id",i]] longLongValue];found=YES;break;}}
+    found=NO;unsigned long long targetID=0;CGFloat nearest=CGFLOAT_MAX;const auto targets=[self state:world];for(int i=0;i<[targets[@"enemyCount"] intValue];++i){const CGFloat x=[targets[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],y=[targets[[NSString stringWithFormat:@"e%d_y",i]] doubleValue];const CGFloat distance=hypot(x-[targets[@"playerScreenX"] doubleValue],y-[targets[@"playerScreenY"] doubleValue]);if(x>32&&x<736&&y>120&&y<980&&distance<nearest){nearest=distance;destination=CGPointMake(x,y);targetID=[targets[[NSString stringWithFormat:@"e%d_id",i]] longLongValue];found=YES;}}
     XCTAssertTrue(found);[self tapLogical:destination world:world];[self wait:^BOOL{const auto now=[self state:world];return [now[@"selectionTouches"] longLongValue]>[targets[@"selectionTouches"] longLongValue]&&[now[@"touchSelectedEnemy"] longLongValue]==targetID&&[now[@"emissions"] longLongValue]>[targets[@"emissions"] longLongValue];} description:@"real enemy selection ID causes additional original weapon emissions"];
     [self tapButton:1021 data:0 world:world];[self wait:^BOOL{return [[self state:world][@"paused"] intValue]==1;} description:@"system GPU menu pauses world"];
     NSDictionary* paused=[self state:world];[self wait:^BOOL{return [[self state:world][@"ticks"] doubleValue]>[paused[@"ticks"] doubleValue]+10;} description:@"display continues while world is paused"];
@@ -78,4 +85,33 @@
     XCTAssertEqual([[self state:world][@"saves"] intValue],1);[self capture:@"source-slot-after-confirmed-delete"];
     [app terminate];[app launch];world=app.otherElements[@"hm2.world"];XCTAssertTrue([world waitForExistenceWithTimeout:15]);[self titleToSlots:world];XCTAssertEqual([[self state:world][@"slot0Used"] intValue],0);[app terminate];
 }
+- (void)testActualGameOverAlertAndReturnToBase {
+    self.continueAfterFailure=NO;XCUIApplication* app=[[XCUIApplication alloc]initWithBundleIdentifier:@"com.gelb2.heavymach2.restored"];
+    NSString* run=NSUUID.UUID.UUIDString;app.launchEnvironment=@{@"HM2_UI_TESTING":@"1",@"HM2_UI_TEST_RUN":run,@"HM2_UI_TEST_FIXTURE":@"gameOver"};[app launch];
+    XCUIElement* world=app.otherElements[@"hm2.world"];XCTAssertTrue([world waitForExistenceWithTimeout:15]);[self titleToSlots:world];XCTAssertEqualObjects([self state:world][@"slot0Name"],@"GAMEOVER");
+    [self tapButton:1001 data:0 world:world];[self wait:^BOOL{return [[self state:world][@"screen"] intValue]==7&&[[self state:world][@"enemyCount"] intValue]>0;} description:@"saved original field starts"];
+    [self wait:^BOOL{return [[self state:world][@"doorPhase"] intValue]==8;} description:@"field doors finish before real target input"];
+    NSDictionary* field=[self state:world];XCTAssertEqualObjects(field[@"lastBase"],@"Base002");XCTAssertGreaterThan([field[@"playerHP"] intValue],0);XCTAssertLessThan([field[@"playerHP"] intValue],[field[@"maximumHP"] intValue]);
+    const int saves=[field[@"saves"] intValue];BOOL selected=NO;unsigned long long target=0;
+    for(int i=0;i<[field[@"enemyCount"] intValue];++i){const double x=[field[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],y=[field[[NSString stringWithFormat:@"e%d_y",i]] doubleValue];if(x>0&&x<768&&y>100&&y<1024){target=[field[[NSString stringWithFormat:@"e%d_id",i]] longLongValue];[self tapLogical:CGPointMake(x,y) world:world];selected=YES;break;}}
+    // Provoke the first enemy, then change target while it is still alive.
+    // Finishing that single enemy can leave the Player regenerating safely.
+    const auto pursuing=[self state:world];BOOL firstAlive=NO,retargeted=NO;CGFloat nearest=CGFLOAT_MAX;CGPoint next=CGPointZero;unsigned long long second=0;
+    for(int i=0;i<[pursuing[@"enemyCount"] intValue];++i){const auto id=[pursuing[[NSString stringWithFormat:@"e%d_id",i]] longLongValue];if(id==target){firstAlive=YES;continue;}const CGFloat x=[pursuing[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],y=[pursuing[[NSString stringWithFormat:@"e%d_y",i]] doubleValue],distance=hypot(x-[pursuing[@"playerScreenX"] doubleValue],y-[pursuing[@"playerScreenY"] doubleValue]);if(x>20&&x<748&&y>120&&y<1000&&distance<nearest){nearest=distance;next=CGPointMake(x,y);second=id;retargeted=YES;}}
+    XCTAssertTrue(firstAlive&&retargeted);[self tapLogical:next world:world];XCTAssertEqual([[self state:world][@"touchSelectedEnemy"] longLongValue],static_cast<long long>(second));
+    XCTAssertTrue(selected);NSLog(@"HM2_GAMEOVER_INPUT run=%@ before=%@ after=%@",run,field,[self state:world]);
+    XCUIElement* destroyed=app.alerts[@"Destroy Your Mach."];XCTAssertTrue([destroyed waitForExistenceWithTimeout:60],@"Actual battle state: %@",[self state:world]);
+    XCTAssertTrue(destroyed.staticTexts[@"매크가 파괴되었습니다.\n기지로 돌아가서 매크를 수리합니다."].exists);XCTAssertEqual(destroyed.buttons.count,1u);
+    NSDictionary* dead=[self state:world];XCTAssertEqual([dead[@"workingHP"] intValue],0);XCTAssertEqual([dead[@"actorState"] intValue],3);XCTAssertEqual([dead[@"gameState"] intValue],3);XCTAssertEqual([dead[@"paused"] intValue],0);XCTAssertGreaterThan([dead[@"enemyEmissions"] longLongValue],0ll);XCTAssertEqual([dead[@"saves"] intValue],saves);[self capture:@"actual-gameover-original-alert"];
+    NSDate* returnStart=[NSDate date];[destroyed.buttons[@"OK"] tap];NSDate* predicateStart=[NSDate date];__block NSDictionary* returned=nil;__block NSTimeInterval wall=0,predicateWall=0;
+    // Software OpenGL in the simulator can render fewer than10 frames/s. Keep
+    // the actual frame bound; record the former15-second wall failure below.
+    [self wait:^BOOL{const auto now=[self state:world];NSLog(@"HM2_GAMEOVER_RETURN ticks=%@ screen=%@ phase=%@ token=%@ HP=%@",now[@"ticks"],now[@"screen"],now[@"doorPhase"],now[@"gameOverToken"],now[@"workingHP"]);const BOOL done=[now[@"screen"] intValue]==3&&[now[@"doorPhase"] intValue]==8;if(done&&!returned){returned=now;wall=-[returnStart timeIntervalSinceNow];predicateWall=-[predicateStart timeIntervalSinceNow];}return done;} description:@"GameOver OK uses original doors and enters base" timeout:60];
+    NSDictionary* base=returned;XCTAssertNotNil(base);XCTAssertEqualObjects(base[@"location"],@"Base002");XCTAssertEqual([base[@"workingHP"] intValue],[base[@"maximumHP"] intValue]);XCTAssertEqual([base[@"saves"] intValue],saves+1);XCTAssertEqual([base[@"gameOverToken"] longLongValue],0ll);[self capture:@"gameover-base-return-saved"];
+    const long long returnTick=[base[@"gameOverConfirmTick"] longLongValue],returnFrames=[base[@"ticks"] longLongValue]-returnTick;XCTAssertGreaterThan(returnTick,0ll);XCTAssertGreaterThanOrEqual(returnFrames,166ll);XCTAssertLessThanOrEqual(returnFrames,300ll);
+    NSDictionary* observation=@{@"tapAndReturnWallSeconds":@(wall),@"predicateWallSeconds":@(predicateWall),@"confirmTick":@(returnTick),@"completionTick":[base[@"ticks"] copy],@"ticksFromActualConfirm":@(returnFrames),@"originalTransitionTicks":@166,@"uiObservationFrameLimit":@300,@"formerWallLimitSeconds":@15,@"formerWallLimitPassed":@(predicateWall<=15)};NSData* observationData=[NSJSONSerialization dataWithJSONObject:observation options:NSJSONWritingPrettyPrinted error:nil];XCTAttachment* timing=[XCTAttachment attachmentWithData:observationData uniformTypeIdentifier:@"public.json"];timing.name=@"GameOver transition frame and wall observation";timing.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:timing];NSLog(@"HM2_GAMEOVER_TIMING %@",observation);
+    [app terminate];[app launch];world=app.otherElements[@"hm2.world"];XCTAssertTrue([world waitForExistenceWithTimeout:15]);[self titleToSlots:world];[self tapButton:1001 data:0 world:world];[self wait:^BOOL{return [[self state:world][@"screen"] intValue]==3;} description:@"restarted save remains at restored base"];
+    XCTAssertEqualObjects([self state:world][@"location"],@"Base002");XCTAssertEqual([[self state:world][@"workingHP"] intValue],[[self state:world][@"maximumHP"] intValue]);XCTAssertFalse(destroyed.exists);[app terminate];
+}
+
 @end

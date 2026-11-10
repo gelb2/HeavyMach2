@@ -111,7 +111,9 @@ int main(int argc,char** argv){
     action(menus,5004,ui::ButtonEventType::push,available[0].dataId);assert(menus.state().acceptedMissions.empty());
     action(menus,5004,ui::ButtonEventType::pop,available[0].dataId);assert(menus.state().acceptedMissions.size()==1&&menus.state().acceptedMissions[0].dataId==available[0].dataId);
     action(menus,5009,ui::ButtonEventType::push);assert(menus.metrics().unsupportedActions==unsupportedBefore);
-    action(menus,5009);assert(menus.metrics().unsupportedActions==unsupportedBefore+1); // Actual missing platform action only.
+    const auto rankingAlerts=menuHost.alerts.size();
+    action(menus,5009);assert(menus.metrics().unsupportedActions==unsupportedBefore);
+    assert(menuHost.alerts.size()==rankingAlerts+1&&menuHost.alerts.back()=="현재 랭킹 서비스를 이용할 수 없습니다.");
     assert(menuHost.writes.size()==menuSaves);action(menus,2100);assert(menus.state().screen==ui::ScreenId::base&&menuHost.writes.size()==menuSaves+1);
     action(menus,2002);action(menus,2002);assert(menus.state().screen==ui::ScreenId::shop&&menus.state().inventoryVisible);
     action(menus,2104,ui::ButtonEventType::push,{}, {},4);assert(menus.state().shopCategory==4&&menus.state().shopPage==0);

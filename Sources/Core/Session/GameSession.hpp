@@ -15,6 +15,8 @@ struct SessionHost {
     virtual void soundID(unsigned,Vec2)=0;
     virtual void alert(std::string_view originalKey)=0;
     virtual void alert(std::string_view originalKey,std::string_view){alert(originalKey);}
+    // Restoration notices have literal localized text, not an original key.
+    virtual void notice(std::string_view title,std::string_view message){alert(message,title);}
     virtual void requestName(unsigned slot)=0;
     virtual void requestDelete(unsigned slot)=0;
     virtual void requestGameOver(std::uint64_t){alert("DestroyMach","Destroy Your Mach.");}

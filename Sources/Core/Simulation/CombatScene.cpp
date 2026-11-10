@@ -537,7 +537,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
         if(!paused&&playerMotion.state().state==2){
             playerMotion.setState(3); // Player.onDestroy0xb024; no corpse/drop.
             if(gameState!=3){
-                gameState=3;stateChangeTime=clock.renderTime();
+                gameState=3;stateChangeTime=hooks.globalRenderTime(clock.renderTime());
                 hooks.playerDestroyed();
             }
         }
@@ -761,7 +761,7 @@ void CombatScene::setPlayerHP(int hp){impl_->hp=hp;}
 void CombatScene::setIsSave(bool value){impl_->saveAllowed=value;}
 bool CombatScene::isSave()const{return impl_->saveAllowed;}
 void CombatScene::setPaused(bool p){impl_->paused=p;}
-void CombatScene::setGameState(int value){impl_->gameState=value;impl_->stateChangeTime=impl_->clock.renderTime();}
+void CombatScene::setGameState(int value){impl_->gameState=value;impl_->stateChangeTime=impl_->hooks.globalRenderTime(impl_->clock.renderTime());}
 int CombatScene::gameState()const{return impl_->gameState;}
 float CombatScene::gameStateChangeTime()const{return impl_->stateChangeTime;}
 void CombatScene::setActive(bool a){impl_->active=a;if(!a){impl_->navigation.cancel();impl_->targetPointer=0;impl_->leftFire=impl_->rightFire=false;}}

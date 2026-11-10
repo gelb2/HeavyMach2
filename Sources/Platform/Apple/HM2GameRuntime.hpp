@@ -6,7 +6,7 @@
 
 namespace hm2::apple {
 struct NativeRequest {
-    enum class Kind {name,deleteSlot,alert,saveError,gameOver};
+    enum class Kind {name,deleteSlot,alert,saveError,gameOver,notice};
     Kind kind;unsigned slot=0;std::string text;std::string title{};
     std::uint64_t token=0;
 };
@@ -15,7 +15,7 @@ struct NativeRequest {
 class GameRuntime {
     struct Impl;std::unique_ptr<Impl> impl_;
 public:
-    GameRuntime(NSURL* resourceRoot,NSURL* isolatedSaveFile,std::function<void(const NativeRequest&)>);
+    GameRuntime(NSURL* resourceRoot,NSURL* isolatedSaveFile,std::function<void(const NativeRequest&)>,std::function<std::uint32_t()> absoluteTimeLow={});
     ~GameRuntime();
     GameRuntime(const GameRuntime&)=delete;
     void tick();

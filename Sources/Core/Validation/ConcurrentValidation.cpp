@@ -1,4 +1,5 @@
 #include "Core/Validation/ConcurrentValidation.hpp"
+#include "Core/Validation/SessionFixtures.hpp"
 #include "Core/Progression/Progression.hpp"
 #include "Core/Presentation/VisualLayer.hpp"
 #include "Core/Simulation/DarwinWorldRandom.hpp"
@@ -81,12 +82,21 @@ struct ConcurrentValidation::Impl {
         Impl& owner;unsigned index;Bytes saved;std::vector<std::string> alerts;
         Adapter(Impl& o,unsigned i):owner(o),index(i){}
         void sound(std::string_view name,Vec2 p)override{++owner.observations[index].sounds;owner.host.sound(index,name,p);}
-        void soundID(unsigned id,Vec2 p)override{++owner.observations[index].sounds;if(id==13)++owner.observations[index].repairSounds;if(id==14)++owner.observations[index].dashSounds;owner.host.soundID(index,id,p);}
+        void soundID(unsigned id,Vec2 p)override{++owner.observations[index].sounds;if(index==owner.rankingIndex)owner.observations[index].ranking.events.push_back("sfx"+std::to_string(id));if(id==13)++owner.observations[index].repairSounds;if(id==14)++owner.observations[index].dashSounds;owner.host.soundID(index,id,p);}
         void alert(std::string_view key)override{alerts.emplace_back(key);}
         void requestName(unsigned)override{}void requestDelete(unsigned)override{}
+        void requestGameOver(std::uint64_t token)override{
+            auto& o=owner.observations[index].gameOver;++o.requests;
+            if(!o.requestFrame){o.requestFrame=owner.counters.frames;o.token=token;o.savesAtRequest=owner.observations[index].saves;}
+        }
+        void notice(std::string_view title,std::string_view message)override{
+            auto& o=owner.observations[index].ranking;++o.notices;o.frame=owner.counters.frames;o.title=title;o.message=message;o.events.emplace_back("notice");
+        }
         bool writeSave(std::span<const std::uint8_t> data,SaveReason reason)override{
             if(!owner.host.writeSave(index,data,reason))return false;
-            saved.assign(data.begin(),data.end());++owner.observations[index].saves;return true;
+            saved.assign(data.begin(),data.end());++owner.observations[index].saves;
+            if(index==owner.gameOverIndex&&reason==SaveReason::enterBase&&owner.observations[index].gameOver.confirmFrame)owner.observations[index].gameOver.baseDoorPhase=owner.cases.at(index)->game->screenTransition().phase;
+            return true;
         }
         ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest& r)override{return owner.host.prepareWorldText(index,r);}
         std::uint32_t absoluteTimeLow()override{return owner.host.absoluteTimeLow(index);}
@@ -106,14 +116,14 @@ struct ConcurrentValidation::Impl {
     std::vector<std::unique_ptr<Case>> cases;ConcurrentMetrics counters;
     bool active=true;std::uint64_t sourceFrameNumber=std::numeric_limits<std::uint64_t>::max();
     std::vector<Frame> sourceFrames;std::vector<FrameActivity> activity;std::vector<ButtonActivity> pendingButtons;std::size_t shopIndex=0,missionIndex=0,restartIndex=0,movementIndex=0;
-    std::vector<std::size_t> aidKitIndices,airStrikeIndices,worldIndices,botIndices,helpIndices;std::size_t dashIndex=0;std::uint64_t pendingAidKitUses=0,pendingAirStrikeUses=0,pendingBotRepairs=0,pendingHelpInputs=0;
+    std::vector<std::size_t> aidKitIndices,airStrikeIndices,worldIndices,botIndices,helpIndices;std::size_t dashIndex=0,gameOverIndex=112,rankingIndex=113;std::uint64_t pendingAidKitUses=0,pendingAirStrikeUses=0,pendingBotRepairs=0,pendingHelpInputs=0;
     int shopCreditBefore=0,shopItemsBefore=0,shopCreditAfter=0,shopItemsAfter=0;unsigned repairButton=0;
     static int repairCount(GameSession& game){int count=0;for(const auto& item:game.state().inventory)if(item.dataId=="01001")count+=item.count;return count;}
     explicit Impl(ResourceAccess& source,ValidationHost& sink):resources(source),host(sink),catalog(Weapons::parse(DataTable::parse(resources.read("WeaponInfo.tble")))){
         const auto items=DataTable::parse(resources.read("ItemInfo.tble"));std::vector<WeaponStart> weapons;
         for(std::size_t row=0;row<items.rowCount();++row)if(items.value(row,"Type")=="PtWpn")weapons.push_back({std::string(items.value(row,"Code").value_or("")),std::string(items.value(row,"strParam").value_or("")),items.integer(row,"Lv")});
         if(weapons.size()!=110)throw std::runtime_error("Expected original HD110 player-weapon items; no enemy weapons may be substituted");
-        descriptions.reserve(112);observations.resize(112);cases.reserve(112);
+        descriptions.reserve(114);observations.resize(114);cases.reserve(114);
         for(std::size_t i=0;i<weapons.size();i+=2){const std::span pair(weapons.data()+i,std::size_t(2));
             add({"combat "+pair[0].code+" + "+pair[1].code,ScenarioRole::combat,{pair[0].code,pair[1].code}},startSave(pair,host.unixTime()),true);
         }
@@ -194,6 +204,23 @@ struct ConcurrentValidation::Impl {
             auto& game=*cases[index]->game;o.initialPaused=game.battle()->isPaused();o.lastWorldTime=game.battle()->clock().worldTime();
             if(const auto* help=game.help()){o.initialPresent=true;o.initialPage=help->state().page;o.initialLayer=help->state().layer;o.initialGuide=help->state().guidanceVisible;o.initialChangePages=help->state().changePages;}
         }
+        // Append-only: keep original scenarios0..111 and each seed unchanged.
+        gameOverIndex=cases.size();
+        add({"real enemy death / GameOver / confirm / Base002 save",ScenarioRole::gameOver,{},"Stage01_01"},gameOverFixture(host.unixTime()),true,false);
+        {auto& o=observations[gameOverIndex].gameOver;o.initialHP=cases[gameOverIndex]->game->battle()->playerHP();o.savesBefore=observations[gameOverIndex].saves;}
+        rankingIndex=cases.size();
+        add({"Command5009 / Korean ranking unavailable notice",ScenarioRole::rankingUnavailable,{}},gameOverFixture(host.unixTime()),false);
+        // Pre-read the actual future Base002 consumer using an independent
+        // preparation session. Its state, RNG, writes and HP never enter cases.
+        struct PreparationHost final:SessionHost {
+            Impl& owner;explicit PreparationHost(Impl& p):owner(p){}
+            void sound(std::string_view,Vec2)override{}void soundID(unsigned,Vec2)override{}void alert(std::string_view)override{}
+            void requestName(unsigned)override{}void requestDelete(unsigned)override{}
+            bool writeSave(std::span<const std::uint8_t>,SaveReason)override{return true;}
+            ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest& r)override{return owner.host.prepareWorldText(unsigned(owner.gameOverIndex),r);}
+            std::uint32_t absoluteTimeLow()override{return 17;}std::uint32_t unixTime()override{return owner.host.unixTime();}
+        } preparationHost(*this);
+        {auto saved=gameOverFixture(host.unixTime());progression::SlotView(saved.slot(0)).string(0x2d,16,"Base002");DarwinWorldRandom rng(1);GameSession preparation(resources,preparationHost,rng,std::move(saved));if(!preparation.selectSlot(0))throw std::logic_error("Base002 preparation select failed");preparation.enterBase();(void)preparation.preparationFrame();}
         // Prewarm all original KR Help pictures, including the menu guidance
         // image whose actual creation is scheduled during concurrent battle.
         for(const auto* name:{"HelpScr01_kr.png","HelpScr02_kr.png","HelpScr03_kr.png","HelpHelp.png"})if(resources.exists(name))(void)resources.read(name);
@@ -365,8 +392,32 @@ struct ConcurrentValidation::Impl {
         if(counters.frames==220)helpEnd(menu,700);
         if(counters.frames==230)helpEnd(menu,384);
     }
+    void guideGameOver(){
+        auto& game=*cases[gameOverIndex]->game;auto& o=observations[gameOverIndex].gameOver;
+        if(o.requestFrame&&!o.confirmFrame&&counters.frames>=o.requestFrame+8){
+            auto* scene=game.battle();o.confirmFrame=counters.frames;o.confirmWorldTime=scene->clock().worldTime();o.waitAdvanced=o.confirmWorldTime>o.requestWorldTime;
+            o.confirmAccepted=game.confirmGameOver(o.token);o.confirmDoorPhase=game.screenTransition().phase;o.pendingCleared=!game.pendingGameOver();
+            o.locationAtConfirm=progression::SlotView(std::span(const_cast<std::uint8_t*>(game.workingSlot().data()),game.workingSlot().size())).string(0x2d,16);
+            o.savesAfterConfirm=observations[gameOverIndex].saves;o.duplicateRejected=!game.confirmGameOver(o.token);return;
+        }
+        auto* scene=game.battle();if(!scene||scene->playerHP()<1||o.targetInputAccepted)return;
+        for(const auto& enemy:scene->enemies()){
+            const auto point=scene->camera().toScreen(enemy.position);if(enemy.hp<1||enemy.corpse||point.x<=0||point.x>=768||point.y<=100||point.y>=1024)continue;
+            constexpr std::uintptr_t pointer=0x474f5645;const bool accepted=game.inputWorld(PointerPhase::begin,point,pointer);game.inputWorld(PointerPhase::end,point,pointer);
+            o.targetInputAccepted=accepted&&scene->selectedEnemy()==enemy.id;if(o.targetInputAccepted)break;
+        }
+    }
+    void guideRanking(){
+        auto& game=*cases[rankingIndex]->game;auto& o=observations[rankingIndex].ranking;
+        if(counters.frames==181||counters.frames==182)press(rankingIndex,2001);
+        if(o.notices||counters.frames<183||game.state().screen!=ui::ScreenId::command||game.screenTransition().phase!=8)return;
+        const Bytes slot(game.workingSlot().begin(),game.workingSlot().end()),disk=cases[rankingIndex]->adapter.saved;const auto screen=game.state().screen;const auto transition=game.screenTransition().phase;const auto unsupported=game.metrics().unsupportedActions;
+        o.events.clear();o.savesBefore=observations[rankingIndex].saves;press(rankingIndex,5009);o.savesAfter=observations[rankingIndex].saves;
+        o.slotUnchanged=std::equal(slot.begin(),slot.end(),game.workingSlot().begin());o.savedBytesUnchanged=disk==cases[rankingIndex]->adapter.saved;
+        o.screenUnchanged=screen==game.state().screen;o.transitionUnchanged=transition==game.screenTransition().phase;o.unsupportedUnchanged=unsupported==game.metrics().unsupportedActions;
+    }
     void schedule(){
-        for(const auto index:worldIndices)guideWorld(index);guideDash();guideBots();guideHelp();
+        for(const auto index:worldIndices)guideWorld(index);guideDash();guideBots();guideHelp();guideGameOver();guideRanking();
         auto& shop=*cases[shopIndex]->game;const auto menuFrame=counters.frames>180?counters.frames-180:0;
         // The second Base tap requests original doors. Run all other worlds
         // while these real menu sessions close, replace at phase4, and reopen.
@@ -416,6 +467,17 @@ struct ConcurrentValidation::Impl {
         auto& value=*cases[i];auto& game=*value.game;auto& observed=observations[i];const auto& state=game.state();
         observed.level=state.level;observed.credit=state.credits;observed.experience=raw32(game.workingSlot(),0x70);
         for(const auto& mission:state.acceptedMissions)if(mission.dataId=="M001010")observed.missionComplete=mission.complete;
+        if(descriptions[i].role==ScenarioRole::gameOver){
+            auto& o=observed.gameOver;
+            if(const auto* scene=game.battle()){
+                o.enemyEmissions=scene->metrics().enemyEmissions;o.damageCalls=scene->metrics().damageCalls;
+                if(scene->playerHP()==0&&!o.deathFrame){o.deathFrame=counters.frames;o.deathHP=int(raw32(game.workingSlot(),0x7c));o.deathPlayerState=scene->player().state;}
+                if(o.requestFrame==counters.frames){o.requestHP=scene->playerHP();o.requestPlayerState=scene->player().state;o.requestWorldState=scene->gameState();o.requestPaused=scene->isPaused();o.requestStateTime=scene->gameStateChangeTime();o.requestRenderTime=game.renderTime();o.requestWorldTime=scene->clock().worldTime();}
+            }else if(o.confirmFrame&&!o.baseFrame&&state.screen==ui::ScreenId::base){o.baseFrame=counters.frames;o.baseHP=int(raw32(game.workingSlot(),0x7c));o.baseId=state.baseId;o.savesAtBase=observed.saves;for(unsigned j=0;j<3;++j)o.savedBotHP[j]=raw32(game.workingSlot(),0x64c+j*4);
+                DarwinWorldRandom decodeRandom(1);auto saved=SaveData::decode(value.adapter.saved,decodeRandom,false);progression::SlotView stored(saved.slot(0));
+                o.savedPayloadValid=stored.hp()==o.baseHP&&stored.string(0x2d,16)=="Base002"&&stored.string(0x55,16)=="Base002";for(unsigned j=0;j<3;++j)o.savedPayloadValid=o.savedPayloadValid&&stored.u32(0x64c+j*4)==0;
+            }
+        }
         if(const auto* battle=game.battle()){observed.playerHP=battle->playerHP();if(observed.playerHP>0)++observed.aliveTicks;const auto& m=battle->metrics();observed.emissions=value.priorEmissions+m.emissions;observed.playerEmissions=value.priorPlayerEmissions+m.playerEmissions;observed.damage=value.priorDamage+m.damageCalls;observed.kills=value.priorKills+m.kills;observed.strikeRequests=m.airStrikeRequests;observed.strikeProjectiles=m.airStrikeProjectiles;observed.strikeDamageCalls=m.airStrikeDamageCalls;observed.strikeEnemyHPRemoved=m.airStrikeEnemyHPRemoved;observed.strikeTicks=m.airStrikeTicks;observed.activeStrikes=battle->activeAirStrikes();
             unsigned k=0;for(const auto kind:{MachineKind::vehicle,MachineKind::turret,MachineKind::aircraft}){observed.enemySpawns[k]=m.enemySpawnsByKind.at(kind);observed.enemyEmissions[k]=m.enemyEmissionsByKind.at(kind);observed.enemyDamage[k]=m.enemyDamageCallsByKind.at(kind);observed.enemyKills[k]=m.enemyKillsByKind.at(kind);observed.enemyRemovals[k]=m.enemyRemovalsByKind.at(kind);++k;}
             if(counters.frames==1){observed.firstSpawns=observed.enemySpawns;for(const auto& enemy:battle->enemies())if(enemy.boss)++observed.bossSpawns;}
@@ -477,13 +539,15 @@ void ConcurrentValidation::tick(){auto& p=*impl_;if(!p.active)return;p.resources
                 if(target&&target!=scene->selectedEnemy())scene->selectEnemy(target);
             }
         }
-        if(auto* scene=c.game->battle()){const auto& d=p.descriptions[i];const bool representative=d.role==ScenarioRole::worldAudit&&(d.map=="Stage01_02"||d.map=="Stage02_07"||d.map=="Stage03_04");if(d.role!=ScenarioRole::airStrike&&d.role!=ScenarioRole::dash&&!representative&&!scene->selectedEnemy())for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=scene->camera().toScreen(enemy.position);if(point.x<0||point.x>scene->camera().viewport.width||point.y<100||point.y>scene->camera().viewport.height)continue;const bool botRole=d.role==ScenarioRole::botAttack||d.role==ScenarioRole::botPicker;const bool incoming=std::any_of(observed.bots.begin(),observed.bots.end(),[](const auto& b){return b.hpRemoved>0;});if(botRole&&!incoming&&p.botThreats.contains(enemy.name))continue;scene->selectEnemy(enemy.id);break;}}
+        if(auto* scene=c.game->battle()){const auto& d=p.descriptions[i];const bool representative=d.role==ScenarioRole::worldAudit&&(d.map=="Stage01_02"||d.map=="Stage02_07"||d.map=="Stage03_04");if(d.role!=ScenarioRole::airStrike&&d.role!=ScenarioRole::dash&&d.role!=ScenarioRole::gameOver&&!representative&&!scene->selectedEnemy())for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=scene->camera().toScreen(enemy.position);if(point.x<0||point.x>scene->camera().viewport.width||point.y<100||point.y>scene->camera().viewport.height)continue;const bool botRole=d.role==ScenarioRole::botAttack||d.role==ScenarioRole::botPicker;const bool incoming=std::any_of(observed.bots.begin(),observed.bots.end(),[](const auto& b){return b.hpRemoved>0;});if(botRole&&!incoming&&p.botThreats.contains(enemy.name))continue;scene->selectEnemy(enemy.id);break;}}
         const bool movement=i==p.movementIndex;const bool botCase=p.descriptions[i].role==ScenarioRole::botAttack||p.descriptions[i].role==ScenarioRole::botPicker;const auto beforeBots=observed.bots;
         if(movement)p.guideMovement();
         const auto beforeEmissions=observed.playerEmissions,beforeDamage=observed.damage,beforeKills=observed.kills;
         const Vec2 beforePosition=(movement||botCase)?c.game->battle()->player().position:Vec2{};
         const int beforeHP=movement?c.game->battle()->playerHP():0,beforeCredit=(movement||botCase)?c.game->state().credits:0,beforeInventory=(movement||botCase)?p.inventoryCount(*c.game):0;
         c.game->tick([&p,&c,i]{p.host.tickScenarioUI(unsigned(i),*c.game,c.random);});if(observed.ticks==0)observed.firstFrame=p.counters.frames;observed.lastFrame=p.counters.frames;++observed.ticks;++activity.tickedScenarios;p.observe(i);
+        if(p.descriptions[i].role==ScenarioRole::gameOver){const auto& o=observed.gameOver;activity.gameOverEvents+=(o.deathFrame==p.counters.frames)+(o.requestFrame==p.counters.frames)+(o.confirmFrame==p.counters.frames)+(o.baseFrame==p.counters.frames);}
+        if(p.descriptions[i].role==ScenarioRole::rankingUnavailable&&observed.ranking.frame==p.counters.frames)activity.rankingNotices=observed.ranking.notices;
         if(movement){const auto* scene=c.game->battle();const auto position=scene->player().position;
             const float dx=position.x-beforePosition.x,dy=position.y-beforePosition.y,step=std::sqrt(dx*dx+dy*dy);
             observed.distanceMoved+=step;observed.lastPosition=position;
@@ -511,7 +575,7 @@ void ConcurrentValidation::tick(){auto& p=*impl_;if(!p.active)return;p.resources
         if(const auto* scene=c.game->battle())for(const auto& [part,count]:scene->metrics().playerWeaponEmissions){auto [old,inserted]=c.lastWeaponCounts.try_emplace(part,0);(void)inserted;const auto previousCount=old->second;if(count>previousCount){frameWeapons.insert(part);observed.weaponEmissions[part]+=count-previousCount;}old->second=count;}
     }
     const bool otherCombat=activity.combatEmittingScenarios||activity.combatActiveProjectiles||activity.combatDamage;
-    if(otherCombat){if(activity.botEmissions||activity.botItemContacts||activity.botRewardArrivals||activity.botHPRemoved||activity.botRepairs)++p.counters.botFramesWithCombatActivity;if(activity.helpInputRequests||std::any_of(activity.buttons.begin(),activity.buttons.end(),[&p](const auto& b){return p.descriptions.at(b.scenario).role==ScenarioRole::help;}))++p.counters.helpFramesWithCombatActivity;if(activity.airStrikeUses)++p.counters.airStrikeFramesWithCombatActivity;if(activity.aidKitUses)++p.counters.aidKitFramesWithCombatActivity;if(activity.movementLootMoving)++p.counters.movementFramesWithCombatActivity;if(activity.movementLootPickups)++p.counters.pickupFramesWithCombatActivity;if(activity.movementLootInjury)++p.counters.injuryFramesWithCombatActivity;if(activity.movementLootMoving&&activity.movementLootEmissions)++p.counters.movementEmissionFramesWithCombatActivity;}
+    if(otherCombat){if(activity.gameOverEvents)++p.counters.gameOverFramesWithCombatActivity;if(activity.rankingNotices)++p.counters.rankingFramesWithCombatActivity;if(activity.botEmissions||activity.botItemContacts||activity.botRewardArrivals||activity.botHPRemoved||activity.botRepairs)++p.counters.botFramesWithCombatActivity;if(activity.helpInputRequests||std::any_of(activity.buttons.begin(),activity.buttons.end(),[&p](const auto& b){return p.descriptions.at(b.scenario).role==ScenarioRole::help;}))++p.counters.helpFramesWithCombatActivity;if(activity.airStrikeUses)++p.counters.airStrikeFramesWithCombatActivity;if(activity.aidKitUses)++p.counters.aidKitFramesWithCombatActivity;if(activity.movementLootMoving)++p.counters.movementFramesWithCombatActivity;if(activity.movementLootPickups)++p.counters.pickupFramesWithCombatActivity;if(activity.movementLootInjury)++p.counters.injuryFramesWithCombatActivity;if(activity.movementLootMoving&&activity.movementLootEmissions)++p.counters.movementEmissionFramesWithCombatActivity;}
     if(!activity.buttons.empty()){++p.counters.menuActionFrames;if(activity.combatEmittingScenarios||activity.combatActiveProjectiles||activity.combatDamage)++p.counters.menuFramesWithCombatActivity;}
     std::set<WeaponKind> kinds;for(const auto& part:frameWeapons)kinds.insert(p.catalog.weapon(part).kind);activity.emittedWeaponKinds.assign(kinds.begin(),kinds.end());
     activity.emittedWeaponParts.assign(frameWeapons.begin(),frameWeapons.end());p.counters.maxConcurrentEmittingScenarios=std::max(p.counters.maxConcurrentEmittingScenarios,activity.emittingScenarios);p.counters.maxConcurrentWeaponDefinitions=std::max(p.counters.maxConcurrentWeaponDefinitions,std::uint64_t(frameWeapons.size()));p.counters.maxConcurrentWeaponKinds=std::max(p.counters.maxConcurrentWeaponKinds,std::uint64_t(kinds.size()));if(frameWeapons.size()>=5)++p.counters.framesWithFiveWeaponDefinitions;if(kinds.size()>=5)++p.counters.framesWithFiveWeaponKinds;p.activity.push_back(std::move(activity));
@@ -527,6 +591,6 @@ const std::vector<ScenarioObservation>& ConcurrentValidation::observations()cons
 const std::vector<FrameActivity>& ConcurrentValidation::frameActivity()const{return impl_->activity;}
 ConcurrentMetrics ConcurrentValidation::metrics()const{const auto& p=*impl_;auto result=p.counters;result.activeScenarios=p.active?p.cases.size():0;result.underlyingReads=p.resources.reads;result.underlyingExists=p.resources.probes;result.warmReadMisses=p.resources.readMisses;result.warmExistsMisses=p.resources.probeMisses;result.warmReadNames=p.resources.warmReadNames;result.warmExistsNames=p.resources.warmExistsNames;
     std::set<std::string> activeWeapons;std::uint64_t first=0,last=std::numeric_limits<std::uint64_t>::max();for(std::size_t i=0;i<p.observations.size();++i){const auto& o=p.observations[i];first=std::max(first,o.firstFrame);last=std::min(last,o.lastFrame);for(const auto& part:o.emittedWeaponParts)activeWeapons.insert(part);}result.commonFrameInterval=first>0&&first<=last;result.activeWeaponDefinitions=activeWeapons.size();std::set<WeaponKind> kinds;for(const auto& part:activeWeapons)kinds.insert(p.catalog.weapon(part).kind);result.activeWeaponKinds=kinds.size();return result;}
-std::vector<std::string> ConcurrentValidation::supported()const{return {"110 original PtWpn items /55 independently saved real battles","same-frame session ticks and shared sprite-frame compositor","original target / weapon / damage / death / mission / EXP consumers","scheduled real shop purchase and insufficient-credit refusal","original save encode/decode and restart without condition reinjection","one source-frame consumption per tick, including viewport recomposition","real ground-pointer movement and actual enemy-drop pickup on the same frame clock","six original AidKit consumers and three real AirStrike/bullet consumers","38 original field entries and common vehicle / turret / aircraft consumers","original ground double tap / SP / dash movement / shared particle consumer","six original BOT registrations / real attack and pickup / damage and repair observations","four original KR Help conditions / actual menu and overlay-end input / pause and resume"};}
+std::vector<std::string> ConcurrentValidation::supported()const{return {"110 original PtWpn items /55 independently saved real battles","same-frame session ticks and shared sprite-frame compositor","original target / weapon / damage / death / mission / EXP consumers","scheduled real shop purchase and insufficient-credit refusal","original save encode/decode and restart without condition reinjection","one source-frame consumption per tick, including viewport recomposition","real ground-pointer movement and actual enemy-drop pickup on the same frame clock","six original AidKit consumers and three real AirStrike/bullet consumers","38 original field entries and common vehicle / turret / aircraft consumers","original ground double tap / SP / dash movement / shared particle consumer","six original BOT registrations / real attack and pickup / damage and repair observations","four original KR Help conditions / actual menu and overlay-end input / pause and resume","real enemy damage / GameOver token / original doors / Base002 save","Command5009 / localized ranking unavailable notice / no save"};}
 std::vector<std::string> ConcurrentValidation::missingFeatures()const{return {"all23 Player bottom equipment movement checks","all BOT combat outcomes and death after owner removal attribution","all mission types and all60 mission completion","all stages and final campaign completion","original port-app visual/input/audio equivalence","OS interruption / audio-route transition"};}
 }

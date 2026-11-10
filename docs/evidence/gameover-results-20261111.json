@@ -1,0 +1,294 @@
+{
+  "date": "2026-11-11",
+  "scope": "iOS/iPadOS; platform expansion, device installation/delivery, develop/main release deferred",
+  "baseCommit": "813e58d3c7e0dd08e2dec7c88798044651bfb7ec",
+  "sourceSHA256": {
+    "Sources/Core/Session/GameSession.cpp": "82e676c49cc06347ca1a510107ed993a6adf9943aa7cecacdeac8e6ae11df30f",
+    "Sources/Core/Session/GameSession.hpp": "84fe8fe815c06ac8b4ec663679f3561bff92904a4922a2d1587998902c41f5a0",
+    "Sources/Core/Simulation/CombatScene.cpp": "5d0e8ef2b1f0e356ec1c3cc8c25ff6e14d9d7c58c1dcf083866a0b9734a464da",
+    "Sources/Core/Simulation/CombatScene.hpp": "9e307222c709e01ae12c14ffeb247330b124a82bd5753ea59dad1f16d60e92cd",
+    "Sources/Core/Validation/SessionFixtures.hpp": "4f1d3563f46ec5710230f95ed48250b8b82e8d9ee75b25896c93ecbd6f8a30b4",
+    "Sources/Core/Validation/ConcurrentValidation.cpp": "2d8d25a972999bb0e083570e91840b4ca23867cc009e69db63346c4f63123a90",
+    "Sources/Core/Validation/ConcurrentValidation.hpp": "95bdd6aa7f7aafa55161004cdfe1e57c2c0eadb5b3e9f563dd9ef9daa249a514",
+    "Sources/Platform/Apple/HM2GameRuntime.hpp": "fbcbe5e0599e8986164e14f609ce9d3ada1b1c9c5f0c09f029716d9f192cc995",
+    "Sources/Platform/Apple/HM2GameRuntime.mm": "db8a6a4b4c826e44989b1882e1b9de88e3ce6aae6461012ad7b68a4ce8498efe",
+    "Sources/Platform/Apple/HM2SourceView.mm": "86a4a274e8bb12cca223cf663e4bbdff40894ec6af68f794d06865232f5269d8",
+    "Sources/Platform/Apple/HM2ConcurrentRuntime.mm": "b4198a9619671283ba4c31e9d895ceb06b4c6916b4045bc6c8890549404f6b5a",
+    "Apple/Tests/ConcurrentValidationTests.mm": "7408a5f738451aab1d85839681a9df4b6d8128e2dfadba789547c1b326ab48be",
+    "Apple/UITests/WorldInputTests.mm": "9782b062504c1c5026117d5f3f503f5e05bfb98af506c95e814c65bf055df8ac",
+    "tests/GameOverSessionTests.cpp": "de3742e50e01c31a570c1b28da1d96a397769285430716513892da2b1357910e",
+    "tests/ConcurrentValidationTests.cpp": "303b8e27aa32d55d0a65f41e36214ca862d2c0cb21c91206945353b02601b7a6",
+    "tests/SessionTests.cpp": "b8fd6f56a9c7f6c5590ae86789b640dc47daaa640261ff7f635c852641644434",
+    "CMakeLists.txt": "b0e89bb903a093c5647527a19cc2091070cbc6b7bc1892a6f874c4f9d56b3c6a"
+  },
+  "originalExecutableSHA256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+  "core": {
+    "verifiedTests": 69,
+    "initialSuitePass": 68,
+    "initialSuiteFailure": "OriginalSessionTransitions expected unimplemented ranking count",
+    "correctedTargetPassed": true,
+    "asanUbsanVerifiedTests": 67,
+    "asanInitialPass": 66,
+    "asanCorrectedTargetPassed": true,
+    "additionalBasePrefixRegressionPassed": true
+  },
+  "native": [
+    {
+      "device": "iphone",
+      "frames": 1200,
+      "scenarios": 114,
+      "activeWeapons": 110,
+      "weaponKinds": 5,
+      "gameOver": {
+        "baseDoorPhase": 4,
+        "baseFrame": 555,
+        "baseHP": 256,
+        "baseId": "Base002",
+        "confirmAccepted": true,
+        "confirmDoorPhase": 0,
+        "confirmFrame": 484,
+        "confirmWorldTime": 8.017799874767661,
+        "damageCalls": 21,
+        "deathFrame": 475,
+        "deathHP": 0,
+        "deathPlayerState": 2,
+        "duplicateRejected": true,
+        "enemyEmissions": 3,
+        "initialHP": 1,
+        "locationAtConfirm": "Base002",
+        "pendingCleared": true,
+        "requestFrame": 476,
+        "requestHP": 0,
+        "requestPaused": false,
+        "requestPlayerState": 3,
+        "requestRenderTime": 7.9016194343566895,
+        "requests": 1,
+        "requestStateTime": 7.9016194343566895,
+        "requestWorldState": 3,
+        "requestWorldTime": 7.9015998765826225,
+        "savedBotHP": [
+          0,
+          0,
+          0
+        ],
+        "savedPayloadValid": true,
+        "savesAfterConfirm": 1,
+        "savesAtBase": 2,
+        "savesAtRequest": 1,
+        "savesBefore": 1,
+        "targetInputAccepted": true,
+        "token": 1,
+        "waitAdvanced": true
+      },
+      "ranking": {
+        "events": [
+          "notice",
+          "sfx0"
+        ],
+        "frame": 348,
+        "message": "현재 랭킹 서비스를 이용할 수 없습니다.",
+        "notices": 1,
+        "savedBytesUnchanged": true,
+        "savesAfter": 2,
+        "savesBefore": 2,
+        "screenUnchanged": true,
+        "slotUnchanged": true,
+        "title": "랭킹",
+        "transitionUnchanged": true,
+        "unsupportedUnchanged": true
+      },
+      "overlap": [
+        4,
+        1
+      ],
+      "warmReads": 0,
+      "warmExists": 0,
+      "imageUploads": 0,
+      "repeatGPU": {
+        "comparedPixels": 2843532,
+        "differentRGBPixels": 0,
+        "experimentalBatchingAdopted": false,
+        "firstDrawCalls": 7268,
+        "maxRGBDifference": 0,
+        "renderPath": "originalOrderedScissor",
+        "repeatDrawCalls": 7268,
+        "sameCachedFrame": true,
+        "sourceSprites": 7268
+      },
+      "configuration": "Debug",
+      "audio": {
+        "contextsCreated": 1,
+        "contextBindCalls": 1,
+        "contextClearCalls": 0,
+        "contextBindFailures": 0,
+        "effectNameConversions": 0,
+        "contextMatchesOwner": true
+      }
+    },
+    {
+      "device": "ipad",
+      "frames": 1200,
+      "scenarios": 114,
+      "activeWeapons": 110,
+      "weaponKinds": 5,
+      "gameOver": {
+        "baseDoorPhase": 4,
+        "baseFrame": 555,
+        "baseHP": 256,
+        "baseId": "Base002",
+        "confirmAccepted": true,
+        "confirmDoorPhase": 0,
+        "confirmFrame": 484,
+        "confirmWorldTime": 8.017799874767661,
+        "damageCalls": 21,
+        "deathFrame": 475,
+        "deathHP": 0,
+        "deathPlayerState": 2,
+        "duplicateRejected": true,
+        "enemyEmissions": 3,
+        "initialHP": 1,
+        "locationAtConfirm": "Base002",
+        "pendingCleared": true,
+        "requestFrame": 476,
+        "requestHP": 0,
+        "requestPaused": false,
+        "requestPlayerState": 3,
+        "requestRenderTime": 7.9016194343566895,
+        "requests": 1,
+        "requestStateTime": 7.9016194343566895,
+        "requestWorldState": 3,
+        "requestWorldTime": 7.9015998765826225,
+        "savedBotHP": [
+          0,
+          0,
+          0
+        ],
+        "savedPayloadValid": true,
+        "savesAfterConfirm": 1,
+        "savesAtBase": 2,
+        "savesAtRequest": 1,
+        "savesBefore": 1,
+        "targetInputAccepted": true,
+        "token": 1,
+        "waitAdvanced": true
+      },
+      "ranking": {
+        "events": [
+          "notice",
+          "sfx0"
+        ],
+        "frame": 348,
+        "message": "현재 랭킹 서비스를 이용할 수 없습니다.",
+        "notices": 1,
+        "savedBytesUnchanged": true,
+        "savesAfter": 2,
+        "savesBefore": 2,
+        "screenUnchanged": true,
+        "slotUnchanged": true,
+        "title": "랭킹",
+        "transitionUnchanged": true,
+        "unsupportedUnchanged": true
+      },
+      "overlap": [
+        4,
+        1
+      ],
+      "warmReads": 0,
+      "warmExists": 0,
+      "imageUploads": 0,
+      "repeatGPU": {
+        "comparedPixels": 3870400,
+        "differentRGBPixels": 0,
+        "experimentalBatchingAdopted": false,
+        "firstDrawCalls": 7268,
+        "maxRGBDifference": 0,
+        "renderPath": "originalOrderedScissor",
+        "repeatDrawCalls": 7268,
+        "sameCachedFrame": true,
+        "sourceSprites": 7268
+      },
+      "configuration": "Debug",
+      "audio": {
+        "contextsCreated": 1,
+        "contextBindCalls": 1,
+        "contextClearCalls": 0,
+        "contextBindFailures": 0,
+        "effectNameConversions": 0,
+        "contextMatchesOwner": true
+      }
+    }
+  ],
+  "sourceUI": [
+    {
+      "device": "ipad",
+      "timing": {
+        "originalTransitionTicks": 166,
+        "formerWallLimitPassed": false,
+        "ticksFromActualConfirm": 181,
+        "tapAndReturnWallSeconds": 17.159714102745056,
+        "formerWallLimitSeconds": 15,
+        "confirmTick": 813,
+        "uiObservationFrameLimit": 300,
+        "completionTick": "994",
+        "predicateWallSeconds": 16.067156076431274
+      }
+    },
+    {
+      "device": "iphone",
+      "timing": {
+        "originalTransitionTicks": 166,
+        "formerWallLimitPassed": true,
+        "ticksFromActualConfirm": 167,
+        "tapAndReturnWallSeconds": 8.037130951881409,
+        "formerWallLimitSeconds": 15,
+        "confirmTick": 1000,
+        "uiObservationFrameLimit": 300,
+        "completionTick": "1167",
+        "predicateWallSeconds": 7.102690935134888
+      }
+    }
+  ],
+  "normalSourceUITouch": {
+    "iphone": "iphone-ui-final.log: passed normal UI method; actual clock",
+    "ipad": "ipad-ui.log: passed normal UI method; actual clock"
+  },
+  "sourceDefaultNative": {
+    "iphone": {
+      "tests": 4,
+      "log": "iphone-final-marker.log",
+      "configuration": "Debug O2"
+    },
+    "ipad": {
+      "tests": 4,
+      "log": "ipad-seeded-gameover.log",
+      "configuration": "Debug; default actual clock"
+    }
+  },
+  "evidenceSHA256": {
+    "core-tests.log": "b240247008438b81b131037e0bd9b5cce3df0f338c2d2e30d1a247e277ed7dbb",
+    "session-regression-tests.log": "7fc379d74b0ff26346cc97d0ac5f79616e609148b1e8b60ce138fb48f7ff3763",
+    "sanitized-tests.log": "a2586314bcdd2b3bdd8ea8bf62aa74902863aa18c228db581982d83a9a0fd121",
+    "sanitized-session-tests.log": "de896a7034feafdeb8805f0554d66199e1f69d51d2f4e38f277b0f3d73dd59c0",
+    "base-prefix-test.log": "9a0ec23152a290c7c3261f39c44c6a47d3256b54718efe32290cd516936e1856",
+    "sanitized-base-prefix-test.log": "5415935a5d5417a734173867e4586239651b1f8aae8302130483ccb6ec2a4e6a",
+    "ipad-native.log": "a6338f9bcc9374135ab4670b9b26639f128318eaf175689986f1354c28f71f14",
+    "iphone-native.log": "dfc3f4c6b28280559bc4a102f66a9056f3bda23c6a083a516556997f42509d6b",
+    "ipad-final-marker.log": "58a25783f18f66145018f03ecb09c0c65b951dbedd3c812c3681276c5dcc95db",
+    "iphone-final-marker.log": "ca59851e884a5b32d107e74cb2fd6dd1cfeb888d59d0520187a44cf7b35acd6d",
+    "ipad-seeded-gameover.log": "19cf262db049811a7397381760552de0939bb73cf15b985c7842a8b2aceba634",
+    "source-o2-sample.txt": "470929a5ee83b9bb46117f09386744a699d17df89b1e0915401faddfc92777cd",
+    "retarget-fixture-test.log": "ba56f3fb4b8364246dcdef74bf565a94731c075b5e244659e438110a53f023c2",
+    "review/gameover-followup-review.md": "f201da87067213fd879d2e069490bc5d042481ed4569d7b18983c5ade59d3bf9",
+    "review/source-gameover-seed-review.md": "2ea7df2d03d4052990821741baf7927d2c8619b51dca1ea2d39785dbaa9bec9b",
+    "review/ui-gameover-wait-review.md": "229855b1c716eb2fa3434543363b7a3ca8fcda4eaa601927acb9157db0b7a00c",
+    "review/ui-gameover-final-evidence-review.md": "69c7514e0d2fcb412d4c6501f7e335709115387647c46e7a70671d20a18bb198",
+    "review/ui-gameover-final-evidence-manifest.json": "abef7d4dd13f16dc0dbfd93dc0940885dc35e545a686c3837ce73859c8d9770b"
+  },
+  "limits": [
+    "iPad former15-second performance criterion still fails: predicate16.067s; no claim of performance completion",
+    "Original port-app actual GameOver/lifecycle comparison not complete",
+    "No full60-mission/23-bottom/all-campaign/original whole-app equivalence claim",
+    "No device installation, other-platform expansion or develop/main release in this step"
+  ],
+  "next": "Restore Command completed-mission sweep/popup/5007 using common Progression executor. RED: actual Command entry retains500Cr instead of first ordered80Cr reward."
+}

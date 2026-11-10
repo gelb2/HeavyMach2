@@ -1,5 +1,22 @@
 # HeavyMach 2 TODO
 
+## 현재 범위 — 2026-11-11 재개
+
+- iOS·iPadOS 정상 플레이·원본 대조·동시 치트 검증에 집중한다.
+- 랭킹5009는 서비스 연결 대신 기존 알림 형식으로 “현재 랭킹 서비스를 이용할 수 없습니다.”를 표시한다. 아래 과거 GameCenter 연동/서버 검증 계획은 현재 작업 대상에서 제외한다.
+- 다른 플랫폼 확장·설치 전달·배포와 develop/main 릴리스는 보류한다. 아래 해당 항목은 후속 기록이며 지금 실행하지 않는다.
+
+## 게임오버·랭킹 후속 — 2026-11-11
+
+- [x] 원본 state2→3·World3·전역 render 시각·알림 identity·기존 문/기지 저장 연결의 공통 회귀. Core69개와 ASan/UBSan67개를 확인했다. 초기 기존 랭킹 기대값 실패와 수정 후 해당 검사 통과를 함께 보존한다. Base 접두 보정/미정의 Base004 보존도 추가 검사했다.
+- [x] 기존112개에 게임오버·랭킹 안내를 추가한114조건. O2 CPU action/실제Screens 두 경로와 iPhone/iPad Native 각1,200프레임·메뉴 예열360프레임 통과. 실제 적 피해·문 phase4의 저장1회 추가·저장 decode, 예열 뒤 read/exists/upload0을 확인했다.
+- [x] 기존 Debug 정상 Source UI의 이동·적 선택·사격·일시정지·Help·한국어 랭킹 알림·저장 재시작/삭제를 양 시뮬레이터에서 확인했다. iPhone은 실제 GameOver 알림→기지 복귀·저장·재시작도 확인했다.
+- [x] 양 기기 Source GameOver OS UI의 실제 파괴 알림→OK→Base002·HP256·저장1회 추가·재시작. 실제 confirm marker부터 첫 phase8 관측까지 iPhone167/iPad181프레임을 확인했다. 원본166 tick과 UI 관측 상한300을 구분한다. 실제 적 두 대 선택·반격 조건을 사용하며 결과를 주입하지 않는다.
+- [ ] iPad 시뮬레이터의15초 벽시계 성능 실패. 최종 predicate 대기16.07초이며 O2도 해결하지 못했다. main thread sample의 glDrawArrays/GLRendererFloat456/629와 전장7~8tick/s를 보존한다. 기능 검사60초·166~300 tick 통과를 성능 통과로 취급하지 않는다. 원본 포팅판 GameOver/lifecycle의 실제 대조도 남는다.
+- [ ] 새 O2 Apple 후보의 관련 회귀·독립 검토·최종 결과·HTML 보고·작업 브랜치 커밋을 마친다. [진행 기록](gameover-restoration-20261111.md).
+- [x] 다음 완료 임무 누락의 RED 재현. 원본형식 저장의 M002010/M001010 수락 순서·조건을 준비한 뒤 실제 Command 진입에서500→500Cr를 확인했다. 기대하는 첫80Cr 자동 지급과5007 popup은 아직 구현하지 않았다.
+
+
 ## 사용자 중지 요청의 중간 저장 — 2026-11-10
 
 - [x] [게임오버 연결 중간 기록](gameover-checkpoint-20261110.md): 실제 전투 RED→같은 probe GREEN과 공통 코어 빌드 확인. 원본 계약·미검증 범위를 기록하고 사용자 지시에 따라 중간 커밋.

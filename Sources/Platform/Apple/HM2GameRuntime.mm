@@ -16,12 +16,13 @@ NSString* string(std::string_view value){return [[NSString alloc]initWithBytes:v
 struct GameRuntime::Impl:SessionHost,ui::ScreensHost {
     NSURL* saveURL;HM2Renderer* renderer;HM2Audio* audio;
     std::function<void(const NativeRequest&)> request;
+    std::function<std::uint32_t()> absoluteTime;
     Files files;DarwinWorldRandom random{1};PreparedTiles tiles{"screens"};
     std::unique_ptr<ui::TextRasterizer> rasterizer=makeTextRasterizer();ui::TextPreparationCache textCache;
     std::map<const ui::TextBitmap*,std::string> textNames;
     std::unique_ptr<GameSession> game;std::unique_ptr<ui::Screens> ui;
     std::uint64_t revision=0;CombatScene* preparedWorld=nullptr;bool active=true;
-    Impl(NSURL* root,NSURL* save,std::function<void(const NativeRequest&)> callback):saveURL(save),request(std::move(callback)),files(root.fileSystemRepresentation){
+    Impl(NSURL* root,NSURL* save,std::function<void(const NativeRequest&)> callback,std::function<std::uint32_t()> time):saveURL(save),request(std::move(callback)),absoluteTime(std::move(time)),files(root.fileSystemRepresentation){
         if(!root.isFileURL||!save.isFileURL)throw std::runtime_error("HM2 runtime requires local resource/save URLs");
         renderer=[[HM2Renderer alloc]initWithResourceRoot:root];audio=[[HM2Audio alloc]initWithResourceRoot:root];
         if(![audio prepareSounds])throw std::runtime_error(audio.lastError.UTF8String);
@@ -41,6 +42,7 @@ struct GameRuntime::Impl:SessionHost,ui::ScreensHost {
     void bgm(std::string_view n)override{if(![audio playMusic:string(n)])throw std::runtime_error(audio.lastError.UTF8String);}
     void alert(std::string_view key)override{notify({NativeRequest::Kind::alert,0,std::string(key),key=="IncorrectName"?"Incorrect Name":"Alert!"});}
     void alert(std::string_view key,std::string_view title)override{notify({NativeRequest::Kind::alert,0,std::string(key),std::string(title)});}
+    void notice(std::string_view title,std::string_view message)override{notify({NativeRequest::Kind::notice,0,std::string(message),std::string(title)});}
     void requestName(unsigned slot)override{notify({NativeRequest::Kind::name,slot,{},"New User"});}
     void requestDelete(unsigned slot)override{notify({NativeRequest::Kind::deleteSlot,slot,"DeleteSlot","Delete Slot"});}
     void requestGameOver(std::uint64_t token)override{notify({NativeRequest::Kind::gameOver,0,"DestroyMach","Destroy Your Mach.",token});}
@@ -50,7 +52,7 @@ struct GameRuntime::Impl:SessionHost,ui::ScreensHost {
         if(!success)notify({NativeRequest::Kind::saveError,0,std::string(error.localizedDescription.UTF8String)});
         return success;
     }
-    std::uint32_t absoluteTimeLow()override{return std::uint32_t(mach_absolute_time());}
+    std::uint32_t absoluteTimeLow()override{return absoluteTime?absoluteTime():std::uint32_t(mach_absolute_time());}
     std::uint32_t unixTime()override{return std::uint32_t(std::time(nullptr));}
     ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest& request)override{return prepareText(request);}
     ui::PreparedScreenText prepareText(const ui::TextRasterRequest& request)override{
@@ -69,7 +71,7 @@ struct GameRuntime::Impl:SessionHost,ui::ScreensHost {
         if(rebuilt||game->battle()!=preparedWorld){preparedWorld=game->battle();const auto prepared=game->preparationFrame();[renderer prepareFrame:prepared];}
     }
 };
-GameRuntime::GameRuntime(NSURL* root,NSURL* save,std::function<void(const NativeRequest&)> callback):impl_(std::make_unique<Impl>(root,save,std::move(callback))){}
+GameRuntime::GameRuntime(NSURL* root,NSURL* save,std::function<void(const NativeRequest&)> callback,std::function<std::uint32_t()> time):impl_(std::make_unique<Impl>(root,save,std::move(callback),std::move(time))){}
 GameRuntime::~GameRuntime()=default;
 void GameRuntime::tick(){auto& p=*impl_;if(!p.active)return;p.game->tick([&p]{p.synchronize();p.ui->tick(p.game->renderTime(),p.random);});p.synchronize();}
 void GameRuntime::draw(CAEAGLLayer* layer){auto& p=*impl_;Frame frame=p.game->drawWorld();p.ui->append(frame,p.game->renderTime());p.game->appendOverlays(frame);[p.renderer drawFrame:frame layer:layer];}

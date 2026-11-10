@@ -73,6 +73,9 @@ struct CombatSceneHooks {
     virtual void collectItems(VisualLayer&,const MapCamera&,const PreparedTiles&){}
     virtual ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest&);
     virtual void linkGate(const MapGate&){}
+    // World.setGameState records the app-wide render clock. Standalone Scene
+    // consumers use their own clock; a Session supplies its GameMain clock.
+    virtual float globalRenderTime(float standaloneTime)const{return standaloneTime;}
 };
 struct CombatSetup {
     std::string map="Stage01_01";

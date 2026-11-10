@@ -127,6 +127,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         }
     }
     void playerDied()override{dirty=true;}
+    float globalRenderTime(float)const override{return clock.renderTime();}
     void playerDestroyed()override{
         if(gameOverToken)return;
         do{gameOverToken=nextGameOverToken.fetch_add(1,std::memory_order_relaxed);}while(!gameOverToken);
@@ -577,7 +578,7 @@ void GameSession::action(const ui::ScreenAction& a){
             if(id==1027){p.closeDialogs();p.scene->setPaused(true);p.view.airliftVisible=true;p.view.selectedAirlift=-1;p.dirty=true;p.uiSound(0);return;}
             if(id==1030){p.closeDialogs();p.dirty=true;p.uiSound(0);return;}
             if(id==1031){p.closeDialogs();p.scene->setPaused(true);p.uiSound(0);
-                if(p.scene->isSave()){save(SaveReason::saveAndExit);const auto score=p.slot().u32(0x70);if(std::bit_cast<std::int32_t>(p.slot().u32(0x74))<std::bit_cast<std::int32_t>(score)){p.slot().u32(0x74,score);++p.metrics.unsupportedActions; /* reportScore platform consumer pending */}}
+                if(p.scene->isSave()){save(SaveReason::saveAndExit);const auto score=p.slot().u32(0x70);if(std::bit_cast<std::int32_t>(p.slot().u32(0x74))<std::bit_cast<std::int32_t>(score)){p.slot().u32(0x74,score); /* Ranking service intentionally unavailable; retain local best/save order. */}}
                 p.requestScreen(ui::ScreenId::title);return;}
             if(id==1032){p.closeDialogs();p.uiSound(0);p.host.alert("VisitIndiean","More Games");p.dirty=true;return;}
             if(p.view.airliftVisible&&id>=4002&&id<=4007){const auto& current=state();const int index=int(id)-4002;const auto& item=current.airlifts[std::size_t(index)];
@@ -591,7 +592,11 @@ void GameSession::action(const ui::ScreenAction& a){
     }
     // Count missing actual consumers only at their original action phase.
     // Other phases on known controls are intentional original no-ops.
-    if(a.screen==ui::ScreenId::command&&(id==5007||id==5009)&&event==ui::ButtonEventType::pop){++p.metrics.unsupportedActions;return;}
+    if(a.screen==ui::ScreenId::command&&id==5009&&event==ui::ButtonEventType::pop){
+        p.host.notice(p.displayLocale=="kr"?"랭킹":"Ranking",p.displayLocale=="kr"?"현재 랭킹 서비스를 이용할 수 없습니다.":"The ranking service is currently unavailable.");
+        p.uiSound(0);return;
+    }
+    if(a.screen==ui::ScreenId::command&&id==5007&&event==ui::ButtonEventType::pop){++p.metrics.unsupportedActions;return;}
     if(a.screen==ui::ScreenId::field&&id==1029&&event==ui::ButtonEventType::pop){p.closeDialogs();p.showHelp(true);p.uiSound(0);return;}
     if(a.screen==ui::ScreenId::field&&id>=6200&&id<=6204&&event==ui::ButtonEventType::push){
         if(p.quickItems&&p.scene&&!p.scene->isPaused()&&!p.view.inventoryVisible&&!p.view.missionVisible&&!p.view.airliftVisible&&!p.view.systemVisible){
