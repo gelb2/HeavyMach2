@@ -11,7 +11,7 @@ namespace {
 void near(float a,float b){assert(std::abs(a-b)<.00001f);}
 struct Host:WeaponHost,WeaponEffectsHost {
     std::map<std::string,TileImage,std::less<>> images;
-    WeaponTarget victim{17,{200,40},1000};bool present=true,damageRandom=false,nilImages=false;
+    WeaponTarget victim{17,{200,40},1000};bool present=true,damageRandom=false,nilImages=false,projectileRandom=false;
     WeaponEffects* effects=nullptr;WeaponEffectInput input;
     unsigned reads=0;std::vector<std::uint32_t> values;
     std::vector<std::string> events;std::vector<int> damages;std::vector<Vec2> soundPositions;
@@ -36,7 +36,7 @@ struct Host:WeaponHost,WeaponEffectsHost {
     TileImage* preparedTile(std::string_view name)override{
         if(nilImages)return nullptr;const auto it=images.find(name);return it==images.end()?nullptr:&it->second;
     }
-    void attachProjectile(WeaponProjectile p)override{events.push_back("projectile");projectiles.push_back(std::move(p));}
+    void attachProjectile(WeaponProjectile p)override{events.push_back("projectile");projectiles.push_back(std::move(p));if(projectileRandom)(void)random();}
     void particleStarted(WeaponParticleRole role,const Particle&)override{
         events.push_back(role==WeaponParticleRole::flash?"flash":role==WeaponParticleRole::hitEffect?"hit":"shell");
     }
@@ -182,6 +182,25 @@ int main(){
     // emission: endpoint RNG2 + (fireTime RNG1 + speed RNG1)*4.
     assert(shotgun.host.projectiles.size()==4&&shotgun.host.reads==10&&shotgun.host.soundPositions.size()==5);
     assert(shController.state().fireLeft==0&&shotgun.host.damages.empty());
+    // Common GobBullet setFire is identical after the controller's flash;
+    // the direct AirStrike path consumes no flash/reset RNG or particles.
+    Fixture controllerBullet,directBullet;auto common=missile();
+    controllerBullet.effects.emit(common,shot,controllerBullet.host.input,controllerBullet.host,controllerBullet.host);
+    directBullet.effects.createProjectile(common,shot,directBullet.host.input,directBullet.host,directBullet.host,true);
+    assert(controllerBullet.pool.allocations()==1&&directBullet.pool.allocations()==0);
+    assert(controllerBullet.host.reads==4&&directBullet.host.reads==1);
+    assert((directBullet.host.events==std::vector<std::string>{"R1","trail","audio","projectile"}));
+    const auto& normal=controllerBullet.host.projectiles.at(0);const auto& drop=directBullet.host.projectiles.at(0);
+    assert(!normal.visual->state().drop&&drop.visual->state().drop);
+    assert(normal.motion.state().position.x==drop.motion.state().position.x&&normal.motion.state().position.y==drop.motion.state().position.y);
+    assert(normal.motion.state().velocity.x==drop.motion.state().velocity.x&&normal.motion.state().velocity.y==drop.motion.state().velocity.y);
+    assert(normal.motion.state().acceleration.x==drop.motion.state().acceleration.x&&normal.motion.state().acceleration.y==drop.motion.state().acceleration.y);
+    assert(normal.visual->effectTile()->name==drop.visual->effectTile()->name&&normal.trail->lastPosition()==drop.trail->lastPosition());
+    assert(controllerBullet.host.soundPositions[0].x==directBullet.host.soundPositions[0].x&&controllerBullet.host.soundPositions[0].y==directBullet.host.soundPositions[0].y);
+    directBullet.host.clear();directBullet.host.projectileRandom=true;
+    directBullet.effects.createProjectile(common,shot,directBullet.host.input,directBullet.host,directBullet.host,true);
+    assert((directBullet.host.events==std::vector<std::string>{"R1","trail","audio","projectile","R2"}));
+    assert(directBullet.host.projectiles.back().visual->state().drop&&directBullet.pool.allocations()==0);
     // An out-of-domain kind fails before consuming any world state.
     Fixture unsupported;auto unknown=w;unknown.kind=static_cast<WeaponKind>(9);bool rejected=false;
     try{unsupported.effects.emit(unknown,shot,unsupported.host.input,unsupported.host,unsupported.host);}catch(...){rejected=true;}

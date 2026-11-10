@@ -55,7 +55,7 @@ struct ConcurrentValidation::Impl {
         Impl& owner;unsigned index;Bytes saved;std::vector<std::string> alerts;
         Adapter(Impl& o,unsigned i):owner(o),index(i){}
         void sound(std::string_view name,Vec2 p)override{++owner.observations[index].sounds;owner.host.sound(index,name,p);}
-        void soundID(unsigned id,Vec2 p)override{++owner.observations[index].sounds;owner.host.soundID(index,id,p);}
+        void soundID(unsigned id,Vec2 p)override{++owner.observations[index].sounds;if(id==13)++owner.observations[index].repairSounds;owner.host.soundID(index,id,p);}
         void alert(std::string_view key)override{alerts.emplace_back(key);}
         void requestName(unsigned)override{}void requestDelete(unsigned)override{}
         bool writeSave(std::span<const std::uint8_t> data,SaveReason reason)override{
@@ -77,13 +77,14 @@ struct ConcurrentValidation::Impl {
     std::vector<std::unique_ptr<Case>> cases;ConcurrentMetrics counters;
     bool active=true;std::uint64_t sourceFrameNumber=std::numeric_limits<std::uint64_t>::max();
     std::vector<Frame> sourceFrames;std::vector<FrameActivity> activity;std::vector<ButtonActivity> pendingButtons;std::size_t shopIndex=0,missionIndex=0,restartIndex=0,movementIndex=0;
+    std::vector<std::size_t> aidKitIndices,airStrikeIndices;std::uint64_t pendingAidKitUses=0,pendingAirStrikeUses=0;
     int shopCreditBefore=0,shopItemsBefore=0,shopCreditAfter=0,shopItemsAfter=0;unsigned repairButton=0;
     static int repairCount(GameSession& game){int count=0;for(const auto& item:game.state().inventory)if(item.dataId=="01001")count+=item.count;return count;}
     explicit Impl(ResourceAccess& source,ValidationHost& sink):resources(source),host(sink),catalog(Weapons::parse(DataTable::parse(resources.read("WeaponInfo.tble")))){
         const auto items=DataTable::parse(resources.read("ItemInfo.tble"));std::vector<WeaponStart> weapons;
         for(std::size_t row=0;row<items.rowCount();++row)if(items.value(row,"Type")=="PtWpn")weapons.push_back({std::string(items.value(row,"Code").value_or("")),std::string(items.value(row,"strParam").value_or("")),items.integer(row,"Lv")});
         if(weapons.size()!=110)throw std::runtime_error("Expected original HD110 player-weapon items; no enemy weapons may be substituted");
-        descriptions.reserve(59);observations.resize(59);cases.reserve(59);
+        descriptions.reserve(68);observations.resize(68);cases.reserve(68);
         for(std::size_t i=0;i<weapons.size();i+=2){const std::span pair(weapons.data()+i,std::size_t(2));
             add({"combat "+pair[0].code+" + "+pair[1].code,ScenarioRole::combat,{pair[0].code,pair[1].code}},startSave(pair,host.unixTime()),true);
         }
@@ -96,12 +97,26 @@ struct ConcurrentValidation::Impl {
         auto& movement=observations[movementIndex];auto& game=*cases[movementIndex]->game;
         movement.startPosition=movement.lastPosition=game.battle()->player().position;movement.initialCredit=cases[movementIndex]->game->state().credits;
         movement.initialExperience=raw32(game.workingSlot(),0x70);movement.initialHP=game.battle()->playerHP();
+        for(const auto* code:{"01001","01002","01003","01004","01005","01006"}){
+            auto save=startSave(std::span(weapons.data()+104,2),host.unixTime());progression::SlotView slot(save.slot(0));
+            slot.hp(std::max(1,slot.maxHP()/4));slot.string(0x8c+5*6,6,code);slot.byte(0x53c+5,5);slot.string(0x61c,6,code);
+            const auto index=cases.size();aidKitIndices.push_back(index);
+            add({std::string("real AidKit ")+code,ScenarioRole::aidKit,{weapons[104].code,weapons[105].code}},std::move(save),true,false);
+            observations[index].quickItemCode=code;
+        }
+        for(const auto* code:{"02004","02005","02007"}){
+            auto save=startSave(std::span(weapons.data()+104,2),host.unixTime());progression::SlotView slot(save.slot(0));
+            slot.string(0x8c+6*6,6,code);slot.byte(0x53c+6,5);slot.string(0x8c+7*6,6,"");slot.byte(0x53c+7,0);slot.string(0x622,6,code);
+            const auto index=cases.size();airStrikeIndices.push_back(index);
+            add({std::string("real airstrike ")+code,ScenarioRole::airStrike,{weapons[104].code,weapons[105].code}},std::move(save),true);
+            observations[index].strikeItemCode=code;
+        }
         sourceFrames.resize(cases.size());counters.activeScenarios=cases.size();
     }
-    void add(ScenarioDescription description,SaveData save,bool field){
+    void add(ScenarioDescription description,SaveData save,bool field,bool visitBase=true){
         const auto index=unsigned(cases.size());descriptions.push_back(std::move(description));
         auto value=std::make_unique<Case>(*this,index);value->game=std::make_unique<GameSession>(resources,value->adapter,value->random,std::move(save));
-        if(!value->game->selectSlot(0))throw std::runtime_error("Validation selectSlot save failed");value->game->enterBase();
+        if(!value->game->selectSlot(0))throw std::runtime_error("Validation selectSlot save failed");if(visitBase)value->game->enterBase();
         value->initialLevel=value->game->state().level;observations[index].initialLevel=value->initialLevel;
         if(field){observations[index].missionAccepted=value->game->acceptMission("M001010");if(!value->game->enterField("Stage01_01",0))throw std::runtime_error("Validation original field unavailable");}
         if(const auto* scene=value->game->battle())value->lastWeaponCounts=scene->metrics().playerWeaponEmissions;
@@ -146,13 +161,35 @@ struct ConcurrentValidation::Impl {
         if(frame==4)press(missionIndex,5004);
         if(frame==5){auto& mission=*cases[missionIndex]->game;for(const auto& item:mission.state().acceptedMissions)if(item.dataId=="M001010")observations[missionIndex].missionAccepted=true;
             if(observations[missionIndex].missionAccepted&&!mission.enterField("Stage01_01",0))throw std::runtime_error("Validation mission field unavailable");}
+        if(counters.frames==240)for(const auto index:aidKitIndices)press(index,6200);
+        if(counters.frames==241)for(const auto index:aidKitIndices){
+            auto& game=*cases[index]->game;auto& o=observations[index];auto* scene=game.battle();
+            const auto count=[&](){int result=0;for(const auto& item:game.state().inventory)if(item.dataId==o.quickItemCode)result+=item.count;return result;};
+            o.quickCountBefore=count();o.quickHPBefore=scene->playerHP();o.quickSlotHPBefore=int(raw32(game.workingSlot(),0x7c));o.quickMaximumHP=int(raw32(game.workingSlot(),0x80));
+            const auto particles=scene->metrics().particleAllocations;const auto sounds=o.repairSounds;
+            const auto screen=scene->camera().toScreen(scene->player().position);constexpr std::uintptr_t pointer=0x4149444b;
+            o.quickTapAccepted=game.inputWorld(PointerPhase::begin,screen,pointer);game.inputWorld(PointerPhase::end,screen,pointer);
+            o.quickHPAfter=scene->playerHP();o.quickSlotHPAfter=int(raw32(game.workingSlot(),0x7c));o.quickCountAfter=count();o.quickSelectionAfter=game.state().selectedQuick;
+            o.quickRepairSounds=o.repairSounds-sounds;o.quickParticleAllocations=scene->metrics().particleAllocations-particles;o.quickUseFrame=counters.frames;
+            if(o.quickCountAfter==o.quickCountBefore-1&&o.quickHPAfter>o.quickHPBefore)++pendingAidKitUses;
+        }
+        if(counters.frames==260)for(const auto index:airStrikeIndices)press(index,6201);
+        if(counters.frames==261)for(const auto index:airStrikeIndices){
+            auto& game=*cases[index]->game;auto& o=observations[index];auto* scene=game.battle();
+            const auto count=[&](){int result=0;for(const auto& item:game.state().inventory)if(item.dataId==o.strikeItemCode)result+=item.count;return result;};
+            o.strikeCountBefore=count();Vec2 target{scene->player().position.x+100,scene->player().position.y+100};float best=std::numeric_limits<float>::max();
+            for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=scene->camera().toScreen(enemy.position);if(point.x<32||point.x>736||point.y<180||point.y>980)continue;const float dx=enemy.position.x-scene->player().position.x,dy=enemy.position.y-scene->player().position.y,d=dx*dx+dy*dy;if(d<best){best=d;target=enemy.position;o.strikeTargetVisibleEnemy=true;}}
+            o.strikeTarget=target;const auto screen=scene->camera().toScreen(target);constexpr std::uintptr_t pointer=0x41495253;
+            o.strikeTapAccepted=game.inputWorld(PointerPhase::begin,screen,pointer);game.inputWorld(PointerPhase::end,screen,pointer);o.strikeCountAfter=count();o.strikeUseFrame=counters.frames;
+            if(o.strikeTapAccepted&&o.strikeCountAfter==o.strikeCountBefore-1)++pendingAirStrikeUses;
+        }
         if(counters.frames==600)restart();
     }
     void observe(std::size_t i){
         auto& value=*cases[i];auto& game=*value.game;auto& observed=observations[i];const auto& state=game.state();
         observed.level=state.level;observed.credit=state.credits;observed.experience=raw32(game.workingSlot(),0x70);
         for(const auto& mission:state.acceptedMissions)if(mission.dataId=="M001010")observed.missionComplete=mission.complete;
-        if(const auto* battle=game.battle()){observed.playerHP=battle->playerHP();if(observed.playerHP>0)++observed.aliveTicks;const auto& m=battle->metrics();observed.emissions=value.priorEmissions+m.emissions;observed.playerEmissions=value.priorPlayerEmissions+m.playerEmissions;observed.damage=value.priorDamage+m.damageCalls;observed.kills=value.priorKills+m.kills;
+        if(const auto* battle=game.battle()){observed.playerHP=battle->playerHP();if(observed.playerHP>0)++observed.aliveTicks;const auto& m=battle->metrics();observed.emissions=value.priorEmissions+m.emissions;observed.playerEmissions=value.priorPlayerEmissions+m.playerEmissions;observed.damage=value.priorDamage+m.damageCalls;observed.kills=value.priorKills+m.kills;observed.strikeRequests=m.airStrikeRequests;observed.strikeProjectiles=m.airStrikeProjectiles;observed.strikeDamageCalls=m.airStrikeDamageCalls;observed.strikeEnemyHPRemoved=m.airStrikeEnemyHPRemoved;observed.strikeTicks=m.airStrikeTicks;observed.activeStrikes=battle->activeAirStrikes();
             for(const auto& [part,count]:m.playerWeaponEmissions)if(count)value.emitted.insert(part);
             observed.emittedWeaponParts.assign(value.emitted.begin(),value.emitted.end());}
     }
@@ -191,9 +228,9 @@ struct ConcurrentValidation::Impl {
 ConcurrentValidation::ConcurrentValidation(ResourceAccess& r,ValidationHost& h):impl_(std::make_unique<Impl>(r,h)){}
 ConcurrentValidation::~ConcurrentValidation()=default;
 void ConcurrentValidation::tick(){auto& p=*impl_;if(!p.active)return;p.resources.warm=true;++p.counters.frames;p.schedule();
-    FrameActivity activity;activity.frame=p.counters.frames;activity.buttons=std::move(p.pendingButtons);p.pendingButtons.clear();activity.saveRestart=p.counters.frames==600&&p.observations[p.restartIndex].restarted;std::set<std::string> frameWeapons;
+    FrameActivity activity;activity.frame=p.counters.frames;activity.buttons=std::move(p.pendingButtons);p.pendingButtons.clear();activity.saveRestart=p.counters.frames==600&&p.observations[p.restartIndex].restarted;activity.aidKitUses=p.pendingAidKitUses;p.pendingAidKitUses=0;activity.airStrikeUses=p.pendingAirStrikeUses;p.pendingAirStrikeUses=0;std::set<std::string> frameWeapons;
     for(std::size_t i=0;i<p.cases.size();++i){auto& c=*p.cases[i];auto& observed=p.observations[i];
-        if(auto* scene=c.game->battle()){if(!scene->selectedEnemy())for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){scene->selectEnemy(enemy.id);break;}}
+        if(auto* scene=c.game->battle()){if(p.descriptions[i].role!=ScenarioRole::airStrike&&!scene->selectedEnemy())for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){scene->selectEnemy(enemy.id);break;}}
         const bool movement=i==p.movementIndex;
         if(movement)p.guideMovement();
         const auto beforeEmissions=observed.playerEmissions,beforeDamage=observed.damage,beforeKills=observed.kills;
@@ -221,13 +258,14 @@ void ConcurrentValidation::tick(){auto& p=*impl_;if(!p.active)return;p.resources
         if(const auto* scene=c.game->battle())for(const auto& [part,count]:scene->metrics().playerWeaponEmissions){auto [old,inserted]=c.lastWeaponCounts.try_emplace(part,0);(void)inserted;const auto previousCount=old->second;if(count>previousCount){frameWeapons.insert(part);observed.weaponEmissions[part]+=count-previousCount;}old->second=count;}
     }
     const bool otherCombat=activity.combatEmittingScenarios||activity.combatActiveProjectiles||activity.combatDamage;
-    if(otherCombat){if(activity.movementLootMoving)++p.counters.movementFramesWithCombatActivity;if(activity.movementLootPickups)++p.counters.pickupFramesWithCombatActivity;if(activity.movementLootInjury)++p.counters.injuryFramesWithCombatActivity;if(activity.movementLootMoving&&activity.movementLootEmissions)++p.counters.movementEmissionFramesWithCombatActivity;}
+    if(otherCombat){if(activity.airStrikeUses)++p.counters.airStrikeFramesWithCombatActivity;if(activity.aidKitUses)++p.counters.aidKitFramesWithCombatActivity;if(activity.movementLootMoving)++p.counters.movementFramesWithCombatActivity;if(activity.movementLootPickups)++p.counters.pickupFramesWithCombatActivity;if(activity.movementLootInjury)++p.counters.injuryFramesWithCombatActivity;if(activity.movementLootMoving&&activity.movementLootEmissions)++p.counters.movementEmissionFramesWithCombatActivity;}
     if(!activity.buttons.empty()){++p.counters.menuActionFrames;if(activity.combatEmittingScenarios||activity.combatActiveProjectiles||activity.combatDamage)++p.counters.menuFramesWithCombatActivity;}
     std::set<WeaponKind> kinds;for(const auto& part:frameWeapons)kinds.insert(p.catalog.weapon(part).kind);activity.emittedWeaponKinds.assign(kinds.begin(),kinds.end());
     activity.emittedWeaponParts.assign(frameWeapons.begin(),frameWeapons.end());p.counters.maxConcurrentEmittingScenarios=std::max(p.counters.maxConcurrentEmittingScenarios,activity.emittingScenarios);p.counters.maxConcurrentWeaponDefinitions=std::max(p.counters.maxConcurrentWeaponDefinitions,std::uint64_t(frameWeapons.size()));p.counters.maxConcurrentWeaponKinds=std::max(p.counters.maxConcurrentWeaponKinds,std::uint64_t(kinds.size()));if(frameWeapons.size()>=5)++p.counters.framesWithFiveWeaponDefinitions;if(kinds.size()>=5)++p.counters.framesWithFiveWeaponKinds;p.activity.push_back(std::move(activity));
 }
 void ConcurrentValidation::setActive(bool active){impl_->active=active;for(auto& value:impl_->cases)value->game->setActive(active);}
 Frame ConcurrentValidation::drawFrame(Size viewport){return impl_->compose(viewport);}
+Frame ConcurrentValidation::scenarioFrame(unsigned i)const{if(impl_->sourceFrameNumber!=impl_->counters.frames)throw std::logic_error("Capture a scenario only after its common frame draw");return impl_->sourceFrames.at(i);}
 GameSession& ConcurrentValidation::session(unsigned i){return *impl_->cases.at(i)->game;}
 ResourceAccess& ConcurrentValidation::cachedResources(){return impl_->resources;}
 std::size_t ConcurrentValidation::scenarioCount()const{return impl_->cases.size();}
@@ -236,6 +274,6 @@ const std::vector<ScenarioObservation>& ConcurrentValidation::observations()cons
 const std::vector<FrameActivity>& ConcurrentValidation::frameActivity()const{return impl_->activity;}
 ConcurrentMetrics ConcurrentValidation::metrics()const{const auto& p=*impl_;auto result=p.counters;result.activeScenarios=p.active?p.cases.size():0;result.underlyingReads=p.resources.reads;result.underlyingExists=p.resources.probes;result.warmReadMisses=p.resources.readMisses;result.warmExistsMisses=p.resources.probeMisses;result.warmReadNames=p.resources.warmReadNames;result.warmExistsNames=p.resources.warmExistsNames;
     std::set<std::string> activeWeapons;std::uint64_t first=0,last=std::numeric_limits<std::uint64_t>::max();for(std::size_t i=0;i<p.observations.size();++i){const auto& o=p.observations[i];first=std::max(first,o.firstFrame);last=std::min(last,o.lastFrame);for(const auto& part:o.emittedWeaponParts)activeWeapons.insert(part);}result.commonFrameInterval=first>0&&first<=last;result.activeWeaponDefinitions=activeWeapons.size();std::set<WeaponKind> kinds;for(const auto& part:activeWeapons)kinds.insert(p.catalog.weapon(part).kind);result.activeWeaponKinds=kinds.size();return result;}
-std::vector<std::string> ConcurrentValidation::supported()const{return {"110 original PtWpn items /55 independently saved real battles","same-frame session ticks and shared sprite-frame compositor","original target / weapon / damage / death / mission / EXP consumers","scheduled real shop purchase and insufficient-credit refusal","original save encode/decode and restart without condition reinjection","one source-frame consumption per tick, including viewport recomposition","real ground-pointer movement and actual enemy-drop pickup on the same frame clock"};}
-std::vector<std::string> ConcurrentValidation::missingFeatures()const{return {"quick-item actual use","special attack execution","dash execution","bot actor AI / attack / pickup","all mission types and all60 mission completion","all stages and final campaign completion","original port-app visual/input/audio equivalence","OS interruption / audio-route transition"};}
+std::vector<std::string> ConcurrentValidation::supported()const{return {"110 original PtWpn items /55 independently saved real battles","same-frame session ticks and shared sprite-frame compositor","original target / weapon / damage / death / mission / EXP consumers","scheduled real shop purchase and insufficient-credit refusal","original save encode/decode and restart without condition reinjection","one source-frame consumption per tick, including viewport recomposition","real ground-pointer movement and actual enemy-drop pickup on the same frame clock","six original AidKit consumers and three real AirStrike/bullet consumers"};}
+std::vector<std::string> ConcurrentValidation::missingFeatures()const{return {"dash execution","other Player bottom controllers","turret / aircraft Scene integration","bot actor AI / attack / pickup","all mission types and all60 mission completion","all stages and final campaign completion","original port-app visual/input/audio equivalence","OS interruption / audio-route transition"};}
 }

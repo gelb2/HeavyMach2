@@ -2,6 +2,8 @@
 #include "Core/Presentation/VisualLayer.hpp"
 #include <algorithm>
 #include <cassert>
+#include <cmath>
+#include <limits>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -18,10 +20,11 @@ struct Files:ResourceAccess {
 // Text layout test double: deliberately does not claim original glyph raster QA.
 struct Host:ScreensHost {
     unsigned preparations=0;std::vector<ScreenAction> actions;std::vector<std::string> songs,sounds;
+    std::vector<TextRasterRequest> requests;
     std::vector<unsigned> ids;std::function<void(const ScreenAction&)> callback;
     void action(const ScreenAction& e)override{actions.push_back(e);if(callback)callback(e);}
     PreparedScreenText prepareText(const TextRasterRequest& r)override{
-        ++preparations;auto b=std::make_shared<TextBitmap>();b->request=r;b->layout=textRasterLayout(r);
+        ++preparations;requests.push_back(r);auto b=std::make_shared<TextBitmap>();b->request=r;b->layout=textRasterLayout(r);
         b->alpha.resize(std::size_t(b->layout.width)*b->layout.height);
         return {"prepared:"+r.sourceId,std::move(b)};
     }
@@ -32,6 +35,37 @@ struct Host:ScreensHost {
 struct Random:WorldRandom {unsigned calls=0;std::uint32_t random()override{++calls;return 7;}};
 std::vector<ButtonKey> ids(Screens& ui,unsigned id){auto keys=ui.buttons();std::erase_if(keys,[&](const auto& k){return k.id!=id;});return keys;}
 const Sprite* sprite(const Frame& f,std::string_view name){for(const auto& s:f.sprites)if(s.image==name)return &s;return nullptr;}
+void fieldMessage(const char* root){
+    Files files(root);Host host;PreparedTiles tiles("message-test");Screens ui(files,tiles,host);Random random;
+    ScreensState state;state.screen=ScreenId::field;state.selectedSlot=0;ui.refresh(state,0);
+    const auto draw=[&](){Frame frame;ui.append(frame,999);return frame;};
+    const auto box=[&](const Frame& frame){return sprite(frame,"MessageBox.png");};
+    const auto label=[&](const Frame& frame){return sprite(frame,"prepared:GuiGame.message");};
+    const auto width=[](const Sprite* s){assert(s&&s->strip.size()==4);return s->strip[2].position.x-s->strip[0].position.x;};
+    const auto height=[](const Sprite* s){assert(s&&s->strip.size()==4);return s->strip[0].position.y-s->strip[1].position.y;};
+    assert(!box(draw()));state.message="Tap the Mach. to repair.";state.messageVisible=true;state.messageRevision=1;state.messageWorldTime=1.25;ui.refresh(state,100);
+    auto frame=draw();assert(box(frame)&&label(frame));assert(box(frame)->center.x==405&&box(frame)->center.y==158&&width(box(frame))==512&&height(box(frame))==64&&box(frame)->strip[0].uv.y==0&&box(frame)->strip[1].uv.y==.5f);
+    assert(label(frame)->size.width==512&&label(frame)->size.height==24&&label(frame)->center.x==405);
+    const auto& request=host.requests.back();assert(request.fontName=="TrebuchetMS-Bold"&&request.fontSize==16&&request.alignment==TextAlign::center&&!request.retina);
+    assert(std::count(host.ids.begin(),host.ids.end(),10)==1);const auto reads=files.reads,probes=files.probes,preparations=host.preparations;
+    state.messageWorldTime=1.35;ui.updateHUD(state);ui.tick(1000,random);frame=draw();assert(box(frame)->center.y==166&&label(frame)->center.y==166&&random.calls==0);
+    ui.refresh(state,1001);frame=draw();assert(box(frame)->center.y==166&&std::count(host.ids.begin(),host.ids.end(),10)==1); // unrelated HUD refresh keeps lifetime.
+    state.messageRevision=2;state.messageWorldTime=1.4;ui.refresh(state,1002);assert(box(draw())->center.y==166&&std::count(host.ids.begin(),host.ids.end(),10)==2); // set does not reset Y.
+    state.messageVisible=false;state.messageRevision=3;ui.refresh(state,1003);frame=draw();assert(box(frame)&&!label(frame)&&height(box(frame))==64);
+    const double frozen=state.messageWorldTime;ui.tick(1004,random);frame=draw();assert(std::abs(height(box(frame))-64*.7725f)<.0001f); // world pause does not stop GUI folding.
+    for(unsigned i=0;i<64;++i){state.messageWorldTime=frozen;ui.updateHUD(state);ui.tick(1005+float(i),random);}assert(!box(draw())&&random.calls==0);
+    assert(files.reads==reads&&files.probes==probes); // Same message may prepare a wrapper, never reload PNG.
+    state.messageVisible=true;state.messageAutoHide=true;state.messageRevision=4;state.messageWorldTime=20;ui.refresh(state,2000);
+    state.messageWorldTime=30;ui.updateHUD(state);ui.tick(2001,random);assert(label(draw()));
+    state.messageWorldTime=20+double(std::nextafter(10.f,11.f));ui.updateHUD(state);ui.tick(2002,random);assert(!label(draw())&&box(draw()));
+    state.messageAutoHide=false;state.messageRevision=5;state.messageWorldTime=16777216.;ui.refresh(state,3000);
+    state.messageWorldTime=16777216.25;ui.updateHUD(state);ui.tick(3001,random);frame=draw();assert(std::abs(box(frame)->center.y-161.9598f)<.001f&&label(frame)->center.y==162); // double current time survives.
+    state.messageRevision=6;state.messageWorldTime=0;ui.refresh(state,4000);const auto beforeSentinel=draw();const float sentinelY=box(beforeSentinel)->center.y;
+    state.messageWorldTime=1;ui.updateHUD(state);ui.tick(4001,random);frame=draw();assert(box(frame)->center.y==sentinelY&&label(frame)); // original msgTime0 sentinel.
+    state.messageVisible=false;state.messageRevision=7;ui.refresh(state,4002);for(unsigned i=0;i<100;++i)ui.tick(4003+float(i),random);assert(box(draw()));
+    assert(host.preparations>=preparations&&random.calls==0);
+    std::cout<<"FIELD_MESSAGE original512x64/512x24/font/SFX10/floatDoubleClock/bounce/hide/pause/refresh/sentinel PASS\n";
+}
 }
 int main(int argc,char** argv){
     ItemDescriptionValues desc;desc.type=1;desc.param1=30;desc.price=100;
@@ -48,6 +82,7 @@ int main(int argc,char** argv){
     assert(Screens::missionDescription("Original comment",{{2,"E_Tank_01",3,5}},true)=="Original comment\n\nMission Objects\n  - destroy E_Tank_01 (3/5)\n");
     assert(!Screens::missionDescription("Original",{{1,"unresolved",0,1}},false));
     if(argc<2)return 77;
+    fieldMessage(argv[1]);
     Files files(argv[1]);Host host;PreparedTiles tiles("screens-test");Screens ui(files,tiles,host);Random random;
     ScreensState state;ui.refresh(state,0);assert(ui.buttons().empty()&&host.songs.back()=="STAGE1.wav");
     ui.input(PointerPhase::end,{100,100},1,1);assert(host.actions.back().titleTap&&!host.actions.back().titleReady);

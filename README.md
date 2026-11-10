@@ -1,6 +1,6 @@
 # HeavyMach 2 Restoration
 
-HeavyMach 2의 독립 비공개 복원 저장소다. REA/Ghidra로 HD 원본을 분석하고 C++ 공통 코어에 맵·보행·조준·발사·피해·적 차량·음향·진행·장비·저장 모듈을 연결하고 있다. Apple GPU 통합 검사에서 타이틀·슬롯·기지·전투와 저장 후 재실행을 확인했다. 설치 앱의 시작 장면은 보행이며, 정상 게임 전체와 전체 치트 앱은 아직 미완료다. [현재 구현·검증 범위](docs/combat-runtime-restoration-20261110.md)와 [59조건 동시 치트 검증](docs/concurrent-validation-20261110.md)을 따른다.
+HeavyMach 2의 독립 비공개 복원 저장소다. REA/Ghidra로 HD 원본을 분석하고 C++ 공통 코어에 맵·보행·조준·발사·피해·적 차량·음향·진행·장비·저장 모듈을 연결하고 있다. Apple GPU 통합 검사에서 타이틀·슬롯·기지·전투와 저장 후 재실행을 확인했다. Source 앱의 시작 장면은 보행이다. Validation은 구급상자6종·공습3종을 포함한68조건을 함께 실행한다. 정상 게임 전체와 전체 치트 앱은 아직 미완료다. [현재 구현·검증 범위](docs/combat-runtime-restoration-20261110.md)와 [59조건 동시 치트 검증](docs/concurrent-validation-20261110.md)을 따른다.
 
 ## 작업 경계
 
@@ -41,3 +41,5 @@ python3 tools/check_no_ipa.py --all
 [보고 사이트](docs/report-site.md) · [온라인 보행 검증 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/) · [온라인 전체 치트 앱 계획](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/plan.html) — 본인 계정 로그인 필요. 보고서·계획·이미지4장의 실제 서비스 표시를 확인했다.
 
 [온라인 59조건 동시 검증 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/concurrent.html) — C++46개와 iPhone/iPad 각각1,200프레임 결과. 본인 계정 로그인 필요. 게시 본문·링크·결과JSON·이미지의 서비스 응답을 확인했다.
+
+[구급상자·공습·메시지와68조건 검증](docs/quick-items-restoration-20261110.md) — C++48개·양 시뮬레이터1,200프레임. 차량 외 Scene 연결과37개field 진입은 다음 과제다.

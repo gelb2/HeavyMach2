@@ -62,6 +62,9 @@ class WeaponEffects {
 public:
     WeaponEffects(ParticlePool&,WeaponEffectResources);
     void emit(const WeaponInfo&,const WeaponEmission&,const WeaponEffectInput&,WorldRandom&,WeaponEffectsHost&);
+    // Common GobBullet setFire path. Controller emit invokes it after flash;
+    // AirStrike invokes it without flash, then original setDrop before attach.
+    void createProjectile(const WeaponInfo&,const WeaponEmission&,const WeaponEffectInput&,WorldRandom&,WeaponEffectsHost&,bool drop=false);
     void tickTrails(double worldTime,bool paused,WorldRandom&);
     void pruneRemovedTrails(); // Ownership cleanup only; no tick or RNG.
     void appendTrails(Frame&,const MapCamera&)const;

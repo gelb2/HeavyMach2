@@ -179,3 +179,12 @@ HD 1.0.3을 iPhone Air / iOS 26.5 시뮬레이터(97CA5646-36BB-47A9-919A-D78DD6
 - [ ] 초기 일반판 ItemInfo 12021 행의 탭 누락이 원작 reader와 실제 장비 화면에 미치는 영향 확인. 데이터 집계에서 에셋 누락으로 단정하지 않음.
 
 - [x] 여섯 IPA 내부 날짜 조사 완료. 최초 후보 일반 1.0.0. 최후 서명 기록 HD 1.0.3, 최후 실행파일 ZIP 수정시각 일반 2.0.1. 현재 서명 결합 불일치와 재포장 시각 한계를 [전 버전 조사](ipa-version-audit.md)에 기록.
+
+
+## 퀵 아이템 후속
+
+- [x] [구급상자6종의 실제 소비와68조건 동시 검증](quick-items-restoration-20261110.md). 원본 actorHP·슬롯HP·수량·공통particle·게이지·음향·선택/메시지를 연결한다.
+- [x] GobAirStrike3종의 실제 actor·공통 탄환 생성·실제 적HP 감소 연결. Player발사0·수량5→4·plane/marker·음향·수명 검증.
+- [x] 원본 메시지 GPU·SFX10·HP게이지 및 양 시뮬레이터68조건1,200프레임/독립앱 종료 검증. 전체C++48개와 전체Core ASan/UBSan 통과.
+- [ ] 차량만 허용하는 Scene을 공통EnemyActor로 바꿔 현재 진입할 수 없는37개field를 검증.
+- [ ] 원본 지면double-tap/SP100의 Dash 연결과 별도 동시 조건. navigation-only 입력이 우연히 Dash를 발동하지 않도록 정상 입력 간격을 검토.

@@ -20,6 +20,7 @@ public:
     [[nodiscard]] validation::ConcurrentValidation& validation();
     // Same cached frame, one renderer/context, no simulation/UI/VFX advance.
     [[nodiscard]] NSDictionary* verifyRepeatedRendering(CAEAGLLayer*,Size viewport);
+    [[nodiscard]] bool captureStoredFrame(unsigned frame,CAEAGLLayer*);
     void captureNextFrame();
     [[nodiscard]] NSData* pixels()const;
     [[nodiscard]] NSData* legacyComparisonPixels()const;

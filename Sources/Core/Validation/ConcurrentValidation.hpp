@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace hm2::validation {
-enum class ScenarioRole {combat,shop,mission,saveRestart,movementLoot};
+enum class ScenarioRole {combat,shop,mission,saveRestart,movementLoot,aidKit,airStrike};
 struct ScenarioDescription {std::string label;ScenarioRole role=ScenarioRole::combat;std::vector<std::string> weapons;};
 struct NavigationObservation {std::uint64_t frame=0;Vec2 player,world,screen;std::string lootCode;bool accepted=false,blocked=false;};
 struct PickupObservation {std::uint64_t frame=0;std::string code;int type=0,value=0;Vec2 player,item;int creditDelta=0;};
@@ -29,6 +29,17 @@ struct ScenarioObservation {
     int pickupCreditGain=0,inventoryGain=0;
     std::vector<NavigationObservation> navigation;
     std::vector<PickupObservation> pickups;
+    std::string quickItemCode;
+    std::uint64_t quickUseFrame=0,repairSounds=0,quickRepairSounds=0;
+    int quickCountBefore=0,quickCountAfter=0,quickHPBefore=0,quickHPAfter=0,quickMaximumHP=0,quickSlotHPBefore=0,quickSlotHPAfter=0,quickSelectionAfter=-2;
+    unsigned long quickParticleAllocations=0;
+    bool quickTapAccepted=false;
+    std::string strikeItemCode;
+    std::uint64_t strikeUseFrame=0,strikeRequests=0,strikeProjectiles=0,strikeDamageCalls=0,strikeEnemyHPRemoved=0,strikeTicks=0;
+    int strikeCountBefore=0,strikeCountAfter=0;
+    std::size_t activeStrikes=0;
+    Vec2 strikeTarget;
+    bool strikeTapAccepted=false,strikeTargetVisibleEnemy=false;
 };
 struct ButtonActivity {unsigned scenario=0,id=0;int intData=0;bool delivered=false;};
 struct FrameActivity {
@@ -40,6 +51,7 @@ struct FrameActivity {
     bool saveRestart=false,movementLootMoving=false;
     std::uint64_t movementLootEmissions=0,movementLootPickups=0,movementLootInjury=0;
     int movementLootCreditGain=0;
+    std::uint64_t aidKitUses=0,airStrikeUses=0;
 };
 struct ConcurrentMetrics {
     std::uint64_t frames=0,drawFrames=0,underlyingReads=0,underlyingExists=0,warmReadMisses=0,warmExistsMisses=0;
@@ -49,7 +61,7 @@ struct ConcurrentMetrics {
     std::uint64_t framesWithFiveWeaponDefinitions=0,framesWithFiveWeaponKinds=0;
     std::uint64_t menuActionFrames=0,menuFramesWithCombatActivity=0;
     std::uint64_t movementFramesWithCombatActivity=0,pickupFramesWithCombatActivity=0,injuryFramesWithCombatActivity=0;
-    std::uint64_t movementEmissionFramesWithCombatActivity=0;
+    std::uint64_t movementEmissionFramesWithCombatActivity=0,aidKitFramesWithCombatActivity=0,airStrikeFramesWithCombatActivity=0;
     std::vector<std::string> warmReadNames,warmExistsNames;
 };
 struct ValidationHost {
@@ -82,6 +94,8 @@ public:
     // Each session's drawWorld is consumed at most once per tick. A repeated
     // request returns the cached composed frame and never consumes VFX twice.
     Frame drawFrame(Size viewport={1920,1080});
+    // Diagnostic copy after drawFrame, without another world/UI/VFX draw.
+    [[nodiscard]] Frame scenarioFrame(unsigned)const;
     GameSession& session(unsigned);
     ResourceAccess& cachedResources();
     [[nodiscard]] std::size_t scenarioCount()const;

@@ -39,6 +39,30 @@ std::shared_ptr<Trail> WeaponEffects::attachTrail(const TileImage* tile,Vec2 pos
     trail->add(position,time,random);if(endpoint)trail->add(destination,time,random);
     trails_.push_back(trail);host.trailAttached(*trail);return trail;
 }
+void WeaponEffects::createProjectile(const WeaponInfo& info,const WeaponEmission& shot,const WeaponEffectInput& input,WorldRandom& random,WeaponEffectsHost& host,bool drop){
+    if(info.kind==WeaponKind::gun||info.kind==WeaponKind::sniper||static_cast<int>(info.kind)<0||static_cast<int>(info.kind)>8)
+        throw std::runtime_error("Original direct-damage weapon cannot create GobBullet");
+    if(!std::isfinite(input.worldTime)||!std::isfinite(float(input.worldTime)))throw std::runtime_error("Invalid original projectile clock");
+    ProjectileMotion motion(info,shot.muzzle,shot.destination,input.worldTime,random.random(),input.hostile);
+    const int effect=static_cast<int>(info.effect);
+    const TileImage* effectTile=info.effectImage.empty()?nullptr:host.preparedTile(info.effectImage);
+    std::shared_ptr<Trail> trail;
+    if(effect>=4&&effect<=7){
+        TrailConfig config;float wind=0,diffuse=.05f;
+        switch(effect){
+            case 4:config={4,16,64,.2f,.5f};wind=20;break;
+            case 5:config={4,16,64,.3f,.3f};break;
+            case 6:config={32,64,64,.2f,.3f};wind=40;diffuse=.1f;break;
+            case 7:config={1,64,16,0,.05f};break;
+        }
+        trail=attachTrail(effectTile,shot.muzzle,config,wind,diffuse,input.worldTime,random,host,false,{});
+    }
+    const TileImage* image=info.bulletImage.empty()?nullptr:host.preparedTile(info.bulletImage);
+    auto visual=std::make_shared<ProjectileVisual>(info,image,effectTile,trail,input.hostile);
+    host.fireSound(info,{(shot.muzzle.x-input.playerPosition.x)/100.f,(shot.muzzle.y-input.playerPosition.y)/100.f});
+    if(drop)visual->setDrop(true);
+    host.attachProjectile({&info,std::move(motion),image,std::move(trail),input.hostile?.06f:.04f,5,std::move(visual)});
+}
 void WeaponEffects::emit(const WeaponInfo& info,const WeaponEmission& shot,const WeaponEffectInput& input,WorldRandom& random,WeaponEffectsHost& host){
     const bool sniper=info.kind==WeaponKind::sniper;
     if(static_cast<int>(info.kind)<0||static_cast<int>(info.kind)>8)
@@ -47,26 +71,7 @@ void WeaponEffects::emit(const WeaponInfo& info,const WeaponEmission& shot,const
         throw std::runtime_error("Invalid original weapon effect clock");
     flash(shot,input,random,host);
     if(info.kind!=WeaponKind::gun&&!sniper){
-        // setFire consumes its speed RNG after the optional flash reset/tile/
-        // rotation calls. A full visual pool changes the projectile's stream.
-        ProjectileMotion motion(info,shot.muzzle,shot.destination,input.worldTime,random.random(),input.hostile);
-        const int effect=static_cast<int>(info.effect);
-        const TileImage* effectTile=info.effectImage.empty()?nullptr:host.preparedTile(info.effectImage);
-        std::shared_ptr<Trail> trail;
-        if(effect>=4&&effect<=7){
-            TrailConfig config;float wind=0,diffuse=.05f;
-            switch(effect){
-                case 4:config={4,16,64,.2f,.5f};wind=20;break;
-                case 5:config={4,16,64,.3f,.3f};break;
-                case 6:config={32,64,64,.2f,.3f};wind=40;diffuse=.1f;break;
-                case 7:config={1,64,16,0,.05f};break;
-            }
-            trail=attachTrail(effectTile,shot.muzzle,config,wind,diffuse,input.worldTime,random,host,false,{});
-        }
-        const TileImage* image=info.bulletImage.empty()?nullptr:host.preparedTile(info.bulletImage);
-        auto visual=std::make_shared<ProjectileVisual>(info,image,effectTile,trail,input.hostile);
-        host.fireSound(info,{(shot.muzzle.x-input.playerPosition.x)/100.f,(shot.muzzle.y-input.playerPosition.y)/100.f});
-        host.attachProjectile({&info,std::move(motion),image,std::move(trail),input.hostile?.06f:.04f,5,std::move(visual)});
+        createProjectile(info,shot,input,random,host);
         return;
     }
     if(auto* hit=particles_.allocate(input.renderTime,random)){

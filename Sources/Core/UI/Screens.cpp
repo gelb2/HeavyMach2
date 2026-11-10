@@ -7,6 +7,7 @@
 #include <functional>
 #include <map>
 #include <limits>
+#include <numbers>
 #include <stdexcept>
 #include <type_traits>
 #include <variant>
@@ -23,6 +24,13 @@ struct TextNode {std::shared_ptr<Text> text;unsigned layer=7;std::shared_ptr<But
 struct NumberNode {std::shared_ptr<ImageFont> font;TileImage* tile;unsigned layer=7;std::string tag;};
 struct PreviewNode {Frame frame;Vec2 origin;unsigned layer=7;};
 using Node=std::variant<ImageNode,ButtonNode,TextNode,NumberNode,PreviewNode>;
+struct MessagePresentation {
+    VisualImage background;
+    std::shared_ptr<Text> text;
+    std::uint64_t revision=0;
+    float start=0;
+    bool initialized=false,hiding=false,autoHide=false;
+};
 struct TitlePresentation {
     float start=0,bgScale=1.8f,bgRotate=-.05f,titleScale=50,episodeScale=40,bigX=1024;
     Vec2 bgPosition{100,-10};
@@ -39,12 +47,40 @@ struct Screens::Impl {
     std::shared_ptr<std::array<VisualLayer,14>> layers;
     std::shared_ptr<Impl> previous;
     TitlePresentation title;
+    MessagePresentation message;
     std::vector<std::pair<std::shared_ptr<Button>,Vec2>> chooserMoves;
     float now=0;
     Impl(ResourceAccess& r,PreparedTiles& t,ScreensHost& h,const ScreensState& s,float time,std::shared_ptr<Impl> old)
         :resources(r),tiles(t),host(h),state(s),previous(std::move(old)),now(time){
-        if(previous&&previous->state.screen==s.screen){title=previous->title;layers=previous->layers;}
+        if(previous&&previous->state.screen==s.screen){title=previous->title;message=previous->message;layers=previous->layers;}
         else{title.start=time;layers=std::make_shared<std::array<VisualLayer,14>>();}
+    }
+    void hideMessage(){message.hiding=true;message.text.reset();}
+    void syncMessage(){
+        if(state.screen!=ScreenId::field)return;
+        auto& m=message;
+        if(!m.initialized){
+            if(auto* prepared=tile("MessageBox.png",1,2))m.background.tile=tiles.visual(*prepared);
+            m.background.screenPosition={405,158};m.background.show=false;m.initialized=true;
+        }
+        if(m.revision==state.messageRevision)return;m.revision=state.messageRevision;
+        if(!state.messageVisible){hideMessage();return;}
+        m.background.tileNo=unsigned(state.messageBackground);m.background.scale={1,1};m.background.show=true;m.hiding=false;m.autoHide=state.messageAutoHide;
+        m.text.reset();TextRasterRequest request{"GuiGame.message",state.message,"TrebuchetMS-Bold",{512,24},16,TextAlign::center,false,0};
+        auto prepared=host.prepareText(request);if(!prepared.bitmap||!(prepared.bitmap->request==request))throw std::runtime_error("Message text preparation changed the original request");
+        m.text=std::make_shared<Text>(std::move(prepared.image),std::move(prepared.bitmap));m.text->setColor(255,255,255);m.text->position=m.background.screenPosition;
+        m.start=float(state.messageWorldTime);host.sfx(10);
+    }
+    void tickMessage(){
+        auto& m=message;if(state.selectedSlot<0||m.start==0)return;
+        const float age=float(state.messageWorldTime-double(m.start));
+        if(age>.6f){m.background.screenPosition.y=158;if(m.autoHide&&age>10.f)hideMessage();}
+        else{const float q=age/.6f;const float angle=float(double(q)*std::numbers::pi*3.0);const float wave=std::sin(angle);const float amplitude=(.6f-age)*16.f;m.background.screenPosition.y=158.f+std::abs(wave*amplitude);}
+        if(m.hiding){
+            if(m.background.scale.y>.1f){m.background.scale.y+=(.09f-m.background.scale.y)*.25f;if(m.background.scale.y<=.1f)m.background.scale.y=.1f;}
+            else{m.background.scale.x+=(.04f-m.background.scale.x)*.25f;if(m.background.scale.x<=.05f){m.background.show=false;m.start=0;m.hiding=false;}}
+        }
+        if(m.text)m.text->position=m.background.screenPosition;
     }
     TileImage* tile(std::string_view name,unsigned columns=1,unsigned rows=1){
         auto* t=tiles.prepare(resources,name);if(t){t->columns=columns;t->rows=rows;}return t;
@@ -422,6 +458,7 @@ void Screens::Impl::build(){
         }
         default:throw std::runtime_error("Unknown original screen ID");
     }
+    syncMessage();
     dispatcher.subscribe({},[this](const ButtonEvent& event){
         const auto panel=panels.at(event.key.owner);const auto screen=state.screen;const unsigned id=event.key.id;
         // Side effects are requested at their original handler event boundary.
@@ -441,6 +478,7 @@ void Screens::Impl::build(){
 }
 void Screens::Impl::tick(float time,WorldRandom& random){
     if(!std::isfinite(time))throw std::runtime_error("Nonfinite original UI clock");now=time;
+    if(state.screen==ScreenId::field)tickMessage();
     if(state.screen==ScreenId::title){
         auto& t=title;
         t.bgRotate=t.bgRotate<0?t.bgRotate+(.01f-t.bgRotate)/60.f:0;
@@ -490,10 +528,12 @@ void Screens::Impl::append(Frame& frame,float time){
         else if constexpr(std::is_same_v<T,PreviewNode>)for(auto s:n.frame.sprites){s.center=plus(s.center,n.origin);
             for(auto& v:s.strip)v.position=plus(v.position,n.origin);layer.submitNonAtlas(std::move(s));}
     },node);
+    if(state.screen==ScreenId::field&&message.initialized){auto& layer=layers->at(9);layer.submitImage(message.background);if(message.text){Frame textFrame;message.text->append(textFrame);for(auto& s:textFrame.sprites)layer.submitNonAtlas(std::move(s));}}
     for(auto& layer:*layers)layer.drain().appendBatches(frame);
 }
 
 void Screens::Impl::updateHUD(const ScreensState& next){
+    state.messageWorldTime=next.messageWorldTime;state.selectedSlot=next.selectedSlot;
     state.hpBarWidth=next.hpBarWidth;state.hpBarFilled=next.hpBarFilled;
     state.spBarWidth=next.spBarWidth;state.spBarFilled=next.spBarFilled;state.boosterReady=next.boosterReady;
     state.experienceRate=next.experienceRate;state.enemyHpRate=next.enemyHpRate;

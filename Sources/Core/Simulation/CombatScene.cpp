@@ -9,6 +9,7 @@
 #include "Core/Simulation/ProjectileImpact.hpp"
 #include "Core/Simulation/ProjectileVisual.hpp"
 #include "Core/Simulation/WeaponEffects.hpp"
+#include "Core/Simulation/AirStrike.hpp"
 #include <algorithm>
 #include <array>
 #include <bit>
@@ -28,7 +29,7 @@ VisibilityState imageVisibility(const TileImage* tile){
     return out;
 }
 }
-struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost {
+struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost,AirStrikeHost {
     struct Enemy {
         std::uint64_t id=0;std::size_t spawner=0;EnemyVehicle actor;
         VisibilityState root;
@@ -50,6 +51,7 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost {
         std::shared_ptr<Projectile> projectile;
         VisibilityState visibility;
         bool drawVisible=false;
+        std::shared_ptr<AirStrike> airStrike;
     };
     CombatSceneHooks& hooks;
     CombatMetrics metrics;
@@ -75,6 +77,8 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost {
     std::vector<PlayerWeapon> playerWeapons;
     std::vector<VisibilityState> playerParts;
     VisibilityState playerRoot;
+    std::array<VisibilityState,2> playerHPVisible;
+    float playerHPScale=1,playerHPX=-1;
     std::array<VisibilityState,64> particleVisible;
     ParticlePool pool;
     std::unique_ptr<WeaponEffects> effects;
@@ -116,7 +120,7 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost {
         for(std::size_t i=0;i<playerMounts.size();++i)playerAnimationSlots.push_back(i);
         tiles.prepareWorldEffects(r);
         if(auto* t=tiles.prepare(r,"Target.png")){t->columns=2;t->rows=1;}
-        for(const auto* name:{"BulletShell.png","Efx_Trail04.png","Efx_Trail02.png","Efx_Nuclear.png"})tiles.prepare(r,name);
+        for(const auto* name:{"Airplane.png","BulletShell.png","Efx_Trail04.png","Efx_Trail02.png","Efx_Nuclear.png"})tiles.prepare(r,name);
         for(const auto& [name,w]:weapons.all()){
             metrics.playerWeaponEmissions.emplace(name,0);metrics.enemyWeaponEmissions.emplace(name,0);
             if(!w.bulletImage.empty())tiles.prepare(r,w.bulletImage);
@@ -131,6 +135,8 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost {
         for(const auto& [name,part]:models.parts()){
             (void)name;if(auto* tile=tiles.prepare(r,partImage(part))){tile->columns=std::max(1u,part.tileCount);tile->rows=1;}
         }
+        if(auto* tile=tiles.prepare(r,"HPGauge.png")){tile->columns=1;tile->rows=2;}
+        for(auto& visible:playerHPVisible)visible=imageVisibility(tiles.lookup("HPGauge.png"));
         hooks.prepareTiles(r,tiles);
         prepareParts(r,playerMounts,playerParts);
         for(std::size_t i=0;i<playerMounts.size();++i){
@@ -241,7 +247,7 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost {
             amount=hooks.playerDamage(amount,rng());
             hp=std::bit_cast<std::int32_t>(std::uint32_t(hp)-std::uint32_t(amount));
             if(hp<1){hp=0;baseCrash(playerMotion.state().position);clearPlayerTarget();auto s=playerMotion.state();s.state=2;playerMotion=BipodMotion(s);hooks.playerDied();}
-            soundID(15+random()%3,damageSoundPosition(playerMotion.state().position));hooks.playerHPChanged(hp);return;
+            soundID(15+random()%3,damageSoundPosition(playerMotion.state().position));hooks.playerHPChanged(hp);refreshPlayerHPGauge();return;
         }
         auto* e=enemy(id);if(!e)return;
         auto& state=e->actor.state();state.hp=std::bit_cast<std::int32_t>(std::uint32_t(state.hp)-std::uint32_t(amount));
@@ -270,9 +276,25 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost {
         void damage(const WeaponInfo&,std::uint64_t id,int amount)override{scene.damage(id,amount);}
         TileImage* preparedTile(std::string_view name)override{return scene.tiles.lookup(name);}
         void fireSound(const WeaponInfo& info,Vec2 p)override{scene.fireSound(info,p);}
-        void attachProjectile(WeaponProjectile p)override{++scene.metrics.projectilesCreated;scene.dynamic.push_back({{},std::make_shared<Projectile>(std::move(p)),{},false});}
-        void trailAttached(const Trail&)override{auto trail=scene.effects->trails().back();scene.dynamic.push_back({trail,{},imageVisibility(trail->state().tile),false});}
+        void attachProjectile(WeaponProjectile p)override{++scene.metrics.projectilesCreated;scene.dynamic.push_back({{},std::make_shared<Projectile>(std::move(p)),{},false,{}});}
+        void trailAttached(const Trail&)override{auto trail=scene.effects->trails().back();scene.dynamic.push_back({trail,{},imageVisibility(trail->state().tile),false,{}});}
     };
+    TileImage* preparedTile(std::string_view name)override{return tiles.lookup(name);}
+    Particle* allocateParticle(float time)override{auto* p=pool.allocate(time,rng());metrics.particleAllocations=pool.allocations();return p;}
+    void sound(unsigned id)override{soundID(id,{});}
+    void createBullet(const AirStrikeBullet& shot)override{
+        if(!shot.weapon)throw std::logic_error("AirStrike emitted without its original weapon");
+        WeaponEffectInput input;input.worldTime=clock.worldTime();input.renderTime=clock.renderTime();input.playerPosition=playerMotion.state().position;input.hostile=shot.toPlayer;
+        EffectsHost host(*this,input.hostile,0);
+        // Synchronous original setFire consumes speed/trail RNG and sound;
+        // setDrop(true) follows it, then addChild. No controller flash/bonus.
+        effects->createProjectile(*shot.weapon,{shot.source,shot.destination,shot.angle},input,rng(),host,shot.drop);
+        ++metrics.airStrikeProjectiles;
+    }
+    void startAirStrike(const WeaponInfo* weapon,float delay,Vec2 target){
+        auto actor=std::make_shared<AirStrike>(weapon,delay,target,playerMotion.state().position,clock.worldTime(),clock.renderTime(),*this,rng());
+        dynamic.push_back({{},{},{},false,std::move(actor)});++metrics.airStrikeRequests;
+    }
     void emitWeapon(const WeaponInfo& w,const WeaponEmission& shot,WeaponEffectInput input,std::uint64_t owner){
         ++metrics.emissions;if(input.hostile)++metrics.enemyEmissions;else ++metrics.playerEmissions;
         ++(input.hostile?metrics.enemyWeaponEmissions:metrics.playerWeaponEmissions).at(w.part);
@@ -421,9 +443,21 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost {
         equipmentCodes=std::move(codes);
         if(newInfo!=weapons.all().end())playerWeapons.push_back({index,&newInfo->second,WeaponController(clock.worldTime()),1,slot==2});
     }
+    void refreshPlayerHPGauge(){
+        playerHPScale=float(hp)/float(hooks.playerMaximumHP());playerHPX=playerHPScale*21.f-21.f;
+    }
+    void collectPlayerHPGauge(){
+        const auto* tile=tiles.lookup("HPGauge.png");if(!tile)return;
+        const auto root=playerMotion.state().position;
+        for(unsigned i=0;i<2;++i){const Vec2 position{root.x+(i?playerHPX:0.f),root.y+(i?31.f:30.f)};
+            VisualImage image;image.tile=tiles.visual(*tile);image.tileNo=i?0:1;image.useAtlas=true;image.blendType=0;
+            image.screenPosition=camera.toScreen(position);image.scale={i?playerHPScale:1.f,1.f};image.isInScreen=playerHPVisible[i].inScreen;
+            layers[5].submitImage(image);refreshVisibility(playerHPVisible[i],position,&camera);
+        }
+    }
     void tickPlayer(){
         if(hp>0&&hp<hooks.playerMaximumHP()&&double(hpRefreshTime)+.3<clock.worldTime()){
-            ++hp;hpRefreshTime=float(clock.worldTime());
+            ++hp;hpRefreshTime=float(clock.worldTime());refreshPlayerHPGauge();
         }
         hooks.playerProgressTick();
         if(!paused&&(playerMotion.state().state==0||playerMotion.state().state==1)&&playerRoot.inScreen){
@@ -435,6 +469,7 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost {
                 targetCheckTime=float(clock.worldTime());
             }
         }
+        collectPlayerHPGauge();
         // Bipod owns angles and foot/body offsets. Preserve controller recoil
         // as a separate addition rather than replacing it with the gait offset.
         EquipmentCodes codes;for(std::size_t i=0;i<4;++i)codes[i]=equipmentCodes[i];
@@ -467,7 +502,12 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost {
         ImpactTarget bot(std::size_t)const override{throw std::out_of_range("No restored bots in this scene");}
         std::uint64_t selectedEnemy()const override{return scene.targetID;}
         int damageBonus()const override{return scene.hooks.damageBonus();}
-        void damage(std::uint64_t id,int amount)override{scene.damage(id,amount);}
+        void damage(std::uint64_t id,int amount)override{
+            const bool airStrike=projectile.value.visual->state().drop;
+            const auto* victim=airStrike&&id!=1?scene.enemy(id):nullptr;const int before=victim?victim->actor.state().hp:0;
+            if(airStrike)++scene.metrics.airStrikeDamageCalls;scene.damage(id,amount);
+            if(victim&&victim->actor.state().hp<before)scene.metrics.airStrikeEnemyHPRemoved+=std::uint64_t(before-victim->actor.state().hp);
+        }
         void finishTrail(Vec2 position)override{if(projectile.value.trail)projectile.value.trail->add(position,scene.clock.worldTime(),scene.rng());}
         void nuclearFlash(Vec2 position)override{
             // 0x71d0, CFString0x5e0fc -> Efx_Nuclear.png.
@@ -489,8 +529,8 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost {
     void tickDynamic(){
         for(std::size_t i=0;i<dynamic.size();){
             // Copy shared ownership before callbacks append/reallocate this list.
-            auto trail=dynamic[i].trail;auto projectile=dynamic[i].projectile;
-            if((trail&&trail->state().removed)||(projectile&&projectile->value.motion.state().removed)){
+            auto trail=dynamic[i].trail;auto projectile=dynamic[i].projectile;auto airStrike=dynamic[i].airStrike;
+            if((trail&&trail->state().removed)||(projectile&&projectile->value.motion.state().removed)||(airStrike&&airStrike->state().removed)){
                 dynamic.erase(dynamic.begin()+std::ptrdiff_t(i));continue;
             }
             if(trail){trail->tick(clock.worldTime(),paused,rng());refreshVisibility(dynamic[i].visibility,trail->state().position,&camera);dynamic[i].drawVisible=trail->state().show&&dynamic[i].visibility.inScreen;}
@@ -508,6 +548,11 @@ struct CombatScene::Impl:EnemyVehicleHost,EnemySpawnerHost {
                 const auto pos=projectile->value.motion.state().position;
                 refreshVisibility(projectile->effect,pos,&camera);refreshVisibility(projectile->bullet,pos,&camera);refreshVisibility(projectile->root,pos,&camera);
                 dynamic[i].drawVisible=projectile->root.inScreen&&!projectile->value.motion.state().removed;
+            }
+            else if(airStrike){
+                // World.tick calls QobBase during pause. AirStrike itself has
+                // no pause gate, unlike GobBullet/Trail; frozen world time only.
+                ++metrics.airStrikeTicks;airStrike->tick(clock.worldTime(),&camera);airStrike->collect(layers[7],camera,tiles);
             }
             ++i;
         }
@@ -589,6 +634,12 @@ bool CombatScene::input(PointerPhase p,Vec2 v,std::uintptr_t id){return impl_->i
 bool CombatScene::selectEnemy(std::uint64_t id,bool append){return impl_->select(id,append);}
 void CombatScene::setFiring(bool left,bool right){impl_->leftFire=left;impl_->rightFire=right;}
 void CombatScene::equipWeapon(EquipmentCodes codes,unsigned slot){impl_->equipWeapon(codes,slot);}
+void CombatScene::refreshPlayerHPGauge(){impl_->refreshPlayerHPGauge();}
+Particle* CombatScene::allocateParticle(){auto* particle=impl_->pool.allocate(impl_->clock.renderTime(),impl_->rng());impl_->metrics.particleAllocations=impl_->pool.allocations();return particle;}
+const TileImage* CombatScene::preparedTile(std::string_view name)const{return impl_->tiles.lookup(name);}
+bool CombatScene::isPaused()const{return impl_->paused;}
+void CombatScene::startAirStrike(const WeaponInfo* weapon,float delay,Vec2 target){impl_->startAirStrike(weapon,delay,target);}
+std::size_t CombatScene::activeAirStrikes()const{std::size_t count=0;for(const auto& node:impl_->dynamic)if(node.airStrike&&!node.airStrike->state().removed)++count;return count;}
 void CombatScene::setPlayerHP(int hp){impl_->hp=hp;}
 void CombatScene::setIsSave(bool value){impl_->saveAllowed=value;}
 bool CombatScene::isSave()const{return impl_->saveAllowed;}

@@ -11,6 +11,9 @@
 namespace hm2 {
 class PreparedTiles;
 class VisualLayer;
+struct WeaponInfo;
+class Particle;
+struct TileImage;
 struct CombatEnemySnapshot {std::uint64_t id=0;std::string name;Vec2 position;int hp=0;bool targetingPlayer=false,corpse=false;std::size_t activeParts=0;};
 struct CombatPlayerWeaponSnapshot {
     unsigned inventoryEquipSlot=0,currentMuzzle=1,parentSocket=0;
@@ -22,6 +25,7 @@ struct CombatPlayerWeaponSnapshot {
     float fireTime=0,fireBound=0;
 };
 struct CombatMetrics {
+    std::uint64_t airStrikeRequests=0,airStrikeProjectiles=0,airStrikeDamageCalls=0,airStrikeTicks=0,airStrikeEnemyHPRemoved=0;
     std::uint64_t randomCalls=0,emissions=0,damageCalls=0,projectilesCreated=0,projectilesRemoved=0,soundRequests=0;
     std::uint64_t playerEmissions=0,enemyEmissions=0,enemyTicks=0,projectileTicks=0,drawCalls=0,kills=0;
     unsigned long particleAllocations=0;
@@ -75,6 +79,12 @@ public:
     bool selectEnemy(std::uint64_t,bool append=false);
     void setFiring(bool left,bool right);
     void equipWeapon(EquipmentCodes,unsigned inventoryEquipSlot); // Only2/3.
+    void refreshPlayerHPGauge();
+    Particle* allocateParticle(); // Existing world pool/reset/RNG only.
+    [[nodiscard]] const TileImage* preparedTile(std::string_view)const;
+    [[nodiscard]] bool isPaused()const;
+    void startAirStrike(const WeaponInfo*,float fireDelay,Vec2 target);
+    [[nodiscard]] std::size_t activeAirStrikes()const;
     void setPlayerHP(int); // Original setHp: field writer; no damage/death event.
     void setIsSave(bool); // Original0xfea0 field writer, independent of HP.
     [[nodiscard]] bool isSave()const;

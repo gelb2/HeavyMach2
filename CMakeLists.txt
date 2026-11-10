@@ -16,6 +16,7 @@ add_library(HeavyMach2Core STATIC
     Sources/Core/Data/SaveData.cpp
     Sources/Core/Progression/Progression.cpp
     Sources/Core/Progression/Equipment.cpp
+    Sources/Core/Progression/QuickItems.cpp
     Sources/Core/Session/GameSession.cpp
     Sources/Core/Validation/ConcurrentValidation.cpp
     Sources/Core/Simulation/TerrainCollision.cpp
@@ -35,6 +36,7 @@ add_library(HeavyMach2Core STATIC
     Sources/Core/Simulation/EnemyActors.cpp
     Sources/Core/Simulation/EnemyVehicle.cpp
     Sources/Core/Simulation/CombatScene.cpp
+    Sources/Core/Simulation/AirStrike.cpp
     Sources/Core/Simulation/ObjectCollision.cpp
     Sources/Core/UI/Text.cpp
     Sources/Core/UI/Screens.cpp
@@ -150,6 +152,12 @@ if(BUILD_TESTING)
     target_link_libraries(SaveTests PRIVATE HeavyMach2Core)
     target_compile_options(SaveTests PRIVATE -UNDEBUG)
     add_test(NAME OriginalHDSaveEnvelope COMMAND SaveTests)
+    add_executable(AirStrikeTests tests/AirStrikeTests.cpp)
+    target_link_libraries(AirStrikeTests PRIVATE HeavyMach2Core)
+    target_compile_options(AirStrikeTests PRIVATE -UNDEBUG)
+    if(HM2_HD_RESOURCES)
+        add_test(NAME OriginalAirStrikeActor COMMAND AirStrikeTests "${HM2_HD_RESOURCES}")
+    endif()
     add_executable(CombatSceneTests tests/CombatSceneTests.cpp)
     target_link_libraries(CombatSceneTests PRIVATE HeavyMach2Core)
     target_compile_options(CombatSceneTests PRIVATE -UNDEBUG)
@@ -166,6 +174,10 @@ if(BUILD_TESTING)
     add_test(NAME OriginalExperienceRules COMMAND ProgressionTests)
     if(HM2_HD_RESOURCES)
         add_test(NAME OriginalInventoryMissionsAndDrops COMMAND ProgressionTests "${HM2_HD_RESOURCES}")
+        add_executable(QuickItemsTests tests/QuickItemsTests.cpp)
+        target_link_libraries(QuickItemsTests PRIVATE HeavyMach2Core)
+        target_compile_options(QuickItemsTests PRIVATE -UNDEBUG)
+        add_test(NAME OriginalQuickItemConsumers COMMAND QuickItemsTests "${HM2_HD_RESOURCES}")
         add_executable(EquipmentTests tests/EquipmentTests.cpp)
         target_link_libraries(EquipmentTests PRIVATE HeavyMach2Core)
         target_compile_options(EquipmentTests PRIVATE -UNDEBUG)

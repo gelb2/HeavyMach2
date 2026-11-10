@@ -53,6 +53,11 @@ struct ScreensState {
     bool inventoryVisible=false,missionVisible=false,airliftVisible=false,systemVisible=false,tradeVisible=false;
     bool buyMode=false,pathMode=false;
     std::string selectedWeaponLeft,selectedWeaponRight,message,missionTitle,missionBody;
+    // GuiGame setMessage/hideMessage calls have identity even when text repeats.
+    std::uint64_t messageRevision=0;
+    bool messageVisible=false,messageAutoHide=false;
+    int messageBackground=0;
+    double messageWorldTime=0;
     std::string tradeItemId;
     int tradeCount=0,tradePrice=0;
     Frame machPreview; // Actual equipped Player assembly, no stand-in artwork.
