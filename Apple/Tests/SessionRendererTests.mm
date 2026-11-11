@@ -72,6 +72,9 @@ UIImage* image(NSData* rgba,CGSize size){
         XCTAssertTrue(tap(*runtime,1009,layer));XCTAssertTrue(tap(*runtime,1001,layer));XCTAssertEqual(requestedNames,1u);
         XCTAssertFalse(runtime->provideName(0,"01234567890","us"));XCTAssertTrue(runtime->provideName(0,"MACH","us"));XCTAssertTrue(tap(*runtime,1001,layer));runtime->tick();runtime->draw(layer);
         XCTAssertEqual(runtime->session().state().screen,hm2::ui::ScreenId::base);XCTAssertEqual(runtime->session().metrics().saveCompletions,3u);
+        XCTAssertTrue(runtime->session().help()&&runtime->session().help()->state().page==0);
+        runtime->input(hm2::PointerPhase::begin,{384,512},101);runtime->input(hm2::PointerPhase::end,{384,512},101);
+        XCTAssertEqual(runtime->session().help(),nullptr);
         NSData* saved=[NSData dataWithContentsOfURL:save];XCTAssertEqual(saved.length,hm2::SaveData::byteCount);
         XCTAssertTrue(tap(*runtime,2005,layer));XCTAssertTrue(tap(*runtime,2005,layer));if(runtime->session().help()){runtime->input(hm2::PointerPhase::begin,{700,512},101);runtime->input(hm2::PointerPhase::end,{700,512},101);}runtime->tick();runtime->draw(layer);
         XCTAssertEqual(runtime->session().state().screen,hm2::ui::ScreenId::field);XCTAssertNotEqual(runtime->session().battle(),nullptr);

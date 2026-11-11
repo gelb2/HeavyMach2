@@ -34,13 +34,14 @@ VisibilityState imageVisibility(const TileImage* tile){
 }
 struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,DashStartHost,DashMotionHost,WorldNavigationEvents {
     struct Enemy {
-        std::uint64_t id=0;std::size_t spawner=0;EnemyActor actor;
+        std::uint64_t id=0;std::optional<std::size_t> spawner;EnemyActor actor;
         VisibilityState root;
         std::vector<VisibilityState> parts,shadows;
         float crashTime=0,targetScale=1,targetAlpha=1,targetAngle=0;bool removed=false,removePending=false,targetShow=false;
         VisibilityState targetVisibility;
-        Enemy(std::uint64_t n,std::size_t s,const Models& m,const Weapons& w,const MachineInfo& i,Vec2 p,double t,WorldRandom& r)
-        :id(n),spawner(s),actor(m,w,i,p,t,r,p),parts(actor.mounts().size()),shadows(actor.mounts().size()){}
+        // addEnemyMach sets layer 1. addMissionObjects overrides it to 5.
+        Enemy(std::uint64_t n,std::optional<std::size_t> s,const Models& m,const Weapons& w,const MachineInfo& i,Vec2 p,double t,WorldRandom& r)
+        :id(n),spawner(s),actor(m,w,i,p,t,r,s?std::optional<Vec2>(p):std::nullopt,s?1u:5u),parts(actor.mounts().size()),shadows(actor.mounts().size()){}
     };
     struct FriendlyBot {
         std::uint64_t id;Bot actor;VisibilityState root;std::vector<VisibilityState> parts,shadows;std::array<VisibilityState,2> gauge;std::uint64_t itemCaptures=0,hpRemoved=0,enemyHPRemoved=0;
@@ -92,6 +93,12 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
     VisibilityState playerRoot;
     std::array<VisibilityState,2> playerHPVisible;
     float playerHPScale=1,playerHPX=-1;
+    struct PickupNotice {
+        std::optional<ui::Text> label;
+        float start=0,height=50;
+        Vec2 scale{1,1};
+        bool visible=false;
+    } pickupNotice;
     std::array<VisibilityState,64> particleVisible;
     ParticlePool pool;
     std::unique_ptr<WeaponEffects> effects;
@@ -130,15 +137,13 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
             if(nearest>std::abs(512.f-gate->position.y))playerDirection=-std::numbers::pi_v<float>/2;
             playerPosition.x+=std::cos(playerDirection)*50.f;playerPosition.y+=std::sin(playerDirection)*50.f;
         }
-        playerMotion=BipodMotion(playerPosition,playerDirection,equipment.item(setup.equipment[1]).parameter3);
-        playerContact.position=playerPosition;
         playerMounts=equipment.mounts(models,setup.equipment);playerParts.resize(playerMounts.size());playerShadows.resize(playerMounts.size());
         playerKind=machines.machine("Player").kind;
         for(std::size_t i=0;i<playerMounts.size();++i)playerAnimationSlots.push_back(i);
         tiles.prepareWorldEffects(r);
         movementVisual.prepare(r,tiles);navigation.observe(this);
         if(auto* t=tiles.prepare(r,"Target.png")){t->columns=2;t->rows=1;}
-        for(const auto* name:{"Efx_Dash.png","Efx_LevelUp.png","Airplane.png","BulletShell.png","Efx_Trail04.png","Efx_Trail02.png","Efx_Nuclear.png"})tiles.prepare(r,name);
+        for(const auto* name:{"Efx_Dash.png","Efx_LevelUp.png","Airplane.png","BulletShell.png","Efx_Trail04.png","Efx_Trail02.png","Efx_Nuclear.png","PickItem.png"})tiles.prepare(r,name);
         for(const auto& [name,w]:weapons.all()){
             metrics.playerWeaponEmissions.emplace(name,0);metrics.enemyWeaponEmissions.emplace(name,0);
             if(!w.bulletImage.empty())tiles.prepare(r,w.bulletImage);
@@ -173,6 +178,19 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
             const auto mounts=models.modelMounts(s.model);std::vector<VisibilityState> unused(mounts.size()),shadow(mounts.size());prepareParts(r,mounts,unused,shadow);
         }
         WorldGateNames gateNames(r);gates=std::make_unique<WorldGates>(r,tiles,map.map().gates,setup.openEventGate,gateNames,[this](const ui::TextRasterRequest& request){return hooks.prepareWorldText(request);});
+        // setStage calls addMissionObjects after openMap and before Player/BOT.
+        for(const auto& object:setup.missionObjects){
+            if(object.kind==MissionFieldObject::Kind::item){
+                hooks.placeMissionItem(object.code,object.itemPosition,rng());
+                continue;
+            }
+            const float x=randomUnit(rng())*600.f-300.f;
+            const float y=randomUnit(rng())*600.f-300.f;
+            auto& enemy=addEnemy(machines.machine(object.code),{x,y},std::nullopt,false);
+            enemy.actor.setMovementRates(1.5f,50.f);
+        }
+        playerMotion=BipodMotion(playerPosition,playerDirection,equipment.item(setup.equipment[1]).parameter3);
+        playerContact.position=playerPosition;
         effects=std::make_unique<WeaponEffects>(pool,WeaponEffectResources{
             tiles.lookup("Efx_Fire.png"),tiles.lookup("Efx_Damage.png"),tiles.lookup("BulletShell.png"),tiles.lookup("Efx_Trail04.png"),tiles.lookup("Efx_Trail02.png")});
         for(auto& visible:particleVisible)visible.visual=true;
@@ -224,12 +242,17 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
             image.screenPosition=camera.toScreen(position);image.isInScreen=b->gauge[child].inScreen;layers[5].submitImage(image);refreshVisibility(b->gauge[child],position,&camera);}
     }
     bool inCamera(Vec2 position)const override{return hm2::inCamera(VisibilityState{},position,&camera);}
-    bool spawn(const MapSpawner& s,bool boss)override{
-        auto e=std::make_unique<Enemy>(nextID++,spawning,models,weapons,machines.machine(s.model),s.position,clock.worldTime(),rng());
+    Enemy& addEnemy(const MachineInfo& info,Vec2 position,std::optional<std::size_t> source,bool boss){
+        auto e=std::make_unique<Enemy>(nextID++,source,models,weapons,info,position,clock.worldTime(),rng());
         e->actor.setBoss(boss);++metrics.enemySpawnsByKind.at(e->actor.info().kind);
         for(std::size_t i=0;i<e->parts.size();++i){const auto& part=models.part(e->actor.mounts()[i].part);e->parts[i]=originalPartVisibility(tiles.lookup(partImage(part)),part);e->shadows[i]=imageVisibility(part.tileCount?tiles.lookupShadow(partImage(part)):nullptr);}
         e->targetVisibility=imageVisibility(tiles.lookup("Target.png"));
-        actors.push_back(std::move(e));return true;
+        actors.push_back(std::move(e));
+        return *actors.back();
+    }
+    bool spawn(const MapSpawner& s,bool boss)override{
+        addEnemy(machines.machine(s.model),s.position,spawning,boss);
+        return true;
     }
     void soundID(unsigned id,Vec2 p){++metrics.soundRequests;hooks.soundID(id,p);}
     void fireSound(const WeaponInfo& w,Vec2 p)override{++metrics.soundRequests;hooks.sound(w.fireSound,p);}
@@ -316,7 +339,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
             for(auto& b:botActors)b->actor.clearTargetIf(id,*this);
             hooks.dropEnemyLoot(e->actor.info(),e->actor.motion().position,clock.worldTime(),clock.renderTime(),rng());
             e->actor.removePartsForCorpse();
-            spawners[e->spawner].enemyDead(clock.worldTime(),rng());
+            if(e->spawner)spawners[*e->spawner].enemyDead(clock.worldTime(),rng());
             std::erase(selection,id);
             if(wasFirst&&!selection.empty())setTarget(selection.front());
             hooks.rewardEnemyKill(e->actor.info(),e->actor.motion().position,clock.worldTime(),clock.renderTime(),rng());
@@ -526,7 +549,45 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
             layers[5].submitImage(image);refreshVisibility(playerHPVisible[i],position,&camera);
         }
     }
+    void tickPickupNotice(){
+        auto& notice=pickupNotice;
+        if(notice.start==0)return;
+        const float age=float(clock.worldTime()-double(notice.start));
+        if(age<=.6f){
+            const float angle=float(double(age/.6f)*std::numbers::pi*3.0);
+            notice.height=50.f+std::abs(std::sin(angle)*((.6f-age)*20.f));
+        }else{
+            notice.height=50.f;
+            if(age>2.5f){
+                notice.scale.x+=.1f;
+                notice.scale.y-=.1f;
+                if(notice.scale.y<=0){notice.visible=false;notice.start=0;}
+            }
+        }
+    }
+    void collectPickupNotice(){
+        auto& notice=pickupNotice;
+        if(!notice.visible)return;
+        const auto* tile=tiles.lookup("PickItem.png");if(!tile)return;
+        const auto root=playerMotion.state().position;
+        const Vec2 world{root.x,root.y+notice.height};
+        if(!hm2::inCamera(imageVisibility(tile),world,&camera))return;
+        VisualImage background;
+        background.tile=tiles.visual(*tile);
+        background.screenPosition=camera.toScreen(world);
+        background.scale=notice.scale;
+        auto& layer=layers[3];
+        layer.submitImage(background);
+        if(notice.label){
+            notice.label->position=background.screenPosition;
+            notice.label->scale.y=notice.scale.y;
+            Frame frame;
+            notice.label->append(frame);
+            for(auto& sprite:frame.sprites)layer.submitNonAtlas(std::move(sprite));
+        }
+    }
     void tickPlayer(){
+        tickPickupNotice();
         if(hp>0&&hp<hooks.playerMaximumHP()&&double(hpRefreshTime)+.3<clock.worldTime()){
             ++hp;hpRefreshTime=float(clock.worldTime());refreshPlayerHPGauge();
         }
@@ -555,6 +616,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
             }
         }
         collectPlayerHPGauge();
+        collectPickupNotice();
         // Bipod owns angles and foot/body offsets. Preserve controller recoil
         // as a separate addition rather than replacing it with the gait offset.
         EquipmentCodes codes;for(std::size_t i=0;i<4;++i)codes[i]=equipmentCodes[i];
@@ -679,7 +741,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
             ++i;
         }
         hooks.tickItems(clock.worldTime(),clock.renderTime(),playerMotion.state().position,rng());
-        hooks.collectItems(layers[1],camera,tiles);
+        hooks.collectItems(layers[0],layers[1],camera,tiles);
         tickPool();
         for(spawning=0;spawning<spawners.size();++spawning)spawners[spawning].tick(clock.worldTime(),playerMotion.state().position,*this);
         gates->tick(playerMotion.state().position,[this]{return paused;},[this](const MapGate& gate){hooks.linkGate(gate);},&camera);gates->collect(layers[1],&camera);
@@ -737,6 +799,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
 };
 ui::PreparedScreenText CombatSceneHooks::prepareWorldText(const ui::TextRasterRequest&){throw std::logic_error("Missing original world text host");}
 void CombatSceneHooks::setPlayerSpecial(float){throw std::logic_error("Missing actual Player SP consumer");}
+void CombatSceneHooks::placeMissionItem(std::string_view,Vec2,WorldRandom&){throw std::logic_error("Missing mission item consumer");}
 CombatScene::CombatScene(ResourceAccess& r,CombatSceneHooks& h,CombatSetup setup):impl_(std::make_unique<Impl>(r,h,setup)){}
 CombatScene::~CombatScene()=default;
 void CombatScene::tick(){impl_->tick();}
@@ -751,6 +814,19 @@ void CombatScene::showLevelUpEffect(){
     const auto* tile=p.tiles.lookup("Efx_LevelUp.png");if(!tile)throw std::logic_error("Missing prepared original level-up effect");
     auto& s=effect->state();s.tile=tile;s.tileNumber=0;s.life=2.f;s.blendType=2;s.scale={.5f,.5f};s.scaleVelocity=.006f;s.position=p.playerMotion.state().position;
     effect->start(p.clock.renderTime());++p.metrics.levelUpEffectsCreated;
+}
+void CombatScene::beginPickupNotice(){
+    auto& notice=impl_->pickupNotice;
+    notice.scale={1,1};
+    notice.visible=true;
+    notice.label.reset();
+}
+void CombatScene::setPickupNoticeText(std::string_view text,double worldTime){
+    ui::TextRasterRequest request{"Player.pickup",std::string(text),"Arial",{120,14},12,ui::TextAlign::center,false,0};
+    auto prepared=impl_->hooks.prepareWorldText(request);
+    if(!prepared.bitmap||!(prepared.bitmap->request==request))throw std::runtime_error("Pickup text preparation changed the original request");
+    impl_->pickupNotice.label.emplace(std::move(prepared.image),std::move(prepared.bitmap));
+    impl_->pickupNotice.start=float(worldTime);
 }
 Particle* CombatScene::allocateParticle(){auto* particle=impl_->pool.allocate(impl_->clock.renderTime(),impl_->rng());impl_->metrics.particleAllocations=impl_->pool.allocations();return particle;}
 const TileImage* CombatScene::preparedTile(std::string_view name)const{return impl_->tiles.lookup(name);}
@@ -772,6 +848,14 @@ const MapCamera& CombatScene::camera()const{return impl_->camera;}
 const TerrainCollision& CombatScene::terrain()const{return impl_->terrain;}
 const CombatMetrics& CombatScene::metrics()const{return impl_->metrics;}
 std::span<const WorldGateSnapshot> CombatScene::gates()const{return impl_->gates->snapshots();}
+void CombatScene::collectRadarMarks(std::vector<ui::RadarMark>& marks)const{
+    const auto& p=*impl_;
+    // DlgRader.draw0x23d28 visits Player, listBot and actual listGate in order.
+    marks.clear();
+    marks.push_back({p.playerMotion.state().position,0});
+    for(const auto& bot:p.botActors)marks.push_back({bot->actor.motion().position,1});
+    for(const auto& gate:p.gates->snapshots())marks.push_back({gate.definition.position,2});
+}
 CombatDashSnapshot CombatScene::dashState()const{return {impl_->dashMotion.velocity(),impl_->dashMotion.lastEffectPosition(),impl_->dashGesture.tapTime(),impl_->hooks.playerSpecial(),impl_->navigation.pointer(),impl_->navigation.count(),impl_->playerContact.current};}
 std::vector<CombatEnemySnapshot> CombatScene::enemies()const{
     std::vector<CombatEnemySnapshot> out;

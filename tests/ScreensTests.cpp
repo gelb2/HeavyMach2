@@ -122,6 +122,97 @@ void fieldNameRange(const char* root){
     assert(std::find(host.ids.begin(),host.ids.end(),6)==host.ids.end()); // setOutOfRange request/SFX gate belongs to the actual Session.
     std::cout<<"FIELD_NAME_RANGE nameReplacement/gaugeHide/sharedRNG/f32Boundaries/initialZeroStampBlink/hiddenTick/persistentGeneration/noWarmIO PASS\n";
 }
+void fieldCredits(const char* root){
+    Files files(root);Host host;PreparedTiles tiles("field-credits-test");Screens ui(files,tiles,host);Random random;
+    ScreensState state;state.screen=ScreenId::field;state.hasWorkingSlot=true;state.fieldUIRevision=1;state.credits=500;
+    ui.refresh(state);
+    auto displayed=[&]{
+        auto frame=draw(ui);const auto* glyphs=sprite(frame,"NumSet01b.png");
+        assert(glyphs&&glyphs->atlasBatch);
+        int value=0,place=1;
+        for(const auto& quad:glyphs->atlasBatch->quads){
+            value+=place*int(std::lround(quad.vertices[0].uv.x*16));
+            place*=10;
+        }
+        return value;
+    };
+    assert(displayed()==0);
+    ui.tick(1,random);assert(displayed()==100);
+    ui.tick(2,random);assert(displayed()==180);
+    state.credits=205;assert(ui.updateHUD(state));assert(displayed()==180);
+    ui.tick(3,random);assert(displayed()==185);
+    ui.refresh(state);assert(displayed()==185);
+    state.screen=ScreenId::base;ui.refresh(state);ui.tick(4,random);
+    state.screen=ScreenId::field;ui.refresh(state);assert(displayed()==189);
+    const auto reads=files.reads,probes=files.probes;
+    for(unsigned i=0;i<8;++i)ui.tick(float(5+i),random);
+    assert(displayed()==205&&files.reads==reads&&files.probes==probes&&host.preparations==0&&random.calls==0);
+    state.credits=1;assert(ui.updateHUD(state));ui.tick(13,random);assert(displayed()==165&&state.credits==1);
+    ++state.fieldUIRevision;assert(ui.updateHUD(state));assert(displayed()==0);
+    state.hasWorkingSlot=false;assert(ui.updateHUD(state));ui.tick(14,random);assert(displayed()==0);
+}
+void radarMarks(const char* root){
+    Files files(root);Host host;PreparedTiles tiles("radar-test");Screens ui(files,tiles,host);
+    ScreensState state;state.screen=ScreenId::field;
+    state.radarMarks={{{-512,512},0},{{128,16},1},{{-16,-32},2}};
+    ui.refresh(state,0);
+    auto marks=[](const Frame& frame){
+        std::vector<Sprite> result;
+        for(const auto& sprite:frame.sprites)if(sprite.image=="RaderMark.png")result.push_back(sprite);
+        return result;
+    };
+    const auto first=marks(draw(ui));
+    assert(first.size()==3);
+    const Vec2 centers[]={{377,72},{417,41},{408,38}};
+    for(unsigned i=0;i<first.size();++i){
+        const auto& mark=first[i];
+        assert(!mark.atlasBatch&&mark.strip.size()==4);
+        assert(geometryWidth(&mark)==8&&geometryHeight(&mark)==8);
+        assert(mark.strip[0].uv.x==i/8.f&&mark.strip[2].uv.x==(i+1)/8.f);
+        assert(mark.center.x==centers[i].x&&mark.center.y==centers[i].y);
+    }
+    const auto reads=files.reads,probes=files.probes;
+    state.radarMarks={{{-256,-128},0}};
+    assert(ui.updateHUD(state));
+    const auto moved=marks(draw(ui));
+    assert(moved.size()==1&&moved[0].strip[0].uv.x==0&&moved[0].center.x==393&&moved[0].center.y==32);
+    assert(files.reads==reads&&files.probes==probes);
+}
+void fieldPlaceName(const char* root){
+    Files files(root);Host host;PreparedTiles tiles("place-name-test");Screens ui(files,tiles,host);Random random;
+    ScreensState state;state.screen=ScreenId::field;state.hasWorkingSlot=true;state.fieldPlaceRevision=1;state.fieldPlaceName="under beach 01";
+    ui.refresh(state);
+    auto frame=draw(ui);
+    const auto* background=sprite(frame,"PlaceNameBG.png");
+    assert(background&&background->center.x==-1024&&background->center.y==512);
+    const auto& label=request(host,"GuiGame.placeName");
+    assert(label.text==state.fieldPlaceName&&label.fontName=="Arial"&&label.fontSize==32&&label.dimensions.width==256&&label.dimensions.height==40&&label.alignment==TextAlign::center);
+    std::vector<const Sprite*> labels;
+    for(const auto& s:frame.sprites)if(s.image=="prepared:GuiGame.placeName")labels.push_back(&s);
+    assert(labels.size()==2&&labels[0]->center.x==-1022&&labels[0]->center.y==510&&labels[0]->color.r==0);
+    assert(labels[1]->center.x==-1024&&labels[1]->center.y==512&&labels[1]->color.r==1);
+    ui.tick(.01f,random);frame=draw(ui);
+    assert(near(sprite(frame,"PlaceNameBG.png")->center.x,-1024.f+1408.f/12.f));
+    const auto preparations=host.preparations;
+    ui.refresh(state);
+    frame=draw(ui);assert(near(sprite(frame,"PlaceNameBG.png")->center.x,-1024.f+1408.f/12.f));
+    state.screen=ScreenId::base;ui.refresh(state);
+    ui.tick(.02f,random);assert(!sprite(draw(ui),"PlaceNameBG.png"));
+    state.screen=ScreenId::field;ui.refresh(state);
+    const float first=-1024.f+1408.f/12.f;
+    frame=draw(ui);assert(near(sprite(frame,"PlaceNameBG.png")->center.x,first+(384.f-first)/12.f));
+    bool reachedCenter=false;
+    const auto reads=files.reads,probes=files.probes;
+    for(unsigned i=0;i<300;++i){
+        ui.tick(i/60.f,random);frame=draw(ui);
+        if(const auto* bg=sprite(frame,"PlaceNameBG.png");bg&&bg->center.x==384)reachedCenter=true;
+    }
+    assert(reachedCenter&&!sprite(frame,"PlaceNameBG.png")&&!sprite(frame,"prepared:GuiGame.placeName"));
+    assert(host.preparations==preparations&&files.reads==reads&&files.probes==probes);
+    ui.refresh(state);assert(!sprite(draw(ui),"PlaceNameBG.png"));
+    ++state.fieldPlaceRevision;ui.refresh(state);
+    frame=draw(ui);assert(sprite(frame,"PlaceNameBG.png")->center.x==-1024);
+}
 std::vector<const Sprite*> pageSprites(const Frame& frame){std::vector<const Sprite*> out;for(const auto& sprite:frame.sprites)if(sprite.image=="InvenPage.png")out.push_back(&sprite);return out;}
 void slotPreviewTranslation(const char* root){
     Files files(root);Host host;PreparedTiles tiles("slot-preview-test");Screens ui(files,tiles,host);
@@ -263,7 +354,7 @@ int main(int argc,char** argv){
     if(argc<2)return 77;
     slotPreviewTranslation(argv[1]);
     fieldMessage(argv[1]);
-    shopDetails(argv[1]);inventoryMaintenanceDetails(argv[1]);fieldNameRange(argv[1]);pageIndicators(argv[1]);
+    shopDetails(argv[1]);inventoryMaintenanceDetails(argv[1]);fieldNameRange(argv[1]);fieldCredits(argv[1]);radarMarks(argv[1]);fieldPlaceName(argv[1]);pageIndicators(argv[1]);
     Files files(argv[1]);Host host;PreparedTiles tiles("screens-test");Screens ui(files,tiles,host);Random random;
     ScreensState state;ui.refresh(state,0);assert(ui.buttons().empty()&&host.songs.back()=="STAGE1.wav");
     ui.input(PointerPhase::end,{100,100},1,1);assert(host.actions.back().titleTap&&!host.actions.back().titleReady);

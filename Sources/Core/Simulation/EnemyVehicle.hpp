@@ -55,11 +55,17 @@ class EnemyVehicle {
     void tickParts(double,EnemyVehicleHost&);
 public:
     EnemyVehicle(const Models&,const Weapons&,const MachineInfo&,Vec2 position,double time,
-                 WorldRandom&,std::optional<Vec2> spawnerPosition=std::nullopt);
+                 WorldRandom&,std::optional<Vec2> spawnerPosition=std::nullopt,unsigned partBaseLayer=1);
     void tick(EnemyVehicleTick,const TerrainCollision&,EnemyVehicleHost&);
     void setDestination(Vec2 value){motion_.setDestination(value);}
     void applyContact(Vec2 value){motion_.applyContact(value);}
     void setMachineState(int);
+    void setMovementRates(float moveSpeed,float rotationSpeed){
+        auto state=motion_.state();
+        state.moveSpeed=moveSpeed;
+        state.rotationSpeed=rotationSpeed;
+        motion_=VehicleMotion(state);
+    }
     // Enemy.onCrash: retain insertion-index0 as the layer1 corpse and remove
     // every later part, including its child controller. Does not clear target
     // or change HP; the original damage caller may retarget after onCrash.

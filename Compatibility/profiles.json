@@ -1,0 +1,62 @@
+{
+  "phone": {
+    "source_index": 3,
+    "bundle_id": "com.gelb2.heavymach2.reference.phone",
+    "product": "HM2ReferencePhone",
+    "display_name": "HM2 Reference Phone",
+    "guest_family": "iphone",
+    "options": [
+      "--landscape-right",
+      "--device-family=iphone"
+    ],
+    "host_family": [
+      1
+    ],
+    "version": "2.0.1"
+  },
+  "hd": {
+    "source_index": 5,
+    "bundle_id": "com.gelb2.heavymach2.reference.hd",
+    "product": "HM2ReferenceHD",
+    "display_name": "HM2 Reference HD",
+    "guest_family": "ipad",
+    "options": [
+      "--device-family=ipad"
+    ],
+    "host_family": [
+      2
+    ],
+    "version": "1.0.3"
+  },
+  "phone110": {
+    "source_index": 1,
+    "bundle_id": "com.gelb2.heavymach2.reference.phone110",
+    "product": "HM2ReferencePhone110",
+    "display_name": "HM2 Phone 1.1.0",
+    "guest_family": "iphone",
+    "options": [
+      "--landscape-right",
+      "--device-family=iphone"
+    ],
+    "host_family": [
+      1
+    ],
+    "version": "1.1.0"
+  },
+  "hd100": {
+    "source_index": 4,
+    "bundle_id": "com.gelb2.heavymach2.reference.hd100",
+    "product": "HM2ReferenceHD100",
+    "display_name": "HM2 HD 1.0.0",
+    "guest_family": "ipad",
+    "options": [
+      "--device-family=ipad",
+      "--landscape-right"
+    ],
+    "host_family": [
+      1,
+      2
+    ],
+    "version": "1.0.0"
+  }
+}

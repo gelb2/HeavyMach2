@@ -33,13 +33,13 @@ struct WeaponBridge:WeaponHost {
     void fireSound(const WeaponInfo& info,Vec2 p)override{host.fireSound(info,p);}
 };
 }
-EnemyActor::EnemyActor(const Models& models,const Weapons& weapons,const MachineInfo& info,Vec2 p,double time,WorldRandom& random,std::optional<Vec2> spawner)
+EnemyActor::EnemyActor(const Models& models,const Weapons& weapons,const MachineInfo& info,Vec2 p,double time,WorldRandom& random,std::optional<Vec2> spawner,unsigned partBaseLayer)
 :models_(models),info_(info),contact_{p,-1,-1,0}{
     validTime(time);if(!supports(info.kind))throw std::runtime_error("Enemy kind has no verified HD map-spawned consumer");
     if(!std::isfinite(p.x)||!std::isfinite(p.y))throw std::runtime_error("Invalid original enemy position");
-    if(info.kind==MachineKind::vehicle){vehicle_=std::make_unique<EnemyVehicle>(models,weapons,info,p,time,random,spawner);return;}
+    if(info.kind==MachineKind::vehicle){vehicle_=std::make_unique<EnemyVehicle>(models,weapons,info,p,time,random,spawner,partBaseLayer);return;}
     mounts_=models_.modelMounts(info.name);activeParts_.assign(mounts_.size(),true);
-    for(std::size_t i=0;i<mounts_.size();++i){auto& mount=mounts_[i];++mount.layer;
+    for(std::size_t i=0;i<mounts_.size();++i){auto& mount=mounts_[i];mount.layer+=partBaseLayer;
         if(models_.part(mount.part).type==4){const auto w=weapons.all().find(mount.part);
             if(w!=weapons.all().end()){EnemyActorWeapon value;value.mountIndex=i;value.info=&w->second;weapons_.push_back(std::move(value));state_.attackable=true;}
         }
@@ -68,6 +68,14 @@ void EnemyActor::applyContact(Vec2 p){
     if(vehicle_){vehicle_->applyContact(p);return;}motion_.position=p;
 }
 void EnemyActor::setMachineState(int s){if(vehicle_)vehicle_->setMachineState(s);else motion_.state=s;}
+void EnemyActor::setMovementRates(float moveSpeed,float rotationSpeed){
+    if(vehicle_){
+        vehicle_->setMovementRates(moveSpeed,rotationSpeed);
+        return;
+    }
+    motion_.moveSpeed=moveSpeed;
+    motion_.rotationSpeed=rotationSpeed;
+}
 void EnemyActor::removePartsForCorpse(){
     if(vehicle_){vehicle_->removePartsForCorpse();return;}if(mounts_.empty())return;
     mounts_[0].layer=1;for(std::size_t i=1;i<activeParts_.size();++i)activeParts_[i]=false;

@@ -40,6 +40,12 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
     ScreenTransition transition;
     std::unique_ptr<MapLoading> mapLoading;std::unique_ptr<CombatScene> retiredWorld;std::string linkMap;int linkGateId=0;
     PartSprites previewSprites;
+    struct SlotPreview {
+        EquipmentCodes codes;
+        BipodMotion motion;
+    };
+    std::array<std::optional<SlotPreview>,3> slotPreviews;
+    std::uint64_t nextPreviewRevision=0;
     ui::ScreensState view;SessionMetrics metrics;
     GameClock clock;double worldTime=0;bool active=true,dirty=true,worldSaveAllowed=false;
     std::uint64_t presentationRevision=0;
@@ -66,7 +72,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         const std::time_t time=seconds;std::tm local{};if(!localtime_r(&time,&local))return {};
         char text[32];std::snprintf(text,sizeof(text),"%04d/%02d/%02d %02d:%02d:%02d",local.tm_year+1900,local.tm_mon+1,local.tm_mday,local.tm_hour,local.tm_min,local.tm_sec);return text;
     }
-    struct Drop {std::uint64_t id=0;progression::FieldItem item;VisibilityState root,icon;Vec2 pickupPlayer;};
+    struct Drop {std::uint64_t id=0;progression::FieldItem item;VisibilityState root,icon;Vec2 pickupPlayer;bool missionPlaced=false;};
     std::vector<Drop> drops;std::uint64_t nextDropID=1;
     PreparedTiles* worldTiles=nullptr;
 
@@ -96,17 +102,21 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         const auto image=action.type==0?"Icon00001.png":action.type==1?"Icon00010.png":"Icon"+action.item+".png";
         view.completedMission.rewards.push_back({action.type,action.value,image});dirty=true;
     }
-    void refreshCompletedMission(){
-        view.completedMission={};dirty=true;
-        std::string selected;const auto location=slot().string(0x2d,16);
+    const progression::MissionDefinition* readyMissionAt(std::string_view location)const{
         for(const auto* mission:progress->missions.acceptedDefinitions()){
             const auto* current=progress->missions.state(mission->id);
-            if(current&&current->requireComplete&&mission->completePlace==location){selected=mission->id;break;}
+            if(current&&current->requireComplete&&mission->completePlace==location)return mission;
         }
-        if(selected.empty()){commandState=1;return;}
+        return nullptr;
+    }
+    void refreshCompletedMission(){
+        view.completedMission={};dirty=true;
+        const auto location=slot().string(0x2d,16);
+        const auto* selected=readyMissionAt(location);
+        if(!selected){commandState=1;return;}
         presentingCompletedMission=true;
         struct Reset {bool& flag;~Reset(){flag=false;}} reset{presentingCompletedMission};
-        if(!progress->claimMission(selected,location))throw std::logic_error("Original completed mission changed during presentation");
+        if(!progress->claimMission(selected->id,location))throw std::logic_error("Original completed mission changed during presentation");
     }
     void tickCommand(){
         if(view.screen!=ui::ScreenId::command||commandCurState==commandState)return;
@@ -144,6 +154,10 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         // This writes Player SLOT HP only. Player.levelUp does not heal its actor HP.
         dirty=true;
     }
+    void pickupBegin(const progression::Item&)override{if(scene)scene->beginPickupNotice();}
+    void pickupText(const progression::Item& item,int count,bool,double time)override{
+        if(scene)scene->setPickupNoticeText(item.type==0?std::to_string(count)+" cr":item.name,time);
+    }
     void playerHPChanged(int hp)override{slot().hp(hp);}
     void playerProgressTick()override{if(equipment)equipment->tickSpecial();}
     float playerSpecial()const override{return equipment?equipment->stats().specialCurrent:0;}
@@ -175,12 +189,24 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         if(time>double(float(stamp+2.f))){stamp=float(time);host.soundID(6,{});}
     }
     void enemyTargetChanged(std::string_view name)override{view.enemyName=name;++view.enemyNameRevision;}
+    void addFieldItem(progression::FieldItem item,bool missionPlaced=false){
+        Drop drop;
+        drop.id=nextDropID++;
+        drop.item=std::move(item);
+        drop.missionPlaced=missionPlaced;
+        drop.root.visual=drop.icon.visual=true;
+        const auto setBounds=[](VisibilityState& state,const TileImage* tile){
+            if(tile)state.bounds={-tile->pixels.width*.5f,-tile->pixels.height*.5f,tile->pixels.width*.5f,tile->pixels.height*.5f};
+        };
+        setBounds(drop.root,worldTiles->lookup("Efx_Item2.png"));
+        setBounds(drop.icon,worldTiles->lookup(drop.item.item->iconImage()));
+        drops.push_back(std::move(drop));
+    }
+    void placeMissionItem(std::string_view code,Vec2 position,WorldRandom& rng)override{
+        if(const auto* item=definitions.findItem(code))addFieldItem(progression::FieldItem::create(*item,1,position,rng),true);
+    }
     void dropEnemyLoot(const MachineInfo& info,Vec2 p,double,float,WorldRandom& rng)override{
-        progress->itemSpawner.drop(info,p,rng,[this](auto item){
-            Drop drop;drop.id=nextDropID++;drop.item=std::move(item);drop.root.visual=drop.icon.visual=true;
-            auto setBounds=[](VisibilityState& state,const TileImage* tile){if(tile)state.bounds={-tile->pixels.width*.5f,-tile->pixels.height*.5f,tile->pixels.width*.5f,tile->pixels.height*.5f};};
-            setBounds(drop.root,worldTiles->lookup("Efx_Item2.png"));setBounds(drop.icon,worldTiles->lookup(drop.item.item->iconImage()));drops.push_back(std::move(drop));
-        });
+        progress->itemSpawner.drop(info,p,rng,[this](auto item){addFieldItem(std::move(item));});
     }
     void rewardEnemyKill(const MachineInfo& info,Vec2,double,float,WorldRandom&)override{
         progress->killed(info.name,info.experience,mapName);
@@ -195,18 +221,18 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         for(const auto& b:actors)pickers.push_back({b.referenceType,b.position,b.id});
         for(auto& drop:drops){drop.item.tick(worldTime,player,pickers,rng,scene?&scene->terrain():nullptr,[&](const auto& i,int value){progress->pickup(i,value,worldTime);},[&](std::size_t index){if(scene)scene->botPickedItem(pickers.at(index).id,drop.id);});if(drop.item.removed)drop.pickupPlayer=player;}
     }
-    void collectItems(VisualLayer& layer,const MapCamera& camera,const PreparedTiles& tiles)override{
+    void collectItems(VisualLayer& ground,VisualLayer& objects,const MapCamera& camera,const PreparedTiles& tiles)override{
         for(auto& drop:drops){const auto& item=drop.item;
-            auto submit=[&](std::string_view name,VisibilityState& visibility,bool atlas,unsigned blend,float scale,float angle,float alpha,bool removed){
+            auto submit=[&](VisualLayer& layer,std::string_view name,VisibilityState& visibility,bool atlas,unsigned blend,float scale,float angle,float alpha,bool removed){
                 const auto* tile=tiles.lookup(name);if(!tile)return;
                 if(!atlas){visibility.removed=removed;refreshVisibility(visibility,item.position,&camera);if(removed)return;}
                 VisualImage image;image.tile=tiles.visual(*tile);image.screenPosition=camera.toScreen(item.position);image.useAtlas=atlas;image.blendType=blend;image.scale={scale,scale};image.angle=angle;image.alpha=alpha;image.isInScreen=visibility.inScreen;layer.submitImage(image);
                 visibility.removed=removed;refreshVisibility(visibility,item.position,&camera);
             };
-            submit("Efx_Item2.png",drop.root,item.rootUsesAtlas,2,item.scale,item.angle,item.alpha,item.removed);
+            submit(drop.missionPlaced?ground:objects,"Efx_Item2.png",drop.root,item.rootUsesAtlas,2,item.scale,item.angle,item.alpha,item.removed);
             // calcWorldPos only adds positions. Parent angle/alpha/scale do not
             // propagate into this independent original QobImage child.
-            submit(item.item->iconImage(),drop.icon,true,0,item.item->type==0?1.f:.5f,0,1,false);
+            submit(objects,item.item->iconImage(),drop.icon,true,0,item.item->type==0?1.f:.5f,0,1,false);
         }
     }
     void setDetailInventory(int absolute){if(absolute<0&&detailInventory<0)return;detailInventory=absolute;++view.detailRevision;}
@@ -223,9 +249,13 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         commandAvailableRows.clear();commandAcceptedRows.clear();
         if(id==ui::ScreenId::title&&scene){worldSaveAllowed=scene->isSave();quickItems.reset();scene.reset();drops.clear();worldTiles=nullptr;}
         if(id!=ui::ScreenId::field)closeDialogs();
-        if(id==ui::ScreenId::slots){view.selectedSlot=-1;for(unsigned i=0;i<3;++i){Slot candidate(data.slot(i));if(candidate.byte(8)&&(view.selectedSlot<0||std::bit_cast<std::int32_t>(Slot(data.slot(unsigned(view.selectedSlot))).u32(4))<std::bit_cast<std::int32_t>(candidate.u32(4))))view.selectedSlot=int(i);}}
+        if(id==ui::ScreenId::slots){slotPreviews={};view.selectedSlot=-1;for(unsigned i=0;i<3;++i){Slot candidate(data.slot(i));if(candidate.byte(8)&&(view.selectedSlot<0||std::bit_cast<std::int32_t>(Slot(data.slot(unsigned(view.selectedSlot))).u32(4))<std::bit_cast<std::int32_t>(candidate.u32(4))))view.selectedSlot=int(i);}}
         clearSelection();selectedMissionId.clear();view.selectedMission=-1;view.missionBody.clear();view.selectedShop=-1;hideShopDetail();
         if(id==ui::ScreenId::shop){view.inventoryVisible=true;view.shopCategory=0;view.shopPage=0;view.inventoryPage=0;}
+        if(id!=ui::ScreenId::field){
+            help.reset();
+            if(progress)showFirstMenuHelp(id);
+        }
     }
     ui::ItemView itemView(const progression::Item* item,int count=0,int position=-1,bool equipped=false,int priceMode=0){
         ui::ItemView out;if(!item)return out;out.dataId=item->code;out.name=item->name;out.icon=item->iconImage();out.count=count;out.price=item->price;out.level=item->level;out.position=position;out.countable=item->countable;out.equipped=equipped;out.originalType=item->type;
@@ -236,14 +266,68 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         if(equipment){const auto& s=equipment->stats();values.leftAttack=s.leftAttackPoint;values.rightAttack=s.rightAttackPoint;values.bodyHP=s.bonusHP;values.bodyDefense=s.bodyDefense;values.armorDefense=s.armorDefense;values.footSpeed=s.stepSizeInteger;values.boosterMaximum=s.specialMaximum;}
         out.description=ui::Screens::itemDescription(values,priceMode).value_or("");return out;
     }
-    Frame preview(progression::Inventory& inventory){
+    static EquipmentCodes previewCodes(const progression::Inventory& inventory){
         EquipmentCodes codes{};for(unsigned i=0;i<4;++i)if(const auto* e=inventory.entry(inventory.equipment()[i]);e&&e->item)codes[i]=e->item->code;
+        return codes;
+    }
+    Frame preview(progression::Inventory& inventory){
+        const auto codes=previewCodes(inventory);
         auto pose=models.mountedPose(parts.mounts(models,codes));previewSprites.prepare(resources,pose);Frame out;previewSprites.append(out,pose,{});return out;
     }
+    void buildSlotPreview(unsigned index,bool prepare){
+        const auto& preview=*slotPreviews[index];
+        const auto& motion=preview.motion;
+        const auto pose=models.mountedPose(parts.mounts(models,preview.codes,motion.angles(),motion.offsets()),motion.state().angle);
+        if(prepare)previewSprites.prepare(resources,pose);
+        auto& slot=view.slots[index];
+        slot.machPreview.sprites.clear();
+        const auto position=motion.state().position;
+        previewSprites.append(slot.machPreview,pose,{position.x+170.f,position.y-34.f});
+        slot.machPreviewRevision=++nextPreviewRevision;
+    }
+    void tickSlotPreviews(){
+        if(view.screen!=ui::ScreenId::slots)return;
+        if(dirty)rebuild();
+        const auto visualPose=[](const BipodState& s){
+            return std::array{s.position.x,s.position.y,s.angle,s.bodyAngle,s.baseAngle,
+                s.leftWeaponAngle,s.rightWeaponAngle,s.left.angle,s.right.angle,s.left.addX,s.right.addX,s.bodyAddY};
+        };
+        for(unsigned i=0;i<slotPreviews.size();++i){
+            if(!slotPreviews[i])continue;
+            auto& motion=slotPreviews[i]->motion;
+            const auto previous=visualPose(motion.state());
+            auto position=motion.state().position;
+            // GuiSelectSlot.tick0x2e0a0 eases toward the slot anchor before
+            // the selected Player child picks its next destination.
+            const auto ease=[](float value,float target){
+                return std::abs(value-target)>.1f?value+(target-value)/5.f:target;
+            };
+            position={ease(position.x,-170.f),ease(position.y,34.f)};
+            motion.applyContact(position);
+            if(view.selectedSlot==int(i)){
+                if(motion.state().state==0||random.random()%100==0){
+                    const float x=randomUnit(random)*400.f-200.f;
+                    const float y=randomUnit(random)*400.f-200.f;
+                    motion.setDestination({position.x+x,position.y+y});
+                }
+            }else motion.setState(0);
+            motion.tick();
+            if(visualPose(motion.state())!=previous)buildSlotPreview(i,false);
+        }
+    }
     void rebuild(){
-        for(unsigned i=0;i<3;++i){auto& v=view.slots[i];Slot s(data.slot(i));v={};v.used=s.byte(8)!=0;if(!v.used)continue;
+        for(unsigned i=0;i<3;++i){auto& v=view.slots[i];Slot s(data.slot(i));v.used=s.byte(8)!=0;if(!v.used){v={};slotPreviews[i].reset();continue;}
             v.name=s.string(9,32);v.country=s.string(0x29,4);v.createdAt=localDate(s.u32(0));v.savedAt=localDate(s.u32(4));v.location=s.string(0x3d,24);v.missionPercent=definitions.missions().empty()?0:int(std::uint32_t(int(std::bit_cast<std::int16_t>(s.u16(0x65a)))*100)/definitions.missions().size());v.level=s.level()+1;v.credits=int(s.credit());v.experience=int(s.experience());v.experienceRate=s.experienceGauge();
-            progression::Inventory inventory(definitions);inventory.importSlot(s);v.machPreview=preview(inventory);
+            progression::Inventory inventory(definitions);inventory.importSlot(s);
+            const auto codes=previewCodes(inventory);
+            if(!slotPreviews[i]||slotPreviews[i]->codes!=codes){
+                // refreshSlot0x2e6f8 sets direction before attaching the parts.
+                BipodState initial;
+                initial.position={-170.f,34.f};
+                initial.angle=std::bit_cast<float>(0x3fc90fdbu);
+                slotPreviews[i]=SlotPreview{codes,BipodMotion(initial)};
+                buildSlotPreview(i,true);
+            }
         }
         if(progress&&equipment){auto s=slot();const auto& stats=equipment->stats();view.locale=displayLocale;view.baseId=base();
             view.credits=std::bit_cast<std::int32_t>(s.credit());view.level=s.level();view.attack=stats.damageBonus;view.defense=stats.bodyDefense+stats.armorDefense;view.speed=stats.stepSizeInteger;
@@ -273,6 +357,17 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
             };
             for(const auto& d:definitions.missions())if(view.availableMissions.size()<5&&progress->missions.available(d.id,base(),s.level()))view.availableMissions.push_back(missionView(d,false));
             for(const auto* d:progress->missions.acceptedDefinitions())if(d)view.acceptedMissions.push_back(missionView(*d,true));
+            view.baseDescription.clear();
+            view.baseHasCompletedMission=false;
+            if(view.screen==ui::ScreenId::base){
+                // GuiBase.setSelect: / init. The description uses the game's
+                // display locale, and the completion marker belongs to this base.
+                constexpr std::string_view keys[]={"DescCmdCenter","DescShop","DescMaintenance","DescExitBase",
+                    "DescGoField","DescGoField","DescGoField"};
+                const int selected=view.selectedBaseButton;
+                if(selected>=1&&selected<=7)view.baseDescription=descriptions.lookup(keys[selected-1]).value_or("");
+                view.baseHasCompletedMission=readyMissionAt(view.baseId)!=nullptr;
+            }
             view.selectedMission=-1;view.selectedMissionDataId=selectedMissionId;view.missionBody.clear();view.missionTitle.clear();
             auto select=[&](const std::vector<ui::ItemView>& list,int start){for(std::size_t i=0;i<list.size();++i)if(list[i].dataId==selectedMissionId){view.selectedMission=start+int(i);view.missionBody=list[i].description;view.missionTitle=list[i].name;}};
             if(view.screen==ui::ScreenId::command)select(view.availableMissions,0);
@@ -287,6 +382,20 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
             view.weaponChoices.clear();if(view.weaponChoiceType==2||view.weaponChoiceType==3)for(std::size_t i=0;i<entries.size();++i){const auto& e=entries[i];if(e.item&&e.item->type==10&&e.count>0&&!e.flags){auto item=itemView(e.item,e.count,int(i),e.flags);item.attackDelta=item.attackPoint-(view.weaponChoiceType==2?stats.leftAttackPoint:stats.rightAttackPoint);view.weaponChoices.push_back(std::move(item));}}
             if(view.weaponChoiceType&&!view.weaponChoices.size())view.weaponChoiceType=0;
         }dirty=false;++presentationRevision;
+    }
+    void showFirstMenuHelp(ui::ScreenId id){
+        // GuiBase.init 0x246d4, GuiShop.init 0x30e4c, and
+        // GuiMaintenance.init 0x2bb74 share the original save counter.
+        const bool baseScreen=id==ui::ScreenId::base;
+        if(!baseScreen&&id!=ui::ScreenId::shop&&id!=ui::ScreenId::maintenance)return;
+        const auto count=slot().u32(0x1b5c);
+        if(count!=(baseScreen?1u:2u))return;
+        help=std::make_unique<ui::Help>(resources,displayLocale,baseScreen?0:1);
+        help->setLayer(9);
+        // Maintenance attaches GuiHelp at (-240,-160) to its (384,512)
+        // root. GuiHelp's pages add their own (384,512) position.
+        if(id==ui::ScreenId::maintenance)help->setCenter({528,864});
+        slot().u32(0x1b5c,count+1);
     }
     void showHelp(bool navigation){
         if(!scene)return;
@@ -312,6 +421,8 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
     void dynamicHUD(){
         if(scene)view.messageWorldTime=scene->clock().worldTime();
         if(scene)view.fieldWorldTime=scene->clock().worldTime();
+        if(scene&&view.screen==ui::ScreenId::field)scene->collectRadarMarks(view.radarMarks);
+        else view.radarMarks.clear();
         view.hasWorkingSlot=bool(progress);
         if(!equipment)return;const auto s=slot();const auto& stats=equipment->stats();
         view.credits=std::bit_cast<std::int32_t>(s.credit());view.level=s.level();view.experienceRate=s.experienceGauge();
@@ -437,6 +548,7 @@ void GameSession::tick(const std::function<void()>& tickGameUI){
     },[&p](std::string_view name){p.host.sound(name,{});}});
     if(p.scene){p.scene->tick();p.worldTime=p.scene->clock().worldTime();}
     p.tickCommand();
+    p.tickSlotPreviews();
     if(tickGameUI)tickGameUI();
     if(p.mapLoading){
         // GuiMapLoading is a later GameMain child. Its callbacks execute only
@@ -456,6 +568,7 @@ void GameSession::setActive(bool active){
 }
 bool GameSession::createSlot(unsigned index,std::string_view name,std::string_view country){
     if(index>=3||name.empty())return false;auto& p=*impl_;p.data.initializeSlot(index,name,country,p.host.unixTime());p.dirty=true;
+    p.slotPreviews[index].reset();
     // GlobalInfo.initSlot finishes with selectSlot/save. The name callback
     // refreshes the slots screen; it does not enter the Base automatically.
     return selectSlot(index);
@@ -484,21 +597,30 @@ void GameSession::enterBase(){
 }
 bool GameSession::enterField(std::string_view map,int gate){
     auto& p=*impl_;if(!p.progress)return false;
-    p.gameOverToken=0;
+    p.gameOverToken=0;p.help.reset();
     // World.setStage reseeds from mach_absolute_time before creating its pool.
     p.slot().string(0x2d,16,map);p.slot().u32(0x68,std::uint32_t(gate));
     if(p.scene){p.worldSaveAllowed=p.scene->isSave();p.worldTime=p.scene->clock().worldTime();}
     p.quickItems.reset();p.random.reseed(p.host.absoluteTimeLow());p.scene.reset();p.drops.clear();p.worldTiles=nullptr;
     CombatSetup setup;
-    // GobWorld.openMap evaluates accepted incomplete openGate actions once.
+    // openMap reads event gates. addMissionObjects uses the same accepted list
+    // and preserves the action order for the shared world RNG.
+    const auto location=p.slot().string(0x2d,16);
     for(const auto* mission:p.progress->missions.acceptedDefinitions()){
         const auto* state=p.progress->missions.state(mission->id);if(!state||state->requireComplete)continue;
-        for(const auto& action:mission->acceptActions)if(action.type==7&&action.place==map)setup.openEventGate=true;
+        for(const auto& action:mission->acceptActions){
+            if(action.place!=location)continue;
+            if(action.type==5)setup.missionObjects.push_back({MissionFieldObject::Kind::item,action.item,{float(action.x),float(action.y)}});
+            else if(action.type==6)setup.missionObjects.push_back({MissionFieldObject::Kind::enemy,action.enemy});
+            else if(action.type==7)setup.openEventGate=true;
+        }
     }
     setup.map=map;setup.gate=gate;setup.playerHP=p.slot().hp();setup.equipment=p.equipment->codes();setup.random=&p.random;setup.initialRenderTime=p.clock.renderTime();setup.initialWorldTime=p.worldTime;setup.offsetInsideGate=true;setup.isSave=p.worldSaveAllowed;
     for(unsigned i=0;i<3;++i){const auto code=p.slot().string(0x63a+i*6,6);const auto* item=p.definitions.findItem(code);if(item)setup.botSlots[i]={item->stringParameter,std::bit_cast<std::int32_t>(p.slot().u32(0x64c+i*4))};}
     auto scene=std::make_unique<CombatScene>(p.resources,p,setup);p.scene=std::move(scene);p.quickItems=std::make_unique<progression::QuickItems>(p.progress->inventory,p.slot(),p.weapons,p);p.mapName=map;p.screen(ui::ScreenId::field);p.closeDialogs();
     p.slot().string(0x3d,24,p.maps.map(map).description);
+    p.view.fieldPlaceName=p.slot().string(0x3d,24);
+    ++p.view.fieldPlaceRevision;
     const auto firstHelp=p.slot().u32(0x1b5c);
     if(std::bit_cast<std::int32_t>(firstHelp)<5){p.showHelp(false);p.slot().u32(0x1b5c,firstHelp+5u);}
     // GameMain.setScreen_Game calls setPause0 after World.setStage, including
@@ -540,9 +662,9 @@ Frame GameSession::preparationFrame()const{
 const MapLoading* GameSession::mapLoading()const{return impl_->mapLoading.get();}
 const ScreenTransitionState& GameSession::screenTransition()const{return impl_->transition.state();}
 const ui::Help* GameSession::help()const{return impl_->help.get();}
-void GameSession::appendOverlays(Frame& frame)const{if(impl_->view.screen==ui::ScreenId::field&&impl_->help)impl_->help->append(frame);impl_->transition.append(frame);if(impl_->mapLoading)impl_->mapLoading->append(frame);}
+void GameSession::appendOverlays(Frame& frame)const{if(impl_->help)impl_->help->append(frame);impl_->transition.append(frame);if(impl_->mapLoading)impl_->mapLoading->append(frame);}
 bool GameSession::inputOverlay(PointerPhase phase,Vec2 point,std::uintptr_t id){
-    auto& p=*impl_;if(!p.active||p.view.screen!=ui::ScreenId::field||!p.help)return false;
+    auto& p=*impl_;if(!p.active||!p.help)return false;
     const bool consumed=p.help->input(phase,point,id);
     if(p.help->state().removed){p.help.reset();p.dirty=true;}
     return consumed;
@@ -645,8 +767,9 @@ void GameSession::action(const ui::ScreenAction& a){
     if(a.screen==ui::ScreenId::field&&id==1029&&event==ui::ButtonEventType::pop){p.closeDialogs();p.showHelp(true);p.uiSound(0);return;}
     if(a.screen==ui::ScreenId::field&&id>=6200&&id<=6204&&event==ui::ButtonEventType::push){
         if(p.quickItems&&p.scene&&!p.scene->isPaused()&&!p.view.inventoryVisible&&!p.view.missionVisible&&!p.view.airliftVisible&&!p.view.systemVisible){
-            const unsigned index=id-6200;const auto* item=p.progress->inventory.quickSlots()[index];
-            if(item&&item->type!=1&&item->type!=2){++p.metrics.unsupportedActions;return;} // Other original item types remain unverified.
+            // WndQuickSlot.handleButton0x34e54 selects by stock. World.useItem
+            // changes target mode only for repair/airstrike after selection.
+            const unsigned index=id-6200;
             const auto& current=state();p.quickItems->press(index,current.quick[index].count,false);
         }return;
     }

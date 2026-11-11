@@ -1,0 +1,19 @@
+{
+  "repository": "https://github.com/moleworld-dev/MoleWorld-5.5.0-touchHLE-offline.git",
+  "commit": "ebf9433e2bfd32071545bf49484b1345d15522a3",
+  "source": "fresh-port/20-touchHLE-src/touchHLE",
+  "rust": "1.99.1",
+  "features": [
+    "static",
+    "cpu_interpreter"
+  ],
+  "disabled_features": [
+    "moleworld_compat"
+  ],
+  "sdl_repository": "https://github.com/touchHLE/rust-sdl2.git",
+  "sdl_commit": "b67f98fe6a147773b6f05d50ae775d9fe16561e7",
+  "baseline_patch_source": "gelb2/HeavyMach@c604a8eab8aba24affd39c1fc74f79a1be38538e:Compatibility/patches/heavymach.patch",
+  "patches": [
+    "heavymach2.patch"
+  ]
+}

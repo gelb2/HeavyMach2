@@ -67,5 +67,35 @@ void navigation(Files& files){
     assert(game.inputOverlay(PointerPhase::end,{384,0},1));assert(game.inputOverlay(PointerPhase::end,{204,0},1)&&!game.help());
     std::cout<<"HELP_SESSION Pop1029/KRpage2+HelpHelp/allEventsConsumed/firstEndOnlyGuidance/204+564/actualWorldPauseResume/warmIO0/save0/SFX0once/inactive PASS\n";
 }
+void firstMenuHelp(Files& files){
+    for(const unsigned facility:{2002u,2003u}){
+        Host host;DarwinWorldRandom rng(2);GameSession game(files,host,rng,fixture(1));
+        host.game=&game;
+        assert(game.selectSlot(0));game.enterBase();
+        assert(game.help()&&game.help()->state().page==0&&game.help()->state().layer==9);
+        auto frame=overlay(game);
+        assert(frame.sprites.size()==1&&frame.sprites[0].image=="HelpScr01_kr.png");
+        assert(frame.sprites[0].center.x==384&&frame.sprites[0].center.y==512);
+        assert(word(game.workingSlot(),0x1b5c)==2);
+        DarwinWorldRandom decoder(8);
+        assert(word(SaveData::decode(host.stored,decoder,false).slot(0),0x1b5c)==2);
+        assert(game.inputOverlay(PointerPhase::begin,{384,512},4)&&game.help());
+        assert(game.inputOverlay(PointerPhase::end,{384,512},4)&&!game.help());
+        const auto saves=host.writes.size();
+        const auto action=[&](unsigned id){game.action({game.state().screen,ui::Panel::root,{ui::ButtonEventType::pop,{0,id},1,{}}});};
+        const auto settle=[&]{unsigned ticks=0;while(game.screenTransition().phase!=8){game.tick();assert(++ticks<300);}};
+        action(facility);action(facility);settle();
+        assert(game.state().screen==(facility==2002?ui::ScreenId::shop:ui::ScreenId::maintenance));
+        assert(game.help()&&game.help()->state().page==1&&!game.help()->state().changePages);
+        frame=overlay(game);
+        assert(frame.sprites.size()==1&&frame.sprites[0].image=="HelpScr02_kr.png");
+        assert(frame.sprites[0].center.x==(facility==2002?384:528)&&frame.sprites[0].center.y==(facility==2002?512:864));
+        assert(game.inputOverlay(PointerPhase::end,{100,100},4)&&!game.help());
+        assert(word(game.workingSlot(),0x1b5c)==3&&host.writes.size()==saves);
+        action(2100);settle();
+        action(facility);action(facility);settle();
+        assert(!game.help()&&word(game.workingSlot(),0x1b5c)==3&&host.writes.size()==saves+1);
+    }
 }
-int main(int argc,char** argv){if(argc<2)return 77;Files files(argv[1]);initial(files);navigation(files);}
+}
+int main(int argc,char** argv){if(argc<2)return 77;Files files(argv[1]);firstMenuHelp(files);initial(files);navigation(files);}

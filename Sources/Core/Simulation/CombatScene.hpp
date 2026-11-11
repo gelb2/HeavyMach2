@@ -19,6 +19,12 @@ class Particle;
 struct TileImage;
 struct CombatEnemySnapshot {std::uint64_t id=0;std::string name;Vec2 position;int hp=0;bool targetingPlayer=false,corpse=false;std::size_t activeParts=0;MachineKind kind=MachineKind::bipod;bool boss=false,moveToTarget=false;};
 struct CombatBotSetup {std::string machine;int savedHP=0;};
+struct MissionFieldObject {
+    enum class Kind {item,enemy};
+    Kind kind;
+    std::string code;
+    Vec2 itemPosition{};
+};
 struct CombatBotSnapshot {std::uint64_t id=0;std::string name;unsigned slot=0;Vec2 position;int hp=0,maximumHP=0,referenceType=0;bool removed=false;std::uint64_t target=0,pickItem=0;float rotorAngle=0;BotGauge gauge;BotMetrics metrics;std::uint64_t itemCaptures=0,hpRemoved=0,enemyHPRemoved=0;};
 struct CombatPlayerWeaponSnapshot {
     unsigned inventoryEquipSlot=0,currentMuzzle=1,parentSocket=0;
@@ -70,7 +76,8 @@ struct CombatSceneHooks {
     virtual void botHPChanged(unsigned,int){}
     virtual void botDestroyed(unsigned){}
     virtual void prepareTiles(ResourceAccess&,PreparedTiles&){}
-    virtual void collectItems(VisualLayer&,const MapCamera&,const PreparedTiles&){}
+    virtual void placeMissionItem(std::string_view code,Vec2 position,WorldRandom&);
+    virtual void collectItems(VisualLayer&,VisualLayer&,const MapCamera&,const PreparedTiles&){}
     virtual ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest&);
     virtual void linkGate(const MapGate&){}
     // World.setGameState records the app-wide render clock. Standalone Scene
@@ -85,6 +92,8 @@ struct CombatSetup {
     // False retains the existing isolated gate-position comparison fixture.
     bool offsetInsideGate=false;
     bool openEventGate=false;
+    // GobWorld.addMissionObjects consumes live accepted actions in order.
+    std::vector<MissionFieldObject> missionObjects;
     std::array<CombatBotSetup,3> botSlots{};
     EquipmentCodes equipment=PlayerEquipment::startingCodes;
     std::uint32_t randomSeed=1;
@@ -108,6 +117,8 @@ public:
     void equipWeapon(EquipmentCodes,unsigned inventoryEquipSlot); // Only2/3.
     void refreshPlayerHPGauge();
     void showLevelUpEffect(); // Original shared pool, before HP/gauge refresh.
+    void beginPickupNotice();
+    void setPickupNoticeText(std::string_view,double worldTime);
     [[nodiscard]] std::vector<CombatBotSnapshot> bots()const;
     void setBotHP(std::uint64_t,int); // Raw setter; repair owns slot write.
     void refreshBotHPGauge(std::uint64_t); // Visual only for QuickItems.
@@ -133,6 +144,7 @@ public:
     [[nodiscard]] const TerrainCollision& terrain()const;
     [[nodiscard]] const CombatMetrics& metrics()const;
     [[nodiscard]] std::span<const WorldGateSnapshot> gates()const;
+    void collectRadarMarks(std::vector<ui::RadarMark>&)const;
     [[nodiscard]] CombatDashSnapshot dashState()const;
     [[nodiscard]] std::vector<CombatEnemySnapshot> enemies()const;
     [[nodiscard]] std::vector<CombatPlayerWeaponSnapshot> playerWeapons()const;

@@ -1,0 +1,21 @@
+diff --git a/sdl2-sys/build.rs b/sdl2-sys/build.rs
+index 4831846..cf4ab1f 100644
+--- a/sdl2-sys/build.rs
++++ b/sdl2-sys/build.rs
+@@ -526,11 +526,15 @@ fn copy_dynamic_libraries(sdl2_compiled_path: &Path, target_os: &str) {
+ }
+ 
+ fn main() {
++    // The bundled SDL source is a sibling of rust-sdl2, outside Cargo package tracking.
++    println!("cargo:rerun-if-changed=../../SDL/src");
++    println!("cargo:rerun-if-changed=../../SDL/include");
++    println!("cargo:rerun-if-changed=../../SDL/CMakeLists.txt");
+     let target = env::var("TARGET").expect("Cargo build scripts always have TARGET");
+     let host = env::var("HOST").expect("Cargo build scripts always have HOST");
+     let target_os = get_os_from_triple(target.as_str()).unwrap();
+ 
+-    let sdl2_source_path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap()).join("SDL");
++    let sdl2_source_path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap()).join("../../SDL");
+ 
+     let sdl2_compiled_path: PathBuf;
+     #[cfg(feature = "bundled")]

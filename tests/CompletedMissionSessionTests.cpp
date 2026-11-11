@@ -1,4 +1,5 @@
 #include "PreparedTextStub.hpp"
+#include "Core/Data/Descriptions.hpp"
 #include "Core/Session/GameSession.hpp"
 #include "Core/Progression/Progression.hpp"
 #include "Core/Simulation/DarwinWorldRandom.hpp"
@@ -19,13 +20,17 @@ struct Files:ResourceAccess {
 };
 struct Host:SessionHost {
     Bytes stored;std::vector<SaveReason> writes;std::vector<unsigned> sounds;std::vector<std::string> alerts,notices;std::function<void(std::string_view)> onAlert;
+    std::vector<ui::TextRasterRequest> pickupRequests;
     void sound(std::string_view,Vec2)override{}void soundID(unsigned id,Vec2)override{sounds.push_back(id);}
     void alert(std::string_view key)override{alerts.emplace_back(key);if(onAlert)onAlert(key);}
     void notice(std::string_view,std::string_view message)override{notices.emplace_back(message);}
     void requestName(unsigned)override{assert(false);}void requestDelete(unsigned)override{assert(false);}
     bool writeSave(std::span<const std::uint8_t> bytes,SaveReason why)override{writes.push_back(why);stored.assign(bytes.begin(),bytes.end());return true;}
     std::uint32_t absoluteTimeLow()override{return 1;}std::uint32_t unixTime()override{return 1794268800;}
-    ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest& r)override{return test::preparedTextStub(r);}
+    ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest& r)override{
+        if(r.sourceId=="Player.pickup")pickupRequests.push_back(r);
+        return test::preparedTextStub(r);
+    }
 };
 struct Events:progression::Events{};
 progression::Definitions definitions(Files& files){const auto table=[&](std::string_view name){return DataTable::parse(files.read(name));};return progression::Definitions::parse(table("ItemInfo.tble"),table("ItemRegen.tble"),table("MissionList.tble"),table,"kr");}
@@ -77,6 +82,62 @@ ui::ButtonKey key(ui::Screens& ui,unsigned id){for(const auto& key:ui.buttons())
 void click(ui::Screens& ui,unsigned id,float now){auto b=ui.button(key(ui,id));assert(b);const auto at=b->screenPosition();assert(ui.input(PointerPhase::begin,at,22,now));(void)ui.input(PointerPhase::end,at,22,now+.01f);}
 const Sprite& sprite(const Frame& frame,std::string_view image){for(const auto& s:frame.sprites)if(s.image==image)return s;assert(false);std::abort();}
 Size dimensions(const Sprite& sprite){if(sprite.strip.empty())return sprite.size;float left=sprite.strip[0].position.x,right=left,bottom=sprite.strip[0].position.y,top=bottom;for(const auto& vertex:sprite.strip){left=std::min(left,vertex.position.x);right=std::max(right,vertex.position.x);bottom=std::min(bottom,vertex.position.y);top=std::max(top,vertex.position.y);}return {right-left,top-bottom};}
+void baseDescriptionAndNotices(Files& files){
+    const auto descriptions=Descriptions::parse(DataTable::parse(files.read("Description_kr.tble")));
+    const auto baseTable=DataTable::parse(files.read("Base001.tble"));
+    Vec2 anchor;
+    for(std::size_t row=0;row<baseTable.rowCount();++row)
+        if(baseTable.value(row,"Type")=="Desc")anchor={baseTable.real(row,"X"),baseTable.real(row,"Y")};
+    for(bool completed:{false,true}){
+        Host host;DarwinWorldRandom random(1);
+        GameSession game(files,host,random,completed?twoReady(files):initial());
+        assert(game.selectSlot(0));game.enterBase();
+        UIHost bridge(game,host);PreparedTiles tiles("base-ui");ui::Screens screens(files,tiles,bridge);
+        bridge.screens=&screens;bridge.sync();
+        auto draw=[&]{Frame frame;screens.append(frame,0);return frame;};
+        auto has=[](const Frame& frame,std::string_view image){
+            return std::any_of(frame.sprites.begin(),frame.sprites.end(),[&](const Sprite& s){return s.image==image;});
+        };
+        const auto command=screens.button(key(screens,2001))->screenPosition();
+        screens.tick(.49f,random);
+        assert(!has(draw(),"MissionNotice.png"));
+        screens.tick(.5f,random);
+        auto frame=draw();
+        auto notice=[&](float offset,float topUV){
+            return std::any_of(frame.sprites.begin(),frame.sprites.end(),[&](const Sprite& s){
+                return s.image=="MissionNotice.png"&&s.center.x==command.x&&s.center.y==command.y+offset&&
+                    !s.strip.empty()&&std::abs(s.strip[0].uv.y-topUV)<.001f;
+            });
+        };
+        assert(notice(28,0)==completed);
+        if(!completed)assert(notice(-28,.5f));
+        screens.tick(1,random);
+        assert(!has(draw(),"MissionNotice.png"));
+        click(screens,2001,1);
+        frame=draw();
+        const auto& initialBG=sprite(frame,"BaseTextBG.png");
+        assert(initialBG.center.x==384+(anchor.x>0?480:-480)&&initialBG.center.y==512+anchor.y);
+        assert(!has(frame,"cpu-text:GuiBase.description"));
+        const auto request=bridge.requests.back();
+        assert(request.text==descriptions.lookup("DescCmdCenter")&&request.fontName=="TrebuchetMS-Bold"&&
+            request.fontSize==18&&request.dimensions.width==280&&request.dimensions.height==184&&request.alignment==ui::TextAlign::left);
+        screens.tick(1.01f,random);
+        frame=draw();
+        const float start=anchor.x>0?480:-480;
+        assert(sprite(frame,"BaseTextBG.png").center.x==std::round(384+start+(anchor.x-start)/6.f));
+        bridge.sync();
+        assert(bridge.requests.back()==request&&bridge.requests.size()==1);
+        for(unsigned i=0;i<100;++i)screens.tick(2+i/60.f,random);
+        frame=draw();
+        const auto& label=sprite(frame,"cpu-text:GuiBase.description");
+        assert(label.center.x==384+anchor.x&&label.center.y==512+anchor.y&&std::abs(dimensions(label).height-184)<.001f);
+        click(screens,2002,4);
+        assert(bridge.requests.back().text==descriptions.lookup("DescShop"));
+        assert(!has(draw(),"cpu-text:GuiBase.description"));
+        action(game,2002,{},ui::ButtonEventType::cancel);bridge.sync();
+        assert(!has(draw(),"BaseTextBG.png"));
+    }
+}
 void popupInputAndGeometry(Files& files){
     Host host;DarwinWorldRandom random(1);GameSession game(files,host,random,twoReady(files));assert(game.selectSlot(0));game.enterBase();command(game);
     UIHost bridge(game,host);PreparedTiles tiles("completed-test");ui::Screens screens(files,tiles,bridge);bridge.screens=&screens;bridge.sync();const auto saves=host.writes.size();
@@ -240,5 +301,221 @@ void partialInventoryFailure(const char* root){
     assert(game.state().acceptedMissions.empty());action(game,5007,"M001010");game.tick();assert(game.state().completedMission.dataId.empty()&&game.state().commandListVisible&&game.state().credits==545&&host.alerts.size()==1&&host.writes.size()==saves);
     std::cout<<"COMPLETED partialItemFailureKeepsAddedItems/remainingActionsContinue/takeNotDisplayed/noRetryOrSave/reentrant5007Rejected PASS\n";
 }
+void missionObjects(Files& files){
+    const auto defs=definitions(files);
+    const auto expectedEnemyPosition=[](unsigned precedingItems){
+        DarwinWorldRandom expected(1);
+        // openMap initializes 64 pool particles before addMissionObjects.
+        for(unsigned i=0;i<64+2*precedingItems;++i)(void)expected.random();
+        const auto coordinate=[&]{
+            const float unit=float(expected.random())*0x1p-31f;
+            const float scaled=float(double(unit)*600.0);
+            return scaled-300.f;
+        };
+        const float x=coordinate(),y=coordinate();
+        return Vec2{x,y};
+    };
+    unsigned itemActions=0,enemyActions=0;
+    for(const auto& mission:defs.missions()){
+        for(const auto& action:mission.acceptActions){
+            if(action.type!=5&&action.type!=6)continue;
+            auto data=initial();
+            progression::SlotView slot(data.slot(0));
+            slot.u32(0x1b5c,5);
+            Events events;
+            progression::Progression progress(slot,defs,events);
+            progress.restore();
+            assert(progress.missions.accept(mission.id)&&!progress.missions.state(mission.id)->requireComplete);
+            progress.prepareSave();
+            Host host;
+            DarwinWorldRandom random(1);
+            GameSession game(files,host,random,data);
+            assert(game.selectSlot(0)&&game.enterField("Stage01_01",0));
+            assert(game.fieldItems().empty()&&game.battle()->enemies().empty());
+            assert(game.enterField(action.place,0));
+            const auto items=game.fieldItems();
+            const auto enemies=game.battle()->enemies();
+            if(action.type==5){
+                ++itemActions;
+                assert(enemies.empty()&&items.size()==1&&items[0].code==action.item&&items[0].value==1);
+                assert(items[0].position.x==float(action.x)&&items[0].position.y==float(action.y));
+                assert(game.enterField(action.place,0)&&game.fieldItems().size()==1);
+            }else{
+                ++enemyActions;
+                assert(items.empty()&&enemies.size()==1&&enemies[0].name==action.enemy&&!enemies[0].boss);
+                const auto expected=expectedEnemyPosition(0);
+                if(enemies[0].position.x!=expected.x||enemies[0].position.y!=expected.y)
+                    std::cerr<<mission.id<<" "<<action.place<<" expected="<<std::hexfloat<<expected.x<<","<<expected.y
+                             <<" actual="<<enemies[0].position.x<<","<<enemies[0].position.y
+                             <<" rngCalls="<<game.battle()->metrics().randomCalls<<"\n";
+                assert(enemies[0].position.x==expected.x&&enemies[0].position.y==expected.y);
+            }
+        }
+    }
+    assert(itemActions==7&&enemyActions==7);
+
+    // These original actions coexist on Stage02_06. The item consumes two
+    // RNG draws only when it is pending and earlier in the accepted list.
+    for(bool itemFirst:{false,true})for(bool itemReady:{false,true}){
+        auto data=initial();
+        progression::SlotView slot(data.slot(0));
+        slot.u32(0x1b5c,5);
+        Events events;
+        progression::Progression progress(slot,defs,events);
+        progress.restore();
+        assert(progress.missions.accept("M021030")&&progress.missions.accept("M001160"));
+        if(itemReady)assert(progress.inventory.add(*defs.findItem("05109"),1));
+        assert(progress.missions.state("M021030")->requireComplete==itemReady);
+        if(itemFirst)order(slot,{"M021030","M001160"});
+        else order(slot,{"M001160","M021030"});
+        progress.prepareSave();
+        Host host;
+        DarwinWorldRandom random(1);
+        GameSession game(files,host,random,data);
+        assert(game.selectSlot(0)&&game.enterField("Stage02_06",0));
+        const auto enemies=game.battle()->enemies();
+        assert(game.fieldItems().size()==(itemReady?0:1));
+        const auto expected=expectedEnemyPosition(itemFirst&&!itemReady?1:0);
+        assert(enemies.size()==1&&enemies[0].position.x==expected.x&&enemies[0].position.y==expected.y);
+    }
+    std::cout<<"MISSIONS all original item/enemy placements, location checks, accepted order, ready skip and reentry PASS\n";
 }
-int main(int argc,char** argv){if(argc<2)return 77;Files files(argv[1]);orderedSweep(files);popupInputAndGeometry(files);acceptRefreshOnly(files);retainedRowSelection(files);failedAcceptanceRefresh(files);commandDetailExpansion(files);partialInventoryFailure(argv[1]);}
+void playMissionObject(Files& files,bool combat){
+    const auto defs=definitions(files);
+    const std::string_view id=combat?"M020030":"M001030";
+    const auto def=std::find_if(defs.missions().begin(),defs.missions().end(),[&](const auto& m){return m.id==id;});
+    assert(def!=defs.missions().end());
+    const auto& placement=def->acceptActions.at(0);
+    const auto maps=Maps::parse(Chunk::parse(files.read("MapInfo.mcb")));
+    const auto& map=maps.map(placement.place);
+    const Vec2 itemPosition{float(placement.x),float(placement.y)};
+    const auto distanceSquared=[](Vec2 a,Vec2 b){const auto x=a.x-b.x,y=a.y-b.y;return x*x+y*y;};
+    const auto gate=std::min_element(map.gates.begin(),map.gates.end(),[&](const auto& a,const auto& b){
+        return distanceSquared(a.position,itemPosition)<distanceSquared(b.position,itemPosition);
+    });
+    assert(gate!=map.gates.end());
+    auto data=initial();
+    progression::SlotView slot(data.slot(0));
+    slot.u32(0x1b5c,5);slot.credit(10000);
+    slot.u32(0x1b60+(combat?2:0)*4,1); // Destination already visited.
+    slot.u32(0x654,0);
+    Events events;
+    progression::Progression progress(slot,defs,events);
+    progress.restore();
+    assert(progress.missions.accept(id)&&!progress.missions.state(id)->requireComplete);
+    if(combat){
+        slot.level(99);slot.experience(progression::Experience::bounds(99).previous);
+        const progression::Item* armor=nullptr;
+        for(const auto& [code,item]:defs.items())
+            if(item.type==13&&(!armor||item.param1>armor->param1))armor=&item;
+        assert(armor);
+        assert(!progress.inventory.entry(20)->item&&progress.inventory.setItem(20,armor,1)&&progress.inventory.setEquip(20,4));
+        assert(progress.inventory.add(*defs.findItem("02007"),30));
+        assert(progress.inventory.add(*defs.findItem("01006"),50));
+    }
+    progress.prepareSave();
+    if(combat){slot.string(0x61c,6,"02007");slot.string(0x622,6,"01006");}
+    Host host;
+    DarwinWorldRandom random(1);
+    GameSession game(files,host,random,data);
+    assert(game.selectSlot(0));game.enterBase();
+    assert(game.enterField(placement.place,gate->number));
+    auto tick=[&]{game.tick();(void)game.drawWorld();};
+    auto touch=[&](Vec2 position){
+        const auto point=game.battle()->camera().toScreen(position);
+        if(point.x<0||point.x>768||point.y<100||point.y>1024)return false;
+        assert(game.inputWorld(PointerPhase::begin,point,81));
+        (void)game.inputWorld(PointerPhase::end,point,81);
+        return true;
+    };
+    auto completed=[&]{
+        const auto& missions=game.state().acceptedMissions;
+        return std::any_of(missions.begin(),missions.end(),[&](const auto& mission){return mission.dataId==id&&mission.complete;});
+    };
+    const auto experience=[&]{
+        const auto bytes=game.workingSlot();
+        return std::uint32_t(bytes[0x70])|(std::uint32_t(bytes[0x71])<<8)
+            |(std::uint32_t(bytes[0x72])<<16)|(std::uint32_t(bytes[0x73])<<24);
+    };
+    const auto initialXP=experience();
+    const auto initialStock=combat?count(game,"02007"):count(game,placement.item);
+    const auto target=combat?game.battle()->enemies().at(0).id:0;
+    const auto initialPosition=game.battle()->player().position;
+    for(unsigned frame=0;frame<1800&&!completed();++frame){
+        if(combat&&game.state().hpRate<.65f&&frame%12==0){
+            action(game,6201,{},ui::ButtonEventType::push);
+            assert(touch(game.battle()->player().position));
+        }
+        if(frame%45==0){
+            auto destination=itemPosition;
+            if(combat){
+                const auto enemies=game.battle()->enemies();
+                const auto enemy=std::find_if(enemies.begin(),enemies.end(),[&](const auto& e){return e.id==target;});
+                assert(enemy!=enemies.end()&&enemy->hp>0);
+                destination=enemy->position;
+                const auto point=game.battle()->camera().toScreen(destination);
+                if(point.x>0&&point.x<768&&point.y>100&&point.y<1024){
+                    action(game,6200,{},ui::ButtonEventType::push);
+                    assert(touch(destination));
+                    tick();
+                    continue;
+                }
+            }
+            if(!touch(destination)){
+                const auto player=game.battle()->player().position;
+                assert(touch({player.x+(destination.x-player.x)*.25f,player.y+(destination.y-player.y)*.25f}));
+            }
+        }
+        tick();
+        if(game.battle()->playerHP()<=0)
+            std::cerr<<"Mission "<<id<<" Player destroyed at "<<frame
+                     <<", airStrikes="<<game.battle()->metrics().airStrikeRequests<<"\n";
+        assert(game.battle()->playerHP()>0);
+    }
+    if(!completed()){
+        const auto player=game.battle()->player().position;
+        std::cerr<<"Mission "<<id<<" incomplete; gate="<<gate->number<<" from "<<initialPosition.x<<","<<initialPosition.y
+                 <<" to "<<player.x<<","<<player.y<<" airStrikes="<<game.battle()->metrics().airStrikeRequests<<"\n";
+    }
+    assert(completed());
+    if(combat){
+        assert(count(game,"02007")<initialStock&&experience()>initialXP);
+        const auto enemies=game.battle()->enemies();
+        assert(std::any_of(enemies.begin(),enemies.end(),[&](const auto& e){return e.id==target&&e.corpse&&e.activeParts==1;}));
+    }else{
+        assert(initialStock==0&&count(game,placement.item)==1);
+        const auto frame=game.drawWorld();
+        const auto& pickup=sprite(frame,"PickItem.png");
+        const auto& label=sprite(frame,"cpu-text:Player.pickup");
+        const auto player=game.battle()->camera().toScreen(game.battle()->player().position);
+        assert(pickup.center.x==player.x&&std::abs(pickup.center.y-player.y-50.f)<.001f);
+        assert(label.center.x==std::round(pickup.center.x)&&label.center.y==std::round(pickup.center.y));
+        assert(!host.pickupRequests.empty());
+        const auto& request=host.pickupRequests.back();
+        assert(request.text==defs.findItem(placement.item)->name&&request.fontName=="Arial"&&request.fontSize==12&&
+            request.dimensions.width==120&&request.dimensions.height==14&&request.alignment==ui::TextAlign::center);
+    }
+
+    action(game,1027);action(game,combat?4004:4002,def->completePlace);action(game,4001);settle(game);
+    assert(game.state().screen==ui::ScreenId::base);
+    const auto credit=game.state().credits;
+    const auto beforeRewardXP=experience();
+    const auto beforeRewardBot=count(game,"04201");
+    const auto saves=host.writes.size();
+    command(game);
+    assert(game.state().completedMission.dataId==id);
+    assert(game.state().credits==credit+(combat?40000:300)&&experience()==beforeRewardXP+(combat?40000:400));
+    if(!combat)assert(count(game,placement.item)==0&&count(game,"04201")==beforeRewardBot+1);
+    action(game,5007,std::string(id));game.tick();
+    action(game,2100);settle(game);
+    assert(host.writes.size()==saves+1&&host.writes.back()==SaveReason::enterBase);
+    DarwinWorldRandom decoder(1);
+    auto saved=SaveData::decode(host.stored,decoder,false);
+    progression::SlotView restoredSlot(saved.slot(0));
+    progression::Progression restored(restoredSlot,defs,events);
+    restored.restore();
+    assert(restored.missions.state(id)->complete&&restoredSlot.credit()==game.state().credits);
+    std::cout<<"MISSION "<<id<<" actual "<<(combat?"AirStrike/kill/XP":"movement/pickup")<<"/Airlift/command reward/save PASS\n";
+}
+}
+int main(int argc,char** argv){if(argc<2)return 77;Files files(argv[1]);baseDescriptionAndNotices(files);orderedSweep(files);popupInputAndGeometry(files);acceptRefreshOnly(files);retainedRowSelection(files);failedAcceptanceRefresh(files);commandDetailExpansion(files);partialInventoryFailure(argv[1]);missionObjects(files);playMissionObject(files,false);playMissionObject(files,true);}

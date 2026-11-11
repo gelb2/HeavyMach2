@@ -33,7 +33,7 @@ bool Help::input(PointerPhase phase,Vec2 logical,std::uintptr_t){
 void Help::append(VisualLayer& layer)const{
     if(state_.removed)return;
     const auto submit=[&](std::string_view name){const auto* tile=tiles_.lookup(name);if(!tile)return;
-        VisualImage image;image.tile=tiles_.visual(*tile);image.screenPosition={384,512};image.tileNo=0;image.useAtlas=false;layer.submitImage(image);
+        VisualImage image;image.tile=tiles_.visual(*tile);image.screenPosition=center_;image.tileNo=0;image.useAtlas=false;layer.submitImage(image);
     };
     submit(pages_[std::size_t(state_.page)]);
     if(state_.guidanceVisible)submit("HelpHelp.png");

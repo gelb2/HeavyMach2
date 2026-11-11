@@ -19,6 +19,7 @@ class Help {
     std::string locale_;
     std::array<std::string,3> pages_;
     HelpState state_;
+    Vec2 center_{384,512};
     std::function<void()> onClose_;
     void close();
 public:
@@ -30,6 +31,7 @@ public:
     Help(Help&&)=delete;
     Help& operator=(Help&&)=delete;
     void setPage(int);
+    void setCenter(Vec2 center){center_=center;}
     void setLayer(unsigned value){state_.layer=value;} // QobBase propagation.
     // All events are consumed, including an event which closes the receiver.
     // Only end/state2 changes it. Identifier/Y are unused by original GuiHelp.

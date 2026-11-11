@@ -22,7 +22,15 @@ struct ImageNode {VisualImage image;unsigned layer=7;std::string tag;std::shared
 struct ButtonNode {std::shared_ptr<Button> button;unsigned layer=7;};
 struct TextNode {std::shared_ptr<Text> text;unsigned layer=7;std::shared_ptr<Button> parent{};Vec2 local{};};
 struct NumberNode {std::shared_ptr<ImageFont> font;TileImage* tile;unsigned layer=7;std::string tag;};
-struct PreviewNode {Frame frame;unsigned layer=7;};
+struct PreviewNode {Frame frame;Vec2 origin;unsigned slot;std::uint64_t revision;unsigned layer=7;};
+struct RadarNode {VisualTile tile;unsigned layer=9;};
+struct BaseDescriptionNode {
+    VisualImage background;
+    std::shared_ptr<Text> text;
+    float localX;
+    float targetX;
+    unsigned layer=7;
+};
 enum class DetailKind {shop,inventory,maintenance};
 struct DetailPresentation {
     DetailKind kind=DetailKind::shop;std::uint64_t revision=0;int absolute=-1;
@@ -34,6 +42,7 @@ struct DetailNode {std::shared_ptr<DetailPresentation> detail;unsigned layer=9;}
 struct FieldPresentation {
     std::uint64_t identity=0,enemyRevision=0;bool range[2]={false,false};
     std::shared_ptr<Text> enemyName;
+    std::int32_t displayedCredits=0;
 };
 enum class CommandPart {middle,top,bottom,row,detail,accept};
 struct CommandNode {
@@ -46,13 +55,18 @@ struct CommandPresentation {
     float size=0,displayedSize=0,detailY=0;
     int displayedSelection=-1,detailSelection=-1;
 };
-using Node=std::variant<ImageNode,ButtonNode,TextNode,NumberNode,PreviewNode,DetailNode>;
+using Node=std::variant<ImageNode,ButtonNode,TextNode,NumberNode,PreviewNode,DetailNode,RadarNode,BaseDescriptionNode>;
 struct MessagePresentation {
     VisualImage background;
     std::shared_ptr<Text> text;
     std::uint64_t revision=0;
     float start=0;
     bool initialized=false,hiding=false,autoHide=false;
+};
+struct PlaceNamePresentation {
+    std::uint64_t revision=0;
+    VisualImage background;
+    std::shared_ptr<Text> shadow,label;
 };
 struct TitlePresentation {
     float start=0,bgScale=1.8f,bgRotate=-.05f,titleScale=50,episodeScale=40,bigX=1024;
@@ -71,17 +85,19 @@ struct Screens::Impl {
     std::shared_ptr<Impl> previous;
     TitlePresentation title;
     MessagePresentation message;
+    PlaceNamePresentation placeName;
     std::vector<std::pair<std::shared_ptr<Button>,Vec2>> chooserMoves;
     float now=0;
     std::shared_ptr<DetailPresentation> detail;FieldPresentation fieldPresentation;
     CommandPresentation command;
     std::vector<CommandNode> commandNodes;
     float commandSelectedRowY=0;
+    bool baseNoticeVisible=true;
     Impl(ResourceAccess& r,PreparedTiles& t,ScreensHost& h,const ScreensState& s,float time,std::shared_ptr<Impl> old)
         :resources(r),tiles(t),host(h),state(s),previous(std::move(old)),now(time){
         if(previous&&previous->state.screen==s.screen){title=previous->title;message=previous->message;layers=previous->layers;}
         else{title.start=time;layers=std::make_shared<std::array<VisualLayer,14>>();}
-        if(previous)fieldPresentation=previous->fieldPresentation;
+        if(previous){fieldPresentation=previous->fieldPresentation;placeName=previous->placeName;}
         // accept5004 only invalidates Command.curState. Keep its existing rows
         // until the following Command tick actually refreshes the list.
         if(previous&&s.screen==ScreenId::command&&previous->state.screen==s.screen&&s.commandListRevision&&s.commandListRevision==previous->state.commandListRevision){
@@ -145,13 +161,46 @@ struct Screens::Impl {
         button->scale=scale;dispatcher.add(button);keys.push_back(key);panels[key.owner]=panel;
         nodes.push_back(ButtonNode{button,layer});return button;
     }
+    std::shared_ptr<Text> prepareText(const TextRasterRequest& request){
+        auto prepared=host.prepareText(request);
+        if(!prepared.bitmap||!(prepared.bitmap->request==request))throw std::runtime_error("UI text preparation changed the original request");
+        return std::make_shared<Text>(std::move(prepared.image),std::move(prepared.bitmap));
+    }
+    void syncPlaceName(){
+        if(state.screen!=ScreenId::field||placeName.revision==state.fieldPlaceRevision)return;
+        placeName={};
+        placeName.revision=state.fieldPlaceRevision;
+        if(!placeName.revision)return;
+        if(auto* background=tile("PlaceNameBG.png")){
+            placeName.background.tile=tiles.visual(*background);
+            placeName.background.screenPosition={-1024,512};
+        }
+        if(!state.fieldPlaceName.empty()){
+            placeName.label=prepareText({"GuiGame.placeName",state.fieldPlaceName,"Arial",{256,40},32,TextAlign::center,false,0});
+            placeName.shadow=std::make_shared<Text>(*placeName.label);
+            placeName.shadow->setColor(0,0,0);
+        }
+    }
+    void tickPlaceName(){
+        auto& background=placeName.background;
+        if(!state.hasWorkingSlot||!background.show||background.tile.image.empty())return;
+        // GuiGame.tick0x29508 approaches the center, then the right edge.
+        // QobBase.easyOutTo0x36b48 snaps within the supplied minimum.
+        auto& x=background.screenPosition.x;
+        const float destination=x<384.f?384.f:900.f;
+        const float distance=destination-x;
+        x=distance>.1f?x+distance/12.f:destination;
+        if(x>=900.f){
+            background.show=false;
+            placeName.shadow.reset();
+            placeName.label.reset();
+        }
+    }
     void text(std::string id,std::string value,Vec2 position,Size size,const char* font,float fontSize,TextAlign align,
               Color color={1,1,1,1},unsigned layer=9,Vec2 scale={1,1}){
         if(value.empty())return;
-        TextRasterRequest request{std::move(id),std::move(value),font,size,fontSize,align,false,0};
-        auto prepared=host.prepareText(request);
-        if(!prepared.bitmap||!(prepared.bitmap->request==request))throw std::runtime_error("UI text preparation changed the original request");
-        auto label=std::make_shared<Text>(std::move(prepared.image),std::move(prepared.bitmap));label->position=position;label->scale=scale;
+        auto label=prepareText({std::move(id),std::move(value),font,size,fontSize,align,false,0});
+        label->position=position;label->scale=scale;
         label->setColor(std::uint8_t(color.r*255),std::uint8_t(color.g*255),std::uint8_t(color.b*255));label->alpha=color.a;
         nodes.push_back(TextNode{std::move(label),layer});
     }
@@ -168,11 +217,9 @@ struct Screens::Impl {
         font->position=at;font->setPitch(pitch);font->setAlignRate(align);font->setText(value);font->tick();
         nodes.push_back(NumberNode{std::move(font),t,9,{}});
     }
-    void preview(const Frame& frame,Vec2 origin,unsigned layer=7){
-        if(frame.sprites.empty())return;
-        // QobBase child world position is local+parent. Freeze that translation
-        // once at preparation, including absolute atlas vertices. The source
-        // frame may be shared by several slots and remains immutable.
+    static Frame translatedPreview(const Frame& frame,Vec2 origin){
+        // QobBase child world position is local+parent. Translate once for
+        // each pose revision, including atlas vertices. Keep the source frame.
         Frame prepared=frame;
         for(auto& sprite:prepared.sprites){
             sprite.center=plus(sprite.center,origin);
@@ -184,7 +231,7 @@ struct Screens::Impl {
                 sprite.atlasBatch=std::move(translated);
             }
         }
-        nodes.push_back(PreviewNode{std::move(prepared),layer});
+        return prepared;
     }
     void icon(const ItemView& item,Vec2 position,unsigned layer=9){
         if(!item.icon.empty())image(item.icon,position,item.iconColumns,item.iconRows,item.iconTile,{1,1},false,0,1,layer);
@@ -212,7 +259,8 @@ struct Screens::Impl {
             text(source+".saved.shadow",slot.location,plus(origin,{143,-41}),{256,16},"Trebuchet-BoldItalic",14,TextAlign::center,{0,0,0,1});
             text(source+".saved",slot.location,plus(origin,{142,-40}),{256,16},"Trebuchet-BoldItalic",14,TextAlign::center,{100.f/255,220.f/255,240.f/255,1});
             number("NumSet_Cr.png",slot.credits,plus(origin,{180,-69}),11,1);
-            preview(slot.machPreview,plus(origin,{-170,34}));
+            const Vec2 machOrigin=plus(origin,{-170,34});
+            nodes.push_back(PreviewNode{translatedPreview(slot.machPreview,machOrigin),machOrigin,i,slot.machPreviewRevision});
         }
         // GameMain layer3 is inherited through GuiSelectSlot/slotBase.
         // Explicit part child layers (notably shadow0) remain on each Sprite.
@@ -221,16 +269,88 @@ struct Screens::Impl {
     void base(){
         const auto name=state.baseId+".tble";
         const auto table=DataTable::parse(resources.read(name));const Vec2 root{384,512};
+        std::optional<Vec2> commandPosition,descriptionPosition;
         for(std::size_t i=0;i<table.rowCount();++i){
             const auto kind=table.value(i,"Type").value_or("");const auto asset=table.value(i,"ImageFile").value_or("");
-            const Vec2 at=plus(root,{table.real(i,"X"),table.real(i,"Y")});const float scale=table.real(i,"Scale");const int id=table.integer(i,"ID");
+            const Vec2 local{table.real(i,"X"),table.real(i,"Y")};
+            const Vec2 at=plus(root,local);const float scale=table.real(i,"Scale");const int id=table.integer(i,"ID");
             if(kind=="Image")image(asset,at,1,1,0,{scale,scale},false,id>10?2:0,id>10?0.f:1.f,7,id>10?"baseSelect"+std::to_string(id-10):"");
             else if(kind=="Button"){
                 std::optional<Size> bounds;if(id<4)bounds=Size{160,100};else if(id!=4)bounds=Size{160,60};
-                addButton(Panel::root,unsigned(2000+id),asset,at,1,2,state.selectedBaseButton==id?1:0,1,bounds,0,{}, {scale,scale});
+                addButton(Panel::root,unsigned(2000+id),asset,at,1,2,state.selectedBaseButton==id?1:0,1,bounds,0,{}, {scale,scale},true,7);
+                if(id==1)commandPosition=at;
+            }else if(kind=="Desc")descriptionPosition=local;
+        }
+        const bool sameBase=previous&&previous->state.screen==ScreenId::base&&previous->state.baseId==state.baseId;
+        if(sameBase)baseNoticeVisible=previous->baseNoticeVisible;
+        // GuiBase.init0x246d4 adds these markers after the table's controls.
+        if(auto* notice=tile("MissionNotice.png",1,2);notice&&commandPosition){
+            auto addNotice=[&](unsigned index,float offset){
+                VisualImage mark;
+                mark.tile=tiles.visual(*notice);
+                mark.tileNo=index;
+                mark.screenPosition=plus(*commandPosition,{0,offset});
+                mark.show=baseNoticeVisible;
+                nodes.push_back(ImageNode{std::move(mark),7,"baseMissionNotice"});
+            };
+            if(state.baseHasCompletedMission)addNotice(0,28);
+            if(!state.availableMissions.empty())addNotice(1,-28);
+        }
+        if(!descriptionPosition||state.selectedBaseButton<1||state.selectedBaseButton>7)return;
+        if(sameBase&&previous->state.selectedBaseButton==state.selectedBaseButton&&previous->state.baseDescription==state.baseDescription){
+            for(const auto& node:previous->nodes)if(const auto* description=std::get_if<BaseDescriptionNode>(&node)){
+                nodes.push_back(*description);
+                return;
             }
-            // Desc supplies the selection animation anchor. Ads are excluded
-            // by the product contract and never create a network/UI consumer.
+        }
+        if(auto* background=tile("BaseTextBG.png")){
+            // GuiBase.setSelect:0x243b8 begins at local x +/-480. The
+            // child text only becomes visible when the background arrives.
+            VisualImage image;
+            image.tile=tiles.visual(*background);
+            const float localX=descriptionPosition->x>0?480.f:-480.f;
+            image.screenPosition=plus(root,{localX,descriptionPosition->y});
+            image.scale.y=.02f;
+            std::shared_ptr<Text> label;
+            if(!state.baseDescription.empty()){
+                label=prepareText({"GuiBase.description",state.baseDescription,"TrebuchetMS-Bold",
+                    {280,184},18,TextAlign::left,false,0});
+                label->position=image.screenPosition;
+                label->scale.y=image.scale.y;
+                label->visible=false;
+            }
+            nodes.push_back(BaseDescriptionNode{std::move(image),std::move(label),localX,descriptionPosition->x});
+        }
+    }
+    void tickBaseDescription(BaseDescriptionNode& description){
+        auto& background=description.background;
+        if(description.localX==description.targetX){
+            background.scale.y+=(1.f-background.scale.y)/3.f;
+        }else{
+            description.localX+=(description.targetX-description.localX)/6.f;
+            if(std::abs(description.localX-description.targetX)<=1.f){
+                description.localX=description.targetX;
+                if(description.text)description.text->visible=true;
+            }
+            background.screenPosition.x=384.f+description.localX;
+        }
+        if(description.text){
+            description.text->position=background.screenPosition;
+            description.text->scale.y=background.scale.y;
+        }
+    }
+    void tickBase(float time){
+        baseNoticeVisible=std::fmod(std::trunc(time*2.f),2.f)!=0.f;
+        for(auto& node:nodes){
+            if(auto* description=std::get_if<BaseDescriptionNode>(&node))tickBaseDescription(*description);
+            else if(auto* n=std::get_if<ImageNode>(&node)){
+                if(n->tag=="baseMissionNotice")n->image.show=baseNoticeVisible;
+                else if(n->tag.starts_with("baseSelect")){
+                    const int selection=std::stoi(n->tag.substr(10));
+                    const float target=state.selectedBaseButton==selection?.5f:0.f;
+                    n->image.alpha+=(target-n->image.alpha)/10.f;
+                }
+            }
         }
     }
     void titleScreen(){
@@ -285,10 +405,11 @@ struct Screens::Impl {
         image("EnemyGauge.png",{384,956},1,2,1,{1,1},false,0,1,9,"hud.enemyBack");
         image("EnemyGauge.png",{384-128*(1-state.enemyHpRate),957},1,2,0,{state.enemyHpRate,1},false,0,1,9,"hud.enemy");
         number("NumTile05.png",std::bit_cast<std::int32_t>(std::uint32_t(state.level)+1),plus(hud,{-364,-106}),9,.5f,9,false,"hud.level");
-        number("NumSet01b.png",state.credits,plus(hud,{-122,-37}),6,1,9,false,"hud.credits");
+        number("NumSet01b.png",fieldPresentation.displayedCredits,plus(hud,{-122,-37}),6,1,9,false,"hud.displayedCredits");
         addButton(Panel::root,1021,"QuickBtn.png",plus(hud,{237,-36}),2,4,4,5,Size{60,60});
         addButton(Panel::root,1026,"QuickBtn.png",plus(hud,{296,-36}),2,4,0,1,Size{60,60});
         addButton(Panel::root,1025,"QuickBtn.png",plus(hud,{355,-36}),2,4,2,3,Size{60,60});
+        if(auto* mark=tile("RaderMark.png",8,1))nodes.push_back(RadarNode{tiles.visual(*mark)});
         quickSlots({511,29});
         updateHUD(state);
         if(state.weaponChoiceType!=0)weaponChoices();
@@ -300,6 +421,17 @@ struct Screens::Impl {
     void tickDetail();
     void syncEnemyName();
     void tickRange(WorldRandom&);
+    void tickFieldCredits(){
+        auto& displayed=fieldPresentation.displayedCredits;
+        const auto target=std::int32_t(state.credits);
+        if(!state.fieldUIRevision||!state.hasWorkingSlot||displayed==target)return;
+        // GuiGame.tick0x29a18 uses signed division on a 32-bit difference.
+        const auto delta=std::bit_cast<std::int32_t>(std::uint32_t(target)-std::uint32_t(displayed));
+        displayed=std::bit_cast<std::int32_t>(std::uint32_t(displayed)+std::uint32_t(delta/5));
+        const auto remaining=std::bit_cast<std::int32_t>(std::uint32_t(displayed)-std::uint32_t(target));
+        const auto magnitude=remaining<0?std::bit_cast<std::int32_t>(0u-std::uint32_t(remaining)):remaining;
+        if(magnitude<5)displayed=target;
+    }
     void inventory(Vec2,bool=false);
     void equip(Vec2,unsigned=9);
     void bots(Vec2);
@@ -727,6 +859,7 @@ void Screens::Impl::build(){
         default:throw std::runtime_error("Unknown original screen ID");
     }
     syncMessage();
+    syncPlaceName();
     dispatcher.subscribe({},[this](const ButtonEvent& event){
         const auto panel=panels.at(event.key.owner);const auto screen=state.screen;const unsigned id=event.key.id;
         // Side effects are requested at their original handler event boundary.
@@ -747,8 +880,11 @@ void Screens::Impl::build(){
 void Screens::Impl::tick(float time,WorldRandom& random){
     if(!std::isfinite(time))throw std::runtime_error("Nonfinite original UI clock");now=time;
     if(state.screen==ScreenId::field)tickMessage();
+    // GuiGame keeps ticking its banner while hidden if a slot is loaded.
+    tickPlaceName();
     if(state.screen==ScreenId::command&&state.commandListVisible)tickCommandList();
-    tickRange(random);tickDetail();
+    if(state.screen==ScreenId::base)tickBase(time);
+    tickRange(random);tickFieldCredits();tickDetail();
     if(state.screen==ScreenId::title){
         auto& t=title;
         t.bgRotate=t.bgRotate<0?t.bgRotate+(.01f-t.bgRotate)/60.f:0;
@@ -777,10 +913,10 @@ void Screens::Impl::tick(float time,WorldRandom& random){
         updateTitleImages();
     }
     for(auto& node:nodes){
-        if(auto* number=std::get_if<NumberNode>(&node))number->font->tick();
-        if(state.screen==ScreenId::base)if(auto* n=std::get_if<ImageNode>(&node);n&&n->tag.starts_with("baseSelect")){
-            const int selection=std::stoi(n->tag.substr(10));const float target=state.selectedBaseButton==selection?.5f:0.f;
-            n->image.alpha+=(target-n->image.alpha)/10.f;
+        if(auto* number=std::get_if<NumberNode>(&node)){
+            if(number->tag=="hud.displayedCredits"&&number->font->number()!=fieldPresentation.displayedCredits)
+                number->font->setNumber(fieldPresentation.displayedCredits);
+            number->font->tick();
         }
     }
     for(auto& [button,target]:chooserMoves){
@@ -801,8 +937,36 @@ void Screens::Impl::append(Frame& frame,float time){
             for(const auto& label:{d.title,d.description})if(label){Frame textFrame;label->append(textFrame);for(auto& sprite:textFrame.sprites)layer.submitNonAtlas(std::move(sprite));}
             if(d.large){auto image=*d.large;layer.submitImage(image);}
         }
+        else if constexpr(std::is_same_v<T,BaseDescriptionNode>){
+            auto background=n.background;
+            layer.submitImage(background);
+            if(n.text){Frame f;n.text->append(f);for(auto& s:f.sprites)layer.submitNonAtlas(std::move(s));}
+        }
+        else if constexpr(std::is_same_v<T,RadarNode>){
+            // GuiGame.init0x29c9c / DlgRader.draw0x23d28 use world positions,
+            // independent of camera and enemy visibility.
+            VisualImage image;
+            image.tile=n.tile;
+            for(const auto& mark:state.radarMarks){
+                image.tileNo=mark.tile;
+                image.screenPosition={409.f+mark.worldPosition.x*.0625f,40.f+mark.worldPosition.y*.0625f};
+                layer.submitImage(image);
+            }
+        }
     },node);
     if(state.screen==ScreenId::field&&message.initialized){auto& layer=layers->at(9);layer.submitImage(message.background);if(message.text){Frame textFrame;message.text->append(textFrame);for(auto& s:textFrame.sprites)layer.submitNonAtlas(std::move(s));}}
+    if(state.screen==ScreenId::field&&!placeName.background.tile.image.empty()&&placeName.background.show){
+        auto& layer=layers->at(9);
+        layer.submitImage(placeName.background);
+        if(placeName.label){
+            Frame textFrame;
+            placeName.shadow->position=plus(placeName.background.screenPosition,{2,-2});
+            placeName.shadow->append(textFrame);
+            placeName.label->position=placeName.background.screenPosition;
+            placeName.label->append(textFrame);
+            for(auto& sprite:textFrame.sprites)layer.submitNonAtlas(std::move(sprite));
+        }
+    }
     for(auto& layer:*layers)layer.drain().appendBatches(frame);
 }
 
@@ -812,6 +976,7 @@ void Screens::Impl::updateHUD(const ScreensState& next){
     state.spBarWidth=next.spBarWidth;state.spBarFilled=next.spBarFilled;state.boosterReady=next.boosterReady;
     state.experienceRate=next.experienceRate;state.enemyHpRate=next.enemyHpRate;
     state.level=next.level;state.credits=next.credits;state.hpRate=next.hpRate;state.spRate=next.spRate;
+    state.radarMarks=next.radarMarks;
     state.fieldWorldTime=next.fieldWorldTime;state.fieldUIRevision=next.fieldUIRevision;state.hasWorkingSlot=next.hasWorkingSlot;
     state.outOfRangeTimeLeft=next.outOfRangeTimeLeft;state.outOfRangeTimeRight=next.outOfRangeTimeRight;
     state.enemyName=next.enemyName;state.enemyNameRevision=next.enemyNameRevision;
@@ -831,6 +996,14 @@ void Screens::Impl::updateHUD(const ScreensState& next){
         }else if(auto* n=std::get_if<NumberNode>(&node)){
             if(n->tag=="hud.level")n->font->setNumber(std::bit_cast<std::int32_t>(std::uint32_t(next.level)+1));
             else if(n->tag=="hud.credits")n->font->setNumber(next.credits);
+            else if(n->tag=="hud.displayedCredits"&&n->font->number()!=fieldPresentation.displayedCredits)
+                n->font->setNumber(fieldPresentation.displayedCredits);
+        }else if(auto* n=std::get_if<PreviewNode>(&node)){
+            const auto& slot=next.slots[n->slot];
+            if(n->revision!=slot.machPreviewRevision){
+                n->frame=translatedPreview(slot.machPreview,n->origin);
+                n->revision=slot.machPreviewRevision;
+            }
         }
     }
 }
@@ -937,9 +1110,9 @@ std::vector<ScreenCoverage> Screens::coverage(){
     return {
         {ScreenId::title,Panel::root,"Title images, intro timing, original two-step tap","GuiTitle0x32340/0x327f4/0x3220c",true},
         {ScreenId::slots,Panel::root,"Three slots1009, OK1001, Back1004, Delete1010, names/font/date/credits","GuiSelectSlot0x2e1a4/0x2e6f8",true},
-        {ScreenId::slots,Panel::root,"Slot complete stats/date and current mech animation","GuiSelectSlot.refreshSlot; host assembly",false},
+        {ScreenId::slots,Panel::root,"Selected slot mech movement with equipped parts","GuiSelectSlot0x2e6f8/0x2dfe0/0x2e0a0, GobHvM_Player0xc028",true},
         {ScreenId::base,Panel::root,"Base6 tables and27 table buttons, original bounds and IDs","GuiBase0x246d4/Base001..006.tble",true},
-        {ScreenId::base,Panel::root,"Selection description slide and mission notices","GuiBase0x243b8/0x251d0",false},
+        {ScreenId::base,Panel::root,"Selection description slide and mission notices","GuiBase0x243b8/0x246d4/0x251d0",true},
         {ScreenId::field,Panel::root,"HUD gauges, menu1021, weapon selectors1022/1023, inv1025/mission1026","GuiGame0x29c9c/0x291d4/0x29100/0x29054",true},
         {ScreenId::field,Panel::weaponChoices,"Inventory weapon chooser1024, raw index, originalAffecter targets and labels","GuiGame0x2aad8/QobAffecter0x36698",true},
         {ScreenId::field,Panel::root,"Path move button7000 creation","GuiGame.handleButton; constructor unresolved",false},
@@ -957,7 +1130,9 @@ std::vector<ScreenCoverage> Screens::coverage(){
         {ScreenId::shop,Panel::root,"Five categories2104,24 items2200..2223,pages2105/2106,BUY2102/SELL2103/EXIT2100","GuiShop0x30e4c/0x30260",true},
         {ScreenId::shop,Panel::trade,"Trade2110/2111,2107,2108/2109,actual qty/credit rendering","GuiShop0x31b20",true},
         {ScreenId::shop,Panel::root,"Item detail2112, original preview and expansion animation","GuiShop0x31554/0x30888",false},
-        {ScreenId::field,Panel::root,"Radar, place/enemy names,message lifetime,help pages/game-over native alerts","GuiGame/GuiHelp/GameMain; host consumers pending",false}
+        {ScreenId::field,Panel::root,"Player, BOT and open gate radar markers","DlgRader0x23c7c/0x23d28",true},
+        {ScreenId::field,Panel::root,"Stage-entry place-name banner","GuiGame0x2a820/0x29508, GobWorld0x13778",true},
+        {ScreenId::field,Panel::root,"Enemy names,message lifetime,help pages/game-over native alerts","GuiGame/GuiHelp/GameMain",true}
     };
 }
 }

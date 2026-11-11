@@ -86,10 +86,24 @@ void waitForNewStage(GameSession& game){
 void labelsAndPlace(Files& files,const Maps& maps,const WorldGateNames& names){
     Host host;DarwinWorldRandom random(9);GameSession game(files,host,random,fixture("Stage01_01",1));assert(game.selectSlot(0)&&game.enterField("Stage01_01",1));assert(game.battle()->gates().size()==3);
     const auto& raw=maps.map("Stage01_01").gates;for(std::size_t i=0;i<raw.size();++i){const auto& state=game.battle()->gates()[i];assert(state.definition.number==raw[i].number&&state.definition.linkMap==raw[i].linkMap&&state.destinationName==*names.find(raw[i].linkMap));}
+    const auto& marks=game.state().radarMarks;
+    const auto player=game.battle()->player().position;
+    const auto bots=game.battle()->bots();
+    assert(marks.size()==1+bots.size()+raw.size()&&marks[0].tile==0);
+    assert(marks[0].worldPosition.x==player.x&&marks[0].worldPosition.y==player.y);
+    for(std::size_t i=0;i<bots.size();++i){
+        const auto& mark=marks[1+i];
+        assert(mark.tile==1&&mark.worldPosition.x==bots[i].position.x&&mark.worldPosition.y==bots[i].position.y);
+    }
+    for(std::size_t i=0;i<raw.size();++i){
+        const auto& mark=marks[1+bots.size()+i];
+        assert(mark.tile==2&&mark.worldPosition.x==raw[i].position.x&&mark.worldPosition.y==raw[i].position.y);
+    }
     assert(host.textRequests.size()==6);for(const auto& r:host.textRequests)assert(r.fontName=="Trebuchet-BoldItalic"&&r.fontSize==13&&r.dimensions.width==64&&r.dimensions.height==48&&r.alignment==ui::TextAlign::center);
     assert(host.textRequests[0].text=="RuinField Base"&&host.textRequests[2].text=="wetland"&&host.textRequests[4].text=="wide planes 01");
     game.tick();const auto frame=game.drawWorld();assert(std::any_of(frame.sprites.begin(),frame.sprites.end(),[](const auto& s){return s.image=="LinkGate.png"&&!s.atlasBatch;}));assert(std::any_of(frame.sprites.begin(),frame.sprites.end(),[](const auto& s){return s.image.starts_with("cpu-text:GobLinkGate:");}));
     Host distinctHost;DarwinWorldRandom distinctRandom(11);GameSession distinct(files,distinctHost,distinctRandom,fixture("Stage02_09",0));assert(distinct.selectSlot(0)&&distinct.enterField("Stage02_09",0));assert(string(distinct.workingSlot(),0x3d,24)=="under beach 01");
+    assert(distinct.state().fieldPlaceName=="under beach 01"&&distinct.state().fieldPlaceRevision==1);
     assert(std::any_of(distinctHost.textRequests.begin(),distinctHost.textRequests.end(),[](const auto& r){return r.text=="under city 05";})); // Gate's MapList name intentionally differs from target MapInfo.
     std::cout<<"GATE_SESSION actualScene3/rawOrder/MapListLabelProducer/commonText64x48/realFrame/slotMapInfoDescription PASS\n";
 }
@@ -122,6 +136,8 @@ void eventMatrix(Files& files,const Maps& maps,const progression::Definitions& d
             Host host;DarwinWorldRandom random(7);GameSession game(files,host,random,fixture(event.from,entry,&mission,state));assert(game.selectSlot(0)&&game.enterField(event.from,entry));
             const auto& accepted=game.state().acceptedMissions;assert(accepted.size()==std::size_t(state!=0));if(state)assert(accepted[0].dataId==event.mission&&accepted[0].complete==(state==2));
             const auto gates=game.battle()->gates();const bool created=std::any_of(gates.begin(),gates.end(),[&](const auto& g){return g.definition.eventOnly&&g.definition.number==source.number&&g.definition.linkMap==event.to;});assert(created==(state==1)&&gates.size()==map.gates.size()-std::size_t(state!=1));
+            const auto& marks=game.state().radarMarks;
+            assert(std::count_if(marks.begin(),marks.end(),[](const auto& mark){return mark.tile==2;})==gates.size());
             if(state==1){const auto before=host.writes.size();const auto stored=host.stored;const auto start=game.battle()->player().position;expectSpawn(*game.battle(),source);const auto movedTicks=walkUntilTransition(game,source,start);assert(game.mapLoading()&&!game.battle()->isSave()&&host.writes.size()==before);
                 const double pausedClock=game.battle()->clock().worldTime();waitForNewStage(game);assert(game.battle()->clock().worldTime()==pausedClock);expectSpawn(*game.battle(),findGate(maps.map(event.to),source.linkGate));assert(!game.battle()->isSave()&&host.writes.size()==before&&host.stored==stored&&string(game.workingSlot(),0x2d,16)==event.to&&std::count(host.sounds.begin(),host.sounds.end(),"Title_TitleIn.wav")==1);
                 game.tick();(void)game.drawWorld();assert(game.battle()->clock().worldTime()>pausedClock&&host.writes.size()==before);

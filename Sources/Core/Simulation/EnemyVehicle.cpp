@@ -26,7 +26,7 @@ struct WeaponAdapter:WeaponHost {
 };
 }
 EnemyVehicle::EnemyVehicle(const Models& models,const Weapons& weapons,const MachineInfo& info,Vec2 position,double time,
-                           WorldRandom& random,std::optional<Vec2> spawner)
+                           WorldRandom& random,std::optional<Vec2> spawner,unsigned partBaseLayer)
 :models_(models),info_(info),contact_{position,-1,-1,0},spawner_(spawner){
     validTime(time);
     if(info.kind!=MachineKind::vehicle)throw std::runtime_error("Unverified non-vehicle enemy consumer");
@@ -34,7 +34,7 @@ EnemyVehicle::EnemyVehicle(const Models& models,const Weapons& weapons,const Mac
     mounts_=models_.modelMounts(info.name);
     activeParts_.assign(mounts_.size(),true);
     for(std::size_t i=0;i<mounts_.size();++i){
-        auto& mount=mounts_[i];++mount.layer; // addEnemyMach's layer1, descendants2.
+        auto& mount=mounts_[i];mount.layer+=partBaseLayer;
         const auto& part=models_.part(mount.part);
         if(part.type==4){
             const auto found=weapons.all().find(part.name);

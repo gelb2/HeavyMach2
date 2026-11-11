@@ -200,6 +200,26 @@ int main(int argc,char** argv){
     emptyLeft.tick();emptyLeft.drawFrame();assert(emptyFiles.reads==emptyReads&&emptyFiles.probes==emptyProbes);
     assert(!emptyLeft.isSave());emptyLeft.setIsSave(true);emptyLeft.setPlayerHP(0);assert(emptyLeft.isSave());
     emptyLeft.setIsSave(false);emptyLeft.setPlayerHP(256);assert(!emptyLeft.isSave());
+    const auto noticeStart=emptyLeft.clock().worldTime();
+    emptyLeft.beginPickupNotice();
+    emptyLeft.setPickupNoticeText("15 cr",noticeStart);
+    emptyLeft.tick();
+    const auto noticeSprite=[&]{
+        const auto frame=emptyLeft.drawFrame();
+        const auto found=std::find_if(frame.sprites.begin(),frame.sprites.end(),[](const Sprite& sprite){return sprite.image=="PickItem.png";});
+        return found==frame.sprites.end()?std::optional<Sprite>{}:std::optional<Sprite>(*found);
+    };
+    const auto bounced=noticeSprite();assert(bounced);
+    const auto height=[&](const Sprite& sprite){return sprite.center.y-emptyLeft.camera().toScreen(emptyLeft.player().position).y;};
+    assert(height(*bounced)>50.f);
+    emptyLeft.setPaused(true);for(unsigned i=0;i<10;++i)emptyLeft.tick();
+    const auto frozen=noticeSprite();assert(frozen&&std::abs(height(*frozen)-height(*bounced))<.001f);
+    emptyLeft.setPaused(false);
+    while(emptyLeft.clock().worldTime()-noticeStart<=2.51)emptyLeft.tick();
+    const auto shrinking=noticeSprite();assert(shrinking&&shrinking->strip.size()==4);
+    assert(shrinking->strip[1].position.y-shrinking->strip[0].position.y<32.f);
+    for(unsigned i=0;i<11;++i)emptyLeft.tick();
+    assert(!noticeSprite()&&emptyFiles.reads==emptyReads&&emptyFiles.probes==emptyProbes);
     std::cout<<"Field swap: spare10111 left, append order, preserved right controller/recoil, both emissions and warm IO passed\n";
     // A real untreated player can take damage. This separate shared stream
     // avoids contaminating the long battle's deterministic comparison.

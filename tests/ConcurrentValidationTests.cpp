@@ -54,6 +54,8 @@ struct Host final:validation::ValidationHost {
         const auto base=runtime->session(0).state();auto state=base;
         for(unsigned id=1;id<=7;++id){state=base;state.screen=ui::ScreenId(id);screens.refresh(state);prepare(screens,temporary.tiles,0);}
         for(const auto* name:{"Base001","Base002","Base003","Base004","Base005","Base006"}){state=base;state.screen=ui::ScreenId::base;state.baseId=name;screens.refresh(state);prepare(screens,temporary.tiles,0);}
+        state=base;state.screen=ui::ScreenId::base;state.selectedBaseButton=1;
+        screens.refresh(state);prepare(screens,temporary.tiles,0);
         for(unsigned panel=0;panel<4;++panel){state=base;state.screen=ui::ScreenId::field;state.inventoryVisible=panel==0;state.missionVisible=panel==1;state.airliftVisible=panel==2;state.systemVisible=panel==3;screens.refresh(state);prepare(screens,temporary.tiles,0);}
         // Prepare the actual owned107 chooser inventory without executing
         // an equipment action or counting preparation as a passing scenario.
@@ -71,7 +73,11 @@ struct Host final:validation::ValidationHost {
         interfaces.at(index)->screens->tick(game.renderTime(),counted);
     }
 
-    ui::PreparedScreenText prepareWorldText(unsigned,const ui::TextRasterRequest& r)override{return test::preparedTextStub(r);}
+    std::map<unsigned,std::set<std::string>> pickupLabels;
+    ui::PreparedScreenText prepareWorldText(unsigned index,const ui::TextRasterRequest& r)override{
+        if(r.sourceId=="Player.pickup")pickupLabels[index].insert(r.text);
+        return test::preparedTextStub(r);
+    }
     validation::ConcurrentValidation* runtime=nullptr;
     std::map<unsigned,Bytes> saved;std::map<unsigned,std::uint64_t> sounds,saves,presses,uiDraws,restarts;
     void sound(unsigned i,std::string_view,Vec2)override{++sounds[i];}
@@ -187,6 +193,8 @@ int main(int argc,char** argv){
     assert(runtime.scenarios()[58].role==validation::ScenarioRole::movementLoot&&moving.navigationRequests>0&&moving.distanceMoved>30&&moving.maxDisplacement>30&&moving.playerEmissions>0&&moving.kills>0);
     assert(moving.dashStarts==0);for(std::size_t i=1;i<moving.navigation.size();++i)assert(moving.navigation[i].frame-moving.navigation[i-1].frame>=31);
     assert(moving.coinPickups>0&&moving.pickupCreditGain>0&&moving.credit==moving.initialCredit+moving.pickupCreditGain&&moving.experience>moving.initialExperience);
+    for(const auto& item:moving.pickups)if(item.type==0)
+        assert(host.pickupLabels[58].contains(std::to_string(item.value)+" cr"));
     assert(metrics.movementFramesWithCombatActivity>0&&metrics.pickupFramesWithCombatActivity>0&&metrics.movementEmissionFramesWithCombatActivity>0);
     for(const auto& item:moving.pickups)assert(std::abs(item.player.x-item.item.x)<30&&std::abs(item.player.y-item.item.y)<30);
     assert(metrics.aidKitFramesWithCombatActivity>0);unsigned aidKitCases=0;

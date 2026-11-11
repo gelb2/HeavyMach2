@@ -39,16 +39,21 @@
     self.multipleTouchEnabled=YES;self.contentScaleFactor=UIScreen.mainScreen.scale;_active=YES;
     CAEAGLLayer* layer=(CAEAGLLayer*)self.layer;layer.opaque=YES;
     layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
-    _uiTesting=[NSProcessInfo.processInfo.environment[@"HM2_UI_TESTING"] isEqualToString:@"1"];
     _resourceRoot=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];
     NSFileManager* manager=NSFileManager.defaultManager;NSURL* directory;
+#if DEBUG
+    _uiTesting=[NSProcessInfo.processInfo.environment[@"HM2_UI_TESTING"] isEqualToString:@"1"];
     if(_uiTesting){
         // Test sessions are isolated by a validated UUID. Relaunching the same
         // test UUID checks persistence without opening the player's save.
         NSUUID* run=[[NSUUID alloc]initWithUUIDString:NSProcessInfo.processInfo.environment[@"HM2_UI_TEST_RUN"]];if(!run)run=NSUUID.UUID;
         directory=[[[manager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].firstObject URLByAppendingPathComponent:@"UITests" isDirectory:YES] URLByAppendingPathComponent:run.UUIDString isDirectory:YES];
         self.isAccessibilityElement=YES;self.accessibilityIdentifier=@"hm2.world";self.accessibilityLabel=@"HeavyMach2 Game";
-    }else directory=[[[manager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].firstObject URLByAppendingPathComponent:@"HeavyMach2" isDirectory:YES] copy];
+    }else
+#endif
+    {
+        directory=[[[manager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].firstObject URLByAppendingPathComponent:@"HeavyMach2" isDirectory:YES] copy];
+    }
     NSError* error=nil;
     if(!directory||![manager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:&error])_startupError=error.localizedDescription?:@"Cannot create the game save directory.";
     _saveFile=[directory URLByAppendingPathComponent:@"HeavyMach2.sav"];
@@ -154,6 +159,7 @@
 - (void)touchesCancelled:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event{[self input:touches phase:hm2::PointerPhase::cancel];}
 - (void)setActive:(BOOL)active{_active=active;_display.paused=!active;if(_runtime)_runtime->setActive(active);}
 - (void)updateTestState {
+#if DEBUG
     if(!_uiTesting)return;
     if(!_runtime){self.accessibilityValue=_startupError?[@"error=" stringByAppendingString:_startupError]:@"loading=1";return;}
     auto& game=_runtime->session();const auto& state=game.state();const auto& metrics=game.metrics();
@@ -174,6 +180,7 @@
     }
     for(const auto& key:_runtime->screens().buttons()){const auto b=_runtime->screens().button(key);if(!b||!b->visible||!b->active)continue;const auto p=b->screenPosition();[value appendFormat:@";b%u_%d_x=%.6f;b%u_%d_y=%.6f",key.id,key.intData,p.x,key.id,key.intData,p.y];}
     self.accessibilityValue=value;
+#endif
 }
 - (void)dealloc{[_display invalidate];if(_runtime)_runtime->setActive(false);}
 @end

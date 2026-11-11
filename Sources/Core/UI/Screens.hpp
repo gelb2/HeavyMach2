@@ -26,6 +26,7 @@ struct SlotView {
     int level=0,credits=0,experience=0,missionPercent=0;
     float experienceRate=0;
     Frame machPreview; // Actual assembly commands, relative to original (-170,34).
+    std::uint64_t machPreviewRevision=0;
 };
 struct EquipmentStatsView {
     int attackLeft=0,attackRight=0,baseHP=0,bonusHP=0,bodyDefense=0,armorDefense=0,stepSize=0;
@@ -33,10 +34,13 @@ struct EquipmentStatsView {
 };
 struct MissionRewardView {int type=0,value=0;std::string image;};
 struct CompletedMissionView {std::string dataId,title;std::vector<MissionRewardView> rewards;};
+struct RadarMark {Vec2 worldPosition;unsigned tile=0;};
 struct ScreensState {
     ScreenId screen=ScreenId::title;
     std::string locale="us",baseId="Base001";
     int selectedSlot=-1,selectedBaseButton=0;
+    std::string baseDescription;
+    bool baseHasCompletedMission=false;
     std::array<SlotView,3> slots;
     std::vector<ItemView> inventory,shopItems,availableMissions,acceptedMissions,weaponChoices;
     std::array<ItemView,6> equipment;
@@ -44,6 +48,7 @@ struct ScreensState {
     std::array<ItemView,3> bots;
     std::array<ItemView,5> quick;
     std::array<ItemView,6> airlifts;
+    std::vector<RadarMark> radarMarks;
     int selectedInventory=-1,selectedEquipment=-1,selectedBot=-1,selectedQuick=-1;
     int extInventory=-1,extEquipment=-1,extBot=-1,extQuick=-1;
     int inventoryPage=0,shopPage=0,shopCategory=0,selectedShop=-1,selectedMission=-1,selectedAirlift=-1,weaponChoiceType=0;
@@ -74,6 +79,8 @@ struct ScreensState {
     std::uint64_t detailRevision=0; // Original create/hide calls, even same item.
     std::string enemyName;
     std::uint64_t enemyNameRevision=0; // Original setEnemyName calls.
+    std::string fieldPlaceName;
+    std::uint64_t fieldPlaceRevision=0; // Each original setPlaceName call, even on reentry.
     double fieldWorldTime=0;
     float outOfRangeTimeLeft=0,outOfRangeTimeRight=0;
     // GuiGame persists through hide/Base/field reentry. Only actual allocation

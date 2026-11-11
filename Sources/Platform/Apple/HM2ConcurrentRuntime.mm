@@ -87,6 +87,8 @@ struct ConcurrentRuntime::Impl:validation::ValidationHost {
         const auto base=runner->session(0).state();auto state=base;
         for(unsigned id=1;id<=7;++id){state=base;state.screen=ui::ScreenId(id);screens.refresh(state);prepare(screens,temporary.tiles,0);}
         for(const auto* name:{"Base001","Base002","Base003","Base004","Base005","Base006"}){state=base;state.screen=ui::ScreenId::base;state.baseId=name;screens.refresh(state);prepare(screens,temporary.tiles,0);}
+        state=base;state.screen=ui::ScreenId::base;state.selectedBaseButton=1;
+        screens.refresh(state);prepare(screens,temporary.tiles,0);
         for(unsigned panel=0;panel<4;++panel){state=base;state.screen=ui::ScreenId::field;state.inventoryVisible=panel==0;state.missionVisible=panel==1;state.airliftVisible=panel==2;state.systemVisible=panel==3;screens.refresh(state);prepare(screens,temporary.tiles,0);}
         // Prepare the actual owned107 chooser inventory without executing
         // an equipment action or counting preparation as a passing scenario.

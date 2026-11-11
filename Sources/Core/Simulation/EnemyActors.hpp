@@ -43,7 +43,7 @@ class EnemyActor {
 public:
     static bool supports(MachineKind kind){return kind==MachineKind::vehicle||kind==MachineKind::turret||kind==MachineKind::aircraft;}
     EnemyActor(const Models&,const Weapons&,const MachineInfo&,Vec2,double time,
-               WorldRandom&,std::optional<Vec2> spawner=std::nullopt);
+               WorldRandom&,std::optional<Vec2> spawner=std::nullopt,unsigned partBaseLayer=1);
     ~EnemyActor();
     EnemyActor(const EnemyActor&)=delete;
     EnemyActor& operator=(const EnemyActor&)=delete;
@@ -51,6 +51,7 @@ public:
     void setDestination(Vec2);
     void applyContact(Vec2);
     void setMachineState(int);
+    void setMovementRates(float moveSpeed,float rotationSpeed);
     void removePartsForCorpse();
     // Invoke AFTER the host's complete super-onDamage/onCrash continuation.
     // Aircraft retarget without enabling moveToTarget; turrets/vehicles do both.

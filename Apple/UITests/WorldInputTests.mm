@@ -50,6 +50,8 @@
     [self wait:^BOOL{return world.exists&&[[self state:world][@"slot0Used"] intValue]==1;} description:@"original initSlot selected and saved"];
     XCTAssertEqual([[self state:world][@"screen"] intValue],2);XCTAssertEqual([[self state:world][@"saves"] intValue],1);XCTAssertEqualObjects([self state:world][@"slot0Name"],@"MACH");
     [self tapButton:1001 data:0 world:world];[self wait:^BOOL{return [[self state:world][@"screen"] intValue]==3;} description:@"explicit start enters base"];XCTAssertEqual([[self state:world][@"saves"] intValue],3);[self capture:@"source-base-created-save"];
+    XCTAssertEqual([[self state:world][@"helpVisible"] intValue],1);XCTAssertEqual([[self state:world][@"helpPage"] intValue],0);
+    [self tapLogical:CGPointMake(384,512) world:world];[self wait:^BOOL{return [[self state:world][@"helpVisible"] intValue]==0;} description:@"first Korean base Help consumes the closing tap"];
     [self tapButton:2001 data:0 world:world];[self tapButton:2001 data:0 world:world];[self wait:^BOOL{return [[self state:world][@"screen"] intValue]==4;} description:@"command center opens"];
     const int rankingSaves=[[self state:world][@"saves"] intValue];[self tapButton:5009 data:0 world:world];
     XCUIElement* ranking=app.alerts[@"랭킹"];XCTAssertTrue([ranking waitForExistenceWithTimeout:10]);XCTAssertTrue(ranking.staticTexts[@"현재 랭킹 서비스를 이용할 수 없습니다."].exists);XCTAssertEqual(ranking.buttons.count,1u);[self capture:@"ranking-service-unavailable"];[ranking.buttons[@"OK"] tap];
