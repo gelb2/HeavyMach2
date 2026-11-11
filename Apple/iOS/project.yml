@@ -1,0 +1,116 @@
+name: HeavyMach2
+options:
+  deploymentTarget:
+    iOS: "15.0"
+settings:
+  base:
+    CLANG_CXX_LANGUAGE_STANDARD: c++20
+    CLANG_ENABLE_OBJC_ARC: YES
+    CLANG_ENABLE_MODULES: YES
+    ARCHS: arm64
+    TARGETED_DEVICE_FAMILY: "1,2"
+    SUPPORTS_MACCATALYST: NO
+    ENABLE_BITCODE: NO
+    HEADER_SEARCH_PATHS: ["$(SRCROOT)/../../Sources", "$(SRCROOT)/../../ThirdParty/stb", "$(SRCROOT)/../../ThirdParty/OpenALSoft/include"]
+    OTHER_CPLUSPLUSFLAGS: "$(inherited) -ffp-contract=off -fno-fast-math"
+    CODE_SIGN_STYLE: Automatic
+    HM2_OPENAL_DIR: "$(SRCROOT)/../../build/audio-device-openal"
+    "HM2_OPENAL_DIR[sdk=iphonesimulator*]": "$(SRCROOT)/../../build/audio-simulator-openal"
+    LIBRARY_SEARCH_PATHS: ["$(inherited)", "$(HM2_OPENAL_DIR)"]
+    OTHER_LDFLAGS: "$(inherited) -lopenal"
+targetTemplates:
+  SourceApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: ../../Sources/Core
+        excludes: [Validation/**]
+      - path: ../../Sources/Assets
+      - path: ../../Sources/Platform/Apple
+        excludes: [HM2ConcurrentRuntime.mm]
+      - path: ../../.local/prepared/HD
+        type: folder
+        buildPhase: resources
+      - path: ../../.local/prepared/AppIcons.xcassets
+    settings:
+      base:
+        INFOPLIST_FILE: Info.plist
+    dependencies:
+      - sdk: UIKit.framework
+      - sdk: QuartzCore.framework
+      - sdk: OpenGLES.framework
+      - sdk: CoreGraphics.framework
+      - sdk: CoreText.framework
+      - sdk: AudioToolbox.framework
+      - sdk: CoreAudio.framework
+      - sdk: CoreFoundation.framework
+targets:
+  HeavyMach2Source:
+    templates: [SourceApp]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.gelb2.heavymach2.restored
+        HM2_DISPLAY_NAME: HM2 Source
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GCC_PREPROCESSOR_DEFINITIONS: "$(inherited) HM2_VALIDATION=0"
+  HeavyMach2Validation:
+    templates: [SourceApp]
+    sources:
+      - path: ../../Sources/Core/Validation
+      - path: ../../Sources/Platform/Apple/HM2ConcurrentRuntime.mm
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.gelb2.heavymach2.validation
+        HM2_DISPLAY_NAME: HM2 Validation
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIconValidation
+        GCC_PREPROCESSOR_DEFINITIONS: "$(inherited) HM2_VALIDATION=1"
+  HeavyMach2AppleTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: ../Tests
+      - path: ../../Sources/Core/Validation
+      - path: ../../Sources/Platform/Apple/HM2ConcurrentRuntime.mm
+    dependencies:
+      - target: HeavyMach2Source
+      - sdk: UIKit.framework
+      - sdk: QuartzCore.framework
+      - sdk: OpenGLES.framework
+      - sdk: ImageIO.framework
+      - sdk: CoreGraphics.framework
+      - sdk: AudioToolbox.framework
+      - sdk: CoreAudio.framework
+      - sdk: CoreText.framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.gelb2.heavymach2.apple-tests
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/HeavyMach2Source.app/HeavyMach2Source"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+  HeavyMach2UITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: ../UITests
+    dependencies:
+      - target: HeavyMach2Source
+      - sdk: UIKit.framework
+      - sdk: CoreGraphics.framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.gelb2.heavymach2.ui-tests
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: HeavyMach2Source
+schemes:
+  HeavyMach2Source:
+    build:
+      targets:
+        HeavyMach2Source: all
+    test:
+      targets: [HeavyMach2AppleTests, HeavyMach2UITests]
+  HeavyMach2Validation:
+    build:
+      targets:
+        HeavyMach2Validation: all

@@ -16,3 +16,7 @@
 .DS_Store
 __pycache__/
 *.pyc
+
+# Local Xcode UI and user settings
+xcuserdata/
+*.xcuserstate

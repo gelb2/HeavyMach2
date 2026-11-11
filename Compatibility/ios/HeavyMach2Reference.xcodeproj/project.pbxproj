@@ -1,0 +1,433 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		01F03520C4F7CB8A86C97D39 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 8270FCE571BC0CFFC204B988 /* main.c */; };
+		413668CBFFA0EB0ACFB0464E /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 8270FCE571BC0CFFC204B988 /* main.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		8270FCE571BC0CFFC204B988 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		88BAC761B14DAB86E21EBEA4 /* HM2ReferencePhone.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HM2ReferencePhone.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CF65CB1F58C0DCECB6406622 /* HM2ReferenceHD.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HM2ReferenceHD.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		386132CCEE7E30B7C22F7C6F = {
+			isa = PBXGroup;
+			children = (
+				D38B9B9737678CD4E730E720 /* Stub */,
+				91490F66D0382CF17E9F3482 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		91490F66D0382CF17E9F3482 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CF65CB1F58C0DCECB6406622 /* HM2ReferenceHD.app */,
+				88BAC761B14DAB86E21EBEA4 /* HM2ReferencePhone.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D38B9B9737678CD4E730E720 /* Stub */ = {
+			isa = PBXGroup;
+			children = (
+				8270FCE571BC0CFFC204B988 /* main.c */,
+			);
+			path = Stub;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1E767BD38081CA61E6EF9F50 /* HM2ReferenceHD */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 447D5C18F04973B868784B37 /* Build configuration list for PBXNativeTarget "HM2ReferenceHD" */;
+			buildPhases = (
+				A6E0DA8C695BA00793F8B63A /* Sources */,
+				FE5B3BAE3F97D5CFF095548D /* Package local HM2 original */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HM2ReferenceHD;
+			packageProductDependencies = (
+			);
+			productName = HM2ReferenceHD;
+			productReference = CF65CB1F58C0DCECB6406622 /* HM2ReferenceHD.app */;
+			productType = "com.apple.product-type.application";
+		};
+		6667661A8618F046D2B0C1F8 /* HM2ReferencePhone */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BF1F40EDB703E25ABB85F64F /* Build configuration list for PBXNativeTarget "HM2ReferencePhone" */;
+			buildPhases = (
+				F2CB3268ECDF6BEAD2588B9F /* Sources */,
+				C997635CB6EE95D5F1E1417C /* Package local HM2 original */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HM2ReferencePhone;
+			packageProductDependencies = (
+			);
+			productName = HM2ReferencePhone;
+			productReference = 88BAC761B14DAB86E21EBEA4 /* HM2ReferencePhone.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4668B01E09F83C31A502F2D2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					1E767BD38081CA61E6EF9F50 = {
+						DevelopmentTeam = PDF8XXXYH9;
+						ProvisioningStyle = Automatic;
+					};
+					6667661A8618F046D2B0C1F8 = {
+						DevelopmentTeam = PDF8XXXYH9;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 0D759141BFE3DF378F3288E1 /* Build configuration list for PBXProject "HeavyMach2Reference" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 386132CCEE7E30B7C22F7C6F;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 91490F66D0382CF17E9F3482 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1E767BD38081CA61E6EF9F50 /* HM2ReferenceHD */,
+				6667661A8618F046D2B0C1F8 /* HM2ReferencePhone */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		C997635CB6EE95D5F1E1417C /* Package local HM2 original */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Package local HM2 original";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -eu\nif [ \"$PLATFORM_NAME\" = \"iphonesimulator\" ]; then TARGET=aarch64-apple-ios-sim; else TARGET=aarch64-apple-ios; fi\n\"$SRCROOT/../build-runtime.sh\" \"$TARGET\"\npython3 \"$SRCROOT/../package_reference.py\" phone --target \"$TARGET\" --xcode\n";
+		};
+		FE5B3BAE3F97D5CFF095548D /* Package local HM2 original */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Package local HM2 original";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -eu\nif [ \"$PLATFORM_NAME\" = \"iphonesimulator\" ]; then TARGET=aarch64-apple-ios-sim; else TARGET=aarch64-apple-ios; fi\n\"$SRCROOT/../build-runtime.sh\" \"$TARGET\"\npython3 \"$SRCROOT/../package_reference.py\" hd --target \"$TARGET\" --xcode\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A6E0DA8C695BA00793F8B63A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				413668CBFFA0EB0ACFB0464E /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F2CB3268ECDF6BEAD2588B9F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				01F03520C4F7CB8A86C97D39 /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		5D932D56848171DD4C126164 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CONFIGURATION_BUILD_DIR = "$(HOME)/Documents/Codex/HeavyMach2/ReferenceBuilds/DerivedData/Build/Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				DEVELOPMENT_TEAM = PDF8XXXYH9;
+				ENABLE_DEBUG_DYLIB = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				HM2_DISPLAY_NAME = "HM2 Reference HD";
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.gelb2.heavymach2.reference.hd;
+				PRODUCT_NAME = HM2ReferenceHD;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Debug;
+		};
+		74A6824EF70B3D2016BB5421 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CONFIGURATION_BUILD_DIR = "$(HOME)/Documents/Codex/HeavyMach2/ReferenceBuilds/DerivedData/Build/Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				DEVELOPMENT_TEAM = PDF8XXXYH9;
+				ENABLE_DEBUG_DYLIB = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				HM2_DISPLAY_NAME = "HM2 Reference Phone";
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.gelb2.heavymach2.reference.phone;
+				PRODUCT_NAME = HM2ReferencePhone;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		815320E114AADE3EDA2443D5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		D272569FEDB599FBA06F9D21 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CONFIGURATION_BUILD_DIR = "$(HOME)/Documents/Codex/HeavyMach2/ReferenceBuilds/DerivedData/Build/Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				DEVELOPMENT_TEAM = PDF8XXXYH9;
+				ENABLE_DEBUG_DYLIB = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				HM2_DISPLAY_NAME = "HM2 Reference HD";
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.gelb2.heavymach2.reference.hd;
+				PRODUCT_NAME = HM2ReferenceHD;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Release;
+		};
+		E39DDB8785B93B4551CB7D4E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CONFIGURATION_BUILD_DIR = "$(HOME)/Documents/Codex/HeavyMach2/ReferenceBuilds/DerivedData/Build/Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				DEVELOPMENT_TEAM = PDF8XXXYH9;
+				ENABLE_DEBUG_DYLIB = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				HM2_DISPLAY_NAME = "HM2 Reference Phone";
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.gelb2.heavymach2.reference.phone;
+				PRODUCT_NAME = HM2ReferencePhone;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		F05B399292AC9D0CFB5318BE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0D759141BFE3DF378F3288E1 /* Build configuration list for PBXProject "HeavyMach2Reference" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				815320E114AADE3EDA2443D5 /* Debug */,
+				F05B399292AC9D0CFB5318BE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		447D5C18F04973B868784B37 /* Build configuration list for PBXNativeTarget "HM2ReferenceHD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5D932D56848171DD4C126164 /* Debug */,
+				D272569FEDB599FBA06F9D21 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BF1F40EDB703E25ABB85F64F /* Build configuration list for PBXNativeTarget "HM2ReferencePhone" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E39DDB8785B93B4551CB7D4E /* Debug */,
+				74A6824EF70B3D2016BB5421 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4668B01E09F83C31A502F2D2 /* Project object */;
+}

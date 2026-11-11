@@ -1,0 +1,101 @@
+{
+  "date": "2026-11-11",
+  "gameSourceCommit": "4980818",
+  "priorInstallationRecordCommit": "1218e38",
+  "hostTests": {
+    "passed": 70,
+    "failed": 0
+  },
+  "nativeTests": {
+    "configuration": "Release + ENABLE_TESTABILITY=YES for XCTest host only",
+    "platform": "iPadOS 26.5 simulator",
+    "passed": 2,
+    "failed": 0,
+    "frameCounts": [
+      1200,
+      360
+    ]
+  },
+  "standalone": {
+    "frames": 1200,
+    "scenarios": 115,
+    "combatScenarios": 55,
+    "activeWeaponDefinitions": 110,
+    "activeWeaponKinds": 5,
+    "maxProgressingEffects": 27,
+    "warmReadMisses": 0,
+    "warmExistsMisses": 0,
+    "imageTextureUploadsAfterPreparation": 0,
+    "menuActionFrames": 24,
+    "menuFramesWithCombatActivity": 23,
+    "completeGameCoverage": false,
+    "missingFeatures": [
+      "all23 Player bottom equipment movement checks",
+      "all BOT combat outcomes and death after owner removal attribution",
+      "all mission types and all60 mission completion",
+      "all stages and final campaign completion",
+      "original port-app visual/input/audio equivalence",
+      "OS interruption / audio-route transition"
+    ]
+  },
+  "checks": {
+    "frames1200": true,
+    "all115TickedTogether": true,
+    "all110WeaponDefinitionsEmitted": true,
+    "menuButtonFailuresZero": true,
+    "menuOverlapsCombat": true,
+    "overlappingSoundOutputAdvanced": true,
+    "singleEffectContext": true,
+    "noWarmResourceAccess": true,
+    "noWarmImageTextureUpload": true,
+    "audioObjectsAndFileReadsStable": true,
+    "currentUserSavePreserved": true,
+    "wholeGameCompletionNotClaimed": true
+  },
+  "icons": [
+    {
+      "target": "HeavyMach2Source",
+      "configuration": "Release",
+      "bundle": "com.gelb2.heavymach2.restored",
+      "primaryIcon": "AppIcon",
+      "ipadIcon": "AppIcon",
+      "iconFiles": [
+        {
+          "name": "AppIcon60x60@2x.png",
+          "sha256": "8f83fe008282a71cf9378246795e2b4b4992bd2938dd0c8dd6f2dadab3b61b5a"
+        },
+        {
+          "name": "AppIcon76x76@2x~ipad.png",
+          "sha256": "d34528ac1a94767c2cea78740e308439c9280a09f9fe678cde7e0829dfa0588a"
+        }
+      ],
+      "assetCatalogSha256": "ae0b13a8aff5a5c1d9cc21aee77ca0fbbf5c153d513d12ab3ecd2a09ad94437b"
+    },
+    {
+      "target": "HeavyMach2Validation",
+      "configuration": "Release",
+      "bundle": "com.gelb2.heavymach2.validation",
+      "primaryIcon": "AppIconValidation",
+      "ipadIcon": "AppIconValidation",
+      "iconFiles": [
+        {
+          "name": "AppIconValidation76x76@2x~ipad.png",
+          "sha256": "089e93c769d152890edcad95855f8f1d13c2be48ebb13a948dc5584fa5674f3a"
+        },
+        {
+          "name": "AppIconValidation60x60@2x.png",
+          "sha256": "428b08e82d57efc614cce8e41c03818b927f1e9d0c9d5839ab298fae476e7106"
+        }
+      ],
+      "assetCatalogSha256": "37d575571cee41e70e9b1284f2972cede54a3835fb15291794092e1fcf00592e"
+    }
+  ],
+  "physicalIPad": {
+    "normalReleaseUpdated": true,
+    "saveBytesUnchanged": true,
+    "iconVisibleOnHomeScreen": true,
+    "cheatAppInstalled": false
+  },
+  "evidence": ".local/evidence/icons-validation-20261111/",
+  "limitations": "This checks the current 115 scenarios. All missions, campaign, and final HD original comparison remain pending."
+}

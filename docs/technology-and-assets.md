@@ -1,25 +1,27 @@
 # 기술스택과 에셋 절차
 
-상태: 사용자 요구를 반영한 구현 계획이다. HeavyMach 2의 게임 구현·변환기·앱 검증은 아직 없다. HeavyMach 1과 같은 기술스택을 사용하며, HeavyMach 2 원작의 데이터 저장·읽기·파츠 조립·게임 실행 절차를 복원한다. 일반판과 HD판은 각각 자기 원작 포팅 앱과 비교한다.
+상태: 사용자 요구와 [세 작품 기술스택 대조](technology-stack-review-20261110.md)를 반영한 구현 기준이다. [첫 reader·정적 파츠 조립·Apple GPU 출력](initial-source-restoration-20261110.md)을 구현·시뮬레이터 검사했다. 전체 게임·원작 atlas/그림자·에셋 제작/패키징 절차의 복원 완료는 아니다. 기존 포팅 앱 관측과 새 소스 검사를 구분하며 HeavyMach 1·MachDefense와 같은 스택을 유지한다.
 
 ## 기술스택
 
-아래 HeavyMach 1 근거는 main의 `c604a8eab8aba24affd39c1fc74f79a1be38538e`에서 읽었다. 표의 HeavyMach 2 항목은 채택한 방향이며 구현 완료를 뜻하지 않는다.
+2026-11-10에 HeavyMach 1 main `bd0aa73a`, MachDefense main `0aa03aa7`의 빌드 설정과 소비 코드를 대조했다. [조사 명세](evidence/technology-stack-review-20261110.json)에 전체 커밋·파일·해시를 기록한다. 아래는 HM2 채택 기준이며 구현 완료가 아니다. 새 게임 엔진·런타임 언어를 추가하지 않는다.
 
-| 영역 | HeavyMach 2에 사용할 구성 | HeavyMach 1 확인 근거 |
+| 영역 | HeavyMach 2에 사용할 구성 | 기존 두 작품의 근거 |
 |---|---|---|
-| 공통 게임 코어 | C++20. 데이터 reader, 부품 트리, 전투·진행·저장을 공통 코어에 둔다 | `CMakeLists.txt:2–4` |
-| iPhone·iPad | Objective-C++ 플랫폼 연결, Xcode 빌드. 같은 소스의 유니버설 앱에 일반판/HD 표시 구성을 둔다 | `Sources/iOS/HMGLRenderer.mm`, `iOS/project.yml` |
-| 그래픽·음향 | 원작 그래픽 상태·좌표·알파·블렌딩을 보존하는 렌더러와 OpenAL 계열 음향. HM1의 GLES 1.1 구성부터 대조한다 | `Sources/iOS/HMGLRenderer.h`, `HMGLRenderer.mm`, `HMOpenALAudio.mm`; 후자는 OpenAL Soft 1.22.2 표기 |
-| Android | Kotlin 플랫폼 연결 + NDK C++ 공통 코어, CMake/Gradle. EGL/GLES 및 OpenAL 연결 | `Android/app/build.gradle.kts`, `Android/cmake/CMakeLists.txt` |
-| 웹·PWA | Emscripten으로 같은 C++ 코어를 WebAssembly로 빌드. JavaScript 호스트와 WebGL 2 렌더러 | `Web/CMakeLists.txt`, `Sources/Web/WebMain.cpp`, `WebGLRenderer.cpp` |
-| Tauri 데스크톱 | Tauri 2 Rust 호스트와 같은 웹 산출물. 게임 규칙은 C++ 코어에 유지 | `Desktop/Tauri/src-tauri/Cargo.toml` |
-| 원본 비교 앱 | Rust·SDL 기반 touchHLE 계열의 no-JIT 실행기. 일반판과 HD판 원본을 각각 실행 | `Compatibility/upstream.json`; HM2 ARMv7·iPad 지원 적합성은 R1에서 확인 |
-| 에셋 준비·검사 | Python 오프라인 도구, 필요한 이미지 디코딩 연결. 입력 해시·변환 설정·출력 목록을 기록 | `tools/prepare_unit_data.py`, `prepare_unit_data.md`, `prepare_unit_images.py`, `prepare_unit_images.mm` |
+| 공통 게임 코어 | C++20·CMake. reader·부품·전투·진행·저장과 메뉴·HUD를 공통 코어에 둔다 | 양쪽 `CMakeLists.txt`; MachDefense `Sources/Core/Presentation`·`Session` |
+| iPhone·iPad | Objective-C++·Xcode 유니버설 앱. UIKit은 OS 연결, 인게임 표시는 공통 GPU 경로 | HM1 `Sources/iOS/HMGLRenderer.mm`; MD `Sources/Platform/Apple/MDRenderer.mm`, 양쪽 Xcode 구성 |
+| 그래픽·음향 | OpenGL 계열 스프라이트와 OpenAL Soft1.22.2 효과음. Apple BGM은 HD 원본 AudioQueue 경로 | 양쪽 renderer·OpenAL 소비 코드. MD `MDAudio.mm`·`MDAudioQueueMusic.hpp`; HM2 원본 함수는 대조 보고서에 기록 |
+| Android | 기존 Kotlin Activity/JNI 호스트·NDK C++20·EGL/GLES·OpenAL. Kotlin으로 게임·HUD를 별도 구현하지 않음 | 양쪽 `Android/app/build.gradle.kts`, `Android/cmake/CMakeLists.txt`, GameActivity |
+| 웹·PWA | 같은 C++ 코어를 Emscripten/WebAssembly로 빌드. WebGL2·OpenAL API·JS 호스트. Three.js 추가 없음 | 양쪽 `Web/CMakeLists.txt`·웹 렌더/음향 코드 |
+| Tauri 데스크톱 | Tauri2 Rust 호스트·같은 웹 산출물. 게임 규칙은 C++에 유지 | 양쪽 `Desktop/Tauri/src-tauri/Cargo.toml` |
+| 원본 비교 앱 | 기존 Rust·SDL touchHLE 계열 no-JIT 실행기. 복원 제품과 분리 | HM2 `Compatibility/runtime.json`, 기존 포팅 앱·대조 로그. 전체 정상동작은 미완료 |
+| 에셋 준비·검사 | 기존 Python 오프라인 도구·셸 빌드/검사 역할만 유지. Python/Ruby를 게임 실행 의존성으로 추가하지 않음 | HM1 prepare 도구·MD 오프라인 자원 준비 구조. HM2 원작 형식에 맞춰 복원 |
 
 우선 구현 순서는 두 원본 비교 앱과 Apple 유니버설 앱이다. Android·웹/PWA·Tauri는 같은 코어를 사용하는 후속 대상이다. 플랫폼별 구현·검사는 각각 완료 여부를 기록한다. 의존성과 도구 버전은 실제 빌드가 확인된 버전 및 해시로 고정한다.
 
-HM2 원작의 실제 그래픽 API와 호출은 아직 확인하지 않았다. 셰이더 파일 존재만으로 ES 2 사용을 단정하거나 HM1의 ES 1.1 호출을 강제로 적용하지 않는다. R1에서 두 원작의 호출을 확인하고, 필요한 호환 처리를 같은 플랫폼 계층에 명시한다. 공통 코어의 언어·구조를 임의로 바꾸지 않는다.
+HD1.0.3의 EAGLView 초기화는 API1을 요청하며 기존 GLES1 출력 구성과 맞는다. 일반판 포팅 로그의 API2 요청 거절→API1 경로와 검은 지형 실패는 별도 조사한다. HD 기준 렌더러에 일반판 실패를 복제하지 않는다. 필요한 현대 출력 연결은 같은 플랫폼 경계 안에 둔다. 셰이더 파일만으로 새 엔진을 선택하지 않는다.
+
+[시간·저장·음향·인게임 표시 계약](runtime-contract.md)을 함께 따른다. 사격별 DB/파일 쓰기, 매번 context/source 생성, 효과음의 AVAudioPlayer/AVAudioEngine 대체, UIKit 인게임 버튼 구현을 추가하지 않는다. HM2 HD의8/16비트·모노/스테레오 PCM에 맞게 MachDefense 형식 처리를 재사용 기준으로 삼는다. HM1의 모노 PCM16 로더·게임 시간·저장 포맷을 그대로 복사하지 않는다.
 
 ## 원작 절차의 근거
 
@@ -28,6 +30,12 @@ HM2 원작의 실제 그래픽 API와 호출은 아직 확인하지 않았다. �
 HM1의 현행 `prepare_unit_data.md`는 원본 보존, 공통 reader가 읽는 파생 데이터, 별도 `HMEX0001` 확장 계약을 구분한다. HMEX는 복원 엔진에서 추가한 형식이다. 이를 HM2 원작 형식이라고 부르거나 그대로 이식하지 않는다. HM2의 `.mcb`, `.tble`, `.tbl`을 조사하며 HM1의 `.mch`/`.map` 스키마를 대입하지 않는다.
 
 ## 에셋 생성·저장·조립 규칙
+
+2026-11-10 채택 방향은 HD 그래픽을 두 기기에서 공통 사용하는 것이다. 텍스처 픽셀 크기, 원작 조립 좌표·기준점, 기기별 표시 크기, 카메라 시야, HUD 배치를 별도로 관리한다. 일반판/HD 에셋 대응표에 원작 ID·파일·프레임·여백·기준점·접합점 차이를 기록하고, 확인된 공통 reader와 파츠 조립 경로로 연결한다. 확대 비율 하나 또는 유닛별 임의 C++ 보정으로 대응하지 않는다. HD에서 대응 자원이 없는 항목은 누락으로 기록하고 임의 대체하지 않는다. 기존 표본 측정의 수치는 검증 자료이며 아직 최종 표시 상수가 아니다.
+
+후속 지정에 따라 게임 동작·콘텐츠의 기준도 HD판으로 둔다. 원본 소스를 확보한 것은 아니므로 HD 실행파일·데이터에서 확인한 동작을 새 공통 소스로 복원한다. iPhone·iPad의 표시 크기는 각 원작 포팅판과 대조하며, 월드의 충돌·이동·사거리·전투 계산은 HD 기준으로 공유한다. 화면 표시·입력·접합점·효과에 같은 좌표 변환을 적용한다. 상세 기준은 [복원 방향](restoration-plan.md)의 2026-11-10 후속 지정에 있다.
+
+2026-11-10 [대조 결과](reference-comparison-results-20261110.md)에 따라 표시 그림·터치 선택 반지름·탄환 boundRect를 별도로 복원한다. HD의 카메라 기반 표시 여부가 탄환 충돌 후보 조건에도 들어가므로, 렌더 시야와 전투의 연결을 조사·검증한 뒤 화면을 확장한다. WeaponInfo의 판본 차이를 표시 배율로 보정하지 않는다.
 
 1. **원본 보존:** 외부 IPA는 읽기 전용으로 취급한다. 추출 원본도 덮어쓰지 않고 판본·출처 파일·SHA-256을 기록한다. 원본 IPA와 ARM 실행파일은 Git·LFS·원격 산출물에 넣지 않는다.
 2. **보관 위치:** HM2 전용 공간에서 원본 입력, 제작 원고, 변환 출력, 실행 패키지를 분리한다. 로컬 원본은 `.local/` 또는 전용 외부 공간에 두고, 준비된 실행 자원의 저장소 관리 여부는 출처·권리·배포 범위를 확인해 명세에 기록한다. 다른 게임 폴더를 입력 의존성이나 출력 위치로 연결하지 않는다.
@@ -50,4 +58,4 @@ HM1의 현행 `prepare_unit_data.md`는 원본 보존, 공통 reader가 읽는 �
 | R4 신규 유닛 검증 | 원작 유닛과 동일한 exporter·reader·조립·공격 경로를 통과하는지 검사. 예외 확장은 별도 표기 |
 | R6 독립 빌드 | 원본 IPA·ARM 실행파일·비교 실행기·타 게임 checkout 접근 없이 빌드/실행. 자원 명세와 실제 패키지 일치 |
 
-현재 완료한 것은 이 규칙의 문서화다. 형식 복원·변환기·공통 소비 코드·플랫폼 패키지·실기기 비교는 [TODO](todo.md)에 미완료로 관리한다. 구체적인 비교 장면과 통과 조건은 [원본 포팅 앱 검증 계획](reference-port-validation-plan.md)을 따른다.
+현재 reader·raw MCB 왕복·정적 파츠 조립·개별 이미지 fallback GPU 출력의 첫 범위를 검사했다. 전체 형식·변환/제작 도구·atlas·공통 게임 소비 코드·전체 패키지·실기기 비교는 [TODO](todo.md)에 미완료로 관리한다. 구체적인 장면과 통과 조건은 [원본 포팅 앱 검증 계획](reference-port-validation-plan.md)과 [동시 검증](validation-build.md)을 따른다.

@@ -1,0 +1,1072 @@
+{
+  "date": "2026-11-10",
+  "status": "existing_capture_sample_measurement",
+  "method": "Manual visible outer-bound rectangles, original PNG pixels. Typical edge uncertainty ±4 output pixels; no opaque-area segmentation. No game changes/builds/live execution.",
+  "frames": {
+    "phone201": {
+      "file": "phone201-target-after.png",
+      "label": "일반판 2.0.1 · iPhone · 전투 장면",
+      "guest": [
+        480,
+        320
+      ],
+      "viewport": [
+        423,
+        0,
+        1890,
+        1260
+      ],
+      "host_scale": 3,
+      "scene": "RuinField Base, Lv.1, 500 Cr. 발사 중. 게임 줌 수치·장비 ID 미확인.",
+      "sha256": "57d6aed6499999023efbe121b7e7f7d08e473037b67cb8bcbe6fb8c5212e0177",
+      "capture_px": [
+        2736,
+        1260
+      ],
+      "boundary_error_px": 4
+    },
+    "hd103": {
+      "file": "hd-attack-17.png",
+      "label": "HD 1.0.3 · iPad · 전투 장면",
+      "guest": [
+        768,
+        1024
+      ],
+      "viewport": [
+        0,
+        87,
+        1640,
+        2187
+      ],
+      "host_scale": 2,
+      "scene": "RuinField Base, Lv.1, 500 Cr. 전투 장면. 일반판과 카메라 중심·프레임이 일치하지 않음.",
+      "sha256": "3d470ee18a7ee5765d5d8f37d6fbfd6f73ff1798a9cfb2cd43883451dc26e9eb",
+      "capture_px": [
+        1640,
+        2360
+      ],
+      "boundary_error_px": 4
+    },
+    "hd103_idle": {
+      "file": "hd-field-live-16.png",
+      "label": "HD 1.0.3 · iPad · 전장 초기 장면",
+      "guest": [
+        768,
+        1024
+      ],
+      "viewport": [
+        0,
+        87,
+        1640,
+        2187
+      ],
+      "host_scale": 2,
+      "scene": "RuinField Base, Lv.1, 500 Cr. 메크 방향이 전투 장면과 다름.",
+      "sha256": "59bb1a13c409103e02650795d91a3dd1b4e91b89b6c5c38c30026f151925bbf1",
+      "capture_px": [
+        1640,
+        2360
+      ],
+      "boundary_error_px": 4
+    },
+    "phone201_black": {
+      "file": "phone201-target-before.png",
+      "label": "일반판 2.0.1 · 검은 지형 오류 장면",
+      "guest": [
+        480,
+        320
+      ],
+      "viewport": [
+        423,
+        0,
+        1890,
+        1260
+      ],
+      "host_scale": 3,
+      "scene": "지형 표시 오류. 크기 변화 관측용으로만 포함; 정상 렌더링 기준 제외.",
+      "sha256": "ffea3aecbb1f63b769242b1df5ccade757240bdfe8ac0212b5c547cf61f78629",
+      "capture_px": [
+        2736,
+        1260
+      ],
+      "boundary_error_px": 4
+    }
+  },
+  "measurements": [
+    {
+      "frame": "phone201",
+      "key": "player",
+      "label": "주인공 메크",
+      "box_xyxy": [
+        768,
+        889,
+        878,
+        1012
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "HP·그림자·발사광 제외. 파츠가 겹쳐 개별 파츠 치수는 확정하지 않음.",
+      "size_px": [
+        110,
+        123
+      ],
+      "guest_size": [
+        27.94,
+        31.24
+      ],
+      "host_points": [
+        36.67,
+        41.0
+      ],
+      "viewport_percent": [
+        5.82,
+        9.76
+      ],
+      "guest_size_uncertainty": [
+        2.03,
+        2.03
+      ]
+    },
+    {
+      "frame": "phone201",
+      "key": "enemy",
+      "label": "적 붉은 궤도 차량",
+      "box_xyxy": [
+        1818,
+        399,
+        1907,
+        546
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "화면의 E_Tank_01과 외형상 대응하나 이 개체의 내부 ID 직접 확인은 아님.",
+      "size_px": [
+        89,
+        147
+      ],
+      "guest_size": [
+        22.6,
+        37.33
+      ],
+      "host_points": [
+        29.67,
+        49.0
+      ],
+      "viewport_percent": [
+        4.71,
+        11.67
+      ],
+      "guest_size_uncertainty": [
+        2.03,
+        2.03
+      ]
+    },
+    {
+      "frame": "phone201",
+      "key": "hud",
+      "label": "하단 HUD 외곽 최대 범위",
+      "box_xyxy": [
+        423,
+        1008,
+        2313,
+        1260
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "미니맵·원형 무장 버튼 포함. 내부 빈 공간 포함; 실제 불투명 가림 면적 아님.",
+      "size_px": [
+        1890,
+        252
+      ],
+      "guest_size": [
+        480.0,
+        64.0
+      ],
+      "host_points": [
+        630.0,
+        84.0
+      ],
+      "viewport_percent": [
+        100.0,
+        20.0
+      ],
+      "guest_size_uncertainty": [
+        2.03,
+        2.03
+      ]
+    },
+    {
+      "frame": "phone201",
+      "key": "quick",
+      "label": "첫 퀵슬롯 그림",
+      "box_xyxy": [
+        970,
+        1110,
+        1096,
+        1236
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "터치 영역 미측정.",
+      "size_px": [
+        126,
+        126
+      ],
+      "guest_size": [
+        32.0,
+        32.0
+      ],
+      "host_points": [
+        42.0,
+        42.0
+      ],
+      "viewport_percent": [
+        6.67,
+        10.0
+      ],
+      "guest_size_uncertainty": [
+        2.03,
+        2.03
+      ]
+    },
+    {
+      "frame": "phone201",
+      "key": "weapon",
+      "label": "왼쪽 원형 무장 버튼",
+      "box_xyxy": [
+        728,
+        1026,
+        936,
+        1236
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "터치 영역 미측정.",
+      "size_px": [
+        208,
+        210
+      ],
+      "guest_size": [
+        52.83,
+        53.33
+      ],
+      "host_points": [
+        69.33,
+        70.0
+      ],
+      "viewport_percent": [
+        11.01,
+        16.67
+      ],
+      "guest_size_uncertainty": [
+        2.03,
+        2.03
+      ]
+    },
+    {
+      "frame": "phone201",
+      "key": "map",
+      "label": "미니맵 패널",
+      "box_xyxy": [
+        2052,
+        1008,
+        2313,
+        1260
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "캡처 하단 경계까지의 표시 영역.",
+      "size_px": [
+        261,
+        252
+      ],
+      "guest_size": [
+        66.29,
+        64.0
+      ],
+      "host_points": [
+        87.0,
+        84.0
+      ],
+      "viewport_percent": [
+        13.81,
+        20.0
+      ],
+      "guest_size_uncertainty": [
+        2.03,
+        2.03
+      ]
+    },
+    {
+      "frame": "phone201",
+      "key": "menu",
+      "label": "MENU 버튼 그림",
+      "box_xyxy": [
+        423,
+        1184,
+        684,
+        1260
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "하단 경계까지 보이는 영역.",
+      "size_px": [
+        261,
+        76
+      ],
+      "guest_size": [
+        66.29,
+        19.3
+      ],
+      "host_points": [
+        87.0,
+        25.33
+      ],
+      "viewport_percent": [
+        13.81,
+        6.03
+      ],
+      "guest_size_uncertainty": [
+        2.03,
+        2.03
+      ]
+    },
+    {
+      "frame": "phone201",
+      "key": "hp",
+      "label": "상단 HP 막대 표시",
+      "box_xyxy": [
+        423,
+        0,
+        548,
+        36
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "현재 채워진 막대와 외곽 기준; 최대 체력량 치수 아님.",
+      "size_px": [
+        125,
+        36
+      ],
+      "guest_size": [
+        31.75,
+        9.14
+      ],
+      "host_points": [
+        41.67,
+        12.0
+      ],
+      "viewport_percent": [
+        6.61,
+        2.86
+      ],
+      "guest_size_uncertainty": [
+        2.03,
+        2.03
+      ]
+    },
+    {
+      "frame": "phone201",
+      "key": "boost",
+      "label": "상단 부스터 막대 표시",
+      "box_xyxy": [
+        423,
+        39,
+        603,
+        70
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "",
+      "size_px": [
+        180,
+        31
+      ],
+      "guest_size": [
+        45.71,
+        7.87
+      ],
+      "host_points": [
+        60.0,
+        10.33
+      ],
+      "viewport_percent": [
+        9.52,
+        2.46
+      ],
+      "guest_size_uncertainty": [
+        2.03,
+        2.03
+      ]
+    },
+    {
+      "frame": "phone201",
+      "key": "currency",
+      "label": "재화 표시 영역",
+      "box_xyxy": [
+        423,
+        1097,
+        716,
+        1173
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "",
+      "size_px": [
+        293,
+        76
+      ],
+      "guest_size": [
+        74.41,
+        19.3
+      ],
+      "host_points": [
+        97.67,
+        25.33
+      ],
+      "viewport_percent": [
+        15.5,
+        6.03
+      ],
+      "guest_size_uncertainty": [
+        2.03,
+        2.03
+      ]
+    },
+    {
+      "frame": "phone201",
+      "key": "level",
+      "label": "레벨 표시 영역",
+      "box_xyxy": [
+        436,
+        1026,
+        581,
+        1084
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "",
+      "size_px": [
+        145,
+        58
+      ],
+      "guest_size": [
+        36.83,
+        14.73
+      ],
+      "host_points": [
+        48.33,
+        19.33
+      ],
+      "viewport_percent": [
+        7.67,
+        4.6
+      ],
+      "guest_size_uncertainty": [
+        2.03,
+        2.03
+      ]
+    },
+    {
+      "frame": "phone201",
+      "key": "currency_text",
+      "label": "500 숫자 표시 높이",
+      "box_xyxy": [
+        582,
+        1115,
+        652,
+        1148
+      ],
+      "edge_uncertainty_px": 3,
+      "note": "해당 숫자 잉크 경계. 폰트 em 크기 아님.",
+      "size_px": [
+        70,
+        33
+      ],
+      "guest_size": [
+        17.78,
+        8.38
+      ],
+      "host_points": [
+        23.33,
+        11.0
+      ],
+      "viewport_percent": [
+        3.7,
+        2.62
+      ],
+      "guest_size_uncertainty": [
+        1.52,
+        1.52
+      ]
+    },
+    {
+      "frame": "hd103",
+      "key": "player",
+      "label": "주인공 메크",
+      "box_xyxy": [
+        560,
+        1800,
+        658,
+        1913
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "HP·그림자 제외. 일반판과 정확히 같은 프레임·줌인지 미확인.",
+      "size_px": [
+        98,
+        113
+      ],
+      "guest_size": [
+        45.89,
+        52.91
+      ],
+      "host_points": [
+        49.0,
+        56.5
+      ],
+      "viewport_percent": [
+        5.98,
+        5.17
+      ],
+      "guest_size_uncertainty": [
+        3.75,
+        3.75
+      ]
+    },
+    {
+      "frame": "hd103",
+      "key": "enemy",
+      "label": "적 붉은 궤도 차량",
+      "box_xyxy": [
+        1065,
+        1037,
+        1140,
+        1166
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "일반판 붉은 차량과 유사한 세로 방향. 내부 ID 직접 확인 미완료.",
+      "size_px": [
+        75,
+        129
+      ],
+      "guest_size": [
+        35.12,
+        60.4
+      ],
+      "host_points": [
+        37.5,
+        64.5
+      ],
+      "viewport_percent": [
+        4.57,
+        5.9
+      ],
+      "guest_size_uncertainty": [
+        3.75,
+        3.75
+      ]
+    },
+    {
+      "frame": "hd103_idle",
+      "key": "player",
+      "label": "주인공 메크 · 다른 방향",
+      "box_xyxy": [
+        431,
+        1792,
+        539,
+        1885
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "방향·애니메이션에 따른 경계 변화가 있어 전투 장면과 별도 기록.",
+      "size_px": [
+        108,
+        93
+      ],
+      "guest_size": [
+        50.58,
+        43.54
+      ],
+      "host_points": [
+        54.0,
+        46.5
+      ],
+      "viewport_percent": [
+        6.59,
+        4.25
+      ],
+      "guest_size_uncertainty": [
+        3.75,
+        3.75
+      ]
+    },
+    {
+      "frame": "hd103_idle",
+      "key": "enemy_gun",
+      "label": "적 포신이 있는 궤도 차량",
+      "box_xyxy": [
+        1288,
+        769,
+        1449,
+        875
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "보이는 포신 포함. 정식 유닛 ID 미확인.",
+      "size_px": [
+        161,
+        106
+      ],
+      "guest_size": [
+        75.4,
+        49.63
+      ],
+      "host_points": [
+        80.5,
+        53.0
+      ],
+      "viewport_percent": [
+        9.82,
+        4.85
+      ],
+      "guest_size_uncertainty": [
+        3.75,
+        3.75
+      ]
+    },
+    {
+      "frame": "hd103_idle",
+      "key": "hud",
+      "label": "하단 HUD 외곽 최대 범위",
+      "box_xyxy": [
+        0,
+        1985,
+        1640,
+        2274
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "케이블·미니맵·무장 버튼 포함. 실제 불투명 면적과 다름.",
+      "size_px": [
+        1640,
+        289
+      ],
+      "guest_size": [
+        768.0,
+        135.32
+      ],
+      "host_points": [
+        820.0,
+        144.5
+      ],
+      "viewport_percent": [
+        100.0,
+        13.21
+      ],
+      "guest_size_uncertainty": [
+        3.75,
+        3.75
+      ]
+    },
+    {
+      "frame": "hd103_idle",
+      "key": "quick",
+      "label": "첫 퀵슬롯 프레임",
+      "box_xyxy": [
+        1038,
+        2158,
+        1140,
+        2264
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "안쪽 아이콘을 둘러싼 금속 프레임. 옆 구분대는 제외. 터치 영역 미측정.",
+      "size_px": [
+        102,
+        106
+      ],
+      "guest_size": [
+        47.77,
+        49.63
+      ],
+      "host_points": [
+        51.0,
+        53.0
+      ],
+      "viewport_percent": [
+        6.22,
+        4.85
+      ],
+      "guest_size_uncertainty": [
+        3.75,
+        3.75
+      ]
+    },
+    {
+      "frame": "hd103_idle",
+      "key": "quick_inner",
+      "label": "첫 퀵슬롯 안쪽 그림",
+      "box_xyxy": [
+        1057,
+        2176,
+        1127,
+        2246
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "터치 영역 미측정.",
+      "size_px": [
+        70,
+        70
+      ],
+      "guest_size": [
+        32.78,
+        32.78
+      ],
+      "host_points": [
+        35.0,
+        35.0
+      ],
+      "viewport_percent": [
+        4.27,
+        3.2
+      ],
+      "guest_size_uncertainty": [
+        3.75,
+        3.75
+      ]
+    },
+    {
+      "frame": "hd103_idle",
+      "key": "weapon",
+      "label": "왼쪽 원형 무장 버튼",
+      "box_xyxy": [
+        645,
+        2012,
+        781,
+        2150
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "터치 영역 미측정.",
+      "size_px": [
+        136,
+        138
+      ],
+      "guest_size": [
+        63.69,
+        64.61
+      ],
+      "host_points": [
+        68.0,
+        69.0
+      ],
+      "viewport_percent": [
+        8.29,
+        6.31
+      ],
+      "guest_size_uncertainty": [
+        3.75,
+        3.75
+      ]
+    },
+    {
+      "frame": "hd103_idle",
+      "key": "map",
+      "label": "미니맵 패널",
+      "box_xyxy": [
+        790,
+        2110,
+        948,
+        2266
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "",
+      "size_px": [
+        158,
+        156
+      ],
+      "guest_size": [
+        73.99,
+        73.04
+      ],
+      "host_points": [
+        79.0,
+        78.0
+      ],
+      "viewport_percent": [
+        9.63,
+        7.13
+      ],
+      "guest_size_uncertainty": [
+        3.75,
+        3.75
+      ]
+    },
+    {
+      "frame": "hd103_idle",
+      "key": "menu",
+      "label": "MENU 버튼 그림",
+      "box_xyxy": [
+        1261,
+        2059,
+        1389,
+        2098
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "",
+      "size_px": [
+        128,
+        39
+      ],
+      "guest_size": [
+        59.94,
+        18.26
+      ],
+      "host_points": [
+        64.0,
+        19.5
+      ],
+      "viewport_percent": [
+        7.8,
+        1.78
+      ],
+      "guest_size_uncertainty": [
+        3.75,
+        3.75
+      ]
+    },
+    {
+      "frame": "hd103_idle",
+      "key": "hp",
+      "label": "HP 막대 표시",
+      "box_xyxy": [
+        0,
+        2158,
+        77,
+        2183
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "현재 채워진 표시. 최대 체력 막대 폭으로 해석하지 않음.",
+      "size_px": [
+        77,
+        25
+      ],
+      "guest_size": [
+        36.06,
+        11.71
+      ],
+      "host_points": [
+        38.5,
+        12.5
+      ],
+      "viewport_percent": [
+        4.7,
+        1.14
+      ],
+      "guest_size_uncertainty": [
+        3.75,
+        3.75
+      ]
+    },
+    {
+      "frame": "hd103_idle",
+      "key": "boost",
+      "label": "부스터 막대 표시",
+      "box_xyxy": [
+        0,
+        2103,
+        179,
+        2128
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "",
+      "size_px": [
+        179,
+        25
+      ],
+      "guest_size": [
+        83.82,
+        11.71
+      ],
+      "host_points": [
+        89.5,
+        12.5
+      ],
+      "viewport_percent": [
+        10.91,
+        1.14
+      ],
+      "guest_size_uncertainty": [
+        3.75,
+        3.75
+      ]
+    },
+    {
+      "frame": "hd103_idle",
+      "key": "currency",
+      "label": "재화 패널",
+      "box_xyxy": [
+        360,
+        2047,
+        628,
+        2114
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "",
+      "size_px": [
+        268,
+        67
+      ],
+      "guest_size": [
+        125.5,
+        31.37
+      ],
+      "host_points": [
+        134.0,
+        33.5
+      ],
+      "viewport_percent": [
+        16.34,
+        3.06
+      ],
+      "guest_size_uncertainty": [
+        3.75,
+        3.75
+      ]
+    },
+    {
+      "frame": "hd103_idle",
+      "key": "level",
+      "label": "레벨 패널",
+      "box_xyxy": [
+        3,
+        2196,
+        83,
+        2260
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "",
+      "size_px": [
+        80,
+        64
+      ],
+      "guest_size": [
+        37.46,
+        29.97
+      ],
+      "host_points": [
+        40.0,
+        32.0
+      ],
+      "viewport_percent": [
+        4.88,
+        2.93
+      ],
+      "guest_size_uncertainty": [
+        3.75,
+        3.75
+      ]
+    },
+    {
+      "frame": "hd103_idle",
+      "key": "exp",
+      "label": "경험치 패널",
+      "box_xyxy": [
+        82,
+        2198,
+        582,
+        2260
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "",
+      "size_px": [
+        500,
+        62
+      ],
+      "guest_size": [
+        234.15,
+        29.03
+      ],
+      "host_points": [
+        250.0,
+        31.0
+      ],
+      "viewport_percent": [
+        30.49,
+        2.83
+      ],
+      "guest_size_uncertainty": [
+        3.75,
+        3.75
+      ]
+    },
+    {
+      "frame": "hd103_idle",
+      "key": "currency_text",
+      "label": "500 숫자 표시 높이",
+      "box_xyxy": [
+        526,
+        2069,
+        562,
+        2092
+      ],
+      "edge_uncertainty_px": 3,
+      "note": "해당 숫자 잉크 경계. 폰트 em 크기 아님.",
+      "size_px": [
+        36,
+        23
+      ],
+      "guest_size": [
+        16.86,
+        10.77
+      ],
+      "host_points": [
+        18.0,
+        11.5
+      ],
+      "viewport_percent": [
+        2.2,
+        1.05
+      ],
+      "guest_size_uncertainty": [
+        2.81,
+        2.81
+      ]
+    },
+    {
+      "frame": "phone201_black",
+      "key": "player",
+      "label": "주인공 메크 · 오류 장면",
+      "box_xyxy": [
+        861,
+        812,
+        1028,
+        968
+      ],
+      "edge_uncertainty_px": 4,
+      "note": "지형 오류와 방향·줌 차이를 분리하지 못함. 정상 기준으로 채택하지 않음.",
+      "size_px": [
+        167,
+        156
+      ],
+      "guest_size": [
+        42.41,
+        39.62
+      ],
+      "host_points": [
+        55.67,
+        52.0
+      ],
+      "viewport_percent": [
+        8.84,
+        12.38
+      ],
+      "guest_size_uncertainty": [
+        2.03,
+        2.03
+      ]
+    }
+  ],
+  "limits": [
+    "첫 전장의 표본이며 모든 적·장비·애니메이션 전수 측정 아님",
+    "정확한 동일 카메라·줌·장비 ID·프레임 대조 미완료",
+    "파츠별 분리 치수·실제 터치 영역·월드 좌표 시야·실물 mm 미측정",
+    "HD 1.0.0·일반판 1.1.0은 이번 수치표에 포함하지 않음",
+    "현재 앱 provenance는 보조 자료이며 과거 캡처 생성 빌드의 모든 패치 해시를 확정하지 못함",
+    "복원판 iPhone/iPad는 아직 없어 비교 열 미측정"
+  ],
+  "provenance": {
+    "runtime_baseline": "ebf9433e2bfd32071545bf49484b1345d15522a3",
+    "phone_log": "phone201-layer-retry.log",
+    "hd_log": "hd-sim-input-12.log",
+    "phone_guest_ipa_sha256": "23ff9c74c7d890cc6f28952b4845f6c616bae4bb7207a393f80ed9ed76062d32",
+    "hd_guest_ipa_sha256": "7eeb36590b3c19a28741e21671379029d9023864ceb241a5b8560eef045112d2",
+    "capture_device_names": "기존 실행 기록: iPhone Air / iPad Air 11-inch (M4), iOS 26.5. 캡처 크기·로그의 호스트 캔버스와 대응. 이번에 실시간 기기 실행하지 않음.",
+    "viewport_evidence": "window.rs viewport()의 등비 맞춤·round·중앙 정렬 공식; phone 로그 COMP-UP 480x320, host 912x420; HD 로그 COMP-UP 768x1024, host 820x1180; PNG 비검정 경계 각각 (423,0,2313,1260),(0,87,1640,2274).",
+    "current_bundle_provenance_is_not_historical_capture_proof": true
+  }
+}

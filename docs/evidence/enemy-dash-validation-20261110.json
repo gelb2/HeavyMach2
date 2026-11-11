@@ -1,0 +1,3849 @@
+{
+  "scope": "restored modules; all field entry/spawn, representative battles, dash and existing68 conditions; not full game",
+  "completeGameCoverage": false,
+  "originalExecutableSHA256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+  "cppTests": 51,
+  "sourceSHA256": {
+    "Sources/Core/Simulation/CombatScene.cpp": "4d41b85c85c79aac8e007547ad80996bf26badaba04612dbb87e188b9256b338",
+    "Sources/Core/Simulation/CombatScene.hpp": "6ad9d7bb5a22e3e9f34b946bea45f45ba22834dcb05dd87361f33f432edec73d",
+    "Sources/Core/Simulation/Dash.cpp": "03f351a6bd6bf594bd61b24c015f64ad463af2c0eae766fdc879f1324800c900",
+    "Sources/Core/Simulation/Dash.hpp": "21a87f66062b3e35fe1a589f8e8a6e558c34016dfd22640bd26917963cffa7b2",
+    "Sources/Core/Simulation/WorldNavigation.cpp": "356f526c28ac5c103c5892310fcc544455ad6b7a471c76947f9bbca279965c89",
+    "Sources/Core/Simulation/WorldNavigation.hpp": "2f9a69809ca34b85286ea5e448dbbd5826796e3042d5c59ada035e37baf4296c",
+    "Sources/Core/Simulation/BipodMotion.hpp": "e69e49ec23ecdd49eae216d71629edebbb8f34c2ee3ca00e72acc17b2933fe58",
+    "Sources/Core/Session/GameSession.cpp": "1c19a4bdc0b18e211adb3f9e90b32395af73c5b27dcc37a8d00c918d027fb476",
+    "Sources/Core/Validation/ConcurrentValidation.cpp": "0a9866369f2af3bd824b10135ab37b8cd7f366a22ea4a6035333f6155c637707",
+    "Sources/Core/Validation/ConcurrentValidation.hpp": "5c21d0f6b1c77f02c04fbc8782f04cf5ea5ba738fc4de14650e365a5519f8b6c",
+    "Sources/Platform/Apple/HM2ConcurrentRuntime.mm": "2c2dc6f70a1d0cf96442594978a4cb9f794ecb8f443def82bd6833715a080b96",
+    "Apple/Tests/ConcurrentValidationTests.mm": "1ca708c2b0fb11ee76209a9590f6c30b889935f39ed165c10ed69e4a76269aa0",
+    "tests/DashSessionTests.cpp": "591e29d9f9e16856bb70ae1f54491e152d35acd7a85d6ba17261cf730be1cde3",
+    "tests/EnemyActorSceneTests.cpp": "cf4215cd682c7768595de177e5f7e798139044e2876481eea4072cc9591f3f45",
+    "tests/ConcurrentValidationTests.cpp": "624efc5af1168f259122076f21f472c136fd6dee0673048ce1efcee969637a59"
+  },
+  "sanitizer": {
+    "scope": "entire common Core; ASan/UBSan; no leak test",
+    "frames": 1200,
+    "scenarios": 106,
+    "normalObservationParity": {
+      "same": true,
+      "normal": "../core/concurrent106-final.log",
+      "normalized_lines": 1361,
+      "normalization": "Remove seconds footer only; compare SCENARIO/FRAME/WORLD/DASH/AIDKIT/AIRSTRIKE/MOVEMENT/PICKUP/HM2_CONCURRENT line prefixes",
+      "previous_comparison_correction": "concurrent106-second.log used movement input frames1,31,62. Current final.log and sanitizer use (frame-1)%31==0, frames1,32,63. Earlier difference was comparison against the previous input schedule, not evidence of optimizer divergence."
+    }
+  },
+  "devices": {
+    "ipad": {
+      "sourceSHA256": "246be7254f352f05817821fee5ca22ee335d2bb7ad64ba1cb0b6924223f9eb37",
+      "frames": 1200,
+      "scenarios": 106,
+      "combatScenarios": 55,
+      "activeWeaponDefinitions": 110,
+      "activeWeaponKinds": 5,
+      "maxConcurrentWeaponDefinitions": 25,
+      "maxProgressingEffects": 25,
+      "audioContexts": 1,
+      "warmReadMisses": 0,
+      "warmExistsMisses": 0,
+      "imageTextureUploadsAfterPreparation": 0,
+      "cpuAndSubmissionP95ms": 62.546124999999996,
+      "renderComparison": {
+        "comparedPixels": 3870400,
+        "differentRGBPixels": 0,
+        "experimentalBatchingAdopted": false,
+        "firstDrawCalls": 4930,
+        "maxRGBDifference": 0,
+        "renderPath": "originalOrderedScissor",
+        "repeatDrawCalls": 4930,
+        "sameCachedFrame": true,
+        "sourceSprites": 4930
+      },
+      "baselineMenuFrames": 11,
+      "firstSpawns": [
+        385,
+        307,
+        3
+      ],
+      "worlds": [
+        {
+          "id": 68,
+          "map": "Stage01_02",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            22,
+            6,
+            0
+          ],
+          "enemySpawns": [
+            22,
+            6,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            1,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            1,
+            0
+          ],
+          "enemyKills": [
+            0,
+            1,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            1,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 69,
+          "map": "Stage01_03",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            13,
+            8,
+            0
+          ],
+          "enemySpawns": [
+            13,
+            8,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            9,
+            0,
+            0
+          ],
+          "enemyKills": [
+            9,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            7,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 70,
+          "map": "Stage01_04",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            19,
+            6,
+            0
+          ],
+          "enemySpawns": [
+            19,
+            6,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            8,
+            1,
+            0
+          ],
+          "enemyKills": [
+            8,
+            1,
+            0
+          ],
+          "enemyRemovals": [
+            8,
+            1,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 71,
+          "map": "Stage01_05",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            18,
+            7,
+            0
+          ],
+          "enemySpawns": [
+            18,
+            7,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            5,
+            0,
+            0
+          ],
+          "enemyKills": [
+            5,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            5,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 72,
+          "map": "Stage01_06",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3226,
+          "firstSpawns": [
+            19,
+            9,
+            0
+          ],
+          "enemySpawns": [
+            19,
+            9,
+            0
+          ],
+          "enemyEmissions": [
+            3,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            14,
+            0,
+            0
+          ],
+          "enemyKills": [
+            14,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            14,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 73,
+          "map": "Stage01_07",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            19,
+            6,
+            0
+          ],
+          "enemySpawns": [
+            19,
+            6,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            10,
+            0,
+            0
+          ],
+          "enemyKills": [
+            10,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            6,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 74,
+          "map": "Stage01_08",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            1,
+            8,
+            0
+          ],
+          "enemySpawns": [
+            1,
+            8,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            0,
+            0
+          ],
+          "enemyKills": [
+            0,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            0,
+            0
+          ],
+          "bossSpawns": 1,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 75,
+          "map": "Stage01_09",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            2,
+            4,
+            0
+          ],
+          "enemySpawns": [
+            2,
+            4,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            3,
+            0,
+            0
+          ],
+          "enemyKills": [
+            2,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            2,
+            0,
+            0
+          ],
+          "bossSpawns": 1,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 76,
+          "map": "Stage02_01",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            13,
+            4,
+            0
+          ],
+          "enemySpawns": [
+            13,
+            4,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            9,
+            0,
+            0
+          ],
+          "enemyKills": [
+            9,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            9,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 77,
+          "map": "Stage02_02",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            11,
+            5,
+            0
+          ],
+          "enemySpawns": [
+            11,
+            5,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            9,
+            0,
+            0
+          ],
+          "enemyKills": [
+            9,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            9,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 78,
+          "map": "Stage02_03",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            11,
+            1,
+            0
+          ],
+          "enemySpawns": [
+            11,
+            1,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            7,
+            0,
+            0
+          ],
+          "enemyKills": [
+            7,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            7,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 79,
+          "map": "Stage02_04",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            18,
+            1,
+            0
+          ],
+          "enemySpawns": [
+            18,
+            1,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            3,
+            0,
+            0
+          ],
+          "enemyKills": [
+            3,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            3,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 80,
+          "map": "Stage02_05",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            13,
+            2,
+            0
+          ],
+          "enemySpawns": [
+            13,
+            2,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            0,
+            0
+          ],
+          "enemyKills": [
+            0,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 81,
+          "map": "Stage02_06",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            11,
+            3,
+            0
+          ],
+          "enemySpawns": [
+            11,
+            3,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            6,
+            0,
+            0
+          ],
+          "enemyKills": [
+            6,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            6,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 82,
+          "map": "Stage02_07",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3212,
+          "firstSpawns": [
+            0,
+            8,
+            1
+          ],
+          "enemySpawns": [
+            0,
+            8,
+            1
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            16
+          ],
+          "enemyDamage": [
+            0,
+            0,
+            3
+          ],
+          "enemyKills": [
+            0,
+            0,
+            1
+          ],
+          "enemyRemovals": [
+            0,
+            0,
+            1
+          ],
+          "bossSpawns": 1,
+          "worldQuickUses": 1,
+          "buttonFailures": 0
+        },
+        {
+          "id": 83,
+          "map": "Stage02_08",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            15,
+            1,
+            0
+          ],
+          "enemySpawns": [
+            15,
+            1,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            3,
+            0,
+            0
+          ],
+          "enemyKills": [
+            3,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            3,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 84,
+          "map": "Stage02_09",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            4,
+            28,
+            0
+          ],
+          "enemySpawns": [
+            4,
+            28,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            5,
+            13,
+            0
+          ],
+          "enemyKills": [
+            1,
+            13,
+            0
+          ],
+          "enemyRemovals": [
+            1,
+            13,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 85,
+          "map": "Stage02_10",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            7,
+            17,
+            0
+          ],
+          "enemySpawns": [
+            7,
+            17,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            2,
+            14,
+            0
+          ],
+          "enemyKills": [
+            2,
+            14,
+            0
+          ],
+          "enemyRemovals": [
+            2,
+            14,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 86,
+          "map": "Stage03_01",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3140,
+          "firstSpawns": [
+            12,
+            1,
+            0
+          ],
+          "enemySpawns": [
+            12,
+            1,
+            0
+          ],
+          "enemyEmissions": [
+            2,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            27,
+            0,
+            0
+          ],
+          "enemyKills": [
+            3,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            3,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 87,
+          "map": "Stage03_02",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            6,
+            20,
+            0
+          ],
+          "enemySpawns": [
+            6,
+            20,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            20,
+            3,
+            0
+          ],
+          "enemyKills": [
+            2,
+            3,
+            0
+          ],
+          "enemyRemovals": [
+            2,
+            3,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 88,
+          "map": "Stage03_03",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3159,
+          "firstSpawns": [
+            4,
+            22,
+            0
+          ],
+          "enemySpawns": [
+            4,
+            22,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            15,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            3,
+            0
+          ],
+          "enemyKills": [
+            0,
+            3,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            3,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 89,
+          "map": "Stage03_04",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3195,
+          "firstSpawns": [
+            4,
+            5,
+            2
+          ],
+          "enemySpawns": [
+            4,
+            5,
+            2
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            16
+          ],
+          "enemyDamage": [
+            0,
+            0,
+            3
+          ],
+          "enemyKills": [
+            0,
+            0,
+            1
+          ],
+          "enemyRemovals": [
+            0,
+            0,
+            1
+          ],
+          "bossSpawns": 2,
+          "worldQuickUses": 1,
+          "buttonFailures": 0
+        },
+        {
+          "id": 90,
+          "map": "Stage03_05",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            11,
+            8,
+            0
+          ],
+          "enemySpawns": [
+            11,
+            8,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            6,
+            0,
+            0
+          ],
+          "enemyKills": [
+            1,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            1,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 91,
+          "map": "Stage03_06",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            9,
+            2,
+            0
+          ],
+          "enemySpawns": [
+            9,
+            2,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            6,
+            0,
+            0
+          ],
+          "enemyKills": [
+            3,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            3,
+            0,
+            0
+          ],
+          "bossSpawns": 2,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 92,
+          "map": "Stage03_07",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            6,
+            10,
+            0
+          ],
+          "enemySpawns": [
+            6,
+            10,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            11,
+            0,
+            0
+          ],
+          "enemyKills": [
+            4,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            4,
+            0,
+            0
+          ],
+          "bossSpawns": 2,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 93,
+          "map": "Stage04_01",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 2780,
+          "firstSpawns": [
+            3,
+            18,
+            0
+          ],
+          "enemySpawns": [
+            3,
+            18,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            41,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            56,
+            0
+          ],
+          "enemyKills": [
+            0,
+            3,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            3,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 2,
+          "buttonFailures": 0
+        },
+        {
+          "id": 94,
+          "map": "Stage04_02",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 2396,
+          "firstSpawns": [
+            6,
+            21,
+            0
+          ],
+          "enemySpawns": [
+            6,
+            21,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            9,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            8,
+            0
+          ],
+          "enemyKills": [
+            0,
+            8,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            8,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 1,
+          "buttonFailures": 0
+        },
+        {
+          "id": 95,
+          "map": "Stage04_03",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3215,
+          "firstSpawns": [
+            6,
+            10,
+            0
+          ],
+          "enemySpawns": [
+            6,
+            10,
+            0
+          ],
+          "enemyEmissions": [
+            1,
+            3,
+            0
+          ],
+          "enemyDamage": [
+            12,
+            3,
+            0
+          ],
+          "enemyKills": [
+            4,
+            3,
+            0
+          ],
+          "enemyRemovals": [
+            4,
+            3,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 96,
+          "map": "Stage04_04",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 2896,
+          "firstSpawns": [
+            7,
+            18,
+            0
+          ],
+          "enemySpawns": [
+            7,
+            18,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            3,
+            0
+          ],
+          "enemyDamage": [
+            3,
+            37,
+            0
+          ],
+          "enemyKills": [
+            3,
+            2,
+            0
+          ],
+          "enemyRemovals": [
+            3,
+            2,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 97,
+          "map": "Stage04_05",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            12,
+            3,
+            0
+          ],
+          "enemySpawns": [
+            12,
+            3,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            15,
+            0,
+            0
+          ],
+          "enemyKills": [
+            8,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            8,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 98,
+          "map": "Stage04_06",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            11,
+            6,
+            0
+          ],
+          "enemySpawns": [
+            11,
+            6,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            8,
+            0,
+            0
+          ],
+          "enemyKills": [
+            4,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            4,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 99,
+          "map": "Stage04_07",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            16,
+            3,
+            0
+          ],
+          "enemySpawns": [
+            16,
+            3,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            9,
+            0,
+            0
+          ],
+          "enemyKills": [
+            9,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            9,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 100,
+          "map": "Stage04_08",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 2852,
+          "firstSpawns": [
+            6,
+            9,
+            0
+          ],
+          "enemySpawns": [
+            6,
+            9,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            3,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            23,
+            0
+          ],
+          "enemyKills": [
+            0,
+            6,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            6,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 101,
+          "map": "Stage04_09",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            11,
+            3,
+            0
+          ],
+          "enemySpawns": [
+            11,
+            3,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            15,
+            0,
+            0
+          ],
+          "enemyKills": [
+            5,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            5,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 102,
+          "map": "Stage04_10",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            10,
+            13,
+            0
+          ],
+          "enemySpawns": [
+            10,
+            13,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            18,
+            0
+          ],
+          "enemyKills": [
+            0,
+            1,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            1,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 103,
+          "map": "Stage04_11",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            12,
+            1,
+            0
+          ],
+          "enemySpawns": [
+            12,
+            1,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            18,
+            0,
+            0
+          ],
+          "enemyKills": [
+            6,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            6,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 104,
+          "map": "Stage04_12",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            1,
+            10,
+            0
+          ],
+          "enemySpawns": [
+            1,
+            10,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            1,
+            0
+          ],
+          "enemyKills": [
+            0,
+            1,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            1,
+            0
+          ],
+          "bossSpawns": 1,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        }
+      ],
+      "dash": {
+        "id": 105,
+        "label": "real ground double tap / SP / dash",
+        "ticks": 1200,
+        "dashStarts": 1,
+        "dashMoveTicks": 36,
+        "dashParticles": 4,
+        "dashRandomCalls": 4,
+        "dashSounds": 1,
+        "dashInputFrame": 110,
+        "dashSPBefore": 109,
+        "dashSPAfter": 9,
+        "dashMaxDisplacement": 100.37033081054688,
+        "dashInputAccepted": true
+      },
+      "aidKits": [
+        {
+          "id": 59,
+          "quickItemCode": "01001",
+          "quickUseFrame": 241,
+          "quickCountBefore": 5,
+          "quickCountAfter": 4,
+          "quickHPBefore": 456,
+          "quickHPAfter": 576,
+          "quickMaximumHP": 1776,
+          "quickSlotHPAfter": 576,
+          "quickSelectionAfter": -1,
+          "quickRepairSounds": 1,
+          "quickParticleAllocations": 1,
+          "quickTapAccepted": true
+        },
+        {
+          "id": 60,
+          "quickItemCode": "01002",
+          "quickUseFrame": 241,
+          "quickCountBefore": 5,
+          "quickCountAfter": 4,
+          "quickHPBefore": 456,
+          "quickHPAfter": 696,
+          "quickMaximumHP": 1776,
+          "quickSlotHPAfter": 696,
+          "quickSelectionAfter": -1,
+          "quickRepairSounds": 1,
+          "quickParticleAllocations": 1,
+          "quickTapAccepted": true
+        },
+        {
+          "id": 61,
+          "quickItemCode": "01003",
+          "quickUseFrame": 241,
+          "quickCountBefore": 5,
+          "quickCountAfter": 4,
+          "quickHPBefore": 456,
+          "quickHPAfter": 956,
+          "quickMaximumHP": 1776,
+          "quickSlotHPAfter": 956,
+          "quickSelectionAfter": -1,
+          "quickRepairSounds": 1,
+          "quickParticleAllocations": 1,
+          "quickTapAccepted": true
+        },
+        {
+          "id": 62,
+          "quickItemCode": "01004",
+          "quickUseFrame": 241,
+          "quickCountBefore": 5,
+          "quickCountAfter": 4,
+          "quickHPBefore": 456,
+          "quickHPAfter": 988,
+          "quickMaximumHP": 1776,
+          "quickSlotHPAfter": 988,
+          "quickSelectionAfter": -1,
+          "quickRepairSounds": 1,
+          "quickParticleAllocations": 1,
+          "quickTapAccepted": true
+        },
+        {
+          "id": 63,
+          "quickItemCode": "01005",
+          "quickUseFrame": 241,
+          "quickCountBefore": 5,
+          "quickCountAfter": 4,
+          "quickHPBefore": 456,
+          "quickHPAfter": 1344,
+          "quickMaximumHP": 1776,
+          "quickSlotHPAfter": 1344,
+          "quickSelectionAfter": -1,
+          "quickRepairSounds": 1,
+          "quickParticleAllocations": 1,
+          "quickTapAccepted": true
+        },
+        {
+          "id": 64,
+          "quickItemCode": "01006",
+          "quickUseFrame": 241,
+          "quickCountBefore": 5,
+          "quickCountAfter": 4,
+          "quickHPBefore": 456,
+          "quickHPAfter": 1776,
+          "quickMaximumHP": 1776,
+          "quickSlotHPAfter": 1776,
+          "quickSelectionAfter": -1,
+          "quickRepairSounds": 1,
+          "quickParticleAllocations": 1,
+          "quickTapAccepted": true
+        }
+      ],
+      "airStrikes": [
+        {
+          "id": 65,
+          "strikeItemCode": "02004",
+          "strikeUseFrame": 261,
+          "strikeCountBefore": 5,
+          "strikeCountAfter": 4,
+          "strikeTapAccepted": true,
+          "strikeTargetVisibleEnemy": true,
+          "strikeRequests": 1,
+          "strikeProjectiles": 10,
+          "strikeDamageCalls": 1,
+          "strikeEnemyHPRemoved": 200,
+          "strikeTicks": 241,
+          "activeStrikes": 0,
+          "playerEmissions": 0
+        },
+        {
+          "id": 66,
+          "strikeItemCode": "02005",
+          "strikeUseFrame": 261,
+          "strikeCountBefore": 5,
+          "strikeCountAfter": 4,
+          "strikeTapAccepted": true,
+          "strikeTargetVisibleEnemy": true,
+          "strikeRequests": 1,
+          "strikeProjectiles": 10,
+          "strikeDamageCalls": 1,
+          "strikeEnemyHPRemoved": 200,
+          "strikeTicks": 241,
+          "activeStrikes": 0,
+          "playerEmissions": 0
+        },
+        {
+          "id": 67,
+          "strikeItemCode": "02007",
+          "strikeUseFrame": 261,
+          "strikeCountBefore": 5,
+          "strikeCountAfter": 4,
+          "strikeTapAccepted": true,
+          "strikeTargetVisibleEnemy": true,
+          "strikeRequests": 1,
+          "strikeProjectiles": 1,
+          "strikeDamageCalls": 1,
+          "strikeEnemyHPRemoved": 200,
+          "strikeTicks": 241,
+          "activeStrikes": 0,
+          "playerEmissions": 0
+        }
+      ],
+      "messageFonts": [
+        {
+          "font": "TrebuchetMS-Bold",
+          "height": 24,
+          "inkPixels": 1129,
+          "resolvedFont": "TrebuchetMS-Bold",
+          "retina": false,
+          "size": 16,
+          "source": "@text/concurrent/125",
+          "width": 512
+        },
+        {
+          "font": "TrebuchetMS-Bold",
+          "height": 24,
+          "inkPixels": 650,
+          "resolvedFont": "TrebuchetMS-Bold",
+          "retina": false,
+          "size": 16,
+          "source": "@text/concurrent/124",
+          "width": 512
+        }
+      ],
+      "capturedSourceFrames": [
+        {
+          "dashQuads": 1,
+          "frame": 112,
+          "markers": 0,
+          "messageBackgrounds": 0,
+          "planes": 0,
+          "playerHPGaugeQuads": 2,
+          "scenario": 105
+        },
+        {
+          "dashQuads": 0,
+          "frame": 240,
+          "markers": 1,
+          "messageBackgrounds": 1,
+          "planes": 0,
+          "playerHPGaugeQuads": 2,
+          "scenario": 59
+        },
+        {
+          "dashQuads": 0,
+          "frame": 241,
+          "markers": 1,
+          "messageBackgrounds": 1,
+          "planes": 0,
+          "playerHPGaugeQuads": 2,
+          "scenario": 59
+        },
+        {
+          "dashQuads": 0,
+          "frame": 381,
+          "markers": 1,
+          "messageBackgrounds": 0,
+          "planes": 1,
+          "playerHPGaugeQuads": 2,
+          "scenario": 65
+        }
+      ],
+      "inputInterruption": {
+        "beginReachedRealHandler": true,
+        "buttonID": 2100,
+        "capturedBefore": true,
+        "cleanupSentNoAction": true,
+        "creditPreserved": true,
+        "discardedAfter": true,
+        "frame": 300,
+        "noExtraTick": true,
+        "noSave": true,
+        "screenPreserved": true
+      },
+      "missingFeatures": [
+        "all23 Player bottom equipment movement checks",
+        "bot actor AI / attack / pickup",
+        "all mission types and all60 mission completion",
+        "all stages and final campaign completion",
+        "original port-app visual/input/audio equivalence",
+        "OS interruption / audio-route transition"
+      ],
+      "movement": {
+        "distanceMoved": 1342.7236328125,
+        "coinPickups": 3,
+        "itemPickups": 3,
+        "pickupCreditGain": 9,
+        "inventoryGain": 3,
+        "credit": 509,
+        "initialCredit": 500,
+        "dashStarts": 0
+      },
+      "captureRGB": {
+        "112": {
+          "width": 384,
+          "height": 512,
+          "pngMode": 2,
+          "differentRGBPixels": 0,
+          "pngSHA256": "7d69117a4e5a70c7911990758792dc587356932b95a1ad2ae8ce15281b11ac45",
+          "rawSHA256": "a520bb6131dad3fd315e35c33b88d7bf171ef22c27c9facb63050df47a1bc1df"
+        },
+        "240": {
+          "width": 384,
+          "height": 512,
+          "pngMode": 2,
+          "differentRGBPixels": 0,
+          "pngSHA256": "d7e894434c4d3959f759aa735ec4eb8a833658872000f0f594f5ede529d1598f",
+          "rawSHA256": "4182943ade1d04e260426f43e2b267a602f11ba97cb5a659cb2ea71eaccdb1e8"
+        },
+        "241": {
+          "width": 384,
+          "height": 512,
+          "pngMode": 2,
+          "differentRGBPixels": 0,
+          "pngSHA256": "8cd36fd33309b993369f21368f518a9c01f79d43756598557e018adeab008f53",
+          "rawSHA256": "f82d184c748acee3f8fe1a2054574b6b9018b783e9a1304df9729c2e7b9245e3"
+        },
+        "381": {
+          "width": 384,
+          "height": 512,
+          "pngMode": 2,
+          "differentRGBPixels": 0,
+          "pngSHA256": "5f565bdf20c5163dda7a5a5f061a166c86046b88aad588094a72909e67fa2130",
+          "rawSHA256": "cee94e0eccab2b977f1dd5a70af389535a65a169bb5c85b945e37129f7f25d7b"
+        }
+      }
+    },
+    "iphone": {
+      "sourceSHA256": "c89eceee16ce45f2be609757729ddde53fd0b5465a9b1de7a622cd1c43c6a2e9",
+      "frames": 1200,
+      "scenarios": 106,
+      "combatScenarios": 55,
+      "activeWeaponDefinitions": 110,
+      "activeWeaponKinds": 5,
+      "maxConcurrentWeaponDefinitions": 25,
+      "maxProgressingEffects": 25,
+      "audioContexts": 1,
+      "warmReadMisses": 0,
+      "warmExistsMisses": 0,
+      "imageTextureUploadsAfterPreparation": 0,
+      "cpuAndSubmissionP95ms": 53.797416,
+      "renderComparison": {
+        "comparedPixels": 3447360,
+        "differentRGBPixels": 0,
+        "experimentalBatchingAdopted": false,
+        "firstDrawCalls": 4930,
+        "maxRGBDifference": 0,
+        "renderPath": "originalOrderedScissor",
+        "repeatDrawCalls": 4930,
+        "sameCachedFrame": true,
+        "sourceSprites": 4930
+      },
+      "baselineMenuFrames": 11,
+      "firstSpawns": [
+        385,
+        307,
+        3
+      ],
+      "worlds": [
+        {
+          "id": 68,
+          "map": "Stage01_02",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            22,
+            6,
+            0
+          ],
+          "enemySpawns": [
+            22,
+            6,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            1,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            1,
+            0
+          ],
+          "enemyKills": [
+            0,
+            1,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            1,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 69,
+          "map": "Stage01_03",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            13,
+            8,
+            0
+          ],
+          "enemySpawns": [
+            13,
+            8,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            9,
+            0,
+            0
+          ],
+          "enemyKills": [
+            9,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            7,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 70,
+          "map": "Stage01_04",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            19,
+            6,
+            0
+          ],
+          "enemySpawns": [
+            19,
+            6,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            8,
+            1,
+            0
+          ],
+          "enemyKills": [
+            8,
+            1,
+            0
+          ],
+          "enemyRemovals": [
+            8,
+            1,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 71,
+          "map": "Stage01_05",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            18,
+            7,
+            0
+          ],
+          "enemySpawns": [
+            18,
+            7,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            5,
+            0,
+            0
+          ],
+          "enemyKills": [
+            5,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            5,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 72,
+          "map": "Stage01_06",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3226,
+          "firstSpawns": [
+            19,
+            9,
+            0
+          ],
+          "enemySpawns": [
+            19,
+            9,
+            0
+          ],
+          "enemyEmissions": [
+            3,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            14,
+            0,
+            0
+          ],
+          "enemyKills": [
+            14,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            14,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 73,
+          "map": "Stage01_07",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            19,
+            6,
+            0
+          ],
+          "enemySpawns": [
+            19,
+            6,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            10,
+            0,
+            0
+          ],
+          "enemyKills": [
+            10,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            6,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 74,
+          "map": "Stage01_08",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            1,
+            8,
+            0
+          ],
+          "enemySpawns": [
+            1,
+            8,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            0,
+            0
+          ],
+          "enemyKills": [
+            0,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            0,
+            0
+          ],
+          "bossSpawns": 1,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 75,
+          "map": "Stage01_09",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            2,
+            4,
+            0
+          ],
+          "enemySpawns": [
+            2,
+            4,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            3,
+            0,
+            0
+          ],
+          "enemyKills": [
+            2,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            2,
+            0,
+            0
+          ],
+          "bossSpawns": 1,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 76,
+          "map": "Stage02_01",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            13,
+            4,
+            0
+          ],
+          "enemySpawns": [
+            13,
+            4,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            9,
+            0,
+            0
+          ],
+          "enemyKills": [
+            9,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            9,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 77,
+          "map": "Stage02_02",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            11,
+            5,
+            0
+          ],
+          "enemySpawns": [
+            11,
+            5,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            9,
+            0,
+            0
+          ],
+          "enemyKills": [
+            9,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            9,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 78,
+          "map": "Stage02_03",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            11,
+            1,
+            0
+          ],
+          "enemySpawns": [
+            11,
+            1,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            7,
+            0,
+            0
+          ],
+          "enemyKills": [
+            7,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            7,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 79,
+          "map": "Stage02_04",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            18,
+            1,
+            0
+          ],
+          "enemySpawns": [
+            18,
+            1,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            3,
+            0,
+            0
+          ],
+          "enemyKills": [
+            3,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            3,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 80,
+          "map": "Stage02_05",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            13,
+            2,
+            0
+          ],
+          "enemySpawns": [
+            13,
+            2,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            0,
+            0
+          ],
+          "enemyKills": [
+            0,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 81,
+          "map": "Stage02_06",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            11,
+            3,
+            0
+          ],
+          "enemySpawns": [
+            11,
+            3,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            6,
+            0,
+            0
+          ],
+          "enemyKills": [
+            6,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            6,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 82,
+          "map": "Stage02_07",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3212,
+          "firstSpawns": [
+            0,
+            8,
+            1
+          ],
+          "enemySpawns": [
+            0,
+            8,
+            1
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            16
+          ],
+          "enemyDamage": [
+            0,
+            0,
+            3
+          ],
+          "enemyKills": [
+            0,
+            0,
+            1
+          ],
+          "enemyRemovals": [
+            0,
+            0,
+            1
+          ],
+          "bossSpawns": 1,
+          "worldQuickUses": 1,
+          "buttonFailures": 0
+        },
+        {
+          "id": 83,
+          "map": "Stage02_08",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            15,
+            1,
+            0
+          ],
+          "enemySpawns": [
+            15,
+            1,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            3,
+            0,
+            0
+          ],
+          "enemyKills": [
+            3,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            3,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 84,
+          "map": "Stage02_09",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            4,
+            28,
+            0
+          ],
+          "enemySpawns": [
+            4,
+            28,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            5,
+            13,
+            0
+          ],
+          "enemyKills": [
+            1,
+            13,
+            0
+          ],
+          "enemyRemovals": [
+            1,
+            13,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 85,
+          "map": "Stage02_10",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            7,
+            17,
+            0
+          ],
+          "enemySpawns": [
+            7,
+            17,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            2,
+            14,
+            0
+          ],
+          "enemyKills": [
+            2,
+            14,
+            0
+          ],
+          "enemyRemovals": [
+            2,
+            14,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 86,
+          "map": "Stage03_01",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3140,
+          "firstSpawns": [
+            12,
+            1,
+            0
+          ],
+          "enemySpawns": [
+            12,
+            1,
+            0
+          ],
+          "enemyEmissions": [
+            2,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            27,
+            0,
+            0
+          ],
+          "enemyKills": [
+            3,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            3,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 87,
+          "map": "Stage03_02",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            6,
+            20,
+            0
+          ],
+          "enemySpawns": [
+            6,
+            20,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            20,
+            3,
+            0
+          ],
+          "enemyKills": [
+            2,
+            3,
+            0
+          ],
+          "enemyRemovals": [
+            2,
+            3,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 88,
+          "map": "Stage03_03",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3159,
+          "firstSpawns": [
+            4,
+            22,
+            0
+          ],
+          "enemySpawns": [
+            4,
+            22,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            15,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            3,
+            0
+          ],
+          "enemyKills": [
+            0,
+            3,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            3,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 89,
+          "map": "Stage03_04",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3195,
+          "firstSpawns": [
+            4,
+            5,
+            2
+          ],
+          "enemySpawns": [
+            4,
+            5,
+            2
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            16
+          ],
+          "enemyDamage": [
+            0,
+            0,
+            3
+          ],
+          "enemyKills": [
+            0,
+            0,
+            1
+          ],
+          "enemyRemovals": [
+            0,
+            0,
+            1
+          ],
+          "bossSpawns": 2,
+          "worldQuickUses": 1,
+          "buttonFailures": 0
+        },
+        {
+          "id": 90,
+          "map": "Stage03_05",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            11,
+            8,
+            0
+          ],
+          "enemySpawns": [
+            11,
+            8,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            6,
+            0,
+            0
+          ],
+          "enemyKills": [
+            1,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            1,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 91,
+          "map": "Stage03_06",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            9,
+            2,
+            0
+          ],
+          "enemySpawns": [
+            9,
+            2,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            6,
+            0,
+            0
+          ],
+          "enemyKills": [
+            3,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            3,
+            0,
+            0
+          ],
+          "bossSpawns": 2,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 92,
+          "map": "Stage03_07",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            6,
+            10,
+            0
+          ],
+          "enemySpawns": [
+            6,
+            10,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            11,
+            0,
+            0
+          ],
+          "enemyKills": [
+            4,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            4,
+            0,
+            0
+          ],
+          "bossSpawns": 2,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 93,
+          "map": "Stage04_01",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 2780,
+          "firstSpawns": [
+            3,
+            18,
+            0
+          ],
+          "enemySpawns": [
+            3,
+            18,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            41,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            56,
+            0
+          ],
+          "enemyKills": [
+            0,
+            3,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            3,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 2,
+          "buttonFailures": 0
+        },
+        {
+          "id": 94,
+          "map": "Stage04_02",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 2396,
+          "firstSpawns": [
+            6,
+            21,
+            0
+          ],
+          "enemySpawns": [
+            6,
+            21,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            9,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            8,
+            0
+          ],
+          "enemyKills": [
+            0,
+            8,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            8,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 1,
+          "buttonFailures": 0
+        },
+        {
+          "id": 95,
+          "map": "Stage04_03",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3215,
+          "firstSpawns": [
+            6,
+            10,
+            0
+          ],
+          "enemySpawns": [
+            6,
+            10,
+            0
+          ],
+          "enemyEmissions": [
+            1,
+            3,
+            0
+          ],
+          "enemyDamage": [
+            12,
+            3,
+            0
+          ],
+          "enemyKills": [
+            4,
+            3,
+            0
+          ],
+          "enemyRemovals": [
+            4,
+            3,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 96,
+          "map": "Stage04_04",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 2896,
+          "firstSpawns": [
+            7,
+            18,
+            0
+          ],
+          "enemySpawns": [
+            7,
+            18,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            3,
+            0
+          ],
+          "enemyDamage": [
+            3,
+            37,
+            0
+          ],
+          "enemyKills": [
+            3,
+            2,
+            0
+          ],
+          "enemyRemovals": [
+            3,
+            2,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 97,
+          "map": "Stage04_05",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            12,
+            3,
+            0
+          ],
+          "enemySpawns": [
+            12,
+            3,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            15,
+            0,
+            0
+          ],
+          "enemyKills": [
+            8,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            8,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 98,
+          "map": "Stage04_06",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            11,
+            6,
+            0
+          ],
+          "enemySpawns": [
+            11,
+            6,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            8,
+            0,
+            0
+          ],
+          "enemyKills": [
+            4,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            4,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 99,
+          "map": "Stage04_07",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            16,
+            3,
+            0
+          ],
+          "enemySpawns": [
+            16,
+            3,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            9,
+            0,
+            0
+          ],
+          "enemyKills": [
+            9,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            9,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 100,
+          "map": "Stage04_08",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 2852,
+          "firstSpawns": [
+            6,
+            9,
+            0
+          ],
+          "enemySpawns": [
+            6,
+            9,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            3,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            23,
+            0
+          ],
+          "enemyKills": [
+            0,
+            6,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            6,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 101,
+          "map": "Stage04_09",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            11,
+            3,
+            0
+          ],
+          "enemySpawns": [
+            11,
+            3,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            15,
+            0,
+            0
+          ],
+          "enemyKills": [
+            5,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            5,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 102,
+          "map": "Stage04_10",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            10,
+            13,
+            0
+          ],
+          "enemySpawns": [
+            10,
+            13,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            18,
+            0
+          ],
+          "enemyKills": [
+            0,
+            1,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            1,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 103,
+          "map": "Stage04_11",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            12,
+            1,
+            0
+          ],
+          "enemySpawns": [
+            12,
+            1,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            18,
+            0,
+            0
+          ],
+          "enemyKills": [
+            6,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            6,
+            0,
+            0
+          ],
+          "bossSpawns": 0,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        },
+        {
+          "id": 104,
+          "map": "Stage04_12",
+          "ticks": 1200,
+          "firstFrame": 1,
+          "lastFrame": 1200,
+          "draws": 1200,
+          "initialLevel": 99,
+          "playerHP": 3236,
+          "firstSpawns": [
+            1,
+            10,
+            0
+          ],
+          "enemySpawns": [
+            1,
+            10,
+            0
+          ],
+          "enemyEmissions": [
+            0,
+            0,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            1,
+            0
+          ],
+          "enemyKills": [
+            0,
+            1,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            1,
+            0
+          ],
+          "bossSpawns": 1,
+          "worldQuickUses": 0,
+          "buttonFailures": 0
+        }
+      ],
+      "dash": {
+        "id": 105,
+        "label": "real ground double tap / SP / dash",
+        "ticks": 1200,
+        "dashStarts": 1,
+        "dashMoveTicks": 36,
+        "dashParticles": 4,
+        "dashRandomCalls": 4,
+        "dashSounds": 1,
+        "dashInputFrame": 110,
+        "dashSPBefore": 109,
+        "dashSPAfter": 9,
+        "dashMaxDisplacement": 100.37033081054688,
+        "dashInputAccepted": true
+      },
+      "aidKits": [
+        {
+          "id": 59,
+          "quickItemCode": "01001",
+          "quickUseFrame": 241,
+          "quickCountBefore": 5,
+          "quickCountAfter": 4,
+          "quickHPBefore": 456,
+          "quickHPAfter": 576,
+          "quickMaximumHP": 1776,
+          "quickSlotHPAfter": 576,
+          "quickSelectionAfter": -1,
+          "quickRepairSounds": 1,
+          "quickParticleAllocations": 1,
+          "quickTapAccepted": true
+        },
+        {
+          "id": 60,
+          "quickItemCode": "01002",
+          "quickUseFrame": 241,
+          "quickCountBefore": 5,
+          "quickCountAfter": 4,
+          "quickHPBefore": 456,
+          "quickHPAfter": 696,
+          "quickMaximumHP": 1776,
+          "quickSlotHPAfter": 696,
+          "quickSelectionAfter": -1,
+          "quickRepairSounds": 1,
+          "quickParticleAllocations": 1,
+          "quickTapAccepted": true
+        },
+        {
+          "id": 61,
+          "quickItemCode": "01003",
+          "quickUseFrame": 241,
+          "quickCountBefore": 5,
+          "quickCountAfter": 4,
+          "quickHPBefore": 456,
+          "quickHPAfter": 956,
+          "quickMaximumHP": 1776,
+          "quickSlotHPAfter": 956,
+          "quickSelectionAfter": -1,
+          "quickRepairSounds": 1,
+          "quickParticleAllocations": 1,
+          "quickTapAccepted": true
+        },
+        {
+          "id": 62,
+          "quickItemCode": "01004",
+          "quickUseFrame": 241,
+          "quickCountBefore": 5,
+          "quickCountAfter": 4,
+          "quickHPBefore": 456,
+          "quickHPAfter": 988,
+          "quickMaximumHP": 1776,
+          "quickSlotHPAfter": 988,
+          "quickSelectionAfter": -1,
+          "quickRepairSounds": 1,
+          "quickParticleAllocations": 1,
+          "quickTapAccepted": true
+        },
+        {
+          "id": 63,
+          "quickItemCode": "01005",
+          "quickUseFrame": 241,
+          "quickCountBefore": 5,
+          "quickCountAfter": 4,
+          "quickHPBefore": 456,
+          "quickHPAfter": 1344,
+          "quickMaximumHP": 1776,
+          "quickSlotHPAfter": 1344,
+          "quickSelectionAfter": -1,
+          "quickRepairSounds": 1,
+          "quickParticleAllocations": 1,
+          "quickTapAccepted": true
+        },
+        {
+          "id": 64,
+          "quickItemCode": "01006",
+          "quickUseFrame": 241,
+          "quickCountBefore": 5,
+          "quickCountAfter": 4,
+          "quickHPBefore": 456,
+          "quickHPAfter": 1776,
+          "quickMaximumHP": 1776,
+          "quickSlotHPAfter": 1776,
+          "quickSelectionAfter": -1,
+          "quickRepairSounds": 1,
+          "quickParticleAllocations": 1,
+          "quickTapAccepted": true
+        }
+      ],
+      "airStrikes": [
+        {
+          "id": 65,
+          "strikeItemCode": "02004",
+          "strikeUseFrame": 261,
+          "strikeCountBefore": 5,
+          "strikeCountAfter": 4,
+          "strikeTapAccepted": true,
+          "strikeTargetVisibleEnemy": true,
+          "strikeRequests": 1,
+          "strikeProjectiles": 10,
+          "strikeDamageCalls": 1,
+          "strikeEnemyHPRemoved": 200,
+          "strikeTicks": 241,
+          "activeStrikes": 0,
+          "playerEmissions": 0
+        },
+        {
+          "id": 66,
+          "strikeItemCode": "02005",
+          "strikeUseFrame": 261,
+          "strikeCountBefore": 5,
+          "strikeCountAfter": 4,
+          "strikeTapAccepted": true,
+          "strikeTargetVisibleEnemy": true,
+          "strikeRequests": 1,
+          "strikeProjectiles": 10,
+          "strikeDamageCalls": 1,
+          "strikeEnemyHPRemoved": 200,
+          "strikeTicks": 241,
+          "activeStrikes": 0,
+          "playerEmissions": 0
+        },
+        {
+          "id": 67,
+          "strikeItemCode": "02007",
+          "strikeUseFrame": 261,
+          "strikeCountBefore": 5,
+          "strikeCountAfter": 4,
+          "strikeTapAccepted": true,
+          "strikeTargetVisibleEnemy": true,
+          "strikeRequests": 1,
+          "strikeProjectiles": 1,
+          "strikeDamageCalls": 1,
+          "strikeEnemyHPRemoved": 200,
+          "strikeTicks": 241,
+          "activeStrikes": 0,
+          "playerEmissions": 0
+        }
+      ],
+      "messageFonts": [
+        {
+          "font": "TrebuchetMS-Bold",
+          "height": 24,
+          "inkPixels": 650,
+          "resolvedFont": "TrebuchetMS-Bold",
+          "retina": false,
+          "size": 16,
+          "source": "@text/concurrent/124",
+          "width": 512
+        },
+        {
+          "font": "TrebuchetMS-Bold",
+          "height": 24,
+          "inkPixels": 1129,
+          "resolvedFont": "TrebuchetMS-Bold",
+          "retina": false,
+          "size": 16,
+          "source": "@text/concurrent/125",
+          "width": 512
+        }
+      ],
+      "capturedSourceFrames": [
+        {
+          "dashQuads": 1,
+          "frame": 112,
+          "markers": 0,
+          "messageBackgrounds": 0,
+          "planes": 0,
+          "playerHPGaugeQuads": 2,
+          "scenario": 105
+        },
+        {
+          "dashQuads": 0,
+          "frame": 240,
+          "markers": 1,
+          "messageBackgrounds": 1,
+          "planes": 0,
+          "playerHPGaugeQuads": 2,
+          "scenario": 59
+        },
+        {
+          "dashQuads": 0,
+          "frame": 241,
+          "markers": 1,
+          "messageBackgrounds": 1,
+          "planes": 0,
+          "playerHPGaugeQuads": 2,
+          "scenario": 59
+        },
+        {
+          "dashQuads": 0,
+          "frame": 381,
+          "markers": 1,
+          "messageBackgrounds": 0,
+          "planes": 1,
+          "playerHPGaugeQuads": 2,
+          "scenario": 65
+        }
+      ],
+      "inputInterruption": {
+        "beginReachedRealHandler": true,
+        "buttonID": 2100,
+        "capturedBefore": true,
+        "cleanupSentNoAction": true,
+        "creditPreserved": true,
+        "discardedAfter": true,
+        "frame": 300,
+        "noExtraTick": true,
+        "noSave": true,
+        "screenPreserved": true
+      },
+      "missingFeatures": [
+        "all23 Player bottom equipment movement checks",
+        "bot actor AI / attack / pickup",
+        "all mission types and all60 mission completion",
+        "all stages and final campaign completion",
+        "original port-app visual/input/audio equivalence",
+        "OS interruption / audio-route transition"
+      ],
+      "movement": {
+        "distanceMoved": 1342.7236328125,
+        "coinPickups": 3,
+        "itemPickups": 3,
+        "pickupCreditGain": 9,
+        "inventoryGain": 3,
+        "credit": 509,
+        "initialCredit": 500,
+        "dashStarts": 0
+      },
+      "captureRGB": {
+        "112": {
+          "width": 384,
+          "height": 512,
+          "pngMode": 2,
+          "differentRGBPixels": 0,
+          "pngSHA256": "7d69117a4e5a70c7911990758792dc587356932b95a1ad2ae8ce15281b11ac45",
+          "rawSHA256": "a520bb6131dad3fd315e35c33b88d7bf171ef22c27c9facb63050df47a1bc1df"
+        },
+        "240": {
+          "width": 384,
+          "height": 512,
+          "pngMode": 2,
+          "differentRGBPixels": 0,
+          "pngSHA256": "d7e894434c4d3959f759aa735ec4eb8a833658872000f0f594f5ede529d1598f",
+          "rawSHA256": "4182943ade1d04e260426f43e2b267a602f11ba97cb5a659cb2ea71eaccdb1e8"
+        },
+        "241": {
+          "width": 384,
+          "height": 512,
+          "pngMode": 2,
+          "differentRGBPixels": 0,
+          "pngSHA256": "8cd36fd33309b993369f21368f518a9c01f79d43756598557e018adeab008f53",
+          "rawSHA256": "f82d184c748acee3f8fe1a2054574b6b9018b783e9a1304df9729c2e7b9245e3"
+        },
+        "381": {
+          "width": 384,
+          "height": 512,
+          "pngMode": 2,
+          "differentRGBPixels": 0,
+          "pngSHA256": "5f565bdf20c5163dda7a5a5f061a166c86046b88aad588094a72909e67fa2130",
+          "rawSHA256": "cee94e0eccab2b977f1dd5a70af389535a65a169bb5c85b945e37129f7f25d7b"
+        }
+      }
+    }
+  }
+}

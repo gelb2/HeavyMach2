@@ -1,0 +1,59 @@
+{
+  "dependency": "OpenAL Soft",
+  "version": "1.22.2",
+  "upstream": "https://github.com/kcat/openal-soft",
+  "preserved_from": {
+    "repository": "https://github.com/gelb2/MachDefense",
+    "commit": "0aa03aa7c4adf53d6aa8b33c6d4e193105298d6e",
+    "path": "Modules/ThirdParty/openal-soft",
+    "git_tree": "8e25297d247bda5636193c3d5cd128618fa48bd2"
+  },
+  "destination": "ThirdParty/OpenALSoft",
+  "source_files_verified": 317,
+  "vendor_modifications": [],
+  "licenses": [
+    "OpenAL-Soft-LGPL-2.0.txt",
+    "OpenAL-Soft-BSD-3-Clause.txt"
+  ],
+  "adapted_MIT_sources": [
+    {
+      "path": "Sources/Audio/PCM.hpp",
+      "sha256": "8846f29a115c157ca8dd0ec56563c6e189fa12ff1a2de60cb9e9ab0a4fa62155"
+    },
+    {
+      "path": "Sources/Audio/OpenALEffects.hpp",
+      "sha256": "5dd68e9503ef98e7ba6fe19a9d9ae1818fb5c3b426112ecce606ef8751090630"
+    },
+    {
+      "path": "Sources/Audio/OpenALEffects.cpp",
+      "sha256": "a992a08fee9017e8b0f9630a966619970b4ed6d13470b58bcd3744ee2b53a922"
+    },
+    {
+      "path": "Sources/Platform/Apple/MDAudio.mm",
+      "sha256": "caecbcff18ab106e47e6d9b44cbe3c524be98ec555cbfdd9818adcfea43c3561"
+    },
+    {
+      "path": "Sources/Platform/Apple/MDAudioQueueMusic.hpp",
+      "sha256": "cdd1ff631fde29f09e04cc6399a3f10b8cf4b4c5160e25c949ffc9b6a7b09241"
+    },
+    {
+      "path": "tools/build_openal.py",
+      "sha256": "0bb6cd86c9ef5f86e835be4e09d6b0d6cd3138be612fe84eac30910567e2d343"
+    }
+  ],
+  "MIT_license": "ThirdParty/MachDefense/LICENSE",
+  "adaptations": [
+    "Independent HM2 source copy; no runtime link into MachDefense output.",
+    "Original HM2 position->stop->play and source-before-buffer order.",
+    "Preserve PCM8/16 mono/stereo and resource rate.",
+    "AudioQueue .5 second estimate truncates; 16..64KiB clamp, one-buffer small-file loop, Prime(1) then Start.",
+    "HM2 preparation/read counters and actual source sample-offset/output metrics."
+  ],
+  "build": "python3 tools/build_openal.py --sdk iphonesimulator",
+  "sdk_outputs": {
+    "iphonesimulator": "build/audio-simulator-openal/libopenal.a",
+    "iphoneos": "build/audio-device-openal/libopenal.a",
+    "macosx": "build/audio-host-openal/libopenal.a"
+  },
+  "device_build_performed": false
+}

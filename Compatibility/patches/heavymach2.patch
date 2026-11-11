@@ -1,0 +1,2475 @@
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/Cargo.lock b/fresh-port/20-touchHLE-src/touchHLE/Cargo.lock
+index 049f44c..e5bbe74 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/Cargo.lock
++++ b/fresh-port/20-touchHLE-src/touchHLE/Cargo.lock
+@@ -761,7 +761,6 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
+ [[package]]
+ name = "sdl2"
+ version = "0.37.0"
+-source = "git+https://github.com/touchHLE/rust-sdl2?tag=touchHLE-3#b67f98fe6a147773b6f05d50ae775d9fe16561e7"
+ dependencies = [
+  "bitflags 1.3.2",
+  "lazy_static",
+@@ -772,7 +771,6 @@ dependencies = [
+ [[package]]
+ name = "sdl2-sys"
+ version = "0.37.0"
+-source = "git+https://github.com/touchHLE/rust-sdl2?tag=touchHLE-3#b67f98fe6a147773b6f05d50ae775d9fe16561e7"
+ dependencies = [
+  "cfg-if",
+  "cmake",
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/Cargo.toml b/fresh-port/20-touchHLE-src/touchHLE/Cargo.toml
+index 7104228..1d98641 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/Cargo.toml
++++ b/fresh-port/20-touchHLE-src/touchHLE/Cargo.toml
+@@ -2,6 +2,7 @@
+ # License, v. 2.0. If a copy of the MPL was not distributed with this
+ # file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ [workspace]
++exclude = ["vendor/rust-sdl2", "vendor/rust-sdl2/sdl2-sys"]
+ 
+ # Optimize the release build for the hot HLE interpreter glue (objc_msgSend_inner
+ # -> call_from_guest -> run_call -> run_or_step) which by default is split across
+@@ -30,7 +31,7 @@ homepage = { workspace = true }
+ # https://users.rust-lang.org/t/making-both-binary-and-cdylib-from-one-package/29105
+ # staticlib added for iOS: the iOS app executable statically links libtouchHLE.a
+ # (+ SDL2/openal/dynarmic) and calls SDL_main via SDL_UIKitRunApp.
+-crate-type = ["staticlib", "cdylib", "rlib"]
++crate-type = ["rlib"] # The iOS executable links Rust directly; no unused shared/static products.
+ 
+ [[bin]]
+ name = "touchHLE"
+@@ -43,6 +44,8 @@ static = ["sdl2/bundled", "sdl2/static-link", "touchHLE_openal_soft_wrapper/stat
+ # iOS 无可执行内存→纯 Rust 解释器:--no-default-features --features static,cpu_interpreter
+ cpu_dynarmic = ["dep:touchHLE_dynarmic_wrapper"]
+ cpu_interpreter = []
++# Opt-in only: never apply MoleWorld-specific hooks to other guests.
++moleworld_compat = []
+ # 解释器逐指令调试埋点(trace 环 / heartbeat / DERAIL 检测)。dev(debug_assertions)默认开;
+ # release 默认【关】以消除每条指令的固定开销(显著提速)。抓脱轨/挂起时:
+ #   --features static,cpu_interpreter,interp_debug
+@@ -101,8 +104,8 @@ rustc-hash = "2"
+ # behind this, but the actual HIDAPI is not used by touchHLE (see window.rs).
+ # Note that the submodule in vendor/SDL2/ must use exactly the same revision of
+ # SDL2 that rust-sdl2 uses, so that the Android JNI interface matches.
+-sdl2 = { git = "https://github.com/touchHLE/rust-sdl2", tag = "touchHLE-3", features = ["hidapi"] }
+-sdl2-sys = { git = "https://github.com/touchHLE/rust-sdl2", tag = "touchHLE-3" }
++sdl2 = { path = "vendor/rust-sdl2", features = ["hidapi"] }
++sdl2-sys = { path = "vendor/rust-sdl2/sdl2-sys" }
+ touchHLE_dynarmic_wrapper = { path = "src/cpu/dynarmic_wrapper", optional = true }
+ touchHLE_gl_bindings = { path = "src/gles/gl_bindings" }
+ touchHLE_openal_soft_wrapper = { path = "src/audio/openal_soft_wrapper" }
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/build.rs b/fresh-port/20-touchHLE-src/touchHLE/build.rs
+index 2d1a2b3..297640c 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/build.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/build.rs
+@@ -149,7 +149,7 @@ pub fn main() {
+                 let crt = std::path::Path::new(&res_dir)
+                     .join("lib")
+                     .join("darwin")
+-                    .join("libclang_rt.ios.a");
++                    .join(if std::env::var("TARGET").unwrap().ends_with("-sim") { "libclang_rt.iossim.a" } else { "libclang_rt.ios.a" });
+                 if crt.exists() {
+                     // 用 link-arg 把 .a 直接作为链接器(clang)输入,绕开 rustc 的静态库
+                     // 归档解析(libclang_rt.ios.a 是特殊归档格式,`static=` 会报
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/cpu/interpreter/mod.rs b/fresh-port/20-touchHLE-src/touchHLE/src/cpu/interpreter/mod.rs
+index 46eda35..2f71f60 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/cpu/interpreter/mod.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/cpu/interpreter/mod.rs
+@@ -604,6 +604,8 @@ impl InterpreterCpu {
+         // = 启动黑屏数分钟。检测到该循环(精确 PC + 精确指令字 + 整段范围预校验)就用原生 Rust
+         // 整段转换(位运算逐位复刻 0x2e7108-0x2e711c 的 and/orr/移位,bit-for-bit 等价),约 100x。
+         // 任一守卫不符则落普通解释。属游戏特定优化(硬编码 PC),仅对本游戏二进制生效。
++        // Guest addresses are not application identities; keep this opt-in.
++        #[cfg(feature = "moleworld_compat")]
+         if pc == 0x002e7102 && insn == 0xf853_6b04 {
+             let count = self.regs[4];
+             let src0 = self.regs[3];
+@@ -707,8 +709,9 @@ impl InterpreterCpu {
+         // 0 或负的"帧时长"语义上非法;在循环的两个比较点(0x20f540 入口、0x20f5d2 回边,均 r0=frameDuration、
+         // r1=timeAcc、r4=self、r5=timeAcc 的 ivar 偏移)把它钳到 ≥1,保证 timeAcc 每轮至少减 1、循环必然终止。
+         // 同时在入口把异常巨大的累积时间封顶(防 dt 爆炸的超长追帧),只丢弃一次积压(跳一帧动画,无害)。
+-        // 命中范围极窄(仅该函数这两条指令),对其他指令/游戏零影响。这是 touchHLE 侧根因级防护,
+-        // 编进所有构建,无需改 guest 二进制。
++        // This changes guest register semantics and is only valid for MoleWorld.
++        // Other apps must interpret these addresses without game-specific changes.
++        #[cfg(feature = "moleworld_compat")]
+         if pc & 0xffff_ff00 == 0x0020_f500 && (pc == 0x0020_f540 || pc == 0x0020_f5d2) {
+             if (self.regs[0] as i32) <= 0 {
+                 self.regs[0] = 1; // frameDuration 钳到 ≥1
+@@ -987,3 +990,53 @@ impl InterpreterCpu {
+         CpuState::Error(CpuError::UndefinedInstruction)
+     }
+ }
++
++
++#[cfg(all(test, not(feature = "moleworld_compat")))]
++mod generic_guest_tests {
++    use super::*;
++    use crate::mem::MutPtr;
++
++    #[test]
++    fn moleworld_animation_addresses_preserve_other_guest_registers() {
++        let mut mem = Mem::new();
++        for pc in [0x0020_f540, 0x0020_f5d2] {
++            // Thumb MOVS r2, #7: neither r0 nor r1 may change.
++            mem.write(MutPtr::from_bits(pc), 0x2207_u16);
++            let mut cpu = InterpreterCpu::new(0);
++            cpu.cpsr = CPSR_USER_MODE | CPSR_THUMB;
++            cpu.regs[PC] = pc;
++            cpu.regs[0] = 0;
++            cpu.regs[1] = 0x900;
++            assert!(matches!(cpu.step_one(&mut mem), CpuState::Normal));
++            assert_eq!(cpu.regs[0], 0);
++            assert_eq!(cpu.regs[1], 0x900);
++            assert_eq!(cpu.regs[2], 7);
++            assert_eq!(cpu.regs[PC], pc + 2);
++        }
++    }
++
++    #[test]
++    fn moleworld_texture_address_executes_only_one_load() {
++        let mut mem = Mem::new();
++        let pc = 0x002e_7102;
++        // Thumb LDR.W r6, [r3], #4, identical to the fast-path trigger.
++        mem.write(MutPtr::from_bits(pc), 0xf853_u16);
++        mem.write(MutPtr::from_bits(pc + 2), 0x6b04_u16);
++        mem.write(MutPtr::from_bits(0x10000), 0x12345678_u32);
++        mem.write(MutPtr::from_bits(0x20000), 0xabcd_u16);
++        let mut cpu = InterpreterCpu::new(0);
++        cpu.cpsr = CPSR_USER_MODE | CPSR_THUMB;
++        cpu.regs[PC] = pc;
++        cpu.regs[3] = 0x10000;
++        cpu.regs[4] = 1;
++        cpu.regs[5] = 0x20000;
++        assert!(matches!(cpu.step_one(&mut mem), CpuState::Normal));
++        assert_eq!(cpu.regs[PC], pc + 4);
++        assert_eq!(cpu.regs[3], 0x10004);
++        assert_eq!(cpu.regs[4], 1);
++        assert_eq!(cpu.regs[5], 0x20000);
++        assert_eq!(cpu.regs[6], 0x12345678);
++        assert_eq!(mem.read(MutPtr::<u16>::from_bits(0x20000)), 0xabcd);
++    }
++}
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/dyld.rs b/fresh-port/20-touchHLE-src/touchHLE/src/dyld.rs
+index 7366fae..273ff9b 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/dyld.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/dyld.rs
+@@ -857,6 +857,9 @@ impl Dyld {
+         // emulator, link this stub to a no-op (MoleWorld offline port). Done in a
+         // separate method so the `'static` host fn doesn't entangle this method's
+         // borrow of `bins`.
++        if !cfg!(feature = "moleworld_compat") {
++            panic!("Unimplemented guest function: {symbol} at {svc_pc:#x}");
++        }
+         self.link_unimplemented_as_noop(mem, cpu, svc_pc, info.entry_size, symbol)
+     }
+ 
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/environment.rs b/fresh-port/20-touchHLE-src/touchHLE/src/environment.rs
+index f263f04..70b8c53 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/environment.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/environment.rs
+@@ -425,7 +425,14 @@ impl Environment {
+                 .bundle_identifier()
+                 .starts_with("com.go.starwave.CritterCrunch");
+         // We always reset this flag depending on which game is launched.
+-        mem.zero_memory_on_free = !is_spore && !is_critter_crunch;
++        // Original HeavyMach 2 event callbacks remove their current list node.
++        // The caller reads its next pointer after delete (observed PC 0x4e4e8).
++        // Reuse the existing allocation-time clearing policy; do not patch guest code.
++        let is_heavymach2 = bundle.bundle_identifier() == "kr.indieapps.HeavyMach2";
++        mem.zero_memory_on_free = !is_spore && !is_critter_crunch && !is_heavymach2;
++        if is_heavymach2 {
++            log!("HeavyMach 2 compatibility: zero heap memory on allocation instead of free.");
++        }
+         if is_spore {
+             log!("Applying game-specific hack for Spore Origins: zeroing memory on alloc instead of free.");
+         }
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/core_animation/ca_eagl_layer.rs b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/core_animation/ca_eagl_layer.rs
+index 2aecbcf..ff1d16f 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/core_animation/ca_eagl_layer.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/core_animation/ca_eagl_layer.rs
+@@ -251,10 +251,76 @@ pub fn find_fullscreen_eagl_layer(env: &mut Environment) -> id {
+         }
+     }
+ 
++    if !cfg!(feature = "moleworld_compat") && fullscreen_layer_uv_transform(env, layer).is_none() {
++        return nil;
++    }
+     SKIPPED_OVERLAYS.with(|s| *s.borrow_mut() = skipped);
+     layer
+ }
+ 
++/// Map centered screen GL coordinates back to the original layer's GL texture.
++/// Only a centered, full-screen quarter-turn/reflection can use the direct path.
++pub(crate) fn fullscreen_layer_uv_transform(env: &mut Environment, layer: id) -> Option<crate::matrix::Matrix<2>> {
++    use crate::matrix::Matrix;
++    let screen: id = msg_class![env; UIScreen mainScreen];
++    let screen_bounds: CGRect = msg![env; screen bounds];
++    let layer_size = env.objc.borrow::<CALayerHostObject>(layer).bounds.size;
++    let mut local_to_screen = Matrix::<3>::identity();
++    let mut current = layer;
++    while current != nil {
++        let host = env.objc.borrow::<CALayerHostObject>(current);
++        local_to_screen = local_to_screen.multiply(&<Matrix<3> as From<_>>::from(host.superlayer_to_layer_transform()));
++        current = host.superlayer();
++    }
++    normalized_fullscreen_inverse(local_to_screen, screen_bounds.size, layer_size)
++}
++
++fn normalized_fullscreen_inverse(local_to_screen: crate::matrix::Matrix<3>, screen: crate::frameworks::core_graphics::CGSize, layer: crate::frameworks::core_graphics::CGSize) -> Option<crate::matrix::Matrix<2>> {
++    use crate::matrix::Matrix;
++    if screen.width <= 0.0 || screen.height <= 0.0 || layer.width <= 0.0 || layer.height <= 0.0 { return None; }
++    let inverse = local_to_screen.inverse()?;
++    let map = |x: f32, y: f32| {
++        let p = inverse.transform([(0.5+x)*screen.width,(0.5-y)*screen.height,1.0]);
++        [p[0]/layer.width-0.5,0.5-p[1]/layer.height]
++    };
++    let center = map(0.0,0.0);
++    if center.iter().any(|v| !v.is_finite() || v.abs()>0.0001) { return None; }
++    let x = map(0.5,0.0); let y = map(0.0,0.5);
++    let result = Matrix::from_columns([[2.0*x[0],2.0*x[1]],[2.0*y[0],2.0*y[1]]]);
++    for point in [[-0.5,-0.5],[-0.5,0.5],[0.5,-0.5],[0.5,0.5]] {
++        if result.transform(point).iter().any(|v| !v.is_finite() || (v.abs()-0.5).abs()>0.0001) { return None; }
++    }
++    if (result.determinant().abs()-1.0).abs()>0.0001 { return None; }
++    Some(result)
++}
++
++#[cfg(test)]
++mod fullscreen_transform_tests {
++    use super::normalized_fullscreen_inverse;
++    use crate::{matrix::Matrix,frameworks::core_graphics::CGSize};
++    #[test]
++    fn identity_preserves_phone_and_hd() {
++        for (w,h) in [(320.0,480.0),(768.0,1024.0)] {
++            let size=CGSize{width:w,height:h};
++            assert_eq!(normalized_fullscreen_inverse(Matrix::identity(),size,size),Some(Matrix::identity()));
++        }
++    }
++    #[test]
++    fn landscape_layer_uses_inverse_with_y_flip() {
++        let transform=Matrix::from_columns([[0.0,1.0,0.0],[-1.0,0.0,0.0],[320.0,0.0,1.0]]);
++        let result=normalized_fullscreen_inverse(transform,CGSize{width:320.0,height:480.0},CGSize{width:480.0,height:320.0}).unwrap();
++        assert_eq!(result.transform([0.5,0.0]),[0.0,0.5]);
++        let device=Matrix::from_columns([[0.0,-1.0],[1.0,0.0]]);
++        assert_eq!(device.multiply(&result),Matrix::identity());
++    }
++    #[test]
++    fn shifted_or_scaled_layer_requires_composition() {
++        let size=CGSize{width:320.0,height:480.0};
++        assert!(normalized_fullscreen_inverse(Matrix::from_columns([[1.0,0.0,0.0],[0.0,1.0,0.0],[4.0,0.0,1.0]]),size,size).is_none());
++        assert!(normalized_fullscreen_inverse(Matrix::from_columns([[0.5,0.0,0.0],[0.0,0.5,0.0],[80.0,120.0,1.0]]),size,size).is_none());
++    }
++}
++
+ /// For use by `EAGLContext` when presenting to a `CAEAGLLayer`:
+ /// [std::mem::take]s the buffer used to hold the pixels. It should be passed
+ /// back to [present_pixels] once it has been filled.
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/core_animation/composition.rs b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/core_animation/composition.rs
+index 19d0d79..69813f5 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/core_animation/composition.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/core_animation/composition.rs
+@@ -37,7 +37,7 @@ pub(super) struct State {
+     overlay_dirty: Option<(u32, u32, u32, u32)>,
+     /// [2026-10-06 第十轮 R10-A2] 上一趟浮层合成画完时浮层状态的签名(见 overlay_signature)。没变就不再重画、
+     /// 不再读回上传,快路径继续叠加已有的浮层纹理;停止叠加时清空,浮层再出现时必定重画。
+-    overlay_signature: Option<u64>,
++    overlay_signature: Option<(u64, Option<id>)>,
+ }
+ 
+ /// [2026-10-06 第十轮 R10-A2] 只画「找全屏层时被跳过的小浮层」的一趟合成:targets 是那几个浮层,
+@@ -186,7 +186,7 @@ fn set_fastpath_overlay_inactive(env: &mut Environment) {
+         .composition
+         .overlay_signature = None;
+     #[cfg(target_os = "ios")]
+-    crate::frameworks::opengles::set_fastpath_overlay_inactive();
++    crate::frameworks::opengles::set_fastpath_overlay_inactive(env);
+ }
+ 
+ struct MiscGlObjects {
+@@ -332,7 +332,8 @@ pub fn recomposite_if_necessary(env: &mut Environment, force: bool) -> Option<In
+ 
+     // [2026-10-06 第十轮 R10-A2] 浮层没有任何变化:快路径继续叠加已有的浮层纹理,这一趟什么都不做。
+     if let Some(pass) = &overlay_pass {
+-        let signature = overlay_signature(&env.objc, &pass.targets, (fb_width, fb_height));
++        let signature = overlay_signature(&env.objc, &pass.targets, (fb_width, fb_height))
++            .map(|hash| (hash, *env.framework_state.opengles.current_ctx_for_thread(env.current_thread)));
+         if signature.is_some()
+             && signature
+                 == env
+@@ -647,7 +648,8 @@ pub fn recomposite_if_necessary(env: &mut Environment, force: bool) -> Option<In
+             ((x0, y0, width, height), pixels)
+         });
+         std::mem::drop(gles);
+-        let signature = overlay_signature(&env.objc, &pass.targets, (fb_width, fb_height));
++        let signature = overlay_signature(&env.objc, &pass.targets, (fb_width, fb_height))
++            .map(|hash| (hash, *env.framework_state.opengles.current_ctx_for_thread(env.current_thread)));
+         env.framework_state
+             .core_animation
+             .composition
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/foundation/ns_bundle.rs b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/foundation/ns_bundle.rs
+index 68b74e3..e9891b7 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/foundation/ns_bundle.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/foundation/ns_bundle.rs
+@@ -230,6 +230,9 @@ pub const CLASSES: ClassExports = objc_classes! {
+ 
+     // TODO: cache result of lookups
+ 
++    if std::env::var_os("HM2_TRACE").is_some() {
++        log!("[HM2 resource] name={:?} extension={:?}", to_rust_string(env, name), if extension == nil { String::new() } else { to_rust_string(env, extension).to_string() });
++    }
+     let path = path_for_resource_helper(env, this, name, nil, directory, extension);
+     if path != nil {
+         return path
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/foundation/ns_string.rs b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/foundation/ns_string.rs
+index ff754b7..e7eaf67 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/foundation/ns_string.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/foundation/ns_string.rs
+@@ -1061,6 +1061,9 @@ pub const CLASSES: ClassExports = objc_classes! {
+         release(env, this);
+         return nil;
+     }
++    if std::env::var_os("HM2_TRACE").is_some() {
++        log!("[HM2 cstring] pointer={:?} encoding={} bytes={:?}", c_string, encoding, env.mem.cstr_at(c_string));
++    }
+     let len: NSUInteger = env.mem.cstr_at(c_string).len().try_into().unwrap();
+     msg![env; this initWithBytes:c_string length:len encoding:encoding]
+ }
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/openal.rs b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/openal.rs
+index f99c318..00657bc 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/openal.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/openal.rs
+@@ -271,6 +271,9 @@ fn alcCreateContext(
+     };
+ 
+     let guest_res = env.mem.alloc_and_write(GuestALCcontext { _filler: 0 });
++    if std::env::var_os("HM2_AUDIT_IO").is_some() {
++        log!("[HM2 audio] create context={:?} time={:?}", guest_res, env.startup_time.elapsed());
++    }
+ 
+     log_dbg!(
+         "alcCreateContext({:?}, NULL) => {:?} (host: {:?})",
+@@ -286,6 +289,9 @@ fn alcCreateContext(
+ }
+ 
+ fn alcDestroyContext(env: &mut Environment, context: MutPtr<GuestALCcontext>) {
++    if std::env::var_os("HM2_AUDIT_IO").is_some() {
++        log!("[HM2 audio] destroy context={:?} time={:?}", context, env.startup_time.elapsed());
++    }
+     if context.is_null() {
+         log_dbg!("alcDestroyContext() is called with NULL context, ignoring");
+         return;
+@@ -737,6 +743,9 @@ fn alGetSourceiv(env: &mut Environment, source: ALuint, param: ALenum, values: M
+ }
+ 
+ fn alSourcePlay(env: &mut Environment, source: ALuint) {
++    if std::env::var_os("HM2_AUDIT_IO").is_some() {
++        log!("[HM2 audio] play source={} time={:?}", source, env.startup_time.elapsed());
++    }
+     try_get_context!(env, context);
+     unsafe { context.SourcePlay(source) };
+ }
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/opengles.rs b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/opengles.rs
+index fbd1d0d..0cc98b7 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/opengles.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/opengles.rs
+@@ -37,7 +37,7 @@ pub struct State {
+     strings_cache: std::collections::HashMap<GLenum, ConstPtr<u8>>,
+ }
+ impl State {
+-    fn current_ctx_for_thread(&mut self, thread: crate::ThreadId) -> &mut Option<crate::objc::id> {
++    pub(crate) fn current_ctx_for_thread(&mut self, thread: crate::ThreadId) -> &mut Option<crate::objc::id> {
+         self.current_ctxs.entry(thread).or_insert(None);
+         self.current_ctxs.get_mut(&thread).unwrap()
+     }
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/opengles/eagl.rs b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/opengles/eagl.rs
+index feff2ff..63acd65 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/opengles/eagl.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/opengles/eagl.rs
+@@ -59,26 +59,23 @@ const kEAGLRenderingAPIOpenGLES2: EAGLRenderingAPI = 2;
+ #[allow(dead_code)]
+ const kEAGLRenderingAPIOpenGLES3: EAGLRenderingAPI = 3;
+ 
+-/// [MoleWorld iOS · 性能] 跨帧复用的 present 纹理:(纹理名, 宽, 高)。
+-/// 见 `present_renderbuffer` 里的说明——避免每帧向 GL 驱动申请/销毁一张全屏纹理。
+-thread_local! {
+-    static PRESENT_TEX: std::cell::Cell<(GLuint, GLsizei, GLsizei)> =
+-        const { std::cell::Cell::new((0, 0, 0)) };
++/// Host presentation textures belong to one EAGL context. GL object names are
++/// not identities across contexts, even when glIsTexture returns true.
++#[derive(Default)]
++struct PresentationTextures {
++    present: std::cell::Cell<(GLuint, GLsizei, GLsizei)>,
++    composite: std::cell::Cell<(GLuint, u32, u32)>,
++    overlay: std::cell::Cell<(GLuint, u32, u32, bool, (u32, u32, u32, u32))>,
+ }
+ 
+-// [2026-10-06 第十轮 R10-A2] iOS 快路径的浮层画布纹理(建在游戏上下文里):(纹理名, 画布宽, 画布高, 是否叠加,
+-// 有内容的矩形 x0, y0, x1, y1 [GL 坐标,左闭右开])。
+-// 合成器在运行循环里只把「找全屏层时被跳过的小浮层」画进一张透明的整屏画布,读回变动区域交给这里上传
+-// (upload_fastpath_overlay_region);快路径出帧时在游戏画面之上半透明叠加这张纹理(draw_overlay_texture),
+-// 公告板正文、好友村搜索框等浮层照原版可见,又不必为它们退回每帧整屏回读的慢路径。
+-#[cfg(target_os = "ios")]
+-thread_local! {
+-    static OVERLAY_TEX: std::cell::Cell<(GLuint, u32, u32, bool, (u32, u32, u32, u32))> =
+-        const { std::cell::Cell::new((0, 0, 0, false, (0, 0, 0, 0))) };
++fn presentation_textures(env: &mut Environment) -> Option<Rc<PresentationTextures>> {
++    let context = (*env.framework_state.opengles.current_ctx_for_thread(env.current_thread))?;
++    Some(env.objc.borrow::<EAGLContextHostObject>(context).presentation_textures.clone())
+ }
+ 
+ pub(super) struct EAGLContextHostObject {
+     pub(super) gles_ctx: Option<Box<dyn GLESContext>>,
++    presentation_textures: Rc<PresentationTextures>,
+     /// Mapping of OpenGL ES renderbuffer names to `EAGLDrawable` instances
+     /// (always `CAEAGLLayer*`). Retains the instance so it won't dangle.
+     renderbuffer_drawable_bindings: Rc<RefCell<HashMap<GLuint, id>>>,
+@@ -97,6 +94,7 @@ pub const CLASSES: ClassExports = objc_classes! {
+ + (id)alloc {
+     let host_object = Box::new(EAGLContextHostObject {
+         gles_ctx: None,
++        presentation_textures: Rc::new(PresentationTextures::default()),
+         renderbuffer_drawable_bindings: Rc::new(RefCell::new(HashMap::new())),
+         fps_counter: None,
+         next_frame_due: None,
+@@ -268,6 +266,7 @@ pub const CLASSES: ClassExports = objc_classes! {
+         }
+     };
+ 
++    if std::env::var_os("HM2_AUDIT_GL").is_some() { let ctx=*env.framework_state.opengles.current_ctx_for_thread(env.current_thread); log!("[HM2 GL] storage this={:?} current={:?} rb={} drawable={:?} size={}x{}",this,ctx,renderbuffer,drawable,width,height); }
+     retain(env, drawable);
+     let host_obj = env.objc.borrow_mut::<EAGLContextHostObject>(this);
+     let maybe_old_drawable = host_obj.renderbuffer_drawable_bindings.borrow_mut().insert(
+@@ -319,6 +318,11 @@ pub const CLASSES: ClassExports = objc_classes! {
+     };
+ 
+     std::mem::drop(gles);
++    if std::env::var_os("HM2_AUDIT_GL").is_some() {
++        use std::sync::atomic::{AtomicUsize,Ordering};
++        static PRESENT_AUDIT: AtomicUsize=AtomicUsize::new(0);
++        if PRESENT_AUDIT.fetch_add(1,Ordering::Relaxed)<8 { let ctx=*env.framework_state.opengles.current_ctx_for_thread(env.current_thread); log!("[HM2 GL] present this={:?} current={:?} rb={}",this,ctx,renderbuffer); }
++    }
+ 
+     let Some(&drawable) = env
+         .objc
+@@ -335,7 +339,7 @@ pub const CLASSES: ClassExports = objc_classes! {
+     // 全屏 CAEAGLLayer 快路径(顶层被 HUD/遮罩盖住);两者都停 ⇒ guest 真卡在一次 drawScene(CPU 死循环)。
+     // 慢路径顺带打出 fullscreen/ drawable 图层归属,坐实是否被覆盖层挤出快路径。
+     // [同步 2026-09-24] 只在 iOS 打:iOS 真机排查探针;桌面每 64 帧一行会刷屏,main 没有这行日志。
+-    #[cfg(target_os = "ios")]
++    #[cfg(all(target_os = "ios", feature = "moleworld_compat"))]
+     {
+         use std::sync::atomic::{AtomicU64, Ordering};
+         static PRES_ALL_N: AtomicU64 = AtomicU64::new(0);
+@@ -809,11 +813,11 @@ unsafe fn draw_overlay_texture(
+ 
+ /// [2026-10-06 第十轮 R10-A2] 快路径下没有要叠加的浮层(浮层消失、改走完整合成等):停止叠加。纹理留着复用。
+ #[cfg(target_os = "ios")]
+-pub(crate) fn set_fastpath_overlay_inactive() {
+-    OVERLAY_TEX.with(|c| {
+-        let (texture, width, height, _, content) = c.get();
+-        c.set((texture, width, height, false, content));
+-    });
++pub(crate) fn set_fastpath_overlay_inactive(env: &mut Environment) {
++    if let Some(cache) = presentation_textures(env) {
++        let (texture, width, height, _, content) = cache.overlay.get();
++        cache.overlay.set((texture, width, height, false, content));
++    }
+ }
+ 
+ /// [2026-10-06 第十轮 R10-A2] 由合成器在运行循环里调用(不在游戏 drawScene 帧栈上,不发任何消息):在游戏上下文里
+@@ -829,14 +833,7 @@ pub(crate) unsafe fn upload_fastpath_overlay_region(
+     content: (u32, u32, u32, u32),
+     active: bool,
+ ) -> bool {
+-    if env
+-        .framework_state
+-        .opengles
+-        .current_ctx_for_thread(env.current_thread)
+-        .is_none()
+-    {
+-        return false;
+-    }
++    let Some(cache) = presentation_textures(env) else { return false; };
+     let gles_ctx = super::get_thread_context(
+         &mut env.framework_state.opengles,
+         &mut env.objc,
+@@ -844,7 +841,7 @@ pub(crate) unsafe fn upload_fastpath_overlay_region(
+     );
+     let mut gles_boxed = gles_ctx.make_current(env.window.as_mut().unwrap());
+     let gles = gles_boxed.as_mut();
+-    let (mut texture, cached_w, cached_h, _, _) = OVERLAY_TEX.with(|c| c.get());
++    let (mut texture, cached_w, cached_h, _, _) = cache.overlay.get();
+     if let Some(((x, y, width, height), pixels)) = upload {
+         let old_texture_2d: GLuint = get_int(gles, gles11::TEXTURE_BINDING_2D) as _;
+         let old_unpack_alignment: GLint = get_int(gles, gles11::UNPACK_ALIGNMENT);
+@@ -895,9 +892,9 @@ pub(crate) unsafe fn upload_fastpath_overlay_region(
+         }
+         gles.PixelStorei(gles11::UNPACK_ALIGNMENT, old_unpack_alignment);
+         gles.BindTexture(gles11::TEXTURE_2D, old_texture_2d);
+-        OVERLAY_TEX.with(|c| c.set((texture, canvas.0, canvas.1, active, content)));
++        cache.overlay.set((texture, canvas.0, canvas.1, active, content));
+     } else {
+-        OVERLAY_TEX.with(|c| c.set((texture, cached_w, cached_h, active, content)));
++        cache.overlay.set((texture, cached_w, cached_h, active, content));
+     }
+     log_once!("[合成] iOS:快路径叠加被跳过的小浮层(公告板正文、搜索框等)");
+     true
+@@ -920,17 +917,7 @@ pub(crate) unsafe fn present_composited_pixels_in_guest_view(
+     height: u32,
+     rotation_matrix: crate::matrix::Matrix<2>,
+ ) -> bool {
+-    thread_local! {
+-        static COMPOSITE_TEX: std::cell::Cell<(GLuint, u32, u32)> = const { std::cell::Cell::new((0, 0, 0)) };
+-    }
+-    if env
+-        .framework_state
+-        .opengles
+-        .current_ctx_for_thread(env.current_thread)
+-        .is_none()
+-    {
+-        return false;
+-    }
++    let Some(cache) = presentation_textures(env) else { return false; };
+     let viewport = env.window.as_mut().unwrap().viewport();
+     let full_size = env.window.as_ref().unwrap().drawable_size();
+     let virtual_cursor_visible_at = env.window.as_mut().unwrap().virtual_cursor_visible_at();
+@@ -950,7 +937,7 @@ pub(crate) unsafe fn present_composited_pixels_in_guest_view(
+     let old_unpack_alignment: GLint = get_int(gles, gles11::UNPACK_ALIGNMENT);
+     gles.PixelStorei(gles11::UNPACK_ALIGNMENT, 4);
+ 
+-    let (mut texture, cached_w, cached_h) = COMPOSITE_TEX.with(|c| c.get());
++    let (mut texture, cached_w, cached_h) = cache.composite.get();
+     let reusable = texture != 0
+         && cached_w == width
+         && cached_h == height
+@@ -991,7 +978,7 @@ pub(crate) unsafe fn present_composited_pixels_in_guest_view(
+         gles.TexParameteri(gles11::TEXTURE_2D, gles11::TEXTURE_MAG_FILTER, gles11::LINEAR as _);
+         gles.TexParameteri(gles11::TEXTURE_2D, gles11::TEXTURE_WRAP_S, gles11::CLAMP_TO_EDGE as _);
+         gles.TexParameteri(gles11::TEXTURE_2D, gles11::TEXTURE_WRAP_T, gles11::CLAMP_TO_EDGE as _);
+-        COMPOSITE_TEX.with(|c| c.set((texture, width, height)));
++        cache.composite.set((texture, width, height));
+     }
+     gles.PixelStorei(gles11::UNPACK_ALIGNMENT, old_unpack_alignment);
+     log_once!("[合成] iOS:合成画布改在游戏上下文的视图里呈现(弹框、输入框等覆盖层可见)");
+@@ -1020,13 +1007,39 @@ pub(crate) unsafe fn present_composited_pixels_in_guest_view(
+ /// (which should be provided by the app) to a texture and presents it with
+ /// [present_frame], trying to avoid noticeably modifying OpenGL ES state while
+ /// doing so. The front and back buffers are then swapped.
++// Diagnostic readback is opt-in and bounded. Never used for ordinary frame timing.
++unsafe fn audit_frame(gles: &mut dyn GLES, label: &str, width: i32, height: i32) {
++    static ENABLED: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
++    if !*ENABLED.get_or_init(|| std::env::var_os("HM2_AUDIT_FRAME").is_some()) { return; }
++    static CALLS: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
++    let n = CALLS.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
++    if ![120,121,480,481].contains(&n) || width <= 0 || height <= 0 { return; }
++    let mut pixels = vec![0u8; width as usize * height as usize * 4];
++    gles.ReadPixels(0,0,width,height,gles11::RGBA,gles11::UNSIGNED_BYTE,pixels.as_mut_ptr().cast());
++    let colored = pixels.chunks_exact(4).filter(|p| p[0] != 0 || p[1] != 0 || p[2] != 0).count();
++    log!("[HM2 frame] {} n={} size={}x{} colored={} fbo={} status={:#x}", label,n,width,height,colored,get_int(gles,gles11::FRAMEBUFFER_BINDING_OES),gles.CheckFramebufferStatusOES(gles11::FRAMEBUFFER_OES));
++    if let Some(directory) = std::env::var_os("HM2_AUDIT_FRAME_DIR") {
++        // Local, opt-in screenshot evidence. GL row order is bottom-to-top.
++        use std::io::Write;
++        let path = std::path::PathBuf::from(directory).join(format!("{}-{}.ppm", label, n));
++        if let Ok(mut file) = std::fs::File::create(path) {
++            let _ = write!(file, "P6\n{} {}\n255\n", width, height);
++            for row in pixels.chunks_exact(width as usize * 4).rev() {
++                let rgb: Vec<u8> = row.chunks_exact(4).flat_map(|p| p[..3].iter().copied()).collect();
++                let _ = file.write_all(&rgb);
++            }
++        }
++    }
++}
++
+ unsafe fn present_renderbuffer(env: &mut Environment) {
++    let cache = presentation_textures(env).expect("present requires an EAGL context");
+     // [MoleWorld iOS · 诊断] 轻量出帧计数,【release 也开】(不带 cfg 门)。卡死时从设备日志看这条:
+     // [FRAME] 仍在增长 = 每帧还在出帧(渲染慢/内存压力,非单帧 CPU 死循环);停滞 = guest 卡在一次
+     // drawScene 从不返回 present(CPU 死循环)。用于决定性区分"CPU 死循环 vs OOM"。开销:每帧一次
+     // 原子自增 + 每 256 帧一行日志,可忽略。
+     // [同步 2026-09-24] 门控到 iOS(iOS 的 release 照样打,上面"release 也开"的语义不变);桌面 main 没有这行日志。
+-    #[cfg(target_os = "ios")]
++    #[cfg(all(target_os = "ios", feature = "moleworld_compat"))]
+     {
+         use std::sync::atomic::{AtomicU64, Ordering};
+         static FRAME_N: AtomicU64 = AtomicU64::new(0);
+@@ -1055,15 +1068,21 @@ unsafe fn present_renderbuffer(env: &mut Environment) {
+     // 就是 1024×768 横屏),iPhone 也横握,所以不能再叠加 device 方向的旋转;否则
+     // window.rotation_matrix()(LandscapeRight=+90°)会把画面再转 90° = 横躺。改用 identity 直接
+     // 呈现。桌面保持原 device 旋转(present_frame 桌面分支走矩阵形式,行为已验证、不回归)。
+-    #[cfg(target_os = "ios")]
++    #[cfg(all(target_os = "ios", feature = "moleworld_compat"))]
+     let rotation_matrix = crate::matrix::Matrix::<2>::identity();
+-    #[cfg(not(target_os = "ios"))]
+-    let rotation_matrix = env.window.as_mut().unwrap().rotation_matrix();
++    #[cfg(not(all(target_os = "ios", feature = "moleworld_compat")))]
++    let rotation_matrix = {
++        let device = env.window.as_mut().unwrap().rotation_matrix();
++        let layer = find_fullscreen_eagl_layer(env);
++        let layer_uv = crate::frameworks::core_animation::ca_eagl_layer::fullscreen_layer_uv_transform(env, layer)
++            .expect("fast path requires a full-screen layer transform");
++        device.multiply(&layer_uv)
++    };
+     // [2026-10-06 第十轮 R10-A2] 合成器备好了浮层画布、且这次找全屏层时确实跳过了浮层,就叠加上去
+     // (浮层画布是竖屏画布,用窗口方向的旋转)。浮层刚消失时 skipped_overlays 已为空,不会叠出残影。
+     #[cfg(target_os = "ios")]
+     let overlay = {
+-        let (texture, canvas_w, canvas_h, active, content) = OVERLAY_TEX.with(|c| c.get());
++        let (texture, canvas_w, canvas_h, active, content) = cache.overlay.get();
+         if active
+             && texture != 0
+             && !crate::frameworks::core_animation::ca_eagl_layer::skipped_overlays().is_empty()
+@@ -1127,7 +1146,8 @@ unsafe fn present_renderbuffer(env: &mut Environment) {
+     // + DeleteTextures —— 在 GLES1→Metal 的翻译层里等于每帧向驱动申请并销毁一张全屏纹理,非常贵。
+     // 改为:尺寸不变就复用同一张纹理 + CopyTexSubImage2D(只拷像素、不重分配存储、参数只设一次);
+     // 尺寸变化(旋转/分辨率变更)或纹理失效(上下文重建)时才重建。
+-    let (mut texture, cached_w, cached_h) = PRESENT_TEX.with(|c| c.get());
++    audit_frame(gles, "guest", width, height);
++    let (mut texture, cached_w, cached_h) = cache.present.get();
+     let reusable = texture != 0
+         && cached_w == width
+         && cached_h == height
+@@ -1155,7 +1175,7 @@ unsafe fn present_renderbuffer(env: &mut Environment) {
+             height,
+             0,
+         );
+-        PRESENT_TEX.with(|c| c.set((texture, width, height)));
++        cache.present.set((texture, width, height));
+     }
+     if !reusable {
+     // The texture will not have any mip levels so we must ensure the filter
+@@ -1222,6 +1242,8 @@ unsafe fn present_renderbuffer(env: &mut Environment) {
+         overlay,
+     );
+ 
++    audit_frame(gles, "host", full_size.0 as i32, full_size.1 as i32);
++
+     // [MoleWorld iOS] swap 前把 viewRenderbuffer 绑回 GL_RENDERBUFFER:SDL 的 presentRenderbuffer
+     // 呈现【当前绑定的 renderbuffer】。整个 present_frame 期间 GL_RENDERBUFFER 仍绑着游戏自己的
+     // 离屏 renderbuffer(rb=3),不绑回则 swap 呈现的是那块离屏 buffer 而非刚画好的 view
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/opengles/gles_guest.rs b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/opengles/gles_guest.rs
+index cfc45ed..67b8e57 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/opengles/gles_guest.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/opengles/gles_guest.rs
+@@ -156,6 +156,16 @@ fn panic_on_gl_errors(gles: &mut dyn GLES) {
+     }
+ }
+ 
++// Opt-in bounded GL diagnostics; disabled in ordinary execution.
++fn audit_gl() -> bool {
++    static ENABLED: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
++    *ENABLED.get_or_init(|| std::env::var_os("HM2_AUDIT_GL").is_some())
++}
++fn audit_gl_next() -> bool {
++    static CALLS: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
++    audit_gl() && CALLS.fetch_add(1, std::sync::atomic::Ordering::Relaxed) < 600
++}
++
+ // Generic state manipulation
+ fn glGetError(env: &mut Environment) -> GLenum {
+     let ignore_gl_errors = env.options.ignore_gl_errors;
+@@ -418,6 +428,7 @@ fn glScissor(env: &mut Environment, x: GLint, y: GLint, width: GLsizei, height:
+     })
+ }
+ fn glViewport(env: &mut Environment, x: GLint, y: GLint, width: GLsizei, height: GLsizei) {
++    if audit_gl() { let ctx=*env.framework_state.opengles.current_ctx_for_thread(env.current_thread); log!("[HM2 GL] viewport ctx={:?} x={} y={} w={} h={}",ctx,x,y,width,height); }
+     // apply scale hack: assume framebuffer's size is larger than the app thinks
+     // and scale viewport appropriately
+     let factor = env.options.scale_hack.get() as GLsizei;
+@@ -766,7 +777,19 @@ fn glTexCoordPointer(
+     stride: GLsizei,
+     pointer: ConstVoidPtr,
+ ) {
++    if audit_gl_next() {
++        let context = *env.framework_state.opengles.current_ctx_for_thread(env.current_thread);
++        log!("[HM2 GL] uv ctx={:?} size={} type={:#x} stride={} guest={:#x}", context, size, type_, stride, pointer.to_bits());
++    }
+     with_ctx_and_mem(env, |gles, mem| unsafe {
++        if audit_gl_next() && size == 2 && type_ == gles11::FLOAT && stride == 0 && !pointer.is_null() {
++            let mut binding = 0;
++            gles.GetIntegerv(gles11::ARRAY_BUFFER_BINDING, &mut binding);
++            if binding == 0 {
++                let values: Vec<f32> = (0..8).map(|i| mem.read(pointer.cast::<f32>() + i)).collect();
++                log!("[HM2 GL] glTexCoordPointer values={:?}", values);
++            }
++        }
+         let pointer =
+             translate_pointer_or_offset_to_host(gles, mem, pointer, gles11::ARRAY_BUFFER_BINDING);
+         gles.TexCoordPointer(size, type_, stride, pointer)
+@@ -779,18 +802,104 @@ fn glVertexPointer(
+     stride: GLsizei,
+     pointer: ConstVoidPtr,
+ ) {
++    if audit_gl_next() {
++        let context = *env.framework_state.opengles.current_ctx_for_thread(env.current_thread);
++        log!("[HM2 GL] vertex ctx={:?} size={} type={:#x} stride={} guest={:#x}", context, size, type_, stride, pointer.to_bits());
++    }
+     with_ctx_and_mem(env, |gles, mem| unsafe {
++        if audit_gl_next() && size == 2 && type_ == gles11::FLOAT && stride == 0 && !pointer.is_null() {
++            let mut binding = 0;
++            gles.GetIntegerv(gles11::ARRAY_BUFFER_BINDING, &mut binding);
++            if binding == 0 {
++                let values: Vec<f32> = (0..8).map(|i| mem.read(pointer.cast::<f32>() + i)).collect();
++                log!("[HM2 GL] glVertexPointer values={:?}", values);
++            }
++        }
+         let pointer =
+             translate_pointer_or_offset_to_host(gles, mem, pointer, gles11::ARRAY_BUFFER_BINDING);
+         gles.VertexPointer(size, type_, stride, pointer)
+     })
+ }
+ 
++// Bounded, opt-in GPU readback to distinguish upload corruption from draw state.
++unsafe fn audit_bound_texture(gles: &mut dyn GLES, stage: &str) {
++    if !audit_gl() { return; }
++    let Some(directory) = std::env::var_os("HM2_AUDIT_FRAME_DIR") else { return; };
++    let mut texture = 0;
++    gles.GetIntegerv(gles11::TEXTURE_BINDING_2D, &mut texture);
++    let (width, height) = match texture { 86 => (512,512), 87 => (1024,256), _ => return };
++    let path = std::path::PathBuf::from(directory).join(format!("gpu-{}-{}.ppm", stage, texture));
++    if path.exists() { return; }
++    let mut previous = 0;
++    gles.GetIntegerv(gles11::FRAMEBUFFER_BINDING_OES, &mut previous);
++    let mut framebuffer = 0;
++    gles.GenFramebuffersOES(1, &mut framebuffer);
++    gles.BindFramebufferOES(gles11::FRAMEBUFFER_OES, framebuffer);
++    gles.FramebufferTexture2DOES(gles11::FRAMEBUFFER_OES, gles11::COLOR_ATTACHMENT0_OES, gles11::TEXTURE_2D, texture as u32, 0);
++    let status = gles.CheckFramebufferStatusOES(gles11::FRAMEBUFFER_OES);
++    log!("[HM2 GL] GPU {} texture={} status={:#x}", stage, texture, status);
++    if status == gles11::FRAMEBUFFER_COMPLETE_OES {
++        let mut pixels = vec![0u8; width as usize * height as usize * 4];
++        gles.ReadPixels(0,0,width,height,gles11::RGBA,gles11::UNSIGNED_BYTE,pixels.as_mut_ptr().cast());
++        use std::io::Write;
++        if let Ok(mut file) = std::fs::File::create(path) {
++            let _ = write!(file,"P6\n{} {}\n255\n",width,height);
++            let rgb: Vec<u8> = pixels.chunks_exact(4).flat_map(|p| p[..3].iter().copied()).collect();
++            let _ = file.write_all(&rgb);
++        }
++    }
++    gles.BindFramebufferOES(gles11::FRAMEBUFFER_OES, previous as u32);
++    gles.DeleteFramebuffersOES(1, &framebuffer);
++}
++
++// One record per draw configuration, only during an explicit GL audit.
++fn audit_draw_config(gles: &mut dyn GLES, indexed: bool, mode: GLenum, count: GLsizei) {
++    if !audit_gl() { return; }
++    static SEEN: std::sync::OnceLock<std::sync::Mutex<std::collections::HashSet<(bool,u32,i32,[i32;5])>>> = std::sync::OnceLock::new();
++    unsafe {
++        let mut state = [0;5];
++        for (slot,pname) in state.iter_mut().zip([gles11::TEXTURE_BINDING_2D,gles11::ARRAY_BUFFER_BINDING,gles11::ELEMENT_ARRAY_BUFFER_BINDING,gles11::VERTEX_ARRAY_TYPE,gles11::TEXTURE_COORD_ARRAY_TYPE]) { gles.GetIntegerv(pname,slot); }
++        let mut seen = SEEN.get_or_init(Default::default).lock().unwrap();
++        if seen.len() >= 256 || !seen.insert((indexed,mode,count,state)) { return; }
++        log!("[HM2 drawconfig] indexed={} mode={} count={} texture/buffers/types={:?}",indexed,mode,count,state);
++    }
++}
++
+ // Drawing
+ fn glDrawArrays(env: &mut Environment, mode: GLenum, first: GLint, count: GLsizei) {
+     with_ctx_and_mem(env, |gles, _mem| unsafe {
++        audit_bound_texture(gles, "draw");
++        audit_draw_config(gles,false,mode,count);
++        if audit_gl_next() {
++            let mut values = [0i32; 7];
++            for (slot, pname) in values.iter_mut().zip([gles11::TEXTURE_BINDING_2D, gles11::ARRAY_BUFFER_BINDING, gles11::ELEMENT_ARRAY_BUFFER_BINDING, gles11::VERTEX_ARRAY_SIZE, gles11::VERTEX_ARRAY_TYPE, gles11::TEXTURE_COORD_ARRAY_SIZE, gles11::TEXTURE_COORD_ARRAY_TYPE]) { gles.GetIntegerv(pname, slot); }
++            log!("[HM2 GL] draw mode={:#x} first={} count={} tex/buf/elem/vsize/vtype/uvsize/uvtype={:?}", mode, first, count, values);
++        }
+         let fog_state_backup = clamp_fog_state_values(gles);
+         gles.DrawArrays(mode, first, count);
++        if audit_gl() {
++            use std::sync::atomic::{AtomicUsize,Ordering};
++            static DRAW_DUMP: AtomicUsize = AtomicUsize::new(0);
++            let n = DRAW_DUMP.fetch_add(1,Ordering::Relaxed);
++            if n < 4 {
++                let mut values=[0i32;5];
++                for (slot,pname) in values.iter_mut().zip([gles11::FRAMEBUFFER_BINDING_OES,gles11::RENDERBUFFER_BINDING_OES,gles11::ACTIVE_TEXTURE,gles11::CLIENT_ACTIVE_TEXTURE,gles11::TEXTURE_BINDING_2D]) { gles.GetIntegerv(pname,slot); }
++                let mut viewport=[0;4]; gles.GetIntegerv(gles11::VIEWPORT,viewport.as_mut_ptr());
++                log!("[HM2 GL] afterdraw={} fbo/rbo/active/client/tex={:?} vp={:?} error={:#x}",n,values,viewport,gles.GetError());
++                if let Some(directory)=std::env::var_os("HM2_AUDIT_FRAME_DIR") {
++                    let (w,h)=(viewport[2],viewport[3]);
++                    if w>0 && h>0 && w<4096 && h<4096 {
++                        let mut pixels=vec![0u8;w as usize*h as usize*4];
++                        gles.ReadPixels(viewport[0],viewport[1],w,h,gles11::RGBA,gles11::UNSIGNED_BYTE,pixels.as_mut_ptr().cast());
++                        use std::io::Write;
++                        if let Ok(mut f)=std::fs::File::create(std::path::PathBuf::from(directory).join(format!("drawframe-{}.ppm",n))) {
++                            let _=write!(f,"P6\n{} {}\n255\n",w,h);
++                            for row in pixels.chunks_exact(w as usize*4).rev() { for p in row.chunks_exact(4) { let _=f.write_all(&p[..3]); } }
++                        }
++                    }
++                }
++            }
++        }
+         restore_fog_state_values(gles, fog_state_backup);
+     })
+ }
+@@ -809,6 +918,7 @@ fn glDrawElements(
+             indices,
+             gles11::ELEMENT_ARRAY_BUFFER_BINDING,
+         );
++        audit_draw_config(gles,true,mode,count);
+         gles.DrawElements(mode, count, type_, indices);
+         restore_fog_state_values(gles, fog_state_backup);
+     })
+@@ -1125,6 +1235,11 @@ fn glTexImage2D(
+     pixels: ConstVoidPtr,
+ ) {
+     with_ctx_and_mem(env, |gles, mem| unsafe {
++        if audit_gl() {
++            let mut texture = 0;
++            gles.GetIntegerv(gles11::TEXTURE_BINDING_2D, &mut texture);
++            log!("[HM2 GL] upload texture={} level={} size={}x{} format={:#x} type={:#x} guest={:#x}",texture,level,width,height,format,type_,pixels.to_bits());
++        }
+         let pixels = if pixels.is_null() {
+             std::ptr::null()
+         } else {
+@@ -1132,6 +1247,22 @@ fn glTexImage2D(
+             let size = image_size_estimate(pixel_count, format, type_);
+             mem.ptr_at(pixels.cast::<u8>(), size).cast::<GLvoid>()
+         };
++        if audit_gl() && !pixels.is_null() && format == gles11::RGBA && type_ == gles11::UNSIGNED_BYTE {
++            let mut texture = 0;
++            gles.GetIntegerv(gles11::TEXTURE_BINDING_2D, &mut texture);
++            if [86, 87, 88].contains(&texture) {
++                if let Some(directory) = std::env::var_os("HM2_AUDIT_FRAME_DIR") {
++                    use std::io::Write;
++                    let path = std::path::PathBuf::from(directory).join(format!("upload-{}.ppm", texture));
++                    if let Ok(mut file) = std::fs::File::create(path) {
++                        let _ = write!(file, "P6\n{} {}\n255\n", width, height);
++                        let bytes = std::slice::from_raw_parts(pixels.cast::<u8>(), width as usize * height as usize * 4);
++                        let rgb: Vec<u8> = bytes.chunks_exact(4).flat_map(|p| p[..3].iter().copied()).collect();
++                        let _ = file.write_all(&rgb);
++                    }
++                }
++            }
++        }
+         gles.TexImage2D(
+             target,
+             level,
+@@ -1142,7 +1273,8 @@ fn glTexImage2D(
+             format,
+             type_,
+             pixels,
+-        )
++        );
++        audit_bound_texture(gles, "upload");
+     })
+ }
+ fn glTexSubImage2D(
+@@ -1389,6 +1521,7 @@ fn glGetRenderbufferParameterivOES(
+     with_ctx_and_mem(env, |gles, mem| {
+         let params = mem.ptr_at_mut(params, 1);
+         unsafe { gles.GetRenderbufferParameterivOES(target, pname, params) };
++        if audit_gl() { log!("[HM2 GL] rbparam pname={:#x} value={}",pname,unsafe { params.read_unaligned() }); }
+         // apply scale hack: scale down the reported size of the framebuffer,
+         // assuming the framebuffer's true size is larger than it should be
+         if pname == gles11::RENDERBUFFER_WIDTH_OES || pname == gles11::RENDERBUFFER_HEIGHT_OES {
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/uikit/ui_image.rs b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/uikit/ui_image.rs
+index 55ead88..d9d557b 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/uikit/ui_image.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/uikit/ui_image.rs
+@@ -135,6 +135,9 @@ pub const CLASSES: ClassExports = objc_classes! {
+     //       by a functionality gap in touchHLE, not the app actually trying to
+     //       load a broken file, so panicking is most useful.
+     let image = Image::from_bytes(&bytes).unwrap();
++    if std::env::var_os("HM2_AUDIT_GL").is_some() {
++        log!("[HM2 image] path={} size={:?}", path, image.dimensions());
++    }
+     let cg_image = cg_image::from_image(env, image);
+     env.objc.borrow_mut::<UIImageHostObject>(this).cg_image = cg_image;
+     this
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/uikit/ui_nib.rs b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/uikit/ui_nib.rs
+index e6bdd0d..86d2d13 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/uikit/ui_nib.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/uikit/ui_nib.rs
+@@ -380,13 +380,19 @@ fn load_nib_file(env: &mut Environment, ui_nib: id, path: GuestPathBuf) -> Resul
+         () = msg![env; conn connect];
+     }
+ 
+-    // Sending awakeFromNib for all objects
++    // iOS awakens objects instantiated by this nib, not external placeholders.
++    // File's Owner can be a controller whose own nib has already awakened it.
++    let file_owner = env.objc.borrow::<UINibHostObject>(ui_nib).file_owner;
++    let proxy_class: Class = msg_class![env; UIProxyObject class];
+     let enumerator: id = msg![env; objects objectEnumerator];
+     loop {
+         let next: id = msg![env; enumerator nextObject];
+         if next == nil {
+             break;
+         }
++        if next == file_owner || msg![env; next isKindOfClass:proxy_class] {
++            continue;
++        }
+         () = msg![env; next awakeFromNib];
+     }
+ 
+@@ -397,6 +403,12 @@ fn load_nib_file(env: &mut Environment, ui_nib: id, path: GuestPathBuf) -> Resul
+     for i in 0..visibles_count {
+         let visible: id = msg![env; visibles objectAtIndex:i];
+         () = msg![env; visible setHidden:false];
++        // Initial visible NIB windows must participate in key-window routing.
++        // Do not replace a window already selected by the guest application.
++        let windows = &env.framework_state.uikit.ui_view.ui_window;
++        if windows.key_window.is_none() && windows.windows.contains(&visible) {
++            () = msg![env; visible makeKeyWindow];
++        }
+     }
+ 
+     Ok(unarchiver)
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/uikit/ui_view/ui_alert_view.rs b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/uikit/ui_view/ui_alert_view.rs
+index 40e0785..12e6491 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/uikit/ui_view/ui_alert_view.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/frameworks/uikit/ui_view/ui_alert_view.rs
+@@ -105,6 +105,8 @@ struct Overlay {
+     alert: id,
+     /// 全屏容器视图(alloc 得来的 +1,拆除时 removeFromSuperview + release)。
+     container: id,
++    original_controls: Vec<id>,
++    initial_alert_origin: Option<CGPoint>,
+     /// 按钮命中区(逻辑坐标 x, y, 宽, 高)与按钮索引。
+     buttons: Vec<(CGFloat, CGFloat, CGFloat, CGFloat, NSInteger)>,
+     /// 没有任何按钮的框:点任意处按索引 0 关闭(见 [present] 注释)。
+@@ -532,6 +534,7 @@ fn dismiss(env: &mut Environment, alert: id, index: NSInteger, clicked: bool) {
+     };
+     if let Some(overlay) = overlay {
+         let container = overlay.container;
++        let _: bool = msg![env; container endEditing:true];
+         () = msg![env; container removeFromSuperview];
+         release(env, container);
+     }
+@@ -644,10 +647,33 @@ fn strip_owned_fingers(
+ }
+ 
+ /// [复核修 2026-09-15] 按下:见 [filter_touch_event]。返回 None = 被弹框吞掉。
++fn alert_offset(env: &mut Environment) -> (CGFloat, CGFloat) {
++    let info = env.framework_state.uikit.ui_alert_view.overlay.as_ref()
++        .and_then(|o| o.initial_alert_origin.map(|origin| (o.alert, origin)));
++    if let Some((alert, origin)) = info {
++        let frame: CGRect = msg![env; alert frame];
++        (frame.origin.x - origin.x, frame.origin.y - origin.y)
++    } else { (0.0, 0.0) }
++}
++
+ fn filter_touches_down(
+     env: &mut Environment,
+-    map: HashMap<FingerId, Coords>,
++    mut map: HashMap<FingerId, Coords>,
+ ) -> Option<HashMap<FingerId, Coords>> {
++    let mut controls = HashMap::new();
++    let roots = env.framework_state.uikit.ui_alert_view.overlay.as_ref()
++        .map(|o| o.original_controls.clone()).unwrap_or_default();
++    map.retain(|finger, coords| {
++        let point = CGPoint { x: coords.0, y: coords.1 };
++        let custom = roots.iter().any(|&root| {
++            let local: CGPoint = msg![env; root convertPoint:point fromView:nil];
++            let hit: id = msg![env; root hitTest:local withEvent:nil];
++            hit != nil
++        });
++        if custom { controls.insert(*finger, *coords); }
++        !custom
++    });
++    let offset = alert_offset(env);
+     let state = &mut env.framework_state.uikit.ui_alert_view;
+     // 同一根手指又按下:它上一次触摸早已结束,清掉残留的归属与点击判定。
+     for finger in map.keys() {
+@@ -671,6 +697,7 @@ fn filter_touches_down(
+                 continue;
+             }
+             let (lx, ly) = overlay.map.guest_to_logical(x, y);
++            let (lx, ly) = (lx - offset.0, ly - offset.1);
+             let pressed = hit_button(overlay, lx, ly, DOWN_SLOP);
+             let better = match chosen {
+                 None => true,
+@@ -691,7 +718,7 @@ fn filter_touches_down(
+             pressed,
+         });
+     }
+-    None
++    if controls.is_empty() { None } else { Some(controls) }
+ }
+ 
+ /// [复核修 2026-09-15] 抬起 / 取消:去掉归弹框的手指(同时从记账里移除),剩下的交给游戏;
+@@ -701,6 +728,7 @@ fn filter_touches_end(
+     mut map: HashMap<FingerId, Coords>,
+     cancelled: bool,
+ ) -> Option<HashMap<FingerId, Coords>> {
++    let offset = alert_offset(env);
+     let (capture, release_coords, swallowed_any) = {
+         let state = &mut env.framework_state.uikit.ui_alert_view;
+         let capture = if state
+@@ -738,6 +766,7 @@ fn filter_touches_end(
+                             Some(0)
+                         } else {
+                             let (lx, ly) = overlay.map.guest_to_logical(x, y);
++            let (lx, ly) = (lx - offset.0, ly - offset.1);
+                             capture
+                                 .pressed
+                                 .filter(|&down| button_contains(overlay, down, lx, ly, UP_SLOP))
+@@ -937,7 +966,13 @@ fn present(env: &mut Environment, alert: id, window: id) {
+         )
+     };
+ 
+-    let box_w = BOX_W.min(w - 40.0);
++    // Preserve custom controls created by the original guest (e.g. QUIAlertView
++    // text fields). Keep their hierarchy and coordinates; never inject a name.
++    let custom_views = env.objc.borrow::<super::UIViewHostObject>(alert).subviews.clone();
++    let custom_frames: Vec<CGRect> = custom_views.iter().map(|&v| msg![env; v frame]).collect();
++    let custom_w = custom_frames.iter().map(|r| r.origin.x+r.size.width).fold(0.0f32, f32::max);
++    let custom_h = custom_frames.iter().map(|r| r.origin.y+r.size.height).fold(0.0f32, f32::max);
++    let box_w = BOX_W.max(custom_w + PAD).min(w - 40.0);
+     let text_w = box_w - 2.0 * PAD;
+     let max_message_h = (h - 260.0).max(80.0);
+ 
+@@ -987,7 +1022,7 @@ fn present(env: &mut Environment, alert: id, window: id) {
+             content_h += part_h;
+         }
+     }
+-    let box_h = content_h + 2.0 * PAD;
++    let box_h = (content_h + 2.0 * PAD).max(custom_h + buttons_h + 2.0 * PAD);
+     let box_x = ((w - box_w) / 2.0).floor();
+     let box_y = ((h - box_h) / 2.0).floor().max(10.0);
+ 
+@@ -1045,6 +1080,14 @@ fn present(env: &mut Environment, alert: id, window: id) {
+         placed_any = true;
+     }
+ 
++    if !custom_views.is_empty() {
++        let cx = box_x + (box_w - custom_w) / 2.0;
++        let custom_frame = rect(cx, box_y, custom_w, custom_h);
++        () = msg![env; alert setFrame:custom_frame];
++        () = msg![env; container addSubview:alert];
++        y = y.max(box_y + custom_h);
++        placed_any = true;
++    }
+     let mut hits: Vec<(CGFloat, CGFloat, CGFloat, CGFloat, NSInteger)> = Vec::new();
+     if n > 0 {
+         if placed_any {
+@@ -1096,6 +1139,28 @@ fn present(env: &mut Environment, alert: id, window: id) {
+         );
+     }
+ 
++    // UIKit chrome and original controls must move together when the guest
++    // repositions its UIAlertView while editing. Preserve all original frames.
++    let initial_alert_origin = if !custom_views.is_empty() {
++        let frame: CGRect = msg![env; alert frame];
++        let chrome = env.objc.borrow::<super::UIViewHostObject>(container).subviews.clone();
++        let mut index: NSInteger = 0;
++        for child in chrome {
++            if child == alert { continue; }
++            let child_frame: CGRect = msg![env; child frame];
++            retain(env, child);
++            () = msg![env; child removeFromSuperview];
++            let local = rect(child_frame.origin.x - frame.origin.x,
++                             child_frame.origin.y - frame.origin.y,
++                             child_frame.size.width, child_frame.size.height);
++            () = msg![env; child setFrame:local];
++            () = msg![env; alert insertSubview:child atIndex:index];
++            release(env, child);
++            index += 1;
++        }
++        Some(frame.origin)
++    } else { None };
++
+     // 旋转 + 居中,与屏幕方向一致地"摆正"。
+     () = msg![env; container setTransform:transform];
+     let center = CGPoint {
+@@ -1118,6 +1183,8 @@ fn present(env: &mut Environment, alert: id, window: id) {
+     env.framework_state.uikit.ui_alert_view.overlay = Some(Overlay {
+         alert,
+         container,
++        original_controls: custom_views,
++        initial_alert_origin,
+         buttons: hits,
+         tap_anywhere,
+         map,
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/gles/gles1_native.rs b/fresh-port/20-touchHLE-src/touchHLE/src/gles/gles1_native.rs
+index cff2059..a8198d7 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/gles/gles1_native.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/gles/gles1_native.rs
+@@ -543,6 +543,12 @@ impl GLES for GLES1Native<'_> {
+         gles11::IsTexture(texture)
+     }
+     unsafe fn BindTexture(&mut self, target: GLenum, texture: GLuint) {
++        // The MoleWorld binding cache is thread-local, not context-local.
++        // Other apps use the driver's actual context state without this shortcut.
++        if !cfg!(feature = "moleworld_compat") {
++            gles11::BindTexture(target, texture);
++            return;
++        }
+         crate::mole_perf::BINDTEX.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+         if target == gles11::TEXTURE_2D {
+             let u = ACTIVE_UNIT.with(|c| c.get()).min(7);
+@@ -562,7 +568,7 @@ impl GLES for GLES1Native<'_> {
+     unsafe fn TexParameteri(&mut self, target: GLenum, pname: GLenum, mut param: GLint) {
+         // NPOT 纹理:游戏若设 REPEAT/ mipmap-min-filter 会让它在原生 GLES1 不完整 → 强制改成
+         // CLAMP_TO_EDGE / LINEAR(limited-NPOT 合法配置)。只影响 NPOT,POT 纹理原样放行。
+-        if target == gles11::TEXTURE_2D {
++        if cfg!(feature = "moleworld_compat") && target == gles11::TEXTURE_2D {
+             let tex = cur_bound_2d();
+             if tex != 0 && NPOT_TEX.with(|s| s.borrow().contains(&tex)) {
+                 if (pname == gles11::TEXTURE_WRAP_S || pname == gles11::TEXTURE_WRAP_T)
+@@ -635,7 +641,7 @@ impl GLES for GLES1Native<'_> {
+         // [MoleWorld iOS · P0 修复] NPOT 纹理完整性:上传后若是 NPOT,记入集合并立刻强制
+         // CLAMP_TO_EDGE + 非 mipmap min filter,使其在原生 GLES1 上"完整"可采样。POT 纹理
+         // 不动(主村正常)。TexParameteri 里对该集合的纹理也会持续钳制(防游戏之后再设 REPEAT)。
+-        if target == gles11::TEXTURE_2D && level == 0 {
++        if cfg!(feature = "moleworld_compat") && target == gles11::TEXTURE_2D && level == 0 {
+             let tex = cur_bound_2d();
+             if tex != 0 {
+                 if tex_is_npot(width, height) {
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/lib.rs b/fresh-port/20-touchHLE-src/touchHLE/src/lib.rs
+index c0a0964..8953490 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/lib.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/lib.rs
+@@ -271,33 +271,16 @@ pub fn ios_entry() {
+         }
+     }));
+ 
+-    // [扫描修 2026-09-15] iOS 黑屏脚手架拆除(present.rs 里的 4 个真修复保留不动)。
+-    // 这里曾有两类临时改动,都已删除,勿复活:
+-    //  ① 分辨率实验三件套(用 set_var 强开的铺屏环境变量 / MOLE_HIDPI / --scale-hack=2):把 guest 逻辑屏改成
+-    //     与物理屏不匹配的尺寸,dump 出现精确对半黑白,早已注释停用。[2026-09-16] B-06 铺屏的环境变量入口已从
+-    //     window.rs 删除;现在只由下面的 --fill-screen 按真机屏比算逻辑屏,尺寸与屏幕一致,不是当年的错配。
+-    //  ② 强开 MOLE_DIAG:每帧 glReadPixels 截帧,在真机 TBDR GPU 上会 resolve+discard 掉随后
+-    //     presentRenderbuffer 要呈现的 renderbuffer → 屏幕黑(见 mole_diag.rs diag_enabled 的注释),
+-    //     是真机黑屏元凶之一。桌面截帧仍由外部环境变量 MOLE_DIAG=1 开启,不受影响。
+-    // 同时删去冗余的 --scale-hack=1:options.rs 默认值就是 1,默认选项文件也没给本游戏设 scale-hack。
+-
+-    // [MoleWorld iOS · JIT 探针] 让设备自己回答「能不能拿到可执行内存」,别再引用旧结论(见 mole_jitprobe)。
+-    crate::mole_jitprobe::probe();
+-    crate::mole_perf::init_guest_measure();
+-
++    // Guest options live beside the preserved IPA so packaging controls orientation.
+     let base = sdl2::filesystem::base_path().unwrap_or_else(|_| String::from("./"));
+-    let game = std::path::Path::new(&base).join("MoleWorld.ipa");
+-    let args = vec![
+-        String::from("touchHLE"), // argv[0], skipped by main()
+-        game.to_string_lossy().into_owned(),
+-        String::from("--landscape-right"),
+-        String::from("--device-family=ipad"),
+-        // [MoleWorld iOS 宽屏适配] 对齐桌面「启动摩尔庄园-宽屏.command」:按真机屏幕比例自动算 guest 逻辑屏
+-        // (FixedHeight Hor+,短边锁 768、长边随屏比、钳在 [4:3, 2.4])→ iPhone 全面屏铺满无黑边、不拉伸;
+-        // 世界场景多显示海洋,整屏底图走 X_wide.png 重定向,UI 场景由 UI43(宽屏自动开)按 4:3 原设计居中。
+-        // iPad(4:3)算出来仍是 1024x768,逐字节等同原路径。
+-        String::from("--fill-screen"),
+-    ];
++    let game = std::path::Path::new(&base).join("HeavyMach.ipa");
++    let mut args = vec![String::from("touchHLE"), game.to_string_lossy().into_owned()];
++    let config = std::path::Path::new(&base).join("HeavyMach_options.txt");
++    match std::fs::read_to_string(&config) {
++        Ok(text) => args.extend(text.lines().map(str::trim)
++            .filter(|s| !s.is_empty() && !s.starts_with('#')).map(String::from)),
++        Err(e) => { echo!("Cannot read guest options {}: {}", config.display(), e); return; }
++    }
+     match main(args.into_iter()) {
+         Ok(_) => echo!("touchHLE finished"),
+         Err(e) => echo!("touchHLE errored: {e:?}"),
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/libc.rs b/fresh-port/20-touchHLE-src/touchHLE/src/libc.rs
+index 8acfc0a..34841cb 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/libc.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/libc.rs
+@@ -121,6 +121,7 @@ pub const DYLIB: crate::dyld::HostDylib = crate::dyld::HostDylib {
+ /// Container for state of various child modules
+ #[derive(Default)]
+ pub struct State {
++    dlfcn: dlfcn::State,
+     dirent: dirent::State,
+     keymgr: keymgr::State,
+     math: math::State,
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/libc/dlfcn.rs b/fresh-port/20-touchHLE-src/touchHLE/src/libc/dlfcn.rs
+index 98ea10b..c103dc8 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/libc/dlfcn.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/libc/dlfcn.rs
+@@ -9,6 +9,38 @@ use crate::dyld::{export_c_func, FunctionExports};
+ use crate::mem::{ConstPtr, MutVoidPtr, Ptr};
+ use crate::Environment;
+ 
++#[derive(Default)]
++pub struct State { strings: std::collections::HashMap<String, u32> }
++
++fn stable_string(env: &mut Environment, value: String) -> u32 {
++    if let Some(&p) = env.libc_state.dlfcn.strings.get(&value) { return p; }
++    let p = env.mem.alloc_and_write_cstr(value.as_bytes()).to_bits();
++    env.libc_state.dlfcn.strings.insert(value, p);
++    p
++}
++
++// Dl_info contains four 32-bit guest pointers. Addresses refer to loaded guest
++// images, never the host process. Names remain valid for the guest lifetime.
++fn dladdr(env: &mut Environment, address: crate::mem::ConstVoidPtr, info: crate::mem::MutPtr<u32>) -> i32 {
++    let address = address.to_bits();
++    let found = env.bins.iter().enumerate().find(|(_, bin)| {
++        bin.mapped_segments.iter().any(|s| s.contains(&address))
++    });
++    let Some((index, bin)) = found else { return 0; };
++    let base = bin.image_base;
++    let path = if index == 0 { env.bundle.executable_path().as_str().to_string() } else { bin.name.clone() };
++    let symbol = bin.symbol_addresses.iter().filter(|(_,a)| **a <= address)
++        .max_by_key(|(_,a)| **a).map(|(name,&a)| (name.strip_prefix('_').unwrap_or(name).to_string(), a));
++    let file_ptr = stable_string(env, path);
++    let (symbol_ptr, symbol_address) = match symbol {
++        Some((name,a)) => (stable_string(env,name),a), None => (0,0)
++    };
++    for (i,v) in [file_ptr,base,symbol_ptr,symbol_address].into_iter().enumerate() {
++        env.mem.write(info + i as u32, v);
++    }
++    1
++}
++
+ const RTLD_DEFAULT: MutVoidPtr = Ptr::from_bits(-2 as _);
+ 
+ fn is_known_library(path: &str) -> bool {
+@@ -55,6 +87,7 @@ fn dlclose(env: &mut Environment, handle: MutVoidPtr) -> i32 {
+ }
+ 
+ pub const FUNCTIONS: FunctionExports = &[
++    export_c_func!(dladdr(_, _)),
+     export_c_func!(dlopen(_, _)),
+     export_c_func!(dlsym(_, _)),
+     export_c_func!(dlclose(_)),
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/libc/posix_io.rs b/fresh-port/20-touchHLE-src/touchHLE/src/libc/posix_io.rs
+index 1aa3b38..a973137 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/libc/posix_io.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/libc/posix_io.rs
+@@ -197,6 +197,9 @@ pub fn open_direct(env: &mut Environment, path: ConstPtr<u8>, flags: i32) -> Fil
+             return -1;
+         }
+     };
++    if std::env::var_os("HM2_AUDIT_IO").is_some() {
++        log!("[HM2 file] open path={:?} flags={:#x}", path_string, flags);
++    }
+     // TODO: symlinks don't exist in the FS yet, so we can't "not follow" them.
+     if flags & O_NOFOLLOW != 0 {
+         log!("Ignoring O_NOFOLLOW when opening {:?}", path_string);
+@@ -420,6 +423,9 @@ pub fn write(
+         return 0;
+     }
+ 
++    if std::env::var_os("HM2_AUDIT_IO").is_some() {
++        log!("[HM2 guest write] fd={:?} bytes={} time={:?}", fd, size, env.startup_time.elapsed());
++    }
+     let buffer_slice = env.mem.bytes_at(buffer.cast(), size);
+     match file.file.write(buffer_slice) {
+         Ok(bytes_written) => {
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/libc/stdio/printf.rs b/fresh-port/20-touchHLE-src/touchHLE/src/libc/stdio/printf.rs
+index 1102968..27f5495 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/libc/stdio/printf.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/libc/stdio/printf.rs
+@@ -293,34 +293,16 @@ pub fn printf_inner<const NS_LOG: bool, F: Fn(&Mem, GuestUSize) -> u8>(
+                     int.into()
+                 };
+ 
+-                let int_with_precision = if precision.is_some_and(|value| value > 0) {
+-                    format!("{:01$}", int, precision.unwrap())
+-                } else {
+-                    format!("{int}")
+-                };
+-
+-                if pad_width > 0 {
+-                    let pad_width = pad_width as usize;
+-                    if pad_char == '0' && precision.is_none() {
+-                        if prepend_sign {
+-                            assert!(int != 0); // TODO
+-                            assert!(pad_width > 0);
+-                            if int > 0 {
+-                                write!(&mut res, "+{:0>1$}", int, pad_width - 1).unwrap();
+-                            } else {
+-                                write!(&mut res, "-{:0>1$}", int.abs(), pad_width - 1).unwrap();
+-                            }
+-                        } else {
+-                            write!(&mut res, "{int:0>pad_width$}").unwrap();
+-                        }
+-                    } else {
+-                        assert!(!prepend_sign);
+-                        write!(&mut res, "{int_with_precision:>pad_width$}").unwrap();
+-                    }
+-                } else {
+-                    assert!(!prepend_sign);
+-                    res.extend_from_slice(int_with_precision.as_bytes());
+-                }
++                // C integer precision counts digits, excluding the sign. A
++                // positive/zero delta with %+d is used by HM2 item details.
++                let formatted = integer_format(
++                    int,
++                    prepend_sign && specifier != b'u',
++                    pad_width as usize,
++                    pad_char,
++                    precision,
++                );
++                res.extend_from_slice(formatted.as_bytes());
+             }
+             b'@' if NS_LOG => {
+                 assert!(!prepend_sign);
+@@ -427,13 +409,12 @@ pub fn printf_inner<const NS_LOG: bool, F: Fn(&Mem, GuestUSize) -> u8>(
+             }
+             // Float specifiers
+             b'f' => {
+-                assert!(!prepend_sign);
+                 assert!(!left_justified);
+                 let float: f64 = args.next(env);
+                 let pad_width = pad_width as usize;
+                 let precision = precision.unwrap_or(6);
+ 
+-                let formatted = f_format(float, pad_width, pad_char, precision);
++                let formatted = f_format(float, pad_width, pad_char, precision, prepend_sign);
+                 res.extend_from_slice(formatted.as_bytes());
+             }
+             b'e' => {
+@@ -478,7 +459,7 @@ pub fn printf_inner<const NS_LOG: bool, F: Fn(&Mem, GuestUSize) -> u8>(
+                 if P > X && X >= -4 {
+                     let precision: usize = (P - X - 1).try_into().unwrap();
+ 
+-                    let result = f_format(float, pad_width, pad_char, precision);
++                    let result = f_format(float, pad_width, pad_char, precision, false);
+ 
+                     // TODO: skip if alternative representation is requested
+                     let trimmed_result = if result.contains('.') {
+@@ -519,12 +500,49 @@ pub fn printf_inner<const NS_LOG: bool, F: Fn(&Mem, GuestUSize) -> u8>(
+     res
+ }
+ 
+-fn f_format(float: f64, pad_width: usize, pad_char: char, precision: usize) -> String {
++fn integer_format(
++    int: i64,
++    prepend_sign: bool,
++    pad_width: usize,
++    pad_char: char,
++    precision: Option<usize>,
++) -> String {
++    let sign = if int < 0 { "-" } else if prepend_sign { "+" } else { "" };
++    let digits = if int == 0 && precision == Some(0) {
++        String::new()
++    } else {
++        let magnitude = int.unsigned_abs().to_string();
++        let zeroes = precision.unwrap_or(0).saturating_sub(magnitude.len());
++        format!("{}{magnitude}", "0".repeat(zeroes))
++    };
++    let padding = pad_width.saturating_sub(sign.len() + digits.len());
++    if pad_char == '0' && precision.is_none() {
++        format!("{sign}{}{digits}", "0".repeat(padding))
++    } else {
++        format!("{}{sign}{digits}", " ".repeat(padding))
++    }
++}
++
++fn f_format(
++    float: f64,
++    pad_width: usize,
++    pad_char: char,
++    precision: usize,
++    prepend_sign: bool,
++) -> String {
+     if pad_char == '0' {
+-        format!("{float:0pad_width$.precision$}")
++        if prepend_sign {
++            format!("{float:+0pad_width$.precision$}")
++        } else {
++            format!("{float:0pad_width$.precision$}")
++        }
+     } else {
+         assert!(pad_char == ' '); // TODO
+-        format!("{float:pad_width$.precision$}")
++        if prepend_sign {
++            format!("{float:+pad_width$.precision$}")
++        } else {
++            format!("{float:pad_width$.precision$}")
++        }
+     }
+ }
+ 
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/libc/stdlib.rs b/fresh-port/20-touchHLE-src/touchHLE/src/libc/stdlib.rs
+index 060d1b6..89ae39e 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/libc/stdlib.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/libc/stdlib.rs
+@@ -18,11 +18,12 @@ use std::str::FromStr;
+ use std::time::SystemTime;
+ 
+ pub mod qsort;
++mod bsd_random;
+ 
+ #[derive(Default)]
+ pub struct State {
+     rand: u32,
+-    random: u32,
++    random: bsd_random::BsdRandom,
+     arc4random: u32,
+     fcvt_buf: Option<MutPtr<u8>>,
+ }
+@@ -220,20 +221,12 @@ fn rand_r(env: &mut Environment, seed_ptr: MutPtr<u32>) -> i32 {
+     (seed as i32) & RAND_MAX
+ }
+ 
+-// BSD's "better" random number generator, with an implementation that is not
+-// actually better.
++// Darwin random()/srandom() have a defined sequence used by guest data formats.
+ fn srandom(env: &mut Environment, seed: u32) {
+-    // TODO: handle errno properly
+-    set_errno(env, 0);
+-
+-    env.libc_state.stdlib.random = seed;
++    env.libc_state.stdlib.random = bsd_random::BsdRandom::seeded(seed);
+ }
+ fn random(env: &mut Environment) -> i32 {
+-    // TODO: handle errno properly
+-    set_errno(env, 0);
+-
+-    env.libc_state.stdlib.random = prng(env.libc_state.stdlib.random);
+-    (env.libc_state.stdlib.random as i32) & RAND_MAX
++    env.libc_state.stdlib.random.next()
+ }
+ 
+ fn arc4random(env: &mut Environment) -> u32 {
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/libc/stdlib/bsd_random.rs b/fresh-port/20-touchHLE-src/touchHLE/src/libc/stdlib/bsd_random.rs
+new file mode 100644
+index 0000000..85df614
+--- /dev/null
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/libc/stdlib/bsd_random.rs
+@@ -0,0 +1,50 @@
++/* MPL-2.0. Darwin's default degree-31, separation-3 additive random sequence.
++ * Algorithm reference: apple-oss-distributions/Libc/stdlib/FreeBSD/random.c.
++ * Keeps state per guest Environment; no host-global RNG coupling.
++ */
++pub struct BsdRandom { words: [u32; 31], front: usize, rear: usize }
++impl Default for BsdRandom { fn default() -> Self { Self::seeded(1) } }
++impl BsdRandom {
++    pub fn seeded(seed: u32) -> Self {
++        let mut r = Self { words: [0;31], front:3, rear:0 };
++        r.words[0] = seed;
++        for i in 1..31 {
++            let mut x = r.words[i-1] as i32 as i64;
++            if x == 0 { x = 123459876; }
++            x = 16807 * (x % 127773) - 2836 * (x / 127773);
++            if x < 0 { x += 0x7fffffff; }
++            r.words[i] = x as u32;
++        }
++        for _ in 0..310 { r.next(); }
++        r
++    }
++    pub fn next(&mut self) -> i32 {
++        let sum = self.words[self.front].wrapping_add(self.words[self.rear]);
++        self.words[self.front] = sum;
++        self.front = (self.front + 1) % 31;
++        self.rear = (self.rear + 1) % 31;
++        (sum >> 1) as i32
++    }
++}
++#[cfg(test)] mod tests {
++    use super::*;
++    #[test] fn original_table_seed_sequence() {
++        let expected = [134421688,624679831,1175454998,389078347,362115794,1810428007,1289614418,1669641904,192096377,442316865,1966179315,188259782,1458953602,1695212072,967665137,1409341336];
++        let mut r = BsdRandom::seeded(0xb27f7);
++        for e in expected { assert_eq!(r.next(),e); }
++    }
++    #[test] fn default_is_seed_one_and_guests_do_not_interfere() {
++        let mut a=BsdRandom::default(); let mut b=BsdRandom::seeded(1);
++        let mut other=BsdRandom::seeded(9);
++        for _ in 0..2048 { other.next(); assert_eq!(a.next(), b.next()); }
++    }
++    #[cfg(target_os="macos")]
++    #[test] fn matches_darwin_libc_across_seed_and_wrap_boundaries() {
++        unsafe extern "C" { fn srandom(seed:u32); fn random()->std::ffi::c_long; }
++        for seed in [0,1,0xb27f7,0x7fffffff,0x80000000,0xffffffff] {
++            unsafe { srandom(seed); }
++            let mut r=BsdRandom::seeded(seed);
++            for i in 0..4096 { assert_eq!(r.next() as i64, unsafe{random()} as i64,"seed={seed} sample={i}"); }
++        }
++    }
++}
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/libc/time.rs b/fresh-port/20-touchHLE-src/touchHLE/src/libc/time.rs
+index d50ea2c..608aae6 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/libc/time.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/libc/time.rs
+@@ -473,6 +473,7 @@ const DEFAULT_TZ_NAME: &str = "Asia/Shanghai";
+ /// 加 28800;原版服务器也按北京时间跨日。所以默认固定 +8 与游戏/服务器一致;需要真机
+ /// "按设备时区"语义时显式设 MOLE_TZ=host。
+ fn mole_tz_override() -> Option<(i32, String)> {
++    if !cfg!(feature = "moleworld_compat") { return None; }
+     static OVERRIDE: std::sync::OnceLock<Option<(i32, String)>> = std::sync::OnceLock::new();
+     OVERRIDE
+         .get_or_init(|| {
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/mach_o.rs b/fresh-port/20-touchHLE-src/touchHLE/src/mach_o.rs
+index 767219a..9f51a9b 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/mach_o.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/mach_o.rs
+@@ -38,6 +38,9 @@ const VM_PROT_EXECUTE: vm_prot_t = 4;
+ pub struct MachO {
+     /// Name (for debugging purposes and sorting)
+     pub name: String,
++    pub image_base: u32,
++    pub mapped_segments: Vec<std::ops::Range<u32>>,
++    pub symbol_addresses: HashMap<String, u32>,
+     /// Paths of dynamic libraries referenced by the binary.
+     pub dynamic_libraries: Vec<String>,
+     /// Metadata related to sections.
+@@ -320,6 +323,8 @@ impl MachO {
+         // Info used for the result
+         let mut dynamic_libraries = Vec::new();
+         let mut exported_symbols = HashMap::new();
++        let mut symbol_addresses = HashMap::new();
++        let mut mapped_segments = Vec::new();
+         let mut indirect_undef_symbols: Vec<Option<String>> = Vec::new();
+         let mut external_relocations: Vec<(u32, String)> = Vec::new();
+         let mut entry_point_pc: Option<u32> = None;
+@@ -382,6 +387,7 @@ impl MachO {
+                             vmsize
+                         );
+                         into_mem.reserve(vmaddr + slide, vmsize);
++                        mapped_segments.push((vmaddr + slide)..(vmaddr + slide + vmsize));
+ 
+                         // If filesize is less than vmsize, the rest of the
+                         // segment should be filled with zeroes. We are assuming
+@@ -430,6 +436,7 @@ impl MachO {
+                             } = symbol
+                             {
+                                 let entry: u32 = entry.try_into().unwrap();
++                                symbol_addresses.insert(name.to_string(), slide + entry);
+                                 let entry = if desc & N_ARM_THUMB_DEF != 0 {
+                                     entry | GuestFunction::THUMB_BIT
+                                 } else {
+@@ -682,6 +689,9 @@ impl MachO {
+ 
+         Ok(MachO {
+             name,
++            image_base: text_segment_base.unwrap_or(0),
++            mapped_segments,
++            symbol_addresses,
+             dynamic_libraries,
+             sections,
+             exported_symbols,
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/mem.rs b/fresh-port/20-touchHLE-src/touchHLE/src/mem.rs
+index cb56dc3..247d7f3 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/mem.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/mem.rs
+@@ -729,6 +729,11 @@ impl Mem {
+     pub fn free_in_heap(&mut self, heap: Option<&mut HeapAllocator>, ptr: MutVoidPtr) {
+         let (vm, heap) = self.allocators_mut(heap);
+         let size = heap.free(vm, ptr.to_bits());
++        static AUDIT_HEAP: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
++        if *AUDIT_HEAP.get_or_init(|| std::env::var_os("HM2_AUDIT_HEAP").is_some()) && size == 12 {
++            let words: Vec<u32> = (0..3).map(|i| self.read(ptr.cast::<u32>() + i)).collect();
++            log!("[HM2 heap] free node={:?} words={:x?} zero_on_free={}", ptr, words, self.zero_memory_on_free);
++        }
+ 
+         if size > HeapAllocator::HEAP_ALLOCATION_THRESHOLD {
+             // VM allocations are always 0 initialized.
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/mole_activity.rs b/fresh-port/20-touchHLE-src/touchHLE/src/mole_activity.rs
+index 5212daf..f7aec9a 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/mole_activity.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/mole_activity.rs
+@@ -302,6 +302,9 @@ thread_local! {
+ 
+ /// 本模块是否要拦截这个 (类, 选择子)。会被 OR 进 mole_cheats::intercept_wants,必须廉价(只做字符串比较)。
+ pub fn wants(class: &str, sel: &str) -> bool {
++    if !cfg!(feature = "moleworld_compat") {
++        return false;
++    }
+     match class {
+         "NetworkManager" => matches!(
+             sel,
+@@ -360,6 +363,9 @@ pub fn wants(class: &str, sel: &str) -> bool {
+ /// 前置拦截。None = 不归本模块管;Some(true) = 已吞掉调用(返回值寄存器已写好);
+ /// Some(false) = 做完副作用后放行真方法(若发过宿主 msg_send,返回前必须恢复 r0-r3)。
+ pub fn intercept(env: &mut Environment, class: &str, sel: &str) -> Option<bool> {
++    if !cfg!(feature = "moleworld_compat") {
++        return None;
++    }
+     // [扫描修 2026-09-15] 回环自用的选择子要最先处理:NetworkManager 并不实现它,放行会 unrecognized selector。
+     // [2026-10-03] 宿主已不再排 moleActivityLoopback(回环改由运行循环受理点 run_loop_poll 喂包),这里只保留吞臂防御,
+     //   不做任何事:待喂的包仍在队列里,由受理点照常处理。
+@@ -3457,6 +3463,9 @@ static ISLAND_DISCOUNT_PENDING: AtomicBool = AtomicBool::new(false);
+ /// 以前这里只看 VIP_INFO_PENDING,而岛日常/岛折扣是挂在 VIP 受理里顺带做的:进岛时三者同一帧排上所以碰巧能跑,
+ /// 单独排上岛日常或岛折扣时要等到下一次 1084 才会受理。现在每个标志都单独算。
+ pub fn run_loop_pending() -> bool {
++    if !cfg!(feature = "moleworld_compat") {
++        return false;
++    }
+     VIP_INFO_PENDING.load(O)
+         || ISLAND_DAILY_PENDING.load(O)
+         || ISLAND_DISCOUNT_PENDING.load(O)
+@@ -3481,6 +3490,9 @@ pub fn run_loop_pending() -> bool {
+ /// ④ 岛日常 / 岛折扣;⑤ VIP 信息 1084 分发(与以前一样在进村补发的同一轮,早于 1049/1058/1074 回包);
+ /// ⑥ 本轮新入队的回包留到下一轮 ① 再喂。
+ pub fn run_loop_poll(env: &mut Environment) {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     let feed = LOOPBACK_ARMED.swap(false, O) || firework_retry_due();
+     let work = feed
+         || STARTGAME_RESEND_PENDING.load(O)
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/mole_cheats.rs b/fresh-port/20-touchHLE-src/touchHLE/src/mole_cheats.rs
+index be1ba12..3c8d73c 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/mole_cheats.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/mole_cheats.rs
+@@ -106,6 +106,9 @@ const FORCE_VIP_STRS: [&str; 4] = ["1", "2", "3", "4"];
+ /// 那里不能发宿主消息。由菜单在打开「强制VIP」或切换 VIP 等级的触摸上下文里调一次,之后 intercept 里只查池子。
+ /// 四个等级一起预热,切换等级时不必再分配。开关关着时不做事。
+ pub fn forcevip_prewarm(env: &mut Environment) {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     if FORCE_VIP.load(O) {
+         for s in FORCE_VIP_STRS {
+             let _ = crate::frameworks::foundation::ns_string::get_static_str(env, s);
+@@ -123,6 +126,9 @@ const ALLUNLOCK_VIP_STR: &str = "99";
+ /// (ns_string.rs get_static_str),而锁函数可能在列表惯性滚动的 CCScheduler 帧栈上被调到,那里不能发宿主消息。
+ /// 由菜单在打开开关的触摸上下文里调一次(本开关目前只能从菜单打开),之后 intercept 里同一字面量只查池子。
+ pub fn allunlock_prewarm(env: &mut Environment) {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     if ALL_UNLOCK.load(O) {
+         let _ = crate::frameworks::foundation::ns_string::get_static_str(env, ALLUNLOCK_VIP_STR);
+     }
+@@ -144,6 +150,9 @@ static SAVE_HAS_DICT_AS_ARRAY: AtomicBool = AtomicBool::new(false);
+ /// Called by the Foundation layer when a dictionary-typed value turns out to be
+ /// an NSMutableArray (corrupted save). Idempotent; logs once.
+ pub fn note_dict_as_array_corruption() {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     if !SAVE_HAS_DICT_AS_ARRAY.swap(true, O) {
+         log!("[MOLECHEAT] 侦测到坏档:本应是字典的字段被还原为数组,启用成就重复触发抑制以防批量收菜 OOM 崩溃(治本在 NSKeyedArchiver,旧坏档下次保存即自愈)");
+     }
+@@ -1116,11 +1125,17 @@ pub fn bump_level() {
+ 
+ /// Whether the magic-password bypass is on (read by the MagicNumberView hook).
+ pub fn magic_bypass_on() -> bool {
++    if !cfg!(feature = "moleworld_compat") {
++        return false;
++    }
+     MAGIC_BYPASS.load(O)
+ }
+ 
+ /// Whether the Golden Island offline fix is on (read by the Caribbean hooks).
+ pub fn fix_golden_island_on() -> bool {
++    if !cfg!(feature = "moleworld_compat") {
++        return false;
++    }
+     FIX_GOLDEN_ISLAND.load(O)
+ }
+ 
+@@ -4098,6 +4113,9 @@ fn farm_ivar_offsets(env: &Environment) -> Option<[u32; 5]> {
+ 
+ /// [2026-09-16] G-03 读地块的 (farmState_, cropStage_),菜单「一键收获全部」据此分类。只读内存、不发消息;偏移读不到返回 None。
+ pub(crate) fn farm_state_stage(env: &Environment, recv: u32) -> Option<(i32, i32)> {
++    if !cfg!(feature = "moleworld_compat") {
++        return None;
++    }
+     if recv == 0 {
+         return None;
+     }
+@@ -4111,6 +4129,9 @@ pub(crate) fn farm_state_stage(env: &Environment, recv: u32) -> Option<(i32, i32
+ /// 返回 true = 这块地生长中、未成熟,且 beginTime 已在成熟点之前(本来就过了,或刚拨过去),下一次 innerupdate: 就会成熟;
+ /// 返回 false = 不是生长中、已成熟、偏移或时长异常,什么都没写。
+ pub(crate) fn farm_instant_mature_at(env: &mut Environment, recv: u32) -> bool {
++    if !cfg!(feature = "moleworld_compat") {
++        return false;
++    }
+     if recv == 0 {
+         return false;
+     }
+@@ -5396,6 +5417,9 @@ fn island_flush_final(env: &mut Environment, reason: &str) {
+ /// only_if_dirty:失活那次无条件落(与原来退出落盘一致,顺带收下不经置脏路径的活对象字段);进后台/终止紧跟在失活之后,
+ ///   只在这之间又有变化(或上一轮失败被重新置脏)时再落,免得同一时刻连写两三遍。失败时 island_flush_final 当场重试一次。
+ pub fn island_lifecycle_flush(env: &mut Environment, reason: &str, only_if_dirty: bool) {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     if !ENABLE_NEWSCENE_ISLAND.load(O)
+         || env.options.network_access
+         || ONLINE_MODE.load(O)
+@@ -5500,6 +5524,9 @@ fn island_request_flush_now() {
+ 
+ /// [2026-10-03] 进岛 state1 布局注入是否在排队(见 ISLAND_INJECT_PENDING)。ns_run_loop 主线程每轮都调,只有一次原子读。
+ pub fn island_inject_pending() -> bool {
++    if !cfg!(feature = "moleworld_compat") {
++        return false;
++    }
+     ISLAND_INJECT_PENDING.load(O)
+ }
+ 
+@@ -5507,6 +5534,9 @@ pub fn island_inject_pending() -> bool {
+ /// 仍在进岛加载中才注入(与原臂同一条件);state2 兜底(island_state2_reinject_if_empty)若已先注入,它会清掉标志,这里不重复。
+ /// 定时器回调自带自动释放池,这里没有,自建一个包住整次注入。
+ pub fn island_inject_poll(env: &mut Environment) {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     if !ISLAND_INJECT_PENDING.swap(false, O) {
+         return;
+     }
+@@ -5525,6 +5555,9 @@ pub fn island_inject_poll(env: &mut Environment) {
+ 
+ /// [2026-09-25 第五轮遗留 FLUSH] 「关键操作即时落盘」是否在排队。ns_run_loop::run_run_loop 主线程每轮都调,只有一次原子读。
+ pub fn island_flush_now_pending() -> bool {
++    if !cfg!(feature = "moleworld_compat") {
++        return false;
++    }
+     ISLAND_FLUSH_NOW_PENDING.load(O)
+ }
+ 
+@@ -5550,6 +5583,9 @@ pub fn island_flush_now_pending() -> bool {
+ /// 保留的行为:主档去重(ISLAND_SKIP_MAIN_SAVE_ONCE)、解释器 1 秒合并、写盘失败退避(island_retry_ready)、
+ ///   时间旅行闸(island_request_flush_now 一道、island_flush 开头一道)、岛总闸关闭/在线模式时清标志不落盘。
+ pub fn island_flush_now_poll(env: &mut Environment) {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     if !ISLAND_FLUSH_NOW_PENDING.load(O) {
+         return;
+     }
+@@ -7098,6 +7134,9 @@ pub fn watchdog_frame_count() -> u64 {
+ 
+ /// 在 run_inner 每个 yield 点调用:若帧计数 >3 秒没推进(卡死),dump 死循环现场。
+ pub fn watchdog_check(env: &mut Environment) {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     // [同步 iOS 2026-09-24] 两个平台的触发范围不同,用 cfg 分开,桌面与 main 完全一致。
+     // [诊断·点好友卡死取证 · 仅 iOS] 放开看门狗到全场景:watchdog_frame 现每帧 drawScene 无条件推进(iOS 的
+     // messages.rs 在 drawScene 入口直接调),正常帧都秒级完成、WD_FRAME 持续增长 → 只有【单帧 drawScene 卡 >3s】
+@@ -7244,6 +7283,9 @@ pub fn toggle(key: &str) {
+ }
+ 
+ pub fn is_on(key: &str) -> bool {
++    if !cfg!(feature = "moleworld_compat") {
++        return false;
++    }
+     match key {
+         "free_shop" => FREE_SHOP.load(O),
+         "kill_anticheat" => KILL_ANTICHEAT.load(O),
+@@ -7368,6 +7410,9 @@ fn crack_group_on(g: CrackGroup) -> bool {
+ /// 把各破解开关的当前状态写入模拟内存(ON→破解字节,OFF→香草字节)并失效 JIT 缓存。
+ /// 仅在 CRACK_PATCHES_DIRTY 时由 intercept 调用一次。写 __TEXT 是 host 侧直写(绕过 guest 只读页)。
+ fn apply_crack_patches(env: &mut Environment) {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     for p in CRACK_PATCHES {
+         // [2026-10-04 第八轮 R8-C2] 「修复占卜功能」离线不再写破解字节:0xf4102 那段改写会跳过 1138 取奖池(divineDataArray 只剩
+         //   init 建的 5 个空子数组,水晶球没奖品、每轮只出兜底物、每天第一次免费也没了)。离线改为原版流程 + 按调用点放行三道
+@@ -7413,6 +7458,9 @@ fn apply_crack_patches(env: &mut Environment) {
+ ///   而 guest 代码(静态初始化器、_start → UIApplicationMain → 读档)要等 run() 恢复主线程协程才开始执行,
+ ///   所以一定早于第一次 initWithCoder:。这里也不在任何帧栈上,不发 msg_send,dynarmic 和解释器都还没翻译过这段指令。
+ pub fn restore_cracked_vipgold(env: &mut Environment) {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     const VADDR: u32 = 0xb9ce0;
+     const CRACKED: [u8; 8] = [0x4f, 0xf6, 0xff, 0x70, 0xc0, 0xf2, 0x1f, 0x00];
+     const VANILLA: [u8; 8] = [0x7a, 0x44, 0x31, 0x46, 0xcb, 0xf3, 0x34, 0xe2];
+@@ -7919,7 +7967,7 @@ fn mapextend_restore_stone(env: &mut Environment) {
+ ///   为什么直接返回 true 最稳:默认配置下它本来就恒真,零行为/零性能变化;热路径开销由 intercept_wants 的零分配粗筛兜住,
+ ///   不靠这里省;逐项补条件的写法以后每加一个常驻钩子都要记得同步,漏一个就复发。保留函数签名,调用方(messages.rs)不用改。
+ pub fn any_enabled() -> bool {
+-    true
++    cfg!(feature = "moleworld_compat")
+ }
+ 
+ // 曾有 any_cheat_toggle_on(旧总闸开关清单),因 any_enabled 已恒真、全仓零引用而删除,勿复活。
+@@ -8596,6 +8644,9 @@ pub fn anim_render_should_skip(env: &mut Environment, receiver: id) -> bool {
+ /// + 对抗式复查(missed_classes=[])得出(2026-06 性能优化)。
+ #[inline]
+ pub fn intercept_wants(class: &str, sel: &str) -> bool {
++    if !cfg!(feature = "moleworld_compat") {
++        return false;
++    }
+     matches!(
+         class,
+         "AsyncSocket"
+@@ -9563,6 +9614,9 @@ fn ui43_fast_sels(env: &mut Environment) -> Ui43FastSels {
+ /// 没有任何登记对象时只付一次原子读;命中选择子之后才去读寄存器。`from_host` 见 [UI43_ROOTS] 注释。
+ /// 返回 true = 消息已在宿主侧完成(不再派发)。
+ pub fn intercept_fast(env: &mut Environment, sel: SEL, from_host: bool) -> bool {
++    if !cfg!(feature = "moleworld_compat") {
++        return false;
++    }
+     if UI43_ROOTS_LEN.load(O) == 0 && UI43_VIEWS_LEN.load(O) == 0 {
+         return false;
+     }
+@@ -10250,6 +10304,9 @@ fn porter_body_drag(env: &mut Environment, is_move: bool, slots: &PorterSlots) {
+ }
+ 
+ pub fn intercept(env: &mut Environment, class: &str, sel: &str) -> bool {
++    if !cfg!(feature = "moleworld_compat") {
++        return false;
++    }
+     if (class == "Porter" || class == "NewScenePorter") && (sel == "touchBegan:" || sel == "touchMove:") {
+         let lr = env.cpu.regs()[14] & !1u32;
+         if class == "Porter" && lr == 0x30a78 {
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/mole_dev.rs b/fresh-port/20-touchHLE-src/touchHLE/src/mole_dev.rs
+index 1b7e058..d316695 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/mole_dev.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/mole_dev.rs
+@@ -180,6 +180,9 @@ pub fn wants(class_name: &str, sel_name: &str) -> bool {
+ /// 所以在回放期间只把「nextStep 那一个调用点」发来的这次 setter 吞掉(按 LR 精确匹配,其它调用者
+ /// ——读档/存档/限时剧情等——一律放行),吞掉后立即清标志。这里不发任何宿主 msg_send,无需恢复寄存器。
+ pub fn intercept(env: &mut Environment, class_name: &str, sel_name: &str) -> Option<bool> {
++    if !cfg!(feature = "moleworld_compat") {
++        return None;
++    }
+     if !wants(class_name, sel_name) {
+         return None;
+     }
+@@ -220,6 +223,9 @@ static STARTUP_DONE: AtomicBool = AtomicBool::new(false);
+ /// CFPreferences 里才碰 NSUserDefaults,游戏自己读偏好在 didFinishLaunching 之后,所以此刻偏好 plist
+ /// 和存档都还没被读进内存,直接改写沙盒文件就是完整的回滚。
+ pub fn startup(env: &mut Environment) {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     if STARTUP_DONE.swap(true, O) {
+         return;
+     }
+@@ -2341,6 +2347,9 @@ fn trace_rules() -> &'static [TraceRule] {
+ 
+ /// 选择子跟踪是否开启(objc/messages.rs 每条消息读一次,必须廉价:只读原子变量)。
+ pub fn trace_on() -> bool {
++    if !cfg!(feature = "moleworld_compat") {
++        return false;
++    }
+     TRACE_ON.load(O)
+ }
+ /// 跟踪过滤:这条 (类, 选择子) 是否要打印。仅在 trace_on() 为真时调用。只做字符串比较,限流由调用方负责。
+@@ -2406,6 +2415,7 @@ fn parse_command_number<T: std::str::FromStr>(raw: &str, what: &str) -> Result<T
+ /// 不带参数的 `menu` 仍由 mole_diag 当开关处理。
+ /// 调用上下文:frameworks/uikit.rs handle_events 的注入分派点,与菜单 handle_touch 相同,可以发宿主 msg_send。
+ pub fn run_text_command(env: &mut Environment, line: &str) -> DevResult {
++    if !cfg!(feature = "moleworld_compat") { return Err("MoleWorld compatibility is disabled".into()); }
+     let mut words = line.split_whitespace();
+     let head = words.next().unwrap_or("");
+     let args: Vec<&str> = words.collect();
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/mole_items.rs b/fresh-port/20-touchHLE-src/touchHLE/src/mole_items.rs
+index c9b709d..22069c8 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/mole_items.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/mole_items.rs
+@@ -1934,6 +1934,9 @@ fn place_item_island(env: &mut Environment, item: u32) -> Result<String, String>
+ 
+ /// 本模块是否要拦截这个 (类, 选择子)。会被 OR 进 mole_cheats::intercept_wants,只做字符串比较。
+ pub fn wants(class: &str, sel: &str) -> bool {
++    if !cfg!(feature = "moleworld_compat") {
++        return false;
++    }
+     match class {
+         "NewStyleStoreItemsView" => sel == "loadObjectsDataByType:",
+         "AvatarLayer" => sel == "checkRequiredID:",
+@@ -1963,6 +1966,9 @@ pub fn wants(class: &str, sel: &str) -> bool {
+ /// 前置拦截。None = 不归本模块管(或只做了旁路副作用,交给后续钩子/真方法);Some(true) = 已吞掉调用(r0 已写好);
+ /// Some(false) = 做完副作用后放行真方法(发过宿主 msg_send 的分支已恢复 r0-r3)。
+ pub fn intercept(env: &mut Environment, class: &str, sel: &str) -> Option<bool> {
++    if !cfg!(feature = "moleworld_compat") {
++        return None;
++    }
+     match class {
+         "NewStyleStoreItemsView" if sel == "loadObjectsDataByType:" => store_hook(env),
+         // F5-8:250_0 头像 40-46 的 requireid 6009 么么公主的别墅 / 6010 花艺工作室锁。
+@@ -2044,6 +2050,9 @@ fn due(pending: &AtomicBool, next_try_ms: &AtomicU64) -> bool {
+ 
+ /// ns_run_loop::run_run_loop 主线程每轮都调,平时只有三次原子读。
+ pub fn run_loop_pending() -> bool {
++    if !cfg!(feature = "moleworld_compat") {
++        return false;
++    }
+     // [2026-10-07 第十一轮 R11-F-4] 墙钟跳变检测每轮做一次(只读两个时钟),跳了就排一次昼夜对钟。
+     if day_night_clock_jumped() {
+         DAY_NIGHT_RESYNC_PENDING.store(true, Ordering::Relaxed);
+@@ -2059,6 +2068,9 @@ pub fn run_loop_pending() -> bool {
+ /// 运行循环受理点(ns_run_loop,perform 相位之后):栈上没有游戏方法体,可以自由发宿主消息;不在 intercept 里,不碰寄存器。
+ /// HUD 刷新(updateGold 里要格式化数字串)会产生自动释放对象,包一层池当场 drain(perform 相位本身没有池)。
+ pub fn run_loop_poll(env: &mut Environment) {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     let neg_gold = NEG_GOLD_CHECK_PENDING.swap(false, Ordering::Relaxed);
+     let gift = due(&FIRST_CHARGE_PENDING, &FIRST_CHARGE_NEXT_TRY_MS);
+     let unlock = due(&RECHARGE_UNLOCK_PENDING, &RECHARGE_UNLOCK_NEXT_TRY_MS);
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/mole_menu.rs b/fresh-port/20-touchHLE-src/touchHLE/src/mole_menu.rs
+index 34d18df..8b96ab0 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/mole_menu.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/mole_menu.rs
+@@ -637,10 +637,16 @@ fn pages() -> Vec<Page> {
+ }
+ 
+ pub fn is_open() -> bool {
++    if !cfg!(feature = "moleworld_compat") {
++        return false;
++    }
+     MENU.with(|m| m.borrow().open)
+ }
+ 
+ pub fn toggle(env: &mut Environment) {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     if is_open() {
+         teardown(env);
+     } else {
+@@ -1050,6 +1056,9 @@ fn in_rect(x: f32, y: f32, r: CGRect) -> bool {
+ }
+ 
+ pub fn handle_touch(env: &mut Environment, gx: f32, gy: f32) -> bool {
++    if !cfg!(feature = "moleworld_compat") {
++        return false;
++    }
+     if !is_open() {
+         return false;
+     }
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/mole_savebak.rs b/fresh-port/20-touchHLE-src/touchHLE/src/mole_savebak.rs
+index 2d088f6..f477310 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/mole_savebak.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/mole_savebak.rs
+@@ -131,6 +131,9 @@ fn file_ok(name: &str, bytes: &[u8], docs: &Path) -> bool {
+ 
+ /// Fs::write_atomic 在 rename 覆盖目标之前调用(target 是宿主路径)。只管沙盒 Documents 下的两份主档。
+ pub fn before_replace(target: &Path) {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     let Some(name) = target.file_name().and_then(|n| n.to_str()) else {
+         return;
+     };
+@@ -182,6 +185,9 @@ pub fn before_replace(target: &Path) {
+ /// 两份主档是一局的两半,任一被删就整个清掉。原版平时存档不走删除(移植层 write_atomic 用 rename 覆盖),不会误清。
+ /// 只做宿主文件操作,不发消息。
+ pub fn on_main_save_removed(removed: &Path) {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     let Some(name) = removed.file_name().and_then(|n| n.to_str()) else {
+         return;
+     };
+@@ -229,6 +235,9 @@ fn sandbox_dir(env: &Environment) -> PathBuf {
+ 
+ /// 启动自检:lib.rs 在 env.run() 之前调用(早于任何 guest 代码与读档)。在线模式不做。
+ pub fn startup_check(env: &mut Environment) {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     if env.options.network_access {
+         return;
+     }
+@@ -307,6 +316,9 @@ fn check_one(docs: &Path, dir: &Path, name: &str) {
+ 
+ /// 删档、快照恢复成功后调用:清掉备份目录,免得旧备份与新状态混用。
+ pub fn forget_backups(env: &Environment) {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     let dir = sandbox_dir(env).join(BAK_DIR);
+     match std::fs::remove_dir_all(&dir) {
+         Ok(()) => {
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/mole_uid.rs b/fresh-port/20-touchHLE-src/touchHLE/src/mole_uid.rs
+index 648e8ee..14a1424 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/mole_uid.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/mole_uid.rs
+@@ -33,6 +33,9 @@ const UID_PATCHES: &[(u32, &[u8], &[u8], &str)] = &[
+ 
+ /// 打补丁(幂等:已是新字节就跳过)。由 mole_cheats::apply_crack_patches 调用。
+ pub fn apply(env: &mut Environment) {
++    if !cfg!(feature = "moleworld_compat") {
++        return;
++    }
+     let mut done = 0;
+     for &(vaddr, vanilla, patched, what) in UID_PATCHES {
+         let n = vanilla.len() as u32;
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/objc/classes.rs b/fresh-port/20-touchHLE-src/touchHLE/src/objc/classes.rs
+index e7860ce..d6e4633 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/objc/classes.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/objc/classes.rs
+@@ -477,7 +477,7 @@ fn substitute_classes(
+         // namespace: faking with too broad a prefix (e.g. all "TalkingData"/
+         // "TDGA") breaks classes that participate in the class hierarchy as a
+         // superclass, causing "found FakeClass, expected ClassHostObject".
+-        || name == "TDGAKeyChain"
++        || (cfg!(feature = "moleworld_compat") && (name == "TDGAKeyChain"
+         || name == "TDGASecureUDID"
+         || name == "TDGAOpenUDID"
+         // TDGAUtility: TalkingData device-info gatherer (getCpuFrequency/
+@@ -545,7 +545,7 @@ fn substitute_classes(
+         // 和已 fake 的 PunchBoxAd 是同 SDK 不同模块,之前漏了。连同 Taomee 的 MoreGame 包装控制器一起 fake。
+         || name.starts_with("PBMoreGame")
+         || name.starts_with("TaomeeMore")
+-        || name.starts_with("PunchBoxMoreGame"))
++        || name.starts_with("PunchBoxMoreGame"))))
+     {
+         return None;
+     }
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/objc/messages.rs b/fresh-port/20-touchHLE-src/touchHLE/src/objc/messages.rs
+index 4d11c83..250dd1c 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/objc/messages.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/objc/messages.rs
+@@ -388,6 +388,13 @@ fn objc_msgSend_inner(
+         selector.as_str(&env.mem),
+         receiver
+     );
++    static HM2_TRACE: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
++    if *HM2_TRACE.get_or_init(|| std::env::var_os("HM2_TRACE").is_some()) {
++        let sel = selector.as_str(&env.mem);
++        if sel.contains("String") || sel.contains("Resource") || sel.contains("getString") || sel.contains("load") {
++            log!("[HM2 trace] receiver={:?} selector={} r0-r3={:x?} lr={:#x}", receiver, sel, &env.cpu.regs()[0..4], env.cpu.regs()[14]);
++        }
++    }
+     let message_type_info = env.objc.message_type_info.take();
+ 
+     if receiver == nil {
+@@ -407,7 +414,7 @@ fn objc_msgSend_inner(
+     // Nothing valid lives below 0x1000 (the guest image loads at 0x4000+, the heap
+     // is far higher), so this never masks a real object. Robust last line of
+     // defense for the island touch-0x1 crash, independent of any guest-side hook.
+-    if receiver.to_bits() < 0x1000 {
++    if cfg!(feature = "moleworld_compat") && receiver.to_bits() < 0x1000 {
+         log_dbg!(
+             "[(null-page receiver {:?}) {}] -> treating as nil (no-op)",
+             receiver,
+@@ -423,7 +430,7 @@ fn objc_msgSend_inner(
+     // a no-op'd function (CFArrayCreate/Sec*/ASIdentifierManager return 0/nil) as
+     // if it were an object and send it a message. Rather than aborting, treat
+     // "object with nil class" the same as a message to nil: return zero.
+-    if orig_class == nil {
++    if cfg!(feature = "moleworld_compat") && orig_class == nil {
+         log_dbg!(
+             "[(receiver {:?} with nil class) {}] -> treating as nil (no-op)",
+             receiver,
+@@ -439,7 +446,7 @@ fn objc_msgSend_inner(
+     // (called just below for the cheat intercept, and by the dispatcher's
+     // "does not respond to selector" path) would `expect()`-panic
+     // ("Could not get class name!") on such a class. Treat it as a message to nil.
+-    if env.objc.try_get_class_name(orig_class).is_none() {
++    if cfg!(feature = "moleworld_compat") && env.objc.try_get_class_name(orig_class).is_none() {
+         log_dbg!(
+             "[(receiver {:?} with unresolvable class {:?}) {}] -> treating as nil (no-op)",
+             receiver,
+@@ -1119,6 +1126,9 @@ fn objc_msgSend_inner(
+             // [扫描修 2026-09-15] F10-5:selector.as_str 只求值一次(原来 3 次,每次都要在客体内存里
+             // 逐字节找字符串结尾);同一 (类, 选择子) 只在第一次 log!,之后降为 log_dbg!。
+             let sel_str = selector.as_str(&env.mem);
++            if !cfg!(feature = "moleworld_compat") {
++                panic!("Guest class {name} does not respond to {sel_str}");
++            }
+             if first_compat_warning("does-not-respond", &name, sel_str) {
+                 log!(
+                     "Warning: {:?} (class \"{}\") does not respond to selector \"{}\"; treating as no-op (nil). [repeats of this class+selector go to log_dbg]",
+@@ -1145,7 +1155,7 @@ fn objc_msgSend_inner(
+             // exactly as -[NSObject initWithCoder:] does. Returning nil instead
+             // made every decoded saved-map object (buildings, farmland,
+             // decorations) come back nil and vanish from a reloaded village.
+-            if sel_str == "initWithCoder:" {
++            if cfg!(feature = "moleworld_compat") && sel_str == "initWithCoder:" {
+                 env.cpu.regs_mut()[0] = receiver.to_bits();
+                 env.cpu.regs_mut()[1] = 0;
+                 return;
+@@ -1222,6 +1232,9 @@ Type mismatch when sending message {} to {:?}!
+             // frame instead of crashing the emulator.
+             // [扫描修 2026-09-15] F10-5:同 does-not-respond,按 (类, 选择子) 去重,首次 log!、之后 log_dbg!。
+             let sel_str = selector.as_str(&env.mem);
++            if !cfg!(feature = "moleworld_compat") {
++                panic!("Unimplemented guest class {name}, selector {sel_str}");
++            }
+             if first_compat_warning("unimplemented-class", name, sel_str) {
+                 log!(
+                     "Class \"{}\" ({:?}) is unimplemented; {} method \"{}\" treated as no-op (nil). [repeats of this class+selector go to log_dbg]",
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/objc/selectors.rs b/fresh-port/20-touchHLE-src/touchHLE/src/objc/selectors.rs
+index 80161dd..52522d7 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/objc/selectors.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/objc/selectors.rs
+@@ -111,6 +111,9 @@ impl ObjC {
+     /// guest C string per candidate. This is the cheap discriminator that gates
+     /// the (otherwise per-message) class-name and selector-string work.
+     pub(super) fn is_mole_hook_sel(&mut self, mem: &mut Mem, sel: SEL) -> bool {
++        if !cfg!(feature = "moleworld_compat") {
++            return false;
++        }
+         if self.mole_hook_sels.is_none() {
+             // Every hook in that block fires on `selector == "<one of these>"`,
+             // so this is exactly the set that can trigger a hook — keep it in
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/src/window.rs b/fresh-port/20-touchHLE-src/touchHLE/src/window.rs
+index 21fa5d8..159c439 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/src/window.rs
++++ b/fresh-port/20-touchHLE-src/touchHLE/src/window.rs
+@@ -245,6 +245,28 @@ pub enum DeviceOrientation {
+     LandscapeLeft,
+     LandscapeRight,
+ }
++// Simulator keyboards supply screen-relative tilt, using the same rotation
++// convention as the existing controller accelerometer path. This changes only
++// input sensor readings; the guest still applies its own filtering and movement.
++#[cfg(any(test, all(target_os = "ios", target_abi = "sim")))]
++fn simulator_keyboard_acceleration(
++    orientation: DeviceOrientation,
++    left: bool,
++    right: bool,
++    up: bool,
++    down: bool,
++) -> (f32, f32, f32) {
++    let horizontal = (i32::from(right) - i32::from(left)) as f32 * 0.2;
++    let vertical = (i32::from(down) - i32::from(up)) as f32 * 0.2;
++    let (x, y) = match orientation {
++        DeviceOrientation::Portrait => (horizontal, -vertical),
++        DeviceOrientation::PortraitUpsideDown => (-horizontal, vertical),
++        DeviceOrientation::LandscapeLeft => (-vertical, -horizontal),
++        DeviceOrientation::LandscapeRight => (vertical, horizontal),
++    };
++    (x, y, -(1.0 - x * x - y * y).sqrt())
++}
++
+ fn size_for_orientation(
+     family: DeviceFamily,
+     orientation: DeviceOrientation,
+@@ -274,7 +296,8 @@ fn rotate_fullscreen_size(orientation: DeviceOrientation, screen_size: (u32, u32
+         }
+     }
+ }
+-/// Tell SDL2 what orientation we want. Only useful on Android.
++/// Tell SDL2 which interface orientation matches the emulated device.
++/// Used by the Android and iOS host windows.
+ fn set_sdl2_orientation(orientation: DeviceOrientation) {
+     // Despite the name, this hint works on Android too.
+     let hint = match orientation {
+@@ -419,6 +442,7 @@ fn wheel_pinch_inverted() -> bool {
+ /// 0 = 关闭(恢复为任何移动都下发)。
+ const MOUSE_DRAG_SLOP_DEFAULT: f32 = 8.0;
+ fn mouse_drag_slop() -> f32 {
++    if !cfg!(feature = "moleworld_compat") { return 0.0; }
+     static V: std::sync::OnceLock<f32> = std::sync::OnceLock::new();
+     *V.get_or_init(|| {
+         std::env::var("MOLE_MOUSE_DRAG_SLOP")
+@@ -448,6 +472,7 @@ const TOUCH_DRAG_SLOP_DEFAULT: f32 = 8.0;
+ static TOUCH_DRAG_SLOP_AUTO: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
+ const TOUCH_DRAG_SLOP_MM: f32 = 1.3;
+ fn touch_drag_slop() -> f32 {
++    if !cfg!(feature = "moleworld_compat") { return 0.0; }
+     static V: std::sync::OnceLock<Option<f32>> = std::sync::OnceLock::new();
+     let env_value = *V.get_or_init(|| {
+         std::env::var("MOLE_TOUCH_DRAG_SLOP")
+@@ -1022,6 +1047,7 @@ impl Window {
+         // that here.
+         let device_family = options.device_family.unwrap_or(DeviceFamily::iPhone);
+         let device_orientation = options.initial_orientation;
++        echo!("[orientation] initial guest device: {:?}", device_orientation);
+         let fullscreen = options.fullscreen;
+         let lock_aspect = options.lock_aspect;
+ 
+@@ -1055,6 +1081,9 @@ impl Window {
+             }
+         }
+ 
++        #[cfg(target_os = "ios")]
++        set_sdl2_orientation(device_orientation);
++
+         let mut window = if Self::rotatable_fullscreen() {
+             // Without this, SDL will force fullscreen mode to be portrait.
+             set_sdl2_orientation(device_orientation);
+@@ -1710,7 +1739,7 @@ impl Window {
+                     let coords = transform_input_coords(self, (x as f32, y as f32), false);
+                     log_dbg!("INPUT MouseButtonDown x {}, y {}, coords {:?}", x, y, coords);
+                     // [2026-09-24 第四轮 K15 I1-8] 记下按下点,开始本次按下的起拖判定(每次按下都重置)。
+-                    self.mouse_drag = Some(MouseDragState {
++                    self.mouse_drag = cfg!(feature = "moleworld_compat").then_some(MouseDragState {
+                         down: coords,
+                         broke: false,
+                         last: None,
+@@ -2152,17 +2181,17 @@ impl Window {
+                             Event::TouchesCancel(map)
+                         }
+                         E::FingerUp { .. } => {
+-                            touch_slop_up(&mut self.touch_drag, &mut map);
++                            if cfg!(feature = "moleworld_compat") { touch_slop_up(&mut self.touch_drag, &mut map); }
+                             Event::TouchesUp(map)
+                         }
+                         E::FingerMotion { .. } => {
+-                            if !touch_slop_move(&mut self.touch_drag, &mut map, &mut slop_prefix) {
++                            if cfg!(feature = "moleworld_compat") && !touch_slop_move(&mut self.touch_drag, &mut map, &mut slop_prefix) {
+                                 continue;
+                             }
+                             Event::TouchesMove(map)
+                         }
+                         E::FingerDown { .. } => {
+-                            touch_slop_down(&mut self.touch_drag, &map);
++                            if cfg!(feature = "moleworld_compat") { touch_slop_down(&mut self.touch_drag, &map); }
+                             Event::TouchesDown(map)
+                         }
+                         _ => unreachable!(),
+@@ -2525,6 +2554,8 @@ impl Window {
+     }
+     pub fn print_accelerometer_notice(&self, options: &Options) {
+         log!("This app uses the accelerometer.");
++        #[cfg(all(target_os = "ios", target_abi = "sim"))]
++        log!("iOS Simulator: arrow keys simulate device tilt; release to return to neutral. Enable Simulator keyboard capture if needed.");
+ 
+         if !self.controllers.is_empty() && options.analog_stick_tilt_controls {
+             log!("Your connected controller's left analog stick will be used for accelerometer simulation.");
+@@ -2555,6 +2586,20 @@ impl Window {
+     /// Get the real or simulated accelerometer output.
+     /// See also [crate::frameworks::uikit::ui_accelerometer].
+     pub fn get_acceleration(&self, options: &Options) -> (f32, f32, f32) {
++        #[cfg(all(target_os = "ios", target_abi = "sim"))]
++        {
++            use sdl2::keyboard::Scancode;
++            let keys = self.event_pump.keyboard_state();
++            let left = keys.is_scancode_pressed(Scancode::Left);
++            let right = keys.is_scancode_pressed(Scancode::Right);
++            let up = keys.is_scancode_pressed(Scancode::Up);
++            let down = keys.is_scancode_pressed(Scancode::Down);
++            if left || right || up || down {
++                return simulator_keyboard_acceleration(
++                    self.device_orientation, left, right, up, down,
++                );
++            }
++        }
+         if self.controllers.is_empty() || !options.analog_stick_tilt_controls {
+             if let Some(ref accelerometer) = self.accelerometer {
+                 let data = accelerometer.get_data().unwrap();
+@@ -3070,6 +3115,13 @@ impl Window {
+             return;
+         }
+ 
++        echo!("[orientation] guest device: {:?} -> {:?}", self.device_orientation, new_orientation);
++        // iOS uses a UIKit view rather than Android's resizable fullscreen
++        // activity. Its supported-orientation hint must still follow a guest
++        // status-bar/device rotation, rather than remaining at the CLI default.
++        #[cfg(target_os = "ios")]
++        set_sdl2_orientation(new_orientation);
++
+         if !self.fullscreen && !Self::rotatable_fullscreen() {
+             let (width, height) = if Self::rotatable_fullscreen() {
+                 set_sdl2_orientation(new_orientation);
+@@ -3285,7 +3337,7 @@ pub fn show_error_messagebox(window: Option<&Window>, error_message: &str) {
+         messagebox::ButtonData {
+             flags: messagebox::MessageBoxButtonFlag::NOTHING,
+             button_id: 0,
+-            text: "打开日志所在文件夹",
++            text: "Open log folder",
+         },
+         messagebox::ButtonData {
+             flags: messagebox::MessageBoxButtonFlag::NOTHING,
+@@ -3302,7 +3354,7 @@ pub fn show_error_messagebox(window: Option<&Window>, error_message: &str) {
+     let Ok(clicked_button) = messagebox::show_message_box(
+         messagebox::MessageBoxFlag::ERROR,
+         &mbox,
+-        "摩尔庄园出错了",
++        "HeavyMach 2 reference runtime error",
+         &format!("游戏遇到错误,需要退出。\n\n{error_message}\n\n{log_hint}"),
+         window.map(|win| &win.window),
+         None,
+@@ -3525,3 +3577,26 @@ pub(crate) mod ios_save_task {
+         log!("[生命周期] iOS 交还后台执行时间({})", reason);
+     }
+ }
++
++
++#[cfg(test)]
++mod simulator_keyboard_tilt_tests {
++    use super::{simulator_keyboard_acceleration, DeviceOrientation};
++
++    #[test]
++    fn landscape_right_arrows_supply_opposite_guest_y_acceleration() {
++        let right = simulator_keyboard_acceleration(DeviceOrientation::LandscapeRight, false, true, false, false);
++        let left = simulator_keyboard_acceleration(DeviceOrientation::LandscapeRight, true, false, false, false);
++        assert_eq!((right.0, right.1), (0.0, 0.2));
++        assert_eq!((left.0, left.1), (0.0, -0.2));
++        assert!((right.0 * right.0 + right.1 * right.1 + right.2 * right.2 - 1.0).abs() < 0.00001);
++    }
++
++    #[test]
++    fn released_or_opposing_keys_return_flat_gravity() {
++        for orientation in [DeviceOrientation::Portrait, DeviceOrientation::PortraitUpsideDown, DeviceOrientation::LandscapeLeft, DeviceOrientation::LandscapeRight] {
++            assert_eq!(simulator_keyboard_acceleration(orientation, false, false, false, false), (0.0, 0.0, -1.0));
++            assert_eq!(simulator_keyboard_acceleration(orientation, true, true, true, true), (0.0, 0.0, -1.0));
++        }
++    }
++}
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitappdelegate.h b/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitappdelegate.h
+index ac0a88a..e984a88 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitappdelegate.h
++++ b/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitappdelegate.h
+@@ -35,6 +35,7 @@
+ + (NSString *)getAppDelegateClassName;
+ 
+ - (void)hideLaunchScreen;
++- (void)connectWindowScene:(UIWindowScene *)scene;
+ 
+ /* This property is marked as optional, and is only intended to be used when
+  * the app's UI is storyboard-based. SDL is not storyboard-based, however
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitappdelegate.m b/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitappdelegate.m
+index fb42d22..79a45db 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitappdelegate.m
++++ b/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitappdelegate.m
+@@ -344,6 +344,18 @@ - (NSUInteger)supportedInterfaceOrientations
+ 
+ @end
+ 
++/* Heavy Mach recovery: single-scene SDL2 lifecycle for current UIKit. */
++@interface HeavyMachSceneDelegate : UIResponder <UIWindowSceneDelegate>
++@end
++@implementation HeavyMachSceneDelegate
++- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)options
++{
++    if ([scene isKindOfClass:[UIWindowScene class]]) {
++        [[SDLUIKitDelegate sharedAppDelegate] connectWindowScene:(UIWindowScene *)scene];
++    }
++}
++@end
++
+ @implementation SDLUIKitDelegate {
+     UIWindow *launchWindow;
+ }
+@@ -383,6 +395,25 @@ - (void)hideLaunchScreen
+     }];
+ }
+ 
++- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)session options:(UISceneConnectionOptions *)options
++{
++    UISceneConfiguration *config = [[UISceneConfiguration alloc] initWithName:@"HeavyMach" sessionRole:session.role];
++    config.delegateClass = [HeavyMachSceneDelegate class];
++    return config;
++}
++
++- (void)connectWindowScene:(UIWindowScene *)scene
++{
++    if (launchWindow) {
++        launchWindow.windowScene = scene;
++    }
++    static BOOL started = NO;
++    if (!started) {
++        started = YES;
++        [self performSelector:@selector(postFinishLaunch) withObject:nil afterDelay:0.0];
++    }
++}
++
+ - (void)postFinishLaunch
+ {
+     /* Hide the launch screen the next time the run loop is run. SDL apps will
+@@ -465,7 +496,10 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
+                         SDL_IdleTimerDisabledChanged, NULL);
+ 
+     SDL_SetMainReady();
+-    [self performSelector:@selector(postFinishLaunch) withObject:nil afterDelay:0.0];
++    /* Scene connection owns startup: no guest window before a scene exists. */
++    if (![bundle objectForInfoDictionaryKey:@"UIApplicationSceneManifest"]) {
++        [self performSelector:@selector(postFinishLaunch) withObject:nil afterDelay:0.0];
++    }
+ 
+     return YES;
+ }
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitevents.m b/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitevents.m
+index d4e3d05..586bed2 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitevents.m
++++ b/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitevents.m
+@@ -53,10 +53,11 @@ - (void)eventPumpChanged
+     NSNotificationCenter *notificationCenter = NSNotificationCenter.defaultCenter;
+     if (UIKit_EventPumpEnabled && !self.isObservingNotifications) {
+         self.isObservingNotifications = YES;
+-        [notificationCenter addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+-        [notificationCenter addObserver:self selector:@selector(applicationWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
+-        [notificationCenter addObserver:self selector:@selector(applicationDidEnterBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
+-        [notificationCenter addObserver:self selector:@selector(applicationWillEnterForeground) name:UIApplicationWillEnterForegroundNotification object:nil];
++        BOOL usesScenes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIApplicationSceneManifest"] != nil;
++        [notificationCenter addObserver:self selector:@selector(applicationDidBecomeActive) name:(usesScenes ? UISceneDidActivateNotification : UIApplicationDidBecomeActiveNotification) object:nil];
++        [notificationCenter addObserver:self selector:@selector(applicationWillResignActive) name:(usesScenes ? UISceneWillDeactivateNotification : UIApplicationWillResignActiveNotification) object:nil];
++        [notificationCenter addObserver:self selector:@selector(applicationDidEnterBackground) name:(usesScenes ? UISceneDidEnterBackgroundNotification : UIApplicationDidEnterBackgroundNotification) object:nil];
++        [notificationCenter addObserver:self selector:@selector(applicationWillEnterForeground) name:(usesScenes ? UISceneWillEnterForegroundNotification : UIApplicationWillEnterForegroundNotification) object:nil];
+         [notificationCenter addObserver:self selector:@selector(applicationWillTerminate) name:UIApplicationWillTerminateNotification object:nil];
+         [notificationCenter addObserver:self selector:@selector(applicationDidReceiveMemoryWarning) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
+ #if !TARGET_OS_TV
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitopengles.m b/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitopengles.m
+index 6bccaf4..af37e75 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitopengles.m
++++ b/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitopengles.m
+@@ -123,6 +123,25 @@ int UIKit_GL_SwapWindow(_THIS, SDL_Window * window)
+         SDL_UIKit_UpdateBatteryMonitoring();
+ #endif
+ 
++        /* HeavyMach2 compatibility: a guest may keep several EAGL contexts.
++         * MakeCurrent does not reattach an already-associated SDL view. Present
++         * the current context's drawable, restoring its view only when needed. */
++        SDL_WindowData *data = (__bridge SDL_WindowData *)window->driverdata;
++        if (context && (data.viewcontroller.view != context.sdlView || context.sdlView.window != data.uiwindow)) {
++            SDL_Log("[HM2 drawable] restoring presented context view");
++            [data.views removeObject:context.sdlView];
++            [data.views addObject:context.sdlView];
++            [data.viewcontroller.view removeFromSuperview];
++            data.viewcontroller.view = context.sdlView;
++            data.uiwindow.rootViewController = nil;
++            data.uiwindow.rootViewController = data.viewcontroller;
++            [data.uiwindow layoutIfNeeded];
++        }
++        static unsigned hm2_present_count = 0;
++        if (getenv("HM2_AUDIT_FRAME") && hm2_present_count++ < 6) {
++            GLint bound = 0; glGetIntegerv(GL_RENDERBUFFER_BINDING, &bound);
++            SDL_Log("[HM2 drawable] fbo=%u rbo=%u bound=%d size=%dx%d attached=%d hidden=%d alpha=%g", context.sdlView.drawableFramebuffer, context.sdlView.drawableRenderbuffer, bound, context.sdlView.backingWidth, context.sdlView.backingHeight, context.sdlView.window != nil, context.sdlView.hidden, context.sdlView.alpha);
++        }
+         [context.sdlView swapBuffers];
+ 
+         /* You need to pump events in order for the OS to make changes visible.
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitvideo.m b/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitvideo.m
+index 64cff19..87c9cac 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitvideo.m
++++ b/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitvideo.m
+@@ -219,7 +219,11 @@ static void UIKit_DeleteDevice(SDL_VideoDevice * device)
+      * https://bugzilla.libsdl.org/show_bug.cgi?id=3505
+      * https://bugzilla.libsdl.org/show_bug.cgi?id=3465
+      * https://forums.developer.apple.com/thread/65337 */
+-    UIInterfaceOrientation orient = [UIApplication sharedApplication].statusBarOrientation;
++    /* Scene-based UIKit may report Unknown for the legacy application-wide
++     * orientation. Use the window's scene so landscape bounds stay landscape. */
++    UIInterfaceOrientation orient = data.uiwindow.windowScene
++        ? data.uiwindow.windowScene.interfaceOrientation
++        : [UIApplication sharedApplication].statusBarOrientation;
+     BOOL landscape = UIInterfaceOrientationIsLandscape(orient);
+     BOOL fullscreen = CGRectEqualToRect(screen.bounds, frame);
+ 
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitviewcontroller.m b/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitviewcontroller.m
+index a6b157f..b346d51 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitviewcontroller.m
++++ b/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitviewcontroller.m
+@@ -351,9 +351,11 @@ - (void)deinitKeyboard
+ - (void)showKeyboard
+ {
+     keyboardVisible = YES;
++    if (getenv("HM2_AUDIT_INPUT")) SDL_Log("[HM2 keyboard] show fieldWindow=%p viewWindow=%p key=%d", textField.window, self.view.window, self.view.window.isKeyWindow);
+     if (textField.window) {
+         showingKeyboard = YES;
+-        [textField becomeFirstResponder];
++        BOOL became = [textField becomeFirstResponder];
++        if (getenv("HM2_AUDIT_INPUT")) SDL_Log("[HM2 keyboard] became=%d first=%d", became, textField.isFirstResponder);
+         showingKeyboard = NO;
+     }
+ }
+@@ -380,7 +382,10 @@ - (void)keyboardWillShow:(NSNotification *)notification
+ 
+ - (void)keyboardWillHide:(NSNotification *)notification
+ {
+-    if (!showingKeyboard && !rotatingOrientation) {
++    if (getenv("HM2_AUDIT_INPUT")) SDL_Log("[HM2 keyboard] willHide showing=%d rotating=%d first=%d", showingKeyboard, rotatingOrientation, textField.isFirstResponder);
++    /* A hardware keyboard can hide the onscreen keyboard while the field still
++     * owns input focus. Visibility is not the end of the editing session. */
++    if (!showingKeyboard && !rotatingOrientation && !textField.isFirstResponder) {
+         SDL_StopTextInput();
+     }
+     [self setKeyboardHeight:0];
+@@ -388,6 +393,7 @@ - (void)keyboardWillHide:(NSNotification *)notification
+ 
+ - (void)textFieldTextDidChange:(NSNotification *)notification
+ {
++    if (getenv("HM2_AUDIT_INPUT")) SDL_Log("[HM2 keyboard] textChanged length=%lu", (unsigned long)textField.text.length);
+     if (textField.markedTextRange == nil) {
+         NSUInteger compareLength = SDL_min(textField.text.length, committedText.length);
+         NSUInteger matchLength;
+diff --git a/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitwindow.m b/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitwindow.m
+index d2a465b..dea97c7 100644
+--- a/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitwindow.m
++++ b/fresh-port/20-touchHLE-src/touchHLE/vendor/SDL/src/video/uikit/SDL_uikitwindow.m
+@@ -215,6 +215,14 @@ - (void)layoutSubviews
+         /* ignore the size user requested, and make a fullscreen window */
+         /* !!! FIXME: can we have a smaller view? */
+         UIWindow *uiwindow = [[SDL_uikitwindow alloc] initWithFrame:data.uiscreen.bounds];
++        /* Associate the SDL window with the connected single application scene. */
++        for (UIScene *scene in [UIApplication sharedApplication].connectedScenes) {
++            if ([scene isKindOfClass:[UIWindowScene class]] &&
++                ((UIWindowScene *)scene).screen == data.uiscreen) {
++                uiwindow.windowScene = (UIWindowScene *)scene;
++                break;
++            }
++        }
+ 
+         /* put the window on an external display if appropriate. */
+         if (data.uiscreen != [UIScreen mainScreen]) {
