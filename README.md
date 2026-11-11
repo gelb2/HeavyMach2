@@ -1,6 +1,8 @@
 # HeavyMach 2 Restoration
 
-HeavyMach 2의 독립 비공개 복원 저장소다. REA/Ghidra로 HD 원본을 분석하고 C++ 공통 코어에 맵·보행·조준·대시·발사·피해·차량/포탑/항공기·음향·진행·장비·저장 모듈을 연결하고 있다. Apple GPU 통합 검사에서 타이틀·슬롯·기지·전투와 저장 후 재실행을 확인했다. Source 앱은 타이틀·슬롯·이름 입력/저장·기지·전장과 실제 터치 이동/발사에 연결했다. 기기별 최종 표시와 전체 게임은 미완료다. Validation은 구급상자6종·공습3종·38개 전장·대시를 포함한106조건을 함께 실행한다. 정상 게임 전체와 전체 치트 앱은 아직 미완료다. [현재 구현·검증 범위](docs/combat-runtime-restoration-20261110.md)와 [106조건 전장·대시 검증](docs/enemy-dash-restoration-20261110.md)을 따른다.
+HeavyMach 2의 독립 비공개 복원 저장소다. REA/Ghidra로 HD 원본을 분석하고 C++ 공통 코어에 맵·보행·조준·대시·발사·피해·차량/포탑/항공기·음향·진행·장비·저장 모듈을 연결하고 있다. Source 앱은 타이틀·슬롯·이름 입력/저장·기지·전장과 실제 터치 이동/발사에 연결했다. 사용자는 실제 iPad에서 첫 미션 근처의 이동·전투·여러 경로 입력과 퀘스트 수락·성공을 확인했다. [iPad 설치와 사용자 관측](docs/ipad-release-installation-20261111.md).
+
+Validation은 구급상자 6종·공습 3종·38개 전장·대시·BOT·도움말·게임오버·랭킹 안내·완료 임무를 포함한 115조건을 함께 실행한다. iPad 시뮬레이터의 GPU·OpenAL 검사와 별도 치트 Release 앱에서 1,200프레임 실행을 확인했다. 정상 게임 전체와 전체 치트 기능·최종 원작 일괄 대조는 미완료다. [현재 검사와 남은 범위](docs/evidence/app-icons-validation-20261111.json), [이전 전장·대시 구현](docs/enemy-dash-restoration-20261110.md)을 따른다.
 
 ## 작업 경계
 
@@ -21,6 +23,16 @@ python3 tools/check_no_ipa.py --all
 `.gitignore`, 커밋 전 검사, 푸시 전 전체 이력 검사로 IPA를 차단한다. 확장자를 바꾼 ZIP형 IPA도 Payload/*.app 패키지 구조로 검사한다. GitHub 검사는 업로드 뒤 검증이므로 로컬 훅을 대신하지 않는다. 훅을 우회하지 않는다.
 
 빈 초기 커밋에서 main/develop을 만든 뒤 작업 브랜치→develop→main 순서로 준비 내용을 반영한다. 이후 작업도 같은 순서를 따른다.
+
+Apple 앱 자원을 준비할 때는 원본 HD 자원과 앱 아이콘을 각각 생성한다. 원본 입력은 `docs/source-provenance.json`의 로컬 경로·해시를 사용한다.
+
+```sh
+python3 tools/prepare_hd_assets.py
+python3 tools/prepare_app_icons.py
+xcodegen generate --spec Apple/iOS/project.yml
+```
+
+정식판은 원본 HD 앱 그림, 치트판은 같은 그림에 `TEST` 표식을 넣은 아이콘을 쓴다. 생성된 그림은 `.local/prepared/AppIcons.xcassets`에 두며 Git에 원본 그림을 추가하지 않는다. [앱 아이콘 구성](docs/app-icons.md).
 
 [작업 지침](AGENTS.md) · [복원 계획](docs/restoration-plan.md) · [원본 위치와 해시](docs/source-provenance.json) · [TODO](docs/todo.md)
 

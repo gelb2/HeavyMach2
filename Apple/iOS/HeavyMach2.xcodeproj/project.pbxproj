@@ -10,6 +10,7 @@
 		016FCED80D64E201528A7AC2 /* LocomotionScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC4647D2C2976A4283A509AD /* LocomotionScene.cpp */; };
 		0170BE3B8C5BE0FBC7573BD3 /* Weapons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 613BC791A02B06C23C2A3BEA /* Weapons.cpp */; };
 		0766EDE5469E68F0A94467F1 /* Screens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA851BB9990AA00129E04AC /* Screens.cpp */; };
+		0993BFC8FAA10C0844A16FC0 /* AppIcons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2AA858307D90793D8B5AD6AD /* AppIcons.xcassets */; };
 		0B2EF24C8FBAFF38763843FC /* Machines.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C414272E8429546DA101F9E9 /* Machines.cpp */; };
 		0BBB1602146211D4FF91D350 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBDDC303F0216E7A0DD6EC8E /* CoreGraphics.framework */; };
 		0E00FEA3E3EB3551CB639C58 /* AirStrike.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 349328777E119C9432554854 /* AirStrike.cpp */; };
@@ -54,6 +55,7 @@
 		44494A26EC6F85C45CE0649F /* MapLoading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4163E84CEB915EA2E9F7435D /* MapLoading.cpp */; };
 		44D93FE99F90A1B51DA9B553 /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 542A40B06A3F30BD8E8AA159 /* Image.cpp */; };
 		44E1C6D0FEC05F8851ABC63C /* AssemblyPreview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A11F90D201FE7265367DF16 /* AssemblyPreview.cpp */; };
+		4691430E3ECB6239779B51CD /* AppIcons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2AA858307D90793D8B5AD6AD /* AppIcons.xcassets */; };
 		4DBF65A30F1DC29CEEFB0BED /* WorldGates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F071AEBA5BB177C63D5366D /* WorldGates.cpp */; };
 		537F320A7EBC85DA6F7E6269 /* AssemblyPreview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A11F90D201FE7265367DF16 /* AssemblyPreview.cpp */; };
 		539F818AD98E185E3AFB9183 /* HM2SourceView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53644980D69E07491B00CCE9 /* HM2SourceView.mm */; };
@@ -197,6 +199,7 @@
 		2687E7EBF6A21416BCF7CF7A /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		2839D5171319EDC977E0F09A /* WorldNavigation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WorldNavigation.hpp; sourceTree = "<group>"; };
 		29E3E3ED844116807B811834 /* Maps.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Maps.hpp; sourceTree = "<group>"; };
+		2AA858307D90793D8B5AD6AD /* AppIcons.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = AppIcons.xcassets; sourceTree = "<group>"; };
 		2CF8478A8DC9315AA2368375 /* Machines.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Machines.hpp; sourceTree = "<group>"; };
 		2E8E0A4D6617AEE0B46ADD8D /* WeaponEffects.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WeaponEffects.cpp; sourceTree = "<group>"; };
 		3083ACBBE0E8504BA467D0C9 /* ProjectileVisual.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ProjectileVisual.hpp; sourceTree = "<group>"; };
@@ -281,6 +284,7 @@
 		ADD6FC1C62A0BFF2942FA01C /* PCM.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PCM.cpp; sourceTree = "<group>"; };
 		ADDEAEEA7BB8B54C41E3C295 /* AssemblyPreview.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AssemblyPreview.hpp; sourceTree = "<group>"; };
 		AE355BDD1BADB44070C02205 /* PlayerMapPreview.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PlayerMapPreview.cpp; sourceTree = "<group>"; };
+		B1457EC477BD2B366A666D51 /* SessionFixtures.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SessionFixtures.hpp; sourceTree = "<group>"; };
 		B43D62B2508FB7117CB0AF79 /* HeavyMach2Source.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HeavyMach2Source.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B575182419C1FB3F7AF9E7D1 /* DarwinRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DarwinRandom.hpp; sourceTree = "<group>"; };
 		B61FDC38BFE7A6A2FE22F969 /* MapPreview.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MapPreview.hpp; sourceTree = "<group>"; };
@@ -391,6 +395,7 @@
 				2AC4E320B3BBA6E65C27A882 /* Apple */,
 				8D670C1C55DAD23A268E091E /* Assets */,
 				137BB4F5D7A56D396C5265D9 /* Core */,
+				507A7A5E659E4B32B2F43372 /* prepared */,
 				7E2F8678EB52271266A153B3 /* Tests */,
 				C7545EAC592CFC4268A47A1C /* UITests */,
 				1113D69C3BFC95AA677D7C7A /* Validation */,
@@ -430,6 +435,7 @@
 			children = (
 				84F4667C6A29DF3870939245 /* ConcurrentValidation.cpp */,
 				255E2EE555D425F8664C2EC9 /* ConcurrentValidation.hpp */,
+				B1457EC477BD2B366A666D51 /* SessionFixtures.hpp */,
 			);
 			name = Validation;
 			path = ../../Sources/Core/Validation;
@@ -486,6 +492,15 @@
 				05AEE99550ACD829E3D48476 /* QuickItems.hpp */,
 			);
 			path = Progression;
+			sourceTree = "<group>";
+		};
+		507A7A5E659E4B32B2F43372 /* prepared */ = {
+			isa = PBXGroup;
+			children = (
+				2AA858307D90793D8B5AD6AD /* AppIcons.xcassets */,
+			);
+			name = prepared;
+			path = ../../.local/prepared;
 			sourceTree = "<group>";
 		};
 		524737C16FBB9014DBB45E88 /* UI */ = {
@@ -794,6 +809,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0993BFC8FAA10C0844A16FC0 /* AppIcons.xcassets in Resources */,
 				D7F5971512837EC1D3E3875D /* HD in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -802,6 +818,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4691430E3ECB6239779B51CD /* AppIcons.xcassets in Resources */,
 				FAE1591D671183370D6BBA7D /* HD in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -977,7 +994,7 @@
 		072C7CA243707BCC51143684 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconValidation;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) HM2_VALIDATION=1";
 				HM2_DISPLAY_NAME = "HM2 Validation";
@@ -1105,7 +1122,7 @@
 		7EE94E4144DA006DDAB8FCEC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconValidation;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) HM2_VALIDATION=1";
 				HM2_DISPLAY_NAME = "HM2 Validation";
