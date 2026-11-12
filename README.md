@@ -1,65 +1,88 @@
-# HeavyMach 2 Restoration
+# HeavyMach 2 복원
 
-HeavyMach 2의 독립 비공개 복원 저장소다. REA/Ghidra로 HD 원본을 분석하고 C++ 공통 코어에 맵·보행·조준·대시·발사·피해·차량/포탑/항공기·음향·진행·장비·저장 모듈을 연결하고 있다. Source 앱은 타이틀·슬롯·이름 입력/저장·기지·전장과 실제 터치 이동/발사에 연결했다. 사용자는 실제 iPad에서 첫 미션 근처의 이동·전투·여러 경로 입력과 퀘스트 수락·성공을 확인했다. [iPad 설치와 사용자 관측](docs/ipad-release-installation-20261111.md).
+HeavyMach 2 HD를 현재 iPad에서 다시 플레이할 수 있도록 복원하는 프로젝트다. 원본 실행파일과 게임 데이터를 분석하고, 이동·전투·장비·임무·메뉴·음향·저장을 C++ 공통 코어로 구현하고 있다. 게임은 한국어를 기본으로 사용한다.
 
-Validation은 구급상자 6종·공습 3종·38개 전장·대시·BOT·도움말·게임오버·랭킹 안내·완료 임무를 포함한 115조건을 함께 실행한다. iPad 시뮬레이터의 GPU·OpenAL 검사와 별도 치트 Release 앱에서 1,200프레임 실행을 확인했다. 정상 게임 전체와 전체 치트 기능·최종 원작 일괄 대조는 미완료다. [현재 검사와 남은 범위](docs/evidence/app-icons-validation-20261111.json), [이전 전장·대시 구현](docs/enemy-dash-restoration-20261110.md)을 따른다.
+**현재 iPad 정식판으로 플레이할 수 있다.** 사용자는 첫 미션의 이동·전투·경로 그리기와 퀘스트 수락·완수를 확인했고, Wasteland까지 진행한 시점에 크래시를 발견하지 않았다고 보고했다. 전체 기능 복원과 최종 원작 대조는 진행 중이다. [플레이 기록](docs/ipad-release-installation-20261111.md) · [확인한 범위와 남은 문제](docs/public/validation.md)
 
-## 작업 경계
+[플레이 방법](docs/public/quick-play.md) · [빌드와 설치](docs/public/build-and-install.md) · [치트 앱 사용](docs/public/build-and-install.md#치트-앱-실행과-결과) · [TODO](docs/todo.md)
 
-- HeavyMach 2 소스·도구·검사·파생 자원은 이 저장소 안에서만 만든다.
-- HeavyMach 1과 MachDefense의 폴더에 HeavyMach 2 코드를 넣지 않는다. 두 프로젝트의 파일·설정·에셋·저장을 수정하지 않는다.
-- 두 프로젝트는 절차와 기존 조사 근거를 읽는 참고 대상으로만 사용한다. 소스 링크·쓰기 경로·빌드 출력으로 연결하지 않는다.
-- 저장소는 private을 유지한다. 별도 사용자 지시 없이 공개·외부 게시하지 않는다.
-- 원본 IPA는 저장소 밖에 보관한다. Git·LFS·릴리스·CI artifact·보고 사이트·외부 분석 서비스에 올리지 않는다. 이름 변경·재압축·분할도 금지한다.
+## 플레이와 설치
 
-## 시작
+설치된 **HM2 Source**를 열고 iPad를 세로로 놓는다. 타이틀을 터치한 뒤 저장 슬롯을 선택한다. 새 슬롯에서는 이름을 입력하고, 기존 슬롯에서는 이어서 시작한다. 기지에서 임무를 받고 전장으로 나가 지면 터치로 이동하거나 손가락으로 경로를 그린다. 적을 터치하면 표적으로 선택하고 장착한 무기의 조건에 따라 공격한다.
+
+현재 App Store·TestFlight·공개 설치 파일·브라우저 플레이는 제공하지 않는다. 설치하려면 접근 권한이 있는 이 저장소의 소스와 로컬 원본 자원을 준비하고 Xcode에서 본인의 팀으로 서명한다. **저장소를 clone하는 것만으로는 게임 자원이 준비되지 않는다.** [필요한 원본과 준비 순서](docs/public/build-and-install.md#원본-자원-준비)
+
+| 대상 | 현재 상태 |
+| --- | --- |
+| iPad 정식판 | 실제 기기에 Release 설치·시작을 확인했다. 사용자 플레이는 Wasteland까지 보고됐다. 현재 세로 화면이다. |
+| iPad 치트판 | 별도 앱에서 115조건을 같은 프레임에 실행한다. 시뮬레이터에서 1,200프레임 실행과 결과 저장을 확인했다. |
+| iPhone | 유니버설 타깃과 가로 화면 설정이 있다. 현재 HD 기준 검증은 iPad에서 진행하며, iPhone 최종 표시·플레이 검증은 남아 있다. |
+| Android·웹/PWA·Mac·Tauri | 후속 대상이다. 현재 이 저장소에는 해당 게임 앱의 빌드·설치 경로가 없다. |
+
+### 정식판·치트판·포팅판
+
+| 앱 | 용도 | Xcode scheme |
+| --- | --- | --- |
+| HM2 Source | 정상 진행 규칙과 사용자 저장을 쓰는 일반 플레이 앱. 정식판은 Release 구성으로 빌드한다. | `HeavyMach2Source` |
+| HM2 Validation | 경험치·레벨·장비·아이템·진척도 조건을 준비해 여러 게임 상태를 동시에 실행하는 치트 검증 앱. | `HeavyMach2Validation` |
+| HD 포팅판 | 원본 HD 실행파일을 호환 실행기로 구동하는 비교 앱. 복원판과 별도 앱·저장을 사용한다. | [호환 실행 안내](Compatibility/README.md) |
+
+정식판과 치트판은 같은 게임 코어를 사용하고 앱 ID와 저장 공간을 분리한다. 치트판은 자동 검사 후 결과를 저장하는 앱이며, 현재 자유 조작용 치트 메뉴는 제공하지 않는다. 아이콘은 원본 탭투스타트 일러스트를 사용하고 치트판에만 `TEST`를 표시한다. [아이콘 구성](docs/app-icons.md)
+
+## 소스에서 준비하기
+
+Apple Silicon Mac, Xcode, Python 3.11 이상, CMake 3.20 이상, XcodeGen을 사용한다. 저장소 접근 권한과 로컬 HD 1.0.3 원본이 필요하다.
 
 ```sh
+git clone git@github.com:gelb2/HeavyMach2.git
+cd HeavyMach2
 git config core.hooksPath .githooks
-python3 -m unittest discover -s tests -p 'test_*.py'
-python3 tools/check_no_ipa.py --all
 ```
 
-`.gitignore`, 커밋 전 검사, 푸시 전 전체 이력 검사로 IPA를 차단한다. 확장자를 바꾼 ZIP형 IPA도 Payload/*.app 패키지 구조로 검사한다. GitHub 검사는 업로드 뒤 검증이므로 로컬 훅을 대신하지 않는다. 훅을 우회하지 않는다.
-
-빈 초기 커밋에서 main/develop을 만든 뒤 작업 브랜치→develop→main 순서로 준비 내용을 반영한다. 이후 작업도 같은 순서를 따른다.
-
-Apple 앱 자원을 준비할 때는 원본 HD 자원과 앱 아이콘을 각각 생성한다. 원본 입력은 `docs/source-provenance.json`의 로컬 경로·해시를 사용한다.
+[원본 명세](docs/source-provenance.json)의 경로와 SHA-256을 확인한 뒤 자원·아이콘·선택한 SDK의 OpenAL을 준비한다.
 
 ```sh
 python3 tools/prepare_hd_assets.py
 python3 tools/prepare_app_icons.py
+python3 tools/build_openal.py --sdk iphonesimulator
 xcodegen generate --spec Apple/iOS/project.yml
+open Apple/iOS/HeavyMach2.xcodeproj
 ```
 
-정식판은 원본 HD 탭투스타트 일러스트 `Main_BG.png`를 비율을 유지해 정사각형으로 자른 아이콘을 쓴다. 치트판은 같은 그림에 `TEST` 표식을 넣는다. 생성된 그림은 `.local/prepared/AppIcons.xcassets`에 두며 Git에 원본 그림을 추가하지 않는다. [앱 아이콘 구성](docs/app-icons.md).
+Xcode에서 `HeavyMach2Source`와 iPad 시뮬레이터를 선택해 실행한다. 실제 iPad에 설치할 때는 `iphoneos`용 OpenAL을 준비하고 개발 팀·서명·기기 연결을 설정한다. 갱신 전에는 현재 앱의 데이터 컨테이너를 백업한다. [시뮬레이터 명령·실기기 설치·오류 해결](docs/public/build-and-install.md)
 
-[작업 지침](AGENTS.md) · [복원 계획](docs/restoration-plan.md) · [원본 위치와 해시](docs/source-provenance.json) · [TODO](docs/todo.md)
+## 확인한 동작과 남은 과제
 
-[HeavyMach 1 초기 이력 검토](docs/heavymach1-history-review.md) · [일반판·HD판 포팅 앱 검증 계획](docs/reference-port-validation-plan.md)
+타이틀·슬롯·기지·상점·정비·인벤토리·임무·도움말·전장 이동·공격·아이템·BOT·게임오버·저장을 공통 코드에 연결했다. 완료한 개별 검사와 전체 게임의 검증 범위는 구분한다.
 
-[기술스택과 에셋 생성·저장·조립 규칙](docs/technology-and-assets.md)
+2026년 11월 12일 아이콘 적용 후 iPad 시뮬레이터의 치트 앱에서 115조건·1,200프레임, 무기 110종 발사, 효과음 동시 진행 최대 26개, 효과음 컨텍스트 1개를 확인했다. 예열 뒤 자원 재읽기와 이미지 재업로드는 0이었다. 이 수치는 해당 실행의 관측이며 전체 게임의 합격률이 아니다. [검사 명세](docs/evidence/title-illustration-icons-20261112.json)
 
-[세 작품의 실제 기술스택 대조](docs/technology-stack-review-20261110.md) · [시간·저장·음향·인게임 표시 계약](docs/runtime-contract.md)
+E-10 격파 과제의 달성 효과음·토스트 누락, 수집 퀘스트의 아이템 지급 의심은 후속 점검 대상이다. 전체 임무·캠페인, 하체 장비 23종의 동작, 전체 BOT 결과, OS 음향 중단·경로 전환과 HD 포팅판 최종 일괄 대조도 남아 있다. [검증 범위](docs/public/validation.md) · [상세 TODO](docs/todo.md)
 
-[iOS·iPadOS 첫 구현·검사](docs/initial-source-restoration-20261110.md) · [치트 앱·동시 검증](docs/validation-build.md) · [모델 사용 이력](docs/model-usage-history.md)
+## 구현과 복원 기준
 
-[맵·플레이어 장비 후속 구현](docs/player-map-restoration-20261110.md)
+C++20 코어에서 원작 데이터 reader, 파츠 조립, 게임 규칙과 UI를 공유한다. Apple 호스트는 Objective-C++이며, 게임 그림은 OpenGL ES, 효과음은 OpenAL Soft, BGM은 AudioQueue 경로로 출력한다. 원작 소스코드는 확보하지 못했으며, 바이너리·데이터·실행 관측을 근거로 새 소스를 작성한다.
 
-[보행·조준·터치 검사](docs/locomotion-restoration-20261110.md) · [전투 복원 계획](docs/combat-restoration-plan-20261110.md) · [무기 데이터·포구 구현](docs/weapon-data-restoration-20261110.md)
+사격마다 파일·DB를 쓰거나 오디오 컨텍스트를 만들지 않는다. 원본 파츠와 신규 파츠는 공통 데이터·조립·렌더 경로를 따른다. 광고를 표시하거나 요청하지 않는다.
 
-[전체 기능 치트 앱 개발·검증 계획](docs/full-validation-development-plan-20261110.md)
+[기술스택·에셋 절차](docs/technology-and-assets.md) · [실행·저장·음향 계약](docs/runtime-contract.md) · [기존 복원 코드의 출처](docs/source-reuse.md)
 
-[보고 사이트](docs/report-site.md) · [온라인 보행 검증 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/) · [온라인 전체 치트 앱 계획](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/plan.html) — 본인 계정 로그인 필요. 보고서·계획·이미지4장의 실제 서비스 표시를 확인했다.
+## 개발 기록
 
-[온라인 59조건 동시 검증 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/concurrent.html) — C++46개와 iPhone/iPad 각각1,200프레임 결과. 본인 계정 로그인 필요. 게시 본문·링크·결과JSON·이미지의 서비스 응답을 확인했다.
+- [복원 계획](docs/restoration-plan.md) · [원본 일반판·HD판의 차이](docs/original-phone-hd-separation.md) · [여섯 판본 조사](docs/ipa-version-audit.md)
+- [치트 앱과 작업 순서](docs/validation-build.md) · [전체 기능 검증 계획](docs/full-validation-development-plan-20261110.md) · [HD 함수와 복원 범위](docs/hd-original-function-audit-20261111.md)
+- [정식판 설치·사용자 플레이](docs/ipad-release-installation-20261111.md) · [최신 아이콘·동시 검사 기록](docs/evidence/title-illustration-icons-20261112.json)
+- [보고 사이트와 게시 목록](docs/report-site.md) — 기존 비공개 보고 사이트를 사용하며 본인 계정 로그인이 필요하다.
+- [HeavyMach 1 초기 이력 검토](docs/heavymach1-history-review.md) · [포팅 앱 검증 계획](docs/reference-port-validation-plan.md) · [모델 사용 이력](docs/model-usage-history.md)
 
-[구급상자·공습·메시지와68조건 검증](docs/quick-items-restoration-20261110.md) — C++48개·양 시뮬레이터1,200프레임. 차량 외 Scene 연결과37개field 진입은 다음 과제다.
+## 저장소와 자원
 
-[온라인 38개 전장·대시106조건 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/fields-dash.html) — C++51개·양 시뮬레이터 각각1,200프레임, 최초695대 생성·대표 포탑/항공기 전투·대시·구급상자/공습 결과. 본인 계정 로그인이 필요하다. 실제HTTP 본문/링크·결과JSON·PNG 일치를 확인했다. 전체게임·Source정상시작·원작대조는 미완료다.
+이 저장소는 비공개로 유지한다. HeavyMach 1·MachDefense는 절차와 근거를 읽는 참고 대상이며, 이 프로젝트의 소스·출력·저장을 두 저장소에 쓰지 않는다. 작업 브랜치는 `develop`을 거쳐 `main`에 병합한다.
 
-[정상 앱 진입·슬롯/저장/입력 검증](docs/source-entry-restoration-20261110.md) · [등록한 복원 Goal](docs/restoration-goal.md)
+원본 IPA·실행파일·사용자 저장·서명 자료는 커밋하거나 외부로 보내지 않는다. 준비된 원작 자원과 빌드는 Git에서 제외한 로컬 공간에 둔다. 코드의 이용 조건이 원작 그림·음원·게임 데이터의 이용 허락을 포함하지는 않는다. 외부 코드의 허가문은 [재사용 고지](docs/source-reuse.md)와 각 `ThirdParty` 소스에서 확인한다. 사운드 출처·권리 조사는 [TODO](docs/todo.md)에 남아 있다.
 
-[온라인 정상 앱 메뉴·전투 연결 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/source-entry.html) — 본인 로그인 필요. 실제 Source 조작·슬롯/저장·발사와 현재 HD canvas의 한계, Core55·양 시뮬레이터 검사·원본 차이·진행 중인 다음 작업을 담는다.
+[작업 지침](AGENTS.md)
+
+## 개발자의 변
 
 [개발자의 변](docs/RESTORATION.md)
