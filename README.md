@@ -32,7 +32,7 @@ python3 tools/prepare_app_icons.py
 xcodegen generate --spec Apple/iOS/project.yml
 ```
 
-정식판은 원본 HD 앱 그림, 치트판은 같은 그림에 `TEST` 표식을 넣은 아이콘을 쓴다. 생성된 그림은 `.local/prepared/AppIcons.xcassets`에 두며 Git에 원본 그림을 추가하지 않는다. [앱 아이콘 구성](docs/app-icons.md).
+정식판은 원본 HD 탭투스타트 일러스트 `Main_BG.png`를 비율을 유지해 정사각형으로 자른 아이콘을 쓴다. 치트판은 같은 그림에 `TEST` 표식을 넣는다. 생성된 그림은 `.local/prepared/AppIcons.xcassets`에 두며 Git에 원본 그림을 추가하지 않는다. [앱 아이콘 구성](docs/app-icons.md).
 
 [작업 지침](AGENTS.md) · [복원 계획](docs/restoration-plan.md) · [원본 위치와 해시](docs/source-provenance.json) · [TODO](docs/todo.md)
 

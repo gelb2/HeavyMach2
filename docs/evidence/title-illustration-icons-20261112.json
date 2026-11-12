@@ -1,0 +1,177 @@
+{
+  "date": "2026-11-12",
+  "scope": "Tap-to-start original illustration app icons, normal physical iPad update, current cheat app simultaneous smoke run. Game runtime unchanged.",
+  "original_artwork": {
+    "source_ipa_sha256": "7eeb36590b3c19a28741e21671379029d9023864ceb241a5b8560eef045112d2",
+    "source_member": "Payload/HM2HD.app/Main_BG.png",
+    "source_artwork_sha256": "d34b109ac8ccdb73f90a419b60840d350ab7c3d53acad40194f0c8eb3b809a36",
+    "source_pixels": [
+      768,
+      1024
+    ],
+    "source_crop_top_left_xywh": [
+      0,
+      128,
+      768,
+      768
+    ],
+    "decoder": "hm2::decodeImage, shared original CgBI reader",
+    "normal": "Original tap-to-start illustration, centered square crop, uniform resize to opaque 1024 sRGB PNG",
+    "validation": "Same illustration with a 160px opaque TEST footer",
+    "in_game_assets_modified": false,
+    "icons": [
+      {
+        "catalog": "AppIcon",
+        "variant": "normal",
+        "pixels": [
+          1024,
+          1024
+        ],
+        "sha256": "a45600f2759dc661cc0da8fcbc0f5158b4e5f2b2c5fe0c231820b7f5dfad6515"
+      },
+      {
+        "catalog": "AppIconValidation",
+        "variant": "validation",
+        "pixels": [
+          1024,
+          1024
+        ],
+        "sha256": "df9ad26f25e3c077a230d8413d0158ce9899250d9e8b21dcd027a7b20617bbed"
+      }
+    ]
+  },
+  "builds": {
+    "device_source": {
+      "bundle_id": "com.gelb2.heavymach2.restored",
+      "primary_icon": "AppIcon",
+      "icons": [
+        {
+          "file": "AppIcon60x60@2x.png",
+          "sha256": "261a2c86e107940b6d2efe9f4208c9390be7955779a657f7a3a3cba19fdbab6e"
+        },
+        {
+          "file": "AppIcon76x76@2x~ipad.png",
+          "sha256": "78748e6d75a10cd6b30b05bfaf2d057e1df355ba503c2ec56d535a552d2ef64f"
+        }
+      ],
+      "resources_compared": 1479,
+      "resource_mismatches": [],
+      "asset_car_sha256": "eb578929fcc5ab0e8231a5958df5d9627e85da261d30b22ad20e23d6a526a1dd"
+    },
+    "simulator_source": {
+      "bundle_id": "com.gelb2.heavymach2.restored",
+      "primary_icon": "AppIcon",
+      "icons": [
+        {
+          "file": "AppIcon60x60@2x.png",
+          "sha256": "642b5d97e45b7502a93706678b3d9bc677e783a3e6bf61195f6a3217f1e42bda"
+        },
+        {
+          "file": "AppIcon76x76@2x~ipad.png",
+          "sha256": "53d1e8f1a84f205bf49948ac94a4f9f10062e18adfb2069241a658fd29c19714"
+        }
+      ],
+      "resources_compared": 1479,
+      "resource_mismatches": [],
+      "asset_car_sha256": "7192566ca5b58d20374c677bab73fe90c0f18647a9d6f2267e97ca92d4252957"
+    },
+    "simulator_validation": {
+      "bundle_id": "com.gelb2.heavymach2.validation",
+      "primary_icon": "AppIconValidation",
+      "icons": [
+        {
+          "file": "AppIconValidation60x60@2x.png",
+          "sha256": "5cf6590fb5ca8f6507d96461ccfc4d4b57a89dc849d1d495ea15f79b0eed959b"
+        },
+        {
+          "file": "AppIconValidation76x76@2x~ipad.png",
+          "sha256": "7158d9c728c7aa8d9167c73683b262a45b78768978018adc12efbcc357a2b5a0"
+        }
+      ],
+      "resources_compared": 1479,
+      "resource_mismatches": [],
+      "asset_car_sha256": "b5044aad1aeac3a90606f43c8cd8067f596b490c14bdc086694e4eda3307a4ab"
+    }
+  },
+  "physical_ipad": {
+    "normal_release_updated_in_place": true,
+    "signing_verified": true,
+    "save_bytes": 28204,
+    "save_bytes_unchanged": true,
+    "new_icon_observed_in_app_library": true,
+    "launch_and_title_observed": true,
+    "process_alive_after_launch": true,
+    "new_crash_logs_after_update": 0,
+    "existing_retired_crashes": "Two records from 2026-11-10, preserved",
+    "cheat_app_installed_on_physical_ipad": false
+  },
+  "simulator": {
+    "device": "iPad Air 11-inch (M4)",
+    "os": "iPadOS 26.5",
+    "both_new_icons_visible_on_home": true,
+    "standalone_cheat": {
+      "frames": 1200,
+      "scenarios": 115,
+      "commonFrameInterval": true,
+      "combatScenarios": 55,
+      "activeWeaponDefinitions": 110,
+      "activeWeaponKinds": 5,
+      "maxProgressingEffects": 26,
+      "warmReadMisses": 0,
+      "warmExistsMisses": 0,
+      "imageTextureUploadsAfterPreparation": 0,
+      "menuActionFrames": 24,
+      "menuFramesWithCombatActivity": 23,
+      "completeGameCoverage": false,
+      "missingFeatures": [
+        "all23 Player bottom equipment movement checks",
+        "all BOT combat outcomes and death after owner removal attribution",
+        "all mission types and all60 mission completion",
+        "all stages and final campaign completion",
+        "original port-app visual/input/audio equivalence",
+        "OS interruption / audio-route transition"
+      ],
+      "contextsCreated": 1,
+      "checks": {
+        "frames1200": true,
+        "all115TickedTogether": true,
+        "all110WeaponDefinitionsEmitted": true,
+        "menuButtonFailuresZero": true,
+        "menuOverlapsCombat": true,
+        "overlappingSoundOutputAdvanced": true,
+        "singleEffectContext": true,
+        "noWarmResourceAccess": true,
+        "noWarmImageTextureUpload": true,
+        "wholeGameCompletionNotClaimed": true
+      }
+    }
+  },
+  "repository_tests": {
+    "passed": 12,
+    "failed": 0
+  },
+  "previous_valid_tests_reused": {
+    "runtime_source_commit": "4980818",
+    "core_tests_passed": 70,
+    "gpu_audio_xctests_passed": 2,
+    "record": "app-icons-validation-20261111.json",
+    "rerun_in_this_icon_task": false
+  },
+  "failures_and_corrections": [
+    {
+      "attempt": "Decode AppIcon83.5x83.5@2x~ipad.png",
+      "failure": "That built filename did not exist; local inspection helper aborted on empty input.",
+      "correction": "Read actual packaged AppIcon76x76@2x~ipad.png, decoded and visually confirmed."
+    },
+    {
+      "attempt": "Simulator launch with relative stdout/stderr destinations",
+      "failure": "SBMainWorkspace rejected launch.",
+      "correction": "Retried with absolute local log destinations; app completed 1200 frames."
+    }
+  ],
+  "local_evidence": ".local/evidence/title-illustration-icons-20261112/",
+  "artwork_in_git": false,
+  "ipa_in_git": false,
+  "ai_generated_art_adopted": false,
+  "whole_game_validation_complete": false
+}
