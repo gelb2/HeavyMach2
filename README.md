@@ -61,3 +61,5 @@ xcodegen generate --spec Apple/iOS/project.yml
 [정상 앱 진입·슬롯/저장/입력 검증](docs/source-entry-restoration-20261110.md) · [등록한 복원 Goal](docs/restoration-goal.md)
 
 [온라인 정상 앱 메뉴·전투 연결 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/source-entry.html) — 본인 로그인 필요. 실제 Source 조작·슬롯/저장·발사와 현재 HD canvas의 한계, Core55·양 시뮬레이터 검사·원본 차이·진행 중인 다음 작업을 담는다.
+
+[개발자의 변](docs/RESTORATION.md)
