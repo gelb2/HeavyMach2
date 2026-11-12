@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-10",
+  "scope": "c26fff0 normal Source plus two-file UIScene lifecycle fix; in-progress BOT/shadow/Help changes excluded from device candidate",
+  "baseCommit": "c26fff0",
+  "sourceSHA256": {
+    "Sources/Platform/Apple/HM2Application.mm": "73211e53d1e65241714443369acbfcd6b82a3cf1fd42c246c482ec4b168f81f7",
+    "Apple/iOS/Info.plist": "8840737f0a8207020ddc3b7d7689b31c7f30555ae4c6ad7d1a4aec1650b8335c"
+  },
+  "failure": {
+    "os": "iPadOS27.2",
+    "signal": "SIGTRAP",
+    "firstFrame": "___UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption_block_invoke",
+    "localCrashSHA256": "e966884a18d2c8bbdc1cf9065e4557bc6881ca6b0ccfe498125b0deb262cd774"
+  },
+  "simulatorTests": {
+    "ios27": {
+      "passedTests": [
+        "testOriginalNameLengthCountryAndNoFallback",
+        "testRealTouchMovesPlayerOnOriginalTerrain"
+      ],
+      "logSHA256": "0dfc79013c4c121b54e6fdc9764117b05bfcfa5622be6b95c5ba11395bf05f94",
+      "xcodebuildFooterSucceeded": true
+    },
+    "ipad26": {
+      "passedTests": [
+        "testOriginalNameLengthCountryAndNoFallback",
+        "testRealTouchMovesPlayerOnOriginalTerrain"
+      ],
+      "logSHA256": "df8d34c5f88363fb36a896036b9ed0fadd03d4f4b49738f25b2cabeade664b94",
+      "xcodebuildFooterSucceeded": false
+    }
+  },
+  "physicalDevice": {
+    "kind": "iPad Air13 M2",
+    "os": "iPadOS27.2",
+    "configuration": "Release",
+    "bundleIdentifier": "com.gelb2.heavymach2.restored",
+    "version": "0.1.0",
+    "signedExecutableSHA256": "d6a3968c523d8d7146274177bdf24b50f958c59d5f4c768bfbebae44078ba752",
+    "installed": true,
+    "launchSucceeded": true,
+    "processPresentOnTwoQueries": true,
+    "manualGameplayVerified": false
+  },
+  "backup": {
+    "authorizedReplacement": "MachDefense Test only",
+    "files": 14,
+    "bytes": 22942142,
+    "gameSaveIncluded": true,
+    "localOnly": true
+  },
+  "notVerified": [
+    "physical manual gameplay and screenshot",
+    "system alerts and home/foreground observation",
+    "scene reconnect with unsaved combat state",
+    "complete restored game and manual cheat controls",
+    "in-progress BOT/shadow/Help device coverage"
+  ]
+}

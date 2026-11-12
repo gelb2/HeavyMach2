@@ -1,0 +1,639 @@
+{
+  "date": "2026-11-10",
+  "scope": "source and build configuration review of existing games; read-only HM2 shipped-binary static analysis and WAV header census; no new game implementation or runtime performance test",
+  "baseline_hm2_commit": "96d8160",
+  "repositories": [
+    {
+      "repository": "HeavyMach",
+      "reference": "local main",
+      "commit": "bd0aa73ad0bf765f3e54c1800c89b8d550a5e1e9",
+      "read_only": true,
+      "files": [
+        {
+          "path": "CMakeLists.txt",
+          "git_blob": "807653e67d2503f8f03bf5f349c7466920c10907",
+          "bytes": 4640,
+          "sha256": "9340de9bbd6ffee1ad1402f91cdc98c946e55230b8f8fc9d84301d65701b8c85"
+        },
+        {
+          "path": "iOS/project.yml",
+          "git_blob": "96fc25d0e5ef9cbe4fd0369df05825076acf9b86",
+          "bytes": 6915,
+          "sha256": "5bdd94fb125a3b267642d27248719e0be7f4fb366fc80e66abc4c5aa02a088fb"
+        },
+        {
+          "path": "macOS/project.yml",
+          "git_blob": "6cde253dd0862ad62fb8a9739b2d03fa3dc9804c",
+          "bytes": 5221,
+          "sha256": "9263c59bd0bb45ad761fa7daa22bb355c45c307f91e2b4b0ae9faa6b74935983"
+        },
+        {
+          "path": "Sources/Apple/HMGLPlatform.h",
+          "git_blob": "335158a2cf56bb720f592ca99f58d2d57f703461",
+          "bytes": 2699,
+          "sha256": "ea8358afa234e8f6eb9e6eedeb64dc98249a450dbfc725c935298eef558a9f5d"
+        },
+        {
+          "path": "Sources/iOS/HMGLRenderer.mm",
+          "git_blob": "ea0c15f512761d47ecbbec2938db34764976d585",
+          "bytes": 30088,
+          "sha256": "3c03c027dd73c7b17c159a4749a0bbf9dc7514d00109f2ec0e8168fb0e3525d0"
+        },
+        {
+          "path": "Sources/iOS/HMGameView.mm",
+          "git_blob": "a3edab0a4bfff783fdf9ecc07bf9227fb4e34bf1",
+          "bytes": 74892,
+          "sha256": "6afd6c5f67288e77fe4bc57ca5d57e2fdf9de1db838fabdd43a51d1f0f03dd4a"
+        },
+        {
+          "path": "Sources/iOS/HMGameHUD.mm",
+          "git_blob": "5c8959665473b245c230ef43cd5e29b773ee5563",
+          "bytes": 21947,
+          "sha256": "161fef5ee63ad6c6f6e7528cfd03fee885cd96145c0e88f34342341e82ffb5b6"
+        },
+        {
+          "path": "Sources/iOS/HMMenus.mm",
+          "git_blob": "2f66e61459aaeb49de7e66c868964141cf077252",
+          "bytes": 22465,
+          "sha256": "76c91ab47ecec688e28da26d3bd2760a860d54664dc7ee8d65c4eec752655014"
+        },
+        {
+          "path": "Sources/iOS/HMOpenALAudio.mm",
+          "git_blob": "aaf8e0df12bd88eede6562a3fbb177e397093884",
+          "bytes": 11265,
+          "sha256": "8b79549bef32207f1b0c69c30e675f14511f3091759cc8fff2de34f8f2f5026b"
+        },
+        {
+          "path": "Sources/Core/GameSession.cpp",
+          "git_blob": "7f37bafeb99470ad03040db8b3200d5405d4acae",
+          "bytes": 50618,
+          "sha256": "a45755ce6ae33133a3a7755131b4f0cbc7d90b97833b61873bc493ad871be867"
+        },
+        {
+          "path": "Sources/Core/SaveData.cpp",
+          "git_blob": "2d80cd4ce9c596f9cea79dfb14806c0e8052866b",
+          "bytes": 2673,
+          "sha256": "1d522f930e0ba6da69be9939fdb6db46672d02cee9be36443a01771ffc6e5f7e"
+        },
+        {
+          "path": "Sources/Core/AudioContract.hpp",
+          "git_blob": "7ad548e257c4a1f49ca0a79a2cd5158298b2da07",
+          "bytes": 1560,
+          "sha256": "a962f3e71243c3f6732fb839ec37426e1131983d63d1c09c654722d17814f1e1"
+        },
+        {
+          "path": "Sources/Web/WebAudio.cpp",
+          "git_blob": "81bb0500390ec8737f793690e98fa0deb99b9337",
+          "bytes": 6469,
+          "sha256": "d5abfa49f542a948e566d0fb0d113f7212443ba650273f652a9c709ab44f4493"
+        },
+        {
+          "path": "Sources/Web/WebGameHUD.cpp",
+          "git_blob": "04ef5c6cbb492d638ed134ffe44ae91a37625d25",
+          "bytes": 22033,
+          "sha256": "b4a84e051c8e18ca8bc7133c5553b3bf270c95cbeefdf02f480a2a9b2dd2d9d0"
+        },
+        {
+          "path": "Sources/Web/WebMenus.cpp",
+          "git_blob": "c9aa6910aa3e15dc52368621c1fd616d81476bf9",
+          "bytes": 23306,
+          "sha256": "8a76a946e4392db67553c77bc05b464b146bf29bd2575da7742f24d00e1749a9"
+        },
+        {
+          "path": "Sources/Web/WebGLRenderer.cpp",
+          "git_blob": "4afa464fad0daebba6699e1c24fd1939e2070e0f",
+          "bytes": 23556,
+          "sha256": "1c865f8ad191201fc64217860c5e091e997fef1c7ae2f1c27c41ac55eca33391"
+        },
+        {
+          "path": "Web/CMakeLists.txt",
+          "git_blob": "e63c1f45f024ae09bc96c4308b589305ca520386",
+          "bytes": 4267,
+          "sha256": "5ce75df645ea02d1679395ec617ce60501042fb14b41dab6080bb4f62d9cfab7"
+        },
+        {
+          "path": "Android/app/build.gradle.kts",
+          "git_blob": "a15d7a9f5192a525c184902aaf00ad44d6c51713",
+          "bytes": 2186,
+          "sha256": "35dd678c9ccf6c22dca6c31177f11ea225dddfea4dcabdd743e85bbfc299f238"
+        },
+        {
+          "path": "Android/cmake/CMakeLists.txt",
+          "git_blob": "0a6139081eb27c0abf5adf50a35e8f927ab8aca2",
+          "bytes": 1861,
+          "sha256": "e4507689ea6ebba8c4157d4479982b7fbbd3580494509c181ef97b72bac7dd56"
+        },
+        {
+          "path": "Android/app/src/main/cpp/Audio.cpp",
+          "git_blob": "87468b7cde9bd2645fa3982a925355d7ef9dbb76",
+          "bytes": 4402,
+          "sha256": "69fb0551af7eef307a345927218abb6128422d43f06992ae10c0e0084e89d67c"
+        },
+        {
+          "path": "Android/app/src/main/java/com/gelb2/heavymach/GameActivity.kt",
+          "git_blob": "731b39360354528393e26d570bea8a36b4d75524",
+          "bytes": 11286,
+          "sha256": "be6905be1a3d9c615fc4cf0a5191cf258b6352c9bdd7c55c83d12ff526e0ac25"
+        },
+        {
+          "path": "Desktop/Tauri/src-tauri/Cargo.toml",
+          "git_blob": "7330d0d887581c28fe5767922ae5efbc7915d8db",
+          "bytes": 393,
+          "sha256": "147c7f7be2aa8e1f8b4ae3127b1e56f367585687d1feae218fa019b1f9cdf6b0"
+        },
+        {
+          "path": "vendor/openal-soft/CMakeLists.txt",
+          "git_blob": "e20770bc2089968c8a9af3932f2b3ea7528bbfc7",
+          "bytes": 60789,
+          "sha256": "35db7ffa89ba301e94165cdd10a78cf8b6f88588e22d132415bc393d5188b619"
+        },
+        {
+          "path": "Tests/iOS/HMAudioTests.mm",
+          "git_blob": "b8455ea3dbc3938a2a6a78ec1f5a9b8f90a45a7a",
+          "bytes": 4360,
+          "sha256": "7f52626aa205b6c4aa0bf0a7899663b7853837780fb3d43aa98f2eb26c01c816"
+        },
+        {
+          "path": "Tests/iOS/HMFramePerformanceTests.mm",
+          "git_blob": "8f2a5ab2c50de7aa0e07cbc48fe9861b9742cdf3",
+          "bytes": 79341,
+          "sha256": "883456d27e9026ffc4f06b7510e0027a66a9f6b99cf13416374d3e232bcad6dc"
+        },
+        {
+          "path": "Tests/AudioContractTests.cpp",
+          "git_blob": "b18edb5e5f98a55604f29f6f757bbf7cd3e09e87",
+          "bytes": 780,
+          "sha256": "acef4b3947b36cb444d5af1c3e19d99f5455e66e333c4d5af04149dc43930851"
+        }
+      ]
+    },
+    {
+      "repository": "MachDefense",
+      "reference": "local main",
+      "commit": "0aa03aa7c4adf53d6aa8b33c6d4e193105298d6e",
+      "read_only": true,
+      "files": [
+        {
+          "path": "CMakeLists.txt",
+          "git_blob": "c0e133095c0dbd4216fdfc06f76c00e20e279efb",
+          "bytes": 11864,
+          "sha256": "a974d33026060232b04c22b491aa6ec14a400570c087843e9a806b51e6b7d28a"
+        },
+        {
+          "path": "Apple/iOS/project.yml",
+          "git_blob": "ad974f4df475dcf13919be55741319d4380bfd2a",
+          "bytes": 4027,
+          "sha256": "85eb605b5974e6a3ea5e15df0eaa2b0e1cdfef726dea51499a380616b3c68c92"
+        },
+        {
+          "path": "Sources/Platform/Apple/MDRenderer.mm",
+          "git_blob": "17c2f4f11cd0aefdaaac25aa4554bc3f5d4696eb",
+          "bytes": 15992,
+          "sha256": "6e09f807df2d8d37ad776d843b8dc2ea9c74afa2868c3d9c66b51d5c653ae238"
+        },
+        {
+          "path": "Sources/Platform/Apple/MDApplication.mm",
+          "git_blob": "d95614ef2998d7eca111f2c3413304dfaa819755",
+          "bytes": 25638,
+          "sha256": "3b98ac73b3b38bac4987cb1c1abbb0144b2937d1c9f6ca156fa6ca245e0eef2f"
+        },
+        {
+          "path": "Sources/Platform/Apple/MDAudio.mm",
+          "git_blob": "9d50b4b6f5d842cd2f727f07c8f87475b1f43077",
+          "bytes": 4933,
+          "sha256": "caecbcff18ab106e47e6d9b44cbe3c524be98ec555cbfdd9818adcfea43c3561"
+        },
+        {
+          "path": "Sources/Platform/Apple/MDAudioQueueMusic.hpp",
+          "git_blob": "23a82be124b51dc650ae7bc399e6d5a6320c9caa",
+          "bytes": 4643,
+          "sha256": "cdd1ff631fde29f09e04cc6399a3f10b8cf4b4c5160e25c949ffc9b6a7b09241"
+        },
+        {
+          "path": "Sources/Audio/OpenALEffects.cpp",
+          "git_blob": "4ab26a5127b1346d2813754c371eb03648a8c7b0",
+          "bytes": 5811,
+          "sha256": "a992a08fee9017e8b0f9630a966619970b4ed6d13470b58bcd3744ee2b53a922"
+        },
+        {
+          "path": "Sources/Audio/PCM.hpp",
+          "git_blob": "60499d8379053b215e01bba0bc097f8328fcb128",
+          "bytes": 264,
+          "sha256": "8846f29a115c157ca8dd0ec56563c6e189fa12ff1a2de60cb9e9ab0a4fa62155"
+        },
+        {
+          "path": "Sources/Core/Session/GameSession.cpp",
+          "git_blob": "9763a74b5e1656ea4ba0db614a2c587ac799b110",
+          "bytes": 34588,
+          "sha256": "994835c571fa6c37164b4c13eebfd600921665316b5d4745b2d1ef62fe1539a5"
+        },
+        {
+          "path": "Sources/Core/Session/SaveData.cpp",
+          "git_blob": "dc2a899dc3e71a0f7e1249aa78ae171ca6306365",
+          "bytes": 8785,
+          "sha256": "f5f10f72e4d2fa064f27ddfeecc00d8295141132b0dee0122b7c126fde8ee8ce"
+        },
+        {
+          "path": "Sources/Core/Presentation/GameHUD.cpp",
+          "git_blob": "acd220f3b1715ab069d36e68bc55d287f542eb09",
+          "bytes": 25108,
+          "sha256": "ed2a498ebe2eeb46d99377964f76dd5a0ea80566635960fff44372b58d9a49f5"
+        },
+        {
+          "path": "Sources/Core/Presentation/Menu.cpp",
+          "git_blob": "283a83667422c4bac8383e659346f67d2e549c1a",
+          "bytes": 20316,
+          "sha256": "0f557422cfdb92c097bc54171fffe53276b6616035bdd62f9f46c6617d0e7bc5"
+        },
+        {
+          "path": "Web/CMakeLists.txt",
+          "git_blob": "aab70bca4a2b147bc65bad460e4f69111a68faa9",
+          "bytes": 2341,
+          "sha256": "e8bd2380b2d01afa77677b11d40a60238222808f44285154b6eda31e844a8530"
+        },
+        {
+          "path": "Web/src/Main.cpp",
+          "git_blob": "af9ec0826da39734a12969dc389db63de3910008",
+          "bytes": 9534,
+          "sha256": "0ed79b56d52768d6ed4c10ca369a1542386732f293ee33264d8d9c18282e6bfb"
+        },
+        {
+          "path": "Web/src/Renderer.cpp",
+          "git_blob": "1043d6400a62e06b8c948515ba3edd2ca58df7cc",
+          "bytes": 6618,
+          "sha256": "12d1a2ef512eb010431c7f25c2dc9f27ba581b2ed56744d2fad441be9fb3abe3"
+        },
+        {
+          "path": "Web/src/Audio.cpp",
+          "git_blob": "044b51c1adf2b89f47eb22a1abe025c590e0094f",
+          "bytes": 440,
+          "sha256": "5fa9ed87dd251220c8c98a1730df853e6c140ca6abc76685affd9a4d64f782af"
+        },
+        {
+          "path": "Web/src/Audio.hpp",
+          "git_blob": "b204c8f1f09a3cd433d9c9bf7399dcf27c9b3549",
+          "bytes": 257,
+          "sha256": "e5ab4da0ff0402be5139703ef5c11d63300d9f30adb2741b47be52a370e203a0"
+        },
+        {
+          "path": "Android/app/build.gradle.kts",
+          "git_blob": "96908af97eb549b9dc418413abac014ff146b09d",
+          "bytes": 2268,
+          "sha256": "8a38cb5c09eeb7b1302e9f909fc1418e6aa272899b353fac8b7e950fa6d15e76"
+        },
+        {
+          "path": "Android/cmake/CMakeLists.txt",
+          "git_blob": "c63407a47d49803839d284da15a4d326d1c019b0",
+          "bytes": 1603,
+          "sha256": "a7d9bee3a3687aa80fb632c5832635890e796175e5766ca336880b1514c9bb41"
+        },
+        {
+          "path": "Android/app/src/main/cpp/Runtime.cpp",
+          "git_blob": "b6e10f0f3cf30284fc9f086429ac64a29a399a6f",
+          "bytes": 18362,
+          "sha256": "8a687a7f326d9fe24e281be1a7eba4dfe6519f136e91a3040de0b8a829280fec"
+        },
+        {
+          "path": "Android/app/src/main/java/com/gelb2/machdefense/GameActivity.kt",
+          "git_blob": "d91048368fc6b5f0de365cb8346c047293a55bad",
+          "bytes": 9133,
+          "sha256": "8f8f1937e7ab4f77c914ddee497e42b3fbc26211c6a247890b3b21ba5ee9d289"
+        },
+        {
+          "path": "Android/app/src/main/java/com/gelb2/machdefense/Music.kt",
+          "git_blob": "483170b1e3ab9192a48ed8949f943316906a117e",
+          "bytes": 2022,
+          "sha256": "8e9fecf4c3c51688deb8899d6e6f1b2d330d456eb1bb79a4d328dd055a32c77e"
+        },
+        {
+          "path": "Desktop/Tauri/src-tauri/Cargo.toml",
+          "git_blob": "2e61ad1dd38fa86f85b1a684eb6f865b07f2424c",
+          "bytes": 420,
+          "sha256": "92eea9f503384af361c858a48f4cc501d8679333744e138e6677bc6472fe7c4a"
+        },
+        {
+          "path": "Modules/ThirdParty/openal-soft/CMakeLists.txt",
+          "git_blob": "e20770bc2089968c8a9af3932f2b3ea7528bbfc7",
+          "bytes": 60789,
+          "sha256": "35db7ffa89ba301e94165cdd10a78cf8b6f88588e22d132415bc393d5188b619"
+        },
+        {
+          "path": "Tests/FrameIOTests.cpp",
+          "git_blob": "4ef55ab6eec6ce135d2600a5e82db94c169a2aaf",
+          "bytes": 2164,
+          "sha256": "0d36b12c3683e3472e2542b82c6971208c455b677ed12c0c95bd17a1671f2448"
+        },
+        {
+          "path": "Apple/Tests/AudioTests.mm",
+          "git_blob": "bdcb6598ab851b8a6249e2e9ce601202ffd8561c",
+          "bytes": 4637,
+          "sha256": "3e2e2b8f1648592bc33e5fa8a9febbf63e8a29dc977252b9a838e2552a6537df"
+        }
+      ]
+    }
+  ],
+  "hm2_linked_libraries": [
+    {
+      "profile": "hd",
+      "binary_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+      "libraries": [
+        "/System/Library/Frameworks/Foundation.framework/Foundation",
+        "/System/Library/Frameworks/UIKit.framework/UIKit",
+        "/System/Library/Frameworks/OpenGLES.framework/OpenGLES",
+        "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+        "/System/Library/Frameworks/MediaPlayer.framework/MediaPlayer",
+        "/System/Library/Frameworks/OpenAL.framework/OpenAL",
+        "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+        "/System/Library/Frameworks/AudioToolbox.framework/AudioToolbox",
+        "/System/Library/Frameworks/CoreAudio.framework/CoreAudio",
+        "/System/Library/Frameworks/GameKit.framework/GameKit",
+        "/usr/lib/libstdc++.6.dylib",
+        "/usr/lib/libgcc_s.1.dylib",
+        "/usr/lib/libSystem.B.dylib",
+        "/usr/lib/libobjc.A.dylib",
+        "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation"
+      ],
+      "note": "link dependency inventory, not proof that every library is used in gameplay"
+    },
+    {
+      "profile": "phone",
+      "binary_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+      "libraries": [
+        "/System/Library/Frameworks/UIKit.framework/UIKit",
+        "/System/Library/Frameworks/Foundation.framework/Foundation",
+        "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+        "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+        "/System/Library/Frameworks/OpenGLES.framework/OpenGLES",
+        "/System/Library/Frameworks/MediaPlayer.framework/MediaPlayer",
+        "/System/Library/Frameworks/AudioToolbox.framework/AudioToolbox",
+        "/System/Library/Frameworks/OpenAL.framework/OpenAL",
+        "/System/Library/Frameworks/GameKit.framework/GameKit",
+        "/usr/lib/libstdc++.6.dylib",
+        "/usr/lib/libgcc_s.1.dylib",
+        "/usr/lib/libSystem.B.dylib",
+        "/usr/lib/libobjc.A.dylib",
+        "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation"
+      ],
+      "note": "link dependency inventory, not proof that every library is used in gameplay"
+    }
+  ],
+  "hm2_hd_analysis": {
+    "provider": "Ghidra 12.1.4",
+    "original_executable_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+    "functions": [
+      {
+        "address": "0x4229c",
+        "evidence_id": "ev_a474b5a152a7a884fb7a1ccdf05db6d717c6d5b6d0853842bfc0ad0bc8e4d710",
+        "local_file": "hd-functions.json"
+      },
+      {
+        "address": "0x423a8",
+        "evidence_id": "ev_274a74870e6c88e2d8870d3505d19cc542c7efd4eca275b296c6d7ad8df895fa",
+        "local_file": "hd-functions.json"
+      },
+      {
+        "address": "0x42494",
+        "evidence_id": "ev_1731c9ccd9954e2655cd9c69b58e37b51e8c597172546e05fba4306b1030f8f4",
+        "local_file": "hd-functions.json"
+      },
+      {
+        "address": "0x424d8",
+        "evidence_id": "ev_ef68dc2c0aab126f2e98a1445cffdf35866779b0466c9306c95397cb16a46603",
+        "local_file": "hd-functions.json"
+      },
+      {
+        "address": "0x17580",
+        "evidence_id": "ev_3d6c2575a7ecdb03def1abcfdc4c39643a8d87b9c31d16c8cc52d387a2e80840",
+        "local_file": "hd-functions.json"
+      },
+      {
+        "address": "0x40504",
+        "evidence_id": "ev_48ab73e335a949b180056e895f97dfb63b3868cae02e939b2904a174b76f568e",
+        "local_file": "hd-functions.json"
+      },
+      {
+        "address": "0x412d0",
+        "evidence_id": "ev_b134e0c551674280a02f75e44e283602c4f55c1e81fce1c9faf052215d01de08",
+        "local_file": "hd-functions.json"
+      },
+      {
+        "address": "0x407e4",
+        "evidence_id": "ev_489d3ff3a7b8329088e3deca0f032d216c4ee30e5d76ca91187dec9e5ae7dae7",
+        "local_file": "hd-functions.json"
+      },
+      {
+        "address": "0x40aa8",
+        "evidence_id": "ev_35efa8cab4bfa994e099935286f4df60c77efc3bc82fc4bf155e791ca3140c87",
+        "local_file": "hd-functions.json"
+      },
+      {
+        "address": "0x41d04",
+        "evidence_id": "ev_a88d54a7b8ea310992146cf120f59a9bfdd35064c9b316cd441a128864ac86ee",
+        "local_file": "hd-functions.json"
+      },
+      {
+        "address": "0x41a20",
+        "evidence_id": "ev_e3b740d03c32fa9deadf76c81756f121c2045da39607be63d3618b55732af911",
+        "local_file": "hd-functions.json"
+      },
+      {
+        "address": "0x40f50",
+        "evidence_id": "ev_91dbee82991188bd14d6567e0906e1106801a820b411dd303f3dbaa26ceba28d",
+        "local_file": "hd-functions.json"
+      },
+      {
+        "address": "0x383c4",
+        "evidence_id": "ev_5db1824e3fbb793cba052f2a5e980cc3cbdef49d22003fbca583ff41ec59b610",
+        "local_file": "hd-functions.json"
+      },
+      {
+        "address": "0x3078",
+        "evidence_id": "ev_0f029640662c09244ad8061ccd2bac0ce140c433ce49e96c60480799961adddc",
+        "local_file": "hd-functions.json"
+      },
+      {
+        "address": "0x299c",
+        "evidence_id": "ev_fda3c91ba5590798fefb83755bdeccd8d480814503ca4925c86016629154a7c9",
+        "local_file": "hd-functions.json"
+      },
+      {
+        "address": "0x42364",
+        "evidence_id": "ev_b8b092a391e0bf6117e12daa163adc2360a9c5e664a3b8156229f0ab6ffa932e",
+        "local_file": "hd-functions.json"
+      },
+      {
+        "address": "0x42540",
+        "evidence_id": "ev_d2a6e26aac6bcdf6c25124bc7dea94d682b7430cb2d3467eda587a75b3da2e64",
+        "local_file": "hd-functions.json"
+      },
+      {
+        "address": "0x40334",
+        "evidence_id": "ev_d3c81ff383e67769de18d39ce22d78a576fe4b5dd6a3badd09ad2a21d52e0531",
+        "local_file": "hd-functions-additional.json"
+      },
+      {
+        "address": "0x40480",
+        "evidence_id": "ev_f76f00ef2f5e3ff600b0fc506431bd06ac2775b7575379054f8288aa02819b3f",
+        "local_file": "hd-functions-additional.json"
+      },
+      {
+        "address": "0x404b0",
+        "evidence_id": "ev_5db68939eeb15ac506e61b01009dc3fd78f6a43f244492aa3b192d6a3fccd334",
+        "local_file": "hd-functions-additional.json"
+      },
+      {
+        "address": "0x40400",
+        "evidence_id": "ev_c46a50949cefda0fa25cb0ccb5a9040a64e64dcd5e7c2a1ce29b4d2f33a39e2a",
+        "local_file": "hd-functions-additional.json"
+      },
+      {
+        "address": "0x40160",
+        "evidence_id": "ev_4fe75af166d0ddd06ce3883d988075994e434ea063aca5d07ca1d87f406d6518",
+        "local_file": "hd-functions-additional.json"
+      },
+      {
+        "address": "0x41c20",
+        "evidence_id": "ev_e233fba34815a315bfc5e07198479c9d9b92a1fc5fc2ae98ea143e17d0607935",
+        "local_file": "hd-functions-additional.json"
+      },
+      {
+        "address": "0x42020",
+        "evidence_id": "ev_3e550896df946514c4ac4349ae81191136ba82402aee8261cdbbeae08a77eb9a",
+        "local_file": "hd-functions-additional.json"
+      },
+      {
+        "address": "0x42040",
+        "evidence_id": "ev_03d31d3d35c3db92b2694237e65c0c03ba09f4ef2131e0b63311017a77177531",
+        "local_file": "hd-functions-additional.json"
+      },
+      {
+        "address": "0x41e58",
+        "evidence_id": "ev_26eabebccf3b0e1739c8588dd28714ca3cef70c861483dd7f1a90a2c1027bdbc",
+        "local_file": "hd-functions-additional.json"
+      },
+      {
+        "address": "0x414a8",
+        "evidence_id": "ev_7592087ca24207f0b5b0e4a5159c69cffbb810d7069c74b76cddf19e61f480d5",
+        "local_file": "hd-functions-additional.json"
+      },
+      {
+        "address": "0x42318",
+        "evidence_id": "ev_0bd5837440861294cdef90c31698021df7bb874097a064672407001d61c73c73",
+        "local_file": "hd-functions-additional.json"
+      },
+      {
+        "address": "0x42268",
+        "evidence_id": "ev_8da155514242681d9c80169589f3d7914928454ffa6b209bc00c52888f5864d3",
+        "local_file": "hd-functions-additional.json"
+      },
+      {
+        "address": "0x40604",
+        "evidence_id": "ev_de2081da5597f6af13e11efbfadd50d6754567ffab42a0192212ab7757d170be",
+        "local_file": "hd-functions-additional.json"
+      }
+    ],
+    "limits": [
+      "decompiler code is not original source",
+      "ARM float/CGPoint ABI and original save callers require further verification",
+      "sound cache and source playback branches examined; all runtime paths not verified"
+    ]
+  },
+  "audio_format_inventory": [
+    {
+      "profile": "phone",
+      "ipa_sha256": "23ff9c74c7d890cc6f28952b4845f6c616bae4bb7207a393f80ed9ed76062d32",
+      "wav_formats_fmtTag_channels_sampleRate_avgBytes_blockAlign_bits": {
+        "(1, 1, 22050, 44100, 2, 16)": 45,
+        "(1, 1, 22050, 22050, 1, 8)": 1,
+        "(1, 1, 44100, 88200, 2, 16)": 3,
+        "(1, 2, 22050, 88200, 4, 16)": 2,
+        "(1, 2, 22050, 44100, 2, 8)": 2,
+        "(1, 1, 48000, 96000, 2, 16)": 3
+      },
+      "invalid_riff": [],
+      "other_audio_names": [
+        "STAGE3.mp3"
+      ]
+    },
+    {
+      "profile": "hd",
+      "ipa_sha256": "7eeb36590b3c19a28741e21671379029d9023864ceb241a5b8560eef045112d2",
+      "wav_formats_fmtTag_channels_sampleRate_avgBytes_blockAlign_bits": {
+        "(1, 1, 22050, 44100, 2, 16)": 45,
+        "(1, 1, 22050, 22050, 1, 8)": 1,
+        "(1, 1, 44100, 88200, 2, 16)": 3,
+        "(1, 2, 22050, 88200, 4, 16)": 2,
+        "(1, 2, 22050, 44100, 2, 8)": 3,
+        "(1, 1, 48000, 96000, 2, 16)": 3
+      },
+      "invalid_riff": [],
+      "other_audio_names": [
+        "STAGE3.mp3"
+      ]
+    }
+  ],
+  "decision": {
+    "common_core": "C++20 / CMake",
+    "apple_host": "Objective-C++ / Xcode; UIKit for OS boundary only",
+    "graphics": "OpenGL ES1 native, existing WebGL2 output adapter; original asset sprites/parts/fonts",
+    "sfx": "OpenAL API; native OpenAL Soft 1.22.2; reuse MD PCM format support and lifetime structure",
+    "apple_bgm": "original HD AudioFile/AudioQueue path",
+    "android": "existing Kotlin/JNI OS host plus NDK C++20 / EGL / GLES / OpenAL; no Kotlin game implementation",
+    "web_pwa": "Emscripten / WebAssembly / WebGL2 / existing JS host",
+    "desktop": "Tauri 2 Rust host with same web artifact; HM1 native Mac adapter is a separate existing path",
+    "offline_tools": "existing Python/shell/build tools only; not game runtime",
+    "new_runtime_or_engine_required": false
+  },
+  "known_reuse_limits": [
+    "HM1 mono16 decoder cannot directly decode six HD WAVs",
+    "HM1 Apple menus/HUD and web translations are separate files; MD common C++ presentation is HM2 target structure",
+    "HM2 HD frame time increment differs from HM1; do not copy constant/type",
+    "HM2 HD 28204-byte save and random-state effects are game-specific",
+    "HD OpenGL API1 is statically observed; Phone API2 rejection/fallback and black terrain remain unresolved",
+    "OpenAL effects and AudioQueue BGM serve different original roles",
+    "native and Emscripten OpenAL share API contracts, not an identical platform output library",
+    "MD effect play orders stop before gain/position; inspected HD regular effect path orders position before stop/play. Adapt ordering and looping branches rather than copying MD play unchanged."
+  ],
+  "runtime_checks_executed_this_review": [],
+  "existing_test_sources_inspected_not_rerun": [
+    "HeavyMach Tests/iOS/HMAudioTests.mm",
+    "HeavyMach Tests/iOS/HMFramePerformanceTests.mm",
+    "MachDefense Apple/Tests/AudioTests.mm",
+    "MachDefense Tests/FrameIOTests.cpp"
+  ],
+  "local_evidence_directory": ".local/evidence/stack-review-20261110",
+  "artifacts": [
+    {
+      "file": "audio-format-inventory.json",
+      "bytes": 1026,
+      "sha256": "4a17e7d7b62346208f3132bcb6f538bcbf9e0c08a378089c62fddd454f8a82f4"
+    },
+    {
+      "file": "hd-functions-additional.json",
+      "bytes": 52240,
+      "sha256": "e181a2210dd75e66757680b6949f07f9c8f95d0b39710acb8d1084ddd1cd8069"
+    },
+    {
+      "file": "hd-functions.json",
+      "bytes": 109216,
+      "sha256": "53875262447903cc14f02996032fd78dce7a5b964bfbfc8b90e247480cd1dd2c"
+    },
+    {
+      "file": "hd-linked-libraries.txt",
+      "bytes": 1673,
+      "sha256": "347243e020d5757358cd2a6404a07a78b8d4eab927cc24198ad4c66933663813"
+    },
+    {
+      "file": "phone-linked-libraries.txt",
+      "bytes": 1563,
+      "sha256": "aab71f365a524d3292528eedcee3dd8009cab4d711f4cdf6c14aa080cc17d145"
+    }
+  ],
+  "plan_documents": [
+    "../technology-stack-review-20261110.md",
+    "../technology-and-assets.md",
+    "../runtime-contract.md",
+    "../restoration-plan.md",
+    "../todo.md"
+  ]
+}

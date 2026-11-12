@@ -1,0 +1,350 @@
+{
+  "recorded_utc": "2026-11-09T21:05:07.925664+00:00",
+  "branch": "feat/reference-ports",
+  "parent_commit": "2d97b133354c2c03593d2a2a5dbc78c794d19bd8",
+  "scope": "static map and equipment components only; normal gameplay and full cheat app remain unimplemented",
+  "original_executable_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+  "core_tests": {
+    "total": 10,
+    "passed": 10
+  },
+  "parallel_test_summary": {
+    "recorded_utc": "2026-11-09T20:59:24.210815+00:00",
+    "scope": "reader/static assembly/map/equipment GPU components only; not complete game cheat coverage",
+    "shared_build": "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/build/apple/Build/Products/HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
+    "runs": [
+      {
+        "kind": "iphone",
+        "device": "iPhone Air",
+        "udid": "97CA5646-36BB-47A9-919A-D78DD632A439",
+        "start_epoch": 1794257949.604664,
+        "end_epoch": 1794257964.210295,
+        "returncode": 0,
+        "test_interval_epoch": [
+          1794257960.27,
+          1794257963.892
+        ],
+        "success": true,
+        "metrics": [
+          "HM2_MAP_PLAYER_GPU frames=122 textures=9 terrainPixels=2381400 leftChanged=22707 rightChanged=20547 device=iPhone",
+          "HM2_ASSEMBLY_GPU sprites=8 frames=123 textures=2 coloredPixels=123778 pixelMismatches=0 meanMs=4.202 worstMs=7.651 device=iPhone bounds={{0, 0}, {912, 420}}"
+        ],
+        "command": [
+          "xcodebuild",
+          "test-without-building",
+          "-xctestrun",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/build/apple/Build/Products/HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
+          "-destination",
+          "platform=iOS Simulator,id=97CA5646-36BB-47A9-919A-D78DD632A439",
+          "-parallel-testing-enabled",
+          "NO",
+          "-resultBundlePath",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/.local/evidence/player-map-restoration-20261110/parallel/iphone/tests.xcresult"
+        ]
+      },
+      {
+        "kind": "ipad",
+        "device": "iPad Air 11-inch (M4)",
+        "udid": "A183AB56-8DD4-4DB1-AC4A-8180D026708B",
+        "start_epoch": 1794257949.604705,
+        "end_epoch": 1794257964.117816,
+        "returncode": 0,
+        "test_interval_epoch": [
+          1794257960.27,
+          1794257963.752
+        ],
+        "success": true,
+        "metrics": [
+          "HM2_MAP_PLAYER_GPU frames=122 textures=9 terrainPixels=1792520 leftChanged=17151 rightChanged=15387 device=iPad",
+          "HM2_ASSEMBLY_GPU sprites=8 frames=123 textures=2 coloredPixels=210067 pixelMismatches=0 meanMs=6.334 worstMs=7.878 device=iPad bounds={{0, 0}, {820, 1180}}"
+        ],
+        "command": [
+          "xcodebuild",
+          "test-without-building",
+          "-xctestrun",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/build/apple/Build/Products/HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
+          "-destination",
+          "platform=iOS Simulator,id=A183AB56-8DD4-4DB1-AC4A-8180D026708B",
+          "-parallel-testing-enabled",
+          "NO",
+          "-resultBundlePath",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/.local/evidence/player-map-restoration-20261110/parallel/ipad/tests.xcresult"
+        ]
+      }
+    ],
+    "observed_test_overlap_seconds": 3.4820001125335693,
+    "success": true
+  },
+  "packages": [
+    {
+      "product": "HeavyMach2Source",
+      "bundle_id": "com.gelb2.heavymach2.restored",
+      "executable_sha256": "959658cb6c90b2944fbe453b0e3ee7ec71be2bd614c127062131abf6396f1052",
+      "prepared_resources_verified": 1478,
+      "original_arm_executable_included": false,
+      "device_family": [
+        1,
+        2
+      ],
+      "iphone_orientations": [
+        "UIInterfaceOrientationLandscapeLeft",
+        "UIInterfaceOrientationLandscapeRight"
+      ],
+      "ipad_orientations": [
+        "UIInterfaceOrientationPortrait"
+      ]
+    },
+    {
+      "product": "HeavyMach2Validation",
+      "bundle_id": "com.gelb2.heavymach2.validation",
+      "executable_sha256": "fc02016b9418608665935f71214271bb4978fea0e1574c487333390bf41efb25",
+      "prepared_resources_verified": 1478,
+      "original_arm_executable_included": false,
+      "device_family": [
+        1,
+        2
+      ],
+      "iphone_orientations": [
+        "UIInterfaceOrientationLandscapeLeft",
+        "UIInterfaceOrientationLandscapeRight"
+      ],
+      "ipad_orientations": [
+        "UIInterfaceOrientationPortrait"
+      ]
+    }
+  ],
+  "source_files": [
+    {
+      "path": "Apple/Tests/AssemblyRendererTests.mm",
+      "sha256": "f6095253c9ad0f9e3cf0e7d6e14aedb8b939d4ccc189c45821c501948638912b"
+    },
+    {
+      "path": "Apple/iOS/HeavyMach2.xcodeproj/project.pbxproj",
+      "sha256": "1b77166d3804187085b13cef798c6baab65e32715875ec4566ac4c80eddb51a3"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "sha256": "6815f1acfb5b1b25569a601298e489b9a3220a77a9cb376b496266bc1ece92e8"
+    },
+    {
+      "path": "Sources/Core/Data/Maps.cpp",
+      "sha256": "a22685c696ac4620b5da4b80ef156f3695002b54b7cac67db4a24b7d5d14fe8e"
+    },
+    {
+      "path": "Sources/Core/Data/Maps.hpp",
+      "sha256": "d4608110ace8888d4adb1ce311395be194683baa722a8774e04cdeba9cd31321"
+    },
+    {
+      "path": "Sources/Core/Data/Models.cpp",
+      "sha256": "650f2edbf82368b1700d692b8b596fff947eb160a8415a7e1a0b233f4784dd1f"
+    },
+    {
+      "path": "Sources/Core/Data/Models.hpp",
+      "sha256": "44dcf15e38acf7875ad183c465833722658003554070af41cf93b5fc2a5684e0"
+    },
+    {
+      "path": "Sources/Core/Data/PlayerEquipment.cpp",
+      "sha256": "de4c2fba724bb1c1197ad1726305d2ea3fe71cf3d7e0bd70b2fa51673f7104ab"
+    },
+    {
+      "path": "Sources/Core/Data/PlayerEquipment.hpp",
+      "sha256": "2a50d4d4a1188f8399a4c4c719f9ff6b61f5b720b7f19743031436ce4d464681"
+    },
+    {
+      "path": "Sources/Core/Data/Resources.hpp",
+      "sha256": "ff6a90d76f2ec2899926408c98789e2c4287a13e2f117d2746d6f5387219fc3e"
+    },
+    {
+      "path": "Sources/Core/Presentation/AssemblyPreview.cpp",
+      "sha256": "976fa7a6da782afa895529e2575884ffac3db689eb01d8d63a656b70467b055c"
+    },
+    {
+      "path": "Sources/Core/Presentation/AssemblyPreview.hpp",
+      "sha256": "946327e27df482ca02cb6f7d3213f0fdd36e9733833ba7d9357e00edff118eb2"
+    },
+    {
+      "path": "Sources/Core/Presentation/MapPreview.cpp",
+      "sha256": "69b8811b070bec0d5ecc6cfa379407437e16fb0cbcc172783c39811d6a32fe75"
+    },
+    {
+      "path": "Sources/Core/Presentation/MapPreview.hpp",
+      "sha256": "16f55a27cec70f286a9ddc40dad347d33e9d013e4995a2b174d606ac38eb8ac4"
+    },
+    {
+      "path": "Sources/Core/Presentation/PartSprites.cpp",
+      "sha256": "78ab026f6b011e6449e573f71a75759fd8c073281af18933ca9b7724e539ec9f"
+    },
+    {
+      "path": "Sources/Core/Presentation/PartSprites.hpp",
+      "sha256": "eb7910ff9247d2075e43abb5edb2d9ca955f7b50b44f2a38f72319bef0913bc3"
+    },
+    {
+      "path": "Sources/Core/Presentation/PlayerMapPreview.cpp",
+      "sha256": "05663fce47135b6640ab4bc7a255a43bfa574855c6d74bc5b8589b2e36a7ebe9"
+    },
+    {
+      "path": "Sources/Core/Presentation/PlayerMapPreview.hpp",
+      "sha256": "08c7d767d6942c67ee63511b22ced78cf60868de4c53b96f889cbba18858de05"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2Application.mm",
+      "sha256": "957a0040c6135f5009197ba1aef08689f20ebdd80baad3301b64685bb46aa4a2"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2Resources.hpp",
+      "sha256": "5bcb44fdfe6e7449a5cce1f671de342f6fce5ff5edf8cac39bcae066fa9d6614"
+    },
+    {
+      "path": "tests/MapTests.cpp",
+      "sha256": "b905cfc8a5a89299fa752d7432930d9c07912af98b14877c7880484a23cabb2b"
+    },
+    {
+      "path": "tests/OriginalAssetTests.cpp",
+      "sha256": "16202c58b717c91a0c379bde964671a089e13264fdf7a583d378794b9299a9d1"
+    },
+    {
+      "path": "tools/test_apple_parallel.py",
+      "sha256": "9c8c93fbd620be4650a9acf4d86342b8fc80a2e024288bb0d1f6ecc92addafa5"
+    }
+  ],
+  "local_evidence_files": [
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/capture_previews.py",
+      "bytes": 1580,
+      "sha256": "f3cbf703483434439bd760c421d44969bf83cd362201e8974f3318346375277f"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/core-build.log",
+      "bytes": 485,
+      "sha256": "e7218fcc869e53e3fa7ffe389bd58fa6788eed90ed87c16af601440347eb74d8"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/core-tests.log",
+      "bytes": 1228,
+      "sha256": "c146fa2cfdc3496c69e22ccf00154bd5d2c3c1c38f787cb6f8e77b754a286dae"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/independent-review.md",
+      "bytes": 1302,
+      "sha256": "d1e7cd82041c0ff1ac78fc080e0284ab5dceb23244e30f975ba4f403e8b14053"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/ipad-HeavyMach2Source.png",
+      "bytes": 6665290,
+      "sha256": "3dcbb60c4575329a6b43429abd7dec480b08a0d2d05db16aa41c8815784c18b9"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/ipad-HeavyMach2Validation.png",
+      "bytes": 6667346,
+      "sha256": "cff9308e71f2fa07198c1d8a2d22085a0d21860975b2d6753d90131a41928223"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/make_report.py",
+      "bytes": 7833,
+      "sha256": "e0bffb66febc28611a53b75bbf1413c85ec524918ebccdeeec64c1bd216235e3"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/map/complete-rea-evidence.json",
+      "bytes": 291999,
+      "sha256": "46ea95e4253236909d404a757c223071e4406d70a294305d00c3070913c403ab"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/map/implementation-rules.md",
+      "bytes": 3050,
+      "sha256": "9fa53912d7ff92c7f0eeb938c89a08f92c1036206c86f1c2c3484b02bd2c2c57"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/map/map-snapshot.json",
+      "bytes": 11904188,
+      "sha256": "ca864436fce0d9f1a4982c4d7a53f06fb18e0b5a844582c50f109da5b77921f5"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/map/rea-evidence.json",
+      "bytes": 64120,
+      "sha256": "b32a468c4535fb4095fbcc6b30f5e97b8fe17290be2d317997b2d5cf3424bcd5"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/package-check.json",
+      "bytes": 1049,
+      "sha256": "dc09ebe184c0bc80b4ca9bb4a0a03056f71ab8ff374c1d9cb4068653f449acf7"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/parallel/ipad/tests.log",
+      "bytes": 4556,
+      "sha256": "e1247471203c660c8a2264c318e8163e95ec8e139f075741b47fd5a98ddcc14d"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/parallel/iphone/tests.log",
+      "bytes": 4355,
+      "sha256": "7002acf4029ed8f57e2d55df38a12f8a29f544dd123ad23c1b9f028b13ede9ca"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/parallel/summary.json",
+      "bytes": 2818,
+      "sha256": "0316c0eb9e5f011b837225f12ba0a40bf0bf74fc07e6a9a6e962062e85284263"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/phone-HeavyMach2Source.png",
+      "bytes": 3797236,
+      "sha256": "b975f72d06c6f2f85feaf29b73771b92b89bc46e0d146b585c8c003516dd53e8"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/phone-HeavyMach2Validation.png",
+      "bytes": 3802685,
+      "sha256": "a8309214bc25ab82d68bd653075b5d7dd1386b31a6c8381ebd4f41de1276bba4"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/player/default-player.json",
+      "bytes": 9210,
+      "sha256": "37afc8e8c0059897e91fb1efb1fff1f4d94de77805a0de7022e419461af30b72"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/player/hd-player-snapshot.json",
+      "bytes": 13846255,
+      "sha256": "f15e027f5a77224fe566879aba46cbd22d99726213d9a59ebc0035a9d19f54e4"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/player/implementation-rules.md",
+      "bytes": 7732,
+      "sha256": "26a9f7488ef8a679e1ea220285ff614bd54abb8193307b9c10757f21535daae4"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/player/player-evidence.json",
+      "bytes": 7765241,
+      "sha256": "5a93d1fedb1533d09191a58803018293755b699ff246488360b27b1acaebe696"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/player/reused-reader-evidence.json",
+      "bytes": 159272,
+      "sha256": "b04a225f4f4d7bb5e7ce1f82c45b6ef5d2b7cbab71d95d6ca0e462442a1c3050"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/preview-execution.json",
+      "bytes": 8213,
+      "sha256": "be84cd5e654e850a767dc0464f508cbf9ddc4b5d7d57ac84ba7353ee60ff2d80"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/report-check.json",
+      "bytes": 540,
+      "sha256": "704189383ebb381c3cac4b6477c6f05fa629a748ca75ac3e74fcebf1dd84bc1b"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/source-build-final.log",
+      "bytes": 18309,
+      "sha256": "775a8dc85aaf146831d272d715f911d8422f6377726df200770cc985b1146ba7"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/source-build.log",
+      "bytes": 115227,
+      "sha256": "1d0927b4fd464a5283c21751221f17e541fc394fdd6ba99bdf647f793d1f36ec"
+    },
+    {
+      "path": ".local/evidence/player-map-restoration-20261110/validation-build.log",
+      "bytes": 63582,
+      "sha256": "203cb0da91d8a062584aa10741bd5c6ff4b3ef10856af444f02b19d6d7fc525b"
+    }
+  ],
+  "screenshots_visually_inspected": 4,
+  "physical_devices_installed": false,
+  "develop_main_merged": false
+}

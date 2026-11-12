@@ -1,0 +1,979 @@
+{
+  "recorded_utc": "2026-11-09T21:50:50.365345+00:00",
+  "branch": "feat/reference-ports",
+  "parent_commit": "17fe271b017775139e3ff3f3b50b69eb998ba80a",
+  "scope": "bipod locomotion, aim, terrain, path input, weapon data and muzzle components; not full game or full cheat coverage",
+  "original_executable_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+  "core_tests": {
+    "total": 15,
+    "passed": 15,
+    "related_tests_after_test_only_integer_boundary_addition": 2,
+    "passed_related": 2
+  },
+  "apple_tests_per_simulator": {
+    "unit": 4,
+    "ui": 1,
+    "passed": 5
+  },
+  "parallel_test_summary": {
+    "recorded_utc": "2026-11-09T21:43:02.331286+00:00",
+    "scope": "reader/assembly/map/equipment/walking/aim/terrain/real touch components only; not complete game cheat coverage",
+    "shared_build": "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/build/apple/Build/Products/HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
+    "selected_tests": [
+      "all"
+    ],
+    "runs": [
+      {
+        "kind": "iphone",
+        "device": "iPhone Air",
+        "udid": "97CA5646-36BB-47A9-919A-D78DD632A439",
+        "start_epoch": 1794260559.258133,
+        "end_epoch": 1794260582.130579,
+        "returncode": 0,
+        "test_interval_epoch": [
+          1794260563.466,
+          1794260571.284
+        ],
+        "success": true,
+        "metrics": [
+          "HM2_MAP_PLAYER_GPU frames=122 textures=9 terrainPixels=2381400 leftChanged=22707 rightChanged=20547 device=iPhone",
+          "HM2_ASSEMBLY_GPU sprites=8 frames=123 textures=2 coloredPixels=123778 pixelMismatches=0 meanMs=3.974 worstMs=6.632 device=iPhone bounds={{0, 0}, {912, 420}}",
+          "HM2_WEAPON_DATA records=213 mgRange=400 mlRange=600 mgMuzzle=38,24.5 mlMuzzle=27,-26.5 device=iPhone",
+          "HM2_LOCOMOTION_GPU ticks=180 frames=192 textures=9 changedPixels=2380462 playerX=55.966351 playerY=0.000000 device=iPhone",
+          "HM2_WORLD_TOUCH device=iPhone before={"
+        ],
+        "command": [
+          "xcodebuild",
+          "test-without-building",
+          "-xctestrun",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/build/apple/Build/Products/HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
+          "-destination",
+          "platform=iOS Simulator,id=97CA5646-36BB-47A9-919A-D78DD632A439",
+          "-parallel-testing-enabled",
+          "NO",
+          "-resultBundlePath",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/.local/evidence/combat-restoration-20261110/parallel-final/iphone/tests.xcresult"
+        ]
+      },
+      {
+        "kind": "ipad",
+        "device": "iPad Air 11-inch (M4)",
+        "udid": "A183AB56-8DD4-4DB1-AC4A-8180D026708B",
+        "start_epoch": 1794260559.258157,
+        "end_epoch": 1794260582.3309078,
+        "returncode": 0,
+        "test_interval_epoch": [
+          1794260563.466,
+          1794260570.455
+        ],
+        "success": true,
+        "metrics": [
+          "HM2_MAP_PLAYER_GPU frames=122 textures=9 terrainPixels=1792520 leftChanged=17151 rightChanged=15387 device=iPad",
+          "HM2_ASSEMBLY_GPU sprites=8 frames=123 textures=2 coloredPixels=210067 pixelMismatches=0 meanMs=5.942 worstMs=9.516 device=iPad bounds={{0, 0}, {820, 1180}}",
+          "HM2_WEAPON_DATA records=213 mgRange=400 mlRange=600 mgMuzzle=38,24.5 mlMuzzle=27,-26.5 device=iPad",
+          "HM2_LOCOMOTION_GPU ticks=180 frames=192 textures=9 changedPixels=1791816 playerX=55.966351 playerY=0.000000 device=iPad",
+          "HM2_WORLD_TOUCH device=iPad before={"
+        ],
+        "command": [
+          "xcodebuild",
+          "test-without-building",
+          "-xctestrun",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/build/apple/Build/Products/HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
+          "-destination",
+          "platform=iOS Simulator,id=A183AB56-8DD4-4DB1-AC4A-8180D026708B",
+          "-parallel-testing-enabled",
+          "NO",
+          "-resultBundlePath",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/.local/evidence/combat-restoration-20261110/parallel-final/ipad/tests.xcresult"
+        ]
+      }
+    ],
+    "observed_test_overlap_seconds": 6.988999843597412,
+    "success": true
+  },
+  "packages": [
+    {
+      "product": "HeavyMach2Source",
+      "bundle_id": "com.gelb2.heavymach2.restored",
+      "executable_sha256": "959658cb6c90b2944fbe453b0e3ee7ec71be2bd614c127062131abf6396f1052",
+      "prepared_resources_verified": 1478,
+      "original_arm_executable_hash_absent": true,
+      "device_family": [
+        1,
+        2
+      ],
+      "iphone_orientations": [
+        "UIInterfaceOrientationLandscapeLeft",
+        "UIInterfaceOrientationLandscapeRight"
+      ],
+      "ipad_orientations": [
+        "UIInterfaceOrientationPortrait"
+      ]
+    },
+    {
+      "product": "HeavyMach2Validation",
+      "bundle_id": "com.gelb2.heavymach2.validation",
+      "executable_sha256": "fc02016b9418608665935f71214271bb4978fea0e1574c487333390bf41efb25",
+      "prepared_resources_verified": 1478,
+      "original_arm_executable_hash_absent": true,
+      "device_family": [
+        1,
+        2
+      ],
+      "iphone_orientations": [
+        "UIInterfaceOrientationLandscapeLeft",
+        "UIInterfaceOrientationLandscapeRight"
+      ],
+      "ipad_orientations": [
+        "UIInterfaceOrientationPortrait"
+      ]
+    }
+  ],
+  "source_files": [
+    {
+      "path": "Apple/Tests/AssemblyRendererTests.mm",
+      "sha256": "b16d1d4f95b61505a5edbbc1ed7423f6cf8b58d84b3c720ec58db6e97191171e"
+    },
+    {
+      "path": "Apple/UITests/WorldInputTests.mm",
+      "sha256": "988c22aa2be1a21be6899fa4596300351e174d703f027cff1211cded517c1cac"
+    },
+    {
+      "path": "Apple/iOS/HeavyMach2.xcodeproj/project.pbxproj",
+      "sha256": "c9eec3de80a4ab999f8fb4188efb721c5c56f7696d5848c32bcd22c48b373fa0"
+    },
+    {
+      "path": "Apple/iOS/HeavyMach2.xcodeproj/xcshareddata/xcschemes/HeavyMach2Source.xcscheme",
+      "sha256": "e956d3316b5fd9e164434cb2ff0de7d9e7dd5c67e3e5289e4aeccc55743738b9"
+    },
+    {
+      "path": "Apple/iOS/project.yml",
+      "sha256": "74f2ed525ddf136cbff06614183a476056aec5a9a08bf2cd5188e6aeeb65a304"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "sha256": "7384c1bbe595578605a1bed1b50027fc0ec054f86dfb04ab84126c225910c2ef"
+    },
+    {
+      "path": "Sources/Core/Data/DataTable.cpp",
+      "sha256": "c70b1fe3af8244e0f3b5bd04bfec9d2a03f635810f159a154b11f5477ee38996"
+    },
+    {
+      "path": "Sources/Core/Data/DataTable.hpp",
+      "sha256": "3e7479bf4c81d00b9ca738a98d658ab365a1d18a28410eaac7897ab2c331696d"
+    },
+    {
+      "path": "Sources/Core/Data/Models.cpp",
+      "sha256": "ff2d1ed04719c2c9c0ec07fffbb86c52f7d8cd609e4ee50d715e73c80dc39b86"
+    },
+    {
+      "path": "Sources/Core/Data/Models.hpp",
+      "sha256": "7b5d87776a958e5d731c204c8a05fbb287f2b30f4c447bcb4776d816917ea139"
+    },
+    {
+      "path": "Sources/Core/Data/PlayerEquipment.cpp",
+      "sha256": "009fa4f4709d6070961184cdf71e7b80c1bebfc65994ec720ba65f641f2d6008"
+    },
+    {
+      "path": "Sources/Core/Data/PlayerEquipment.hpp",
+      "sha256": "255085196da1a643581c4fc4412b81a02f5d5f6b5d8cd506691ee61995cf7f44"
+    },
+    {
+      "path": "Sources/Core/Data/Weapons.cpp",
+      "sha256": "70488eb5d1c897a87a36c2797b65171c4b991dc7e530faaf2e34ebb16d325b33"
+    },
+    {
+      "path": "Sources/Core/Data/Weapons.hpp",
+      "sha256": "9a40d27d07a7b354b952454913be830951fab67626d6095cee828afc51365127"
+    },
+    {
+      "path": "Sources/Core/Presentation/MapPreview.cpp",
+      "sha256": "f460c489859c95d3a9d60c582458d5b2ab93fe22bf7e12d94688d91beabfa797"
+    },
+    {
+      "path": "Sources/Core/Presentation/MapPreview.hpp",
+      "sha256": "d450eefca79a9ee93d722ce287e07ce89b296d47a304c728127eda15c72408ab"
+    },
+    {
+      "path": "Sources/Core/Presentation/PlayerMapPreview.cpp",
+      "sha256": "24b6b528bcb5c7ffd81cf67c5b1d7c959b10974800c7cc19f36aeadbd7b82752"
+    },
+    {
+      "path": "Sources/Core/Presentation/PlayerMapPreview.hpp",
+      "sha256": "541647fa335aad0a0cd1d4207e2c228e16fe6c6d603a7a32e831e04381d565ca"
+    },
+    {
+      "path": "Sources/Core/Simulation/BipodMotion.cpp",
+      "sha256": "7ffd7773acde0f96b777028c1c93057359219dd9e2ecbd4b347ca6085fdc3f1b"
+    },
+    {
+      "path": "Sources/Core/Simulation/BipodMotion.hpp",
+      "sha256": "37a8bebd9935107119e3496efbcc4ad8e6da6f7674d1c3534c3f08f1758a9ca8"
+    },
+    {
+      "path": "Sources/Core/Simulation/LocomotionScene.cpp",
+      "sha256": "06851d3100c540ad4eba0f3565e0ae335d61a4877691d4829386d37acd11b71c"
+    },
+    {
+      "path": "Sources/Core/Simulation/LocomotionScene.hpp",
+      "sha256": "401cab30e0c63cdd76cb37615f1edf2b8a8bcf6984e2d3924a222aa31bc60bbc"
+    },
+    {
+      "path": "Sources/Core/Simulation/TerrainCollision.cpp",
+      "sha256": "f57ca332c0edf0b50cdd78a3b229c8d5b7516823ef22b4f5f20df6a8b80c387b"
+    },
+    {
+      "path": "Sources/Core/Simulation/TerrainCollision.hpp",
+      "sha256": "84b105ab1459898dc9d274aa0045a26f934330b0c0e9513e8efc260995cb8f0c"
+    },
+    {
+      "path": "Sources/Core/Simulation/WorldNavigation.cpp",
+      "sha256": "6a4469fdafc9aa34ac2766abf10e4b1fc776ae3f25e55ee4efd24c6565c8050f"
+    },
+    {
+      "path": "Sources/Core/Simulation/WorldNavigation.hpp",
+      "sha256": "49a11132ed738285956501c9dea740f44f6bf3d3bf29637b6f183d83ca56bc90"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2Application.mm",
+      "sha256": "70e5965fe07098e0f16b28d03d5e017c56f852661f36afbb4616cd04ae9a8036"
+    },
+    {
+      "path": "tests/LocomotionTests.cpp",
+      "sha256": "57a53d2dca34d0ed1266f7d99202815791e33260f587d07cd7d8e594716a9c6c"
+    },
+    {
+      "path": "tests/OriginalAssetTests.cpp",
+      "sha256": "a329f4d28dbd2861decb0116416a42a9e38ebd7b5b1bc40e80a679706844149b"
+    },
+    {
+      "path": "tests/TerrainTests.cpp",
+      "sha256": "380fb5745614f789d20bbd1219dcd5297eb34969f9d817b4643111e939801727"
+    },
+    {
+      "path": "tests/WeaponsTests.cpp",
+      "sha256": "a26a64435d5dd6ef5efe44c4025135a5cb888ff2c3e1235aefbc63b0910013e3"
+    },
+    {
+      "path": "tools/test_apple_parallel.py",
+      "sha256": "63cf5990d50dc994883d9648017ad9a9c81d7c4db37970e0c52d27fa68eeab42"
+    }
+  ],
+  "local_evidence_files": [
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/capture_current.py",
+      "bytes": 1615,
+      "sha256": "91cf500694c736176bbbc1bff676db27b6f91771949cfbb9053213bb9a23344b"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/core-build-final.log",
+      "bytes": 680,
+      "sha256": "0750902468aa12660f9402bb401c790499ec14c6fb5acefbc0e973aa1ad3a386"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/core-build.log",
+      "bytes": 588,
+      "sha256": "79d08402a5e6b46b60081acd04f71a16ce785999bd15af4e1941e04bc551ab0f"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/core-tests-final.log",
+      "bytes": 1566,
+      "sha256": "79ca1f278e3c212320475156ebafb2abe70b06a80e2ac36541dd6d8d7741092c"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/core-tests.log",
+      "bytes": 1566,
+      "sha256": "e22ce5c8c23999660b9677f49f9417708a1f5d224dd817fe858baf38aa5651c2"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/ipad-HeavyMach2Source.png",
+      "bytes": 6657288,
+      "sha256": "9316199536bd8c2c24ea7a751d1eeee6076779e62c7f7f48cc62c3908a61eeb1"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/ipad-HeavyMach2Validation.png",
+      "bytes": 6676197,
+      "sha256": "da4a7fc0e9d6905025f2140794ad6362a3ab4b85139e61150fc7e637db5a4c1d"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/make_report.py",
+      "bytes": 12648,
+      "sha256": "147527ed3e9022042d7219be752445dc34461faf8947d46d25144db557bef51c"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/package-check.json",
+      "bytes": 1053,
+      "sha256": "db4417760166c704edc68a21f466544984b56851bb830128a8b39c5d34209c8b"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/parallel/ipad/tests.log",
+      "bytes": 10333,
+      "sha256": "ec837f48d3f7f4d3d340846e6a626fcf0bdd537faf3c8509ffc9ee24dcb99739"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/parallel/iphone/tests.log",
+      "bytes": 10020,
+      "sha256": "28775b7464895f34901cd94a9cf1c88d11fa960dd794b7d08c4f452e50a8aac5"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/parallel/summary.json",
+      "bytes": 3202,
+      "sha256": "701cd6122134c7947c9464d75f755e6e2da92c79ad6a2d69a4874bb8d1f42fe1"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/parallel-final/ipad/tests.log",
+      "bytes": 9687,
+      "sha256": "3ad498afcb916fb31340ace33d954f6ed46464de6ab2538bedc4fe3aa46ab407"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/parallel-final/iphone/tests.log",
+      "bytes": 8935,
+      "sha256": "e726a0ab98d3b07a8d70db1e633fe318c1c6c30a337a2a340a19b157bdef6730"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/parallel-final/summary.json",
+      "bytes": 3216,
+      "sha256": "675cde098c73db01208aecedcbf208d4427240e7c9919c9de727dec05ec6ac31"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/parallel-screen-capture/ipad/tests.log",
+      "bytes": 6612,
+      "sha256": "335401aedefe701817fe29e36ad3059433dfdac5ae84db9f32dc906b2d17b87c"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/parallel-screen-capture/iphone/tests.log",
+      "bytes": 6657,
+      "sha256": "462edd8221f324d5513fd54d6268c49c735d42307c143d54801a318e3060cd1f"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/parallel-screen-capture/summary.json",
+      "bytes": 2520,
+      "sha256": "b8eb28d59e5a7d0af33a7c9dbbbcb05f55a61b1942132c2f083a52dd1dc229fc"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/phone-HeavyMach2Source.png",
+      "bytes": 3770158,
+      "sha256": "ca7e89f550183ae29a128788d2851baa2bb4095a5b6eda8471a9cf28ccfff8bd"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/phone-HeavyMach2Validation.png",
+      "bytes": 3836649,
+      "sha256": "33dd3ad14d996de6358c3da1f6be1db53b695e0e5b0ea2c403b6a8f866fb6357"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/phone-source-live.png",
+      "bytes": 3787660,
+      "sha256": "84b7d34b5a195a548bf90df21b01b7ace6b92a9056f260163a0cfbb6f8d71631"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/0x11770.c",
+      "bytes": 3154,
+      "sha256": "6c5e722a466ecc6348740eee830fe75c3267d5f47fab6b317cc396d42f64f47b"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/0x13104.c",
+      "bytes": 8406,
+      "sha256": "cf01317d73f250e91ae209d58121b2a70478e3d8ab49cc27f173334e34bf5c09"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/0x17e10.c",
+      "bytes": 2629,
+      "sha256": "fd07a281f461c00d05a6bdb98989f0215aa979698ca47e1b3572a1d110613413"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/0xc028.c",
+      "bytes": 7582,
+      "sha256": "ac12f10f2f088fa6cb1926e9f34e4dbd3555aeffdb80fed0e333fbafaa5788c3"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/0xc91c.c",
+      "bytes": 544,
+      "sha256": "ad3db8dc5b057cc49b5b83abfbd21b7e2723b0558af0edf738de48234a5300f7"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/0xcd8c.c",
+      "bytes": 1907,
+      "sha256": "06d353d71a45a8482bb7f84ec872edc6586bf402cd15bbe53d4126b7f4b4b1f1"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/0xcfa4.c",
+      "bytes": 3520,
+      "sha256": "921f53d40d87e0823fcf47ccd7f68e292e79b07ded89b68a3414714cac0d266f"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/0xd6d8.c",
+      "bytes": 6542,
+      "sha256": "ca3c2d750e9e6208b698ab2a33470d5e7467ccee2420ee2b86902c4eb60cc094"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/0xdd48.c",
+      "bytes": 25509,
+      "sha256": "206f981cfe0f40f8ece1c5eb5a5e46f982176269b45ae7104f2080db86a88be6"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/constants.json",
+      "bytes": 839,
+      "sha256": "954c6d800ad8015519d64b33e62745b1eeaf1b2b2e8c1ef5b4d4bdbc6e7c5ac0"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/derive_no_target_fixture.py",
+      "bytes": 3018,
+      "sha256": "724c3c768666441501a728ba51f060a485e54232e65c75221aefdaceb893a569"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/derived-no-target-trace.json",
+      "bytes": 21832,
+      "sha256": "6aff2baca9628981fb216e9a23f8dd73e63ab00d1436da44712d176cd07aab54"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/function-index.json",
+      "bytes": 3195,
+      "sha256": "314d2d389e7e1129a46df9847913b55c45d7b54e8579baf19b3d3e021a16e57d"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0x110d8.c",
+      "bytes": 607,
+      "sha256": "6485c5b38f3e153b7b24a8a3d0624dda6edb34dfd645636507f10e1fa939e156"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0x1c0c0.asm",
+      "bytes": 144,
+      "sha256": "9168a29d2ccc5335c708b5f658a0d90692d20e2697fa1d525b221323125a16ef"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0x1c0c0.c",
+      "bytes": 190,
+      "sha256": "7cae01208ab9e466e5c2c7c305aae380a53762b7328cf56ac6147fafcc1a899a"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0x1c31c.c",
+      "bytes": 552,
+      "sha256": "bf06331122749111d30dc6fc73ba06b1d2e2eeafb3a8f892e05bc812d637a4ab"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0x299c.c",
+      "bytes": 657,
+      "sha256": "ca4234be3ec897cc92e359226062e24325ed6b0aef246bcd080c8c30887c8268"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0x373bc.c",
+      "bytes": 2157,
+      "sha256": "f3a82e24b1053407c06c3973e69d7ac7636c8505367eb182617354cde8eed0aa"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0xc4dc.c",
+      "bytes": 429,
+      "sha256": "d58b4c11532d6a402600c077ff4b8182d14e74d9390dc138d6b4c70b2fcb2a3e"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0xc520.c",
+      "bytes": 200,
+      "sha256": "6f266b4f284807c40d6049357dff83a468ab3b9d79ad429f6c56c9601fb411d2"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0xc530.c",
+      "bytes": 449,
+      "sha256": "1fc6b4826d0712f0ea4ddb154a758f0b7b42be2c37da35b8e18b27f7c417961f"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0xc91c.c",
+      "bytes": 544,
+      "sha256": "ad3db8dc5b057cc49b5b83abfbd21b7e2723b0558af0edf738de48234a5300f7"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0xc990.c",
+      "bytes": 1325,
+      "sha256": "bd39ee1ca86165a11ad9601fef7291643c7dc08a5e2f88c371ab06cc4e84c67b"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0xcd8c.c",
+      "bytes": 1907,
+      "sha256": "06d353d71a45a8482bb7f84ec872edc6586bf402cd15bbe53d4126b7f4b4b1f1"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0xcfa4.c",
+      "bytes": 3520,
+      "sha256": "921f53d40d87e0823fcf47ccd7f68e292e79b07ded89b68a3414714cac0d266f"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0xd644.c",
+      "bytes": 1048,
+      "sha256": "baf6d89d53a8d55239a0e85be83542fe8642554f578d00cc2d99b7f35cdae109"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0xd6d8.asm",
+      "bytes": 8101,
+      "sha256": "fb1ffe8c85b6467acb14b2233c210d3e5d7395ea9624940002e012c12f6699fc"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0xd6d8.c",
+      "bytes": 6542,
+      "sha256": "ca3c2d750e9e6208b698ab2a33470d5e7467ccee2420ee2b86902c4eb60cc094"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0xdd48.asm",
+      "bytes": 25797,
+      "sha256": "8e9ca33eb19a106c8f43f9870a07e06fd10f7ab27edd5454d699b0e399daec52"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0xdd48.c",
+      "bytes": 25509,
+      "sha256": "206f981cfe0f40f8ece1c5eb5a5e46f982176269b45ae7104f2080db86a88be6"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/functions/0xf8c0.c",
+      "bytes": 1056,
+      "sha256": "d69e10e43c1a2a687783917cec750a3fe4d585d54e670e747aa9ef771dea98d4"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/hd-locomotion-snapshot.json",
+      "bytes": 14321176,
+      "sha256": "1954e52d204ffce591dd54647fa15f31fa89ddc7f6769e48278228cc285f04a3"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/implementation-rules.md",
+      "bytes": 10474,
+      "sha256": "071f27094aef708815a50c0e533dfa4234900627dda5dd0e5b8dac6c8464e8a8"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/locomotion-evidence.json",
+      "bytes": 8165937,
+      "sha256": "eab7f87527be07dd0544fd0cebb1a3a3e40d7636646c5c9113edbddf38c8f541"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/reused-evidence.json",
+      "bytes": 1943911,
+      "sha256": "bc1a419f834650e21f15451cb3cb6759f1bdc97091ae042fcf6e6928692ede05"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/player/source-review.json",
+      "bytes": 1082,
+      "sha256": "fc4e8f7cc6cfc4a522835da03a5139682a982490ba2fee9065978720b87b8110"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/preview-execution.json",
+      "bytes": 8248,
+      "sha256": "c28c0bd623704f46d6ee4c25c60f66edfec63d397ae691cc5e7abbd1e829da65"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/review-and-build-cleanup.json",
+      "bytes": 605,
+      "sha256": "9b9a39b11e7e7d6dc7aa0b8fb19c3e698312fca9d39a91c38a994a3b30ff5868"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/screenshots/ipad/438E7ADC-6291-468F-897E-A11492DFF9D5.png",
+      "bytes": 5690645,
+      "sha256": "270ba1bc74858238be98e5f6274b64d7513a076b786c5f8d23770c18e53e28c8"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/screenshots/ipad/manifest.json",
+      "bytes": 702,
+      "sha256": "f14a878740cd0ac6a9bdbcc13799a94c82d4dad6c7d30e1957c46a26845d54ce"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/screenshots/iphone/370A2903-571E-4C49-87A3-E874C45FF2E6.png",
+      "bytes": 1432046,
+      "sha256": "1eef294138efb5032f4d91a479ebd75191b43d2af4217ec5c92c994d03ff511f"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/screenshots/iphone/manifest.json",
+      "bytes": 691,
+      "sha256": "aa4c9f8c5270e665b7b29ad49f972487cf55c42c72c70279ef5985edcfcca1aa"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/screenshots-fixed/ipad/C7220C3B-A2CD-4E77-9FE6-740AF673937C.png",
+      "bytes": 5690205,
+      "sha256": "5dd7428b759ca16985b0d4d881b3c5924fe2ae26bfdc4a2220ab42c26f24332f"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/screenshots-fixed/ipad/manifest.json",
+      "bytes": 701,
+      "sha256": "ccc607de54fbe868a2453c5a532fc83aab89e331fb50a8f168359f9edf833569"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/screenshots-fixed/iphone/90457A38-A127-4DA9-AA4F-8C2190F3152A.png",
+      "bytes": 3069613,
+      "sha256": "a5820e6406c27ddf2e5254cebbb6bd7866aa1d879c44d0e760905adc63c811eb"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/screenshots-fixed/iphone/manifest.json",
+      "bytes": 691,
+      "sha256": "d04d170ad076e4067554c6a35344afb57d899f50ad474abf82d21394e8911347"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/source-build-capture.log",
+      "bytes": 10556,
+      "sha256": "b567a14de626b0c3c2669c9689310aa696550e512c0e57d1532cd29163b7ab82"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/source-build-compatible.log",
+      "bytes": 30544,
+      "sha256": "1f3b13448889613daa806cd528ba5971cb7d347eab4e9dd8c9964a7ffdc8b6e0"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/source-build-final.log",
+      "bytes": 41702,
+      "sha256": "f0c320d07c8e0d2a78dc9bf440004df18658fdb6ac61b8fa56fe273775db9f22"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/source-build-integer.log",
+      "bytes": 129104,
+      "sha256": "e2021321683342a3b3901addd0078a579d9776e70ad62449b51f70ea79468b3a"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/source-build-screen-capture.log",
+      "bytes": 13658,
+      "sha256": "d5716c69aae43c66a7aec77932e6be786b15566b5240ffddf9c4640cabb107bf"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/source-build.log",
+      "bytes": 67319,
+      "sha256": "bdd0296d22d88d03f4e20a0d6bc9952edb030739eed456f6103e2537641dcba6"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/validation-build-final.log",
+      "bytes": 35841,
+      "sha256": "6306714019b83b732a96b90cc6472888d3eb4dd20e3ad7de6422a417d39e6864"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/validation-build.log",
+      "bytes": 75199,
+      "sha256": "0452d16335545e7b0f9c891be7749ff2a862aa51bd48a860b35fba3783869f83"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/world/rea-evidence-updated.json",
+      "bytes": 437558,
+      "sha256": "017af763ef606b698f360a4ad24567640dd60974f82629b2cc2924fff8c140d7"
+    },
+    {
+      "path": ".local/evidence/locomotion-restoration-20261110/world/rea-evidence.json",
+      "bytes": 315296,
+      "sha256": "dee782546a90df25917234e1c5f06bd9b59bb88a7ef7e00147cd5141807d61f2"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/apple-build-final.log",
+      "bytes": 133563,
+      "sha256": "6637f9c856540c881cb17a0a14dfd2880df5ddbfaac2afa9c733a70f70d9c0ef"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/apple-build.log",
+      "bytes": 143305,
+      "sha256": "6ba56117bca99f2e8755d6ed1278333b5f62ce0830174385f68b736d3700ef59"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/core-build-boundaries.log",
+      "bytes": 364,
+      "sha256": "23ecf2fe0acb501b8614d249967a63c50e6aa53edc3b9b7c9a89ef788e3f9aa1"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/core-build-comma.log",
+      "bytes": 730,
+      "sha256": "57a9eef332516a3fe3da31dd5135ab9cee5b54d34f675997aa3be34d17c27036"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/core-build-final.log",
+      "bytes": 652,
+      "sha256": "83fdb57db662802713369c28a5f05513e6691bc1adaf8bed18a3ae3d1fa10b2b"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/core-build-numbers.log",
+      "bytes": 1593,
+      "sha256": "3435e11b150d78456aee5c516001d280aaed6cbd65ef3e97543115a524d70f51"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/core-tests-final.log",
+      "bytes": 1778,
+      "sha256": "fcb181852e67c2013f8a4473b384448198373ff2eb592d9efb23f9279bf5253f"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/core-tests-numbers.log",
+      "bytes": 1778,
+      "sha256": "87ebc3bcd97ddc97517c517fdcdbc470c1ea4b5bdd94f7b5b05fabea97d8f6d5"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/core-tests.log",
+      "bytes": 1778,
+      "sha256": "d61d6f400deb1cc75b6f216c0efbf17014b5217d73b69f21cd26178501f2dfb1"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/parallel/ipad/tests.log",
+      "bytes": 4820,
+      "sha256": "d7e8ebd06489072a927e4d714c645354bf28fe4503448198e666ba0c49a538f1"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/parallel/iphone/tests.log",
+      "bytes": 4158,
+      "sha256": "87861bf4389e962ada7fd7a68bbcd53425b4380801e8f32c2520a5d89d49cd29"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/parallel/summary.json",
+      "bytes": 3463,
+      "sha256": "5ee5a5c5d9e1db5076ad59a1a8b1c477db0affd0b4fbf50b45cde0a888470366"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/parallel-final/ipad/tests.log",
+      "bytes": 9604,
+      "sha256": "aad91a53549ca19f0d68dc7448824289d16a60f04f4a5e5951c92eda124f181b"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/parallel-final/iphone/tests.log",
+      "bytes": 9319,
+      "sha256": "fa2ccc2b3b6679b11b57d03f3292483d53a8bedf45b816df3381563938778745"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/parallel-final/summary.json",
+      "bytes": 3465,
+      "sha256": "d6d00143bb2eccbb49e119ca956257fe56c3f2917506e907f633576a903764e5"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/screenshots/ipad/8C1D5B10-B21F-4C99-977D-68816CAA8470.png",
+      "bytes": 5691869,
+      "sha256": "c84424419642c3b4a8feae0b848daa5d13a8d9fe0f70b84097294606b08e6c74"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/screenshots/ipad/manifest.json",
+      "bytes": 702,
+      "sha256": "9cc2f7966fdbc756a817d5572af53eee70dc7e008e212b78eaa397e4db6c1194"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/screenshots/iphone/B4D7ACED-CB3D-4B27-A55D-0372140A7D1E.png",
+      "bytes": 3068869,
+      "sha256": "4c1c3427d94e669d3f44e785e588601bcabf578117386e3619560d2f7e75b445"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/screenshots/iphone/manifest.json",
+      "bytes": 691,
+      "sha256": "46fe662ed02ebb4de20e85fb437213bdda5f28d858bac017a84baabe900fbd4b"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/table/numeric-evidence.json",
+      "bytes": 15234,
+      "sha256": "03ec3cd1863b801a88d936078a28dcbddbac60a591c907de880e0122e9866c10"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/table/rea-evidence.json",
+      "bytes": 138273,
+      "sha256": "81343ce1f9a13fbd6e76fe997fdb13fe5abe263c996353ae7217de2c84a90a04"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/table/table-snapshot.json",
+      "bytes": 12463505,
+      "sha256": "ed0319e214af4555a4abcc496b9357f9c0aca62630b1725c056146fd26689732"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/validation-build-final.log",
+      "bytes": 62556,
+      "sha256": "a25b12c2809374da5bfad9309501f8d1ab640f1819200351174282bd62f2ecff"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/validation-build.log",
+      "bytes": 71317,
+      "sha256": "0391d2d698fdd1d91673552836a54b57293e4635026b4efd361c5872570884f3"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/0x1cf38.c",
+      "bytes": 32758,
+      "sha256": "b6732c0a4bb8a08e187803ed614bb5fc379e811a4608e8c95ed98d49b322833b"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/0x1e7bc.c",
+      "bytes": 379,
+      "sha256": "b67ce5265ba14e07f7b778b63c23cca5fb80409de2b459c54661409ad4ac5a92"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/0xb7b4.c",
+      "bytes": 7073,
+      "sha256": "1a32b73c6a4a0e990a6e50fbb5206b138992adc369da131b7e3c1df88718c27c"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/default-weapon-rows.json",
+      "bytes": 1568,
+      "sha256": "4f958331be48800faacb80173ddd158792c494fbd1c946854bcae93258768f80"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/function-index.json",
+      "bytes": 3712,
+      "sha256": "a26fbf178e0530f66905a05b82671ceceb48e3392bb28b02e311a0ce115ee5bf"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x14ab8.c",
+      "bytes": 288,
+      "sha256": "4eaceee73e44393ddb27d7dbd5feba998c4d1994de4cebda44ed35e2e9449ae8"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x14bc4.c",
+      "bytes": 8455,
+      "sha256": "b0ba1679a801245afe2a2bbd21f65efc29fab183a152a2179e026b896a5ee1a9"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x15ef4.c",
+      "bytes": 7548,
+      "sha256": "8bfc1480c09b7364e99cf96f91bb6ddbf7c28dc7386927005434155f9a795fa8"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x1c2e0.c",
+      "bytes": 376,
+      "sha256": "f8812fdd8c5243eead49d3d30b2a2b801059c992ef20730d9ca74f05474990ea"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x1cc98.asm",
+      "bytes": 2829,
+      "sha256": "0c49fb9a0eaac80790a4b598de554c0629216d5caeec729e9af545dad0c96234"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x1cc98.asm.json",
+      "bytes": 4374,
+      "sha256": "df392a4e92b915feae46fd26d86a4a0b824396351df609e25c15f9e972b36d0b"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x1cc98.c",
+      "bytes": 2721,
+      "sha256": "7e5644c427ec1d257ded0285625e7379315a4b857707f589a7356d87f4f36d69"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x1cee0.c",
+      "bytes": 419,
+      "sha256": "a7ae7fa164f8b976822ef87c9ee660dcbddb54190492a6f5ef3607f72fb5b0fb"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x1cf38.asm",
+      "bytes": 41103,
+      "sha256": "1a72ca4ec5a9f6b5fe4f4ab5f390054085cf1fda0ef9facb61cf86ed84ab3145"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x1cf38.asm.json",
+      "bytes": 53457,
+      "sha256": "507bc10c7a250186f7590f354e7bbb1f1b09a6addeab4156045a790b57eba0fb"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x1cf38.c",
+      "bytes": 32758,
+      "sha256": "b6732c0a4bb8a08e187803ed614bb5fc379e811a4608e8c95ed98d49b322833b"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x1eadc.c",
+      "bytes": 1668,
+      "sha256": "22602cf355bfdbb2e06abc8e0dfd170ac258948f1cbf22d20a711de71a696b40"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x1ed38.c",
+      "bytes": 6283,
+      "sha256": "16395a7981bd08a12b50b03d4de469eda0dac2fa340544fc69a016e3fe968b89"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x407e4.c",
+      "bytes": 186,
+      "sha256": "79642b9a65dd38e3685a5b91fbd5d50e2ddff8f599053aba699ae201874c0aca"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x40aa8.c",
+      "bytes": 2191,
+      "sha256": "df6714dfe98665c2cc0ed578c36894f0274748c559edd4bd237f6ef40e8c8ae1"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x423a8.c",
+      "bytes": 1072,
+      "sha256": "27d1e0f3f4883c7d6f3f537317cb30a31c39a059f0db7d13295c36fce6508472"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x42494.c",
+      "bytes": 313,
+      "sha256": "6f7e392068ec729321d346ced16ed9b4570c4e70c5c0bd4ebe8603b791f4ae27"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x5fd0.c",
+      "bytes": 591,
+      "sha256": "e80a35089470df8487f6a11305b9a00ea29424633753e91532cebfc193626b05"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x6068.c",
+      "bytes": 6840,
+      "sha256": "5e114c692d4eb8d1f83fd0e116a93e35dc4f95fb12466d0c7cf2263039f3a91a"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x6464.asm",
+      "bytes": 10709,
+      "sha256": "846e65e810763ad0ed70c7cd24642d90349cad231b8d487231285bc42c3ace05"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x6464.asm.json",
+      "bytes": 14634,
+      "sha256": "f305e50e163de7518cb083616bff24b8b802adf825490766d62175554ec76e78"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x6464.c",
+      "bytes": 7120,
+      "sha256": "8f037ce3627ce72fb031fbb3d3ff411010420588db5c4f7bad31916fbcb208ca"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x69e4.asm",
+      "bytes": 15719,
+      "sha256": "f18b85ebf98f532bb875fb050ce6b65c9a6223fd71c3c2aad21a1d09b0f99d4a"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x69e4.asm.json",
+      "bytes": 21084,
+      "sha256": "86e64900bf7be2bc7af06b8215b2ddc600a278a82be9cf7c54956ab491f1e9c5"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x69e4.c",
+      "bytes": 10210,
+      "sha256": "99025886a3ae533efbeea560cb4f76c279191448a7a6dca08bce67b85dc59031"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/functions/0x71d0.c",
+      "bytes": 16788,
+      "sha256": "304e165441b02235dc84947b1ef875dc0385095410f341851ec90430eae0443e"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/hd-weapon-snapshot.json",
+      "bytes": 14774461,
+      "sha256": "2a3dc48b3487b158d16972f73b9e44d706c3f68476a6da6436f87cc40854bf7f"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/implementation-rules.md",
+      "bytes": 13977,
+      "sha256": "ca4a1a4650231048d60722b2efa5c6d473b8afd63dd134aa6b7767ada945c9b4"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/reused-evidence.json",
+      "bytes": 135608,
+      "sha256": "7bce9100ee8eebe87eef0319295eadfa39bc72bbccff5b3dcd60af64e682b284"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon/weapon-evidence.json",
+      "bytes": 8619222,
+      "sha256": "7069761e3b85ded167dec75a8a82e08c6d979d24d4c133da88cf48ea023ccf6a"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon-tests-boundaries.log",
+      "bytes": 340,
+      "sha256": "e28fdc14249cdf6546691bc92f7cf6704bf100f0a53a975eb2cc943c56ae9080"
+    },
+    {
+      "path": ".local/evidence/combat-restoration-20261110/weapon-tests-comma.log",
+      "bytes": 340,
+      "sha256": "9805605ef52b76a8daa678a4b76e6e69750434a96cd9a0f60abc19f35973a69f"
+    }
+  ],
+  "report": {
+    "path": ".local/evidence/locomotion-restoration-20261110/report.html",
+    "sha256": "8a944b8c012e0164cc997e44dcb4749de77aafe844849c441d0bb19f33b22250",
+    "embedded_screenshot_paths": [
+      ".local/evidence/combat-restoration-20261110/screenshots/iphone/B4D7ACED-CB3D-4B27-A55D-0372140A7D1E.png",
+      ".local/evidence/locomotion-restoration-20261110/phone-HeavyMach2Validation.png",
+      ".local/evidence/combat-restoration-20261110/screenshots/ipad/8C1D5B10-B21F-4C99-977D-68816CAA8470.png",
+      ".local/evidence/locomotion-restoration-20261110/ipad-HeavyMach2Validation.png"
+    ],
+    "screenshots_visually_inspected": 4,
+    "browser_render_verified": false
+  },
+  "limits": [
+    "original-runtime exact gait frame comparison pending",
+    "real UI drag/multifinger/outside-end not yet tested",
+    "weapon controllers/firing/damage/audio/progression pending",
+    "final per-device viewport/HUD pending"
+  ],
+  "physical_devices_installed": false,
+  "develop_main_merged": false
+}

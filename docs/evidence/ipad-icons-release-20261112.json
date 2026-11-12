@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-12",
+  "iconImplementationCommit": "e140275",
+  "normalBundle": "com.gelb2.heavymach2.restored",
+  "configuration": "Release",
+  "iconName": "AppIcon",
+  "resourceFiles": 1479,
+  "resourceHashesMatch": true,
+  "saveBytes": 28204,
+  "saveBytesUnchanged": true,
+  "signedPackageVerified": true,
+  "installationSucceeded": true,
+  "physicalIPadTitleObserved": true,
+  "gameCodeChanged": false,
+  "testFixturesOrPluginsIncluded": false,
+  "soundProvenanceInvestigationStarted": false,
+  "priorTestsReused": "Unchanged game code: 70 core tests and 115-condition iPad concurrent validation recorded on 2026-11-11. No new game-logic test claim.",
+  "localEvidence": ".local/evidence/ipad-icons-release-20261112/"
+}

@@ -1,0 +1,54 @@
+{
+  "environment": "iPad Air 11-inch M4, iPadOS 26.5 Simulator, Debug O2",
+  "coreTestsPassed": 70,
+  "simulatorTestsSeconds": [
+    103.4,
+    159.716
+  ],
+  "native": {
+    "frames": 1200,
+    "scenarios": 115,
+    "combatScenarios": 55,
+    "activeWeaponDefinitions": 110,
+    "warmReadMisses": 0,
+    "warmExistsMisses": 0,
+    "imageTextureUploadsAfterPreparation": 0
+  },
+  "sourceCredits": [
+    580,
+    680,
+    680
+  ],
+  "captures": {
+    "348": {
+      "sha256": "7e11480679010611b51b281495e28bcaac887c86537f95da336ba8a731ae01f6",
+      "file": "C8A2345F-B3BF-4FF3-A207-F1A419F5142C.png",
+      "visualCheck": "collapsed background behind result"
+    },
+    "356": {
+      "sha256": "54871adb6212f72bb023e96b4719c68e1d6a08cb9c6e7cfb25d081abfa87a6b6",
+      "file": "431A67A7-8307-4419-84BA-43EBE3818930.png",
+      "visualCheck": "collapsed background behind result"
+    },
+    "364": {
+      "sha256": "fa893e78e68e7192d0262b930e17628c54cfea32f3dbb946015c94766d8f6be8",
+      "file": "7F279341-9B17-4A9A-8439-C8538A10A447.png",
+      "visualCheck": "no CompleteMark on Command rows"
+    }
+  },
+  "sourceSHA256": {
+    "Sources/Core/UI/Screens.cpp": "2268d717a682c2d0469f0d1a74178f92ffb35fa1ec25522169952f02b69e9229",
+    "tests/CompletedMissionSessionTests.cpp": "ed2c9f68798312cb7e6aa8b19ee7aa8f9fb65190236352477bdcff73959c79d9"
+  },
+  "logSHA256": {
+    "red-test.log": "61c1a8552c93f64a41c1d02e4cd27c562dbe6c6e0ab7c51d51355982dbf604bc",
+    "core-tests.log": "833108a8bf9e6c9c3bb9b3fa1c1dd0041b2e8024cfb615a83754df13d512db0e",
+    "ipad.log": "6ceef4161d1556f9369d9a3d97878545b2ff38fac5b03c710c3c87a596715186",
+    "campaign-inventory.tsv": "bdeb417c1bfeb7d287ac02b2a497acedc511d5d81f6297a3acf7ba8a14bc568a"
+  },
+  "open": [
+    "new mission dictionary order",
+    "mission setItem and setEnemy consumers",
+    "whole campaign and gameplay coverage"
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "sourceFiles": {
+    "Apple/UITests/WorldInputTests.mm": "56577d211ba9741f48f6534eec66fb3c6ac62161be71cb1a81ab21777d7147c0",
+    "Sources/Core/Session/GameSession.cpp": "4437a48498dd4d9d14e901f9f1fc72e06f4d56cc2b60ab9539214d1cd8b8d6ae",
+    "Sources/Core/UI/Screens.cpp": "b550e201c98ea84b764d6d1a8aa1ce2aed433065fc6cd2284363d9f0d9a5fe73",
+    "Sources/Core/UI/Screens.hpp": "7c4dd792f5378f0cc7b7aad7b0da3f8612170b2ced694074d1068c95da19f27f",
+    "tests/CompletedMissionSessionTests.cpp": "b0fd9ff410c5a1c762fc3a13e8b419ddc3c043037c5bc16da1f03b51c68f913e"
+  },
+  "core": {
+    "core-final-tests.log": {
+      "passed": 70,
+      "sha256": "193c8d4c35f17253879cfd1136f00682c10ea706e56ee5451241104240848124"
+    },
+    "asan-final-tests.log": {
+      "passed": 3,
+      "sha256": "23ee18c7fb3508fffab809df82ab0889b01d19334b76976c4cc223fe707348f0"
+    }
+  },
+  "simulators": {
+    "iPhone": {
+      "testDurationsSeconds": [
+        88.829,
+        109.475
+      ],
+      "native": {
+        "frames": 1200,
+        "scenarios": 115,
+        "combatScenarios": 55,
+        "activeWeaponDefinitions": 110,
+        "warmReadMisses": 0,
+        "warmExistsMisses": 0,
+        "imageTextureUploadsAfterPreparation": 0
+      },
+      "source": {
+        "list": {
+          "b5100_0_y": "600.000000",
+          "b5200_0_y": "448.000000",
+          "b5004_0_y": null,
+          "saves": "2"
+        },
+        "expanded": {
+          "b5100_0_y": "728.000000",
+          "b5200_0_y": "320.000000",
+          "b5004_0_y": "492.000000",
+          "saves": "2"
+        }
+      },
+      "logSHA256": "46ffc05d646f9a5cbd4ede75b49d4ee34159463c0d979db8372c04129b1b85c7",
+      "nativeJSONSHA256": "c2805779e3eac06c1c00c2d6016230347aa79bec8694cc969bef14281662fc10",
+      "sourceJSONSHA256": "48f77b4df38353af9373b9039faadf82e8e7b7f3598d97da1fb0b9c312739f47"
+    },
+    "iPad": {
+      "testDurationsSeconds": [
+        101.906,
+        157.425
+      ],
+      "native": {
+        "frames": 1200,
+        "scenarios": 115,
+        "combatScenarios": 55,
+        "activeWeaponDefinitions": 110,
+        "warmReadMisses": 0,
+        "warmExistsMisses": 0,
+        "imageTextureUploadsAfterPreparation": 0
+      },
+      "source": {
+        "list": {
+          "b5100_0_y": "600.000000",
+          "b5200_0_y": "448.000000",
+          "b5004_0_y": null,
+          "saves": "2"
+        },
+        "expanded": {
+          "b5100_0_y": "728.000000",
+          "b5200_0_y": "320.000000",
+          "b5004_0_y": "492.000000",
+          "saves": "2"
+        }
+      },
+      "logSHA256": "394f326d8f1ba25137e31593f7b6f1b0c9747c9b38bbf21f4211baa04bcef833",
+      "nativeJSONSHA256": "3a01b020320a9b067b6acc5eaf74fbfca662dabfc537021af61afb31a22aba1d",
+      "sourceJSONSHA256": "6073b9be2857919a956c82818b317d7b46b5275d97318ab67be535a40ecb0aeb"
+    }
+  },
+  "reference": {
+    "version": "HD 1.0.3",
+    "environment": "iPadOS 26.5 Simulator",
+    "slotOKOnlyCompletionOrder": [
+      "M002010",
+      "M001010"
+    ],
+    "restorationSlotOKOnlyOrder": [
+      "M002010",
+      "M001010"
+    ],
+    "slotRowAndOKObservation": [
+      "M001010",
+      "M002010"
+    ],
+    "persistedBeforeExit": {
+      "credits": 500,
+      "experience": 0,
+      "repairItems": 5,
+      "accepted": 4
+    },
+    "persistedAfterExitAndRelaunch": {
+      "credits": 680,
+      "experience": 400,
+      "repairItems": 8,
+      "accepted": 2
+    },
+    "duplicateCompletionAfterRelaunch": false,
+    "priorSaveRestoredByteForByte": true,
+    "observedDifferences": [
+      "collapsed NEW MISSIONS panel behind completion window",
+      "new mission row order",
+      "completion marks in Command"
+    ],
+    "exactRenderingEquivalent": false
+  },
+  "localEvidenceSHA256": {
+    "red-test.log": "e0a5fe64fe794f96ff8d7da7fb39186456de711f063ae5dafff11104b06ff025",
+    "reference-save-outcomes.log": "b63587406d8600605bb000322d9bb4466f4298d4cf1a63ef31c4959c695baa8e",
+    "reference-save-order.log": "70c5e67ce84b69d0bbb3db6a7961dfbe3432d7f38fc751b4f17f161785147a7f",
+    "reference-hd-popup1.png": "6c5e5114e0459c4d6eff01c2d3b6a6f77527e753614df6a6dc20b86d8cd6a713",
+    "reference-hd-popup2-or-list.png": "ee92374cefee4ae56064ec164cdf42a6b30ceedff62993356f5a06398ae3ac11",
+    "reference-hd-list.png": "bd8edb9900e0ba0d5f55215c4164e79a0278acb13b370b670cb8f9819b32b81a",
+    "reference-hd-expansion.mp4": "6572bdd2ae8a48651f17d58da0790be54bad7f99562bbe7385cd2a5c6f132ff6",
+    "reference-hd-restarted-list.png": "bd8edb9900e0ba0d5f55215c4164e79a0278acb13b370b670cb8f9819b32b81a",
+    "reference-hd-ok-only-first-confirmed.png": "4379ab4f88cb3584344d1b3dcd562fc015a53f50c026099e1e971259c0e20fb2",
+    "reference-hd-ok-only-second.png": "c329ca3915f8cc48c1747314ca8d392c212d8a71d6ea1244d00c5090b049f72f",
+    "reference-hd-ok-only-list.png": "30e2e058bdc2fc07eba7c7f77c24d63686d201df3738d0fa10ea1da25872bac4"
+  },
+  "completeGameCoverage": false
+}
