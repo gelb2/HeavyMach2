@@ -1,5 +1,15 @@
 # HeavyMach 2 보고 사이트
 
+## 일반판·HD판 차이 조사 — 버전281, 2026-11-13
+
+[조사 결과와 유니버설 설계 보강](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/)에 결과·조사 기준·패키지 전수 비교·네이티브 로직 비교 네 페이지를 게시했다. 감사 브랜치의 근거 커밋은 `75d0bfa5ef58d4d90385fd249669538e48cce561`이다. 여섯 IPA의 파일9,123개와 이미지7,740항목을 조사했다. 함수 본문 보존과 주요 경로의 정적 비교를 전체 함수 의미 동등성·실행 검증 완료로 표현하지 않는다. 유니버설 설계에 영향을 주는 미확정과 다음 확인을 본문·TODO에 남겼다. 게임 코드·자원·앱 빌드·설치는 변경하지 않았다.
+
+사이트 소스는 `c1de2a6f56b32cec7da0d44c1c90c9dc70354845`, 버전281, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_b2bd32a7ca5c819186283ba8cbd23c57`, 배포는 `appgdep_6af6b3b2ec748191aee4a59b0462e410`이다. 공식 상태 succeeded와 본인1명·그룹0·외부0 접근을 확인했다. 실제9경로의 HTTP200을 확인했다. HTML은 호스팅 서비스가 주입한 스크립트를 구분해 표시 문구·자원 링크를 대조했고, 본문 payload·CSS·JS·명세 JSON은 소스와 바이트가 같았다. 기존 콘텐츠1,355파일은 바이트가 같고 첫 화면에는 새 보고 링크만 추가했다. 로컬 Safari에서 네 페이지의 본문·표를 확인했다. 게시 후 Safari에서는 사용자가 다른 탭을 조작하고 있어 온라인 시각 검수 완료로 보고하지 않는다.
+
+이전 사이트가256MiB 한도에 근접해 새 보고서 본문만 gzip JSON으로 묶고 공통 표시 스크립트에서 해제한다. HTML 본문 전체와 원고 해시를 대조했으며 기존 이미지·파일·URL을 지우거나 바꾸지 않았다. 최종 tar 확장 크기는268,413,440바이트로 제한268,435,456바이트 이하이며 콘텐츠1,364개와 생성 hosting manifest1개의 바이트 일치를 확인했다. 원본 IPA·ARM 실행파일·전체 디컴파일·전체 복호 테이블·저장은 포함하지 않았다.
+
+로컬 근거는 `.local/evidence/universal-report-20261113/`의 `site-local-check.json`, `site-archive-check.json`, `site-published-http.json`이다. 인증 토큰은 파일에 저장하지 않는다.
+
 ## 사령부 보상창 배경과 완료 표시 — 2026-11-11
 
 [사령부 보상창 배경과 완료 표시](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/command-panel.html)를 기존 본인 전용 비공개 사이트에 게시했다. 구현과 검사 기록은 `f20a8b8`이다. iPad 시뮬레이터의 복원판 GPU 캡처384×512를 연결했다. 원본 포팅판 캡처와 영상·저장은 로컬에 보존한다.
