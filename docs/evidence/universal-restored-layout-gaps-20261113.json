@@ -1,0 +1,260 @@
+{
+  "source_commit": "0e0e1c384556109d8b45a27eb3f2c6d943ac9b3d",
+  "findings": [
+    {
+      "id": "common-apple-target",
+      "source": "Apple/iOS/project.yml",
+      "lines": [
+        11,
+        21,
+        34
+      ],
+      "sha256": "c26cdf5f40549c950d1be9b8eba71be9d59887d8b50ba465bd636d283ce22b91",
+      "evidence_type": "source inspection",
+      "finding": "같은 앱 타깃 계열과 HD 자원을 두 기기에서 사용",
+      "design_action": "화면 구성 입력을 공통 코어에 전달"
+    },
+    {
+      "id": "frame-default",
+      "source": "Sources/Core/Types.hpp",
+      "lines": [
+        49,
+        51
+      ],
+      "sha256": "eba910dcda30a8e886c45170979537e3ed4e208418b19daf30fd76c90377e301",
+      "evidence_type": "source inspection",
+      "finding": "일반 Frame의 기본 크기는768×1024",
+      "design_action": "메뉴·overlay 출력 크기를 구성으로 전달"
+    },
+    {
+      "id": "world-frame",
+      "source": "Sources/Core/Presentation/MapPreview.cpp",
+      "lines": [
+        22,
+        28
+      ],
+      "sha256": "f460c489859c95d3a9d60c582458d5b2ab93fe22bf7e12d94688d91beabfa797",
+      "evidence_type": "source inspection",
+      "finding": "월드 Frame은 camera.viewport를 전달받음",
+      "design_action": "모든 Frame이 고정이라고 판단하지 않음"
+    },
+    {
+      "id": "camera-default",
+      "source": "Sources/Core/Presentation/MapPreview.hpp",
+      "lines": [
+        9,
+        14
+      ],
+      "sha256": "d450eefca79a9ee93d722ce287e07ce89b296d47a304c728127eda15c72408ab",
+      "evidence_type": "source inspection",
+      "finding": "MapCamera 기본 viewport는768×1024",
+      "design_action": "월드 시야와 활성화의 계약을 함께 결정"
+    },
+    {
+      "id": "physical-surface",
+      "source": "Sources/Platform/Apple/HM2Renderer.mm",
+      "lines": [
+        124,
+        145
+      ],
+      "sha256": "7a22bd809661d1455786e5d69882eb98a30540327168b6969547f47041318bcf",
+      "evidence_type": "source inspection",
+      "finding": "실제 layer 크기 재할당과 등비 fit 경로 있음",
+      "design_action": "논리 배치·safe area 연결이 별도로 필요"
+    },
+    {
+      "id": "inverse-input",
+      "source": "Sources/Platform/Apple/HM2Renderer.mm",
+      "lines": [
+        209,
+        213
+      ],
+      "sha256": "7a22bd809661d1455786e5d69882eb98a30540327168b6969547f47041318bcf",
+      "evidence_type": "source inspection",
+      "finding": "현재 viewport 기준 입력 역변환",
+      "design_action": "새 배치와 같은 변환 정의 사용"
+    },
+    {
+      "id": "hud-create-update",
+      "source": "Sources/Core/UI/Screens.cpp",
+      "lines": [
+        387,
+        414,
+        973,
+        993
+      ],
+      "sha256": "a12133f98d1e58c2990b89f4d6cb028836787550501f322154eba9ed1f7ce926",
+      "evidence_type": "source inspection",
+      "finding": "생성부와 HUD 갱신부가 고정 anchor를 사용",
+      "design_action": "두 경로 모두 공통 배치를 소비"
+    },
+    {
+      "id": "radar",
+      "source": "Sources/Core/UI/Screens.cpp",
+      "lines": [
+        945,
+        953
+      ],
+      "sha256": "a12133f98d1e58c2990b89f4d6cb028836787550501f322154eba9ed1f7ce926",
+      "evidence_type": "source inspection",
+      "finding": "레이더 anchor와 월드좌표1/16 변환이 함께 있음",
+      "design_action": "anchor와 원작 월드 수식 구분"
+    },
+    {
+      "id": "panels",
+      "source": "Sources/Core/UI/Screens.cpp",
+      "lines": [
+        239,
+        276,
+        582,
+        653,
+        779,
+        855
+      ],
+      "sha256": "a12133f98d1e58c2990b89f4d6cb028836787550501f322154eba9ed1f7ce926",
+      "evidence_type": "source inspection",
+      "finding": "메뉴 중심·grid·modal bounds가 HD 기준",
+      "design_action": "그림·입력·modal 차단을 같은 panel 변환에 연결"
+    },
+    {
+      "id": "button-hit",
+      "source": "Sources/Core/UI/Button.cpp",
+      "lines": [
+        28,
+        41,
+        52,
+        55
+      ],
+      "sha256": "c78aa573d4090c82f8d794b5ff5acf15cc063a9b6371a91659e44b38806fefe6",
+      "evidence_type": "source inspection",
+      "finding": "원작 tile/forRetina 및 예외 bounds를 소비",
+      "design_action": "그림 외곽으로 hit를 다시 추정하지 않음"
+    },
+    {
+      "id": "help-input",
+      "source": "Sources/Core/UI/Help.cpp",
+      "lines": [
+        24,
+        39
+      ],
+      "sha256": "ffd01ef5a6895a7a7b6254fca75daf5d18a6a624d6454fec9f4ca70630ad677f",
+      "evidence_type": "source inspection",
+      "finding": "페이지 그림과 prev/close/next 입력 구간이 결합",
+      "design_action": "그림과 입력의 공통 inverse 필요"
+    },
+    {
+      "id": "transition",
+      "source": "Sources/Core/Presentation/ScreenTransition.cpp",
+      "lines": [
+        30,
+        94
+      ],
+      "sha256": "c9d46a938c1e45d5053b130f423dc79076d281dbea859324708ad46de7bd8f52",
+      "evidence_type": "source inspection",
+      "finding": "문 geometry가 phase·시간·사운드·화면/저장 사건과 결합",
+      "design_action": "상태 진행과 출력 coverage 분리"
+    },
+    {
+      "id": "loading",
+      "source": "Sources/Core/Presentation/MapLoading.cpp",
+      "lines": [
+        5,
+        20
+      ],
+      "sha256": "214e96e6d21bd338cb81569f5aee314daf531e703f7cb43492ed1da3430b002c",
+      "evidence_type": "source inspection",
+      "finding": "원래 alpha·clear·setStage 순서와 HD 배경 위치",
+      "design_action": "새 출력비율 coverage를 별도로 계산"
+    },
+    {
+      "id": "input-order",
+      "source": "Sources/Platform/Apple/HM2GameRuntime.mm",
+      "lines": [
+        77,
+        78
+      ],
+      "sha256": "db8a6a4b4c826e44989b1882e1b9de88e3ce6aae6461012ad7b68a4ce8498efe",
+      "evidence_type": "source inspection",
+      "finding": "overlay→Screens→world 입력 순서",
+      "design_action": "HUD/modal 터치가 전장에 전달되지 않게 유지"
+    },
+    {
+      "id": "world-input",
+      "source": "Sources/Core/Simulation/CombatScene.cpp",
+      "lines": [
+        760,
+        782
+      ],
+      "sha256": "372321cd85cc288b764c36874f665512ad099672597692a9e81f3913608eccce",
+      "evidence_type": "source inspection",
+      "finding": "하단 입력 제한과 카메라 역변환",
+      "design_action": "공통 화면 구성의 전장 입력 계약"
+    },
+    {
+      "id": "quick-input",
+      "source": "Sources/Core/Progression/QuickItems.cpp",
+      "lines": [
+        64,
+        68
+      ],
+      "sha256": "2ad7f3ee04554a8edd831266941bdd86fcb0bfd55f6ab5ee37ca737e256086c4",
+      "evidence_type": "source inspection",
+      "finding": "수리·공습의 별도 원작 월드 좌표 변환",
+      "design_action": "같은 화면 구성 입력을 모든 소비자에 전달"
+    },
+    {
+      "id": "visibility",
+      "source": "Sources/Core/Presentation/Visibility.hpp",
+      "lines": [
+        11,
+        20
+      ],
+      "sha256": "acb437eba1b58f761ba840edf517f7333bc74e5025dcc483dcf8f076f3449e6a",
+      "evidence_type": "source inspection",
+      "finding": "화면 경계·여유60·cached inScreen 조건",
+      "design_action": "현재 overlap과 캐시 갱신을 구분"
+    },
+    {
+      "id": "impact-exceptions",
+      "source": "Sources/Core/Simulation/ProjectileImpact.cpp",
+      "lines": [
+        14,
+        41
+      ],
+      "sha256": "f714f704776137c5672ee2bb93526fcd9e3e21a5333f57a621fe4369ed1a5a0c",
+      "evidence_type": "source inspection",
+      "finding": "damageRange==0 경로와 일부 범위 피해 경로의 inScreen 소비가 다름",
+      "design_action": "모든 공격을 하나의 가시성 조건으로 합치지 않음"
+    },
+    {
+      "id": "ai-spawn",
+      "source": "Sources/Core/Simulation/EnemySpawner.cpp",
+      "lines": [
+        16,
+        22
+      ],
+      "sha256": "6cc6d4faa87a7eea35c6e313195bde2af05e7029b2bc1980d668557351fb46e6",
+      "evidence_type": "source inspection",
+      "finding": "거리1024·카메라·재생성 난수 조건",
+      "design_action": "표시 상수로 치환하지 않고 사건 차이를 검사"
+    },
+    {
+      "id": "validation-compositor",
+      "source": "Sources/Core/Validation/ConcurrentValidation.cpp",
+      "lines": [
+        529,
+        543
+      ],
+      "sha256": "c0117c2c8622025464bd38958a1adcd89b89e5f4440ed852fac05e3fa5260f1f",
+      "evidence_type": "source inspection",
+      "finding": "drawFrame(viewport)는 HD 시나리오를 pane에 모아 표시",
+      "design_action": "각 Session에 실제 layout 구성 입력·자동 입력 연결 필요"
+    }
+  ],
+  "runtime_executed": false,
+  "phone_or_ipad_builds_created": false,
+  "assets_regenerated": false,
+  "inferences": [
+    "viewport 변경은 AI·충돌·선택·생성·난수 소비에 영향을 줄 수 있다. 이번 소스 조사에서 실행으로 확인한 결과는 아니다."
+  ]
+}
