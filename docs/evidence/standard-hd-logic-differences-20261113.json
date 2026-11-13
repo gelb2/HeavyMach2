@@ -1,0 +1,3858 @@
+{
+  "schema": 1,
+  "date": "2026-11-13",
+  "investigation": "standard201 armv7 vs HD103 armv7 static native logic comparison",
+  "coverage": {
+    "schema": 1,
+    "date": "2026-11-13",
+    "scope": "static metadata and selected native paths; not whole-game semantic equivalence",
+    "targets": {
+      "phone201": {
+        "sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+        "bytes": 447376,
+        "counts": {
+          "body": 1077,
+          "external": 301,
+          "thunk": 307
+        },
+        "total": 1685,
+        "list_evidence_id": "ev_5f10d666dbb9a0414d49a228dfbf085da409e12ac72ad00ead3154a620b6c51a",
+        "anonymous_bodies": 934,
+        "rtti_classes": 39,
+        "objc_classlist_entries": 7,
+        "objc_methods": 133,
+        "new_evidence_records": 112,
+        "initial_targeted_pseudo_body_count": 96,
+        "initial_not_targeted_pseudo_body_count": 981,
+        "rejected_numeric_address_bindings": 1,
+        "vtable_entrypoints_outside_body_inventory": [
+          "0x11ea0",
+          "0x23ba4",
+          "0x24c54",
+          "0x261dc",
+          "0x27f90",
+          "0x29d5c",
+          "0x2a2fc",
+          "0x2f990",
+          "0x34278",
+          "0x39e14",
+          "0x3bb0c",
+          "0x46f3c",
+          "0x4cab0",
+          "0x4d2a8",
+          "0x4d524",
+          "0x4d598",
+          "0x4dccc",
+          "0x51048",
+          "0x7924",
+          "0x7928",
+          "0x792c",
+          "0x7930",
+          "0x84bc",
+          "0x84c0",
+          "0x9144",
+          "0x9cac",
+          "0xaeec",
+          "0xb318",
+          "0xb988",
+          "0xe0a4"
+        ],
+        "full_export": {
+          "bundle_sha256": "c156318a58dcd40dca51b612f0804638f8557f664115740481d1c66ac70969be",
+          "evidence_records": 2164,
+          "selected": 1077,
+          "completed": 1077,
+          "pseudo_exported": 1077,
+          "assembly_exported": 1077,
+          "classification": {
+            "objc_metadata": 133,
+            "cpp_rtti_virtual_entry": 124,
+            "unclassified": 820
+          },
+          "raw_output_directory": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export",
+          "note": "Full export is evidence availability, not semantic equivalence or completed function correspondence."
+        }
+      },
+      "hd103": {
+        "sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+        "bytes": 414720,
+        "counts": {
+          "body": 1300,
+          "external": 333,
+          "thunk": 348
+        },
+        "total": 1981,
+        "list_evidence_id": "ev_30316ee7dfa36ca1c94a8cb0e6efed9fb31f79258f28e0a9de4d4c2a8e8ec710",
+        "anonymous_bodies": 96,
+        "objc_classes": 80,
+        "objc_methods": 1194,
+        "objc_ivars": 763,
+        "method-evidence": {
+          "selected": 1194,
+          "completed": 1194,
+          "pseudo_files": 1194,
+          "asm_files": 1194
+        },
+        "native-evidence": {
+          "selected": 106,
+          "completed": 106,
+          "pseudo_files": 106,
+          "asm_files": 106
+        }
+      }
+    },
+    "phone_activation_scan": {
+      "scope": "Exact immediate-offset byte access and direct BL only across cached1077 assembly bodies.",
+      "counts": {
+        "write_instructions": 6,
+        "write_functions": 6,
+        "read_instructions": 6,
+        "read_functions": 6,
+        "setter_direct_calls": 150,
+        "setter_direct_caller_functions": 65
+      },
+      "vtable_targets_without_cached_instruction": [
+        "0x11ea0",
+        "0x23ba4",
+        "0x24c54",
+        "0x261dc",
+        "0x27f90",
+        "0x29d5c",
+        "0x2a2fc",
+        "0x2f990",
+        "0x34278",
+        "0x39e14",
+        "0x3bb0c",
+        "0x46f3c",
+        "0x4cab0",
+        "0x4d2a8",
+        "0x4d524",
+        "0x4d598",
+        "0x4dccc",
+        "0x51048",
+        "0x7924",
+        "0x7928",
+        "0x792c",
+        "0x7930",
+        "0x84bc",
+        "0x84c0",
+        "0x9144",
+        "0x9cac",
+        "0xaeec",
+        "0xb318",
+        "0xb988",
+        "0xe0a4"
+      ],
+      "limits": [
+        "Literal offset5 is not proof of object identity at every access.",
+        "Register-offset accesses, aliases, wider stores, indirect calls and excluded blocks are not resolved by this scan.",
+        "The150 setter call targets/conditions are not all semantically classified. No global absence of screen gating is inferred."
+      ]
+    },
+    "limits": [
+      "Body inventories include platform glue and helpers, not only gameplay.",
+      "HD exports cover every indexed body but export existence does not mean all functions were semantically compared.",
+      "Phone queried-body count means retained decompilation, not fully understood or semantically matched.",
+      "Full class/member/type correspondence is not established.",
+      "Runtime behavior was not executed in this audit."
+    ],
+    "followup_reviews": [
+      {
+        "kind": "runtime",
+        "status": "cached-references-reverified",
+        "findings_path": ".local/evidence/universal-runtime-native-review-20261113/findings.json",
+        "findings_sha256": "06fad3c2f8373ad9bd69822dd45ee34e092028093f586c302f2fc66095e63a68",
+        "finding_count": 9,
+        "function_references": 99,
+        "unique_functions": 97,
+        "file_references": 198,
+        "unique_files": 194,
+        "new_runtime_execution": false,
+        "all_hashes_match": true,
+        "prior_verification_sha256": "ddeeb774b0df0f8f0c65ffc8df62bda509fb5af2e07139e6c495784d6affffbb"
+      },
+      {
+        "kind": "ui",
+        "status": "cached-references-reverified",
+        "findings_path": ".local/evidence/universal-original-ui-review-20261113/findings.json",
+        "findings_sha256": "7b4f886455f1e7da6774eed7c2b64f39494b5fa1ef81229d130c80fc6301a877",
+        "finding_count": 6,
+        "function_references": 36,
+        "unique_functions": 36,
+        "file_references": 72,
+        "unique_files": 72,
+        "new_runtime_execution": false,
+        "all_hashes_match": true
+      }
+    ],
+    "path_correspondence": {
+      "rows": 16,
+      "counts": {
+        "role-confirmed": 7,
+        "candidate": 9,
+        "unmapped": 0
+      },
+      "note": "Selected broad paths only; zero unmapped rows does not mean zero semantic unknowns."
+    }
+  },
+  "correspondence_scope": {
+    "rows": 16,
+    "counts": {
+      "role-confirmed": 7,
+      "candidate": 9,
+      "unmapped": 0
+    },
+    "not_a_function_equivalence_rate": true,
+    "zero_unmapped_rows_is_not_zero_unknown_semantics": true
+  },
+  "correspondences": [
+    {
+      "path": "카메라 추적·배율",
+      "phone": "`GobWorld` RTTI → vtable `0x67a18` slot 3 → tick `0x5af50` → `0x57124`",
+      "hd": "`GobWorld::processCamera` `0x11cac`",
+      "status": "role-confirmed",
+      "finding_and_limit": "역할 대응 확인. 일반판 동적 배율, 추적 완화 상수의 차이를 확인"
+    },
+    {
+      "path": "배율 저장·카메라 경계",
+      "phone": "`0x5a418` → manager `0x4e07c`, world `+0x4b0..+0x4bc`",
+      "hd": "HD 카메라 경계 설정·다른 scale 호출자 전체 미추적",
+      "status": "candidate",
+      "finding_and_limit": "후보. HD 게임 전체에 줌이 없다고 판정하지 않음"
+    },
+    {
+      "path": "터치 수신 목록",
+      "phone": "EAGLView touch `0x337c/0x353c/0x36fc` → manager `0x4e0e4`",
+      "hd": "EAGLView touch `0x3bf8/0x3acc/0x39a0` → `QobManager::onTap:State:ID:` `0x3a23c`",
+      "status": "role-confirmed",
+      "finding_and_limit": "역할 대응 확인. phone phase 1/2/3, HD 0/1/2. 일반판 수신 좌표는 화면 중심 기준. 전체 수신 순서는 미확정"
+    },
+    {
+      "path": "월드 터치 역변환",
+      "phone": "world vtable slot 5 `0x5a1dc` → 위치/유닛 아이템·일반 이동",
+      "hd": "`GobWorld::onTap:State:ID:` `0x10f84`",
+      "status": "role-confirmed",
+      "finding_and_limit": "역할 대응 확인. 일반판 역배율 계산·HUD 경계 분기를 확인"
+    },
+    {
+      "path": "적 터치 선택",
+      "phone": "`0x168a8`의 Rad reader → info `+0x20`, `0x59cf0` → `0x54fb4`",
+      "hd": "Rad reader `0x1689c` → `setRadius` `0x19d28`, `onTap_EasyMove` `0x12698`",
+      "status": "role-confirmed",
+      "finding_and_limit": "역할 대응 확인. reader 보정과 선택 수식 차이를 확인. 실제 화면 경계 비율은 미검증"
+    },
+    {
+      "path": "범위피해",
+      "phone": "탄환 `0x8910` → world `0x550d0` → `0x5504c`",
+      "hd": "`GobBullet::setCollide:` `0x71d0`의 `dmgRange != 0` 분기",
+      "status": "candidate",
+      "finding_and_limit": "후보. 일반판 이 함수에는 화면 필터가 없음. 모든 공격에 확대하지 않음"
+    },
+    {
+      "path": "점 충돌·즉발피해",
+      "phone": "weapon tick `0x23d70`의 type 0/6은 `0x550d0` 즉시 호출. 다른 탄환은 `0x8c64` → `0x8584` → `0x8910` → `0x550d0`",
+      "hd": "`checkBulletCollideX:Y:` `0x10ddc`, `checkEnemyBulletCollideX:Y:` `0x10dac`, `setCollide:`의 range 0 분기",
+      "status": "candidate",
+      "finding_and_limit": "후보. 일반판 공통 피해서 Range 0 전용 분기가 보이지 않음. HD 점 충돌과의 전체 대응은 미확정"
+    },
+    {
+      "path": "화면 판정·그리기 등록",
+      "phone": "QobBase 계열 `0x4c5e4`, QobVisual `0x51c4c`, manager `0x4edc4`",
+      "hd": "QobBase tick `0x36d98` → `isInCam` `0x37750` → `_isInScreen`; getter `0x3689c`",
+      "status": "candidate",
+      "finding_and_limit": "후보. 일반판 전체에 대응 판정이 없는지는 미확정"
+    },
+    {
+      "path": "적 AI 진입",
+      "phone": "`GobHvM_Enemy` vtable slot 3 `0xc584`",
+      "hd": "`GobHvM_Enemy::tick` `0xa330`",
+      "status": "role-confirmed",
+      "finding_and_limit": "역할 대응 확인. 양쪽 진입 본문에 화면 gate는 보이지 않음. 이동·공격 helper별 판정은 별도"
+    },
+    {
+      "path": "적 표적 획득",
+      "phone": "`0xc584` → `0xb128`",
+      "hd": "`processAI_Attack` `0xa58c` 등",
+      "status": "candidate",
+      "finding_and_limit": "후보. 일반판 표적 없음·약 0.5초 주기·거리제곱 40,000 조건을 확인. HD 전체 대응 미완료"
+    },
+    {
+      "path": "생성·재생성",
+      "phone": "맵 reader `0x58038`의 kind 4 → `0x57ac8` 적 생성. 퀘스트 추가 생성 `0x57bb8`",
+      "hd": "`readSpawner` `0xff18` → `addEnemySpawner` `0x10a00` → `GobEnemySpawner::tick` `0x7e20`",
+      "status": "role-confirmed",
+      "finding_and_limit": "역할 대응 확인. 맵 소비·생성 시점이 다름. HD 재생성에는 거리·카메라 조건이 있음. 일반판 전역 재생성 부재는 미확정"
+    },
+    {
+      "path": "BOT·수명",
+      "phone": "생성 `0x58738` → BOT tick `0xa240`, 비행 `0xaab8`, 직무 `0xa6ec/0xa9ac`, 회복 `0xad54`",
+      "hd": "BOT tick `0x8f04`, 비행 `0x95ac`, 직무 `0x927c/0x8db0`, 회복 `0x8e28`",
+      "status": "candidate",
+      "finding_and_limit": "후보. 해당 tick 경로의 시간·직무·HP 회복을 연결. 화면 밖 소멸·전체 수명·저장 재개는 미확정"
+    },
+    {
+      "path": "게임 시간·pause",
+      "phone": "host `0x50ec` → manager `0x4e3cc`, world tick `0x5af50`",
+      "hd": "host `0x299c`, world tick `0x110d8`, `time` `0x14864`",
+      "status": "candidate",
+      "finding_and_limit": "후보. 전역 누적 시간은 양쪽 float32·같은 상수지만 tick 전후 순서가 다름. 월드 시간은 phone float32/HD float64. 전체 소비자는 미확정"
+    },
+    {
+      "path": "저장",
+      "phone": "writer `0x17f80`, reader `0x17df4`, 직접 호출 후보 6개",
+      "hd": "writer `0x17580`, reader `0x16d8c`, selector 호출 후보 5개",
+      "status": "candidate",
+      "finding_and_limit": "후보. 파일명은 같으나 형식·seed 위치·XOR 범위·쓰기·난수 재설정이 다름. 사건별 전체 호출 대응은 미확정"
+    },
+    {
+      "path": "음향",
+      "phone": "OpenAL init `0x4965c`, cache `0x49aec`, effect play `0x49ab8/0x49ad0`, BGM `0x49a90`",
+      "hd": "init `0x412d0`, cache `0x423a8`, effect play `0x42494/0x424b0`, BGM `0x424d8`",
+      "status": "candidate",
+      "finding_and_limit": "후보. 조사한 일반 효과음 재생은 기존 context/source를 사용. BGM stop→dispose→load→start 순서 대응. 중단·배경 전환·loop 전체 대응과 실제 음향은 미확정"
+    },
+    {
+      "path": "화면 좌표·공통 시각 계층",
+      "phone": "QobBase 화면 위치 `0x4bebc`, GuiGame `0x2e480`, DlgMission `0x2885c`, GuiHelp `0x3abb0`",
+      "hd": "QobBase/Tile2D, GuiGame `0x29c9c`, DlgMission `0x22b1c`, GuiHelp `0x2b2c4`",
+      "status": "role-confirmed",
+      "finding_and_limit": "역할 대응 확인. 선택한 HUD 부모·hit bounds·도움말·임무창·전환 구조 차이를 확인. 전체 UI 노드와 callback 대응은 미확정"
+    }
+  ],
+  "facts": [
+    {
+      "id": "phone-camera-scale",
+      "status": "observed-static",
+      "phone": [
+        "0x5af50",
+        "0x57124",
+        "0x5a418",
+        "0x4e07c"
+      ],
+      "hd": [
+        "0x11cac"
+      ],
+      "summary": "Phone target scale is clamp((1-d)+1,1,1.6), with d based on abs adjusted player-to-desired-camera delta normalized by90/60. HD processCamera body has no matching distance-driven scale write; global HD zoom absence is not established.",
+      "fields": {
+        "world+0x4c0": "target scale float32",
+        "manager+0xc": "current scale float32",
+        "manager+0x50/+0x54": "camera center",
+        "world+0x4b0..+0x4bc": "camera bounds"
+      },
+      "literals": [
+        {
+          "address": "0x57458",
+          "float32": 90.0
+        },
+        {
+          "address": "0x5745c",
+          "float32": 60.0
+        },
+        {
+          "address": "0x57460",
+          "raw_bits": "0x3fcccccd",
+          "float32": 1.600000023841858
+        }
+      ],
+      "limit": "The algebraic shorthand 2-d does not authorize changing the original FP operation order. Device-vs-release cause is unknown. This is not a decision to copy a phone-specific zoom implementation.",
+      "phone_evidence": {
+        "0x5af50": {
+          "pseudo": "ev_225fb361cabb6d7e4594ae46893d9bb4fd7edc75bb672bc04afc780ea32415c5",
+          "assembly": "ev_29013ac5658d823960365e52fa524ed93270bc2ac49cc14848078f2381ed92c1"
+        },
+        "0x57124": {
+          "pseudo": "ev_de69a9511bd0c20479af3205645dd7c5ba85092909952f63484b1c8f3b0a08d9",
+          "assembly": "ev_bfda4188571e334d14e9301ca27e5fdfdd7fa096053555275bc8bef3fb75d0fc"
+        },
+        "0x5a418": {
+          "pseudo": "ev_dfc85368bd6eda174f07d8d29819097764b9775b576a373ba2c4af1ba2b2c2cd",
+          "assembly": "ev_ce18bffc71901c6e020e65f32193e68c9b716164edd42d069b9eeb30466b96bf"
+        },
+        "0x4e07c": {
+          "pseudo": "ev_cf7f2a64bb29f1aafbb4a305df22eb488dc881dfa801139de0f99b810a93baaf",
+          "assembly": "ev_93f4201c928b73fb7d763b0e89e535ad9f42266a54a1cb5bbe39d370858ba18f"
+        }
+      },
+      "hd_evidence": {
+        "0x11cac": {
+          "pseudo": "ev_492bd6752cb56b039e6b20cfd06b5e3ff57aef3ea5b1cc521ab1dad788ae58a9",
+          "assembly": "ev_05b1b102c8298c7b05efbcd67fdfd56a4f8075303dd1ed09e851f494f727b3bb"
+        }
+      }
+    },
+    {
+      "id": "phone-input-inverse",
+      "status": "observed-static",
+      "phone": [
+        "0x4e0e4",
+        "0x5a1dc"
+      ],
+      "hd": [
+        "0x3a23c",
+        "0x10f84"
+      ],
+      "summary": "Phone manager first subtracts half-screen. World input uses reciprocal manager scale then camera center/offsets. World y<-114 HUD boundary, pause and live-player gates are distinct.",
+      "phone_evidence": {
+        "0x4e0e4": {
+          "pseudo": "ev_cfee2913cb7a31c9402643955721adc16040707a28758b9566614cd61b9c1ded",
+          "assembly": "ev_5090e569461ca36e25689ba2064d6d8e88c0ff8b9f65f055b1315999f7d6551d"
+        },
+        "0x5a1dc": {
+          "pseudo": "ev_b9eb547d882bc5e2ac585334f3fc13cf94d800155033961a8f857feda9981050",
+          "assembly": "ev_6618c7067e77c8dc4ae65c5cd9011a59a3040f56342a1ff82fe9b468b9b53bb6"
+        }
+      },
+      "hd_evidence": {
+        "0x3a23c": {
+          "pseudo": "ev_3385efdc939d1a3922c4633692cc11f72c9f65b96c7669a0759374400c44d39f",
+          "assembly": "ev_9636c17026fbb5e3568495c4d7880698ee505a138cbafa985ea1cf9d68487a5e"
+        },
+        "0x10f84": {
+          "pseudo": "ev_a18ab0e46ec4e289cb09d68270464aba4b1744a9fce53acd4c9332fdcbc80461",
+          "assembly": "ev_c558b42e3af8f750abc8d6c913ff9aab842c192db2341523a8428cc12dc64260"
+        }
+      }
+    },
+    {
+      "id": "radius-reader-and-selection",
+      "status": "observed-static",
+      "phone": [
+        "0x168a8",
+        "0x13d28",
+        "0xefe8",
+        "0x54fb4"
+      ],
+      "hd": [
+        "0x1689c",
+        "0x19d28",
+        "0x12698"
+      ],
+      "summary": "Phone reads MachList Rad, converts int to float, multiplies0.5, truncates int into info+0x20. Instance+0x3c points to that definition. Selection compares distance squared to (stored radius*1.5)^2. HD Rad setter stores the integer directly and selection uses radius squared.",
+      "limit": "Actual screen-pixel boundary ratio was not executed or measured; phone map coordinates also halve and camera scale varies.",
+      "phone_evidence": {
+        "0x168a8": {
+          "pseudo": "ev_db1041afa791c4bd3df543d327eb4823a9bb3b2f50f21a78b13f03cb975049fa",
+          "assembly": "ev_f40f061c1ad4c304da54b185508bf83ae237a790d63efdfa74965b775cfa5bb7"
+        },
+        "0x13d28": {
+          "pseudo": "ev_baeff0e775ec7a54f9ecea09b09a01138c4b014507d2ebb3743385cbbee2527a",
+          "assembly": "ev_c9309398cf4b0cee51a2861929ac778cc49a62a6419c00f65b6f96561476263a"
+        },
+        "0xefe8": {
+          "pseudo": "ev_9fe4fb5741b518856c5218b1dd42e24f11f2e42ff44df81d996267c1b22119ea",
+          "assembly": "ev_a276b0f3428018fe922a05f0100c45133fa063154e576c0196d6b01100d7cddb"
+        },
+        "0x54fb4": {
+          "pseudo": "ev_cd5626a71912732b263b07950699a6d3aba0b44e78e60df6dbf22b896f16ba0c",
+          "assembly": "ev_32f6ebbceead597b83c3c9d60de861f05a8a5a768161282c7f7b47db040df295"
+        }
+      },
+      "hd_evidence": {
+        "0x1689c": {
+          "pseudo": "ev_a71a759b8e0caaf70b774f100387f0cca1de8366269b3a7a2ea1f1a83b504c88",
+          "assembly": "ev_93214793d87f60789b8c832888cbc7ce29b19f9912494e5952875837d65bb389"
+        },
+        "0x19d28": {
+          "pseudo": "ev_18608e5ff753a4da1ffe98b76ea78c31d6483e1b8fd12e63d5211b4ac7c685b1",
+          "assembly": "ev_cee70861802bae2e204bd2d7ae8e3000a1bf31c9019dec68a384069ad1f396c9"
+        },
+        "0x12698": {
+          "pseudo": "ev_ba2234ac416af75fc2d49f657ba67ab1bd879886874042853889d53bdb893bf1",
+          "assembly": "ev_32cca0faf8527980c381dd9af1c58789fb2b779bbdb7d098aca73007dd40507f"
+        }
+      }
+    },
+    {
+      "id": "visibility-cache",
+      "status": "partial-static",
+      "phone": [
+        "0x4c5e4",
+        "0x51c4c",
+        "0x4edc4",
+        "0x10f08",
+        "0x10230"
+      ],
+      "hd": [
+        "0x36d98",
+        "0x37750",
+        "0x3689c",
+        "0xd6d8"
+      ],
+      "summary": "HD QobBase tick computes isInCam and stores isInScreen. HD ground movement checks it after aircraft exception. The analogous phone tree/visual/movement entry bodies have no corresponding cache or common gate in the inspected bodies.",
+      "limit": "No global claim that standard lacks all visibility/culling/activation logic.",
+      "phone_evidence": {
+        "0x4c5e4": {
+          "pseudo": "ev_3140fbc41f2d79e15504d850af18b6982b6c3438c9154882b20d7da65f281ba8",
+          "assembly": "ev_40083210ae8f2bd87c72ab0d4639cd0e6debc0d5100b84da41bf28ce59e65802"
+        },
+        "0x51c4c": {
+          "pseudo": "ev_51519f7fdd3cf4d99b42e63ac28fd3af9136ba878e94e5eff8cb932b527291fc",
+          "assembly": "ev_bb82510fbbe5f2f1f63d7e8c21851e1a5120f57ff770977c6be51eee22fab8ba"
+        },
+        "0x4edc4": {
+          "pseudo": "ev_6f0e6f665e8639ad72fe2ad633464c45fd5ef141bdbe64672350f5c33b28feb4",
+          "assembly": "ev_02303f29dfe7ac71240db1e934f201f3b7a775cccc783fafd3ae0f572f1eb094"
+        },
+        "0x10f08": {
+          "pseudo": "ev_a72e8c6200951c4748455674614178f7e9ff8eebeb928d937151424f35e4223a",
+          "assembly": "ev_700ae50ceeca6c2dba6c8201d93f489c9a7eb4045e454086a15825df544faa7a"
+        },
+        "0x10230": {
+          "pseudo": "ev_86775ab4b56c3f9bd22b4decbf3015f82bda53fb384cba161d389ba135e807bc",
+          "assembly": "ev_2d6a1d4db7b142dce81ba1571f80cd012b87ffd0b7edfd8d3ba8336573a16ad9"
+        }
+      },
+      "hd_evidence": {
+        "0x36d98": {
+          "pseudo": "ev_57735b0e89383dc254f9a01ff4dd6ed4520d2d0379f5465e3f24a905f5ad1b01",
+          "assembly": "ev_d288beca3345275636fd7b8e1993758166da633d5d4e3415d504dacbb88c488a"
+        },
+        "0x37750": {
+          "pseudo": "ev_2f4e8d9a3f91bd5693028a316b87da8d51dbf7a27ad37c197ec18bfa2851b765",
+          "assembly": "ev_5fc65dfd25136ea328a867cc95ec50a4d7de1454704e9165cc7155603c4a036d"
+        },
+        "0x3689c": {
+          "pseudo": "ev_132f4e5f3f8ceebcc47db284d896c147cc855aecf4407bb0e8afc097fa661f77",
+          "assembly": "ev_09378d07efe159190cd23eb2112a03d129af1621efea4abd98c0826d33dffbcc"
+        },
+        "0xd6d8": {
+          "pseudo": "ev_d39744fd2572672704bcc2c77eb195e9f45cef8fca0f666e95f09c9c85707d18",
+          "assembly": "ev_9d2ac4069486f2551d2d17960b21653ce6065e77175ec6662714d960dc72ce30"
+        }
+      }
+    },
+    {
+      "id": "bullet-damage-paths",
+      "status": "partial-static",
+      "phone": [
+        "0x23d70",
+        "0x8c64",
+        "0x8584",
+        "0x8910",
+        "0x550d0",
+        "0x5504c",
+        "0x15128"
+      ],
+      "hd": [
+        "0x71d0",
+        "0x10ddc",
+        "0x10dac"
+      ],
+      "summary": "Phone type0/6 instant branch and other bullet impact path call common damage helper with radius+Range falloff and no observed screen filter in that helper. HD impact separates range0 (no screen filter) from area enemy/BOT branches with screen filter; HD point collision also has its own screen check.",
+      "limit": "Do not generalize one branch or point collision to every attack or change current HD common damage logic from this audit alone.",
+      "phone_evidence": {
+        "0x23d70": {
+          "pseudo": "ev_f4d9dd81afab2a421828760639a29b7cd05f573c313484a76b9f0ccc370e66c0",
+          "assembly": "ev_88f029bb7ef5c6f0fc366e818dedacab29500cc1e61be9dd6957183727461e98"
+        },
+        "0x8c64": {
+          "pseudo": "ev_e5e1250161652246c753ab1959bbef2b7039759f2810189d23e4c5155bdc67cb",
+          "assembly": "ev_9b8680173d47a27b5aa35588516ee2072e6a32970bb3a059406121331f328cc0"
+        },
+        "0x8584": {
+          "pseudo": "ev_dddba3d65b68c67becd806c372b805acef2f27751e5cf45a01988a92b07af21b",
+          "assembly": "ev_b80f5977a97fbb3d057d057fb446c9e4e0b3b25f40dfeb5cfcb4f2e442da8291"
+        },
+        "0x8910": {
+          "pseudo": "ev_b0c042e12f26c30e2dbcd98247995e78b9ec8836c4fc081a8a5e6da69d662f48",
+          "assembly": "ev_446e669e9401b1fba9bbbad2fc667ffd65b3c16021259324089eee173f5d3f30"
+        },
+        "0x550d0": {
+          "pseudo": "ev_a30ec6f49431726f3dd6b09ae753cbacf75d4ae21fa025ae343c394916856690",
+          "assembly": "ev_470a77ad07ff2db58454e03fb97c6d83b4f4397a812559ea1c4b3bf0540cb486"
+        },
+        "0x5504c": {
+          "pseudo": "ev_3102c49ee7027c0c039038a280cc9591d91a1f6f21f1ec4c540009fab0527722",
+          "assembly": "ev_5dfe491508f2a645898fbe14671b8a30f142f7d21b9ad6be514769fd8e879488"
+        },
+        "0x15128": {
+          "pseudo": "ev_b6677b755b39343db4f7a132c05842eb96f6b9337258fdbc585440bcd08e7819",
+          "assembly": "ev_3312cc6a9beee208d26500b800b5068c02b46febc55039b532e4d4b7ac83d66d"
+        }
+      },
+      "hd_evidence": {
+        "0x71d0": {
+          "pseudo": "ev_9123385b182fe46f159cb1ab42d0ed01807dbe43f062a11a27e79dcf55aa85c0",
+          "assembly": "ev_d29155eb87cbb413290934a87c3be2c1eee4b8c38fe95403e7d6a0868d24518d"
+        },
+        "0x10ddc": {
+          "pseudo": "ev_ffd3257e44dee980d5d1cf57a67280a039401d7e70bcecdfc9fc90184f6f6a1d",
+          "assembly": "ev_42836c5d2a187e6ac8ef150d4e9c34e4886a2a4b1a9809e8a1fab27eea7dfce6"
+        },
+        "0x10dac": {
+          "pseudo": "ev_32310c26d95708b4885a453d819d20079cde571b48adb331acdf0ae37e92ffac",
+          "assembly": "ev_25e5fa6cdd282347462cc5e26c554a68bc21311ef3ce19444051e9d3b6b7048a"
+        }
+      }
+    },
+    {
+      "id": "enemy-spawn",
+      "status": "partial-static",
+      "phone": [
+        "0x58038",
+        "0x57ac8",
+        "0x57bb8"
+      ],
+      "hd": [
+        "0xff18",
+        "0x10a00",
+        "0x7e20"
+      ],
+      "summary": "Phone map kind4 reads short x/y, halves them and directly constructs enemy in world+0x78. Quest action spawn is a separate direct caller. HD creates GobEnemySpawner whose tick checks time, count, player axis distances<1024, and camera exclusion for nonzero regen.",
+      "limit": "No global proof that phone has no other respawn path; removed decompiler blocks and indirect callers remain unknown. Difference cause may be release or device policy.",
+      "phone_evidence": {
+        "0x58038": {
+          "pseudo": "ev_bc1098a4b73f9f46383295757dfff35429d93296bf18c6a22b1741322395ce1c",
+          "assembly": "ev_38175985ce172d7912c142b56f651b473f3ac72e0430188e13200ecbdc557ce5"
+        },
+        "0x57ac8": {
+          "pseudo": "ev_628e1e2414c0536d0ec6f785257114754f48236f8ec5a416d7f906e9839ce702",
+          "assembly": "ev_8782ae603aa0dc6a856765540f696d9927b259f5bcd6f62bb3bcdc1d87a00cb7"
+        },
+        "0x57bb8": {
+          "pseudo": "ev_604f1edf49c5db30baf57dd926c0ec010a33bb5fa6f2c69d70f90b6a557ef2f2",
+          "assembly": "ev_89e2a678e290c5cca4233815b60a79916428e2d327b2ded3a4edc8cb755ca967"
+        }
+      },
+      "hd_evidence": {
+        "0xff18": {
+          "pseudo": "ev_a01d25441f9bd412d0b22f22c74cec377c3c94f1ff6da88cbba4f1bfa62e31dc",
+          "assembly": "ev_a635b5837df1f90eab6424d3ecb5df8f019d2230f1f21ab9317ea2547be0e3f0"
+        },
+        "0x10a00": {
+          "pseudo": "ev_3ae55fc33551366f00eb238ce636702e5e1f10ded0aba3b3f5d60f0fa5aa4f66",
+          "assembly": "ev_812a9993cb43e2c106346385305d1aa34a6f6dbb74738e5a995104d88fd66ce5"
+        },
+        "0x7e20": {
+          "pseudo": "ev_045892b070d0d1c022ce7d979d86dd7c17c925d037054d04837bb898a78edc18",
+          "assembly": "ev_792bd568d17340be647bd6846608c0890993e9dfa14983fd75be20507ab11f78"
+        }
+      }
+    },
+    {
+      "id": "bot",
+      "status": "partial-static",
+      "phone": [
+        "0x58738",
+        "0xa240",
+        "0xaab8",
+        "0xa6ec",
+        "0xa9ac",
+        "0xad54"
+      ],
+      "hd": [
+        "0x8f04",
+        "0x95ac",
+        "0x927c",
+        "0x8db0",
+        "0x8e28",
+        "0x8b28",
+        "0x8b2c"
+      ],
+      "summary": "Both tick paths perform flight/job/HP-recovery then common mech tick. Phone dispatches active jobs0/2; HD1/3 job helpers return immediately. Both recover HP+1 every five game-time units under live/not-full conditions.",
+      "limit": "No camera-expiry gate observed in these entry/flight/recovery bodies; death, map transition, saved resume, entire lifetime equivalence are not yet established.",
+      "phone_evidence": {
+        "0x58738": {
+          "pseudo": "ev_837ab5548f3b33b78288b3c1155b1922caabbce68083a7ffa6dfdb0c01bec376",
+          "assembly": "ev_2b625e9f6d4b5f0c25e520aeabd7ba647909b5ed078ad7f829494100f7382dbd"
+        },
+        "0xa240": {
+          "pseudo": "ev_da2a25a105280e93ecbbc74ce7438fcb0b720509425b32961c01b275af0d9e8b",
+          "assembly": "ev_3fe00f3e857eab055d5836d9fd3d869f592c6d6f944717be6ea0c5533b93443a"
+        },
+        "0xaab8": {
+          "pseudo": "ev_676af6fe708834f936e65a9837012b17b2c66325a76cfd62e0abd447b35b9760",
+          "assembly": "ev_525a9467f01be054ae15e71d7b52161cb5306ce256b7a6e9aa986b297b6fbc44"
+        },
+        "0xa6ec": {
+          "pseudo": "ev_e93d21200bea8d64ed14349e3a1fde2a65267fec84b9df91e954b2303c55e6c5",
+          "assembly": "ev_aa01118e46f2d6478d4b26c463260cf8738e9884947ceaab6464bd959c1424f2"
+        },
+        "0xa9ac": {
+          "pseudo": "ev_b84dcb7fb349050e37df2e881d4a872a0dafac5e8aaaf16bbb4502e5e8d8f639",
+          "assembly": "ev_997a7dce4cb9f372e89c791d9f8b9a1eafc071ec8fbc2c2f638d409f6ad27167"
+        },
+        "0xad54": {
+          "pseudo": "ev_2790812fcb0bce677b2917a159df5e6a2aa896eaaa02bdac3fac34fd375622c2",
+          "assembly": "ev_b125e4d0e35c946c256f7955bd4bd0b0914b62313171113aee144a22fd55d13a"
+        }
+      },
+      "hd_evidence": {
+        "0x8f04": {
+          "pseudo": "ev_e97054f5ed7780c98845e9f99d94d31575563a0862b85f1a6d096cd25c108815",
+          "assembly": "ev_832e46f12d97f2a454cb6f6bcc96732bf7046280b9755a29d05a5f20338343ea"
+        },
+        "0x95ac": {
+          "pseudo": "ev_a43cc741ec9fce9efb1f6b5346d9247720c3046d675d6c41fae721a2a31e0c1c",
+          "assembly": "ev_6272e0eb30a40045c7790c09c14064ae674cf01d82de7ed0dcfb347190c08e3e"
+        },
+        "0x927c": {
+          "pseudo": "ev_6e45ef1f366789df4561bea1c20dfa8929ac040d5543ba2fda61ec676630c0b7",
+          "assembly": "ev_22ebd12310ad0a09bc6e5c657ff5eabf14d79c9a6c76c4e05b6380e7b4551e39"
+        },
+        "0x8db0": {
+          "pseudo": "ev_0944e144d740991f50ae18155b072f9ff6b7ac1fb4c7a96edd8da68ae2a79868",
+          "assembly": "ev_6190878000e0ecb2a14fcfe74adbc0b2d835ce0d5fa5e8655c985c037ea874c4"
+        },
+        "0x8e28": {
+          "pseudo": "ev_35c848ba12e9e9ae9e3ca1b984e67cb3136bb538a575196b2f658065959e18d1",
+          "assembly": "ev_9988e7f9c64c141366b28af462b2399a4682e7c5a2f9959e63f234421db8ad81"
+        },
+        "0x8b28": {
+          "pseudo": "ev_b8f67339e9542f1e804e5abfa3e24f2d07c59669a654cfc0712984d9830518db",
+          "assembly": "ev_2d77a26c535aa1dfd5053338e4278510bbcd315d0d714c0e0412825c3a50eb6f"
+        },
+        "0x8b2c": {
+          "pseudo": "ev_ff7f5a6c054c86abb78b225bdbcbca21c5fd0fca98189e349a40e7a3c7d2d042",
+          "assembly": "ev_68c3cc6d1b203806c3203f9be3429cc968a31486e3ede09b0c039e5745065e6b"
+        }
+      }
+    },
+    {
+      "id": "time-increment",
+      "status": "same-global-float-step-different-world-precision-and-phase",
+      "phone": [
+        "0x5af50"
+      ],
+      "hd": [
+        "0x299c",
+        "0x110d8",
+        "0x14864"
+      ],
+      "same": {
+        "raw_bytes": "b9fc873c",
+        "raw_bits": "0x3c87fcb9",
+        "type": "float32",
+        "value": 0.016599999740719795,
+        "scope": "Global frame accumulation: phone manager+0x3c vs HD renderScene global. Does not describe both world-time accumulators."
+      },
+      "different": "Phone manager updates global float32 time after scene/events; HD renderScene updates it before tick. Phone world+0x48 uses float32 under pause gate; HD world _gameTime uses float64 vadd.f64 at0x11108. Phone also stores host absolute double at manager+0x44.",
+      "unknown": "All consumers and scheduling/pause semantics, long-session gameplay effects and any latency were not runtime-tested.",
+      "literal_addresses": {
+        "phone": "0x5b0d4",
+        "hd": "0x2a00"
+      },
+      "phone_evidence": {
+        "0x5af50": {
+          "pseudo": "ev_225fb361cabb6d7e4594ae46893d9bb4fd7edc75bb672bc04afc780ea32415c5",
+          "assembly": "ev_29013ac5658d823960365e52fa524ed93270bc2ac49cc14848078f2381ed92c1"
+        }
+      },
+      "hd_evidence": {
+        "0x299c": {
+          "pseudo": "ev_97e7cb24913384c42b02f0380628a8da7bec66f3acb575b4d7184ba7207d5b34",
+          "assembly": "ev_b6e772098145102323f60e357b99056f2da3d051eb1876852966cb02a0defada"
+        },
+        "0x110d8": {
+          "pseudo": "ev_7032f66dcf004179c8c148703c2122c34a63fe2ba9008e01e08fec8ab94aa7fa",
+          "assembly": "ev_e16b7484fee56ec895d3fe260c3c5bfa8abe55ac605aec63f60be2510854cc1c"
+        },
+        "0x14864": {
+          "pseudo": "ev_17ab63a1073ac48ba5c136f20f0519311734b049bff547711db3530a8c3f090d",
+          "assembly": "ev_3da9f06e3ebc50878c057202b9ab8b2a1d20ba3bca79291d99a05458bdce22db"
+        }
+      },
+      "world_time": {
+        "phone": "float32, vadd.f32 0x5afc4",
+        "hd": "float64, vadd.f64 0x11108; time getter0x14864 copies8bytes",
+        "step_relation": "HD double step exactly represents promoted phone float32 step, but accumulator precision differs.",
+        "hd_step_literal": {
+          "address": "0x1114c",
+          "raw_bytes": "0000002097ff903f",
+          "float64": 0.016599999740719795
+        }
+      }
+    },
+    {
+      "id": "activation-flag-chain-followup",
+      "status": "bounded-asm-chain-confirmed-global-absence-unknown",
+      "summary": "Phone byte+5 checks own/parent visibility recursively at4bcfc and gates tree virtual tick at4c5e4. Mech tick10f08 gates own+5, world pause+41 and state+54 before10230 type dispatcher+50. This common dispatcher has no HD-style isInScreen gate before type branches. No global absence of visibility or activation checks is claimed.",
+      "phone": [
+        "0x4bcfc",
+        "0x4bcf8",
+        "0x4c5e4",
+        "0x4bcb0",
+        "0x4c7a0",
+        "0x51c4c",
+        "0x4edc4",
+        "0x10f08",
+        "0x10230",
+        "0xfc20",
+        "0xf97c",
+        "0xf800",
+        "0xf714",
+        "0xa240",
+        "0x50fe8",
+        "0x5108c",
+        "0x51274"
+      ],
+      "references": [
+        {
+          "address": "0x4bcfc",
+          "exports": {
+            "pseudo": {
+              "evidence_id": "ev_77c84633e43c11f5af225cb2182d20a39540a2d48bad5194c164c1d1a6023aef",
+              "sha256": "88a9c75a5eba36cdef6ae43c2a9409ed774e13f834b35a12fb4e0100f0cf81f1",
+              "bytes": 243
+            },
+            "assembly": {
+              "evidence_id": "ev_fc383e3ce70b9c3eccd80303c24ff15c8cb42d662d1886530a445d54a61df263",
+              "sha256": "8946e2a1c66a784fd606c71b5e37a87806eac7d0989e2c0b4f0643c8d90690ba",
+              "bytes": 294
+            }
+          }
+        },
+        {
+          "address": "0x4bcf8",
+          "exports": {
+            "pseudo": {
+              "evidence_id": "ev_f5dd5157cf5ea3b23362d74321bcc60116d4e10c196d54e1588fae41f5452e2d",
+              "sha256": "9f8c373f67b90db2df49064b3a3427737a0b94b7bf57d46e38fee541f87bede8",
+              "bytes": 109
+            },
+            "assembly": {
+              "evidence_id": "ev_c3c1b22db94da05a0ec3c8bf1d2cef5b545fe772a69a7f54e038daf59569f0a7",
+              "sha256": "aaf773dc71e1ee8c35ed30036862dd5a3df0e0169967554878268af94b456586",
+              "bytes": 42
+            }
+          }
+        },
+        {
+          "address": "0x4c5e4",
+          "exports": {
+            "pseudo": {
+              "evidence_id": "ev_3140fbc41f2d79e15504d850af18b6982b6c3438c9154882b20d7da65f281ba8",
+              "sha256": "d067696206bc9ee0b50fbff6cbaf3f1273b341177f78f419fa5ee3f0afda0b8a",
+              "bytes": 678
+            },
+            "assembly": {
+              "evidence_id": "ev_40083210ae8f2bd87c72ab0d4639cd0e6debc0d5100b84da41bf28ce59e65802",
+              "sha256": "7c6cdef2ac4adc1836905d375ed6e3b6927d6f75c74f97e36b5161f743baafdb",
+              "bytes": 821
+            }
+          }
+        },
+        {
+          "address": "0x4bcb0",
+          "exports": {
+            "pseudo": {
+              "evidence_id": "ev_3ce2d57be1b1795e4b592e6b0884b3f1a06ea95441ec9751ec855410df311e23",
+              "sha256": "440ce05af084b68e70ca370453aa5112709aa35818b92397d8867671e1bb0322",
+              "bytes": 701
+            },
+            "assembly": {
+              "evidence_id": "ev_17373c90f5e4f47468c6a4769e99f3f3f6006c5c4401130868c88384a133d427",
+              "sha256": "1f972b1bb00abe6b94e14edfca948af5440f65c5b53be375413742696657af9b",
+              "bytes": 800
+            }
+          }
+        },
+        {
+          "address": "0x4c7a0",
+          "exports": {
+            "pseudo": {
+              "evidence_id": "ev_6164670f37a7a7add277aa22d6f6e3a898a08fdc106750c536cf46ae77eb84cd",
+              "sha256": "30b861b33cbf2aa63855e738b9cee051771ea2249f7d7b2fa69e8c08465d3cff",
+              "bytes": 701
+            },
+            "assembly": {
+              "evidence_id": "ev_8a62955b5d74745fdc13518f1cf8020d7f115fa0427b466d52eb766179c683e0",
+              "sha256": "4950a2654be11d065a9b5077085b30f029697f29e97ee53076e2ce102eda8b0d",
+              "bytes": 800
+            }
+          }
+        },
+        {
+          "address": "0x51c4c",
+          "exports": {
+            "pseudo": {
+              "evidence_id": "ev_51519f7fdd3cf4d99b42e63ac28fd3af9136ba878e94e5eff8cb932b527291fc",
+              "sha256": "b205f8d84400743b275826d337d6d55d942f2df3c56bc3da5fec6f330551ad34",
+              "bytes": 1224
+            },
+            "assembly": {
+              "evidence_id": "ev_bb82510fbbe5f2f1f63d7e8c21851e1a5120f57ff770977c6be51eee22fab8ba",
+              "sha256": "002fe70060042b2de0b99b64c79e9532825cd56171c79f187ff7eed880fb13a9",
+              "bytes": 2102
+            }
+          }
+        },
+        {
+          "address": "0x4edc4",
+          "exports": {
+            "pseudo": {
+              "evidence_id": "ev_6f0e6f665e8639ad72fe2ad633464c45fd5ef141bdbe64672350f5c33b28feb4",
+              "sha256": "7301eac9f1c1c904dba72d5731d3d8268fda5bb94c89bb19e1ebb7e905238a14",
+              "bytes": 534
+            },
+            "assembly": {
+              "evidence_id": "ev_02303f29dfe7ac71240db1e934f201f3b7a775cccc783fafd3ae0f572f1eb094",
+              "sha256": "bedb1ba6ff2c1f9f78972e8c8037937f8fdd02b362507460741715860bc25c59",
+              "bytes": 1056
+            }
+          }
+        },
+        {
+          "address": "0x10f08",
+          "exports": {
+            "pseudo": {
+              "evidence_id": "ev_a72e8c6200951c4748455674614178f7e9ff8eebeb928d937151424f35e4223a",
+              "sha256": "466d66da401d8fa697bd0aba4761fae5b5254c663bd554f217f58d2dfd4d617a",
+              "bytes": 3776
+            },
+            "assembly": {
+              "evidence_id": "ev_700ae50ceeca6c2dba6c8201d93f489c9a7eb4045e454086a15825df544faa7a",
+              "sha256": "27370e4137858c6cb2458ae2ac0bc68f5aea18810680d96040279a377a87f799",
+              "bytes": 4986
+            }
+          }
+        },
+        {
+          "address": "0x10230",
+          "exports": {
+            "pseudo": {
+              "evidence_id": "ev_86775ab4b56c3f9bd22b4decbf3015f82bda53fb384cba161d389ba135e807bc",
+              "sha256": "8d39a5638579c59fbe7fb2f00cf6f40f0ce29370810e2b65110bc9650fc4dab4",
+              "bytes": 10594
+            },
+            "assembly": {
+              "evidence_id": "ev_2d6a1d4db7b142dce81ba1571f80cd012b87ffd0b7edfd8d3ba8336573a16ad9",
+              "sha256": "a07b10eec772ccbbbf2848cee43bb8b07315e2ce9e7a8d131944e4602bfbba15",
+              "bytes": 10467
+            }
+          }
+        },
+        {
+          "address": "0xfc20",
+          "exports": {
+            "pseudo": {
+              "evidence_id": "ev_1a9f484ce5faba41d7e7aa61dff8d7a4bd15f11a3571550dcab7b1dbbf619add",
+              "sha256": "00399812c86ddb2548130f4998dda0418d08f3a3033fa890a837860881dfe8a7",
+              "bytes": 15397
+            },
+            "assembly": {
+              "evidence_id": "ev_abd7e775ebe0a1e8c74510c0e5f3a3f3a05635a5f8e02d6264ecbbe2620cd6c3",
+              "sha256": "1cf85ae8f7b72ebbef3e0706f7ac62968fa2cc52a2a5af2e4e4db1b3f9754b66",
+              "bytes": 10775
+            }
+          }
+        },
+        {
+          "address": "0xf97c",
+          "exports": {
+            "pseudo": {
+              "evidence_id": "ev_82ff5496ade11214853a76ffcfa5b5936ee93a09190704d9ae53b94b8e115e48",
+              "sha256": "26492c4047f5117f38ed1208eb0d624f39952a900ca6abb0737f4a38cebd107b",
+              "bytes": 5978
+            },
+            "assembly": {
+              "evidence_id": "ev_24c6a52c3ff2b159aee4b82ceb869007f627889a5a18478d1c07eedef6bcca40",
+              "sha256": "b06b5f5959b02477b5320b3918ff057c4699e2c4de36c4b913ee2535eaa8e2d7",
+              "bytes": 4594
+            }
+          }
+        },
+        {
+          "address": "0xf800",
+          "exports": {
+            "pseudo": {
+              "evidence_id": "ev_1d1b088d3e9bc0b9dc9be93fbf6a35a8e09a33359873c9d080ca487351f994eb",
+              "sha256": "4c7608134f2a857c76f4e4f94360ea32a7c3e8a55d015b70f28e17e270847625",
+              "bytes": 3207
+            },
+            "assembly": {
+              "evidence_id": "ev_2ffe930bdc10c3099901ce75b12742dc588f7a0ea443e58ca8b8fb15f2afad52",
+              "sha256": "86fd94e3709babfc2ed0b4c1ec6682b9850a223051f80651d5a72f885e8537b4",
+              "bytes": 2524
+            }
+          }
+        },
+        {
+          "address": "0xf714",
+          "exports": {
+            "pseudo": {
+              "evidence_id": "ev_46277a7902bd52510904f5c83a27187c050621c4583be1ec3ee9000fbcd954fb",
+              "sha256": "853fcbe147414fde1281a96f8bcc907caec12b6087b50a18a08184cd84eccf3d",
+              "bytes": 2638
+            },
+            "assembly": {
+              "evidence_id": "ev_41e9915c61bb7e6420e58eb99664f536ccf6261f403a2612481a43de396deab8",
+              "sha256": "16a57bbde0be4d652c64bfc40f9bf37f0011cfc7fdc014f794dad9343f7ed9e2",
+              "bytes": 1747
+            }
+          }
+        },
+        {
+          "address": "0xa240",
+          "exports": {
+            "pseudo": {
+              "evidence_id": "ev_da2a25a105280e93ecbbc74ce7438fcb0b720509425b32961c01b275af0d9e8b",
+              "sha256": "124ff98dd560334bdcfd30cea33871d546749d40bab3b31cdaf28d284a1a33ad",
+              "bytes": 1472
+            },
+            "assembly": {
+              "evidence_id": "ev_3fe00f3e857eab055d5836d9fd3d869f592c6d6f944717be6ea0c5533b93443a",
+              "sha256": "10442391ddba5de220929e4a3136ae98dc704eac0fafc0e35e591c9dbcbf4eb6",
+              "bytes": 2568
+            }
+          }
+        },
+        {
+          "address": "0x50fe8",
+          "exports": {
+            "pseudo": {
+              "evidence_id": "ev_f019777105738792a093652faca996bc53c2430e1c4827cb65153fb4591a335d",
+              "sha256": "62f3235f00af7dbca400f60d51b5d8054d27117cf1bff0ab28b7d1d8049394f4",
+              "bytes": 695
+            },
+            "assembly": {
+              "evidence_id": "ev_ab4b9ac352d230e2ae524ce1b2271ca8140dc56bb5ccfb13fc2120b771430c79",
+              "sha256": "1fc2d52f3bae4fbc2bef04ddc9b845957bcab076f71f0ee07e5a43fde053a531",
+              "bytes": 953
+            }
+          }
+        },
+        {
+          "address": "0x5108c",
+          "exports": {
+            "pseudo": {
+              "evidence_id": "ev_f955bcdd69371f7fe13bcd137a75a0c4be57b5aca3166558f8154813456faf9a",
+              "sha256": "d9301c699121884115e55cfed6534787c0ccd81e75566cac3bbbebd5ec151681",
+              "bytes": 4236
+            },
+            "assembly": {
+              "evidence_id": "ev_dd4ed74ab22203cbe05f85bc9af1a7161e0dc94f0b6023e2c8c1ab63d6adb396",
+              "sha256": "e40d34be161a10895d14524bc21b67ff54e412d3662bedc472acd0742b82343f",
+              "bytes": 3921
+            }
+          }
+        },
+        {
+          "address": "0x51274",
+          "exports": {
+            "pseudo": {
+              "evidence_id": "ev_9c4fadac5c3d3343cfc4a908c6fe217fc065362e0d605c99610df69ff5b602ad",
+              "sha256": "954d05cb14932e021af245ebc6ebd993d79d973359eacd65a234fbcb8df9ae1c",
+              "bytes": 1131
+            },
+            "assembly": {
+              "evidence_id": "ev_7f6507e05d20446314a9a93a9793f992c57c4b4fc40542023363d5586111d42c",
+              "sha256": "4cf2866270834dba0ad6c7900bad9c9f26ce73b069da7fdde1179907ebabce86",
+              "bytes": 2044
+            }
+          }
+        }
+      ],
+      "scan": {
+        "scope": "Exact immediate-offset byte access and direct BL only across cached1077 assembly bodies.",
+        "counts": {
+          "write_instructions": 6,
+          "write_functions": 6,
+          "read_instructions": 6,
+          "read_functions": 6,
+          "setter_direct_calls": 150,
+          "setter_direct_caller_functions": 65
+        },
+        "vtable_targets_without_cached_instruction": [
+          "0x11ea0",
+          "0x23ba4",
+          "0x24c54",
+          "0x261dc",
+          "0x27f90",
+          "0x29d5c",
+          "0x2a2fc",
+          "0x2f990",
+          "0x34278",
+          "0x39e14",
+          "0x3bb0c",
+          "0x46f3c",
+          "0x4cab0",
+          "0x4d2a8",
+          "0x4d524",
+          "0x4d598",
+          "0x4dccc",
+          "0x51048",
+          "0x7924",
+          "0x7928",
+          "0x792c",
+          "0x7930",
+          "0x84bc",
+          "0x84c0",
+          "0x9144",
+          "0x9cac",
+          "0xaeec",
+          "0xb318",
+          "0xb988",
+          "0xe0a4"
+        ],
+        "limits": [
+          "Literal offset5 is not proof of object identity at every access.",
+          "Register-offset accesses, aliases, wider stores, indirect calls and excluded blocks are not resolved by this scan.",
+          "The150 setter call targets/conditions are not all semantically classified. No global absence of screen gating is inferred."
+        ]
+      },
+      "remaining": [
+        "Classify150 direct show-setter calls by target object/parent and condition.",
+        "Resolve register-offset/alias/wide-store and indirect uses before global absence claims.",
+        "Obtain instruction/branch ranges at30 vtable targets missing from cached1077 bodies, including Enemy targets0xb318/0xb988. Do not generalize one confirmed bx-lr stub to the others.",
+        "Inspect helper-internal activation/collision/death/lifetime paths before declaring all offscreen behavior equivalent."
+      ],
+      "new_runtime_or_rea_execution": false
+    }
+  ],
+  "raw_evidence_directory": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113",
+  "runtime_execution_performed": false,
+  "build_or_device_install_performed": false,
+  "game_source_changed": false,
+  "rea_session_closed": true,
+  "limits": [
+    "All1077/1300 bodies available does not establish all-body semantics or equivalence.",
+    "Function ABI/name/body-byte differences are not treated as semantic differences.",
+    "C++/ObjC metadata difference does not establish separate original source repositories.",
+    "Camera/selection/spawn difference cause cannot yet be assigned to device or version.",
+    "One numeric fallback query at0x23ba4 was rejected; raw bx-lr evidence retained.",
+    "Global float32 frame accumulation must be distinguished from phone float32 versus HD float64 world-time accumulation; shared step bits alone do not establish equal arithmetic."
+  ],
+  "followup_cached_reviews": [
+    {
+      "kind": "runtime",
+      "input_path": ".local/evidence/universal-runtime-native-review-20261113/findings.json",
+      "input_sha256": "06fad3c2f8373ad9bd69822dd45ee34e092028093f586c302f2fc66095e63a68",
+      "findings": [
+        {
+          "id": "fixed-step-and-host-clock",
+          "classification": "same_constant_different_order",
+          "observed": {
+            "shared_global_frame_clock_increment_float32_bits": "0x3c87fcb9",
+            "shared_global_frame_clock_increment_float32_value": 0.016599999740719795,
+            "phone": "drawFrame 0x50ec stores CFAbsoluteTimeGetCurrent double in manager+0x44, invokes 0x4e3cc then 0x4ef90. 0x4e3cc advances accumulated float at +0x3c and writes delta +0x40 after scene/event processing.",
+            "hd": "renderScene 0x299c increments global float before tick and drawVisual. ASM 0x29c6 uses vadd.f32; phone ASM 0x4e566/0x4e56e materializes the exact constant and 0x4e572 uses vadd.f32.",
+            "world_game_time": {
+              "phone": {
+                "function": "0x5af50",
+                "field": "world+0x48",
+                "precision": "float32",
+                "instruction": "0x5afc4 vadd.f32; 0x5afc0 vldr.32 and0x5afc8 vstr.32"
+              },
+              "hd": {
+                "function": "0x110d8",
+                "field": "_gameTime",
+                "precision": "float64",
+                "instruction": "0x11108 vadd.f64; 0x11104 vldr.64 and0x1110c vstr.64",
+                "increment_double_value": 0.016599999740719795,
+                "literal_address": "0x1114c",
+                "literal_bytes_hex": "0000002097ff903f"
+              }
+            }
+          },
+          "inferred": "Both global frame clocks expose the same float32 increment bit pattern, but the timing phase and additional phone absolute clock observation differ. This statement does not cover world-game-time storage: phone world+0x48 uses float32, while HD _gameTime uses float64. This is not measured wall-clock 1/60 second behavior.",
+          "unresolved_next_checks": [
+            "Trace consumers of phone manager+0x44 versus +0x3c/+0x40 and HD global time before asserting scheduling or gameplay duration equivalence.",
+            "No frame-duration or latency measurement was executed."
+          ],
+          "correction": {
+            "date": "2026-11-13",
+            "reason": "Native-owner review distinguished global frame clock precision from world-game-time precision. Earlier fixed-step wording was scoped by function addresses but could be misread as all game time.",
+            "previous_findings_sha256": "8e88c384d35e0b9f341e383e88f84ae8d8453fe7530d8f8639feae8e71cd483c",
+            "previous_findings_preserved_as": "findings.before-clock-scope-correction.json",
+            "scope": "Same float32 increment applies only to global frame clocks. World game time is phone float32 versus HD float64. Equal decimal increments do not imply equal accumulation or save-field precision.",
+            "new_native_queries": 0,
+            "new_app_executions": 0
+          },
+          "references": [
+            {
+              "domain": "phone",
+              "address": "0x50ec",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "ead2867a5f9fc16d31df26fad47e65f575f82fd2254549160ba629cbe0cd4f9b",
+                  "evidence_id": "ev_978c4728701db95d9ac04348ef1610d6879adf23db041882de65246334b2f793"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "7b9f67eec64cd49d569a994ce75eaa3c778723ed2b9bc9a2625f2df01d1a319a",
+                  "evidence_id": "ev_7b940d5223d1514b970ce44231657c57ee4c3401c879878129411240f2ba4aae"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x4e3cc",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "165b84d5f20cc808e740c1fb9eb75beedb3c00c43f015e2700175d7be9fe2d28",
+                  "evidence_id": "ev_ff625e291823e375188c67b7babcac6d8429ccb40693359702aae02462dc91f1"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "0ede72323b8db29d2d92dd409f0aa504207119debd8d7206f7fb275860f58ed8",
+                  "evidence_id": "ev_3655c932c7256384ab19d491760680b074d85de69357b77ad7a655bc39ea0d31"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x5af50",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "90ecb5541c40ddfe2f36daef527611d9aad2712277df0ab2feff64fa2f37b22e",
+                  "evidence_id": "ev_225fb361cabb6d7e4594ae46893d9bb4fd7edc75bb672bc04afc780ea32415c5"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "052bcc28bc4f1b80e8da9b6f7be92cf10f39b9d3b9d14fe78ae16aa2c0bf6a5a",
+                  "evidence_id": "ev_29013ac5658d823960365e52fa524ed93270bc2ac49cc14848078f2381ed92c1"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x299c",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "ca4234be3ec897cc92e359226062e24325ed6b0aef246bcd080c8c30887c8268",
+                  "evidence_id": "ev_97e7cb24913384c42b02f0380628a8da7bec66f3acb575b4d7184ba7207d5b34"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "83e5489cf67a059997cdfcc3b57fc0f5363a89d1d094d82cf6366673ed6b9821",
+                  "evidence_id": "ev_b6e772098145102323f60e357b99056f2da3d051eb1876852966cb02a0defada"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x110d8",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "6485c5b38f3e153b7b24a8a3d0624dda6edb34dfd645636507f10e1fa939e156",
+                  "evidence_id": "ev_7032f66dcf004179c8c148703c2122c34a63fe2ba9008e01e08fec8ab94aa7fa"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "969773aeda3b764874149ec6623b0c1570e26c031135c90460c5df1c19932691",
+                  "evidence_id": "ev_e16b7484fee56ec895d3fe260c3c5bfa8abe55ac605aec63f60be2510854cc1c"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "scheduler-and-lifecycle",
+          "classification": "different_host_callbacks",
+          "observed": {
+            "phone_scheduler": "startAnimation 0x4ea4 creates displayLink, sets animationFrameInterval, adds to current NSDefaultRunLoopMode; stopAnimation 0x45e0 invalidates and clears displayLink.",
+            "phone_callbacks": {
+              "willResignActive": "0x2cd0 calls stopAnimation",
+              "didBecomeActive": "0x2cf4 calls startAnimation",
+              "willTerminate": "0x2d18 calls stopAnimation",
+              "didEnterBackground": "0x2b2c returns",
+              "willEnterForeground": "0x2b30 returns"
+            },
+            "hd_scheduler": "initGameMain 0x2858 uses OS-version-dependent NSTimer fallback or CADisplayLink frameInterval 1, default run loop, target renderScene.",
+            "hd_callbacks": {
+              "willResignActive": "0x24d8 returns",
+              "didBecomeActive": "0x24dc returns",
+              "willTerminate": "0x25d0 synchronizes NSUserDefaults"
+            }
+          },
+          "inferred": "Original app host lifecycle handling differs. The observed callbacks do not establish OS scheduling or audio-interruption behavior during real background transitions.",
+          "unresolved_next_checks": [
+            "Resolve audio-session interruption notification registration and every caller of SoundManager setPause/setBackground before claiming complete audio lifecycle equivalence.",
+            "The universal restoration should define one common host lifecycle policy rather than silently inherit phone and HD callback divergence."
+          ],
+          "references": [
+            {
+              "domain": "phone",
+              "address": "0x4ea4",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "310773be4bff179d1a631f6e58a29b90d43e9ea0dc40176004c8f83cfaeef6cb",
+                  "evidence_id": "ev_c050360cb63a52df201d4c4f35eadb35736583401d4b1c9acf65c7f7293ccb95"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "971bd49e5912348e4d610526b7e60191e28dbdcaef0351e10d1f9dcec2190912",
+                  "evidence_id": "ev_7c1e712e05e7eaed6a0920fe2cfab4ec70f294d93c2e17b04e6cb23147419e8d"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x45e0",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "3c0f15c989c5889401cde0fdb229ddd3d389847fa55f4b69a950c4c8d7d5b312",
+                  "evidence_id": "ev_a768a8e64b2b6521958750be94a4f1cdd9157443d63910d594546a04792443db"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "6c4ea45f08d66c4b3113c899db510090b53ce05453c4de6e00264bb2762231c0",
+                  "evidence_id": "ev_b7ee72a19b0754660c8f435cb4851a5ce76943d024ee0438af653f4ac1df9d87"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x2cd0",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "727f7f18053e5992530c6dd3fbeafd21aa2ba1c351c1c8ea1ba50dcb5b7d182d",
+                  "evidence_id": "ev_0150bdedcbe6f446925907d3f307a801a61661bd61d4d31cdff48b073ca90c92"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "4563bcaf89dee883ac9f8eabdf322925b04fc490070ad25383c6736d305c4994",
+                  "evidence_id": "ev_a7f375bc2542fda4569c717583215d723c095915a2fec24e0b53374a1eb3eae8"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x2cf4",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "3d49ebdcb7acca3a2441a598006972d9721c6847ef73597940fc2d62725873e5",
+                  "evidence_id": "ev_f1d8873c65a2fb55f4dee52f94fac17855831e1353dfa1b3c8ea5effd2045a28"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "4fc75e63946c5d9e080da867a062eb370c2fd36afca47dc181576dff71616c10",
+                  "evidence_id": "ev_14e307bcd621e571f65a9c6ecf6e9bb044c3e2fc9be696ecd1ce733140b27f9f"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x2d18",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "15958c8f9e4a779e6ee9dd236ca2ab212ba79c6c20e3ce569038fe37c4a6310a",
+                  "evidence_id": "ev_bb09f329177936c1db9f83698a2104ff7caca6224f3cc4aa72fcb481b15ad3f9"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "905326705b25a30da748e0bf3452d6efaf44be3d4c949cd1a97e0e3d07e7bdac",
+                  "evidence_id": "ev_a3151a55f58b6278cd6a287aefd3f6854a84ce0d20a4d155611f57f51d8af83a"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x2b2c",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "7cb00f7eeae2717ad922cfca57074e28dfccc03e49d63208825a4f9b2eb84985",
+                  "evidence_id": "ev_27c99a0974f7684f7bbf4976b06453ee3c3121cf350cd6779bfef6c8602affca"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "32fadee6b075b6b2ff7aa8e5ec43b400ec130530090fb40395f818d97292f877",
+                  "evidence_id": "ev_7b7494e77a7d152f8d6de2940026192db673679f1e3eefdbc13ea0db3d9aaa02"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x2b30",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "5347890ea6450185f2d2c9dacaf15450849cdaec71b1fd6af1ed5935168c135b",
+                  "evidence_id": "ev_0ccc865fc7ad4c4df30c2f7e4031b1262721ae16cea9ce14740ae583428acc49"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "4abf7cc30c35c9bdcb20a119ad66af61c03e5f21f94f68dea14e75d6064bce47",
+                  "evidence_id": "ev_de8099492eb4efd1bea5ee70d920753a0f8051857f8eb2ddf43ff2cba5d0fec6"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x2858",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "2aa27168bf8610264c2ed6247461087d5f69ad97b0af285bab45f96a8525f7d2",
+                  "evidence_id": "ev_23bd61eff9bd0d4f17ae56ed7f1c50443c1c38f10ed5f514779b66e366be8f64"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "01f3853699552d645e4c1a86be057a0896a8dbc3da1bfbb5abc507b8500d33c5",
+                  "evidence_id": "ev_22865509d0f14cb2e13fcef9fd50b178521d287fed70cac8b3ff42e97a4ec666"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x24d8",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "bc5dd5ea62c9663a1da0463fc2a58e5851721173acb0c43517498c23f0612436",
+                  "evidence_id": "ev_bc259cc0542d9087cba3333301a0b76314c6a65b465b0a599f0095021cea0372"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "0389c02328fc1f1fb5ab9174ebafff539c41d7278a35d38c056580745e7c2829",
+                  "evidence_id": "ev_98e8d59774f7d4ef880919afff3ea34381e7110b16ec04f63d1a6c3c338bc1b7"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x24dc",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "a5f7f5f42d28eb3f1c33ba64ece36ac6952317e24ba3b2d968be5abc0ffec440",
+                  "evidence_id": "ev_d802c282dc38a66c54b06f2898748c7bec1ca9fcf17eb1a68e38e30ede7d9ec1"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "49322ab83fea82097a1bc410f0da773121fa069108a9d840ac56c304545bfa20",
+                  "evidence_id": "ev_0ed541741dfc439276e36956be15a7867268931f8c1573ef0ce9a3e88f5debf1"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x25d0",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "5743f6d26644de4a8093c76dde70280b31deff218bd181a141596bf6fbc86eca",
+                  "evidence_id": "ev_4c4af9fca9bee3eeb15a08c2f2dd204f18409bdab2a926b5f5c5f23531743dd3"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "384f0abe5b1674af1f192d0f7aab5b7623017d489f3879f2dea7a67a52d90bc5",
+                  "evidence_id": "ev_bf0328b8276c3d958a2dbb72c40ba08d928fd87619bdb2e682e3cca2714b3dda"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "save-format-load-and-write",
+          "classification": "different",
+          "observed": {
+            "phone": {
+              "save": "0x17f80",
+              "load": "0x17df4",
+              "length_bytes": 26344,
+              "magic": "0x0132db78",
+              "magic_offset": 0,
+              "seed_offset": 4,
+              "xor_start": 8,
+              "xor_length": 26332,
+              "checksum_offset": 26340,
+              "checksum": "sum of signed original payload bytes",
+              "filename": "HeavyMach2.sav",
+              "write": "fopen wb -> fwrite(1,0x66e8) -> fclose; no atomic replacement shown",
+              "legacy_load": "0x17df4 contains a separate path if magic differs; fixed seed 0x51."
+            },
+            "hd": {
+              "save": "0x17580",
+              "load": "reads NSData length, decrypts bytes from offset4 to length-4 and verifies trailing checksum; no phone magic branch shown",
+              "length_bytes": 28204,
+              "seed_offset": 0,
+              "xor_start": 4,
+              "checksum_offset": 28200,
+              "checksum": "sum of signed original payload bytes",
+              "slot_copy_bytes": 9056,
+              "filename": "HeavyMach2.sav",
+              "write": "NSData dataWithBytes:length -> writeToFile:atomically:YES"
+            }
+          },
+          "inferred": "The save formats are structurally incompatible. A shared HD-rule restoration must preserve its chosen HD-compatible storage semantics and cannot swap in the phone save layout as a device adaptation.",
+          "unresolved_next_checks": [
+            "This audit did not load, mutate or migrate any user save.",
+            "A field-level save migration, if requested later, requires explicit schema mapping and preservation tests; matching filenames do not provide compatibility."
+          ],
+          "references": [
+            {
+              "domain": "phone",
+              "address": "0x17f80",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "71282834f97f3138e43c77188a5b9d9c8912d9e2b420f75a0300ace183464713",
+                  "evidence_id": "ev_4ce2279631d01913970224316ac2e7c2fecfa2ef8f798ba8953c2723c74eae48"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "ba6b7058eab74d8c953d1ae8afc13f99eac3d7f707eaf057f8504546726b8952",
+                  "evidence_id": "ev_a0a5b72207cddea21c8c148757ec338dfad27e468d6be9f89c08189f1a898c59"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x17df4",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "9dcb9cb859ffce10ccc721674c1b743d26fb758338a65eb93e4d973db221e41c",
+                  "evidence_id": "ev_e3a57791ff419fd5728ce62db1ed871320f7e77bdd168a47f5c7254a7c8a8588"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "b746e8f392ca259165ba6dd2aa7c4cc421581804c601792647ac4921faf1d8f7",
+                  "evidence_id": "ev_34ae91ac1eab85866ffdba150afdcd1f476ea0ce0f5b1018e25bf9ce040af917"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x17580",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "300c68145cf853f866370526bff483e113f04c5de5995af84ad5f7528b6e345e",
+                  "evidence_id": "ev_95340201b100c6ce536c76d3d49a59855eefbc0ee38f104c2d23c2e2862a925b"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "4ef93934015f02e2aa7b61f603c5ee3caac294d162e4625138191da0ae295f01",
+                  "evidence_id": "ev_e0f65c48e880b44a56f9abd11bcb8b25919134005d7d782ac7e6a5a2459d2825"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x16d8c",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "03ae208fa34012a90be1f09183681ff7ac113875c65698e9bf0d6962e16231a9",
+                  "evidence_id": "ev_2ae23a6b86ccb60280c304f0f72c35b489301484872a52bafbf051ad92e2b572"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "5451512abaeeb0b329c3bdd72e020bfa6e6331491f2b4e3eceb6e01bb098f23f",
+                  "evidence_id": "ev_afadf5552c19bb9780b79d3d8788e48272b6607719689fcdb82f42816df45c82"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "save-rng-and-startup-rng",
+          "classification": "different",
+          "observed": {
+            "phone": "initGameMain 0x52e8 seeds srandom from mach_absolute_time. Save 0x17f80 takes random()%0xffff from existing RNG state, stores seed at offset4, then srandom(seed) drives XOR.",
+            "hd": "saveDataFile 0x17580 calls mach_absolute_time, srandom(low32), random()%0xffff, writes seed as first word, then srandom(seed) drives XOR.",
+            "common": "Both original save paths consume/reset process RNG through random/srandom."
+          },
+          "inferred": "At the observed save top level, HD reseeds with host time at each save and phone does not. This may couple save events to later RNG behavior; resulting gameplay effects were not established.",
+          "unresolved_next_checks": [
+            "Trace all gameplay RNG consumers and helper calls before asserting isolated RNG streams or exact gameplay sequences.",
+            "Do not replace original HD RNG behavior merely to harmonize device families without an explicit change decision."
+          ],
+          "references": [
+            {
+              "domain": "phone",
+              "address": "0x52e8",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "92f83f445e691318afc0fe780ca78a03cb92ad066a83c20cb658d531cebe6c13",
+                  "evidence_id": "ev_20abbba3412ef6ebbfd491db7ad5cbc5afd375f9b4247b23a6deb38f161d2f4d"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "97d103a00a78cd61baccb15e19ebf4bfebeae727a31a3443784c324a84459ad9",
+                  "evidence_id": "ev_a1d1040160f0d11c16344f982fdae8abadf3468d44ef9a02fb8aed8d84be0a93"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x17f80",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "71282834f97f3138e43c77188a5b9d9c8912d9e2b420f75a0300ace183464713",
+                  "evidence_id": "ev_4ce2279631d01913970224316ac2e7c2fecfa2ef8f798ba8953c2723c74eae48"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "ba6b7058eab74d8c953d1ae8afc13f99eac3d7f707eaf057f8504546726b8952",
+                  "evidence_id": "ev_a0a5b72207cddea21c8c148757ec338dfad27e468d6be9f89c08189f1a898c59"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x1754c",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "7f1e9765f8fccbc817e895471f64b4b23208da7bc7e21272827f0e8c47f69d32",
+                  "evidence_id": "ev_b78ec3f5fd345ba001c43130d3b1592b5ed633cc51c84952da7bfc5124144b1d"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "17fc03e546747eedd6e0ea3db3ddc6a1f65aa02f991d49fb2c99afb48be727dc",
+                  "evidence_id": "ev_b92a853bf9d1e42b80e3035056eecb71fcdb833ddc75e57f9ba1fcbe6a504130"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x172bc",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "b3c9a7d80cf537867cef0b78565b52189cd7f55beece4a274794cbba8ee10449",
+                  "evidence_id": "ev_7d9772e94241b3c827061b85cf77d95923b67d0672f401cde141cc1f91e8587d"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "984a716e875494a45e69ccb6c5898add9e723a67f79d24529818e40f1b8a0a6b",
+                  "evidence_id": "ev_a826284c4af063a1af2dfbe97cde08494dc7625b4132541e3a8f201f2458aeee"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x17580",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "300c68145cf853f866370526bff483e113f04c5de5995af84ad5f7528b6e345e",
+                  "evidence_id": "ev_95340201b100c6ce536c76d3d49a59855eefbc0ee38f104c2d23c2e2862a925b"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "4ef93934015f02e2aa7b61f603c5ee3caac294d162e4625138191da0ae295f01",
+                  "evidence_id": "ev_e0f65c48e880b44a56f9abd11bcb8b25919134005d7d782ac7e6a5a2459d2825"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "save-callsite-search",
+          "classification": "bounded_direct_call_inventory",
+          "observed": {
+            "phone_direct_text_callers": [
+              "0x1a0b0",
+              "0x2ca98",
+              "0x3de68",
+              "0x55cf4",
+              "0x5a5dc",
+              "0x6b78"
+            ],
+            "hd_selector_callers": [
+              "0x13778 GobWorld::setStage:LinkGate:",
+              "0x17be0 GlobalInfo::selectSlot:",
+              "0x281e0 GuiGame::handleButton:",
+              "0x5468 GameMain::alertView:clickedButtonAtIndex:",
+              "0x5644 GameMain::setScreen_Base"
+            ],
+            "scope": "All 1077 phone cached pseudocode bodies and all 1194 HD method +106 native bodies were searched. Function definitions were excluded by searching text after the first opening brace."
+          },
+          "inferred": "The direct callers include slot/base/stage/UI flows. This is not a complete dynamic call graph and does not prove that every weapon path is free of indirect save calls.",
+          "unresolved_next_checks": [
+            "Map unresolved phone UI and stage branches to the corresponding HD semantic events.",
+            "Resolve virtual/function-pointer and selector paths before making an unconditional no-per-shot-write claim."
+          ],
+          "references": [
+            {
+              "domain": "phone",
+              "address": "0x1a0b0",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "1d87b1d4cc0e92eb39470b3c63fe2961f80cc9956d497c526add585503def4d6",
+                  "evidence_id": "ev_9d44c7d20e0ebcfafd538b7698f518e540e0828baa87b5ce0b9e877afb11179b"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "d61c04e51d966e3627351071b851048919726eda86540cd03601414cd36afd1f",
+                  "evidence_id": "ev_2200fee226b181d16134f7c3ab3e0f40bb845acff914f9492e34d321ad19d33e"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x2ca98",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "30eacbf21484540846ac5dbca6f5d16b43a7230939ef98a985d729b6cc371183",
+                  "evidence_id": "ev_7171574a1b15215ba2a2368ba7c233a59c7ae3eebc75252a96cab0a99a32999b"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "21e36654808e1d0967cc0293ff37077247f198de8f0aaed5053683b8c1c89684",
+                  "evidence_id": "ev_e3fae2e2349e5542c0127430bb498f8305bb93fe456b5d7bac20d676688a8b18"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x3de68",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "20da321263e22e5b10c5717e68c495931d3e6e09043c0a7a972a51e0e61281e8",
+                  "evidence_id": "ev_b58abde59cf0ca984054afdadab33806ac6a6f3d5e2b79ece8bab1d761287eb8"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "7341b45b5018855389162000c96e5b44aa5761643dfffef7c761881cf9849b15",
+                  "evidence_id": "ev_2959236aef21ac6b57f747f3acdfc5b0047268fb0e3e551ec9eeb88fd5b7ddbb"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x55cf4",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "df356f6d780ccf519069e9bc7c5e1d629612c1ffc507e658d9145daa334bb6d4",
+                  "evidence_id": "ev_986063f8aeb3fcebd665e574f9b619484a39141fdbc7e2684a724c3fd34f5078"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "46b9826b99af229a44e231955bd471c6ef9500535c757ad37070f1c4b4b6fc67",
+                  "evidence_id": "ev_5f1070b8ebfcc1bb1e63a54cda65294adb22dea37bd3a54f5df344adbc87c9e1"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x5a5dc",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "04225c67fc03d232966db82c140b7e567824ea432f9bbe457210ddded62422d1",
+                  "evidence_id": "ev_275a1247dc058188e0a58561df30febf5830bfe818cd0b0a0d0a6d0c6fdd9138"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "6fe946bbc2235cb835ef554e03ba640815d8de44d8c67171142113659fa4a65d",
+                  "evidence_id": "ev_620a269307ffd2beeb36c574d6860f8244c15f90a5055f8f055084dfa3f7745c"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x6b78",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "532255409601f585f9853a04ffc77f4889fb382e08d8dfaef3f94a166bed0082",
+                  "evidence_id": "ev_499557b5119a3e57aca6448592ce206775065f795b2c9019a60dc8f9db605025"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "35574279954f7e4657a99eaac6349a4d8c0d296bfd67f5668afc81b241c0a5ca",
+                  "evidence_id": "ev_0a9591258283549511da23e0c26a58296a4659ae2df4af178e1bf34018b1f152"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x13778",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "c2ee7edfce3ce5e4053f53a163c388872905c0a68c858819b4231e529fbe0b01",
+                  "evidence_id": "ev_2cfeda2426d79c748af7d495ee4e703e0b18d0c8c7ab68d2ca80c766fe5e1796"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "205429b1d1aed0184d3a0a6041922dbdf1a40d3497714d4cf509487702daad46",
+                  "evidence_id": "ev_f5a94480e5d648bc8572e5dd718a4aad91cbbce153df1d3111d82cede6a86007"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x17be0",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "c2ffeffdf8df1d2dd2c75a307b112e981f40055636950bd02fc879baadb93e71",
+                  "evidence_id": "ev_5300be6a001cfd2a19b2bd933ba95247048201743cc7d1ebc42baa7480da8c23"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "2e074e79a34c2f8fd09f1ef7ff6c9d2d1f4f2cce0e8566b69fdb4e4e2e1d2e03",
+                  "evidence_id": "ev_d049373290ea1371ba4aed1342090d924d3975d95ab70ecf4c3212f59750abdc"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x281e0",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "0b4866a731a47fdf886521f374218dba348b47de699ac93f20c2ef06df8cc5d1",
+                  "evidence_id": "ev_3b06347c622bc7908dd5120146cce22bc212f01fded4196a679a2c8854111a45"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "a9d7cfa9eac5310225110ced6df328c0e1fada7beacf41077ec8e584e59cfc2e",
+                  "evidence_id": "ev_85c6587c8cf1c0dd3e7938d960644a7d3692970deb25833a7358df42b97b250a"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x5468",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "3335307894f478e23abc12d65efc64ce002a37dacec071a40346f1b13be20a11",
+                  "evidence_id": "ev_764c257fd01618590241df13befb620d295d732ae70fc8f367b9978ccaafe42e"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "ad6f71c9204f58fb2644e5d261457572a530d5f6e65524b999c37016853c8a59",
+                  "evidence_id": "ev_3a0875441e29314a8b903de14ac91a1acd3007e0ad4a8faee7c456b478c159ec"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x5644",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "5e29b4346d4f4cd837d930bd9437355016a4c45aae58658c023ca849814c3b8c",
+                  "evidence_id": "ev_aadb2683567127288f739422c50c32cb2a7ced930b2459b6c6de45e04861ab3c"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "58e976ca948df38ad628f612993d706c98a217ef0288533b8aa42a57b12cb326",
+                  "evidence_id": "ev_bca31baaba732ffc38f94a5771f07729cb4832d67e02f0dd824315fb8dbffb53"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "openal-initialize-cache-and-reuse",
+          "classification": "common_flow_different_cache_wrapper",
+          "observed": {
+            "phone_init": "0x49b3c -> 0x47b00(0x46ac4400) -> 0x4965c: alcOpenDevice -> optional mixer-frequency config -> alcCreateContext -> alcMakeContextCurrent. Frequency argument decodes to22050f. Initial listener position is zero.",
+            "hd_init": "SoundManager::init 0x4229c -> 0x40504(0x46ac4400) -> 0x412d0 follows the same device/context/current order and sets zero listener position.",
+            "phone_cache": "0x49aec performs string-key map lookup; on miss uses bundle resolution 0x46b20 -> 0x47ca4 -> 0x49930 -> alGenSources and 0x49864/0x496fc PCM buffer loading, then stores sound ID in the map.",
+            "hd_cache": "SoundManager::getSound 0x423a8 uses NSMutableDictionary/SoundID; on miss bundle lookup ->0x40334 ->0x41c20 ->0x40cf4 alGenSources ->0x414a8/0x41368 PCM buffer loading. On hit it reuses cached ID.",
+            "lazy_context_fallback": "phone 0x47ca4 and HD0x40334 each create/init an engine only if the global engine pointer is null.",
+            "static_pcm": "phone0x4763c and HD0x402c4 lazily resolve alBufferDataStatic via alcGetProcAddress and pass loaded PCM buffers."
+          },
+          "inferred": "The examined sound-load/cache/play chain reuses a long-lived OpenAL context and sound IDs. The wrapper data structure differs (C++ string map vs Objective-C dictionary), which is not evidence of different audible output.",
+          "unresolved_next_checks": [
+            "No audio latency/output measurement was executed.",
+            "Context reuse conclusion is scoped to these traced wrappers; it is not inferred from a single imported symbol.",
+            "Complete caller-frequency and alternate-path audit is needed for a global statement that no game event can reinitialize the engine."
+          ],
+          "references": [
+            {
+              "domain": "phone",
+              "address": "0x49b3c",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "19614f920491e630908de1d664f9f341a5228f51c23f5852c9af33e3d2713288",
+                  "evidence_id": "ev_7023713ac79b48431c15aeb900664fe18d58aaef72cc1d078aab46de98df10af"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "4c1795aa69c506f8e5449fd0cb57362cf46dcea1e556ae40654f796f82740d70",
+                  "evidence_id": "ev_7bb6889401fc00d1f3c0f0f2ae0fe54331d6092bfad0ba54d55eb237c85bdb87"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x47b00",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "7b1b6626295972d9d8d0e697a24cc79abddeb7404507ac4df1977bc98278d54a",
+                  "evidence_id": "ev_aaef24fd01d2b6c385e5bcb785c5b665c859e67a3af33ed81cfef1350adaead5"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "67a699604a2bae073001825fc4c19fb527df94dc242346273880591a98058184",
+                  "evidence_id": "ev_be5e3e2985b8af272b9b854c3d1365075ff634e414c599a42e6fe4adc540b640"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x4965c",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "d0ffdd53378e2dc117336116d66ac4a1d09c6f734d575382ed5e8fc0bce21a19",
+                  "evidence_id": "ev_6b0865bf7871e15270b1b7001dd311db0e63557dde3e5b4fb64429d37be239a0"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "587baf36bc63ded51f0774c2131fea0d18f06cee23dbc8541572d6ec474c4945",
+                  "evidence_id": "ev_b450bfbd43731de81e28d68faf505948996ca7c4292af76e0bcba650d416de59"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x49aec",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "757333cbe9d1d5655aaceac7c7e7917c1e4b88340a47d15dd6548e8b54a0fdb6",
+                  "evidence_id": "ev_48f9bb02b89a1bf3c23cb20e8617b7d01eb4d06554ba7933ddcd90844602e32c"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "bc57bc43dce250e7f7e69582ec8896d1d440989100b5e5a394387b268f5b257c",
+                  "evidence_id": "ev_0b946cbf36fe348a2f2f4ecfea98900b4914bbba8b202b8483db88e782c4468e"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x46b20",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "720d5b0084847002c96aa6ab1eb8835c2353580d91ebbbde0405ef07b054fe13",
+                  "evidence_id": "ev_978adf31fa8ad50067b7ce8448b68cd7a5d83af0d49dfba27bc81631f61814f6"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "6c04bdeaec90d6d70c7bc456d642b49064b7ca52e5ba65f523fa329e96144a8b",
+                  "evidence_id": "ev_51e989443a981c998dc66a5c3bdc6cd7931bd69d670394277a41ab73739374cd"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x47ca4",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "5c1528ee482b399402383ef4bc0863c068ee0a8bd6f27cddb1a7e817c9147a79",
+                  "evidence_id": "ev_404b376aaba947a94096c7e257379096b95266d647e8448568a046f4e310cdbd"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "c71e0326f00b915e63bd63f7b6f8b409d48759b86904b1a980ad633bd7498775",
+                  "evidence_id": "ev_b406bcc6b387b3e7d93d099f47c8aab04d8340f961173ef6fdd1c0b8f2b0703b"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x49930",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "e4493733139e87c278afdc2070659ba3b6143473c48dead8c1d0bf3d80a631e8",
+                  "evidence_id": "ev_b054ea7b0d0274ae5ddeaa9c79106db35b989f5eae645ec68d2ac2058b8ae0df"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "448afad458529752afa5995c22d2ef8c9562060beb5f9ad0485e994b81f096c4",
+                  "evidence_id": "ev_93b2c36cde6c79229abfee353f3a8955ee54c470535238cd6259240532237f9a"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x49864",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "89f97969b66aca56ecb272e9714495c9205f1af34485f46e709d2395c8081335",
+                  "evidence_id": "ev_1cc92fc269f275d26c45466cac8bfb525135727baf9582f8120a6ed9760d11de"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "657c802c99acea3cbbb6d5bcae0c7b9d125f0a609a993b73a94c1d0b5f68f004",
+                  "evidence_id": "ev_587500dfa835ca7a48e8fe71f335a61d88da8fbac60e1ed1534b012f73c93285"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x496fc",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "c87bfca2ec506bcff413fb0ab1614560e51216220e1caab504b0c9ec7dfeb8ea",
+                  "evidence_id": "ev_1396b07a5130c5980788835cd73a961d4c290f4b9700d378427d622a26c2df98"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "60b3f388daf83a105c9505a442b30fe7b7e2c48d0faf0d13f2dbaed2243db521",
+                  "evidence_id": "ev_1b7bea9e5ea89ae840d1b0f5b5fe6fbe31331602d16bc203fb03ae17fd344eb1"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x4763c",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "edbaf25fd6ff4885961a90ddbdec1fd7ac93e01215c7148741842aa4f86115a4",
+                  "evidence_id": "ev_05cc693c96e28de2e44df7b810ce32222906d8b82f811c0abff5490795a1724d"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "661adde4643848c008993649657567d7d1b3b564e1b393d1bb07ac12ccebfa42",
+                  "evidence_id": "ev_564c926402fe724218c71dab4a60d7d52adde3187782699ae46156b9e23eec36"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x4229c",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "8f716d422a6f4314972f32877f606d5c922362def1047e2a8ab569af4746730e",
+                  "evidence_id": "ev_5b71c90c40c665b9e06683b3e1a9347114f6fe2efc5e5234518791a7ad2786c8"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "84586d776754b0b172efaa476ca2bf11aa322cfaab400060905984fec0196f30",
+                  "evidence_id": "ev_ccfa8e1448a46767852cf8214ce0dadb2dee8ddf2b3325257bc3728191fb0743"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x423a8",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "27d1e0f3f4883c7d6f3f537317cb30a31c39a059f0db7d13295c36fce6508472",
+                  "evidence_id": "ev_a245bc4afb243968902fc312a16a329d3443a12089dc8915ee6d84befde58069"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "93c68c457bcf26d2d96ef008bd54ce4e46b32459b55280f18f24999f225379c6",
+                  "evidence_id": "ev_26a818bd4b224c52ef5ca10c141225b673191574fb074a40a2d20db1044f8338"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x40504",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "4452aad9500a7fb2d08072d179d860da703b4ac9663a306acae70e74a069c18b",
+                  "evidence_id": "ev_76a5a700ef7dc9dfc671355f2bad30ac9b90b520836b74461d434b0813c531c1"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "35b4a5a43238704dc9b524fc76b64d5e291bdeeedad92ff4c3b6c7ad5b5779e2",
+                  "evidence_id": "ev_9ff4c8395e2224e5190b635310386fead1ccc03786042070acb87f52812cb0aa"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x412d0",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "c81c61f0022a545d853985ebe3c984823487127b0cd61e019fe8e3f2693297e0",
+                  "evidence_id": "ev_be9689fa405b1cdb0af6db6295e721ec943f75b64f54b84602a97a7ee7f0dde7"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "11c9635ea6645640f0a933c308eb85bb3493e2c3851beb12457642419082e6a8",
+                  "evidence_id": "ev_be7ca0711142d4064678e349e569330baa032011a79d68efdf2619f0938cac81"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x40334",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "1581e0a66bcdc87fb2533a624d03ebf41c3cefd25b29f9b5244ed29c591aa2dd",
+                  "evidence_id": "ev_a3974e9cc3a5c315bc28516270dd2bbefef81cb1274f751f4273af9ce03335bd"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "f7328a9782ec6e9389300182a869a3fd75e5d2926b9befcc57d72596da6be00d",
+                  "evidence_id": "ev_f4143de16f321bbec92109aaf700dd12194a2e91c641fd5a0ffd4c581f7a81cd"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x41c20",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "8b773bedd927d0b259b957a3c17360fa996e0fb19594aaf7ec4493d8aafcdda6",
+                  "evidence_id": "ev_2eca5f659c4968df95f19d184a7f589d2e3ce08a2c97e5a0ce68e4f40004e2fb"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "6c1f3f449902cb5238952d8be10933c473f5b6e4204c8720c43f7885b9d9f235",
+                  "evidence_id": "ev_90877e6fb890fff650adf52e509c02f09ac71153455774dfb2bc7c2117b2608e"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x40cf4",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "56a01197b6b06c75ab038742025e8f0f1601e648d0533f3a79def7f9c2d21e41",
+                  "evidence_id": "ev_1c7d45a30dbfe8dbef4121e3cd6bea175bef37d55c5d8cc0d329754c3557265b"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "5304f5febf22d14ebbac1f815fac2e4a33a57070a41babf2be8870afd8ecfcdd",
+                  "evidence_id": "ev_25fa694b9eb8dcae0b51417422fc5b5af98d06caef9afdb59de738e25899693b"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x414a8",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "73c0c8dee43f9816e11572a168e54003b4e4c6a4d24d88a254a1120099ff9a47",
+                  "evidence_id": "ev_f2eac315d1fd52f5bc874a93ef08dcfd73b3778c38301bb1c05547d141b11904"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "9d5d90f3e142117d53a28a71f79095cc8ccb539b281d5142202a5e7e6a2c13d2",
+                  "evidence_id": "ev_0daa24161f9340b3e21eb78ee073a336e0b97a4f369c416a921665339eedf330"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x41368",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "ece1736d33eb94e0725cb0e339484b5efd3ea6e6964fa1ef2fd089162d65d4da",
+                  "evidence_id": "ev_757030997e60d5a0c299c3bc38e3497bc6cfeef9bf460a5b1cca12f98be15db4"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "e81f8758f70b462eb0e0f34fd9e34794e97186c673f5b448b0b2d5ab5aec164a",
+                  "evidence_id": "ev_ac0059d6c78e36c93e757c19b0876b9925d85c4965a026ae2cd2e5e3ac4c14cc"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x402c4",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "11734b4f1922fc290c92dc9d7fa96304d7ccf92a10dd21b9f612d43c98ef13c6",
+                  "evidence_id": "ev_5a98d00ce21a36a37555e17172ae0812573807443f931c3018bbb1abf0031528"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "f717dd26caf4f85f3bd5c8f7d186fe00ee399fc05a7a2542c4f2426756e4b5ff",
+                  "evidence_id": "ev_2f227ed1050f13a4d40700471f447b33cae2a4483f1cffee46f3e1607e256619"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "openal-effect-play-and-dispose",
+          "classification": "common_examined_structure",
+          "observed": {
+            "phone": "positioned play0x49ab8 or centered play0x49ad0 ->0x47858/0x47f8c alSource3f ->0x478a0/0x48508 ->0x482d8. The native effect-start stops the existing source, then nonloop play calls alSourcePlay. Loop mode has attack/loop queue and worker branches.",
+            "hd": "play:X:Y:0x42494 or play:0x424b0 ->0x40480/0x42020/0x407e4 alSource3f ->0x404b0/0x42040/0x40aa8. Native start also stops the source before nonloop alSourcePlay, with a separate attack/loop worker path.",
+            "context_cleanup": "phone engine destructor0x49398 and HD0x42114 delete cached effects, destroy context then close device. These functions are not in the examined ordinary play chain."
+          },
+          "inferred": "The observed ordinary one-shot play chain has no context create/destroy or PCM reload calls, while engine init/cleanup lives in separate paths. Repeated playback of the same cached source explicitly stops that source first in both originals.",
+          "unresolved_next_checks": [
+            "Compare loop worker helper implementations and sound-pool selection callers before claiming complete polyphony/loop behavior equality.",
+            "Decompiler parameter omissions and ARM float register signatures were not treated as a true API signature."
+          ],
+          "references": [
+            {
+              "domain": "phone",
+              "address": "0x49ab8",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "76a1497b1a4e0507f06d0e76336af69b1c0315af954aa87182234d1dbb22913c",
+                  "evidence_id": "ev_1bd0e2058c75983c74548c4f9eb109639098e4571257f17ab685bbe6fac411a7"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "5b6150d3a9cc06064e1814977766100e80cc850b5d2ec1d8963c4da0a841f455",
+                  "evidence_id": "ev_7afc8fbad28583ec5141de05f8f9ceb1ca4e360148d889c21afd0f13bdd91905"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x49ad0",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "6dec525fa08372e51a2900237d1f2214db62ee13395c376b149dbe9fab0ab0ed",
+                  "evidence_id": "ev_b01015016fd3f6b9452ded5d922fc928db9c1f02ee43bcb5dee6a151193e29f9"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "b747dd78cfad8c22303b46203c98146b48c6a3367091bd6d40a059546c0c415f",
+                  "evidence_id": "ev_969aaaf1c66283683a0bd04d26e16870a55d50676ab21540b2d0a8af6893e685"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x47858",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "353acb391e571cdd25326dff37fd033126d490668a6e2df9c19d357dca5dc8fb",
+                  "evidence_id": "ev_63ccd4d995fdf770f06daba4a210d50108a224f8878eff05085684108de57a70"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "6c3fea303fcb80c0671b803f4702e97bc37fe726214a09f758b2a83cf87234c7",
+                  "evidence_id": "ev_c6d3fcadb8aa0d2c0fba5137496b0e33fe73617c0eba384ca50d0bb8605f64c9"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x47f8c",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "2aa165af8910911a51532d76877f1402d84dab28db1a11ede73ba7892bdfdde1",
+                  "evidence_id": "ev_22f7e7445779350afb4e7f06869ae488d1a4752b7a0443ff213a61d8546d52bd"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "bc70ab40a5e1a58a183e7217e7c5434bf994c4912d9bbfe5d7d6ecf779ab25bf",
+                  "evidence_id": "ev_be98b6daf68cbc6ccac1ba28246cccaeaffc6cc339df1bb6739edcb229dccbc5"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x478a0",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "b4f75c1f842099cf464f589d9557780c0386c3a0b810c03020d75587fc690e9e",
+                  "evidence_id": "ev_9f0d3b2aebad3ec75d873e68fc8c8902cf9f580d2d78cad2bfff3d53dc374e95"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "c94f7fdf9c929b7e63b0d9544378c1e7a5f04a6234ee770cf2ffe34078503e42",
+                  "evidence_id": "ev_193d240648f2529d2164fa99e73f328f2ef9ead81a8abba598462befd26f90b0"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x48508",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "cf230bfc7b6c5d70640e06d7d9393210e7191e2afd12a43e9119ffa97b22f616",
+                  "evidence_id": "ev_e34d8fb866f96f7630aa5a7d05ce8f87adbfc257ce20efeddefbbe46623684bc"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "fb75134c1065b0089b48bb843623eed7e25caee8b76d2b459e94613732ac0a12",
+                  "evidence_id": "ev_7e0b6dba41f4a7148a9386fb77af1a3d69332b6f1519dc74e98abc5668e34539"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x482d8",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "4b5c94d6e2b5c257d2823387ab4eafcfeb8a4b11779d7cb8a2994be05c8251cd",
+                  "evidence_id": "ev_5230069a612acb5ef9cfff8e66b1f0c3a314388fefbd2bae156d13246c8d0ee5"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "0bf775c4c849080284256394630c8aacfc20766b9b64a6dd554b319735c7b3ed",
+                  "evidence_id": "ev_e57b71f91cf5256a2ca833817061f16c6cc0982a5b2dec727edc2a4433d48b85"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x480ec",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "7c3c1a79301d0439d821ba7236cd159a6e82e0e61fca6ccc8c4f3e0fb95b96b2",
+                  "evidence_id": "ev_0f19d6af7ee22f4afdbb147b90696b561df5fc1812ec17ebaea1103b17b5598c"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "79dde471c70e1b1173cf783530b39660ea94b5069b5d3ae6349277cf2317e201",
+                  "evidence_id": "ev_fda7c401e2bd55c9629f0eba9e5b9725ba8198c86d427a8f047f1fdedd33db1a"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x49398",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "8c05e34dda3236649d80b4e324da5734d5a55e1fb081eed2f57be9685d1103cf",
+                  "evidence_id": "ev_5416bd23dc46ce6bccd13b787a4dc1c29653035cd2273ff7226b5b8ff82788b3"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "02e800d19d2184ee48f98f6fb1f600e38fc067822a3b06e8839800439ce0f1ce",
+                  "evidence_id": "ev_9fa6ca0aed9d21672061043518300a7194b9a7d53ddbbd4c9725ae91fdfcb0d5"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x42494",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "6f7e392068ec729321d346ced16ed9b4570c4e70c5c0bd4ebe8603b791f4ae27",
+                  "evidence_id": "ev_21082bb3340ae7ae43942dd8b884cc24cf705e6cad18dfdccaec86541e10ba34"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "b8731fbc84e74f5f6eb443dba7b95d4d1e59ac5b1cb43a4478a61e4cac63560c",
+                  "evidence_id": "ev_f859511354ab0143beaa123e2e6acf6b6f706fe0db818afc21791770fee07561"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x424b0",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "c6c169ae3decfc3547a2e0073698b1ed705dab148ade153f0c29148476dcd0ee",
+                  "evidence_id": "ev_ab42117892a4d6a6b96a6df9cb81d527ff00c61163f8745a96b365303ca4d506"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "f2378e6f30720bcffb43f927d79b373f5a0a9b53d9e03456086555e475f6c720",
+                  "evidence_id": "ev_f67073f3c78318ca75a74bae6f882760b574f210f8fd8ba6908720d1bb5aeba5"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x40480",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "d3b2e8f8d519c6874b896cdc3db2e08451939b71c1064068ab0350d77ba76c15",
+                  "evidence_id": "ev_1d3d3a325168035daf073092c42968931fa3ebfed44658a2dfd7bee5affea507"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "3676b6a7df5a6db3d2bb28759820106bdde3e732ef04b7edc579dce032a7f63c",
+                  "evidence_id": "ev_4ac63773424a7f46514073df38de9f4ff05061c6685f851d91a9246ec2271e95"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x42020",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "76d7c3e18b2a115cab4d57d3d8bb21627f564f47870111d1a7d6a8e4fd416e24",
+                  "evidence_id": "ev_f644c5f265a7e941d9aac3bed65051ccd9607e4036b4f3ca32051b2876c987a2"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "af5cb275f9eb44e1b966b409d2b5abb81b43f2d3e07a2651654a2fc339452165",
+                  "evidence_id": "ev_4dcd386aed5cd8d2154350ad91de5a64fe5137512dc488336744485d40377315"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x407e4",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "79642b9a65dd38e3685a5b91fbd5d50e2ddff8f599053aba699ae201874c0aca",
+                  "evidence_id": "ev_c03d63ed1704578690c4c4ca25acd214eaddc6ce19325056d95928b709da933d"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "cb1b38edafb99842e9ce5245643878bda2429d52428b2ee62892c93c57c64baf",
+                  "evidence_id": "ev_f2d041072b160e389a3ec0c9c64884d69b13ecc1594e9949a9eb9c59f9984269"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x404b0",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "725c225ab24bd4a79e624f0f63b62a14a3c7d1e5914dd684c5c384a70ef913d3",
+                  "evidence_id": "ev_b9511c175e3cb5410148d5db473a9bd84caf4ebb0042a7edeb78522209dba181"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "3010df0fba792eb0664291aa65563a033e8fbfd87cbe73b913a3e2fb541f3b7f",
+                  "evidence_id": "ev_e5c69b8d433b47015e8f45b26e4bf211c32385657295af171b7d6993e547dac4"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x42040",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "aafa4c1c93063e7cbf7a5d7b0cb02946ef6b32e37f66e978c02f42ff45b54824",
+                  "evidence_id": "ev_12fef9aaec28193ef38ee737302ed17303d69505194b163daf7175d61a5ac60e"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "328ac50015d4f8b61c9eaa63c238d2690b8d28547f90a9c67038ee7840c9064a",
+                  "evidence_id": "ev_ef57fa2dc9abd8b64bdd03a6667b7ddaf9be4c5432c0732a8d1536d455955fed"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x40aa8",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "df6714dfe98665c2cc0ed578c36894f0274748c559edd4bd237f6ef40e8c8ae1",
+                  "evidence_id": "ev_33274dd7744c9ef835b189cd982fab398bfba86d8685525c0894f5afd58a2807"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "d3da2d6b4d338c182bcf56b05528d79326c3227702c7796e7c8b2e89bab32524",
+                  "evidence_id": "ev_653c715ce48e3d6fbcadb357d909e75dedc31d053efa4c2b80d23c90909f8f4b"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x42114",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "75a1f0d03ceec4d2310adb31fe0ac21b1d1af5377c6ca5d7606fdc7f8b2592fd",
+                  "evidence_id": "ev_d2d872448f304a1da859613feaab0c20c13343507d7a111dcca33d03d624a789"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "1a2bc18ac840d683d3e929a2e0f21499d5b50be45d1d283191e22bddb9a8b831",
+                  "evidence_id": "ev_6a80a1cc841e6bd418a36f93979a779d5c75942acc8d9ce4695c1354a5e7f588"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "audioqueue-bgm-core",
+          "classification": "common_examined_structure_not_full_equivalence",
+          "observed": {
+            "phone": {
+              "create": "0x48cec",
+              "callback": "0x48e70",
+              "start": "0x488d4"
+            },
+            "hd": {
+              "create": "0x41d04",
+              "callback": "0x416d4",
+              "start": "0x40f50"
+            },
+            "create_order": "CFRunLoopGetCurrent + common run-loop modes -> AudioQueueNewOutput -> optional magic-cookie and channel-layout attachment -> isRunning listener -> gain parameter.",
+            "start_order": "AudioQueuePrime(queue,1,0); only success leads to AudioQueueStart(queue,0).",
+            "callback_common": "AudioFileReadPackets; EOF/loop/next-file bookkeeping, file close/open, cookie or queue rebuild branch, AudioQueueStop for stop/format transitions, AudioQueueEnqueueBuffer and packet-position updates.",
+            "phone_bgm_wrapper": "0x49a90 ->0x478c0(1) stop request ->0x47908 dispose old engine ->0x46b20 bundle resolution ->0x47a64/0x49560 load ->0x478ec/0x488d4 start.",
+            "buffer_setup": "phone0x493fc and HD0x41a20 request 0.5-second buffers via0x47694/0x3ff8c, use common minimum0x4000 and maximum0x10000 with packet-size exception, allocate1 whole-file buffer for short files or3 streaming buffers, and prefill through callbacks. Arithmetic multiplication order differs in the decompiled helpers, so bit equality is not asserted.",
+            "hd_bgm_wrapper": "playBGM0x424d8 requests prior-track stop, disposes prior queue via0x40310, resolves bundle path,0x40400 creates/loads streaming state and0x40160 starts it."
+          },
+          "inferred": "The examined stream core uses the same queue-oriented design in both originals, rather than loading/recreating an output context for each shot. Compiler/code-generation and helper organization differ; no byte or full semantic equivalence is claimed.",
+          "unresolved_next_checks": [
+            "Map HD callback literals DAT_0005deb0/DAT_0005deac to exact callbacks using the native-owner audit if that pointer proof is needed; pseudocode similarity alone does not resolve those pointers.",
+            "Compare all format-transition helpers, concrete input AudioStreamBasicDescription values and rounding boundaries before claiming exact streaming configuration equivalence.",
+            "No real interruption/resume or audible latency test was run."
+          ],
+          "references": [
+            {
+              "domain": "phone",
+              "address": "0x48cec",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "815dd26d8fe1ab8d9a6c510f8410278e803b8b16606dacf9011c7ced1055d93c",
+                  "evidence_id": "ev_05658a211e16fc6704ed7e500b2edf81be9197dd2111d0865f979e730021f8a8"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "28237cf7d219995e2e4e331975a666eca7bf3f30f69e6b1d3a183ce21ef05996",
+                  "evidence_id": "ev_b992e1582db590cacbe9f85f58240087842e00f8eaf89508d1964995058f1d06"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x48e70",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "ef57b50c86a31b800ca66d2eda3d5abc5c10133a408e8cb302174deb0f60b4a3",
+                  "evidence_id": "ev_cc73b6f140ed9aa65917cc0c32e1e85d5e8c9727196d9958413d1069fde215df"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "8452d0860b12d7f542c1f05ec216b77e1e9ccaeb6e7a1360523f4c488fce7308",
+                  "evidence_id": "ev_8c6050436e8976dfa17704fe630048111222a6a6b01aab46f1cebcdad8dd3a7e"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x488d4",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "31e423db1e8487eedd6a4149b79a865e6185838ff420b95f6c697f2b43fb5f12",
+                  "evidence_id": "ev_acf3e53f988ae6d3a0c72c086a99194de37ad04e9fd7e034e02b0dfbc83e8822"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "e1bdae57f052c3d6d820d4a8212d7ddd6d361e48a8de35a086afcd23babbb1f0",
+                  "evidence_id": "ev_b8ea2a331cddb5f1eac14dd7db24536111047dc937dca9c48889ac554e687ae1"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x49a90",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "a5ffa4467a361a46e535ca798dc87052437aea5054a4ed60d7b90fbbef92c1f5",
+                  "evidence_id": "ev_a6cb38347f93537330e27612188ba217ab7ba897aaecffd4cc332f151f91570f"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "9956047903df12ffd30f1c8833e40597f6dc682e7cddb4387dad1e53ed37b575",
+                  "evidence_id": "ev_a4aecb94140d302aa5e04964abb527ad130e37e9208c235f8db2b0bcc0890ed9"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x478c0",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "ac53f03ade9b45ecf66185ded107b724b249ad5fb2f5f4e5586a734d4b0be77f",
+                  "evidence_id": "ev_3dc42409a30e111b7e907515c7a5865964bb7d1ede1b9040af77f9468a07dc47"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "fac19e51a121d91e6e1dce4ea71c985f5a64b115eef6c83d3c8503a55c57a584",
+                  "evidence_id": "ev_441a908319715d5028b0f29187b9a61f90d5a17c8948dbb57c4c3ba9ccbbe44d"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x47908",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "412d2217b26fccaca1fd9bc6d49c030bba45642c8f64dd53f9a4720bbf3be716",
+                  "evidence_id": "ev_3411a14dd001f63eff2e28d364d04a5aa1b92fa964ed71df4797fefe7052cc1a"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "708b9b739ac00c2672b0c6e75b8915171f5f6580dede7d3da5697bf10bdaceec",
+                  "evidence_id": "ev_015bbf06f3afb68e90c33e2d8b54a703114ab9b0f18a6b7320deec4d16037080"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x47a64",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "02837dea043cbdf4809d114ec8b70c694864bcb662be82b86c9567b3413de61c",
+                  "evidence_id": "ev_81657a4a151f40a9091a5aa1e765f0658444934a31fcf4476887e902467cc5be"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "fb2d14d14d5e6f28333fea1392b8eb772d56d829933096a2c6eca6e07606ebd5",
+                  "evidence_id": "ev_b5113dc82027384c57ffc20102a22dcfb5fdc162efbd6f851e1e097f95f60ec0"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x478ec",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "7c88bdf458e2e0038ab5380b992c78f797f84ab30a9ad6cadc126ca646aa3f34",
+                  "evidence_id": "ev_4321840587f06d7c8a13d16b2d86e5ba6b404bc88e4b5a838459d7e29d48ebd8"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "ce0619bd8ac8c830919f6fa292329b1d06aa6b7074eb7c3717bd5e397d9ad58a",
+                  "evidence_id": "ev_0d20968ba25d3127638c1c900f1b8d01cbc25c36abeeb77235ee8de93c48104a"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x493fc",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "2532b5c11dcdb61131a613dbbc884eaa4b903cd01f8b7e83f089995ec87a67e9",
+                  "evidence_id": "ev_ae98ed846bb2b39b2685a7fc800584515054097f84b11ff57ddf3cda31c8bb17"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "bd1f16689edb6afe7a61c4b1c88872ab5a0e47558a2c3092b446b11fd7a58db9",
+                  "evidence_id": "ev_6927600f00389f263c81b545e3c647e1047646e87aa4606155d8ec699512695a"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x47694",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "855081a048e3a0b8fbed68d6f6dd1dc32fa2597fbd4d1a14a098a2b1c2791ed1",
+                  "evidence_id": "ev_d7ee1b5fcb26734e82c24112d2f7dccc0f785b34d821225a136f944c3971b71e"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "47103ce9916cc6e6e09ba705dde71bfe582e03f76d736e3cb4e0b6fd4f3a0f16",
+                  "evidence_id": "ev_2309c5945e0e1bd27565637da9b87420cb84b4cd56a02643b5af31b8639bb942"
+                }
+              ]
+            },
+            {
+              "domain": "phone",
+              "address": "0x4925c",
+              "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "c38ca4ca3f93b3c1096d6d9c0b85356ff6c1b90c782a5c32ca6667273a2761c1",
+                  "evidence_id": "ev_16513fd424fcf26578af7f250d5b1fa61031e90a25c4a44dab01fc228a525f24"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "ca74d7084702c57726f0aca064d8b49f6e00c1128696d5f9591cb9c48a0f5057",
+                  "evidence_id": "ev_17d245e2c02dfed93000dd434d073cc97357d9448a570a7883970992a57e6253"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x424d8",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "0e0d998bfba9e2e83c1ece037b1dfdaeb808e8b3e88e4cd1b1c0e8f5a8744cbf",
+                  "evidence_id": "ev_329d67a8be89638a4060c6c913e687cbaaaa87f9a0d80d90caf08ac86ed3ae65"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "6da45c31ee1ef8c30d2a6000a0d009584293fd99ce8d7ab4dd5626ea54b6da3d",
+                  "evidence_id": "ev_d837ccd8ac745e286dbc44a693b3037738a852e57803ebd1e76c318e98cd8ea1"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x41d04",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "0dac1bd982683c3ea76d48de65cb0c6844170ce46268073d261fe478d5e9b2ad",
+                  "evidence_id": "ev_92f06595a6cf9861e8f9ae65409c0d623d96337bcdc87be30c32916a5a7f9ef7"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "f708cbb7ca82a7292d8aab6c6ccb317f1e4d41a528334942aa3f5cfad5d149c2",
+                  "evidence_id": "ev_123be6b14ded503b7149cce3a3d1a68bbcbcf4a8e85808357e990ea87c73a4a1"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x416d4",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "342933189915ab1ac200682c17372a0801cf29f16098752a082c3c77e2c8b38f",
+                  "evidence_id": "ev_a35dca6f1504f46793a29902e53abf9da5be22fc8959edfa289070006fa0a440"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "188ead45ae5ec47230c571ad81d0962a354e40d9286ed30ab7a0e64c1b3cd79b",
+                  "evidence_id": "ev_e125e4ded1c07b1ed93da813e4a3e62ccdec6e2afc655cd92353a183484a6c71"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x40f50",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "33de8f4d970bc7d05bff97fcbf92d621d83a2e2cf83046f8dd3a7e611cc9241e",
+                  "evidence_id": "ev_378f1e90287c3d5d8733db4915dfd2087c10cf11876d756f87e0b4df3c287868"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "7f80c1ff6a1c70ac7cc76ab7c62559fda51feff4ba28cbeb68c8a856a1559776",
+                  "evidence_id": "ev_74754b23116d5249b14d8869e0166f24573591baf675530b1a07e7189dbf57f6"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x40134",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "16ce53f0d9c10932daafac606480dc3968f23ae586fbd6bb5f839be806055cba",
+                  "evidence_id": "ev_d8118b3281e1693c44bc2c3a2c0f382b1bf0d909a53a18b7f3c9da39f1513b45"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "7cc14a93e98282cc4b26c54134b04ebf1827678fa475ae11b2d77d9a67177532",
+                  "evidence_id": "ev_6fb399a2607c5ef10601580ff3f98e85cee9a1cf8e682e5e3fcd8200e522a746"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x40310",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "b850fb57c3201a493488dfae9427f29011b93daf8dfd823e9d1409a10bfb8725",
+                  "evidence_id": "ev_d9990097ac20e24f4b20e75d81579757877f7fcad1db98f9bb8cdcb6df339019"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "5fab2fc5e516af07b8d2123107b47531801770ba760592cb551959220d6aa89f",
+                  "evidence_id": "ev_02faa80e63aa99676cc5bfe1a7e1a6d7f39a2de3a38496be3b79bc2a7b373bb0"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x40400",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "a01ca8b2622eae38150e16202760d7f362d7a340f72c79b233e63675be59584f",
+                  "evidence_id": "ev_32cee688cfa1cf6a51f85221c182845362a7df83465e41006023634e8eeaa76d"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "f550e234142ed0d71a907b58463b172e3f2da5625236a13a1ebff2635b8c28ac",
+                  "evidence_id": "ev_beca25120f8c74fe6a50b342958982bf465797083af13297d7073168400d6be6"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x40160",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "e5b08232df813c47541f3f9f7abbe57bde047dbead5d69a6560c80b03901d3ca",
+                  "evidence_id": "ev_d66d83e780f9e35551a01407f80e54a585bf75df618d1208127a327416d8e680"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "ae6ffb12b567614fc0c95de394ab68ad98b095e183d54ac9d34b543ec4a236b5",
+                  "evidence_id": "ev_edc880422a5b4543dd8cd1fa065be6a04ca4938460ee6977914deb4957fa630e"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x41a20",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "57bd244c812f0328b8bf957a44cac724735e061ede26b7932c02904985935f32",
+                  "evidence_id": "ev_ce30d1c1e2f8ca70ed0b0bb143130fd80b3002c6e6082628f94b43d7e97bfbd0"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "b1c3edeaba87dddf81c9b0941790a168ca24a493e190ad9c7e345545f0c753f1",
+                  "evidence_id": "ev_763aed3d505a622cf39574a10a1aaa272207a5053e3a6da50c678576e481cfac"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x3ff8c",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "bdda2a9c7bb67629386b020c59c795b228c0d33a752c683c309ddc92c703a40e",
+                  "evidence_id": "ev_70514163391e52adbb53209aa83b7a1b5b7564e23f02bebc511c6b4843e7b169"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "8a0347100f401b153645ba4ec5402cb22075a250391bf8526dd7a2d8c0fe2507",
+                  "evidence_id": "ev_ba82de9c03fb0949a3e2f2cec7f971850f28d9a896410df7d31eac31b0504db5"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x41f3c",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "7b2e7ff123903c8cd6e45b857f4dd2f7b8898884397a1682d82e8c912a8e7b9c",
+                  "evidence_id": "ev_0c987f1c637dbfe4344ed8e598ef60b8347257a211732823514dee9ae8390304"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "b8d032be83f303f71380117495c1b20083e804a23a1a081317ff6aad6db5cb32",
+                  "evidence_id": "ev_41f40c6e4f2cfef160f1a9821661e14cb883a8c2c3f77535ecbe8191c0f6939b"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "hd-audio-pause-background",
+          "classification": "observed_hd_only_unpaired",
+          "observed": {
+            "hd_setPause": "0x42268 releases the sound dictionary and sets it null; no AudioQueuePause call in this method body.",
+            "hd_setBackground": "0x42364 releases/clears sound cache then calls0x40604, which destroys global OpenAL engine and streaming engine and nulls both pointers.",
+            "cache_search": "No AudioQueuePause string was found in either complete cached pseudo corpus; this is a bounded textual search, not proof of absent indirect/platform pause behavior."
+          },
+          "inferred": "The HD method named setPause is not sufficient evidence that the audio queue is paused. Background cleanup is explicit. The equivalent high-level phone events remain unpaired.",
+          "unresolved_next_checks": [
+            "Find all phone and HD callers of cache reset/background methods, audio-session delegate/notification registration, and resume reinitialization paths.",
+            "Do not infer runtime pause state from method names or an import list."
+          ],
+          "references": [
+            {
+              "domain": "hd_methods",
+              "address": "0x42268",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "ea7386e9d61fcca08952de8d49eba10b30ae04d568c706919f7dbdca182640c6",
+                  "evidence_id": "ev_20e596ebfe8d1aed112379ca9e1786845d5bdbc91e716cbcf5b813e7ad58e6e6"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "76684ca064c379e48d2d202fb2fc2b47ae344c3e2398107fa620913ba60eb1b4",
+                  "evidence_id": "ev_4471c8a0e0d5c18af1ddfcb3eacd2e08061213311a8ae0d5938b37947c9312f8"
+                }
+              ]
+            },
+            {
+              "domain": "hd_methods",
+              "address": "0x42364",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "9786937faefeaf17ad8a6d5451c087c7be5ac248ea46bbcd3be95f452b02832c",
+                  "evidence_id": "ev_0e40867a9bf6d152f9238cd7d9f0a0c1600dae2c4a77f2cb3efa42ef54629b51"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "f4e14ea0756935d1e1f30765256838d4a5ac9df0a23cda01e490ee4072f11731",
+                  "evidence_id": "ev_ee74928ef2143729a88b0dbdd7b7c36b5c0313f03f4df87b852edb866f63fed3"
+                }
+              ]
+            },
+            {
+              "domain": "hd_native",
+              "address": "0x40604",
+              "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "da0524f0364818a828ab3ee764a4ed22423681280af7aad450db8acf402d73b1",
+                  "evidence_id": "ev_c6f527eae12329d16d19a7eff410e59fadc827eab4b7ca5eccf0c5222a5e62b9"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "5388401af281c324e5a0133c2e3bf4197ac05d6bc0bf722ec834d623e52f22e2",
+                  "evidence_id": "ev_0e03727c799c7dbfb3233ae1987db3f30deae19abfacfa3e508056cf38df2536"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "remaining_checks": [
+        "Complete export inventory coverage is not complete semantic equivalence coverage.",
+        "No original source code is available here; files are cached disassembly and decompilation.",
+        "No gameplay execution or audio output measurement occurred in this task.",
+        "Only cached source references/hashes, technical values and concise flow observations are recorded.",
+        "Design impact: use one HD-derived gameplay/save/audio behavior for all restored devices; the phone original is display/input reference, not a second rules implementation. Host lifecycle differences need an explicit common policy."
+      ]
+    },
+    {
+      "kind": "ui",
+      "input_path": ".local/evidence/universal-original-ui-review-20261113/findings.json",
+      "input_sha256": "7b4f886455f1e7da6774eed7c2b64f39494b5fa1ef81229d130c80fc6301a877",
+      "findings": [
+        {
+          "id": "host-input-boundary",
+          "status": "confirmed-cached-code",
+          "phone_addresses": [
+            "0x40fc",
+            "0x3ce8",
+            "0x337c",
+            "0x353c",
+            "0x36fc",
+            "0x4e0e4"
+          ],
+          "hd_addresses": [
+            "0x3bf8",
+            "0x3acc",
+            "0x39a0",
+            "0x2b0a8"
+          ],
+          "phone": "EAGL initWithCoder sets interface orientation 3, configures orthographic projection from screen bounds; createSurface stores half view dimensions at manager+0x60/+0x64. Touch methods Y-flip locationInView and use phases begin=1/move=2/end=3. Manager 0x4e0e4 subtracts half-screen before dispatch. Thus original phone UI handler coordinates are center-relative. The cached host derives dimensions from bounds; this is not evidence of a literal 480x320 universal constant.",
+          "hd": "HD touch methods Y-flip but use phases 0/1/2. GuiHelp consumes positive-screen X thresholds 204 and 564, unlike phone -112/+112. Do not directly reuse numeric phase values or local coordinates across binaries.",
+          "design_consequence": "Keep UIKit/Metal host in physical-point/pixel/safe-area boundary only. Common viewport must provide one invertible render/input mapping for HD layout nodes. Original phone runtime 480x320 measurement is a separate sampled observation; code paths here do not establish phone zoom for every world/state.",
+          "references": [
+            {
+              "domain": "phone201",
+              "address": "0x337c",
+              "metadata_role": "EAGLView::touchesEnded:withEvent:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "d5bde39a2229f85b8f870de1bf7061f27dbe6b5d308add553d9977fb0e027b62",
+                  "evidence_id": "ev_b4918abf51373d6d6e4ef3112c6edc47ef5952d7df3d892ef11081ae2c8d8ffc"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "51caabd19ea1943f47e2b8198465dfa50a87cd1fcd36b506c79eab146fcdff4a",
+                  "evidence_id": "ev_e40790676e694c9b5db61e29b9613482c46df078ac6caf85df535779df7c7fc6"
+                }
+              ]
+            },
+            {
+              "domain": "phone201",
+              "address": "0x353c",
+              "metadata_role": "EAGLView::touchesMoved:withEvent:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "dae23f2b3d8b922c1bd6df3eb40b97c4560fb1ab4aaad46bae173c63a866b133",
+                  "evidence_id": "ev_7e6b48aac52f460abb158db77be34ae94c442065e016771e93750bf2dbf26f43"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "411c8c7062ceae05f0926fbcecaf8e4a6fa9216b4306dfd601bc8d06b2013d40",
+                  "evidence_id": "ev_ab052a450a705bc69348eb911ae8d6c3feaaecf303fc90121859d8b13e359d9c"
+                }
+              ]
+            },
+            {
+              "domain": "phone201",
+              "address": "0x36fc",
+              "metadata_role": "EAGLView::touchesBegan:withEvent:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "88d0d4f854d83a3d5ed526bd8a00417fd1a9b06803f0dc6b1e04636b3b2b942b",
+                  "evidence_id": "ev_ecc7a3ebc9dbee3202b9fd35b6b6c348a220b111db7a16927d7b0ec1e3306cab"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "8347246241e425d1add843c80d574b21cd2d44a908293c82a7cdab9aaf0d919e",
+                  "evidence_id": "ev_59943256a6addfc2e125ba43cc35c033cb1bf495bf9f341dd68efe6f72af607f"
+                }
+              ]
+            },
+            {
+              "domain": "phone201",
+              "address": "0x3ce8",
+              "metadata_role": "EAGLView::_createSurface",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "d1c06c067e3a59ec3041c974093caad2c31b8e7c723a12729639b1b1b17cb542",
+                  "evidence_id": "ev_2c43cf8db6d8b604855ce42f9150526ee3154d7c10407e1ecca78de7a62384de"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "6bc3f83b74237635df7a9b87a2cfd6a31685c9bf7b64c4d7b4105c745cd9a756",
+                  "evidence_id": "ev_36caa7aa453ddb68e6dabb0837d82155d39c0493d7be942be7b1a933a0cb0d5e"
+                }
+              ]
+            },
+            {
+              "domain": "phone201",
+              "address": "0x40fc",
+              "metadata_role": "EAGLView::initWithCoder:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "08fa05a91f40ea8998f3f2eb311905d5a87c662eb830d3ed0b37375e1d757ad6",
+                  "evidence_id": "ev_371786af44d8803d39921e72cbf96d39086571c119a93abeca1d9447860c8685"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "adc1c69efe2692d9ce81dd80f0724d6258cafae73498ff7d6eaf8377a9ab9b55",
+                  "evidence_id": "ev_0f4c5797acb216a374f44e24a8f3f9fd6f5f25fb33e98e109c74cfec27fbff7f"
+                }
+              ]
+            },
+            {
+              "domain": "phone201",
+              "address": "0x4e0e4",
+              "metadata_role": "FUN_0004e0e4",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "298639d307a74d748bbea6ad4aac9044b478201a998206b0e169e9d447e3ce91",
+                  "evidence_id": "ev_cfee2913cb7a31c9402643955721adc16040707a28758b9566614cd61b9c1ded"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "e1b134526f1c4397ffbc66a153a53c614ba3b88b868fd09fa2c709fbbfd7f99e",
+                  "evidence_id": "ev_5090e569461ca36e25689ba2064d6d8e88c0ff8b9f65f055b1315999f7d6551d"
+                }
+              ]
+            },
+            {
+              "domain": "hd103",
+              "address": "0x3bf8",
+              "metadata_role": "EAGLView::touchesBegan:withEvent:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "402822c872dc2d68f5ad001efc221366404600fd73ff5acaaef59339fa56752e",
+                  "evidence_id": "ev_d0f8e3d0e5ede21ebd572fbc3eee31d5250af6f9651d39511b72c90ea8ad1e50"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "6aad201168e3d6934e613af8c696ed259567747b1e489beec860d3482c81029d",
+                  "evidence_id": "ev_b2794f33de6e3080e97729738dcfc540d7c47bf567bbc39046dfd4ff3e394f54"
+                }
+              ]
+            },
+            {
+              "domain": "hd103",
+              "address": "0x3acc",
+              "metadata_role": "EAGLView::touchesMoved:withEvent:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "d2849852f7fedc861eac91fe741f5ebb06a8145638ff4955eaa868f1c27c2b46",
+                  "evidence_id": "ev_672eb3b4ccef4082e20924473982f6f2d7c10b62e6aa71ceec30e30e2ef88a4c"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "790104a100abe018d167744b66b15f81bf83d6b482233a2d98ea321c364e6348",
+                  "evidence_id": "ev_d926397a2c10fb1f7dfdc11e1b771bf3fd05a35257d9317e0cc6d4f229599527"
+                }
+              ]
+            },
+            {
+              "domain": "hd103",
+              "address": "0x39a0",
+              "metadata_role": "EAGLView::touchesEnded:withEvent:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "b79943445612d465bcfba8e9c5c661c1db213d457ca6666b6cf2c52502dbda8a",
+                  "evidence_id": "ev_ee764343132b836a163d220874b7741acaa2e24363d24b481ac9f3b6841be4cf"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "42b8314d8299e4b7c3360da741165257692a27109b6b81fbd39aa31142aad529",
+                  "evidence_id": "ev_3e318cb751cb9ba203fa79acaedd7c452c50b9be87c0456fa075e65ed3c42a73"
+                }
+              ]
+            },
+            {
+              "domain": "hd103",
+              "address": "0x2b0a8",
+              "metadata_role": "GuiHelp::onTap:State:ID:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "886ccc023823641c6334e671d68c544e0193d862d515a4ef6fb9022aae65b3ac",
+                  "evidence_id": "ev_917e4bea3e079418ece4030278310574820a40b072d8d7046b355aaf3cecf5b5"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "53bb80fc90738776bcefff8e7f5ec469e75dd3ee2a486937154883cbeba606a8",
+                  "evidence_id": "ev_05c8527aff7c112a47d2bb19a8de76f729a90e034d797200942932223fe29214"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "retina-file-logical-geometry",
+          "status": "confirmed-cached-code",
+          "phone_addresses": [
+            "0x520c0",
+            "0x524a8",
+            "0x51d9c",
+            "0x4727c",
+            "0x4b850",
+            "0x4b4b8",
+            "0x2e480"
+          ],
+          "hd_addresses": [
+            "0x3f530",
+            "0x3f56c",
+            "0x3fb04",
+            "0x43ea8",
+            "0x444ac"
+          ],
+          "phone": "0x520c0 tries basename@2x.extension only for deviceType3, falls back to original key/file and sets forRetina accordingly. Constructor 0x51d9c initially sets type2. Separately 0x524a8 sets forRetina(true) whenever type!=1, even after fallback, so forRetina does not imply an @2x physical filename. HUD WeaponCap uses this explicit path. TileSplit0x4b850 halves logical tileWidth/Height when forRetina. Draw0x4b4b8 multiplies supplied visual scales by0.5 when forRetina.",
+          "hd": "HD getTile/getTileForRetina has the same conditional @2x lookup vs explicit flag distinction. HD constructor detects iPad type1 and retina phone type3. HD TileSplit0x43ea8 computes logical tileWidth/Height without the phone conditional half; HD draw0x444ac does halve supplied scales when forRetina.",
+          "design_consequence": "Track physical file size, atlas split, logical tile size, sprite origin and draw scale separately. Their half factors serve different consumers; do not double-apply a retina factor or treat a phone logical getter as an HD pixel dimension. Preserve HD asset metadata and choose layout/world density in common config.",
+          "references": [
+            {
+              "domain": "phone201",
+              "address": "0x520c0",
+              "metadata_role": "FUN_000520c0",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "bb21a33c08408df139bd5fda4493ac73b15a1116f4125ed286a89a5ae2852601",
+                  "evidence_id": "ev_42190d4481bdbcbae4e9a6b86ffe09113d1b3b79ec0190ed5bd165e4bd8233d4"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "8c8825bd1480bbfa8b9f8909a20bd7c1421ec23981a333c2cec2f6d4c08c14e7",
+                  "evidence_id": "ev_63035580daf36e8a538924b0d73a1d62c2038289dd974d86e35ea0c98b45633d"
+                }
+              ]
+            },
+            {
+              "domain": "phone201",
+              "address": "0x524a8",
+              "metadata_role": "FUN_000524a8",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "668e58ff64cccbe664a43901358bbc75eae47f6101cd01d55b57eba7a69d2c4a",
+                  "evidence_id": "ev_d1716f868c42a7d44f5985627441bf41a7ba9dcafbf6d5bed68b204c14089a7e"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "0a6847657d4283afe756f1389bee94501c090d9615c9c04ab638ddd7667ec1a0",
+                  "evidence_id": "ev_b00ef84d1430a0fb20f4d7282657e300e22ccd91e203442b11556b46720e3ca1"
+                }
+              ]
+            },
+            {
+              "domain": "phone201",
+              "address": "0x51d9c",
+              "metadata_role": "FUN_00051d9c",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "af4b57cb8336cfde2539cf98a8b96f2c5dc24f31e2e1a2e604042395b5b7a228",
+                  "evidence_id": "ev_7c691cf9abe20edd126fb50f14fa300b634a1060d9b455b90833ed5be8f12055"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "b093dea19f99bdfddcd4f2717c65787587b05727e8dd82189887e80673754fba",
+                  "evidence_id": "ev_be0ed9d3bda350eaf382ff59f85330d1acb406b38484c39c548640c847e7306a"
+                }
+              ]
+            },
+            {
+              "domain": "phone201",
+              "address": "0x4727c",
+              "metadata_role": "FUN_0004727c",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "bf64dfae604be2b4055f2c3a5f6d1fb69e172d5f87b5d5180958483ba3fbb3f5",
+                  "evidence_id": "ev_d8449c1fdd29b31f1aa7649ebabbce96a2eb2b50bc72248a1146fcd676b89bdf"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "9992e836c8c880a3f71bd107a0211555a4697c3da62ca4a27f0fd99dc6451f61",
+                  "evidence_id": "ev_5b833a50763f618c24848822dbea103fd5ceaff8237276dbdfb830d980bd3bd7"
+                }
+              ]
+            },
+            {
+              "domain": "phone201",
+              "address": "0x4b850",
+              "metadata_role": "Tile2D::tileSplitX:splitY:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "02e8527b2fc1e08394645e84dff3042574a3fb68a344612bb8ae3c80d5421a98",
+                  "evidence_id": "ev_cfe48256e54731f79a6d7fb48948c7854dc36749674c9b356b65d42036ec3d26"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "5738761fac9f85fb03154054d1132826422b38da4497d33923dfbb4b1a298998",
+                  "evidence_id": "ev_44d615ce6daad80770b62fcb687a988aa806f5c7212584e0340e5b6a26e2935c"
+                }
+              ]
+            },
+            {
+              "domain": "phone201",
+              "address": "0x4b4b8",
+              "metadata_role": "Tile2D::drawTile:x:y:blendType:alpha:scaleX:scaleY:rotate:reverse:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "bbeeaca952b777bb13aa2c1213954ba8b27540ba2d1d38306c869085bd196876",
+                  "evidence_id": "ev_e2a54dd229cd970f4e09986a96c9446b55f42a091538b2e1a02c70eaef0b935a"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "01c21a3ee7d18fe768849f2e15bf1c6086ca4775970914e4431fe26b32ce1028",
+                  "evidence_id": "ev_ef6ab04953476821a8d15d85a930bb2a64e7a936499a369f01654c4e8a1e4702"
+                }
+              ]
+            },
+            {
+              "domain": "phone201",
+              "address": "0x2e480",
+              "metadata_role": "FUN_0002e480",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "4634ea2ba2cea2f9bc8940b599dcfdca1730044e4bbe9704fa8106da2979a45b",
+                  "evidence_id": "ev_e22288bff314718d2b1bdff1a355b7c093712a4a68bfaaf19b0b1ada875cdab9"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "5e493689d4ad37fc2571854fdac535b3cc3fb93e2be4078273b2f2c3904d99c9",
+                  "evidence_id": "ev_47c0ef3ee78e83a958d61d4fd40949be50b7f901aff1549eb6e404f599b8de01"
+                }
+              ]
+            },
+            {
+              "domain": "hd103",
+              "address": "0x3f530",
+              "metadata_role": "ResMgr_Tile::getTileForRetina:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "c149ff4486e9249ad65f73bc13d1efdb39e7c5980ae2f95467c182096a14a7a8",
+                  "evidence_id": "ev_fbda73847726165f7affdb426bb21dceedfd1f25adfd032afc5ce2fa50e490e6"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "4cdb6b963d442dfdd4814aaaa5315790d1b5673ead72d5c70dd3a6b59f70a464",
+                  "evidence_id": "ev_6dcb7aa13b8258d606961626b663c2dafaf2ef005b0eaf3cb3ef47ddfe36682c"
+                }
+              ]
+            },
+            {
+              "domain": "hd103",
+              "address": "0x3f56c",
+              "metadata_role": "ResMgr_Tile::getTile:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "ed35bea192dd1bc92b833a03a3a8b749d91c34a6ee8f4188544bc42a0032d3e1",
+                  "evidence_id": "ev_e6e7ad9a2e23722a7875753c1abe0f4eb60995c09cf5e1fad4e7a27e397fd5de"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "b3bd9afc9c48615c8b224ffef306c02a4a0c73b7ab890c3565b89231f61df3f8",
+                  "evidence_id": "ev_c144c316d49d92d15d0a16a4d3ff2d7be6b845873a47ea628aa1400b42819fc8"
+                }
+              ]
+            },
+            {
+              "domain": "hd103",
+              "address": "0x3fb04",
+              "metadata_role": "ResMgr_Tile::init",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "c8a5940b74b74d6f71b06f24a86f538ee2a01a0fc8946c89f59f7ae85e708c44",
+                  "evidence_id": "ev_cfb48b646966056613bb7e9969dc8bacf760ecd2546a170bf74b74541ccf3dfd"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "a7e8ba5628f6277be7e5513311ddde1a20c4e6640a9b031cf66a65a065808751",
+                  "evidence_id": "ev_889adc5ebf1fbda31c53938bc7d8b7d7666935ddb463459ef0080c676a2eec0c"
+                }
+              ]
+            },
+            {
+              "domain": "hd103",
+              "address": "0x43ea8",
+              "metadata_role": "Tile2D::tileSplitX:splitY:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "1e271638362298c1d842f363a664df3d2b665a008c9e62df4a250804b059d88a",
+                  "evidence_id": "ev_fb9906eefd68020fa5917bb251755462bbfcbb9ea6c2795d481a01be79d2cdf0"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "1f27473e17c9fcc2b71813654de65736daf65a9ca915a15b489fde527c08bc47",
+                  "evidence_id": "ev_14358ba51ce5f425c39bce2081158bcbd12238ed2ab23dd8151db8fbc263d0da"
+                }
+              ]
+            },
+            {
+              "domain": "hd103",
+              "address": "0x444ac",
+              "metadata_role": "Tile2D::drawTile:x:y:blendType:alpha:scaleX:scaleY:rotate:reverse:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "03400e5a602c6a29c5a1946c7a139047ea8ac65ab6ecbc174d2110036038eca7",
+                  "evidence_id": "ev_bf6a02447e7143149eb774eefb624be08d949ddd264f47586938c4a4f8a3e8e9"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "1661234b77c1e7815671ad4e08e36d59be7b418010f3fa2bf9d4c642882df76d",
+                  "evidence_id": "ev_ced08e53a60ea9efac7e7d209c28bf0eed4afeb15eac5325d13c132f38fbc976"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "hud-parent-child-hit-role",
+          "status": "confirmed-selected-path",
+          "phone_addresses": [
+            "0x2e480",
+            "0x4ca54",
+            "0x4cadc",
+            "0x4bebc"
+          ],
+          "hd_addresses": [
+            "0x29c9c",
+            "0x37aa8"
+          ],
+          "phone": "GuiGame init0x2e480 attaches GameUI_BG at local(0,-128); weapon buttons1022/1023 are its children at(-136,0)/(142,0), explicit bounds80x52, and their weapon-image children have scale0.5. Menu1021 has explicit bounds96x44 at(-210,-24). QobButton0x4ca54 stores half width/height; hit0x4cadc compares a center-derived point to those half bounds using strict edges after manager translation. These are code-generated nodes and hit rectangles, not only a base table.",
+          "hd": "HD GuiGame::init0x29c9c creates weapon buttons1022/1023 directly under GuiGame, then child out-of-range indicators. HUD background/gauge hierarchy and menu button parent differ from phone. HD weapon bounds are set64x64 in ASM0x29db2..0x29db8 and0x29e1a..0x29e22. HD bound setter0x37aa8 uses scale fields when storing rectangle. Decompiler VFP field/order requires ASM before assigning exact asymmetric-scale behavior.",
+          "design_consequence": "Use HD hierarchy as common presentation source. A node anchor/parent transform must move both draw geometry and input geometry. Uniformly multiplying phone positions or only replacing screenHeight would not preserve these hierarchies. This does not census every HUD node or every command handler.",
+          "references": [
+            {
+              "domain": "phone201",
+              "address": "0x4bebc",
+              "metadata_role": "FUN_0004bebc",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "7f7aa414576c45707752a866e8ada0821a153e4f318b1d9055d23b30ed8045c9",
+                  "evidence_id": "ev_f777f9b4f975b32a3bc70bd0615c0be32123a1e40accd42f9aeaa7bbcd5d25ed"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "ce7377c87e3b7620c431a444735e268712b4ea31c6b4b914f42d4f6ae40b1e82",
+                  "evidence_id": "ev_13c1b31093d1ffd8f69dacce242946e84b7df9bf37c77f1531ec7d639c325213"
+                }
+              ]
+            },
+            {
+              "domain": "phone201",
+              "address": "0x4ca54",
+              "metadata_role": "FUN_0004ca54",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "c53a4fac933331dca99025a542cf259ab850b1602b7db81f12ff79a61d37868a",
+                  "evidence_id": "ev_1b84d7b96d4c9be1eaa39c9779a42ced18edd247d66fdd124160fcdcd596471e"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "c72857d87779eb9c2f970b23e79b0b7ca2af5afad96ae0410dac29d7232b2e0a",
+                  "evidence_id": "ev_14176fe41bdd86c5451acb702e7c6dd06f6bb469c54d6b754b8cc2fb0a0fc601"
+                }
+              ]
+            },
+            {
+              "domain": "phone201",
+              "address": "0x4cadc",
+              "metadata_role": "FUN_0004cadc",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "d8cd7c3bf139199d952e13e1dc9ad194bf63eb3aa1da7d73403d757a7bf2a3a6",
+                  "evidence_id": "ev_7fa57582e6c49a77206030fcc3f4b6320307da9b272bd75e434b271440fa550c"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "f432a037a6bf21537a542b84e3daae8b76445fae746b4ed5d46cc0a5a5007dda",
+                  "evidence_id": "ev_8d9cba89bc4b0d2dfe606927ca059010abcd0adde8b8b5940571cf1b387516de"
+                }
+              ]
+            },
+            {
+              "domain": "phone201",
+              "address": "0x2e480",
+              "metadata_role": "FUN_0002e480",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "4634ea2ba2cea2f9bc8940b599dcfdca1730044e4bbe9704fa8106da2979a45b",
+                  "evidence_id": "ev_e22288bff314718d2b1bdff1a355b7c093712a4a68bfaaf19b0b1ada875cdab9"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "5e493689d4ad37fc2571854fdac535b3cc3fb93e2be4078273b2f2c3904d99c9",
+                  "evidence_id": "ev_47c0ef3ee78e83a958d61d4fd40949be50b7f901aff1549eb6e404f599b8de01"
+                }
+              ]
+            },
+            {
+              "domain": "hd103",
+              "address": "0x37aa8",
+              "metadata_role": "QobButton::setBoundWidth:Height:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "07e9b150a2a1cb1517afee5270ed7d29aff0644f5aba93a0a9be71d57d10ef8a",
+                  "evidence_id": "ev_2a64ab8da168b66b9e04ef6a8856724560440024e201fe8b2b3c7b2159c0431a"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "eb5ad8b1594929ffd0af90684d50b2e588a72b6d87054bfe1745bd6d06eaacc7",
+                  "evidence_id": "ev_fe820b86cbd0250b08a983fe88af5a5255040b69c8000e1d4d9322c944f4ed20"
+                }
+              ]
+            },
+            {
+              "domain": "hd103",
+              "address": "0x29c9c",
+              "metadata_role": "GuiGame::init",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "ad04ed4f20508a9bc68661bebe13f8433802446046cee5de94ea65c4a33307d5",
+                  "evidence_id": "ev_6d363a43cf24516cd59abd3f341842e8c95e98c4ead141e9076eba1b4f81b0ea"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "1a9fdc5e51bbaf42a0ce9dcc8bee1d4a430da6746c23aefe1b337e058e62450d",
+                  "evidence_id": "ev_c898b17ed17c495ce858b253ce493ee5dc953d03625081aedeb0afe50ff44aa1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mission-dialog-structure",
+          "status": "confirmed-selected-path",
+          "phone_addresses": [
+            "0x2885c"
+          ],
+          "hd_addresses": [
+            "0x22b1c"
+          ],
+          "phone": "DlgMission constructor0x2885c derives from QobImage, loads MissionBG.png as its own tile and attaches Btn_CloseX.png (2x1, ID5000) at local(200,95). RTTI/vtable identity is matched by constructor assignment and body strings.",
+          "hd": "HD DlgMission::init0x22b1c derives from QobBase and creates separate middle/bottom/top background children at Y0/-32/+32. OK(ID5002) and close(ID5000) are children of bottom background, with original push-depth/release-height/release-delay setup. This confirms structural UI version differences; it does not imply the phone lacks the mission-completion game feature.",
+          "design_consequence": "Keep HD dialog composition/handlers in common game/UI code. Reposition assembled HD nodes with their hit regions. If reducing the dialog to landscape, record supported readable sizing/scroll/reflow behavior explicitly; do not fabricate phone-specific cropped image files or convert game UI to UIKit.",
+          "references": [
+            {
+              "domain": "phone201",
+              "address": "0x2885c",
+              "metadata_role": "FUN_0002885c",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "88ee2b62e82e832ae67076835d5a87164a2bb4c9f626a4adb5c777f7abc8df3e",
+                  "evidence_id": "ev_05c81d5423b98976e1ec7af346b4690ba2726f15afcba0c227ff54f6cd8a77a5"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "bcb8da770547d9b1fbe23d2fa385a43f0fa93e7d24a3b6ffcb9a10a0f9176eea",
+                  "evidence_id": "ev_f6fe518992bdad278c69a7e9542ac5ff55eecd5acefbdf3a2d39457428374f6d"
+                }
+              ]
+            },
+            {
+              "domain": "hd103",
+              "address": "0x22b1c",
+              "metadata_role": "DlgMission::init",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "e7b2e6859d0a212c064d5a6c13c115a08e9e81d99518658989c6e3465e0f00f0",
+                  "evidence_id": "ev_53665eced4a9ca5f5e2c4d92afd822eb0621f8d6fe35df173f42e9c909f0f7c7"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "4b6156dd8361e0654f85bb4f685512e8c023698f6669039d38e88112a9201c6b",
+                  "evidence_id": "ev_d373b2d0f59bd572a2d57828232c87f442128f56c82e8301758ce0c868ef9e13"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "help-version-content-input",
+          "status": "confirmed-selected-path",
+          "phone_addresses": [
+            "0x3abb0",
+            "0x3afb4",
+            "0x3affc"
+          ],
+          "hd_addresses": [
+            "0x2b0a8",
+            "0x2b1f0",
+            "0x2b2c4"
+          ],
+          "phone": "GuiHelp constructor0x3abb0 loads five HelpScr%02d_<locale>.jpg pages and HelpHelp.png; setPage0x3afb4 clamps0..4. onTap0x3affc checks phase1 (ASM0x3b056), uses center-local X<-112 / X<=112 navigation zones, and retains additional non-change-page conditions for pages2/3.",
+          "hd": "GuiHelp init0x2b2c4 loads three HelpScr%02d_<locale>.png pages at(384,512). onTap0x2b0a8 checks phase2 (ASM0x2b0b8), uses X<204 / X<=564 zones and closes/unpauses when changePage is false. This is content/count/interaction logic difference, not merely higher-resolution artwork.",
+          "design_consequence": "Select HD help content and behavior for shared core/assets. A full-page HD raster in phone landscape requires an explicit common GPU presentation policy; contain preserves complete content but may reduce text too much, zoom/pan/scroll can preserve pixel readability without generating separate phone files. Choice and readable minimum remain unmeasured. Do not claim phone five pages were restored by retaining only HD three pages; state chosen HD baseline.",
+          "references": [
+            {
+              "domain": "phone201",
+              "address": "0x3abb0",
+              "metadata_role": "FUN_0003abb0",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "c8cbd8d0d4a879876ceda22dc920205a59c2ec415a54fb30181b3eaaf7a3a34a",
+                  "evidence_id": "ev_2142824c228626249596b04dd782ec866061da0a6205c87cbbb9247adfce3cb0"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "9ffea72811d539dca33351863d99d79f1be9ffbc06b5de2e2919ac575ef93d3f",
+                  "evidence_id": "ev_1c4238dcbe021ec9c3de751cba769e67a4a9ee91cba82609ef71b194fe4ba148"
+                }
+              ]
+            },
+            {
+              "domain": "phone201",
+              "address": "0x3afb4",
+              "metadata_role": "FUN_0003afb4",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "1b87fbf5d690cbdadb7493e362214021e09898d73da3871ed9ac4f0eb7241733",
+                  "evidence_id": "ev_7c550f4466cca0dc94eed26441b505d2bbd16ed5ca1c8413c3a3e11e133fbf25"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "029587dc1de92c2dec59aa09f64c5934023872c8b5143c42a7689b96903fcce0",
+                  "evidence_id": "ev_bb2aa6a51ea38de025dc5f968ce51cb310b6c05b286cdd0e02f37a8ecb87bea9"
+                }
+              ]
+            },
+            {
+              "domain": "phone201",
+              "address": "0x3affc",
+              "metadata_role": "FUN_0003affc",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "f7792af900dccc06df0eaf6f38154c606964ff7e7bc81ac25e9cc66f431cdc02",
+                  "evidence_id": "ev_58632091bc9d122bd4daaeb6e68104dfa3fc7c83105458d3baabd24cd866de80"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "a9d295bf29c3222e764e73b2be245f9583fd2425b351df94d859e43ba480da62",
+                  "evidence_id": "ev_5b3ff0e17c04b15f06ac74f27dca3b4b614e5e31e9aa5d653cc3453a6e3403f6"
+                }
+              ]
+            },
+            {
+              "domain": "hd103",
+              "address": "0x2b0a8",
+              "metadata_role": "GuiHelp::onTap:State:ID:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "886ccc023823641c6334e671d68c544e0193d862d515a4ef6fb9022aae65b3ac",
+                  "evidence_id": "ev_917e4bea3e079418ece4030278310574820a40b072d8d7046b355aaf3cecf5b5"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "53bb80fc90738776bcefff8e7f5ec469e75dd3ee2a486937154883cbeba606a8",
+                  "evidence_id": "ev_05c8527aff7c112a47d2bb19a8de76f729a90e034d797200942932223fe29214"
+                }
+              ]
+            },
+            {
+              "domain": "hd103",
+              "address": "0x2b1f0",
+              "metadata_role": "GuiHelp::setPage:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "5421a34ca1747275dcc73ae71bc9ae8b8bfb4f4e9e5c13208fbffe3d503190f0",
+                  "evidence_id": "ev_d5025a76c2d0802bd170a978c169d2c7837a7da1e3bb78038eef00a548edd02d"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "f67f9dfa1ec67841480f70b757e120ec99f9318bcbb85038c4fa5b1d1e469541",
+                  "evidence_id": "ev_82d9fd131f15b87abf2e1bffd13d4cc3780f93c8eb14fd162dac4119672d38dc"
+                }
+              ]
+            },
+            {
+              "domain": "hd103",
+              "address": "0x2b2c4",
+              "metadata_role": "GuiHelp::initWithLocale:Page:",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "1ba3e7943a2fe713a7235a3a2a34fbf946141d2cbac7eb1852f179686d5ac1f7",
+                  "evidence_id": "ev_b9d1bd120dab18f2e69fe6f0d82711550400148db0425d75ec54a39a34dbd093"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "3dbe730999a182864b7aa2f400eb8bcacc1244460433737b37bffd229ebc830d",
+                  "evidence_id": "ev_5d9ef4a412fca1f0fe5fe8ec33594f7572a74bb7a47a387c888e5a6048e162fa"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "transition-phase-coverage",
+          "status": "confirmed-selected-path",
+          "phone_addresses": [
+            "0x5f8c"
+          ],
+          "hd_addresses": [
+            "0x45e8"
+          ],
+          "phone": "GameMain tick0x5f8c runs loading phases0..8, approaches geometry with divisors5/6/10, center scale1.5 to0.9 then snap1, changes screen at phase4 via0x7350, and uses original close/open sound calls. Phone coordinates include centered start topY263,bottomY-310,leftX-340,rightX340 and target limits unlike HD.",
+          "hd": "GameMain tick0x45e8 also has loading phase sequence with close/open sounds, screen refresh atphase4, center scale targets1.5/0.9/1, and easing divisors5/6/10. HD phase0 starts top(384,1408), bottom(384,-384), left(-256,512), right(1024,512), with its own closing thresholds and snapping. Selected shared roles are confirmed, bit-for-bit timing equivalence is not asserted.",
+          "design_consequence": "Preserve HD phase advancement/tick formulas/sound ordering as game behavior. Map resulting panel geometry to viewport coverage separately. Replacing all768/1024 or derived thresholds by target width/height inside phase formulas can change duration and screen-refresh timing. GPU geometry/clip/UV may extend coverage using the same HD textures without altering source files; retained image ratio/seams and full occlusion need later tests.",
+          "references": [
+            {
+              "domain": "phone201",
+              "address": "0x5f8c",
+              "metadata_role": "FUN_00005f8c",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "a3f1743e3498e15d024f7c9309c991f0ae682ad71ee725cccb81f635fe5c5597",
+                  "evidence_id": "ev_d85fd10ff263e7e91e2ff31ab9320a5d99e62c1c430a8f2f132ce9267ad095ca"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "eee40cb41ab6af66271c5f6a1c6b4cdc89111b9ef14907e0ca696007c7f4cf93",
+                  "evidence_id": "ev_ca4380f3967283bf883231554113af8d3dcb8187125f7a33895d0c59a0ce441e"
+                }
+              ]
+            },
+            {
+              "domain": "hd103",
+              "address": "0x45e8",
+              "metadata_role": "GameMain::tick",
+              "exports": [
+                {
+                  "kind": "pseudo",
+                  "sha256": "02304335b603ff32cf564f24a52861f06b05d909d59b46adad9d3f20c0f40402",
+                  "evidence_id": "ev_7197b44a0cbbd717e3c9286e9a642fcc245b2af2b1b9e068602dc581951a5163"
+                },
+                {
+                  "kind": "assembly",
+                  "sha256": "9e28696229decf65e0f510b71f5e06022dc211e7b557ce9887e275e7707584c8",
+                  "evidence_id": "ev_f0940d793d6a032fa395f7adb292fe113cfcdf44f763133bc123039f40688fee"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "remaining_checks": [
+        "Expand role correspondence across inventory/shop/quick-slot/airlift/title/select-slot/loading and callbacks; shared class name or vtable slot alone is not proof of equivalent behavior.",
+        "Trace phone resource type setters/callers and selected resource-returned actual dimensions before claiming any @2x branch activated.",
+        "Recover complete parent/absolute-position, clip/scissor, button scale/movement and hit-edge contracts for all visible interactive nodes; current selected functions do not close the whole UI graph.",
+        "Measure HD full-page Help/StageClear/Title and mixed-size MaintenanceBG raster readability/cropping on target landscape viewport using same HD files. No phone file generation or new cropped resource files.",
+        "Keep phase/tick/save/audio/RNG assertions separate from viewport coverage. Later deterministic paired scenarios must compare camera/isInScreen/spawn/AI/attack exception branches and RNG consumption; this UI subset does not establish phone original camera zoom.",
+        "Original phone480x320 and HD768x1024 display samples constrain their measured states only; determine original phone map-zoom scope before selecting a common world-density policy."
+      ]
+    }
+  ],
+  "followup_verification": [
+    {
+      "kind": "runtime",
+      "status": "cached-references-reverified",
+      "findings_path": ".local/evidence/universal-runtime-native-review-20261113/findings.json",
+      "findings_sha256": "06fad3c2f8373ad9bd69822dd45ee34e092028093f586c302f2fc66095e63a68",
+      "finding_count": 9,
+      "function_references": 99,
+      "unique_functions": 97,
+      "file_references": 198,
+      "unique_files": 194,
+      "new_runtime_execution": false,
+      "all_hashes_match": true,
+      "prior_verification_sha256": "ddeeb774b0df0f8f0c65ffc8df62bda509fb5af2e07139e6c495784d6affffbb"
+    },
+    {
+      "kind": "ui",
+      "status": "cached-references-reverified",
+      "findings_path": ".local/evidence/universal-original-ui-review-20261113/findings.json",
+      "findings_sha256": "7b4f886455f1e7da6774eed7c2b64f39494b5fa1ef81229d130c80fc6301a877",
+      "finding_count": 6,
+      "function_references": 36,
+      "unique_functions": 36,
+      "file_references": 72,
+      "unique_files": 72,
+      "new_runtime_execution": false,
+      "all_hashes_match": true
+    }
+  ]
+}
