@@ -1,5 +1,17 @@
 # HeavyMach 2 보고 사이트
 
+## iPhone 추가 조사·개발 계획·금지사항 — 버전282, 2026-11-13
+
+[추가 조사](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/followup.html), [개발 계획·금지사항](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/development.html), [인계](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/handover.html), 카메라·전투/UI/시간·저장·음향의 분야별 후속을 기존 네 페이지와 연결해 총10페이지로 게시했다. 근거 커밋은 iPhone 작업 브랜치의 `94985910f97ad7ce8ab1d135473e366c9ac66635`다. 추가 정적 조사·계획·금지사항 보존이며 게임 구현·새 앱 실행·실기기 설치·develop/main 릴리스는 하지 않았다. 실제 표시 크기·가독성·오디오 중단/복귀와 남은 간접 분기는 미확정 또는 다음 실행 조건으로 남겼다.
+
+사이트 소스는 `c8da8badc69dfc7275076c25d9c552d390f6868d`, 버전282, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_d6f0a81459748191b7d2dbfee5bf844c`, 배포는 `appgdep_6af6c2916df88191bd8813a1d9dd2250`이다. 공식 succeeded와 본인1명·그룹0·외부0을 확인했다. 실제18경로 HTTP200, HTML 표시 문구·링크 일치와 본문 payload·스크립트·CSS·명세 JSON 바이트 일치를 확인했다. 로컬 Chrome에서 새 여섯 페이지의 본문·표와 목록을 확인했다. 온라인 Chrome에서는 로그인 화면까지 확인했으므로 로그인 후의 시각 검수 완료로 보고하지 않는다.
+
+256MiB 한도를 지키기 위해 목록 `index.html`의 기존 본문을 `report-index-content.bin`에 gzip으로 보존하고 기존 head/style과 새 loader로 표시한다. 본문은 새 보고 링크 하나를 제외하면 이전 소스와 같다. `report-index-source.json`에 이전/현재 본문·압축 결과 해시를 구분했다. 이후 목록을 고칠 때는 압축 payload를 풀어 기존 본문을 보존한 채 링크를 수정하고 해시를 갱신한다. 최초 변환은 `tools/compact_report_index.py`로 재현할 수 있으며 재압축을 이유로 기존 보고서·이미지를 지우지 않는다.
+
+기존 파일 중1,357개는 바이트가 같고 변경은 목록과 기존 조사 폴더 안7개 파일에 한정됐다. 원본 이미지·게임 자원은 바꾸지 않았다. 최종 tar 확장 크기는268,413,440바이트이며 콘텐츠1,373개와 생성 hosting manifest1개의 바이트 일치를 확인했다. 원본 IPA·실행파일·전체 함수 본문·전체 CFString·사용자 저장은 새 사이트 소스에 넣지 않았다.
+
+로컬 근거: `.local/evidence/iphone-universal-integration-20261113/`의 `evidence-verification.json`, `document-validation.json`, `site-local-check.json`, `site-archive-check.json`, `site-deployment.json`, `site-published-http.json`. 토큰은 파일에 저장하지 않았다.
+
 ## 일반판·HD판 차이 조사 — 버전281, 2026-11-13
 
 [조사 결과와 유니버설 설계 보강](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/)에 결과·조사 기준·패키지 전수 비교·네이티브 로직 비교 네 페이지를 게시했다. 감사 브랜치의 근거 커밋은 `75d0bfa5ef58d4d90385fd249669538e48cce561`이다. 여섯 IPA의 파일9,123개와 이미지7,740항목을 조사했다. 함수 본문 보존과 주요 경로의 정적 비교를 전체 함수 의미 동등성·실행 검증 완료로 표현하지 않는다. 유니버설 설계에 영향을 주는 미확정과 다음 확인을 본문·TODO에 남겼다. 게임 코드·자원·앱 빌드·설치는 변경하지 않았다.
