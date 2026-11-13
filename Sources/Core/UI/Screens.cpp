@@ -83,12 +83,14 @@ struct Screens::Impl {
     Region region=Region::content;
     float verticalPan=0,verticalOrigin=0;Vec2 verticalStart;std::uintptr_t verticalPointer=0;bool verticalDragging=false;
     float shopPan=0,panOrigin=0;Vec2 panStart;std::uintptr_t panPointer=0;
+    float listTop=1024,listBottom=0;
     std::map<const Button*,Region> buttonRegions;
     struct RegionScope {Impl& self;Region before;RegionScope(Impl& p,Region value):self(p),before(p.region){p.region=value;}~RegionScope(){self.region=before;}};
     template<class T> void pushNode(T node){
         node.region=region;
         if constexpr(std::is_same_v<T,ImageNode>){
             if(node.tag=="title.bg")node.region=Region::backdrop;
+            else if(layout.configuration().compact&&(node.tag=="menu.backdrop"||node.image.tile.image=="SelSlot_BG.png"||node.image.tile.image=="CmdCenterBG.png"))node.region=Region::backdrop;
             else if(node.tag=="title.big")node.region=Region::banner;
             else if(node.tag.starts_with("hud.enemy"))node.region=Region::top;
             else if(state.screen==ScreenId::shop&&node.image.tile.image=="ShopBG.png")node.region=Region::shopBackdrop;
@@ -104,8 +106,8 @@ struct Screens::Impl {
         nodes.push_back(std::move(node));
     }
     Region scrollingRegion()const{return state.weaponChoiceType?Region::chooser:Region::list;}
-    float verticalLimit()const{if(!layout.configuration().enabled)return 0;const auto r=scrollingRegion();if(!layout.configuration().compact&&r==Region::list)return 0;if(r==Region::list&&state.screen!=ScreenId::command&&!state.missionVisible)return 0;const float height=r==Region::chooser?std::max(1024.f,float(state.weaponChoices.size())*36+200):1024;return std::max(0.f,height*layout.ui(r).scale-layout.clip(r)->height);}
-    DisplayTransform presentation(Region r)const{return layout.ui(r,r==Region::list||r==Region::chooser?verticalPan:shopPan);}
+    float verticalLimit()const{if(!layout.configuration().enabled)return 0;const auto r=scrollingRegion();if(!layout.configuration().compact&&r==Region::list)return 0;if(r==Region::list&&state.screen!=ScreenId::command&&!state.missionVisible)return 0;const float height=r==Region::chooser?std::max(1024.f,float(state.weaponChoices.size())*36+200):listTop-listBottom+12;return std::max(0.f,height*layout.ui(r).scale-layout.clip(r)->height);}
+    DisplayTransform presentation(Region r)const{auto t=layout.ui(r,r==Region::list||r==Region::chooser?verticalPan:shopPan);if(r==Region::list&&layout.configuration().enabled&&layout.configuration().compact)t.offset.y+=(1024-listTop)*t.scale-8;return t;}
     std::optional<ClipRect> clipping(Region r)const{return layout.clip(r,shopPan);}
     Region buttonRegion(const Button& button)const{const auto found=buttonRegions.find(&button);return found==buttonRegions.end()?Region::content:found->second;}
 
@@ -302,27 +304,36 @@ RegionScope card(*this,Region(unsigned(Region::slot0)+i));
     void base(){
         const auto name=state.baseId+".tble";
         const auto table=DataTable::parse(resources.read(name));const Vec2 root{384,512};
+        const bool compact=layout.configuration().enabled&&layout.configuration().compact;
+        unsigned buttonCount=0,buttonIndex=0;
+        for(std::size_t i=0;i<table.rowCount();++i)buttonCount+=table.value(i,"Type")=="Button";
         std::optional<Vec2> commandPosition,descriptionPosition;
         for(std::size_t i=0;i<table.rowCount();++i){
             const auto kind=table.value(i,"Type").value_or("");const auto asset=table.value(i,"ImageFile").value_or("");
             const Vec2 local{table.real(i,"X"),table.real(i,"Y")};
             const Vec2 at=plus(root,local);const float scale=table.real(i,"Scale");const int id=table.integer(i,"ID");
-            if(kind=="Image")image(asset,at,1,1,0,{scale,scale},false,id>10?2:0,id>10?0.f:1.f,7,id>10?"baseSelect"+std::to_string(id-10):"");
+            if(kind=="Image"){RegionScope background(*this,compact?Region::backdrop:Region::content);image(asset,at,1,1,0,{scale,scale},false,id>10?2:0,id>10?0.f:1.f,7,id>10?"baseSelect"+std::to_string(id-10):"");}
             else if(kind=="Button"){
                 std::optional<Size> bounds;if(id<4)bounds=Size{160,100};else if(id!=4)bounds=Size{160,60};
-                addButton(Panel::root,unsigned(2000+id),asset,at,1,2,state.selectedBaseButton==id?1:0,1,bounds,0,{}, {scale,scale},true,7);
-                if(id==1)commandPosition=at;
+                const auto position=compact?layout.baseButtonPosition(buttonIndex,buttonCount):at;++buttonIndex;
+                const float factor=compact?std::min(.75f,layout.configuration().content().height/(buttonCount*72)):scale;
+                if(compact)bounds=Size{id==4?128.f:256.f,64};
+                RegionScope control(*this,compact?Region::surface:Region::content);
+                addButton(Panel::root,unsigned(2000+id),asset,position,1,2,state.selectedBaseButton==id?1:0,1,bounds,0,{}, {factor,factor},true,7);
+                if(id==1)commandPosition=position;
             }else if(kind=="Desc")descriptionPosition=local;
         }
         const bool sameBase=previous&&previous->state.screen==ScreenId::base&&previous->state.baseId==state.baseId;
         if(sameBase)baseNoticeVisible=previous->baseNoticeVisible;
         // GuiBase.init0x246d4 adds these markers after the table's controls.
         if(auto* notice=tile("MissionNotice.png",1,2);notice&&commandPosition){
+            RegionScope noticeRegion(*this,compact?Region::surface:Region::content);
             auto addNotice=[&](unsigned index,float offset){
                 VisualImage mark;
                 mark.tile=tiles.visual(*notice);
                 mark.tileNo=index;
-                mark.screenPosition=plus(*commandPosition,{0,offset});
+                mark.screenPosition=plus(*commandPosition,{0,offset*(compact?.75f:1.f)});
+                if(compact)mark.scale={.75f,.75f};
                 mark.show=baseNoticeVisible;
                 pushNode(ImageNode{std::move(mark),7,"baseMissionNotice"});
             };
@@ -332,7 +343,7 @@ RegionScope card(*this,Region(unsigned(Region::slot0)+i));
         if(!descriptionPosition||state.selectedBaseButton<1||state.selectedBaseButton>7)return;
         if(sameBase&&previous->state.selectedBaseButton==state.selectedBaseButton&&previous->state.baseDescription==state.baseDescription){
             for(const auto& node:previous->nodes)if(const auto* description=std::get_if<BaseDescriptionNode>(&node)){
-                RegionScope readable(*this,Region::panel);pushNode(*description);
+                RegionScope readable(*this,Region::baseDescription);pushNode(*description);
                 return;
             }
         }
@@ -352,7 +363,7 @@ RegionScope card(*this,Region(unsigned(Region::slot0)+i));
                 label->scale.y=image.scale.y;
                 label->visible=false;
             }
-            {RegionScope readable(*this,Region::panel);pushNode(BaseDescriptionNode{std::move(image),std::move(label),localX,descriptionPosition->x});}
+            {RegionScope readable(*this,Region::baseDescription);pushNode(BaseDescriptionNode{std::move(image),std::move(label),localX,descriptionPosition->x});}
         }
     }
     void tickBaseDescription(BaseDescriptionNode& description){
@@ -617,6 +628,7 @@ void Screens::Impl::inventoryDialog(Vec2 origin,bool shopMode){
     if(!shopMode&&state.detailInventory>=0&&!state.detailItem.dataId.empty())buildDetail(DetailKind::inventory,state.detailItem,origin,state.detailInventory);
 }
 void Screens::Impl::maintenance(){
+    if(layout.configuration().compact){RegionScope backdrop(*this,Region::backdrop);image(state.baseId+".png",{384,512},1,1,0,{1,1},false,0,1,0,"menu.backdrop");}
     RegionScope scope(*this,Region::maintenance);
     const Vec2 root{384,512};image("MaintenanceBG.png",root,1,1,0,{1,1},false,0,1,3);
     inventory(plus(root,{27,63}));equip(plus(root,{-148,52}),3);bots(plus(root,{-47,52}));
@@ -627,6 +639,7 @@ void Screens::Impl::maintenance(){
     if(state.detailInventory>=0&&!state.detailItem.dataId.empty())buildDetail(DetailKind::maintenance,state.detailItem,root,state.detailInventory);
 }
 void Screens::Impl::shop(){
+    if(layout.configuration().compact){RegionScope backdrop(*this,Region::backdrop);image(state.baseId+".png",{384,512},1,1,0,{1,1},false,0,1,0,"menu.backdrop");}
     RegionScope scope(*this,Region::shopStock);
     const Vec2 root{384,512};image("ShopBG.png",root,1,1,0,{1,1},false,0,1,3);
     if(state.inventoryVisible)inventoryDialog(plus(root,{0,-200}),true);
@@ -696,10 +709,12 @@ void Screens::Impl::missionList(bool command){
     const Vec2 root{384,512};
     const auto available=command?std::min<std::size_t>(5,state.availableMissions.size()):0;
     const auto accepted=std::min<std::size_t>(5,state.acceptedMissions.size());
+    const auto displayAvailable=available+(command&&available==0&&layout.configuration().enabled&&layout.configuration().compact?1u:0u);
     const float header=command&&accepted?64.f:0.f;
     const float detail=!command&&state.selectedMission>=0?256.f:0.f;
-    const float length=float(available+accepted)*44+header+(command?0.f:40.f);
+    const float length=float(displayAvailable+accepted)*44+header+(command?0.f:40.f);
     const float half=(length+detail)*.5f;
+    listTop=root.y+half+64;listBottom=root.y-half-64;
     int detailSelection=state.selectedMission;
     if(command){
         const bool sameList=previous&&previous->state.screen==state.screen
@@ -751,9 +766,9 @@ void Screens::Impl::missionList(bool command){
         text("Command.noNewMission","There is not a new mission.",list,{384,24},"Copperplate-Bold",20,TextAlign::center,{140.f/255,240.f/255,1,1},10);
         remember(first,CommandPart::row,list.y);
     }
-    const float acceptedY=-float(available)*44-header;
+    const float acceptedY=-float(displayAvailable)*44-header;
     if(command&&accepted){
-        const auto at=plus(list,{0,-float(available)*44-10});
+        const auto at=plus(list,{0,-float(displayAvailable)*44-10});
         first=nodes.size();
         image("MyMissions.png",at,1,1,0,{1,1},false,0,1,10);
         remember(first,CommandPart::row,at.y,int(available));
@@ -786,8 +801,8 @@ void Screens::Impl::positionCommandList(){
             case CommandPart::middle:
                 std::get<ImageNode>(node).image.scale.y=(entry.baseY+command.displayedSize)/32;
                 continue;
-            case CommandPart::top: y+=command.displayedSize;break;
-            case CommandPart::bottom: y-=command.displayedSize;break;
+            case CommandPart::top: y+=command.displayedSize;listTop=y+32;break;
+            case CommandPart::bottom: y-=command.displayedSize;listBottom=y-32;break;
             case CommandPart::row:
                 y+=command.displayedSize;
                 if(entry.row>command.displayedSelection)y-=2*command.displayedSize;
@@ -805,6 +820,7 @@ void Screens::Impl::positionCommandList(){
             button->button->position.y=y;
         }
     }
+    verticalPan=std::min(verticalPan,verticalLimit());
 }
 void Screens::Impl::tickCommandList(){
     constexpr float destination=128;
@@ -904,6 +920,7 @@ void Screens::Impl::build(){
         }
         default:throw std::runtime_error("Unknown original screen ID");
     }
+    verticalPan=std::min(verticalPan,verticalLimit());
     syncMessage();
     syncPlaceName();
     dispatcher.subscribe({},[this](const ButtonEvent& event){
@@ -1018,9 +1035,10 @@ void Screens::Impl::append(Frame& frame,float time){
             for(auto& sprite:textFrame.sprites)layer.submitNonAtlas(std::move(sprite));
         }
     }
-    const auto first=frame.sprites.size();
     for(auto& layer:*layers){layer.setPresentation();layer.drain().appendBatches(frame);}
-    if(layout.configuration().enabled){for(std::size_t i=first;i<frame.sprites.size();++i)transformSprite(frame.sprites[i],{},layout.configuration().content());frame.width=layout.configuration().canvas.width;frame.height=layout.configuration().canvas.height;}
+    // Each node owns its clip. A final safe-area intersection would cut the
+    // full-screen backdrops back into black side bars after assembly.
+    if(layout.configuration().enabled){frame.width=layout.configuration().canvas.width;frame.height=layout.configuration().canvas.height;}
 
 }
 
@@ -1104,7 +1122,7 @@ bool Screens::input(PointerPhase phase,Vec2 point,std::uintptr_t pointer,float t
 }
 void Screens::append(Frame& out,float time)const{if(auto keep=impl_)keep->append(out,time);}
 void Screens::discardInputs(){if(impl_){impl_->dispatcher.discardAll();impl_->panPointer=0;impl_->verticalPointer=0;impl_->verticalDragging=false;}}
-void Screens::setDisplay(DisplayConfiguration display){DisplayLayout check(display);discardInputs();display_=display;if(impl_){impl_->layout=check;impl_->shopPan=std::min(impl_->shopPan,check.shopPanLimit());}}
+void Screens::setDisplay(DisplayConfiguration display){DisplayLayout check(display);discardInputs();display_=display;if(impl_){const auto state=impl_->state;const auto now=impl_->now;refresh(state,now);}}
 Vec2 Screens::buttonScreenPosition(ButtonKey key)const{const auto button=this->button(key);if(!button)throw std::out_of_range("Unknown screen button");return impl_->presentation(impl_->buttonRegion(*button)).map(button->screenPosition());}
 void Screens::setHorizontalPan(float value){if(!impl_||!std::isfinite(value))throw std::invalid_argument("Invalid presentation pan");impl_->shopPan=std::clamp(value,0.f,impl_->layout.shopPanLimit());}
 float Screens::horizontalPanLimit()const{return impl_?impl_->layout.shopPanLimit():0;}

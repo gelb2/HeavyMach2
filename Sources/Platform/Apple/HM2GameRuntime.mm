@@ -97,4 +97,4 @@ void GameRuntime::captureNextFrame(){[impl_->renderer captureNextFrame];}
 CGSize GameRuntime::drawableSize()const{return impl_->renderer.drawableSize;}
 }
 
-namespace hm2::apple {void GameRuntime::setDisplay(DisplayConfiguration display){impl_->ui->discardInputs();impl_->game->setDisplay(display);impl_->ui->setDisplay(display);}}
+namespace hm2::apple {void GameRuntime::setDisplay(DisplayConfiguration display){auto& p=*impl_;p.ui->discardInputs();p.game->setDisplay(display);p.ui->setDisplay(display);Frame frame;p.ui->append(frame,p.game->renderTime());p.tiles.appendPreparation(frame);[p.renderer prepareFrame:frame];[p.renderer prepareFrame:p.game->preparationFrame()];}}

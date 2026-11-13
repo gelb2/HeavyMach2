@@ -111,9 +111,17 @@
     for(int i=0;i<[field[@"enemyCount"] intValue];++i){const double x=[field[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],y=[field[[NSString stringWithFormat:@"e%d_y",i]] doubleValue];if([self fieldPointX:x y:y state:field]){target=[field[[NSString stringWithFormat:@"e%d_id",i]] longLongValue];[self tapLogical:CGPointMake(x,y) world:world];selected=YES;break;}}
     // Provoke the first enemy, then change target while it is still alive.
     // Finishing that single enemy can leave the Player regenerating safely.
-    const auto pursuing=[self state:world];BOOL firstAlive=NO,retargeted=NO;CGFloat nearest=CGFLOAT_MAX;CGPoint next=CGPointZero;unsigned long long second=0;
-    for(int i=0;i<[pursuing[@"enemyCount"] intValue];++i){const auto id=[pursuing[[NSString stringWithFormat:@"e%d_id",i]] longLongValue];if(id==target){firstAlive=YES;continue;}const CGFloat x=[pursuing[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],y=[pursuing[[NSString stringWithFormat:@"e%d_y",i]] doubleValue],distance=hypot(x-[pursuing[@"playerScreenX"] doubleValue],y-[pursuing[@"playerScreenY"] doubleValue]);if([self fieldPointX:x y:y state:pursuing]&&distance<nearest){nearest=distance;next=CGPointMake(x,y);second=id;retargeted=YES;}}
-    XCTAssertTrue(firstAlive&&retargeted);[self tapLogical:next world:world];XCTAssertEqual([[self state:world][@"touchSelectedEnemy"] longLongValue],static_cast<long long>(second));
+    BOOL retargeted=NO;
+    // XCTest reads and synthesized touches run while the world/camera move.
+    // Track the live target within this same battle; never reset its outcome.
+    for(unsigned attempt=0;attempt<3&&!retargeted;++attempt){
+        const auto pursuing=[self state:world];BOOL firstAlive=NO,found=NO;CGFloat nearest=CGFLOAT_MAX;CGPoint next=CGPointZero;unsigned long long second=0;
+        for(int i=0;i<[pursuing[@"enemyCount"] intValue];++i){const auto id=[pursuing[[NSString stringWithFormat:@"e%d_id",i]] longLongValue];if(id==target){firstAlive=YES;continue;}const CGFloat x=[pursuing[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],y=[pursuing[[NSString stringWithFormat:@"e%d_y",i]] doubleValue],distance=hypot(x-[pursuing[@"playerScreenX"] doubleValue],y-[pursuing[@"playerScreenY"] doubleValue]);if([self fieldPointX:x y:y state:pursuing]&&distance<nearest){nearest=distance;next=CGPointMake(x,y);second=id;found=YES;}}
+        XCTAssertTrue(firstAlive&&found);if(!firstAlive||!found)break;
+        [self tapLogical:next world:world];const auto after=[self state:world];retargeted=static_cast<unsigned long long>([after[@"touchSelectedEnemy"] longLongValue])==second;
+        NSLog(@"HM2_GAMEOVER_RETARGET attempt=%u requested=%llu point=%.3f,%.3f before=%@ after=%@",attempt,second,next.x,next.y,pursuing,after);
+    }
+    XCTAssertTrue(retargeted);
     XCTAssertTrue(selected);NSLog(@"HM2_GAMEOVER_INPUT run=%@ before=%@ after=%@",run,field,[self state:world]);
     XCUIElement* destroyed=app.alerts[@"Destroy Your Mach."];XCTAssertTrue([destroyed waitForExistenceWithTimeout:60],@"Actual battle state: %@",[self state:world]);
     XCTAssertTrue(destroyed.staticTexts[@"매크가 파괴되었습니다.\n기지로 돌아가서 매크를 수리합니다."].exists);XCTAssertEqual(destroyed.buttons.count,1u);

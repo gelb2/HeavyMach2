@@ -1,5 +1,6 @@
 #include "Core/Presentation/MapPreview.hpp"
 #include "Assets/Image.hpp"
+#include <algorithm>
 #include <cmath>
 #include <stdexcept>
 
@@ -22,10 +23,23 @@ MapPreview::MapPreview(ResourceAccess& r,std::string_view name):maps_(Maps::pars
 Frame MapPreview::compose(const MapCamera& camera)const{
     valid(camera);Frame frame;frame.width=camera.viewport.width;frame.height=camera.viewport.height;
     const auto p=camera.toScreen({});
-    if(!background_.empty())frame.sprites.push_back({background_,camera.toScreen(camera.backgroundWorld),{backgroundSize_.width*2,backgroundSize_.height*2}});
+    if(!background_.empty()){
+        const auto center=camera.toScreen(camera.backgroundWorld);Size size{backgroundSize_.width*2,backgroundSize_.height*2};
+        if(camera.fillSurface){const float cover=std::max({1.f,(camera.viewport.width+2*std::abs(center.x-camera.viewport.width*.5f))/size.width,(camera.viewport.height+2*std::abs(center.y-camera.viewport.height*.5f))/size.height});size={size.width*cover,size.height*cover};}
+        frame.sprites.push_back({background_,center,size});
+    }
     // setFixedPos:YES on HD nonretina rounds the translated terrain center to
     // integral original coordinates. Background and other units remain unrounded.
-    frame.sprites.push_back({foreground_,{std::round(p.x),std::round(p.y)},foregroundSize_});
+    Sprite terrain{foreground_,{std::round(p.x),std::round(p.y)},foregroundSize_};
+    if(camera.fillSurface&&background_.empty()){
+        // Preserve every original terrain pixel/coordinate. Only the camera's
+        // edge overscan samples the existing GPU CLAMP_TO_EDGE texture; no
+        // new terrain, mirrored tiles, assets or collision data are generated.
+        const float left=terrain.center.x-foregroundSize_.width*.5f,bottom=terrain.center.y-foregroundSize_.height*.5f;
+        const float x0=std::min(0.f,left),y0=std::min(0.f,bottom),x1=std::max(camera.viewport.width,left+foregroundSize_.width),y1=std::max(camera.viewport.height,bottom+foregroundSize_.height);
+        for(Vec2 point:{Vec2{x0,y0},Vec2{x1,y0},Vec2{x0,y1},Vec2{x1,y1}})terrain.strip.push_back({point,{(point.x-left)/foregroundSize_.width,1-(point.y-bottom)/foregroundSize_.height},{1,1,1,1}});
+    }
+    frame.sprites.push_back(std::move(terrain));
     return frame;
 }
 }

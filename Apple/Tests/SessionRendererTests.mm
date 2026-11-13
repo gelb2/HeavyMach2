@@ -4,6 +4,7 @@
 #import "Platform/Apple/HM2Renderer.h"
 #include "Assets/Image.hpp"
 #include "Core/Presentation/VisualLayer.hpp"
+#include "Core/Simulation/DarwinWorldRandom.hpp"
 #include <algorithm>
 
 @interface HM2SessionSurface:UIView @end
@@ -30,6 +31,45 @@ UIImage* image(NSData* rgba,CGSize size){
 }
 @interface SessionRendererTests:XCTestCase @end
 @implementation SessionRendererTests
+- (void)testPhoneFullScreenMenusAndBattleEdges {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);
+    NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];NSError* error=nil;
+    XCTAssertTrue([NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:&error]);
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];
+    HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,912,420)];surface.contentScaleFactor=1;
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];surface.frame=CGRectMake(0,0,912,420);[surface layoutIfNeeded];
+    try{
+        const auto config=hm2::DisplayConfiguration::surface({912,420},{68,20,68,0});
+        hm2::SaveData fixture;fixture.initializeSlot(0,"FULL","kr",1794268800);fixture.slot(0)[0x1b5c]=5;hm2::DarwinWorldRandom random(1);const auto bytes=fixture.encode(random,1);
+        const auto save=[directory URLByAppendingPathComponent:@"HeavyMach2.sav"];XCTAssertTrue([[NSData dataWithBytes:bytes.data() length:bytes.size()] writeToURL:save atomically:YES]);
+        hm2::apple::GameRuntime runtime(root,save,{});runtime.setDisplay(config);XCTAssertTrue(runtime.session().selectSlot(0));runtime.session().enterBase();runtime.synchronize();settle(runtime,layer);
+        auto capture=[&](NSString* label){
+            for(unsigned n=0;n<90;++n){runtime.tick();runtime.draw(layer);}
+            runtime.captureNextFrame();runtime.draw(layer);const auto extent=runtime.drawableSize();XCTAssertEqual(extent.width,912);XCTAssertEqual(extent.height,420);
+            NSData* rgba=runtime.pixels();XCTAssertEqual(rgba.length,912u*420u*4u);if(rgba.length!=912u*420u*4u)return;
+            const auto* p=static_cast<const std::uint8_t*>(rgba.bytes);unsigned nonblack[4]={};
+            for(unsigned y=0;y<420;++y)for(unsigned side=0;side<2;++side){const auto at=(std::size_t(y)*912+(side?911:0))*4;if(p[at]+p[at+1]+p[at+2]>8)++nonblack[side];}
+            for(unsigned x=0;x<912;++x)for(unsigned side=0;side<2;++side){const auto at=(std::size_t(side?419:0)*912+x)*4;if(p[at]+p[at+1]+p[at+2]>8)++nonblack[side+2];}
+            for(unsigned side=0;side<4;++side)XCTAssertGreaterThan(nonblack[side],side<2?210u:456u,@"%@ black border side%u",label,side);
+            NSLog(@"HM2_FULLSCREEN %@ drawable=912x420 coloredEdges=%u,%u,%u,%u",label,nonblack[0],nonblack[1],nonblack[2],nonblack[3]);
+            UIImage* shot=image(rgba,extent);if(shot){auto* a=[XCTAttachment attachmentWithImage:shot];a.name=label;a.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:a];}
+        };
+        auto press=[&](unsigned id){bool found=false;for(const auto& key:runtime.screens().buttons())if(key.id==id){const auto point=runtime.screens().buttonScreenPosition(key);runtime.input(hm2::PointerPhase::begin,point,800);runtime.input(hm2::PointerPhase::end,point,800);found=true;break;}XCTAssertTrue(found);settle(runtime,layer);};
+        press(2001);capture(@"phone-fullscreen-base-description");press(2001);XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::command);capture(@"phone-fullscreen-command");
+        press(2100);press(2002);press(2002);XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::shop);
+        if(runtime.session().help()){runtime.input(hm2::PointerPhase::begin,{450,210},801);runtime.input(hm2::PointerPhase::end,{450,210},801);}
+        capture(@"phone-fullscreen-shop");press(2100);
+        XCTAssertTrue(runtime.session().enterField("Stage01_01",0));runtime.synchronize();
+        if(runtime.session().help()){runtime.input(hm2::PointerPhase::begin,{450,210},802);runtime.input(hm2::PointerPhase::end,{450,210},802);}
+        capture(@"phone-fullscreen-field-idle");
+        auto* scene=runtime.session().battle();XCTAssertTrue(scene!=nullptr);if(scene){for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=runtime.session().worldCanvasPoint(scene->camera().toScreen(enemy.position));if(point.x>68&&point.x<844&&point.y>145&&point.y<400){runtime.input(hm2::PointerPhase::begin,point,803);runtime.input(hm2::PointerPhase::end,point,803);if(scene->selectedEnemy())break;}}
+            XCTAssertNotEqual(scene->selectedEnemy(),0u);capture(@"phone-fullscreen-field-target");
+            const auto frame=runtime.session().drawWorld();XCTAssertEqual(frame.width,912);XCTAssertEqual(frame.height,420);XCTAssertGreaterThan(scene->metrics().playerEmissions,0u);
+        }
+    }catch(const std::exception& e){XCTFail(@"Phone full-screen failed: %s",e.what());}
+    window.hidden=YES;window.rootViewController=nil;XCTAssertTrue([NSFileManager.defaultManager removeItemAtURL:directory error:&error]);
+}
 - (void)testOriginalNameLengthCountryAndNoFallback {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];NSError* error=nil;

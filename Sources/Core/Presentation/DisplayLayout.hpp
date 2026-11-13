@@ -20,7 +20,8 @@ struct DisplayTransform {
     [[nodiscard]] bool identity()const{return scale==1&&offset.x==0&&offset.y==0;}
 };
 enum class DisplayRegion {content,backdrop,title,slot0,slot1,slot2,bottom,top,
-    panel,maintenance,list,chooser,shopStock,shopBackdrop,shopInventory,shopFooter,banner};
+    panel,maintenance,list,chooser,shopStock,shopBackdrop,shopInventory,shopFooter,banner,
+    world,surface,baseDescription};
 class DisplayLayout {
     DisplayConfiguration configuration_;
 public:
@@ -32,6 +33,7 @@ public:
     [[nodiscard]] float worldScale(float zoom=1)const;
     [[nodiscard]] Size worldViewport(float zoom=1)const;
     [[nodiscard]] DisplayTransform world(float zoom=1)const;
+    [[nodiscard]] Vec2 baseButtonPosition(unsigned index,unsigned count)const;
 };
 // Runs after the original node/rounding/atlas assembly. Never mutates textures.
 void transformSprite(Sprite&,const DisplayTransform&,std::optional<ClipRect> = {});

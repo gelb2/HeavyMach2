@@ -39,7 +39,7 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
     const auto fit=[&](float w,float h){return std::min({nominal,a.width/w,a.height/h});};
     const auto centered=[&](float w,float h){return anchored({384,512},center,fit(w,h));};
     switch(region){
-    case DisplayRegion::backdrop:return anchored({384,512},center,std::max(a.width/768,a.height/1024));
+    case DisplayRegion::backdrop:{const auto c=configuration_.compact?ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height}:a;return anchored({384,512},{c.x+c.width*.5f,c.y+c.height*.5f},std::max(c.width/768,c.height/1024));}
     case DisplayRegion::title:return configuration_.compact?anchored({384,202},center,std::min(nominal,a.width/560)):centered(768,1024);
     case DisplayRegion::slot0:case DisplayRegion::slot1:case DisplayRegion::slot2:{
         const auto index=unsigned(region)-unsigned(DisplayRegion::slot0);
@@ -47,9 +47,9 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
         const float scale=std::min({nominal,std::max(1.f,a.width-24)/(3*512+32),std::max(1.f,a.height-72)/256});
         return anchored({384,760-float(index)*240},{a.x+a.width*(float(index)+.5f)/3,a.y+a.height*.57f},scale);
     }
-    case DisplayRegion::bottom:return anchored({384,0},{center.x,a.y},configuration_.compact?.5f:1.f);
-    case DisplayRegion::top:return anchored({384,1024},{center.x,a.y+a.height},1.f);
-    case DisplayRegion::banner:return anchored({384,512},center,configuration_.compact?.5f:1.f);
+    case DisplayRegion::bottom:return anchored({384,0},{center.x,a.y},configuration_.compact?std::min({.75f,a.width/768,a.height/256}):1.f);
+    case DisplayRegion::top:return anchored({384,1024},{center.x,a.y+a.height},ui(DisplayRegion::bottom).scale);
+    case DisplayRegion::banner:return anchored({384,512},center,configuration_.compact?ui(DisplayRegion::bottom).scale:1.f);
     case DisplayRegion::panel:return centered(768,560);
     case DisplayRegion::maintenance:return centered(640,440);
     case DisplayRegion::list:{if(!configuration_.compact)return centered(768,1024);const float s=std::min(nominal,a.width/768);return anchored({384,1024},{center.x,a.y+a.height+pan},s);}
@@ -66,11 +66,20 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
         return anchored({640,52},{a.x+a.width-48,a.y+18},.5f);
     }
     case DisplayRegion::content:return centered(768,1024);
+    case DisplayRegion::world:return world();
+    case DisplayRegion::surface:return {};
+    case DisplayRegion::baseDescription:{
+        if(!configuration_.compact)return centered(768,560);
+        const float rail=std::min(220.f,a.width*.38f),gap=16;
+        const float width=std::max(1.f,a.width-rail-gap);
+        return anchored({384,312},{a.x+rail+gap+width*.5f,center.y},std::min({.75f,width/512,(a.height-24)/256}));
+    }
     }
     throw std::logic_error("Unknown presentation region");
 }
 std::optional<ClipRect> DisplayLayout::clip(DisplayRegion region,float pan)const{
     if(!configuration_.enabled)return {};
+    if(configuration_.compact&&(region==DisplayRegion::world||region==DisplayRegion::backdrop))return ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};
     auto result=configuration_.content();
     if(region==DisplayRegion::bottom){
         // HD gauge tiles slide through the original screen's left edge.
@@ -94,8 +103,12 @@ float DisplayLayout::worldScale(float zoom)const{
     finite(zoom);if(zoom<=0)throw std::invalid_argument("Nonpositive world display zoom");
     return !configuration_.enabled?1.f:(configuration_.compact?.5f:1.f)*zoom;
 }
-Size DisplayLayout::worldViewport(float zoom)const{const auto a=configuration_.content();const auto s=worldScale(zoom);return {a.width/s,a.height/s};}
-DisplayTransform DisplayLayout::world(float zoom)const{const auto a=configuration_.content();return {worldScale(zoom),{a.x,a.y}};}
+Size DisplayLayout::worldViewport(float zoom)const{const auto a=configuration_.compact?ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height}:configuration_.content();const auto s=worldScale(zoom);return {a.width/s,a.height/s};}
+DisplayTransform DisplayLayout::world(float zoom)const{const auto a=configuration_.content();return {worldScale(zoom),configuration_.compact?Vec2{}:Vec2{a.x,a.y}};}
+Vec2 DisplayLayout::baseButtonPosition(unsigned index,unsigned count)const{
+    const auto a=configuration_.content();const float rail=std::min(220.f,a.width*.38f);
+    return {a.x+rail*.5f,a.y+a.height*(1.f-(float(index)+.5f)/std::max(1u,count))};
+}
 void transformSprite(Sprite& sprite,const DisplayTransform& t,std::optional<ClipRect> clip){
     if(!t.identity()){
         sprite.center=t.map(sprite.center);sprite.size={sprite.size.width*t.scale,sprite.size.height*t.scale};

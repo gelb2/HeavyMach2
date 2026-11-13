@@ -67,19 +67,27 @@ void constrainCamera(MapCamera& camera,Vec2 player){
         maximum={512-camera.viewport.width*.5f,512-camera.viewport.height*.5f};
         if(minimum.x>maximum.x)minimum.x=maximum.x=(minimum.x+maximum.x)*.5f;
         if(minimum.y>maximum.y)minimum.y=maximum.y=(minimum.y+maximum.y)*.5f;
+        if(camera.fillSurface){minimum.x+=1-camera.offset.x;maximum.x-=1+camera.offset.x;minimum.y+=1-camera.offset.y;maximum.y-=1+camera.offset.y;}
     }
     camera.center={std::clamp(camera.center.x,minimum.x,maximum.x),std::clamp(camera.center.y,minimum.y,maximum.y)};
     if(camera.keepFocusVisible){
         // Shared small-window policy after ease, including camera offset.
         // Reference HD framing does not enable this additional protection.
-        const Vec2 low{player.x-camera.viewport.width*.5f-camera.offset.x+camera.focusRadius,
+        const Vec2 low{player.x-camera.viewport.width*.5f-camera.offset.x+camera.focusRadius+camera.focusRight,
                        player.y-camera.viewport.height*.5f-camera.offset.y+camera.focusRadius};
-        const Vec2 high{player.x+camera.viewport.width*.5f-camera.offset.x-camera.focusRadius,
+        const Vec2 high{player.x+camera.viewport.width*.5f-camera.offset.x-camera.focusRadius-camera.focusLeft,
                         player.y+camera.viewport.height*.5f-camera.offset.y-camera.focusMinimumY-camera.focusRadius};
         const float lx=std::max(minimum.x,low.x),hx=std::min(maximum.x,high.x);
         const float ly=std::max(minimum.y,low.y),hy=std::min(maximum.y,high.y);
         if(lx<=hx)camera.center.x=std::clamp(camera.center.x,lx,hx);
         if(ly<=hy)camera.center.y=std::clamp(camera.center.y,ly,hy);
+        if(camera.fillSurface){
+            // At a gate the actor may be too close to the finite map edge to
+            // fit above HUD. Keep it in the playable area; MapPreview covers
+            // this overscan using the original background/edge sampling.
+            if(low.x<=high.x)camera.center.x=std::clamp(camera.center.x,low.x,high.x);
+            if(low.y<=high.y)camera.center.y=std::clamp(camera.center.y,low.y,high.y);
+        }
     }
     camera.backgroundWorld={(camera.center.x+camera.offset.x)*.94f,(camera.center.y+camera.offset.y)*.94f};
 }

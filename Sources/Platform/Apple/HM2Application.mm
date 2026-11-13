@@ -67,7 +67,7 @@
 }
 - (void)display:(CADisplayLink*)link {
     if(!_validationFinished&&self.window&&self.bounds.size.width>0&&self.bounds.size.height>0){
-        _concurrent->tick();const bool finished=_concurrent->validation().metrics().frames>=1200;
+        _concurrent->tick();const bool finished=_concurrent->validation().metrics().frames>=hm2::validation::displayValidationFrames(_concurrent->validation().session(0).display());
         if(finished)_concurrent->captureNextFrame();
         _concurrent->draw((CAEAGLLayer*)self.layer,{float(self.bounds.size.width),float(self.bounds.size.height)});[self updateTestState];
         if(finished){
@@ -75,7 +75,7 @@
             NSError* error=nil;NSData* data=[NSJSONSerialization dataWithJSONObject:report options:NSJSONWritingPrettyPrinted|NSJSONWritingSortedKeys error:&error];
             NSURL* output=[_validationDirectory URLByAppendingPathComponent:@"report.json"];
             if(!data||![data writeToURL:output options:NSDataWritingAtomic error:&error])NSLog(@"HM2 validation report failed: %@",error);
-            else NSLog(@"HM2 validation finished1200frames: %@",output.path);
+            else NSLog(@"HM2 validation finished%lluframes: %@",_concurrent->validation().metrics().frames,output.path);
         }
     }
 

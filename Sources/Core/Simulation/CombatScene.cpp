@@ -65,7 +65,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
     CombatMetrics metrics;
     DisplayConfiguration display;float displayZoom=1;
     void updateDisplay(std::optional<Vec2> target,bool advance){
-        if(!display.enabled){displayZoom=1;camera.viewport={768,1024};camera.inputMinimumY=100;camera.fitWorld=camera.keepFocusVisible=false;camera.lowerOverscan=94;return;}
+        if(!display.enabled){displayZoom=1;camera.viewport={768,1024};camera.inputMinimumY=100;camera.fitWorld=camera.keepFocusVisible=camera.fillSurface=false;camera.lowerOverscan=94;return;}
         if(display.focusZoom){
             const auto player=playerMotion.state().position;
             if(!target&&navigation.count())target=navigation.point(navigation.count()-1);
@@ -73,12 +73,21 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
             const float wanted=std::clamp(2.f-std::max(std::abs(dx)/360.f,std::abs(dy)/240.f),1.f,1.6f);
             if(advance)displayZoom+=(wanted-displayZoom)/100.f;
         }else displayZoom=1;
-        const DisplayLayout layout(display);camera.viewport=layout.worldViewport(displayZoom);
+        const DisplayLayout layout(display);
+        camera.fillSurface=display.compact;
+        if(camera.fillSurface){
+            // A finite1024-unit original field must cover the fixed output.
+            // Reserve one world unit for terrain center rounding at an edge.
+            const float minimum=std::max(display.canvas.width,display.canvas.height)/(1022.f*.5f);
+            displayZoom=std::max(displayZoom,minimum);
+        }
+        camera.viewport=layout.worldViewport(displayZoom);
         const float uiRatio=layout.ui(DisplayRegion::bottom).scale/layout.worldScale(displayZoom);
-        camera.inputMinimumY=100*uiRatio;camera.lowerOverscan=94*uiRatio;
+        camera.inputMinimumY=100*uiRatio+(display.compact?display.insets.bottom/layout.worldScale(displayZoom):0);camera.lowerOverscan=94*uiRatio;
         camera.fitWorld=true;camera.keepFocusVisible=camera.viewport.width<768||camera.viewport.height<1024;
         // Actual HD HUD alpha occupies the lower138 of its256px image.
-        camera.focusMinimumY=138*uiRatio;camera.focusRadius=float(machines.machine("Player").radius);
+        camera.focusMinimumY=138*uiRatio+(display.compact?display.insets.bottom/layout.worldScale(displayZoom):0);camera.focusRadius=float(machines.machine("Player").radius);
+        camera.focusLeft=display.compact?display.insets.left/layout.worldScale(displayZoom):0;camera.focusRight=display.compact?display.insets.right/layout.worldScale(displayZoom):0;
     }
     DarwinWorldRandom ownRandom;
     WorldRandom* externalRandom=nullptr;

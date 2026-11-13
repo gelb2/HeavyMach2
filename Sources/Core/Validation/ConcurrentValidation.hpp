@@ -11,6 +11,9 @@
 #include <vector>
 
 namespace hm2::validation {
+// Compact framing changes genuine movement/search completion times. Keep all
+// cases on the same clock for1800 frames; retain the tablet baseline.
+constexpr unsigned displayValidationFrames(const DisplayConfiguration& display){return display.enabled&&display.compact?1800u:1200u;}
 enum class ScenarioRole {combat,shop,mission,saveRestart,movementLoot,aidKit,airStrike,worldAudit,dash,botAttack,botPicker,help,gameOver,rankingUnavailable,completedMissions};
 struct ScenarioDescription {std::string label;ScenarioRole role=ScenarioRole::combat;std::vector<std::string> weapons;std::string map{};};
 struct NavigationObservation {std::uint64_t frame=0;Vec2 player,world,screen;std::string lootCode;bool accepted=false,blocked=false;};

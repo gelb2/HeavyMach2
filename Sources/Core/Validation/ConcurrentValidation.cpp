@@ -7,6 +7,7 @@
 #include <cmath>
 #include <limits>
 #include <map>
+#include <queue>
 #include <set>
 #include <stdexcept>
 
@@ -106,7 +107,8 @@ struct ConcurrentValidation::Impl {
         Adapter adapter;DarwinWorldRandom random;std::unique_ptr<GameSession> game;
         std::uint64_t priorEmissions=0,priorPlayerEmissions=0,priorDamage=0,priorKills=0;
         int initialLevel=0;std::set<std::string> emitted;
-        std::uint64_t worldTarget=0;bool worldEnemyFired=false,worldStrikeUsed=false;
+        std::uint64_t worldTarget=0,lastWorldStrike=0;bool worldEnemyFired=false,worldStrikeUsed=false;
+        std::uint64_t gameOverInitialTarget=0;bool gameOverRetargeted=false;
         std::map<std::string,std::uint64_t,std::less<>> lastWeaponCounts;
         Case(Impl& owner,unsigned index):adapter(owner,index),random(index+1){}
     };
@@ -118,6 +120,7 @@ struct ConcurrentValidation::Impl {
     DisplayConfiguration display;
     std::vector<Frame> sourceFrames;std::vector<FrameActivity> activity;std::vector<ButtonActivity> pendingButtons;std::size_t shopIndex=0,missionIndex=0,restartIndex=0,movementIndex=0;
     std::vector<std::size_t> aidKitIndices,airStrikeIndices,worldIndices,botIndices,helpIndices;std::size_t dashIndex=0,gameOverIndex=112,rankingIndex=113,completedMissionIndex=114;std::uint64_t pendingAidKitUses=0,pendingAirStrikeUses=0,pendingBotRepairs=0,pendingHelpInputs=0;
+    std::optional<double> compactPausedWorldTime;
     int shopCreditBefore=0,shopItemsBefore=0,shopCreditAfter=0,shopItemsAfter=0;unsigned repairButton=0;
     static int repairCount(GameSession& game){int count=0;for(const auto& item:game.state().inventory)if(item.dataId=="01001")count+=item.count;return count;}
     explicit Impl(ResourceAccess& source,ValidationHost& sink):resources(source),host(sink),catalog(Weapons::parse(DataTable::parse(resources.read("WeaponInfo.tble")))){
@@ -270,19 +273,42 @@ struct ConcurrentValidation::Impl {
         constexpr std::uintptr_t pointer=0x574f524c;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(screen),pointer);if(accepted)++observations[index].worldQuickUses;
         game.inputWorld(PointerPhase::end,game.worldCanvasPoint(screen),pointer);return accepted;
     }
-    static float fieldFloor(const MapCamera& camera){return camera.fitWorld?camera.focusMinimumY+20:120.f;}
+    static float fieldFloor(const MapCamera& camera){return camera.fillSurface?camera.inputMinimumY+20:camera.fitWorld?camera.focusMinimumY+20:120.f;}
     bool approachTarget(std::size_t index,Vec2 target){
         auto& game=*cases[index]->game;auto* scene=game.battle();const auto& camera=scene->camera();const auto projected=camera.toScreen(target);
         const float bottom=fieldFloor(camera),top=camera.viewport.height-16;
         if(bottom>=top)return false;
         const Vec2 desired{std::clamp(projected.x,16.f,camera.viewport.width-16),std::clamp(projected.y,bottom,top)};
         const auto enemies=scene->enemies();const auto player=scene->player().position;
+        const auto clearSegment=[&](Vec2 a,Vec2 b){if(!camera.fillSurface)return true;const float dx=b.x-a.x,dy=b.y-a.y;const unsigned steps=std::max(1u,unsigned(std::ceil(std::hypot(dx,dy)/8)));for(unsigned n=1;n<=steps;++n){const float t=float(n)/steps;const Vec2 p{a.x+dx*t,a.y+dy*t};const auto hit=scene->terrain().resolve(p);if(std::abs(hit.position.x-p.x)>.1f||std::abs(hit.position.y-p.y)>.1f)return false;for(const auto& enemy:enemies)if(enemy.hp>0&&!enemy.corpse&&enemy.kind!=MachineKind::aircraft){const float r=float(botRadii.at(enemy.name)+botRadii.at("Player"))+4;const float before=(a.x-enemy.position.x)*(a.x-enemy.position.x)+(a.y-enemy.position.y)*(a.y-enemy.position.y),after=(p.x-enemy.position.x)*(p.x-enemy.position.x)+(p.y-enemy.position.y)*(p.y-enemy.position.y);if(after<r*r&&(before>=r*r||after<before-.1f))return false;}}return true;};
+        const auto navigate=[&](Vec2 ground){const auto screen=camera.toScreen(ground);constexpr std::uintptr_t pointer=0x41505052;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(screen),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(screen),pointer);auto& o=observations[index];++o.navigationRequests;if(!accepted)++o.navigationRejected;o.navigation.push_back({counters.frames,player,ground,screen,"approach-visible-field-target",accepted,scene->player().blocked});return accepted;};
         for(const Vec2 delta:{Vec2{0,0},Vec2{60,0},Vec2{-60,0},Vec2{0,-60},Vec2{120,-60},Vec2{-120,-60}}){
             const Vec2 screen{std::clamp(desired.x+delta.x,16.f,camera.viewport.width-16),std::clamp(desired.y+delta.y,bottom,top)};const auto ground=camera.toWorld(screen);const float dx=ground.x-player.x,dy=ground.y-player.y;if(dx*dx+dy*dy<900)continue;
             const auto contact=scene->terrain().resolve(ground);if(std::abs(contact.position.x-ground.x)>.1f||std::abs(contact.position.y-ground.y)>.1f)continue;
             bool clear=true;for(const auto& enemy:enemies)if(enemy.hp>0&&!enemy.corpse){const float x=enemy.position.x-ground.x,y=enemy.position.y-ground.y,r=float(botRadii.at(enemy.name))+1;if(x*x+y*y<r*r)clear=false;}if(!clear)continue;
-            constexpr std::uintptr_t pointer=0x41505052;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(screen),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(screen),pointer);auto& o=observations[index];++o.navigationRequests;if(!accepted)++o.navigationRejected;o.navigation.push_back({counters.frames,player,ground,screen,"approach-visible-field-target",accepted,scene->player().blocked});return accepted;
-        }return false;
+            if(clearSegment(player,ground))return navigate(ground);
+        }
+        if(!game.display().enabled||!game.display().compact)return false;
+        // Validation input planning only. A short landscape view cannot tap a
+        // distant aircraft through the coastline: route ordinary ground taps
+        // around the real original polygons. No actor/HP/target outcome writes.
+        constexpr int side=31,count=side*side;const auto point=[](int i){return Vec2{-480.f+32*(i%side),-480.f+32*(i/side)};};
+        std::array<bool,count> open{};int start=-1,goal=-1;float startDistance=std::numeric_limits<float>::max(),goalDistance=startDistance;
+        for(int i=0;i<count;++i){const auto p=point(i);const auto hit=scene->terrain().resolve(p);if(std::abs(p.x-hit.position.x)>.1f||std::abs(p.y-hit.position.y)>.1f)continue;bool occupied=false;for(const auto& enemy:enemies)if(enemy.hp>0&&!enemy.corpse&&enemy.kind!=MachineKind::aircraft&&std::hypot(p.x-enemy.position.x,p.y-enemy.position.y)<botRadii.at(enemy.name)+botRadii.at("Player")+4)occupied=true;if(occupied)continue;open[i]=true;const float a=std::hypot(p.x-player.x,p.y-player.y),b=std::hypot(p.x-target.x,p.y-target.y);if(a<startDistance&&clearSegment(player,p)){start=i;startDistance=a;}if(b<goalDistance){goal=i;goalDistance=b;}}
+        if(start<0||goal<0)return false;
+        std::array<float,count> cost;cost.fill(std::numeric_limits<float>::max());std::array<int,count> parent;parent.fill(-1);cost[start]=0;
+        using Route=std::pair<float,int>;std::priority_queue<Route,std::vector<Route>,std::greater<Route>> queue;queue.push({0,start});
+        while(!queue.empty()){const int at=queue.top().second;queue.pop();if(at==goal)break;for(int dy=-1;dy<=1;++dy)for(int dx=-1;dx<=1;++dx){if(!dx&&!dy)continue;const int x=at%side+dx,y=at/side+dy,next=y*side+x;if(x<0||x>=side||y<0||y>=side||!open[next]||!clearSegment(point(at),point(next)))continue;const float distance=cost[at]+std::hypot(float(dx),float(dy));if(distance>=cost[next])continue;cost[next]=distance;parent[next]=at;const auto p=point(next),g=point(goal);queue.push({distance+std::hypot(p.x-g.x,p.y-g.y)/32,next});}}
+        if(goal!=start&&parent[goal]<0){
+            // Aircraft may hover over an enclosed/sea polygon. Walk to the
+            // closest reachable ground, rather than choosing an unreachable
+            // grid cell merely because it lies directly under the aircraft.
+            goal=start;float nearest=std::numeric_limits<float>::max();
+            for(int i=0;i<count;++i)if(std::isfinite(cost[i])&&cost[i]<std::numeric_limits<float>::max()){const auto p=point(i);const float d=std::hypot(p.x-target.x,p.y-target.y);if(d<nearest){nearest=d;goal=i;}}
+        }
+        std::vector<int> path;for(int at=goal;at>=0;at=parent[at]){path.push_back(at);if(at==start)break;}std::reverse(path.begin(),path.end());std::optional<Vec2> nextPoint;
+        for(int at:path){const auto p=point(at);const auto screen=camera.toScreen(p);if(screen.x<16||screen.x>camera.viewport.width-16||screen.y<bottom||screen.y>top||!clearSegment(player,p))break;if(std::hypot(p.x-player.x,p.y-player.y)>=32)nextPoint=p;}
+        return nextPoint?navigate(*nextPoint):false;
     }
     void guideWorld(std::size_t index){
         auto& c=*cases[index];auto& game=*c.game;auto* scene=game.battle();if(!scene||scene->playerHP()<1)return;
@@ -293,8 +319,14 @@ struct ConcurrentValidation::Impl {
             const auto enemies=scene->enemies();if(!c.worldTarget&&counters.frames>=2)for(const auto& e:enemies)if(e.kind==kind&&e.hp>0&&!e.corpse){c.worldTarget=e.id;break;}
             const auto found=std::find_if(enemies.begin(),enemies.end(),[&](const auto& e){return e.id==c.worldTarget&&e.hp>0&&!e.corpse;});if(found==enemies.end())return;
             const auto point=scene->camera().toScreen(found->position);const bool visible=point.x>=16&&point.x<=scene->camera().viewport.width-16&&point.y>=fieldFloor(scene->camera())&&point.y<=scene->camera().viewport.height-16;
-            if(aircraft&&!c.worldStrikeUsed&&visible)c.worldStrikeUsed=worldQuick(index,1,found->position);
             if(scene->metrics().enemyEmissionsByKind.at(kind)>0)c.worldEnemyFired=true;
+            if(aircraft&&(!c.worldStrikeUsed||(scene->camera().fillSurface&&c.worldEnemyFired&&counters.frames>=c.lastWorldStrike+180))){
+                const Vec2 aim{std::clamp(point.x,16.f,scene->camera().viewport.width-16),std::clamp(point.y,scene->camera().inputMinimumY+1,scene->camera().viewport.height-16)};
+                // Use another owned original02007 through actual QuickItems,
+                // aimed at visible ground near the observed aircraft. Normal
+                // missile travel/splash decides whether it hits; no HP writes.
+                if(std::hypot(aim.x-point.x,aim.y-point.y)<=64&&worldQuick(index,1,scene->camera().toWorld(aim))){c.worldStrikeUsed=true;c.lastWorldStrike=counters.frames;}
+            }
             if(c.worldEnemyFired&&visible&&scene->selectedEnemy()!=c.worldTarget){scene->selectEnemy(c.worldTarget);scene->selectEnemy(c.worldTarget);}
             if((!visible||!c.worldEnemyFired)&&(counters.frames-2)%31==0)approachTarget(index,{found->position.x+(turret?65.f:0.f),found->position.y});
             return;
@@ -332,8 +364,9 @@ struct ConcurrentValidation::Impl {
                 // target/fire/HP state is injected by validation. After the
                 // counterattack, retap the nearest visible enemy rather than
                 // waiting on a farther table-order enemy outside gun range.
-                float closest=std::numeric_limits<float>::max();Vec2 chosen{};std::uint64_t target=0;const auto player=scene->player().position;
-                for(const auto& e:scene->enemies())if(e.hp>0&&!e.corpse&&botThreats.contains(e.name)){const auto screen=scene->camera().toScreen(e.position);if(screen.x<16||screen.x>scene->camera().viewport.width-16||screen.y<fieldFloor(scene->camera())||screen.y>scene->camera().viewport.height-16)continue;const float dx=e.position.x-player.x,dy=e.position.y-player.y,d=dx*dx+dy*dy;if(d<closest){closest=d;chosen=screen;target=e.id;}}
+                const WeaponSwapObservation* pending=nullptr;if(scene->camera().fillSurface&&positiveIncoming)for(const auto& swap:observations[index].botWeaponSwaps)if(swap.equipFrame&&!swap.firstEmissionFrame)pending=&swap;
+                float closest=pending?-1:std::numeric_limits<float>::max();Vec2 chosen{};std::uint64_t target=0;const auto player=scene->player().position;
+                for(const auto& e:scene->enemies())if(e.hp>0&&!e.corpse&&(pending||botThreats.contains(e.name))){const auto screen=scene->camera().toScreen(e.position);if(screen.x<16||screen.x>scene->camera().viewport.width-16||screen.y<fieldFloor(scene->camera())||screen.y>scene->camera().viewport.height-16)continue;const float dx=e.position.x-player.x,dy=e.position.y-player.y,d=dx*dx+dy*dy;if(pending){const float range=catalog.weapon(pending->part).shotRange;if(d>range*range)continue;}if(pending?d>closest:d<closest){closest=d;chosen=screen;target=e.id;}}
                 if(target&&target!=scene->selectedEnemy()){constexpr std::uintptr_t pointer=0x424f5454;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(chosen),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(chosen),pointer);if(accepted&&scene->selectedEnemy()==target)cases[index]->worldTarget=target;}
             }
             if(!positiveIncoming&&counters.frames>120&&(counters.frames-1)%31==0){
@@ -379,8 +412,12 @@ struct ConcurrentValidation::Impl {
                 if(game.display().enabled&&!cases[index]->worldEnemyFired)approachTarget(index,{0,0});
             }
             if(descriptions[index].role==ScenarioRole::botPicker&&positiveIncoming){
-                for(unsigned side=0;side<2;++side){auto& swap=observations[index].botWeaponSwaps[side];if(swap.equipFrame)continue;
-                    if(side&&!observations[index].botWeaponSwaps[0].equipFrame)break;
+                for(unsigned order=0;order<2;++order){const unsigned side=scene->camera().fillSurface?1-order:order;auto& swap=observations[index].botWeaponSwaps[side];if(swap.equipFrame)continue;
+                    // In the compact view, exercise the new missile before
+                    // equipping the one-shot gun which would kill its target
+                    // first. Wait for a real emission, never inject one.
+                    if(scene->camera().fillSurface){if(side==0&&!observations[index].botWeaponSwaps[1].firstEmissionFrame)break;}
+                    else if(side&&!observations[index].botWeaponSwaps[0].equipFrame)break;
                     const auto& state=game.state();
                     if(!swap.chooserFrame){swap.pausedBefore=scene->isPaused();swap.savesBefore=observations[index].saves;for(const auto& item:state.inventory)if(item.position==int(swap.inventoryPosition)){swap.ownedBefore=item.dataId==swap.code;swap.countBefore=item.count;swap.equippedBefore=item.equipped;}
                         press(index,1022+side);swap.chooserFrame=counters.frames;swap.chooserShown=game.state().weaponChoiceType==int(2+side);break;}
@@ -444,11 +481,21 @@ struct ConcurrentValidation::Impl {
             o.locationAtConfirm=progression::SlotView(std::span(const_cast<std::uint8_t*>(game.workingSlot().data()),game.workingSlot().size())).string(0x2d,16);
             o.savesAfterConfirm=observations[gameOverIndex].saves;o.duplicateRejected=!game.confirmGameOver(o.token);return;
         }
-        auto* scene=game.battle();if(!scene||scene->playerHP()<1||o.targetInputAccepted)return;
+        auto* scene=game.battle();if(!scene||scene->playerHP()<1)return;
+        auto& fixture=*cases[gameOverIndex];
+        if(o.targetInputAccepted){
+            if(!display.compact||fixture.gameOverRetargeted||scene->metrics().playerEmissions==0)return;
+            // Provoke another original enemy while the first can retaliate,
+            // as the actual Source UI GameOver test does. Do not set HP/death.
+            for(const auto& enemy:scene->enemies())if(enemy.id!=fixture.gameOverInitialTarget&&enemy.hp>0&&!enemy.corpse){const auto point=scene->camera().toScreen(enemy.position);if(point.x<=16||point.x>=scene->camera().viewport.width-16||point.y<=fieldFloor(scene->camera())||point.y>=scene->camera().viewport.height-16)continue;
+                constexpr std::uintptr_t pointer=0x474f5632;game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(point),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(point),pointer);
+                if(scene->selectedEnemy()==enemy.id){fixture.gameOverRetargeted=true;break;}
+            }return;
+        }
         for(const auto& enemy:scene->enemies()){
             const auto point=scene->camera().toScreen(enemy.position);if(enemy.hp<1||enemy.corpse||point.x<=0||point.x>=scene->camera().viewport.width||point.y<=scene->camera().inputMinimumY||point.y>=scene->camera().viewport.height)continue;
             constexpr std::uintptr_t pointer=0x474f5645;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(point),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(point),pointer);
-            o.targetInputAccepted=accepted&&scene->selectedEnemy()==enemy.id;if(o.targetInputAccepted)break;
+            o.targetInputAccepted=accepted&&scene->selectedEnemy()==enemy.id;if(o.targetInputAccepted){fixture.gameOverInitialTarget=enemy.id;break;}
         }
     }
     void guideRanking(){
@@ -469,6 +516,13 @@ struct ConcurrentValidation::Impl {
     }
     void schedule(){
         for(const auto index:worldIndices)guideWorld(index);guideDash();guideBots();guideHelp();guideGameOver();guideRanking();guideCompletedMissions();
+        // In the compact batch, pause/resume one real railgun battle through
+        // the enlarged HUD while all other sessions keep advancing. This
+        // also exercises overlapping firing after a menu interruption.
+        if(display.enabled&&display.compact&&(counters.frames==120||counters.frames==121))for(unsigned i=0;i<counters.combatScenarios;++i){auto* battle=cases[i]->game->battle();const auto mounts=battle->playerWeapons();if(std::any_of(mounts.begin(),mounts.end(),[](const auto& w){return w.part=="P_Wpn_Rlg_101";})){
+            if(counters.frames==120){compactPausedWorldTime=battle->clock().worldTime();if(!press(i,1021)||!battle->isPaused())throw std::logic_error("Compact HUD did not pause the real battle");}
+            else {if(!compactPausedWorldTime||battle->clock().worldTime()!=*compactPausedWorldTime)throw std::logic_error("Compact HUD pause advanced world time");if(!press(i,1030)||battle->isPaused())throw std::logic_error("Compact HUD did not resume the real battle");}
+            break;}}
         auto& shop=*cases[shopIndex]->game;const auto menuFrame=counters.frames>180?counters.frames-180:0;
         // The second Base tap requests original doors. Run all other worlds
         // while these real menu sessions close, replace at phase4, and reopen.
