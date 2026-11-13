@@ -16,8 +16,15 @@ PAGES = {
     'docs/universal-design-audit-plan-20261113.md': 'plan.html',
     'docs/universal-package-differences-20261113.md': 'packages.html',
     'docs/standard-hd-logic-differences-20261113.md': 'logic.html',
+    'docs/iphone-followup-investigation-20261113.md': 'followup.html',
+    'docs/iphone-development-contract.md': 'development.html',
+    'HANDOVER-IPHONE-UNIVERSAL.md': 'handover.html',
+    'docs/iphone-universal-native-followup-20261113.md': 'native-followup.html',
+    'docs/iphone-universal-runtime-followup-20261113.md': 'runtime-followup.html',
+    'docs/iphone-universal-ui-followup-20261113.md': 'ui-followup.html',
 }
-LABELS = ['조사 결과', '조사 범위와 설계 기준', '패키지 전수 비교', '실행파일 로직 비교']
+LABELS = ['초기 조사', '조사 범위', '패키지 비교', '초기 로직 비교', '추가 조사',
+          '개발 계획·금지사항', '작업 인계', '카메라·전투', '시간·저장·음향', 'UI·입력']
 CSS = '''
 :root{--paper:#f3f1eb;--ink:#222923;--muted:#687069;--line:#d5d9ce;--accent:#ad471d}
 *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.75 system-ui,sans-serif}
