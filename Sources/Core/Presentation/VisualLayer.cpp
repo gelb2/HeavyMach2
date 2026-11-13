@@ -108,7 +108,7 @@ void VisualLayerFrame::append(Frame& frame)const{
     for(const auto& batch:atlases){
         const float maxS=batch.content.width/batch.storage.width,maxT=batch.content.height/batch.storage.height;
         for(const auto& quad:batch.quads){
-            Sprite sprite;sprite.image=batch.image;sprite.blend=batch.blend;sprite.textureSource=batch.textureSource;
+            Sprite sprite;sprite.image=batch.image;sprite.blend=batch.blend;sprite.textureSource=batch.textureSource;sprite.clip=batch.clip;
             for(const auto& v:quad.vertices)sprite.strip.push_back({v.position,{v.uv.x/maxS,v.uv.y/maxT},
                 {float(v.color.r)/255.f,float(v.color.g)/255.f,float(v.color.b)/255.f,float(v.color.a)/255.f}});
             frame.sprites.push_back(std::move(sprite));
@@ -119,7 +119,7 @@ void VisualLayerFrame::appendBatches(Frame& frame)const &{
     frame.sprites.insert(frame.sprites.end(),nonAtlas.begin(),nonAtlas.end());
     for(const auto& batch:atlases){
         if(batch.quads.empty())continue;
-        Sprite command;command.image=batch.image;command.blend=batch.blend;command.textureSource=batch.textureSource;
+        Sprite command;command.image=batch.image;command.blend=batch.blend;command.textureSource=batch.textureSource;command.clip=batch.clip;
         command.atlasBatch=std::make_shared<const AtlasBatch>(batch);
         frame.sprites.push_back(std::move(command));
     }
@@ -128,7 +128,7 @@ void VisualLayerFrame::appendBatches(Frame& frame)&&{
     frame.sprites.insert(frame.sprites.end(),std::make_move_iterator(nonAtlas.begin()),std::make_move_iterator(nonAtlas.end()));
     for(auto& batch:atlases){
         if(batch.quads.empty())continue;
-        Sprite command;command.image=batch.image;command.blend=batch.blend;command.textureSource=batch.textureSource;
+        Sprite command;command.image=batch.image;command.blend=batch.blend;command.textureSource=batch.textureSource;command.clip=batch.clip;
         command.atlasBatch=std::make_shared<const AtlasBatch>(std::move(batch));
         frame.sprites.push_back(std::move(command));
     }
@@ -145,7 +145,7 @@ std::size_t VisualLayer::group(const VisualTile& tile,unsigned blendType){
         if(!sameStorage(groups_[i].tile,tile))throw std::runtime_error("Original Tile2D identity changed texture storage");
         return i;
     }
-    Group g;g.tile=tile;g.blendType=blendType;g.quads.reserve(g.capacity);
+    Group g;g.tile=tile;g.blendType=blendType;g.quads.reserve(g.capacity);g.clips.reserve(g.capacity);
     groups_.push_back(std::move(g));return groups_.size()-1;
 }
 void VisualLayer::prepareAtlas(const VisualTile& tile){(void)group(tile,0);}
@@ -167,9 +167,9 @@ void VisualLayer::submitImage(VisualImage& image){
     // Original uses uint16 indices. Refuse the original wraparound hazard
     // instead of silently splitting/reordering an unverified oversized group.
     if(batch.quads.size()>=16384)throw std::runtime_error("Original atlas exceeds uint16 quad index range");
-    if(batch.quads.size()==batch.capacity){batch.capacity*=2;batch.quads.reserve(batch.capacity);}
+    if(batch.quads.size()==batch.capacity){batch.capacity*=2;batch.quads.reserve(batch.capacity);batch.clips.reserve(batch.capacity);}
     image.tileNo=std::min(image.tileNo,image.tile.columns*image.tile.rows-1);
-    batch.quads.push_back(quad);
+    batch.quads.push_back(quad);batch.clips.push_back(presentationClip_);
 }
 unsigned VisualLayer::atlasCapacity(std::size_t index)const{
     if(index>=groups_.size())throw std::runtime_error("Unknown original atlas group");
@@ -179,13 +179,20 @@ VisualLayerFrame VisualLayer::drain(){
     VisualLayerFrame out;out.nonAtlas=nonAtlas_;
     for(auto& g:groups_){
         if(g.quads.empty())continue; // drawNumberOfQuads:0 performs no GL draw.
-        AtlasBatch b;b.tileIdentity=g.tile.identity;b.image=g.tile.image;b.blendType=g.blendType;
-        b.textureSource=g.tile.textureSource;b.pixelFormat=g.tile.pixelFormat;b.capacity=g.capacity;b.content=g.tile.content;b.storage=g.tile.storage;
-        b.blend=originalAtlasBlend(g.blendType,g.tile.pixelFormat);b.quads=g.quads;
-        b.indices.reserve(g.quads.size()*6);
-        for(std::size_t i=0;i<g.quads.size();++i){const auto n=static_cast<std::uint16_t>(i*4);
-            for(const auto index:{0,1,2,3,2,1})b.indices.push_back(static_cast<std::uint16_t>(n+index));}
-        out.atlases.push_back(std::move(b));g.quads.clear();
+        // Keep resource-group order and submitted quad order. Only adjacent
+        // quads with equal clipping can share one GPU scissor command. A/B/A
+        // stays three runs; changing window bounds never creates new groups.
+        for(std::size_t first=0;first<g.quads.size();){
+            auto end=first+1;while(end<g.quads.size()&&g.clips[end]==g.clips[first])++end;
+            AtlasBatch b;b.tileIdentity=g.tile.identity;b.image=g.tile.image;b.blendType=g.blendType;
+            b.textureSource=g.tile.textureSource;b.pixelFormat=g.tile.pixelFormat;b.capacity=g.capacity;b.content=g.tile.content;b.storage=g.tile.storage;b.clip=g.clips[first];
+            b.blend=originalAtlasBlend(g.blendType,g.tile.pixelFormat);b.quads.assign(g.quads.begin()+first,g.quads.begin()+end);
+            b.indices.reserve(b.quads.size()*6);
+            for(std::size_t i=0;i<b.quads.size();++i){const auto n=static_cast<std::uint16_t>(i*4);
+                for(const auto index:{0,1,2,3,2,1})b.indices.push_back(static_cast<std::uint16_t>(n+index));}
+            out.atlases.push_back(std::move(b));first=end;
+        }
+        g.quads.clear();g.clips.clear();
     }
     nonAtlas_.clear();return out;
 }

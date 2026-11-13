@@ -60,6 +60,7 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
     const bool portrait=UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPad;
     if(portrait?viewport.width>=viewport.height:viewport.width<=viewport.height){XCTFail(@"Test scene orientation differs from current iPhone-landscape / iPad-portrait contract: %.1fx%.1f",viewport.width,viewport.height);window.hidden=YES;return;}
     const auto safe=surface.safeAreaInsets;runtime->setDisplay(hm2::DisplayConfiguration::surface(viewport,{float(safe.left),float(safe.bottom),float(safe.right),float(safe.top)}));
+    NSLog(@"HM2_CONCURRENT_CANVAS width=%.3f height=%.3f safeLeft=%.3f safeBottom=%.3f safeRight=%.3f safeTop=%.3f device=%@",viewport.width,viewport.height,safe.left,safe.bottom,safe.right,safe.top,portrait?@"iPad":@"iPhone");
     timer.callback=^(CADisplayLink* link){@autoreleasepool{
         try{
             live->tick();++frames;if(fullCoverage&&frames==300)(void)live->verifyInactiveInputDiscard();if(frames==targetFrames)live->captureNextFrame();live->draw(layer,viewport);
@@ -75,7 +76,7 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
     attachPixels(self,runtime->pixels(),runtime->drawableSize(),@"Same-frame repeated original GPU");
     XCTAssertEqual([comparison[@"differentRGBPixels"] unsignedIntegerValue],0u);
     XCTAssertEqualObjects(comparison[@"repeatDrawCalls"],comparison[@"firstDrawCalls"]);
-    NSMutableDictionary* report=[runtime->report() mutableCopy];report[@"renderComparison"]=comparison;NSError* error=nil;NSData* data=[NSJSONSerialization dataWithJSONObject:report options:NSJSONWritingPrettyPrinted|NSJSONWritingSortedKeys error:&error];XCTAssertNotNil(data);
+    NSMutableDictionary* report=[runtime->report() mutableCopy];report[@"renderComparison"]=comparison;const auto& actual=runtime->validation().session(0).display();report[@"gameCanvas"]=@{@"width":@(actual.canvas.width),@"height":@(actual.canvas.height),@"safeLeft":@(actual.insets.left),@"safeBottom":@(actual.insets.bottom),@"safeRight":@(actual.insets.right),@"safeTop":@(actual.insets.top)};NSError* error=nil;NSData* data=[NSJSONSerialization dataWithJSONObject:report options:NSJSONWritingPrettyPrinted|NSJSONWritingSortedKeys error:&error];XCTAssertNotNil(data);
     if(data){XCTAttachment* attachment=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];attachment.name=@"HM2 real display-clock concurrent report";attachment.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:attachment];}
     XCTAssertEqual(frames,targetFrames);XCTAssertEqual([report[@"scenarios"] unsignedIntegerValue],115u);XCTAssertEqual([report[@"combatScenarios"] unsignedIntegerValue],55u);
     XCTAssertTrue([report[@"commonFrameInterval"] boolValue]);

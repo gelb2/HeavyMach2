@@ -40,6 +40,12 @@ int main(){
     nav.input(PointerPhase::begin,{340,160},1,camera,actor);const auto oldCount=nav.count();nav.input(PointerPhase::end,{800,160},2,camera,actor);assert(nav.pointer()==0&&nav.count()==oldCount);
     WorldNavigation empty;MapCamera c{{},{},{768,1024}};processCamera(c,{100,-100},empty);same(c.center.x,2);same(c.center.y,-2);same(c.backgroundWorld.x,1.88f);
     c.center={500,-500};processCamera(c,{500,-500},empty);same(c.center.x,128);same(c.center.y,-94);
+    // Original HD framing remains identical with configured map fitting.
+    for(const Vec2 start:{Vec2{0,0},Vec2{500,-500},Vec2{-600,600}})for(const Vec2 player:{Vec2{-275,-412},Vec2{100,-100},Vec2{500,500}}){MapCamera original,configured;original.center=configured.center=start;configured.fitWorld=true;for(unsigned i=0;i<20;++i){processCamera(original,player,empty);processCamera(configured,player,empty);assert(std::bit_cast<unsigned>(original.center.x)==std::bit_cast<unsigned>(configured.center.x)&&std::bit_cast<unsigned>(original.center.y)==std::bit_cast<unsigned>(configured.center.y));}}
+    // A smaller view includes offset in its post-ease visible-focus limits.
+    MapCamera small;small.viewport={970,500};small.fitWorld=small.keepFocusVisible=true;small.offset={20,-15};small.inputMinimumY=62.5f;small.focusMinimumY=86.25f;small.lowerOverscan=58.75f;small.focusRadius=25;constrainCamera(small,{-275,-412});const auto onScreen=small.toScreen({-275,-412});assert(onScreen.x>=25&&onScreen.x<=small.viewport.width-25&&onScreen.y>=small.focusMinimumY+25&&onScreen.y<=small.viewport.height-25);
+    // Whole-map fit and an infeasible focus interval never invert std::clamp.
+    small.viewport={1200,1400};constrainCamera(small,{5000,5000});assert(std::isfinite(small.center.x)&&std::isfinite(small.center.y));
     // Mixed movement/aim/idle states run together without sharing their state.
     BipodMotion moving,idle,targeted;moving.setDestination({500,0});
     for(int i=0;i<300;++i){moving.tick();idle.tick();targeted.tick(nullptr,Vec2{0,200});}

@@ -1,7 +1,7 @@
 {
   "branch": "feat/iphone-universal-20261113",
-  "single_simulator_batch": true,
-  "simulator_reruns_after_harness_correction": 0,
+  "single_simulator_batch": false,
+  "simulator_reruns_after_harness_correction": 2,
   "physical_device_operations": 0,
   "core_tests_before_native": 73,
   "native_before_harness_corrections": {
@@ -235,5 +235,280 @@
     "source_test_build_succeeded": true,
     "validation_app_build_succeeded": true,
     "native_rerun": false
-  }
+  },
+  "revalidation_01": {
+    "iphone": {
+      "result": "Failed",
+      "totalTestCount": 20,
+      "passedTests": 17,
+      "failedTests": 3,
+      "skippedTests": 0,
+      "failures": [
+        "ConcurrentValidationTests/testAllRestoredScenariosOnOneDisplayClock",
+        "SessionRendererTests/testOriginalShopItemDetailsAndSellPosition",
+        "WorldInputTests/testRealTouchMovesPlayerOnOriginalTerrain"
+      ]
+    },
+    "ipad": {
+      "result": "Failed",
+      "totalTestCount": 20,
+      "passedTests": 19,
+      "failedTests": 1,
+      "skippedTests": 0,
+      "failures": [
+        "SessionRendererTests/testOriginalShopItemDetailsAndSellPosition"
+      ]
+    }
+  },
+  "camera_product_fix": {
+    "problem": "Fixed HD center bounds on a compact landscape window let the real Player leave the screen or sit below HUD. Previous test-coordinate-only explanation was incomplete.",
+    "source_log_player_screen_y": [
+      -5.839052,
+      14.555725
+    ],
+    "cpu_red_player_y": 60.046,
+    "cpu_red_required_y": 89,
+    "after_fix_player_visibility_frames": 240,
+    "original_hd_center_bitwise_regression": true,
+    "policy": "Configured viewport-derived world bounds; compact view constrains Player above HUD after original ease; no world radius/physics/RNG changes"
+  },
+  "strict_display_cpu_after_camera_fix": {
+    "frames": 1200,
+    "scenarios": 115,
+    "configurations": [
+      {
+        "canvas": [
+          852,
+          393
+        ],
+        "safe": [
+          59,
+          21,
+          59,
+          0
+        ]
+      },
+      {
+        "canvas": [
+          912,
+          420
+        ],
+        "safe": [
+          68,
+          20,
+          68,
+          0
+        ]
+      },
+      {
+        "canvas": [
+          1024,
+          1366
+        ],
+        "safe": [
+          0,
+          20,
+          0,
+          24
+        ]
+      }
+    ],
+    "passed": true,
+    "core_passed": 73,
+    "all_3_attackers_emit_and_damage": true,
+    "all_3_pickers_capture": true,
+    "selection_limit": "Some representative and weapon-pair targets use common selectEnemy directly; not all target selection is pointer input."
+  },
+  "revalidation_02": {
+    "status": "passed",
+    "path": ".local/evidence/iphone-implementation-20261113/revalidation-02/native",
+    "automatic_retries": false,
+    "counts": {
+      "iphone": {
+        "result": "Passed",
+        "totalTestCount": 20,
+        "passedTests": 20,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "failures": []
+      },
+      "ipad": {
+        "result": "Passed",
+        "totalTestCount": 20,
+        "passedTests": 20,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "failures": []
+      }
+    },
+    "scope": "Complete20 per simulator before the later visual HUD/atlas clipping correction",
+    "iphone": {
+      "canvas": {
+        "height": 420,
+        "safeBottom": 20,
+        "safeLeft": 68,
+        "safeRight": 68,
+        "safeTop": 0,
+        "width": 912
+      },
+      "frames": 1200,
+      "scenarios": 115,
+      "weapons": 110,
+      "picker_contacts": [
+        4,
+        2,
+        3
+      ],
+      "attacker_emissions": [
+        19,
+        21,
+        21
+      ],
+      "attacker_enemy_hp_removed": [
+        152,
+        336,
+        504
+      ],
+      "warm_read_misses": 0,
+      "warm_exists_misses": 0,
+      "image_uploads_after_preparation": 0,
+      "same_frame_rgb_differences": 0
+    },
+    "ipad": {
+      "canvas": {
+        "height": 1366,
+        "safeBottom": 25,
+        "safeLeft": 0,
+        "safeRight": 0,
+        "safeTop": 0,
+        "width": 1024
+      },
+      "frames": 1200,
+      "scenarios": 115,
+      "weapons": 110,
+      "picker_contacts": [
+        3,
+        3,
+        2
+      ],
+      "attacker_emissions": [
+        20,
+        25,
+        21
+      ],
+      "attacker_enemy_hp_removed": [
+        160,
+        392,
+        472
+      ],
+      "warm_read_misses": 0,
+      "warm_exists_misses": 0,
+      "image_uploads_after_preparation": 0,
+      "same_frame_rgb_differences": 0
+    }
+  },
+  "hud_visual_followup": {
+    "status": "passed",
+    "discovered_after_full20": true,
+    "problem": "Centered HUD exposed parts of sliding HP/booster atlas gauge tiles previously outside the reference viewport. VisualLayer also discarded presentationClip on atlas submission.",
+    "cpu_red": {
+      "clip_left": 0,
+      "hud_left": 141.5
+    },
+    "fix": "Translated reference768-wide HUD clip; carry per-quad clips through ordered contiguous atlas runs to Sprite.clip and GPU scissor. Preserve tile+blend groups, quad order, original atlas path and16-bit indices.",
+    "game_stats_changed": false,
+    "independent_static_review_p1_p2_remaining": 0,
+    "core_passed": 73,
+    "source_test_build_succeeded": true,
+    "validation_app_build_succeeded": true,
+    "native_counts": {
+      "iphone": {
+        "result": "Passed",
+        "totalTestCount": 4,
+        "passedTests": 4,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "failures": []
+      },
+      "ipad": {
+        "result": "Passed",
+        "totalTestCount": 4,
+        "passedTests": 4,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "failures": []
+      }
+    },
+    "comparison": {
+      "iphone": {
+        "cases": 115,
+        "compared_fields": [
+          "playerEmissions",
+          "enemyEmissions",
+          "enemyDamage",
+          "enemyKills",
+          "enemyRemovals",
+          "kills",
+          "coinPickups",
+          "itemPickups",
+          "pickupCreditGain",
+          "distanceMoved",
+          "bots",
+          "botWeaponSwaps"
+        ],
+        "gameplay_differences": [],
+        "gameCanvas": {
+          "height": 420,
+          "safeBottom": 20,
+          "safeLeft": 68,
+          "safeRight": 68,
+          "safeTop": 0,
+          "width": 912
+        },
+        "warmReadMisses": 0,
+        "warmExistsMisses": 0,
+        "imageTextureUploadsAfterPreparation": 0,
+        "differentRGBPixels": 0
+      },
+      "ipad": {
+        "cases": 115,
+        "compared_fields": [
+          "playerEmissions",
+          "enemyEmissions",
+          "enemyDamage",
+          "enemyKills",
+          "enemyRemovals",
+          "kills",
+          "coinPickups",
+          "itemPickups",
+          "pickupCreditGain",
+          "distanceMoved",
+          "bots",
+          "botWeaponSwaps"
+        ],
+        "gameplay_differences": [],
+        "gameCanvas": {
+          "height": 1366,
+          "safeBottom": 25,
+          "safeLeft": 0,
+          "safeRight": 0,
+          "safeTop": 0,
+          "width": 1024
+        },
+        "warmReadMisses": 0,
+        "warmExistsMisses": 0,
+        "imageTextureUploadsAfterPreparation": 0,
+        "differentRGBPixels": 0
+      }
+    },
+    "manual_native_field_captures": {
+      "iphone": "gauge confined inside centered HUD",
+      "ipad": "gauge confined inside centered HUD"
+    }
+  },
+  "latest_native_scope": "Full20/20 each after camera fix; following HUD/atlas clip correction selected4/4 each including115 concurrent1200-frame GPU, original indexed atlas, A8 shadow and actual Source UI/save/restart. Not a full20 rerun after the last rendering correction.",
+  "remaining_native_display_scope": [
+    "Opposite iPhone landscape orientation and asymmetric safe areas",
+    "Original display-size and full-campaign equivalence"
+  ]
 }

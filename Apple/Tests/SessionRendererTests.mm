@@ -254,6 +254,7 @@ UIImage* image(NSData* rgba,CGSize size){
         XCTAssertTrue(runtime.provideName(0,"MACH","kr"));XCTAssertTrue(tap(runtime,1001,layer));
         if(runtime.session().help()){runtime.input(hm2::PointerPhase::begin,{384,512},101);runtime.input(hm2::PointerPhase::end,{384,512},101);XCTAssertFalse(runtime.session().help());}
         XCTAssertTrue(tap(runtime,2002,layer));XCTAssertTrue(tap(runtime,2002,layer));XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::shop);
+        if(runtime.session().help()){XCTAssertEqual(runtime.session().help()->state().page,1);runtime.input(hm2::PointerPhase::begin,{384,512},102);runtime.input(hm2::PointerPhase::end,{384,512},102);XCTAssertFalse(runtime.session().help());}
         const auto writes=runtime.session().metrics().saveRequests;
         auto inspect=[&](NSString* label,const std::string& largeIcon,bool popup){
             for(unsigned n=0;n<90;++n){runtime.tick();runtime.draw(layer);}

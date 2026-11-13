@@ -55,8 +55,32 @@ void processCamera(MapCamera& camera,Vec2 player,const WorldNavigation& navigati
     Vec2 wanted=player;
     if(target){wanted.x+=(target->x-player.x)*.5f;wanted.y+=(target->y-player.y)*.5f;}
     else if(navigation.count()){const auto p=navigation.point(navigation.count()-1);wanted.x+=(p.x-player.x)*.5f;wanted.y+=(p.y-player.y)*.5f;}
-    camera.center.x=std::clamp(ease(camera.center.x,wanted.x),-128.f,128.f);
-    camera.center.y=std::clamp(ease(camera.center.y,wanted.y),-94.f,0.f);
+    camera.center={ease(camera.center.x,wanted.x),ease(camera.center.y,wanted.y)};
+    constrainCamera(camera,player);
+}
+void constrainCamera(MapCamera& camera,Vec2 player){
+    Vec2 minimum{-128,-94},maximum{128,0};
+    if(camera.fitWorld){
+        // HD0x11cac uses these constants for768x1024. Phone0x5a418
+        // derives bounds from world half-size / half-screen / current zoom.
+        minimum={-512+camera.viewport.width*.5f,-512+camera.viewport.height*.5f-camera.lowerOverscan};
+        maximum={512-camera.viewport.width*.5f,512-camera.viewport.height*.5f};
+        if(minimum.x>maximum.x)minimum.x=maximum.x=(minimum.x+maximum.x)*.5f;
+        if(minimum.y>maximum.y)minimum.y=maximum.y=(minimum.y+maximum.y)*.5f;
+    }
+    camera.center={std::clamp(camera.center.x,minimum.x,maximum.x),std::clamp(camera.center.y,minimum.y,maximum.y)};
+    if(camera.keepFocusVisible){
+        // Shared small-window policy after ease, including camera offset.
+        // Reference HD framing does not enable this additional protection.
+        const Vec2 low{player.x-camera.viewport.width*.5f-camera.offset.x+camera.focusRadius,
+                       player.y-camera.viewport.height*.5f-camera.offset.y+camera.focusRadius};
+        const Vec2 high{player.x+camera.viewport.width*.5f-camera.offset.x-camera.focusRadius,
+                        player.y+camera.viewport.height*.5f-camera.offset.y-camera.focusMinimumY-camera.focusRadius};
+        const float lx=std::max(minimum.x,low.x),hx=std::min(maximum.x,high.x);
+        const float ly=std::max(minimum.y,low.y),hy=std::min(maximum.y,high.y);
+        if(lx<=hx)camera.center.x=std::clamp(camera.center.x,lx,hx);
+        if(ly<=hy)camera.center.y=std::clamp(camera.center.y,ly,hy);
+    }
     camera.backgroundWorld={(camera.center.x+camera.offset.x)*.94f,(camera.center.y+camera.offset.y)*.94f};
 }
 }

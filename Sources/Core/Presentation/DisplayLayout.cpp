@@ -72,6 +72,13 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
 std::optional<ClipRect> DisplayLayout::clip(DisplayRegion region,float pan)const{
     if(!configuration_.enabled)return {};
     auto result=configuration_.content();
+    if(region==DisplayRegion::bottom){
+        // HD gauge tiles slide through the original screen's left edge.
+        // Move that768-wide boundary with HUD instead of exposing the hidden
+        // tile portion when a wider window centers the original controls.
+        const auto hud=ui(region,pan);const auto left=hud.map({0,0}),right=hud.map({768,0});
+        result=intersection(result,{left.x,result.y,right.x-left.x,result.height});
+    }
     if(configuration_.compact&&(region==DisplayRegion::list||region==DisplayRegion::chooser)){const float footer=std::min(60.f,result.height*.25f);result.y+=footer;result.height-=footer;}
     if(configuration_.compact&&region==DisplayRegion::shopBackdrop){
         const auto t=ui(region,pan);const auto lower=t.map({0,512});

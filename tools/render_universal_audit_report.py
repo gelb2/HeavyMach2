@@ -39,6 +39,8 @@ p,li{overflow-wrap:anywhere}code{font-size:.88em;background:#e7e8df;padding:2px 
 SCRIPT = '''
 (async()=>{
  const status=document.getElementById('load-status');
+ document.getElementById('report-navigation').innerHTML=__REPORT_NAVIGATION__;
+ document.getElementById('report-footer-note').textContent='화면·데이터·함수 비교 결과와 미확정 범위는 본문에 구분했습니다. 원본 IPA·실행파일·전체 디컴파일·사용자 저장은 이 사이트에 포함하지 않습니다.';
  try{
   const response=await fetch('report-content.bin');
   if(!response.ok)throw new Error('HTTP '+response.status);
@@ -162,10 +164,10 @@ def main():
         source_url = 'https://github.com/gelb2/HeavyMach2/blob/' + quote(ref, safe='') + '/' + source_name
         full = ('<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
                 '<title>' + html.escape(title) + '</title><link rel="stylesheet" href="report.css"><script src="report.js" defer></script></head><body data-page="' + page + '"><main>'
-                '<a href="../heavymach2-restoration-20261110/#report-log">HeavyMach2 누적 보고 목록</a>' + nav +
+                '<a href="../heavymach2-restoration-20261110/#report-log">HeavyMach2 누적 보고 목록</a><div id="report-navigation"></div>' +
                 '<p class="meta" id="load-status">문서를 불러오는 중입니다.</p><div id="report-content"></div>' +
                 '<noscript><p>문서 표시에는 JavaScript가 필요합니다. 아래 GitHub 원고에서도 읽을 수 있습니다.</p></noscript>' +
-                '<footer><p>화면·데이터·함수 비교 결과와 미확정 범위는 본문에 구분했습니다. 원본 IPA·실행파일·전체 디컴파일·사용자 저장은 이 사이트에 포함하지 않습니다.</p>'
+                '<footer><p id="report-footer-note"></p>'
                 '<p><a href="' + source_url + '">GitHub 원고</a></p></footer></main></body></html>')
         (output / page).write_text(full)
         records.append({'source': source_name, 'page': page, 'source_sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
@@ -174,11 +176,11 @@ def main():
     packed = gzip.compress(json.dumps(payload, ensure_ascii=False, separators=(',', ':')).encode(), mtime=0)
     (output / 'report-content.bin').write_bytes(packed)
     (output / 'report.css').write_text(CSS)
-    (output / 'report.js').write_text(SCRIPT)
+    (output / 'report.js').write_text(SCRIPT.replace('__REPORT_NAVIGATION__', json.dumps(nav, ensure_ascii=False)))
     evidence = json.loads((ROOT / 'docs/evidence/iphone-implementation-20261113.json').read_text())
     (output / 'implementation-results.json').write_text(json.dumps(evidence, ensure_ascii=False, separators=(',', ':')) + '\n')
     (output / 'sources.json').write_text(json.dumps({'source_ref': ref, 'pages': records,
-                                                   'payload_sha256': hashlib.sha256(packed).hexdigest()}, ensure_ascii=False, indent=2) + '\n')
+                                                   'payload_sha256': hashlib.sha256(packed).hexdigest()}, ensure_ascii=False, separators=(',', ':')) + '\n')
     print(json.dumps({'output': str(output), 'pages': records}, ensure_ascii=False))
 
 

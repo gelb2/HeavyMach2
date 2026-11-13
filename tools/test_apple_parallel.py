@@ -52,7 +52,7 @@ def main():
         directory.mkdir()
         command = ['xcodebuild', 'test-without-building', '-xctestrun', str(run),
                    '-destination', 'platform=iOS Simulator,id=' + identifier,
-                   '-parallel-testing-enabled', 'NO', '-test-iterations', '1',
+                   '-parallel-testing-enabled', 'NO',
                    '-collect-test-diagnostics', 'never', '-resultBundlePath', str(directory / 'tests.xcresult')]
         command.extend('-only-testing:' + item for item in args.only_testing)
         start = time.time()

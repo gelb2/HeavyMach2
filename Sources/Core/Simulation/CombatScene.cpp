@@ -65,7 +65,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
     CombatMetrics metrics;
     DisplayConfiguration display;float displayZoom=1;
     void updateDisplay(std::optional<Vec2> target,bool advance){
-        if(!display.enabled){displayZoom=1;camera.viewport={768,1024};camera.inputMinimumY=100;return;}
+        if(!display.enabled){displayZoom=1;camera.viewport={768,1024};camera.inputMinimumY=100;camera.fitWorld=camera.keepFocusVisible=false;camera.lowerOverscan=94;return;}
         if(display.focusZoom){
             const auto player=playerMotion.state().position;
             if(!target&&navigation.count())target=navigation.point(navigation.count()-1);
@@ -74,7 +74,11 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
             if(advance)displayZoom+=(wanted-displayZoom)/100.f;
         }else displayZoom=1;
         const DisplayLayout layout(display);camera.viewport=layout.worldViewport(displayZoom);
-        camera.inputMinimumY=100*layout.ui(DisplayRegion::bottom).scale/layout.worldScale(displayZoom);
+        const float uiRatio=layout.ui(DisplayRegion::bottom).scale/layout.worldScale(displayZoom);
+        camera.inputMinimumY=100*uiRatio;camera.lowerOverscan=94*uiRatio;
+        camera.fitWorld=true;camera.keepFocusVisible=camera.viewport.width<768||camera.viewport.height<1024;
+        // Actual HD HUD alpha occupies the lower138 of its256px image.
+        camera.focusMinimumY=138*uiRatio;camera.focusRadius=float(machines.machine("Player").radius);
     }
     DarwinWorldRandom ownRandom;
     WorldRandom* externalRandom=nullptr;
@@ -909,6 +913,6 @@ void CombatScene::botPickedItem(std::uint64_t bot,std::uint64_t item){if(auto* b
 }
 
 namespace hm2 {
-void CombatScene::setDisplay(DisplayConfiguration display){impl_->navigation.cancel();impl_->targetPointer=0;impl_->leftFire=impl_->rightFire=false;impl_->display=display;impl_->updateDisplay({},false);}
+void CombatScene::setDisplay(DisplayConfiguration display){impl_->navigation.cancel();impl_->targetPointer=0;impl_->leftFire=impl_->rightFire=false;impl_->display=display;impl_->updateDisplay({},false);constrainCamera(impl_->camera,impl_->playerMotion.state().position);}
 float CombatScene::displayZoom()const{return impl_->displayZoom;}
 }

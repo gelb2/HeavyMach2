@@ -43,6 +43,7 @@ struct AtlasBatch {
     std::vector<AtlasQuad> quads;
     std::vector<std::uint16_t> indices; // Six indices per live quad.
     TextureSource textureSource={};
+    std::optional<ClipRect> clip;
 };
 struct VisualLayerFrame {
     std::vector<Sprite> nonAtlas;
@@ -67,7 +68,7 @@ struct VisualLayerFrame {
 // Scene/camera resolves screen positions and the previous-tick isInScreen gate.
 // No renderer, OS views, game logic, or camera policy is introduced here.
 class VisualLayer {
-    struct Group {VisualTile tile;unsigned blendType=0,capacity=32;std::vector<AtlasQuad> quads;};
+    struct Group {VisualTile tile;unsigned blendType=0,capacity=32;std::vector<AtlasQuad> quads;std::vector<std::optional<ClipRect>> clips;};
     std::vector<Sprite> nonAtlas_;
     std::vector<Group> groups_;
     unsigned unitSize_,visualCapacity_;

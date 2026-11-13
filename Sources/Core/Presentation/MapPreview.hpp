@@ -11,6 +11,9 @@ struct MapCamera {
     Size viewport{768,1024};
     float inputMinimumY=100;
     Vec2 backgroundWorld;
+    // Configured surfaces adapt camera framing, never world geometry/radii.
+    bool fitWorld=false,keepFocusVisible=false;
+    float lowerOverscan=94,focusMinimumY=100,focusRadius=25;
     [[nodiscard]] Vec2 toScreen(Vec2 world)const;
     [[nodiscard]] Vec2 toWorld(Vec2 screen)const;
 };
