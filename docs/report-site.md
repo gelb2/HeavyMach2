@@ -1,5 +1,15 @@
 # HeavyMach 2 보고 사이트
 
+## iPhone 전체 화면·HUD 후속 — 버전285, 2026-11-13
+
+[전체 화면·HUD 수정과 검사](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/implementation.html)를 갱신했다. 기존 고정 보고 목록 첫 절에도 연결했다. 계획12bfcdd·구현64ebe70·검사/설치 기록bd5dfae를 구분한다. C++73개, 양쪽 Native115조건과 실제 Source 터치/게임오버 복귀를 통과했다. iPhone 정식 Release 업데이트와 저장28,204바이트 보존을 확인했다. 수정본 실기기 화면 재검사는 잠금 해제 대기이며 맵 끝 픽셀 연장 외형은 TODO로 남겼다. develop/main 병합은 하지 않았다.
+
+사이트 소스는 `b47c67d17f3fcb38258aa5faddb3e188dab23627`, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_abfba75b4c988191af1ac33e832d63e2`, 배포는 `appgdep_6af70bac91b88191b07e56722c5d31e7`다. 공식 succeeded와 본인1명·그룹0·외부0 접근을 확인했다. Safari에서 로컬 보고 본문·링크·배치를 확인했다. 게시 후 브라우저 전환은 `cgWindowNotFound`로 실패했으므로 게시본 브라우저 검수 완료로 쓰지 않는다.
+
+처음 묶음은 macOS 확장 메타데이터 때문에269,972,992바이트로 한도를 넘었다. 공식 workflow에 로컬 tar 형식/메타데이터 설정을 적용한 최종 스트림은268,431,872바이트다. 콘텐츠1,378개와 생성 hosting manifest1개를 대조했고 모든 콘텐츠 바이트 일치를 확인했다. 기존 이미지·본문·링크를 삭제하거나 축소하지 않았다. 원본 IPA·개인 저장·서명 비밀은 포함하지 않았다.
+
+근거는 `.local/evidence/iphone-fullscreen-fix-20261113/`에 보존했다. 이전 사용하지 않는 Release 출력2개271,201,685바이트도 lsof 미사용 확인 후 정리했다. 현재 서명 Release·Source/Validation 검사 제품·소스·사용자 백업·실패 로그/캡처는 유지했다.
+
 ## HeavyMach2 고정 진입점
 
 [HeavyMach2 누적 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)를 계속 사용한다. 새 조사·계획·구현·검사 보고는 이 목록에 추가하고, 모든 새 보고서에서 같은 목록으로 돌아갈 수 있게 한다. 전체 사이트 첫 화면에서도 이 주소를 연결한다. 기존 보고서 주소와 과거 근거는 보존한다.
