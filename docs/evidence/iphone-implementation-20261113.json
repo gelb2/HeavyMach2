@@ -593,7 +593,7 @@
     "physical_release": {
       "installed": true,
       "save_preservation_verified": true,
-      "screen_verification": "pending_unlock"
+      "screen_verification": "2026-11-14 actual device base/command/movement/attack/gameover/menu checked; see physical_recheck_20261114"
     },
     "remaining": [
       "landscape_left Native",
@@ -603,5 +603,36 @@
     ],
     "all_prior_failures_preserved": true,
     "develop_main_merged": false
+  },
+  "physical_recheck_20261114": {
+    "source": "64ebe70",
+    "configuration": "Release",
+    "built": true,
+    "installed": true,
+    "save_preserved": true,
+    "save_bytes": 28204,
+    "launched": true,
+    "observed": [
+      "title full screen",
+      "saved slot level21 loaded",
+      "Skyway Base full screen",
+      "command description fully visible and separate from EXIT",
+      "Command initial list shows all3 accepted missions",
+      "Skyway field entered with larger HUD",
+      "actual hostile fire destroyed Player; Korean GameOver alert shown",
+      "GameOver OK returned to Skyway Base",
+      "Ruin Field ground tap displayed movement marker; Player walked to target and BOTs followed",
+      "enemy E_Tank_06 selected; name/HP and actual projectiles/impact/damage observed",
+      "world output rectangle and HUD size stayed fixed during observed movement/attack; no black letterbox seen",
+      "system menu opened; app left paused"
+    ],
+    "scope": "actual iPhone; not full campaign coverage",
+    "observed_crash": false,
+    "remaining": [
+      "map edge pixel stretching",
+      "native LandscapeLeft",
+      "original phone proportions",
+      "full campaign and all UI coverage"
+    ]
   }
 }
