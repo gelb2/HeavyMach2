@@ -1,5 +1,13 @@
 # HeavyMach 2 보고 사이트
 
+## iPhone 정식판 설치·직접 검사 — 버전286, 2026-11-14
+
+[기존 구현 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/implementation.html#2026-11-14-iphone-정식판-설치와-직접-검사)와 [누적 보고 목록](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)을 갱신했다. 게임 소스64ebe70과 동일한 Release를 다시 빌드·서명·설치·실행했고 저장28,204바이트 보존을 확인했다. 실제 기지 설명/EXIT 분리·사령부 첫3행·이동/BOT 추종·E_Tank_06 공격 피해·파괴 후 기지 복귀를 관측했다. 관측 중 출력 영역/HUD 크기는 유지됐고 검은 레터박스나 크래시는 없었다. 맵 가장자리 외형·가로 왼쪽·원작 표시 비례·전 캠페인은 남는다. 기록 커밋은1a07444다.
+
+사이트 소스는 `51fa8e3fab60d5015f44aa13b83791697fbec843`, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_078384afeaa481919c2a41db6d8f3e27`, 배포는 `appgdep_6af7a1594b5481919f50cc94c695985b`다. 공식 succeeded와 본인1명·그룹0·외부0의 비공개 접근을 확인했다. 이번 새 문단의 브라우저 시각 검수는 수행하지 않았다. 기존 보고·그림·주소를 유지했고 원본 IPA·사용자 저장·기기 식별자는 게시하지 않았다.
+
+공식 workflow archive는 확장268,434,432바이트로256MiB 이하이며 콘텐츠1,378개가 현재 소스와 바이트 단위로 일치했다. 생성 hosting manifest는 별도로 구분했다. 게시 후24경로의 HTTP200·HTML 본문/링크 일치·payload/JSON/CSS/JS 바이트 일치를 확인했다. 근거는 `.local/evidence/iphone-release-check-20261114/`다. 실제 iPad·다른 두 게임·develop/main은 변경하지 않았다.
+
 ## iPhone 전체 화면·HUD 후속 — 버전285, 2026-11-13
 
 [전체 화면·HUD 수정과 검사](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/implementation.html)를 갱신했다. 기존 고정 보고 목록 첫 절에도 연결했다. 계획12bfcdd·구현64ebe70·검사/설치 기록bd5dfae를 구분한다. C++73개, 양쪽 Native115조건과 실제 Source 터치/게임오버 복귀를 통과했다. iPhone 정식 Release 업데이트와 저장28,204바이트 보존을 확인했다. 수정본 실기기 화면 재검사는 잠금 해제 대기이며 맵 끝 픽셀 연장 외형은 TODO로 남겼다. develop/main 병합은 하지 않았다.
