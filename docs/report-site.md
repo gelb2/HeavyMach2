@@ -5,6 +5,19 @@
 [HeavyMach2 누적 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)를 계속 사용한다. 새 조사·계획·구현·검사 보고는 이 목록에 추가하고, 모든 새 보고서에서 같은 목록으로 돌아갈 수 있게 한다. 전체 사이트 첫 화면에서도 이 주소를 연결한다. 기존 보고서 주소와 과거 근거는 보존한다.
 
 
+## iPhone 공통 구현·검사와 누적 목록 — 버전283, 2026-11-13
+
+[HeavyMach2 누적 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)에 기존 보고·측정·일반판/HD 조사·추가 조사·계획·이번 구현을 연결했다. [이번 구현과 기기별 최종 검사](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/implementation.html)와 근거 JSON도 같은 목록으로 돌아간다. 사이트 전체 첫 화면에도 고정 진입점을 추가했다. 기존 본문·그림·주소를 보존했고 초기 개발 상태는 당시 기록으로 표시했다.
+
+구현은 `7622bd1c2ac4476700553867f5b7f581de2749c9`로 작업 브랜치에 커밋·푸시했다. HD 자원 한 벌·같은 공통 게임 코어의 iPhone 창/HUD/입력과115조건 치트 표시를 연결했다. C++73개와 Apple 컴파일을 통과했다. 마지막 Native 한 묶음은 iPhone16/20·iPad18/20으로 실패 상태이며, 검사 준비·좌표·창 구성 수정 후 Native 재실행은 하지 않았다. 실기기 설치·develop/main 병합도 하지 않았다.
+
+사이트 소스는 `e9d5880dcb9bf542bcd34513f2f95bada325a261`, 버전283, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_5c2144c22d608191a1b0bda2e96f020d`, 배포는 `appgdep_6af6d442e5fc8191ab74c11177d2d4ee`다. 공식 succeeded와 본인1명·그룹0·외부0을 확인했다. 실제24경로 HTTP200, HTML 표시 본문·링크 일치와 payload·CSS·JS·JSON의 소스 바이트 일치를 확인했다. 누적 목록과 구현 본문의 레이아웃·이동 링크는 로컬 Chrome에서 확인했다. 결과 표 추가 후 온라인 시각 검사는 수행하지 않았으며, 게시 본문은 인증 HTTP로 검증했다.
+
+공식 archive의 확장 크기는268,429,824바이트이며1,379개 파일을 소스와 대조했다. 후속 보고 추가 전256MiB 제한을 다시 확인해야 한다. 원본 IPA·ARM·사용자 저장·전체 분석 출력은 포함하지 않았다. 성공한 이전282의 전달용 tar257,125,363바이트는 lsof 미사용과 재생성 가능한 사이트 소스·저장버전 보존을 확인하고 정리했다. 현재283 archive·실패 xcresult/첨부·사용자 저장·원본은 보존했다.
+
+로컬 근거는 `.local/evidence/iphone-implementation-20261113/`의 `final-simulator-batch/summary.json`, 기기별 `*-results-summary.json`, `core-final-tests.log`, `apple-final-harness-build.log`, `site-local-check.json`, `site-archive-check.json`, `site-published-http.json`, `generated-cache-cleanup.json`이다. 토큰은 저장하지 않았다.
+
+
 ## iPhone 추가 조사·개발 계획·금지사항 — 버전282, 2026-11-13
 
 [추가 조사](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/followup.html), [개발 계획·금지사항](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/development.html), [인계](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/handover.html), 카메라·전투/UI/시간·저장·음향의 분야별 후속을 기존 네 페이지와 연결해 총10페이지로 게시했다. 근거 커밋은 iPhone 작업 브랜치의 `94985910f97ad7ce8ab1d135473e366c9ac66635`다. 추가 정적 조사·계획·금지사항 보존이며 게임 구현·새 앱 실행·실기기 설치·develop/main 릴리스는 하지 않았다. 실제 표시 크기·가독성·오디오 중단/복귀와 남은 간접 분기는 미확정 또는 다음 실행 조건으로 남겼다.
