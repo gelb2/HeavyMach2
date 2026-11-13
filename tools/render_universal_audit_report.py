@@ -12,6 +12,7 @@ from urllib.parse import quote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 PAGES = {
+    'docs/iphone-implementation-20261113.md': 'implementation.html',
     'docs/universal-design-audit-results-20261113.md': 'index.html',
     'docs/universal-design-audit-plan-20261113.md': 'plan.html',
     'docs/universal-package-differences-20261113.md': 'packages.html',
@@ -23,7 +24,7 @@ PAGES = {
     'docs/iphone-universal-runtime-followup-20261113.md': 'runtime-followup.html',
     'docs/iphone-universal-ui-followup-20261113.md': 'ui-followup.html',
 }
-LABELS = ['초기 조사', '조사 범위', '패키지 비교', '초기 로직 비교', '추가 조사',
+LABELS = ['iPhone 구현·검사', '초기 조사', '조사 범위', '패키지 비교', '초기 로직 비교', '추가 조사',
           '개발 계획·금지사항', '작업 인계', '카메라·전투', '시간·저장·음향', 'UI·입력']
 CSS = '''
 :root{--paper:#f3f1eb;--ink:#222923;--muted:#687069;--line:#d5d9ce;--accent:#ad471d}
@@ -70,6 +71,8 @@ def render(text, source, ref):
             relative = str(resolved.relative_to(ROOT))
         except ValueError:
             return '#'
+        if relative == 'docs/evidence/iphone-implementation-20261113.json':
+            return 'implementation-results.json'
         if relative in PAGES:
             return PAGES[relative] + ('#' + parsed.fragment if parsed.fragment else '')
         return ('https://github.com/gelb2/HeavyMach2/blob/' + quote(ref, safe='') + '/' +
@@ -159,7 +162,7 @@ def main():
         source_url = 'https://github.com/gelb2/HeavyMach2/blob/' + quote(ref, safe='') + '/' + source_name
         full = ('<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
                 '<title>' + html.escape(title) + '</title><link rel="stylesheet" href="report.css"><script src="report.js" defer></script></head><body data-page="' + page + '"><main>'
-                '<a href="../index.html#reports">개발 보고 목록</a>' + nav +
+                '<a href="../heavymach2-restoration-20261110/#report-log">HeavyMach2 누적 보고 목록</a>' + nav +
                 '<p class="meta" id="load-status">문서를 불러오는 중입니다.</p><div id="report-content"></div>' +
                 '<noscript><p>문서 표시에는 JavaScript가 필요합니다. 아래 GitHub 원고에서도 읽을 수 있습니다.</p></noscript>' +
                 '<footer><p>화면·데이터·함수 비교 결과와 미확정 범위는 본문에 구분했습니다. 원본 IPA·실행파일·전체 디컴파일·사용자 저장은 이 사이트에 포함하지 않습니다.</p>'
@@ -172,6 +175,8 @@ def main():
     (output / 'report-content.bin').write_bytes(packed)
     (output / 'report.css').write_text(CSS)
     (output / 'report.js').write_text(SCRIPT)
+    evidence = json.loads((ROOT / 'docs/evidence/iphone-implementation-20261113.json').read_text())
+    (output / 'implementation-results.json').write_text(json.dumps(evidence, ensure_ascii=False, separators=(',', ':')) + '\n')
     (output / 'sources.json').write_text(json.dumps({'source_ref': ref, 'pages': records,
                                                    'payload_sha256': hashlib.sha256(packed).hexdigest()}, ensure_ascii=False, indent=2) + '\n')
     print(json.dumps({'output': str(output), 'pages': records}, ensure_ascii=False))

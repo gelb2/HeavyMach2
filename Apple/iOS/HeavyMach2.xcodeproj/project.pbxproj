@@ -121,6 +121,7 @@
 		B56F79F1D8121F0408543154 /* ConcurrentValidation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84F4667C6A29DF3870939245 /* ConcurrentValidation.cpp */; };
 		BEFD5B9E80BF8AA447F28364 /* ObjectCollision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BE1BFC1F95048CCAA58E882 /* ObjectCollision.cpp */; };
 		BFDDB89E3C0B7F7482A6322F /* Bot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3860234029AE25DDBB2EE099 /* Bot.cpp */; };
+		C0ECBB41CA6DF0B97AD26051 /* DisplayLayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E06DB341BE24022D95107498 /* DisplayLayout.cpp */; };
 		C2DC456C6186E0607C055BC9 /* CombatScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A165999C6469516FFE74F603 /* CombatScene.cpp */; };
 		C39C49DECE0DD248053B44F6 /* WeaponEffects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E8E0A4D6617AEE0B46ADD8D /* WeaponEffects.cpp */; };
 		C3DCF63995527AE94D81B4FC /* PCM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ADD6FC1C62A0BFF2942FA01C /* PCM.cpp */; };
@@ -133,6 +134,7 @@
 		D722FE62895D7884C0557085 /* Maps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8CF2FA140E7BCAEF006C920 /* Maps.cpp */; };
 		D75FBB23AFC8B40CD5802479 /* TerrainCollision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB8957B62F2A77CCDA274CF1 /* TerrainCollision.cpp */; };
 		D7F5971512837EC1D3E3875D /* HD in Resources */ = {isa = PBXBuildFile; fileRef = 1AD56BEEAD2F8B2131068154 /* HD */; };
+		DA0168D7DC0E79FE2F65FF28 /* DisplayLayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E06DB341BE24022D95107498 /* DisplayLayout.cpp */; };
 		DA5D1D5D3E22741E351F5295 /* Trail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB99442F94F11D7964A77D4A /* Trail.cpp */; };
 		DA5DE08EABB37EB1E6EA00BF /* HM2TextRasterizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4C8284C6796F6A4F01CE879 /* HM2TextRasterizer.mm */; };
 		DBAAC4C753D58A698A24A022 /* PlayerMapPreview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE355BDD1BADB44070C02205 /* PlayerMapPreview.cpp */; };
@@ -178,6 +180,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		02500EBECE46105EB3FABE8A /* DisplayLayout.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DisplayLayout.hpp; sourceTree = "<group>"; };
 		043AD228C3E3A40192B65C5E /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		0578E11DBD56762668331013 /* ScreenTransition.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ScreenTransition.hpp; sourceTree = "<group>"; };
 		05AEE99550ACD829E3D48476 /* QuickItems.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = QuickItems.hpp; sourceTree = "<group>"; };
@@ -311,6 +314,7 @@
 		DC4647D2C2976A4283A509AD /* LocomotionScene.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LocomotionScene.cpp; sourceTree = "<group>"; };
 		DC50A4756C3EC73148AB453C /* OpenALEffects.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OpenALEffects.hpp; sourceTree = "<group>"; };
 		E03CEE9E63A54435B8540502 /* Chunk.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Chunk.cpp; sourceTree = "<group>"; };
+		E06DB341BE24022D95107498 /* DisplayLayout.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DisplayLayout.cpp; sourceTree = "<group>"; };
 		E1A6C6E0D711E22B2F6CAE37 /* Image.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Image.hpp; sourceTree = "<group>"; };
 		E26694EA3AB84147E099D56D /* Trail.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Trail.hpp; sourceTree = "<group>"; };
 		E55A40FF267F407934E8B2C5 /* Resources.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Resources.hpp; sourceTree = "<group>"; };
@@ -566,6 +570,8 @@
 			children = (
 				9A11F90D201FE7265367DF16 /* AssemblyPreview.cpp */,
 				ADDEAEEA7BB8B54C41E3C295 /* AssemblyPreview.hpp */,
+				E06DB341BE24022D95107498 /* DisplayLayout.cpp */,
+				02500EBECE46105EB3FABE8A /* DisplayLayout.hpp */,
 				4163E84CEB915EA2E9F7435D /* MapLoading.cpp */,
 				86DED0BA017FEFB8B559DCB6 /* MapLoading.hpp */,
 				E8FB007411CC043C0FAE3938 /* MapPreview.cpp */,
@@ -839,6 +845,7 @@
 				AAE2C97ABEE691B01335359A /* CombatScene.cpp in Sources */,
 				3D25EBB05635C26601A47106 /* Dash.cpp in Sources */,
 				936C708FD04DAA8F6164D13B /* DataTable.cpp in Sources */,
+				C0ECBB41CA6DF0B97AD26051 /* DisplayLayout.cpp in Sources */,
 				86F46E67BA5856322CF8C0E4 /* EnemyActors.cpp in Sources */,
 				7BAB3CBC95A28A51C3EE2E16 /* EnemySpawner.cpp in Sources */,
 				9D42E4CE751ECAF6682A28EF /* EnemyVehicle.cpp in Sources */,
@@ -910,6 +917,7 @@
 				B56F79F1D8121F0408543154 /* ConcurrentValidation.cpp in Sources */,
 				63983B9254B17B90537EAEFB /* Dash.cpp in Sources */,
 				87E36D97DBE0C16AB3E344FC /* DataTable.cpp in Sources */,
+				DA0168D7DC0E79FE2F65FF28 /* DisplayLayout.cpp in Sources */,
 				96017CD8E417490E92DF73E1 /* EnemyActors.cpp in Sources */,
 				F0576F911A458759C1C4614E /* EnemySpawner.cpp in Sources */,
 				1E8D18B84CA63E9422DA3493 /* EnemyVehicle.cpp in Sources */,

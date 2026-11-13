@@ -9,6 +9,7 @@ namespace hm2 {
 struct MapCamera {
     Vec2 center,offset;
     Size viewport{768,1024};
+    float inputMinimumY=100;
     Vec2 backgroundWorld;
     [[nodiscard]] Vec2 toScreen(Vec2 world)const;
     [[nodiscard]] Vec2 toWorld(Vec2 screen)const;

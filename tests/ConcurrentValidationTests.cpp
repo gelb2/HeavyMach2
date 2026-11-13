@@ -42,7 +42,7 @@ struct Host final:validation::ValidationHost {
     static void prepare(ui::Screens& screens,PreparedTiles& tiles,float time){Frame frame;screens.append(frame,time);tiles.appendPreparation(frame);}
     void refresh(unsigned index){
         auto& view=*interfaces.at(index);auto& game=runtime->session(index);const auto& state=game.state();
-        if(!view.screens)view.screens=std::make_unique<ui::Screens>(runtime->cachedResources(),view.tiles,view.host);
+        if(!view.screens){view.screens=std::make_unique<ui::Screens>(runtime->cachedResources(),view.tiles,view.host);view.screens->setDisplay(game.display());}
         if(view.revision!=game.presentationRevision()){view.screens->refresh(state,game.renderTime());view.revision=game.presentationRevision();prepare(*view.screens,view.tiles,game.renderTime());(void)game.preparationFrame();}
         else view.screens->updateHUD(state);
     }
@@ -89,7 +89,7 @@ struct Host final:validation::ValidationHost {
         assert(runtime);++presses[i];
         if(nativeUI){refresh(i);auto& view=*interfaces.at(i);auto& game=runtime->session(i);
             for(const auto& key:view.screens->buttons())if(key.id==id&&key.intData==data){auto button=view.screens->button(key);if(!button||!button->visible||!button->active)continue;
-                const auto eventKey=std::pair{id,data};const auto before=view.events[eventKey];const auto point=button->screenPosition();const std::uintptr_t pointer=10000+i;
+                const auto eventKey=std::pair{id,data};const auto before=view.events[eventKey];view.screens->revealButton(key);const auto point=view.screens->buttonScreenPosition(key);const std::uintptr_t pointer=10000+i;
                 if(!game.inputOverlay(PointerPhase::begin,point,pointer))view.screens->input(PointerPhase::begin,point,pointer,game.renderTime());
                 if(!game.inputOverlay(PointerPhase::end,point,pointer))view.screens->input(PointerPhase::end,point,pointer,game.renderTime());return view.events[eventKey]>before;
             }return false;
@@ -146,7 +146,15 @@ void printBotWeapons(Files& files){
 }
 }
 int main(int argc,char** argv){
-    if(argc<2)return 77;const auto begin=std::chrono::steady_clock::now();Files files(argv[1]);if(argc>2&&std::string_view(argv[2])=="--bot-weapons"){printBotWeapons(files);return 0;}if(argc>2&&std::string_view(argv[2])=="--case38-weapons"){printCase38Weapons(files);return 0;}Host host;host.nativeUI=argc>2&&std::string_view(argv[2])=="--native-ui";validation::ConcurrentValidation runtime(files,host);host.runtime=&runtime;if(host.nativeUI)host.prepareNativeUI();
+    if(argc<2)return 77;const auto begin=std::chrono::steady_clock::now();Files files(argv[1]);if(argc>2&&std::string_view(argv[2])=="--bot-weapons"){printBotWeapons(files);return 0;}if(argc>2&&std::string_view(argv[2])=="--case38-weapons"){printCase38Weapons(files);return 0;}const bool displayTest=argc>2&&std::string_view(argv[2]).starts_with("--display-");Host host;host.nativeUI=displayTest||argc>2&&std::string_view(argv[2])=="--native-ui";validation::ConcurrentValidation runtime(files,host);host.runtime=&runtime;if(displayTest){const auto flag=std::string_view(argv[2]);runtime.setDisplay(flag=="--display-phone"?DisplayConfiguration::surface({852,393},{59,21,59,0}):flag=="--display-phone-air"?DisplayConfiguration::surface({912,420},{62,21,62,0}):flag=="--display-phone-air-full"?DisplayConfiguration::surface({912,420}):flag=="--display-phone-portrait"?DisplayConfiguration::surface({420,912},{0,34,0,62}):DisplayConfiguration::surface({1024,1366},{0,20,0,24}));}if(host.nativeUI)host.prepareNativeUI();
+    if(displayTest){
+        for(unsigned i=0;i<1200;++i){runtime.tick();const auto frame=runtime.drawFrame();assert(!frame.sprites.empty());}
+        const auto m=runtime.metrics();unsigned failed=0;for(unsigned i=0;i<runtime.scenarioCount();++i){const auto& o=runtime.observations()[i];failed+=o.buttonFailures;std::cout<<"DISPLAY_CASE "<<i<<" ticks="<<o.ticks<<" buttonFailures="<<o.buttonFailures<<" emissions="<<o.playerEmissions<<" saves="<<o.saves<<std::endl;assert(o.ticks==1200);const auto frame=runtime.scenarioFrame(i);assert(frame.width==runtime.session(i).display().canvas.width);}
+        for(unsigned i=68;i<105;++i)if(runtime.scenarios()[i].map=="Stage01_02"||runtime.scenarios()[i].map=="Stage02_07"||runtime.scenarios()[i].map=="Stage03_04"){const auto& o=runtime.observations()[i];const unsigned k=runtime.scenarios()[i].map=="Stage01_02"?1:2;std::cout<<"DISPLAY_FIELD map="<<runtime.scenarios()[i].map<<" emissions="<<o.enemyEmissions[k]<<" damage="<<o.enemyDamage[k]<<" kills="<<o.enemyKills[k]<<" removed="<<o.enemyRemovals[k]<<std::endl;assert(o.enemyEmissions[k]>0&&o.enemyDamage[k]>0&&o.enemyKills[k]>0&&o.enemyRemovals[k]>0);}
+        std::cout<<"DISPLAY_CONCURRENT frames="<<m.frames<<" scenarios="<<runtime.scenarioCount()<<" weapons="<<m.activeWeaponDefinitions<<" kinds="<<m.activeWeaponKinds<<" buttonFailures="<<failed<<" warmReads="<<m.warmReadMisses<<" warmExists="<<m.warmExistsMisses<<std::endl;
+        for(unsigned i=0;i<55;++i){const auto& o=runtime.observations()[i];if(o.emittedWeaponParts.size()<2){std::cout<<"DISPLAY_WEAPON_GAP case="<<i<<" equip=";for(const auto& code:runtime.scenarios()[i].weapons)std::cout<<code<<",";std::cout<<" fired=";for(const auto& part:o.emittedWeaponParts)std::cout<<part<<",";if(auto* scene=runtime.session(i).battle()){std::cout<<" hp="<<scene->playerHP()<<" selected="<<scene->selectedEnemy();for(const auto& w:scene->playerWeapons())std::cout<<" controller="<<w.part<<":"<<w.fireLeft<<":"<<w.fireTime; }std::cout<<std::endl;}}
+        assert(failed==0&&m.commonFrameInterval&&m.activeWeaponDefinitions==110&&m.activeWeaponKinds==5&&m.maxConcurrentWeaponKinds>=5&&m.warmReadMisses==0&&m.warmExistsMisses==0);return 0;
+    }
     assert(runtime.scenarioCount()==115&&runtime.metrics().combatScenarios==55);std::set<std::string> itemCodes;
     const auto originalItems=DataTable::parse(runtime.cachedResources().read("ItemInfo.tble"));std::vector<std::string> originalWeaponCodes;for(std::size_t row=0;row<originalItems.rowCount();++row)if(originalItems.value(row,"Type")=="PtWpn")originalWeaponCodes.emplace_back(originalItems.value(row,"Code").value());assert(originalWeaponCodes.size()==110);
     for(std::size_t i=0;i<55;++i){const auto& descriptor=runtime.scenarios()[i];assert(descriptor.role==validation::ScenarioRole::combat&&descriptor.weapons.size()==2);for(unsigned side=0;side<2;++side){const auto& code=descriptor.weapons[side];assert(code==originalWeaponCodes[i*2+side]);itemCodes.insert(code);assert(runtime.session(unsigned(i)).state().equipment[side+2].dataId==code);}assert(runtime.session(unsigned(i)).battle());}

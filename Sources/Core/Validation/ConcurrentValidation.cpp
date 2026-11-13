@@ -115,6 +115,7 @@ struct ConcurrentValidation::Impl {
     std::vector<ScenarioDescription> descriptions;std::vector<ScenarioObservation> observations;
     std::vector<std::unique_ptr<Case>> cases;ConcurrentMetrics counters;
     bool active=true;std::uint64_t sourceFrameNumber=std::numeric_limits<std::uint64_t>::max();
+    DisplayConfiguration display;
     std::vector<Frame> sourceFrames;std::vector<FrameActivity> activity;std::vector<ButtonActivity> pendingButtons;std::size_t shopIndex=0,missionIndex=0,restartIndex=0,movementIndex=0;
     std::vector<std::size_t> aidKitIndices,airStrikeIndices,worldIndices,botIndices,helpIndices;std::size_t dashIndex=0,gameOverIndex=112,rankingIndex=113,completedMissionIndex=114;std::uint64_t pendingAidKitUses=0,pendingAirStrikeUses=0,pendingBotRepairs=0,pendingHelpInputs=0;
     int shopCreditBefore=0,shopItemsBefore=0,shopCreditAfter=0,shopItemsAfter=0;unsigned repairButton=0;
@@ -259,15 +260,15 @@ struct ConcurrentValidation::Impl {
         const Vec2 projected=scene->camera().toScreen(destination);
         const Vec2 screen{std::clamp(projected.x,16.f,scene->camera().viewport.width-16),std::clamp(projected.y,120.f,scene->camera().viewport.height-16)};
         const Vec2 requested=scene->camera().toWorld(screen);constexpr std::uintptr_t pointer=0x4c4f4f54;
-        const bool begin=game.inputWorld(PointerPhase::begin,screen,pointer);game.inputWorld(PointerPhase::end,screen,pointer);
+        const bool begin=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(screen),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(screen),pointer);
         ++observed.navigationRequests;if(!begin)++observed.navigationRejected;
         observed.navigation.push_back({counters.frames,player,requested,screen,nearest?nearest->code:"",begin,scene->player().blocked});
     }
     bool press(std::size_t index,unsigned id,int data=0){++observations[index].buttonRequests;const bool delivered=host.pressButton(unsigned(index),id,data);if(!delivered)++observations[index].buttonFailures;pendingButtons.push_back({unsigned(index),id,data,delivered});return delivered;}
     void worldQuick(std::size_t index,unsigned slot,Vec2 target){
         auto& game=*cases[index]->game;press(index,6200+slot);const auto screen=game.battle()->camera().toScreen(target);
-        constexpr std::uintptr_t pointer=0x574f524c;if(game.inputWorld(PointerPhase::begin,screen,pointer))++observations[index].worldQuickUses;
-        game.inputWorld(PointerPhase::end,screen,pointer);
+        constexpr std::uintptr_t pointer=0x574f524c;if(game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(screen),pointer))++observations[index].worldQuickUses;
+        game.inputWorld(PointerPhase::end,game.worldCanvasPoint(screen),pointer);
     }
     void guideWorld(std::size_t index){
         auto& c=*cases[index];auto& game=*c.game;auto* scene=game.battle();if(!scene||scene->playerHP()<1)return;
@@ -278,7 +279,7 @@ struct ConcurrentValidation::Impl {
             for(const auto& e:scene->enemies())if(e.kind==kind&&e.hp>0){c.worldTarget=e.id;
                 if(aircraft)worldQuick(index,1,e.position);
                 else {const auto p=scene->camera().toScreen({e.position.x+65,e.position.y});const Vec2 point{std::clamp(p.x,16.f,752.f),std::clamp(p.y,120.f,1008.f)};
-                    constexpr std::uintptr_t pointer=0x54555252;game.inputWorld(PointerPhase::begin,point,pointer);game.inputWorld(PointerPhase::end,point,pointer);}break;}
+                    constexpr std::uintptr_t pointer=0x54555252;game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(point),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(point),pointer);}break;}
         }
         if(!c.worldEnemyFired&&scene->metrics().enemyEmissionsByKind.at(kind)>0){c.worldEnemyFired=true;scene->selectEnemy(c.worldTarget);scene->selectEnemy(c.worldTarget);}
     }
@@ -287,12 +288,13 @@ struct ConcurrentValidation::Impl {
         if(!scene||scene->playerHP()<1)throw std::runtime_error("Live original Dash start condition lost");
         constexpr Vec2 offsets[]={{100,0},{100,60},{-100,0},{0,100},{60,100},{-80,80}};Vec2 target;bool found=false;
         for(const auto d:offsets){const auto p=scene->player().position;const Vec2 world{p.x+d.x,p.y+d.y};const auto screen=scene->camera().toScreen(world);
-            if(screen.x<16||screen.x>752||screen.y<120||screen.y>1008)continue;bool clear=true;
+            if(screen.x<16||screen.x>scene->camera().viewport.width-16||screen.y<std::max(120.f,scene->camera().inputMinimumY+20)||screen.y>scene->camera().viewport.height-16)continue;bool clear=true;
             for(const auto& e:scene->enemies())if(e.hp>0){const float dx=e.position.x-world.x,dy=e.position.y-world.y;if(dx*dx+dy*dy<10000)clear=false;}
             if(clear){target=screen;found=true;break;}}
+        if(!found&&game.display().enabled){for(int y=-4;y<=4&&!found;++y)for(int x=-4;x<=4&&!found;++x){if(!x&&!y)continue;const auto player=scene->player().position;const Vec2 world{player.x+float(x)*50,player.y+float(y)*50};const auto screen=scene->camera().toScreen(world);if(screen.x<16||screen.x>scene->camera().viewport.width-16||screen.y<scene->camera().inputMinimumY+20||screen.y>scene->camera().viewport.height-16)continue;bool clear=true;for(const auto& e:scene->enemies())if(e.hp>0){const float dx=e.position.x-world.x,dy=e.position.y-world.y;if(dx*dx+dy*dy<10000)clear=false;}if(clear){target=screen;found=true;}}}
         if(!found)throw std::runtime_error("Original Dash ground destination unavailable");auto& o=observations[dashIndex];
         if(counters.frames==110){o.dashSPBefore=scene->dashState().special;o.dashStartPosition=scene->player().position;}
-        constexpr std::uintptr_t pointer=0x44415348;const bool accepted=game.inputWorld(PointerPhase::begin,target,pointer);game.inputWorld(PointerPhase::end,target,pointer);
+        constexpr std::uintptr_t pointer=0x44415348;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(target),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(target),pointer);
         if(counters.frames==110){o.dashSPAfter=scene->dashState().special;o.dashInputAccepted=accepted;o.dashInputFrame=counters.frames;}
     }
     void guideBots(){
@@ -308,7 +310,7 @@ struct ConcurrentValidation::Impl {
                 // waiting on a farther table-order enemy outside gun range.
                 float closest=std::numeric_limits<float>::max();Vec2 chosen{};std::uint64_t target=0;const auto player=scene->player().position;
                 for(const auto& e:scene->enemies())if(e.hp>0&&!e.corpse&&botThreats.contains(e.name)){const auto screen=scene->camera().toScreen(e.position);if(screen.x<16||screen.x>scene->camera().viewport.width-16||screen.y<120||screen.y>scene->camera().viewport.height-16)continue;const float dx=e.position.x-player.x,dy=e.position.y-player.y,d=dx*dx+dy*dy;if(d<closest){closest=d;chosen=screen;target=e.id;}}
-                if(target&&target!=scene->selectedEnemy()){constexpr std::uintptr_t pointer=0x424f5454;const bool accepted=game.inputWorld(PointerPhase::begin,chosen,pointer);game.inputWorld(PointerPhase::end,chosen,pointer);if(accepted&&scene->selectedEnemy()==target)cases[index]->worldTarget=target;}
+                if(target&&target!=scene->selectedEnemy()){constexpr std::uintptr_t pointer=0x424f5454;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(chosen),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(chosen),pointer);if(accepted&&scene->selectedEnemy()==target)cases[index]->worldTarget=target;}
             }
             if(!positiveIncoming&&counters.frames>120&&(counters.frames-1)%31==0){
                 // Guns directly target Player; positive BOT HP damage needs an
@@ -337,7 +339,7 @@ struct ConcurrentValidation::Impl {
                         if(score<best){best=score;chosen=screen;threat=e.name;chosenEnemy=e.id;}
                     }
                 }
-                if(!threat.empty()){cases[index]->worldTarget=chosenEnemy;constexpr std::uintptr_t id=0x424f544e;const bool accepted=game.inputWorld(PointerPhase::begin,chosen,id);game.inputWorld(PointerPhase::end,chosen,id);auto& o=observations[index];++o.navigationRequests;if(!accepted)++o.navigationRejected;o.botThreatName=threat;o.navigation.push_back({counters.frames,player,scene->camera().toWorld(chosen),chosen,threat+"#"+std::to_string(chosenEnemy),accepted,scene->player().blocked});}
+                if(!threat.empty()){cases[index]->worldTarget=chosenEnemy;constexpr std::uintptr_t id=0x424f544e;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(chosen),id);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(chosen),id);auto& o=observations[index];++o.navigationRequests;if(!accepted)++o.navigationRejected;o.botThreatName=threat;o.navigation.push_back({counters.frames,player,scene->camera().toWorld(chosen),chosen,threat+"#"+std::to_string(chosenEnemy),accepted,scene->player().blocked});}
             }
             if(descriptions[index].role==ScenarioRole::botPicker&&positiveIncoming&&!cases[index]->worldEnemyFired&&(observations[index].navigation.empty()||counters.frames-observations[index].navigation.back().frame>=31)){
                 // After provoking a real counterattack, walk back into the
@@ -348,7 +350,7 @@ struct ConcurrentValidation::Impl {
                     const auto screen=scene->camera().toScreen(ground);if(screen.x<16||screen.x>scene->camera().viewport.width-16||screen.y<120||screen.y>scene->camera().viewport.height-16)continue;
                     const auto contact=scene->terrain().resolve(ground);if(std::abs(contact.position.x-ground.x)>.1f||std::abs(contact.position.y-ground.y)>.1f)continue;
                     bool clear=true;for(const auto& e:scene->enemies())if(e.hp>0&&!e.corpse){const float dx=e.position.x-ground.x,dy=e.position.y-ground.y,r=float(botRadii.at(e.name))+8;if(dx*dx+dy*dy<r*r)clear=false;}if(!clear)continue;
-                    const auto player=scene->player().position;constexpr std::uintptr_t pointer=0x424f5443;const bool accepted=game.inputWorld(PointerPhase::begin,screen,pointer);game.inputWorld(PointerPhase::end,screen,pointer);auto& o=observations[index];++o.navigationRequests;if(!accepted)++o.navigationRejected;o.navigation.push_back({counters.frames,player,ground,screen,"field-centre-after-real-counterattack",accepted,scene->player().blocked});if(accepted)cases[index]->worldEnemyFired=true;break;
+                    const auto player=scene->player().position;constexpr std::uintptr_t pointer=0x424f5443;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(screen),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(screen),pointer);auto& o=observations[index];++o.navigationRequests;if(!accepted)++o.navigationRejected;o.navigation.push_back({counters.frames,player,ground,screen,"field-centre-after-real-counterattack",accepted,scene->player().blocked});if(accepted)cases[index]->worldEnemyFired=true;break;
                 }
             }
             if(descriptions[index].role==ScenarioRole::botPicker&&positiveIncoming){
@@ -372,7 +374,7 @@ struct ConcurrentValidation::Impl {
                 const auto apart=[](Vec2 a,Vec2 b){const float dx=a.x-b.x,dy=a.y-b.y;return dx*dx+dy*dy>=36*36;};
                 bool clear=apart(bot.position,scene->player().position);for(const auto& other:bots)if(other.id!=bot.id&&!apart(bot.position,other.position))clear=false;if(!clear)continue;
                 observed.repairBefore=bot.hp;observed.repairCountBefore=game.state().quick[0].count;const auto particles=scene->metrics().particleAllocations;const auto sounds=observations[index].repairSounds;press(index,6200);
-                constexpr std::uintptr_t pointer=0x424f5452;observed.repairAccepted=game.inputWorld(PointerPhase::begin,point,pointer);game.inputWorld(PointerPhase::end,point,pointer);
+                constexpr std::uintptr_t pointer=0x424f5452;observed.repairAccepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(point),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(point),pointer);
                 for(const auto& after:scene->bots())if(after.id==bot.id)observed.repairAfter=after.hp;observed.repairCountAfter=game.state().quick[0].count;observed.repairParticles=scene->metrics().particleAllocations-particles;observed.repairSounds=observations[index].repairSounds-sounds;
                 if(observed.repairAccepted&&observed.repairAfter>observed.repairBefore&&observed.repairCountAfter==observed.repairCountBefore-1){observed.repairFrame=counters.frames;++pendingBotRepairs;}
                 break;
@@ -382,7 +384,7 @@ struct ConcurrentValidation::Impl {
     void helpEnd(std::size_t index,float x){
         auto& game=*cases[index]->game;HelpInputObservation event;event.frame=counters.frames;event.x=x;
         const auto* before=game.help();if(before){event.beforePage=before->state().page;event.beforeGuide=before->state().guidanceVisible;}
-        ++pendingHelpInputs;event.accepted=game.inputOverlay(PointerPhase::end,{x,512},0x48454c50);
+        ++pendingHelpInputs;const auto d=game.display();const auto a=d.content();const Vec2 helpPoint=d.enabled?Vec2{a.x+a.width*x/768,a.y+a.height*.5f}:Vec2{x,512};event.accepted=game.inputOverlay(PointerPhase::end,helpPoint,0x48454c50);
         const auto* after=game.help();if(after){event.afterPage=after->state().page;event.afterGuide=after->state().guidanceVisible;}
         event.closed=before&&!after;event.paused=game.battle()->isPaused();observations[index].help.inputs.push_back(event);
         if(event.closed){observations[index].help.closedFrame=counters.frames;observations[index].help.timeAtClose=game.battle()->clock().worldTime();}
@@ -407,7 +409,7 @@ struct ConcurrentValidation::Impl {
         auto* scene=game.battle();if(!scene||scene->playerHP()<1||o.targetInputAccepted)return;
         for(const auto& enemy:scene->enemies()){
             const auto point=scene->camera().toScreen(enemy.position);if(enemy.hp<1||enemy.corpse||point.x<=0||point.x>=768||point.y<=100||point.y>=1024)continue;
-            constexpr std::uintptr_t pointer=0x474f5645;const bool accepted=game.inputWorld(PointerPhase::begin,point,pointer);game.inputWorld(PointerPhase::end,point,pointer);
+            constexpr std::uintptr_t pointer=0x474f5645;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(point),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(point),pointer);
             o.targetInputAccepted=accepted&&scene->selectedEnemy()==enemy.id;if(o.targetInputAccepted)break;
         }
     }
@@ -457,7 +459,7 @@ struct ConcurrentValidation::Impl {
             o.quickCountBefore=count();o.quickHPBefore=scene->playerHP();o.quickSlotHPBefore=int(raw32(game.workingSlot(),0x7c));o.quickMaximumHP=int(raw32(game.workingSlot(),0x80));
             const auto particles=scene->metrics().particleAllocations;const auto sounds=o.repairSounds;
             const auto screen=scene->camera().toScreen(scene->player().position);constexpr std::uintptr_t pointer=0x4149444b;
-            o.quickTapAccepted=game.inputWorld(PointerPhase::begin,screen,pointer);game.inputWorld(PointerPhase::end,screen,pointer);
+            o.quickTapAccepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(screen),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(screen),pointer);
             o.quickHPAfter=scene->playerHP();o.quickSlotHPAfter=int(raw32(game.workingSlot(),0x7c));o.quickCountAfter=count();o.quickSelectionAfter=game.state().selectedQuick;
             o.quickRepairSounds=o.repairSounds-sounds;o.quickParticleAllocations=scene->metrics().particleAllocations-particles;o.quickUseFrame=counters.frames;
             if(o.quickCountAfter==o.quickCountBefore-1&&o.quickHPAfter>o.quickHPBefore)++pendingAidKitUses;
@@ -469,7 +471,7 @@ struct ConcurrentValidation::Impl {
             o.strikeCountBefore=count();Vec2 target{scene->player().position.x+100,scene->player().position.y+100};float best=std::numeric_limits<float>::max();
             for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=scene->camera().toScreen(enemy.position);if(point.x<32||point.x>736||point.y<180||point.y>980)continue;const float dx=enemy.position.x-scene->player().position.x,dy=enemy.position.y-scene->player().position.y,d=dx*dx+dy*dy;if(d<best){best=d;target=enemy.position;o.strikeTargetVisibleEnemy=true;}}
             o.strikeTarget=target;const auto screen=scene->camera().toScreen(target);constexpr std::uintptr_t pointer=0x41495253;
-            o.strikeTapAccepted=game.inputWorld(PointerPhase::begin,screen,pointer);game.inputWorld(PointerPhase::end,screen,pointer);o.strikeCountAfter=count();o.strikeUseFrame=counters.frames;
+            o.strikeTapAccepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(screen),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(screen),pointer);o.strikeCountAfter=count();o.strikeUseFrame=counters.frames;
             if(o.strikeTapAccepted&&o.strikeCountAfter==o.strikeCountBefore-1)++pendingAirStrikeUses;
         }
         if(counters.frames==600)restart();
@@ -520,7 +522,7 @@ struct ConcurrentValidation::Impl {
         auto restored=SaveData::decode(value.adapter.saved,value.random,false);
         const bool equal=std::equal(originalSlot.begin(),originalSlot.end(),restored.slot(0).begin());
         if(const auto* scene=game.battle()){const auto& m=scene->metrics();value.priorEmissions+=m.emissions;value.priorPlayerEmissions+=m.playerEmissions;value.priorDamage+=m.damageCalls;value.priorKills+=m.kills;}
-        value.game=std::make_unique<GameSession>(resources,value.adapter,value.random,std::move(restored));
+        value.game=std::make_unique<GameSession>(resources,value.adapter,value.random,std::move(restored));value.game->setDisplay(display);
         const bool selected=value.game->selectSlot(0);value.game->enterBase();const bool field=value.game->enterField("Stage01_01",0);
         observations[restartIndex].restarted=equal&&selected&&field;
         value.lastWeaponCounts=value.game->battle()->metrics().playerWeaponEmissions;
@@ -557,9 +559,9 @@ void ConcurrentValidation::tick(){auto& p=*impl_;if(!p.active)return;p.resources
             // weapon's controller/reload/HP is changed.
             const bool missileFired=scene->metrics().playerWeaponEmissions.at("P_Wpn_Msl_309")>0;
             const bool gunFired=scene->metrics().playerWeaponEmissions.at("P_Wpn_Gun_106")>0;
-            if(!scene->selectedEnemy()||(missileFired&&!gunFired)){
+            if(!scene->selectedEnemy()||(missileFired&&!gunFired)||(p.display.enabled&&!missileFired)){
                 float score=missileFired?std::numeric_limits<float>::max():-1;std::uint64_t target=0;const auto player=scene->player().position;
-                for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=scene->camera().toScreen(enemy.position);if(point.x<0||point.x>scene->camera().viewport.width||point.y<100||point.y>scene->camera().viewport.height)continue;const float dx=enemy.position.x-player.x,dy=enemy.position.y-player.y,d=dx*dx+dy*dy;if(missileFired?d<score:d>score){score=d;target=enemy.id;}}
+                for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=scene->camera().toScreen(enemy.position);if(point.x<0||point.x>scene->camera().viewport.width||point.y<100||point.y>scene->camera().viewport.height)continue;const float dx=enemy.position.x-player.x,dy=enemy.position.y-player.y,d=dx*dx+dy*dy;if(p.display.enabled&&d>(missileFired?600.f*600.f:740.f*740.f))continue;if(missileFired?d<score:d>score){score=d;target=enemy.id;}}
                 if(target&&target!=scene->selectedEnemy())scene->selectEnemy(target);
             }
         }
@@ -619,3 +621,5 @@ ConcurrentMetrics ConcurrentValidation::metrics()const{const auto& p=*impl_;auto
 std::vector<std::string> ConcurrentValidation::supported()const{return {"110 original PtWpn items /55 independently saved real battles","same-frame session ticks and shared sprite-frame compositor","original target / weapon / damage / death / mission / EXP consumers","scheduled real shop purchase and insufficient-credit refusal","original save encode/decode and restart without condition reinjection","one source-frame consumption per tick, including viewport recomposition","real ground-pointer movement and actual enemy-drop pickup on the same frame clock","six original AidKit consumers and three real AirStrike/bullet consumers","38 original field entries and common vehicle / turret / aircraft consumers","original ground double tap / SP / dash movement / shared particle consumer","six original BOT registrations / real attack and pickup / damage and repair observations","four original KR Help conditions / actual menu and overlay-end input / pause and resume","real enemy damage / GameOver token / original doors / Base002 save","Command5009 / localized ranking unavailable notice / no save"};}
 std::vector<std::string> ConcurrentValidation::missingFeatures()const{return {"all23 Player bottom equipment movement checks","all BOT combat outcomes and death after owner removal attribution","all mission types and all60 mission completion","all stages and final campaign completion","original port-app visual/input/audio equivalence","OS interruption / audio-route transition"};}
 }
+
+namespace hm2::validation {void ConcurrentValidation::setDisplay(DisplayConfiguration display){impl_->display=display;for(auto& value:impl_->cases)value->game->setDisplay(display);impl_->sourceFrameNumber=~std::uint64_t(0);}}

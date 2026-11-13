@@ -15,6 +15,7 @@ public:
     void tick();
     void draw(CAEAGLLayer*,Size viewport);
     void setActive(bool);
+    void setDisplay(DisplayConfiguration);
     [[nodiscard]] NSDictionary* verifyInactiveInputDiscard();
     [[nodiscard]] NSDictionary* report()const;
     [[nodiscard]] validation::ConcurrentValidation& validation();

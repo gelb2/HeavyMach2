@@ -29,6 +29,11 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
 @implementation HM2ConcurrentTimer
 - (void)frame:(CADisplayLink*)link{if(self.callback)self.callback(link);}
 @end
+@interface HM2ConcurrentController:UIViewController @end
+@implementation HM2ConcurrentController
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations{return UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPad?UIInterfaceOrientationMaskPortrait:UIInterfaceOrientationMaskLandscape;}
+- (BOOL)prefersStatusBarHidden{return YES;}
+@end
 @interface ConcurrentValidationTests:XCTestCase @end
 @implementation ConcurrentValidationTests
 - (void)testAllRestoredScenariosOnOneDisplayClock {
@@ -42,7 +47,9 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
 - (void)runFrames:(unsigned)targetFrames fullCoverage:(BOOL)fullCoverage {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];
-    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];HM2ConcurrentSurface* surface=[[HM2ConcurrentSurface alloc]initWithFrame:window.bounds];surface.contentScaleFactor=UIScreen.mainScreen.scale;
+    UIWindowScene* scene=nil;for(UIScene* candidate in UIApplication.sharedApplication.connectedScenes)if([candidate isKindOfClass:UIWindowScene.class]&&candidate.activationState==UISceneActivationStateForegroundActive){scene=(UIWindowScene*)candidate;break;}
+    XCTAssertNotNil(scene);if(!scene)return;
+    UIWindow* window=[[UIWindow alloc]initWithWindowScene:scene];window.frame=scene.coordinateSpace.bounds;HM2ConcurrentController* controller=[HM2ConcurrentController new];HM2ConcurrentSurface* surface=[[HM2ConcurrentSurface alloc]initWithFrame:window.bounds];surface.contentScaleFactor=UIScreen.mainScreen.scale;
     CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];[surface layoutIfNeeded];
     std::unique_ptr<hm2::apple::ConcurrentRuntime> runtime;
     try{runtime=std::make_unique<hm2::apple::ConcurrentRuntime>(root,directory);}catch(const std::exception& e){XCTFail(@"Concurrent preparation failed: %s",e.what());window.hidden=YES;return;}
@@ -50,6 +57,9 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
     HM2ConcurrentTimer* timer=[HM2ConcurrentTimer new];__block unsigned frames=0;__block NSString* failure=nil;
     auto* live=runtime.get();
     const hm2::Size viewport{float(surface.bounds.size.width),float(surface.bounds.size.height)};
+    const bool portrait=UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPad;
+    if(portrait?viewport.width>=viewport.height:viewport.width<=viewport.height){XCTFail(@"Test scene orientation differs from current iPhone-landscape / iPad-portrait contract: %.1fx%.1f",viewport.width,viewport.height);window.hidden=YES;return;}
+    const auto safe=surface.safeAreaInsets;runtime->setDisplay(hm2::DisplayConfiguration::surface(viewport,{float(safe.left),float(safe.bottom),float(safe.right),float(safe.top)}));
     timer.callback=^(CADisplayLink* link){@autoreleasepool{
         try{
             live->tick();++frames;if(fullCoverage&&frames==300)(void)live->verifyInactiveInputDiscard();if(frames==targetFrames)live->captureNextFrame();live->draw(layer,viewport);

@@ -18,6 +18,6 @@
 
 허브 등록·공통 지침 수정은 허브 작업 브랜치에서 한다. 이것이 다른 게임 저장소를 수정할 권한을 부여하지 않는다.
 
-14. 사용자 지시(2026-11-10): 보고서는 HeavyMach·MachDefense처럼 기존 비공개 보고 사이트에 HTML로 게시하고 실제 링크를 제공한다. [보고 사이트](docs/report-site.md)의 Site ID·접근 범위·소스 위치와 현행 Sites 스킬을 따른다. 로컬 파일/Markdown 전달만으로 사이트 게시 완료로 보고하지 않는다.
+14. 사용자 지시(2026-11-10): 보고서는 HeavyMach·MachDefense처럼 기존 비공개 보고 사이트에 HTML로 게시하고 실제 링크를 제공한다. [보고 사이트](docs/report-site.md)의 Site ID·접근 범위·소스 위치와 현행 Sites 스킬을 따른다. 로컬 파일/Markdown 전달만으로 사이트 게시 완료로 보고하지 않는다. HeavyMach2 새 보고는 기존 `heavymach2-restoration-20261110/#report-log` 고정 목록에 누적 연결하고 새 보고서에도 같은 목록으로 돌아가는 링크를 둔다.
 
 15. iPhone·유니버설 작업을 시작하거나 이어받을 때 [현행 iPhone 인계](HANDOVER-IPHONE-UNIVERSAL.md), [개발 기준·계획·금지사항](docs/iphone-development-contract.md), [추가 조사와 미확정](docs/iphone-followup-investigation-20261113.md)을 실제로 읽는다. 사용자의 2026-11-13 지시에 따라 근거·계획·금지사항을 대화 기억에만 두지 않는다. 이전 조사·현재 iPad 동작·저장을 보존하고, 함수 export를 전체 의미 검증이나 iPhone 개발 완료로 보고하지 않는다.

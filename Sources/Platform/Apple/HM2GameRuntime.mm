@@ -96,3 +96,5 @@ NSData* GameRuntime::pixels(){return impl_->renderer.readRGBA;}
 void GameRuntime::captureNextFrame(){[impl_->renderer captureNextFrame];}
 CGSize GameRuntime::drawableSize()const{return impl_->renderer.drawableSize;}
 }
+
+namespace hm2::apple {void GameRuntime::setDisplay(DisplayConfiguration display){impl_->ui->discardInputs();impl_->game->setDisplay(display);impl_->ui->setDisplay(display);}}

@@ -110,6 +110,8 @@ public:
     ~CombatScene();
     CombatScene(const CombatScene&)=delete;
     CombatScene& operator=(const CombatScene&)=delete;
+    void setDisplay(DisplayConfiguration);
+    [[nodiscard]] float displayZoom()const;
     void tick();
     bool input(PointerPhase,Vec2 logical,std::uintptr_t identifier);
     bool selectEnemy(std::uint64_t,bool append=false);

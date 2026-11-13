@@ -16,6 +16,7 @@
 - (void)display:(CADisplayLink*)link;
 - (void)enqueueRequest:(const hm2::apple::NativeRequest&)request;
 - (void)startRuntime;
+- (void)updateDisplay;
 - (void)completeNativeRequest;
 - (void)updateTestState;
 - (void)failRuntime:(NSString*)message;
@@ -88,6 +89,17 @@
 #endif
     try{_runtime=std::make_unique<hm2::apple::GameRuntime>(_resourceRoot,_saveFile,[weakSelf](const hm2::apple::NativeRequest& request){[weakSelf enqueueRequest:request];},std::move(testTime));}
     catch(const std::exception& e){_startupError=[NSString stringWithUTF8String:e.what()];}
+    [self updateDisplay];
+}
+- (void)layoutSubviews{[super layoutSubviews];[self updateDisplay];}
+- (void)safeAreaInsetsDidChange{[super safeAreaInsetsDidChange];[self updateDisplay];}
+- (void)updateDisplay{
+    if(!_runtime||self.bounds.size.width<=0||self.bounds.size.height<=0)return;
+    const auto a=self.safeAreaInsets;const auto size=self.bounds.size;
+    auto next=hm2::DisplayConfiguration::surface({float(size.width),float(size.height)},{float(a.left),float(a.bottom),float(a.right),float(a.top)});
+    const auto& old=_runtime->session().display();
+    if(old.enabled&&old.canvas.width==next.canvas.width&&old.canvas.height==next.canvas.height&&old.insets.left==next.insets.left&&old.insets.right==next.insets.right&&old.insets.top==next.insets.top&&old.insets.bottom==next.insets.bottom)return;
+    try{_runtime->setDisplay(next);}catch(const std::exception& e){[self failRuntime:[NSString stringWithUTF8String:e.what()]];}
 }
 - (void)enqueueRequest:(const hm2::apple::NativeRequest&)request{_requests.push_back(request);}
 - (void)completeNativeRequest{_requestInFlight=NO;}
@@ -163,7 +175,10 @@
     if(!_uiTesting)return;
     if(!_runtime){self.accessibilityValue=_startupError?[@"error=" stringByAppendingString:_startupError]:@"loading=1";return;}
     auto& game=_runtime->session();const auto& state=game.state();const auto& metrics=game.metrics();
-    NSMutableString* value=[NSMutableString stringWithFormat:@"ticks=%llu;screen=%u;selectedSlot=%d;saves=%llu;saveCompletions=%llu;unsupported=%llu;slot0Used=%d;slot1Used=%d;slot2Used=%d;slot0Name=%s;canvasWidth=768;canvasHeight=1024",_frames,unsigned(state.screen),state.selectedSlot,metrics.saveRequests,metrics.saveCompletions,metrics.unsupportedActions,state.slots[0].used,state.slots[1].used,state.slots[2].used,state.slots[0].name.c_str()];
+    NSMutableString* value=[NSMutableString stringWithFormat:@"ticks=%llu;screen=%u;selectedSlot=%d;saves=%llu;saveCompletions=%llu;unsupported=%llu;slot0Used=%d;slot1Used=%d;slot2Used=%d;slot0Name=%s",_frames,unsigned(state.screen),state.selectedSlot,metrics.saveRequests,metrics.saveCompletions,metrics.unsupportedActions,state.slots[0].used,state.slots[1].used,state.slots[2].used,state.slots[0].name.c_str()];
+    [value appendFormat:@";canvasWidth=%.6f;canvasHeight=%.6f",game.display().canvas.width,game.display().canvas.height];
+    const hm2::DisplayLayout layout(game.display());const auto safe=game.display().content();const auto listClip=layout.clip(hm2::DisplayRegion::list).value_or(safe);
+    [value appendFormat:@";safeX=%.6f;safeY=%.6f;safeWidth=%.6f;safeHeight=%.6f;listClipY=%.6f;listClipTop=%.6f",safe.x,safe.y,safe.width,safe.height,listClip.y,listClip.y+listClip.height];
     [value appendFormat:@";doorPhase=%d;helpVisible=%d;helpPage=%d;helpGuidance=%d;mapLoadingStep=%d",game.screenTransition().phase,game.help()!=nullptr,game.help()?game.help()->state().page:-1,game.help()?game.help()->state().guidanceVisible:false,game.mapLoading()?game.mapLoading()->state().step:-1];
     [value appendFormat:@";selectionTouches=%llu;touchSelectedEnemy=%llu",_selectionTouches,_selectedByTouch];
     [value appendFormat:@";gameOverConfirmTick=%llu",_gameOverConfirmTick];
@@ -175,10 +190,11 @@
     [value appendFormat:@";completedMission=%s;completedRewardCount=%lu;commandListVisible=%d;commandListRevision=%llu;credits=%d;experience=%u;level=%d;repairItems=%d;acceptedCount=%lu",state.completedMission.dataId.c_str(),state.completedMission.rewards.size(),state.commandListVisible,state.commandListRevision,state.credits,word(0x70),state.level,repairItems,state.acceptedMissions.size()];
     if(const auto* scene=game.battle()){const auto& p=scene->player();const auto& m=scene->metrics();[value appendFormat:@";x=%.6f;y=%.6f;destX=%.6f;destY=%.6f;playerHP=%d;emissions=%llu;damage=%llu;kills=%llu;selectedEnemy=%llu;paused=%d;worldTime=%.9f",p.position.x,p.position.y,p.destination.x,p.destination.y,scene->playerHP(),m.playerEmissions,m.damageCalls,m.kills,scene->selectedEnemy(),scene->isPaused(),scene->clock().worldTime()];
         [value appendFormat:@";actorState=%d;gameState=%d;enemyEmissions=%llu",p.state,scene->gameState(),m.enemyEmissions];
-        const auto playerScreen=scene->camera().toScreen(p.position);[value appendFormat:@";playerScreenX=%.6f;playerScreenY=%.6f",playerScreen.x,playerScreen.y];
-        unsigned index=0;for(const auto& e:scene->enemies())if(e.hp>0&&!e.corpse){const auto point=scene->camera().toScreen(e.position);[value appendFormat:@";e%u_x=%.6f;e%u_y=%.6f;e%u_id=%llu",index,point.x,index,point.y,index,e.id];++index;}[value appendFormat:@";enemyCount=%u",index];
+        [value appendFormat:@";displayWorldScale=%.6f;fieldInputMinY=%.6f",layout.worldScale(scene->displayZoom()),safe.y+scene->camera().inputMinimumY*layout.worldScale(scene->displayZoom())];
+        const auto playerScreen=game.worldCanvasPoint(scene->camera().toScreen(p.position));[value appendFormat:@";playerScreenX=%.6f;playerScreenY=%.6f",playerScreen.x,playerScreen.y];
+        unsigned index=0;for(const auto& e:scene->enemies())if(e.hp>0&&!e.corpse){const auto point=game.worldCanvasPoint(scene->camera().toScreen(e.position));[value appendFormat:@";e%u_x=%.6f;e%u_y=%.6f;e%u_id=%llu",index,point.x,index,point.y,index,e.id];++index;}[value appendFormat:@";enemyCount=%u",index];
     }
-    for(const auto& key:_runtime->screens().buttons()){const auto b=_runtime->screens().button(key);if(!b||!b->visible||!b->active)continue;const auto p=b->screenPosition();[value appendFormat:@";b%u_%d_x=%.6f;b%u_%d_y=%.6f",key.id,key.intData,p.x,key.id,key.intData,p.y];}
+    for(const auto& key:_runtime->screens().buttons()){const auto b=_runtime->screens().button(key);if(!b||!b->visible||!b->active)continue;const auto p=_runtime->screens().buttonScreenPosition(key);[value appendFormat:@";b%u_%d_x=%.6f;b%u_%d_y=%.6f",key.id,key.intData,p.x,key.id,key.intData,p.y];const auto original=b->screenPosition();[value appendFormat:@";b%u_%d_hdX=%.6f;b%u_%d_hdY=%.6f",key.id,key.intData,original.x,key.id,key.intData,original.y];}
     self.accessibilityValue=value;
 #endif
 }

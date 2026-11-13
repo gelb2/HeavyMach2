@@ -50,6 +50,16 @@
     _display.preferredFramesPerSecond=60;[_display addToRunLoop:NSRunLoop.mainRunLoop forMode:NSRunLoopCommonModes];
     return self;
 }
+- (void)layoutSubviews{[super layoutSubviews];[self updateDisplay];}
+- (void)safeAreaInsetsDidChange{[super safeAreaInsetsDidChange];[self updateDisplay];}
+- (void)updateDisplay{
+    if(!_concurrent||self.bounds.size.width<=0||self.bounds.size.height<=0)return;
+    const auto a=self.safeAreaInsets;const auto size=self.bounds.size;
+    const auto next=hm2::DisplayConfiguration::surface({float(size.width),float(size.height)},{float(a.left),float(a.bottom),float(a.right),float(a.top)});
+    const auto& old=_concurrent->validation().session(0).display();
+    if(old.enabled&&old.canvas.width==next.canvas.width&&old.canvas.height==next.canvas.height&&old.insets.left==next.insets.left&&old.insets.right==next.insets.right&&old.insets.top==next.insets.top&&old.insets.bottom==next.insets.bottom)return;
+    _concurrent->setDisplay(next);
+}
 - (void)updateTestState {
     if(!_uiTesting||!_concurrent)return;const auto m=_concurrent->validation().metrics();
     self.accessibilityValue=[NSString stringWithFormat:@"frames=%llu;scenarios=%lu;weaponDefinitions=%lu;weaponKinds=%lu",m.frames,(unsigned long)m.activeScenarios,(unsigned long)m.activeWeaponDefinitions,(unsigned long)m.activeWeaponKinds];

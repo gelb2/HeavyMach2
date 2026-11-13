@@ -1,0 +1,57 @@
+#include "PreparedTextStub.hpp"
+#include "Core/Session/GameSession.hpp"
+#include "Core/Simulation/DarwinWorldRandom.hpp"
+#include "Core/Presentation/VisualLayer.hpp"
+#include <cassert>
+#include <cmath>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+using namespace hm2;
+namespace {
+bool near(float a,float b){return std::abs(a-b)<.002f;}
+struct Files:ResourceAccess{std::filesystem::path root;unsigned reads=0;mutable unsigned probes=0;explicit Files(const char* p):root(p){}Bytes read(std::string_view n)override{++reads;std::ifstream f(root/std::string(n),std::ios::binary);if(!f)throw std::runtime_error("Missing display fixture "+std::string(n));return {std::istreambuf_iterator<char>(f),{}};}bool exists(std::string_view n)const override{++probes;return std::filesystem::exists(root/std::string(n));}};
+struct Host:SessionHost,ui::ScreensHost{
+ std::vector<ui::ScreenAction> events;unsigned writes=0;GameSession* game=nullptr;
+ void action(const ui::ScreenAction& a)override{events.push_back(a);}
+ ui::PreparedScreenText prepareText(const ui::TextRasterRequest& r)override{return test::preparedTextStub(r);}
+ ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest& r)override{return prepareText(r);}
+ void bgm(std::string_view)override{}void sound(std::string_view)override{}void sfx(unsigned)override{}void sound(std::string_view,Vec2)override{}void soundID(unsigned,Vec2)override{}void alert(std::string_view)override{}void requestName(unsigned)override{}void requestDelete(unsigned)override{}bool writeSave(std::span<const std::uint8_t>,SaveReason)override{++writes;return true;}std::uint32_t absoluteTimeLow()override{return 1;}std::uint32_t unixTime()override{return 1794268800;}
+};
+void transforms(){
+ const DisplayLayout legacy;assert(legacy.ui(DisplayRegion::bottom).identity());assert(legacy.world().identity());
+ for(auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({852,393},{59,21,59,0}),DisplayConfiguration::surface({1024,1366},{0,20,0,24})}){
+  DisplayLayout layout(config);const auto area=config.content();for(unsigned i=0;i<=unsigned(DisplayRegion::banner);++i){const auto t=layout.ui(DisplayRegion(i));for(Vec2 p: {Vec2{0,0},Vec2{384,512},Vec2{768,1024}}){auto q=t.inverse(t.map(p));assert(near(q.x,p.x)&&near(q.y,p.y));}}
+  assert(near(layout.worldViewport().width*layout.worldScale(),area.width));
+  Sprite source;source.center={40,80};source.size={20,30};source.clip=ClipRect{20,30,40,50};source.strip.push_back({{15,17},{.3f,.7f},{1,.5f,.25f,1}});
+  auto batch=std::make_shared<AtlasBatch>();batch->quads.emplace_back();batch->quads[0].vertices[0].position={25,27};batch->quads[0].vertices[0].uv={.2f,.4f};source.atlasBatch=batch;
+  auto mapped=source;const auto t=layout.world(1.3f);transformSprite(mapped,t,area);assert(near(mapped.center.x,t.map(source.center).x));assert(near(mapped.strip[0].position.y,t.map({15,17}).y));assert(mapped.strip[0].uv.x==.3f&&mapped.atlasBatch->quads[0].vertices[0].uv.y==.4f);assert(source.atlasBatch->quads[0].vertices[0].position.x==25);
+ }
+ const auto a=DisplayLayout(DisplayConfiguration::surface({768,1024})),b=DisplayLayout(DisplayConfiguration::surface({1024,1366}));assert(a.worldScale()==b.worldScale()&&b.worldViewport().width>a.worldViewport().width);
+ bool refused=false;try{(void)DisplayConfiguration::surface({100,100},{50,0,50,0});}catch(const std::invalid_argument&){refused=true;}assert(refused);
+}
+void screens(Files& files,DisplayConfiguration config){
+ Host host;PreparedTiles tiles("universal-test");ui::Screens screens(files,tiles,host);screens.setDisplay(config);const auto area=config.content();
+ ui::ScreensState state;state.locale="kr";state.screen=ui::ScreenId::field;state.hpBarWidth=100;state.hpBarFilled=75;state.spBarWidth=100;state.spBarFilled=50;state.enemyName="E-10";state.enemyNameRevision=1;state.enemyHpRate=.7f;
+ for(unsigned id=1;id<=7;++id){state.screen=ui::ScreenId(id);screens.refresh(state,12);Frame frame;screens.append(frame,12);assert(frame.width==config.canvas.width&&frame.height==config.canvas.height&&!frame.sprites.empty());for(const auto& s:frame.sprites){assert(s.clip&&s.clip->x>=area.x&&s.clip->y>=area.y&&s.clip->x+s.clip->width<=area.x+area.width+.01f);}}
+ state.screen=ui::ScreenId::field;screens.refresh(state,12);const auto beforeReads=files.reads,beforeProbes=files.probes;for(unsigned i=0;i<100;++i){state.hpBarFilled=10+int(i%80);state.credits=int(i);screens.updateHUD(state);Frame frame;screens.append(frame,12);assert(frame.width==config.canvas.width);}assert(files.reads==beforeReads&&files.probes==beforeProbes);
+ for(unsigned id:{1022u,1023u,1025u}){for(const auto& key:screens.buttons())if(key.id==id){const auto p=screens.buttonScreenPosition(key);host.events.clear();screens.input(PointerPhase::begin,p,99,12);screens.input(PointerPhase::end,p,99,12);assert(!host.events.empty()&&host.events.front().button.key.id==id&&host.events.front().button.canvasPosition);break;}}
+ state.screen=ui::ScreenId::shop;state.inventoryVisible=true;state.inventory.resize(25);state.shopItems.resize(24);for(unsigned i=0;i<24;++i){state.shopItems[i].dataId=std::to_string(i);state.shopItems[i].icon="Icon10011.png";}screens.refresh(state,12);unsigned inv=0,stock=0;for(auto key:screens.buttons()){inv+=key.id>=6000&&key.id<6025;stock+=key.id>=2200&&key.id<2224;}assert(inv==25&&stock==24);
+ for(float pan:{0.f,screens.horizontalPanLimit()}){screens.setHorizontalPan(pan);Frame frame;screens.append(frame,12);assert(!frame.sprites.empty());}
+ screens.setHorizontalPan(screens.horizontalPanLimit());for(const auto& key:screens.buttons())if(key.id==6000){const auto p=screens.buttonScreenPosition(key);host.events.clear();screens.input(PointerPhase::begin,p,101,12);screens.input(PointerPhase::move,{p.x+30,p.y-30},101,12);screens.input(PointerPhase::end,{p.x+30,p.y-30},101,12);assert(!host.events.empty());for(const auto& a:host.events)if(a.button.type==ui::ButtonEventType::move){assert(a.dropCoordinates);auto original=DisplayLayout(config).ui(DisplayRegion::shopInventory,screens.horizontalPanLimit()).inverse({p.x+30,p.y-30});assert(near(original.x,a.dropCoordinates->inventory.x));}break;}
+ state=ui::ScreensState{};state.locale="kr";state.screen=ui::ScreenId::command;state.availableMissions.resize(5);state.acceptedMissions.resize(5);for(unsigned i=0;i<5;++i){state.availableMissions[i].dataId="Mnew"+std::to_string(i);state.availableMissions[i].name="Mission";state.acceptedMissions[i].dataId="Mown"+std::to_string(i);state.acceptedMissions[i].name="Mission";}state.selectedMission=0;state.missionTitle="Mission";state.missionBody="Details";screens.refresh(state,12);DarwinWorldRandom rng(1);for(unsigned i=0;i<120;++i)screens.tick(12+float(i)/60,rng);
+ for(const auto& key:screens.buttons())if(key.id>=5100&&key.id<5205){screens.revealButton(key);const auto point=screens.buttonScreenPosition(key);const auto clip=DisplayLayout(config).clip(DisplayRegion::list).value_or(area);assert(point.y>=clip.y&&point.y<=clip.y+clip.height);host.events.clear();screens.input(PointerPhase::begin,point,202,12);screens.input(PointerPhase::end,point,202,12);assert(!host.events.empty()&&host.events.front().button.key==key);}
+ state=ui::ScreensState{};state.locale="kr";state.screen=ui::ScreenId::field;state.weaponChoiceType=2;for(unsigned i=0;i<30;++i){ui::ItemView item;item.dataId=std::to_string(i);item.position=int(i);item.name="Weapon";state.weaponChoices.push_back(item);}screens.refresh(state,12);for(unsigned i=0;i<120;++i)screens.tick(12+float(i)/60,rng);for(const auto& key:screens.buttons())if(key.id==1024){screens.revealButton(key);const auto point=screens.buttonScreenPosition(key);const auto clip=DisplayLayout(config).clip(DisplayRegion::chooser).value_or(area);assert(point.y>=clip.y&&point.y<=clip.y+clip.height);host.events.clear();screens.input(PointerPhase::begin,point,203,12);screens.input(PointerPhase::end,point,203,12);assert(!host.events.empty()&&host.events.front().button.key==key);}
+ state=ui::ScreensState{};state.locale="kr";
+ state.screen=ui::ScreenId::field;state.inventoryVisible=false;state.airliftVisible=true;for(unsigned i=0;i<6;++i){state.airlifts[i].dataId="Base00"+std::to_string(i+1);state.airlifts[i].name="Base";}screens.refresh(state,12);unsigned air=0;for(auto key:screens.buttons())air+=key.id>=4002&&key.id<4008;assert(air==6);
+}
+void help(Files& files,DisplayConfiguration config){unsigned closed=0;ui::Help help(files,"kr",-1,[&]{++closed;});help.setDisplay(config);const auto a=config.content();const Vec2 p{a.x+a.width*.5f,a.y+a.height*.5f};Frame frame;help.append(frame);assert(!frame.sprites.empty()&&frame.sprites[0].clip);const auto y=frame.sprites[0].strip[0].position.y;
+ help.input(PointerPhase::begin,p,1);help.input(PointerPhase::move,{p.x,p.y+100},1);help.input(PointerPhase::end,{p.x,p.y+100},1);assert(!closed&&help.state().guidanceVisible);Frame scrolled;help.append(scrolled);if(config.compact)assert(scrolled.sprites[0].strip[0].position.y>y);
+ help.input(PointerPhase::begin,p,22);help.discardInputs();help.input(PointerPhase::begin,p,2);help.input(PointerPhase::end,p,2);assert(!help.state().guidanceVisible&&!closed);help.input(PointerPhase::begin,p,3);help.input(PointerPhase::end,p,3);assert(closed==1);
+}
+void session(Files& files,DisplayConfiguration config){Host host;DarwinWorldRandom random(1);GameSession game(files,host,random);assert(game.createSlot(0,"Layout","kr"));assert(game.enterField("Stage01_01",0));game.setDisplay(config);auto* scene=game.battle();assert(scene);const auto before=Bytes(game.workingSlot().begin(),game.workingSlot().end());const auto writes=host.writes;const auto old=scene->player().position;auto logical=scene->camera().toScreen({old.x,old.y+100});const auto point=game.worldCanvasPoint(logical);assert(game.inputWorld(PointerPhase::begin,point,77));game.inputWorld(PointerPhase::end,point,77);assert(near(scene->player().destination.x,old.x)&&near(scene->player().destination.y,old.y+100));assert(game.inputWorld(PointerPhase::begin,point,78));game.inputWorld(PointerPhase::end,{point.x,0},78);assert(scene->dashState().movePointer==0);assert(game.inputWorld(PointerPhase::begin,point,79));game.inputWorld(PointerPhase::cancel,{0,0},79);assert(scene->dashState().movePointer==0);
+ for(unsigned i=0;i<100;++i){game.tick();auto frame=game.drawWorld();assert(frame.width==config.canvas.width&&frame.height==config.canvas.height);game.appendOverlays(frame);}assert(host.writes==writes);const auto z=scene->displayZoom();assert(config.focusZoom?(z>1&&z<=1.6f):z==1);
+ const auto pos=scene->player().position;const auto hp=scene->playerHP();game.setDisplay(DisplayConfiguration::surface({1024,1366}));assert(scene->player().position.x==pos.x&&scene->playerHP()==hp&&host.writes==writes);assert(game.workingSlot().size()==before.size());
+}
+}
+int main(int argc,char** argv){if(argc<2)return 77;transforms();Files files(argv[1]);for(auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({852,393},{59,21,59,0}),DisplayConfiguration::surface({1024,1366},{0,20,0,24})}){screens(files,config);help(files,config);session(files,config);}std::cout<<"HM2_DISPLAY PASS 3 canvases / safe-area / inverse-hit / HD25+24+6 / drag / warm100 / help-scroll / common-world / no-display-save\n";}

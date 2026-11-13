@@ -52,7 +52,8 @@ def main():
         directory.mkdir()
         command = ['xcodebuild', 'test-without-building', '-xctestrun', str(run),
                    '-destination', 'platform=iOS Simulator,id=' + identifier,
-                   '-parallel-testing-enabled', 'NO', '-resultBundlePath', str(directory / 'tests.xcresult')]
+                   '-parallel-testing-enabled', 'NO', '-test-iterations', '1',
+                   '-collect-test-diagnostics', 'never', '-resultBundlePath', str(directory / 'tests.xcresult')]
         command.extend('-only-testing:' + item for item in args.only_testing)
         start = time.time()
         with (directory / 'tests.log').open('w') as log:

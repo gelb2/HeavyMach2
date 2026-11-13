@@ -27,6 +27,7 @@ std::string originalDisplayLocale(std::string_view value){
 }
 struct GameSession::Impl:progression::Events,progression::EquipmentEvents,CombatSceneHooks,progression::QuickItemsHost {
     ResourceAccess& resources;SessionHost& host;WorldRandom& random;
+    DisplayConfiguration display;
     SaveData data;std::array<std::uint8_t,SaveData::slotSize> working{};
     std::string displayLocale;
     DataTable itemTable;Descriptions descriptions;progression::Definitions definitions;
@@ -390,7 +391,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         if(!baseScreen&&id!=ui::ScreenId::shop&&id!=ui::ScreenId::maintenance)return;
         const auto count=slot().u32(0x1b5c);
         if(count!=(baseScreen?1u:2u))return;
-        help=std::make_unique<ui::Help>(resources,displayLocale,baseScreen?0:1);
+        help=std::make_unique<ui::Help>(resources,displayLocale,baseScreen?0:1);help->setDisplay(display);
         help->setLayer(9);
         // Maintenance attaches GuiHelp at (-240,-160) to its (384,512)
         // root. GuiHelp's pages add their own (384,512) position.
@@ -401,12 +402,12 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         if(!scene)return;
         scene->setPaused(true);
         help=std::make_unique<ui::Help>(resources,displayLocale,navigation?-1:2,[this]{if(scene)scene->setPaused(false);dirty=true;});
-        help->setPage(2);if(!navigation)help->setLayer(9);dirty=true;
+        help->setDisplay(display);help->setPage(2);if(!navigation)help->setLayer(9);dirty=true;
     }
     void closeDialogs(){view.inventoryVisible=view.missionVisible=view.airliftVisible=view.systemVisible=view.tradeVisible=false;view.weaponChoiceType=0;if(scene)scene->setPaused(false);}
     int inventoryPosition(int cell)const{return view.inventoryPage*25+cell;}
     bool validIdentity(const ui::ButtonKey& key,const progression::Item* item)const{return key.dataId.empty()||(item&&key.dataId==item->code);}
-    void drag(Vec2);
+    void drag(Vec2,Vec2);
     bool inventoryAction(const ui::ScreenAction&);
     bool shopAction(const ui::ScreenAction&);
     void trade(bool buying){
@@ -432,7 +433,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         view.spBarFilled=stats.specialMaximum?float(stats.specialBarWidth)*stats.specialCurrent/stats.specialMaximum:0;view.spRate=stats.specialMaximum?stats.specialCurrent/stats.specialMaximum:0;view.boosterReady=stats.specialCurrent>=100;
     }
 };
-void GameSession::Impl::drag(Vec2 point){
+void GameSession::Impl::drag(Vec2 point,Vec2 quickPoint){
     if(view.selectedInventory<0)return;
     const bool maintenance=view.screen==ui::ScreenId::maintenance;
     const Vec2 root{384,view.screen==ui::ScreenId::shop?312.f:512.f};
@@ -440,7 +441,7 @@ void GameSession::Impl::drag(Vec2 point){
     const float x=(point.x-inv.x+30)/60,y=(point.y-inv.y-30)/-60;
     view.extInventory=x>=0&&x<5&&y>=0&&y<5?int(y)*5+int(x):-1;
     if(view.extInventory>=0){dirty=true;return;}
-    if(view.screen==ui::ScreenId::field){const float qx=(point.x-511+28.5f)/57,qy=(point.y-29+28.5f)/57;
+    if(view.screen==ui::ScreenId::field){const float qx=(quickPoint.x-511+28.5f)/57,qy=(quickPoint.y-29+28.5f)/57;
         view.extQuick=qx>=0&&qx<5&&qy>=0&&qy<1?int(qx):-1;
         if(view.extQuick>=0){dirty=true;return;}
     }
@@ -473,7 +474,7 @@ bool GameSession::Impl::inventoryAction(const ui::ScreenAction& a){
             if(view.screen==ui::ScreenId::shop&&entry&&entry->item&&entry->count>0){view.selectedShop=-1;hideShopDetail();uiSound(0);}
             return true;
         }
-        if(phase==ui::ButtonEventType::move){drag(a.button.position);return true;}
+        if(phase==ui::ButtonEventType::move){drag(a.dropCoordinates?a.dropCoordinates->inventory:a.button.position,a.dropCoordinates?a.dropCoordinates->quick:a.button.position);return true;}
         if(phase==ui::ButtonEventType::pop){if(view.extInventory<0){setDetailInventory(view.selectedInventory<0?-1:inventoryPosition(view.selectedInventory));view.selectedBot=view.extBot=-1;}dirty=true;return true;}
         if(phase==ui::ButtonEventType::cancel){
             const int source=view.selectedInventory>=0?inventoryPosition(view.selectedInventory):-1;
@@ -564,6 +565,7 @@ void GameSession::setActive(bool active){
     if(!active){const bool hadTargets=p.view.extInventory!=-1||p.view.extEquipment!=-1||p.view.extBot!=-1||p.view.extQuick!=-1;
         p.view.extInventory=p.view.extEquipment=p.view.extBot=p.view.extQuick=-1;if(hadTargets)p.dirty=true;
     }
+    if(!active&&p.help)p.help->discardInputs();
     if(p.scene)p.scene->setActive(active);
 }
 bool GameSession::createSlot(unsigned index,std::string_view name,std::string_view country){
@@ -617,7 +619,7 @@ bool GameSession::enterField(std::string_view map,int gate){
     }
     setup.map=map;setup.gate=gate;setup.playerHP=p.slot().hp();setup.equipment=p.equipment->codes();setup.random=&p.random;setup.initialRenderTime=p.clock.renderTime();setup.initialWorldTime=p.worldTime;setup.offsetInsideGate=true;setup.isSave=p.worldSaveAllowed;
     for(unsigned i=0;i<3;++i){const auto code=p.slot().string(0x63a+i*6,6);const auto* item=p.definitions.findItem(code);if(item)setup.botSlots[i]={item->stringParameter,std::bit_cast<std::int32_t>(p.slot().u32(0x64c+i*4))};}
-    auto scene=std::make_unique<CombatScene>(p.resources,p,setup);p.scene=std::move(scene);p.quickItems=std::make_unique<progression::QuickItems>(p.progress->inventory,p.slot(),p.weapons,p);p.mapName=map;p.screen(ui::ScreenId::field);p.closeDialogs();
+    auto scene=std::make_unique<CombatScene>(p.resources,p,setup);p.scene=std::move(scene);p.scene->setDisplay(p.display);p.quickItems=std::make_unique<progression::QuickItems>(p.progress->inventory,p.slot(),p.weapons,p);p.mapName=map;p.screen(ui::ScreenId::field);p.closeDialogs();
     p.slot().string(0x3d,24,p.maps.map(map).description);
     p.view.fieldPlaceName=p.slot().string(0x3d,24);
     ++p.view.fieldPlaceRevision;
@@ -662,7 +664,12 @@ Frame GameSession::preparationFrame()const{
 const MapLoading* GameSession::mapLoading()const{return impl_->mapLoading.get();}
 const ScreenTransitionState& GameSession::screenTransition()const{return impl_->transition.state();}
 const ui::Help* GameSession::help()const{return impl_->help.get();}
-void GameSession::appendOverlays(Frame& frame)const{if(impl_->help)impl_->help->append(frame);impl_->transition.append(frame);if(impl_->mapLoading)impl_->mapLoading->append(frame);}
+void GameSession::appendOverlays(Frame& frame)const{
+    const auto& p=*impl_;if(p.help)p.help->append(frame);
+    Frame overlays;p.transition.append(overlays);if(p.mapLoading)p.mapLoading->append(overlays);
+    if(p.display.enabled){const auto c=p.display.canvas;const float scale=std::max(c.width/768,c.height/1024);transformFrame(overlays,{scale,{c.width*.5f-384*scale,c.height*.5f-512*scale}},c,ClipRect{0,0,c.width,c.height});}
+    frame.sprites.insert(frame.sprites.end(),std::make_move_iterator(overlays.sprites.begin()),std::make_move_iterator(overlays.sprites.end()));
+}
 bool GameSession::inputOverlay(PointerPhase phase,Vec2 point,std::uintptr_t id){
     auto& p=*impl_;if(!p.active||!p.help)return false;
     const bool consumed=p.help->input(phase,point,id);
@@ -673,8 +680,14 @@ std::vector<FieldItemSnapshot> GameSession::fieldItems()const{
     std::vector<FieldItemSnapshot> result;result.reserve(impl_->drops.size());
     for(const auto& drop:impl_->drops){const auto& item=drop.item;result.push_back({item.item?item.item->code:"",item.item?item.item->type:-1,item.value,item.position,item.removed,drop.pickupPlayer});}return result;
 }
-Frame GameSession::drawWorld(){return impl_->scene?impl_->scene->drawFrame():Frame{};}
+Frame GameSession::drawWorld(){auto& p=*impl_;Frame frame=p.scene?p.scene->drawFrame():Frame{};if(p.display.enabled){DisplayLayout layout(p.display);transformFrame(frame,layout.world(p.scene?p.scene->displayZoom():1),p.display.canvas,layout.clip(DisplayRegion::content));}return frame;}
+void GameSession::setDisplay(DisplayConfiguration display){(void)display.content();impl_->display=display;if(impl_->scene)impl_->scene->setDisplay(display);if(impl_->help)impl_->help->setDisplay(display);}
+const DisplayConfiguration& GameSession::display()const{return impl_->display;}
+Vec2 GameSession::worldCanvasPoint(Vec2 logical)const{return DisplayLayout(impl_->display).world(impl_->scene?impl_->scene->displayZoom():1).map(logical);}
 bool GameSession::inputWorld(PointerPhase phase,Vec2 point,std::uintptr_t id){auto& p=*impl_;if(!p.active||!p.scene||!id)return false;
+    if(p.display.enabled){const auto a=p.display.content();const bool outside=point.x<a.x||point.x>a.x+a.width||point.y<a.y||point.y>a.y+a.height;if(outside){if(phase==PointerPhase::begin)return false;if(phase==PointerPhase::end||phase==PointerPhase::cancel)phase=PointerPhase::cancel;}
+        point=DisplayLayout(p.display).world(p.scene->displayZoom()).inverse(point);if(phase==PointerPhase::end&&point.y<p.scene->camera().inputMinimumY)phase=PointerPhase::cancel;}
+
     if(p.quickItems&&p.quickItems->input(phase,point,p.scene->camera(),p.scene->isPaused(),p.scene->clock().renderTime(),p.scene->clock().worldTime()))return true;
     return p.scene->input(phase,point,id);
 }

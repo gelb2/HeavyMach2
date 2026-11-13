@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(HeavyMach2Core STATIC
+    Sources/Core/Presentation/DisplayLayout.cpp
     Sources/Assets/Image.cpp
     Sources/Core/Data/Chunk.cpp
     Sources/Core/Data/DataTable.cpp
@@ -261,6 +262,10 @@ if(BUILD_TESTING)
         target_link_libraries(EquipmentTests PRIVATE HeavyMach2Core)
         target_compile_options(EquipmentTests PRIVATE -UNDEBUG)
         add_test(NAME OriginalEquipmentTradeAndBots COMMAND EquipmentTests "${HM2_HD_RESOURCES}")
+        add_executable(DisplayLayoutTests tests/DisplayLayoutTests.cpp)
+        target_link_libraries(DisplayLayoutTests PRIVATE HeavyMach2Core)
+        target_compile_options(DisplayLayoutTests PRIVATE -UNDEBUG)
+        add_test(NAME UniversalDisplayAndInput COMMAND DisplayLayoutTests "${HM2_HD_RESOURCES}")
         add_executable(ScreensTests tests/ScreensTests.cpp)
         target_link_libraries(ScreensTests PRIVATE HeavyMach2Core)
         target_compile_options(ScreensTests PRIVATE -UNDEBUG)
@@ -270,6 +275,8 @@ if(BUILD_TESTING)
         target_compile_options(ConcurrentValidationTests PRIVATE -UNDEBUG)
         add_test(NAME ConcurrentOriginalGameScenarios COMMAND ConcurrentValidationTests "${HM2_HD_RESOURCES}")
         add_test(NAME ConcurrentOriginalGameWithUI COMMAND ConcurrentValidationTests "${HM2_HD_RESOURCES}" --native-ui 1200)
+        add_test(NAME ConcurrentPhoneDisplay COMMAND ConcurrentValidationTests "${HM2_HD_RESOURCES}" --display-phone)
+        add_test(NAME ConcurrentTabletDisplay COMMAND ConcurrentValidationTests "${HM2_HD_RESOURCES}" --display-tablet)
     endif()
     if(HM2_HD_RESOURCES)
         add_test(NAME OriginalStageVehicleEncounters COMMAND EnemyVehicleTests "${HM2_HD_RESOURCES}")

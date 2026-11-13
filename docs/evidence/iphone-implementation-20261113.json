@@ -1,0 +1,239 @@
+{
+  "branch": "feat/iphone-universal-20261113",
+  "single_simulator_batch": true,
+  "simulator_reruns_after_harness_correction": 0,
+  "physical_device_operations": 0,
+  "core_tests_before_native": 73,
+  "native_before_harness_corrections": {
+    "iphone": {
+      "total": 20,
+      "passed": 16,
+      "failed": 4,
+      "failures": [
+        "ConcurrentValidationTests/testAllRestoredScenariosOnOneDisplayClock",
+        "SessionRendererTests/testOriginalShopItemDetailsAndSellPosition",
+        "WorldInputTests/testCompletedMissionWindowsAndSavedRewards",
+        "WorldInputTests/testRealTouchMovesPlayerOnOriginalTerrain"
+      ],
+      "concurrent": {
+        "frames": 1200,
+        "scenarios": 115,
+        "combatScenarios": 55,
+        "activeWeaponDefinitions": 110,
+        "activeWeaponKinds": 5,
+        "commonFrameInterval": true,
+        "warmReadMisses": 0,
+        "warmExistsMisses": 0,
+        "imageTextureUploadsAfterPreparation": 0,
+        "maxProgressingEffects": 23
+      },
+      "render_comparison": {
+        "comparedPixels": 3447360,
+        "differentRGBPixels": 0,
+        "experimentalBatchingAdopted": false,
+        "firstDrawCalls": 7813,
+        "maxRGBDifference": 0,
+        "renderPath": "originalOrderedScissor",
+        "repeatDrawCalls": 7813,
+        "sameCachedFrame": true,
+        "sourceSprites": 7813
+      },
+      "case_button_failures": 0,
+      "representative_fields": [
+        {
+          "map": "Stage01_02",
+          "enemyEmissions": [
+            0,
+            6,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            1,
+            0
+          ],
+          "enemyKills": [
+            0,
+            1,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "map": "Stage02_07",
+          "enemyEmissions": [
+            0,
+            0,
+            16
+          ],
+          "enemyDamage": [
+            0,
+            0,
+            6
+          ],
+          "enemyKills": [
+            0,
+            0,
+            1
+          ],
+          "enemyRemovals": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "map": "Stage03_04",
+          "enemyEmissions": [
+            0,
+            0,
+            240
+          ],
+          "enemyDamage": [
+            0,
+            0,
+            1
+          ],
+          "enemyKills": [
+            0,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    "ipad": {
+      "total": 20,
+      "passed": 18,
+      "failed": 2,
+      "failures": [
+        "SessionRendererTests/testOriginalShopItemDetailsAndSellPosition",
+        "WorldInputTests/testCompletedMissionWindowsAndSavedRewards"
+      ],
+      "concurrent": {
+        "frames": 1200,
+        "scenarios": 115,
+        "combatScenarios": 55,
+        "activeWeaponDefinitions": 110,
+        "activeWeaponKinds": 5,
+        "commonFrameInterval": true,
+        "warmReadMisses": 0,
+        "warmExistsMisses": 0,
+        "imageTextureUploadsAfterPreparation": 0,
+        "maxProgressingEffects": 23
+      },
+      "render_comparison": {
+        "comparedPixels": 5595136,
+        "differentRGBPixels": 0,
+        "experimentalBatchingAdopted": false,
+        "firstDrawCalls": 8062,
+        "maxRGBDifference": 0,
+        "renderPath": "originalOrderedScissor",
+        "repeatDrawCalls": 8062,
+        "sameCachedFrame": true,
+        "sourceSprites": 8062
+      },
+      "case_button_failures": 0,
+      "representative_fields": [
+        {
+          "map": "Stage01_02",
+          "enemyEmissions": [
+            0,
+            7,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            1,
+            0
+          ],
+          "enemyKills": [
+            0,
+            1,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "map": "Stage02_07",
+          "enemyEmissions": [
+            0,
+            0,
+            16
+          ],
+          "enemyDamage": [
+            0,
+            0,
+            6
+          ],
+          "enemyKills": [
+            0,
+            0,
+            1
+          ],
+          "enemyRemovals": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "map": "Stage03_04",
+          "enemyEmissions": [
+            0,
+            0,
+            16
+          ],
+          "enemyDamage": [
+            0,
+            0,
+            3
+          ],
+          "enemyKills": [
+            0,
+            0,
+            1
+          ],
+          "enemyRemovals": [
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  "source_iphone_actual_canvas": [
+    912,
+    420
+  ],
+  "old_native_unit_canvas": [
+    420,
+    912
+  ],
+  "portrait_diagnostic": "CPU420x912 with original HD game code reproduced Stage03_04 emission240/damage1/kill0/remove0; landscape912x420 with/without safe area passed strict field outcomes.",
+  "post_native_corrections": "test-window scene/orientation, first Help dismissal, display-vs-HD input/delta coordinates, real mission scroll; compile and CPU verification only",
+  "complete_game_or_original_equivalence": false,
+  "post_correction_checks": {
+    "core_passed": 73,
+    "core_failed": 0,
+    "landscape_air_cpu_safe_area_passed": true,
+    "landscape_air_cpu_full_area_passed": true,
+    "source_test_build_succeeded": true,
+    "validation_app_build_succeeded": true,
+    "native_rerun": false
+  }
+}

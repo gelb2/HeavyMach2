@@ -252,6 +252,7 @@ UIImage* image(NSData* rgba,CGSize size){
         hm2::apple::GameRuntime runtime(root,[directory URLByAppendingPathComponent:@"HeavyMach2.sav"],{});
         for(unsigned n=0;n<2;++n){runtime.input(hm2::PointerPhase::begin,{384,512},1);runtime.input(hm2::PointerPhase::end,{384,512},1);}settle(runtime,layer);
         XCTAssertTrue(runtime.provideName(0,"MACH","kr"));XCTAssertTrue(tap(runtime,1001,layer));
+        if(runtime.session().help()){runtime.input(hm2::PointerPhase::begin,{384,512},101);runtime.input(hm2::PointerPhase::end,{384,512},101);XCTAssertFalse(runtime.session().help());}
         XCTAssertTrue(tap(runtime,2002,layer));XCTAssertTrue(tap(runtime,2002,layer));XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::shop);
         const auto writes=runtime.session().metrics().saveRequests;
         auto inspect=[&](NSString* label,const std::string& largeIcon,bool popup){

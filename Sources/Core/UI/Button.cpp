@@ -162,10 +162,10 @@ void ButtonDispatcher::emit(const ButtonEvent& event){
         listener.handler(event);
     }
 }
-bool ButtonDispatcher::input(PointerPhase phase,Vec2 p,std::uintptr_t pointer,float now){
+bool ButtonDispatcher::input(PointerPhase phase,Vec2 p,std::uintptr_t pointer,float now,const std::function<Vec2(const Button&,Vec2)>& pointMap){
     const auto snapshot=buttons_;
     for(auto i=snapshot.rbegin();i!=snapshot.rend();++i)
-        if((*i)->input(phase,p,pointer,now,[this](const auto& e){emit(e);}))return true;
+        if((*i)->input(phase,pointMap?pointMap(**i,p):p,pointer,now,[this,&pointMap,p](const auto& e){auto mapped=e;if(pointMap)mapped.canvasPosition=p;emit(mapped);}))return true;
     return false;
 }
 void ButtonDispatcher::cancelAll(float now){

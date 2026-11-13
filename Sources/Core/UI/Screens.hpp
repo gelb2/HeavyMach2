@@ -91,6 +91,7 @@ struct ScreensState {
     int inventoryPages=3; // Actual Inventory.pages(), not vector capacity/item count.
 };
 struct PreparedScreenText {std::string image;std::shared_ptr<const TextBitmap> bitmap;};
+struct DropCoordinates {Vec2 inventory,quick;};
 struct ScreenAction {
     ScreenId screen;
     Panel panel;
@@ -98,6 +99,7 @@ struct ScreenAction {
     // Title is an original full-screen receiver, with no QobButton ID.
     bool titleTap=false;
     bool titleReady=false;
+    std::optional<DropCoordinates> dropCoordinates={};
 };
 struct ScreensHost {
     virtual ~ScreensHost()=default;
@@ -132,6 +134,7 @@ class Screens {
     PreparedTiles& tiles_;
     ScreensHost& host_;
     std::shared_ptr<Impl> impl_;
+    DisplayConfiguration display_;
 public:
     Screens(ResourceAccess&,PreparedTiles&,ScreensHost&);
     void refresh(const ScreensState&,float renderTime=0);
@@ -144,6 +147,11 @@ public:
     bool updateHUD(const ScreensState&);
     bool input(PointerPhase,Vec2,std::uintptr_t,float renderTime);
     void discardInputs();
+    void setDisplay(DisplayConfiguration);
+    [[nodiscard]] Vec2 buttonScreenPosition(ButtonKey)const;
+    void setHorizontalPan(float);
+    [[nodiscard]] float horizontalPanLimit()const;
+    void revealButton(ButtonKey);
     void append(Frame&,float renderTime)const;
     [[nodiscard]] std::vector<ButtonKey> buttons()const;
     [[nodiscard]] std::shared_ptr<Button> button(ButtonKey)const;

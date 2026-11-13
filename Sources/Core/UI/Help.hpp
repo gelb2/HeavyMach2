@@ -20,6 +20,8 @@ class Help {
     std::array<std::string,3> pages_;
     HelpState state_;
     Vec2 center_{384,512};
+    DisplayConfiguration display_;float scroll_=0,scrollOrigin_=0;Vec2 pointerStart_;std::uintptr_t pointer_=0;bool dragged_=false;
+    [[nodiscard]] DisplayTransform presentation()const;
     std::function<void()> onClose_;
     void close();
 public:
@@ -31,10 +33,13 @@ public:
     Help(Help&&)=delete;
     Help& operator=(Help&&)=delete;
     void setPage(int);
+    void discardInputs(){pointer_=0;dragged_=false;}
+    void setDisplay(DisplayConfiguration display){display_=display;scroll_=0;discardInputs();}
     void setCenter(Vec2 center){center_=center;}
     void setLayer(unsigned value){state_.layer=value;} // QobBase propagation.
     // All events are consumed, including an event which closes the receiver.
-    // Only end/state2 changes it. Identifier/Y are unused by original GuiHelp.
+    // Original GuiHelp changes pages on end/state2 only. Display adaptation
+    // additionally owns vertical scrolling and discards its pointer on suspend.
     bool input(PointerPhase,Vec2 logical,std::uintptr_t identifier=0);
     // The caller chooses this receiver's original state.layer. The span
     // overload resolves that layer explicitly; it never merges into world5.

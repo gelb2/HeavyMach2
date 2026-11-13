@@ -10,8 +10,8 @@ struct NativeRequest {
     Kind kind;unsigned slot=0;std::string text;std::string title{};
     std::uint64_t token=0;
 };
-// Apple adapter for the restored HD game canvas. Device-specific canvas/HUD
-// adaptation remains a separate task; this is also the GPU integration harness.
+// Apple adapter for the shared HD game state. The view supplies logical
+// canvas/safe-area geometry; game UI and world output remain in the core.
 class GameRuntime {
     struct Impl;std::unique_ptr<Impl> impl_;
 public:
@@ -27,6 +27,7 @@ public:
     bool logicalPoint(CGPoint,Vec2&)const;
     [[nodiscard]] std::string nativeText(std::string_view)const;
     void setActive(bool);
+    void setDisplay(DisplayConfiguration);
     void synchronize();
     GameSession& session();
     ui::Screens& screens();

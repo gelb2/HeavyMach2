@@ -22,7 +22,7 @@ void WorldNavigation::clearPath(){
 }
 bool WorldNavigation::input(PointerPhase phase,Vec2 screen,std::uintptr_t id,const MapCamera& camera,BipodMotion& actor){
     if(phase==PointerPhase::cancel)return inputWorld(phase,{},id,actor);
-    if(!id||!std::isfinite(screen.x)||!std::isfinite(screen.y)||screen.y<100)return false;
+    if(!id||!std::isfinite(screen.x)||!std::isfinite(screen.y)||screen.y<camera.inputMinimumY)return false;
     return inputWorld(phase,camera.toWorld(screen),id,actor);
 }
 bool WorldNavigation::inputWorld(PointerPhase phase,Vec2 world,std::uintptr_t id,BipodMotion& actor){

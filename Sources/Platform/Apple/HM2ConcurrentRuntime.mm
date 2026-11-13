@@ -75,7 +75,7 @@ struct ConcurrentRuntime::Impl:validation::ValidationHost {
     void prepare(ui::Screens& screens,PreparedTiles& tiles,float time){Frame frame;screens.append(frame,time);tiles.appendPreparation(frame);[renderer prepareFrame:frame];}
     void refresh(unsigned index){
         auto& view=*interfaces.at(index);auto& game=runner->session(index);const auto& state=game.state();
-        if(!view.screens)view.screens=std::make_unique<ui::Screens>(runner->cachedResources(),view.tiles,view.host);
+        if(!view.screens){view.screens=std::make_unique<ui::Screens>(runner->cachedResources(),view.tiles,view.host);view.screens->setDisplay(game.display());}
         if(view.revision!=game.presentationRevision()){
             view.screens->refresh(state,game.renderTime());view.revision=game.presentationRevision();prepare(*view.screens,view.tiles,game.renderTime());const auto prepared=game.preparationFrame();[renderer prepareFrame:prepared];
         }else view.screens->updateHUD(state);
@@ -112,7 +112,7 @@ struct ConcurrentRuntime::Impl:validation::ValidationHost {
         for(const auto& key:view.screens->buttons())if(key.id==id&&key.intData==intData){
             auto button=view.screens->button(key);if(!button||!button->visible||!button->active)continue;
             const auto eventKey=std::pair{id,intData};const auto before=view.events[eventKey];
-            const auto point=button->screenPosition();const std::uintptr_t pointer=10000+index;
+            view.screens->revealButton(key);const auto point=view.screens->buttonScreenPosition(key);const std::uintptr_t pointer=10000+index;
             if(!game.inputOverlay(PointerPhase::begin,point,pointer))view.screens->input(PointerPhase::begin,point,pointer,game.renderTime());if(!game.inputOverlay(PointerPhase::end,point,pointer))view.screens->input(PointerPhase::end,point,pointer,game.renderTime());return view.events[eventKey]>before;
         }
         return false;
@@ -143,7 +143,7 @@ NSDictionary* ConcurrentRuntime::verifyInactiveInputDiscard(){
     std::shared_ptr<ui::Button> held;for(const auto& key:view.screens->buttons())if(key.id==2100){auto button=view.screens->button(key);if(button&&button->visible&&button->active){held=button;break;}}
     if(!held)throw std::runtime_error("Missing real shop close button for interruption");
     const auto beforeFrames=p.runner->metrics().frames,beforeWrites=p.saveWrites;const int credit=game.state().credits;const auto screen=game.state().screen;
-    const auto point=held->screenPosition();const auto beforeEvents=view.events[std::pair{2100u,0}];
+    const auto point=view.screens->buttonScreenPosition(held->key());const auto beforeEvents=view.events[std::pair{2100u,0}];
     view.screens->input(PointerPhase::begin,point,900000,game.renderTime());const bool captured=held->capturedPointer()==900000&&held->pressed();
     const auto afterBeginEvents=view.events[std::pair{2100u,0}];setActive(false);const bool discarded=held->capturedPointer()==0&&!held->pressed();setActive(true);
     const bool noCleanupAction=view.events[std::pair{2100u,0}]==afterBeginEvents;
@@ -199,3 +199,5 @@ NSData* ConcurrentRuntime::pixels()const{return impl_->renderer.readRGBA;}
 NSData* ConcurrentRuntime::legacyComparisonPixels()const{return impl_->legacyComparison;}
 CGSize ConcurrentRuntime::drawableSize()const{return impl_->renderer.drawableSize;}
 }
+
+namespace hm2::apple {void ConcurrentRuntime::setDisplay(DisplayConfiguration display){impl_->runner->setDisplay(display);for(auto& view:impl_->interfaces)if(view->screens)view->screens->setDisplay(display);}}

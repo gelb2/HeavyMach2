@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/Types.hpp"
+#include "Core/Presentation/DisplayLayout.hpp"
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -70,9 +71,14 @@ class VisualLayer {
     std::vector<Sprite> nonAtlas_;
     std::vector<Group> groups_;
     unsigned unitSize_,visualCapacity_;
+    DisplayTransform presentation_;
+    std::optional<ClipRect> presentationClip_;
     std::size_t group(const VisualTile&,unsigned);
 public:
     explicit VisualLayer(unsigned unitSize=100);
+    // Output adaptation follows original geometry/rounding; it does not alter
+    // the original parent-position, Tile2D, atlas identity or game state.
+    void setPresentation(DisplayTransform t={},std::optional<ClipRect> clip={}){presentation_=t;presentationClip_=clip;}
     // Equivalent to makeCleanAtlas: (which does not clear an existing atlas).
     void prepareAtlas(const VisualTile&);
     // Existing non-atlas consumers may provide their fully resolved commands.

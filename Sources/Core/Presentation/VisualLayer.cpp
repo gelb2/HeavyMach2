@@ -150,6 +150,7 @@ std::size_t VisualLayer::group(const VisualTile& tile,unsigned blendType){
 }
 void VisualLayer::prepareAtlas(const VisualTile& tile){(void)group(tile,0);}
 void VisualLayer::submitNonAtlas(Sprite sprite){
+    transformSprite(sprite,presentation_,presentationClip_);
     if(nonAtlas_.size()==visualCapacity_){
         if(visualCapacity_>std::numeric_limits<unsigned>::max()-unitSize_)
             throw std::runtime_error("Original visual pool capacity overflow");
@@ -160,7 +161,8 @@ void VisualLayer::submitNonAtlas(Sprite sprite){
 void VisualLayer::submitImage(VisualImage& image){
     if(!image.show||!image.isInScreen)return;
     if(!image.useAtlas){submitNonAtlas(nonAtlasImage(image));return;}
-    const auto quad=originalAtlasQuad(image);
+    auto quad=originalAtlasQuad(image);
+    if(!presentation_.identity())for(auto& vertex:quad.vertices)vertex.position=presentation_.map(vertex.position);
     auto& batch=groups_[group(image.tile,image.blendType)];
     // Original uses uint16 indices. Refuse the original wraparound hazard
     // instead of silently splitting/reordering an unverified oversized group.

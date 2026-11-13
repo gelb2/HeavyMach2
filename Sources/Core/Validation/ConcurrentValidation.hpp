@@ -154,6 +154,7 @@ public:
     ConcurrentValidation& operator=(const ConcurrentValidation&)=delete;
     void tick();
     void setActive(bool);
+    void setDisplay(DisplayConfiguration);
     // Each session's drawWorld is consumed at most once per tick. A repeated
     // request returns the cached composed frame and never consumes VFX twice.
     Frame drawFrame(Size viewport={1920,1080});

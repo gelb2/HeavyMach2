@@ -18,18 +18,19 @@ Vec2 plus(Vec2 a,Vec2 b){return {a.x+b.x,a.y+b.y};}
 Owner owner(ScreenId screen,Panel panel){return (Owner(screen)<<16)|Owner(panel);}
 const ItemView emptyItem;
 const ItemView& itemAt(const std::vector<ItemView>& items,std::size_t index){return index<items.size()?items[index]:emptyItem;}
-struct ImageNode {VisualImage image;unsigned layer=7;std::string tag;std::shared_ptr<Button> parent{};Vec2 local{};};
-struct ButtonNode {std::shared_ptr<Button> button;unsigned layer=7;};
-struct TextNode {std::shared_ptr<Text> text;unsigned layer=7;std::shared_ptr<Button> parent{};Vec2 local{};};
-struct NumberNode {std::shared_ptr<ImageFont> font;TileImage* tile;unsigned layer=7;std::string tag;};
-struct PreviewNode {Frame frame;Vec2 origin;unsigned slot;std::uint64_t revision;unsigned layer=7;};
-struct RadarNode {VisualTile tile;unsigned layer=9;};
+using Region=DisplayRegion;
+struct ImageNode {VisualImage image;unsigned layer=7;std::string tag;std::shared_ptr<Button> parent{};Vec2 local{};Region region=Region::content;};
+struct ButtonNode {std::shared_ptr<Button> button;unsigned layer=7;Region region=Region::content;};
+struct TextNode {std::shared_ptr<Text> text;unsigned layer=7;std::shared_ptr<Button> parent{};Vec2 local{};Region region=Region::content;};
+struct NumberNode {std::shared_ptr<ImageFont> font;TileImage* tile;unsigned layer=7;std::string tag;Region region=Region::content;};
+struct PreviewNode {Frame frame;Vec2 origin;unsigned slot;std::uint64_t revision;unsigned layer=7;Region region=Region::content;};
+struct RadarNode {VisualTile tile;unsigned layer=9;Region region=Region::content;};
 struct BaseDescriptionNode {
     VisualImage background;
     std::shared_ptr<Text> text;
     float localX;
     float targetX;
-    unsigned layer=7;
+    unsigned layer=7;Region region=Region::content;
 };
 enum class DetailKind {shop,inventory,maintenance};
 struct DetailPresentation {
@@ -38,7 +39,7 @@ struct DetailPresentation {
     unsigned layer=9;std::shared_ptr<Button> background;
     std::shared_ptr<Text> title,description;std::optional<VisualImage> large;
 };
-struct DetailNode {std::shared_ptr<DetailPresentation> detail;unsigned layer=9;};
+struct DetailNode {std::shared_ptr<DetailPresentation> detail;unsigned layer=9;Region region=Region::content;};
 struct FieldPresentation {
     std::uint64_t identity=0,enemyRevision=0;bool range[2]={false,false};
     std::shared_ptr<Text> enemyName;
@@ -78,6 +79,36 @@ struct TitlePresentation {
 struct Screens::Impl {
     ResourceAccess& resources;PreparedTiles& tiles;ScreensHost& host;ScreensState state;
     std::vector<Node> nodes;
+    DisplayLayout layout;
+    Region region=Region::content;
+    float verticalPan=0,verticalOrigin=0;Vec2 verticalStart;std::uintptr_t verticalPointer=0;bool verticalDragging=false;
+    float shopPan=0,panOrigin=0;Vec2 panStart;std::uintptr_t panPointer=0;
+    std::map<const Button*,Region> buttonRegions;
+    struct RegionScope {Impl& self;Region before;RegionScope(Impl& p,Region value):self(p),before(p.region){p.region=value;}~RegionScope(){self.region=before;}};
+    template<class T> void pushNode(T node){
+        node.region=region;
+        if constexpr(std::is_same_v<T,ImageNode>){
+            if(node.tag=="title.bg")node.region=Region::backdrop;
+            else if(node.tag=="title.big")node.region=Region::banner;
+            else if(node.tag.starts_with("hud.enemy"))node.region=Region::top;
+            else if(state.screen==ScreenId::shop&&node.image.tile.image=="ShopBG.png")node.region=Region::shopBackdrop;
+        }
+        if constexpr(std::is_same_v<T,ButtonNode>){
+            const auto id=node.button->key().id;
+            if(state.screen==ScreenId::slots&&id!=1009)node.region=Region::bottom;
+            if(state.screen==ScreenId::shop&&id==2100)node.region=Region::shopFooter;
+            if(state.screen==ScreenId::shop&&id==2103)node.region=Region::shopInventory;
+            if(state.screen==ScreenId::command&&(id==5009||id==2100))node.region=Region::bottom;
+            buttonRegions[node.button.get()]=node.region;
+        }
+        nodes.push_back(std::move(node));
+    }
+    Region scrollingRegion()const{return state.weaponChoiceType?Region::chooser:Region::list;}
+    float verticalLimit()const{if(!layout.configuration().enabled)return 0;const auto r=scrollingRegion();if(!layout.configuration().compact&&r==Region::list)return 0;if(r==Region::list&&state.screen!=ScreenId::command&&!state.missionVisible)return 0;const float height=r==Region::chooser?std::max(1024.f,float(state.weaponChoices.size())*36+200):1024;return std::max(0.f,height*layout.ui(r).scale-layout.clip(r)->height);}
+    DisplayTransform presentation(Region r)const{return layout.ui(r,r==Region::list||r==Region::chooser?verticalPan:shopPan);}
+    std::optional<ClipRect> clipping(Region r)const{return layout.clip(r,shopPan);}
+    Region buttonRegion(const Button& button)const{const auto found=buttonRegions.find(&button);return found==buttonRegions.end()?Region::content:found->second;}
+
     ButtonDispatcher dispatcher;
     std::vector<ButtonKey> keys;
     std::map<Owner,Panel> panels;
@@ -93,9 +124,9 @@ struct Screens::Impl {
     std::vector<CommandNode> commandNodes;
     float commandSelectedRowY=0;
     bool baseNoticeVisible=true;
-    Impl(ResourceAccess& r,PreparedTiles& t,ScreensHost& h,const ScreensState& s,float time,std::shared_ptr<Impl> old)
-        :resources(r),tiles(t),host(h),state(s),previous(std::move(old)),now(time){
-        if(previous&&previous->state.screen==s.screen){title=previous->title;message=previous->message;layers=previous->layers;}
+    Impl(ResourceAccess& r,PreparedTiles& t,ScreensHost& h,const ScreensState& s,float time,std::shared_ptr<Impl> old,DisplayConfiguration display)
+        :resources(r),tiles(t),host(h),state(s),layout(display),previous(std::move(old)),now(time){
+        if(previous&&previous->state.screen==s.screen){title=previous->title;message=previous->message;layers=previous->layers;shopPan=std::min(previous->shopPan,layout.shopPanLimit());if(previous->state.weaponChoiceType==s.weaponChoiceType&&previous->state.missionVisible==s.missionVisible)verticalPan=std::min(previous->verticalPan,verticalLimit());}
         else{title.start=time;layers=std::make_shared<std::array<VisualLayer,14>>();}
         if(previous){fieldPresentation=previous->fieldPresentation;placeName=previous->placeName;}
         // accept5004 only invalidates Command.curState. Keep its existing rows
@@ -143,7 +174,7 @@ struct Screens::Impl {
         auto* t=tile(name,columns,rows);if(!t)return;
         VisualImage visual;visual.tile=tiles.visual(*t);visual.tileNo=index;visual.screenPosition=position;visual.scale=scale;
         visual.useAtlas=atlas;visual.blendType=blend;visual.alpha=alpha;
-        nodes.push_back(ImageNode{std::move(visual),layer,std::move(tag)});
+        pushNode(ImageNode{std::move(visual),layer,std::move(tag)});
     }
     std::shared_ptr<Button> addButton(Panel panel,unsigned id,std::string_view name,Vec2 position,
         unsigned columns=1,unsigned rows=2,unsigned normal=0,unsigned pressed=1,std::optional<Size> bounds={},
@@ -159,7 +190,7 @@ struct Screens::Impl {
         button->position=position;button->scale=scaleBeforeBounds?scale:Vec2{1,1};button->visible=true;button->active=enabled;
         if(bounds)button->setBoundWidthHeight(bounds->width,bounds->height);
         button->scale=scale;dispatcher.add(button);keys.push_back(key);panels[key.owner]=panel;
-        nodes.push_back(ButtonNode{button,layer});return button;
+        pushNode(ButtonNode{button,layer});return button;
     }
     std::shared_ptr<Text> prepareText(const TextRasterRequest& request){
         auto prepared=host.prepareText(request);
@@ -202,20 +233,20 @@ struct Screens::Impl {
         auto label=prepareText({std::move(id),std::move(value),font,size,fontSize,align,false,0});
         label->position=position;label->scale=scale;
         label->setColor(std::uint8_t(color.r*255),std::uint8_t(color.g*255),std::uint8_t(color.b*255));label->alpha=color.a;
-        nodes.push_back(TextNode{std::move(label),layer});
+        pushNode(TextNode{std::move(label),layer});
     }
     void number(std::string_view name,int value,Vec2 position,float pitch,float align,unsigned layer=9,bool star=false,std::string tag={},unsigned columns=16){
         auto* t=tile(name,columns,1);if(!t)return;
         NumericAtlas a{t->name,t->pixels,t->columns,t->rows,t->forRetina,originalAtlasBlend(0,t->pixelFormat)};
         auto font=std::make_shared<ImageFont>(std::move(a));font->position=position;if(pitch!=0)font->setPitch(pitch);font->setAlignRate(align);
         if(star)font->setText("*");else font->setNumber(value);font->tick();
-        nodes.push_back(NumberNode{std::move(font),t,layer,std::move(tag)});
+        pushNode(NumberNode{std::move(font),t,layer,std::move(tag)});
     }
     void numericText(std::string_view name,std::string value,Vec2 at,float pitch,float align){
         auto* t=tile(name,16,1);if(!t)return;
         auto font=std::make_shared<ImageFont>(NumericAtlas{t->name,t->pixels,t->columns,t->rows,t->forRetina,originalAtlasBlend(0,t->pixelFormat)});
         font->position=at;font->setPitch(pitch);font->setAlignRate(align);font->setText(value);font->tick();
-        nodes.push_back(NumberNode{std::move(font),t,9,{}});
+        pushNode(NumberNode{std::move(font),t,9,{}});
     }
     static Frame translatedPreview(const Frame& frame,Vec2 origin){
         // QobBase child world position is local+parent. Translate once for
@@ -237,12 +268,14 @@ struct Screens::Impl {
         if(!item.icon.empty())image(item.icon,position,item.iconColumns,item.iconRows,item.iconTile,{1,1},false,0,1,layer);
     }
     void slots(){
+    RegionScope scope(*this,Region::content);
         const auto firstNode=nodes.size();
         image("SelSlot_BG.png",{384,512});
         addButton(Panel::root,1010,"Common_Btn_DEL.png",{224,80},1,2,0,1,Size{80,40});
         addButton(Panel::root,1004,"Common_Btn_BACK.png",{384,80},1,2,0,1,Size{80,40});
         addButton(Panel::root,1001,"Common_Btn_OK.png",{544,80},1,2,0,1,Size{80,40});
         for(unsigned i=0;i<3;++i){
+RegionScope card(*this,Region(unsigned(Region::slot0)+i));
             const auto& slot=state.slots[i];const Vec2 origin{384,760-float(i)*240};
             addButton(Panel::root,1009,slot.used?"SelSlot_Sel.png":"SelSlot_Empty.png",origin,1,2,
                 state.selectedSlot==int(i)?0:1,0,{},int(i));
@@ -260,7 +293,7 @@ struct Screens::Impl {
             text(source+".saved",slot.location,plus(origin,{142,-40}),{256,16},"Trebuchet-BoldItalic",14,TextAlign::center,{100.f/255,220.f/255,240.f/255,1});
             number("NumSet_Cr.png",slot.credits,plus(origin,{180,-69}),11,1);
             const Vec2 machOrigin=plus(origin,{-170,34});
-            nodes.push_back(PreviewNode{translatedPreview(slot.machPreview,machOrigin),machOrigin,i,slot.machPreviewRevision});
+            pushNode(PreviewNode{translatedPreview(slot.machPreview,machOrigin),machOrigin,i,slot.machPreviewRevision});
         }
         // GameMain layer3 is inherited through GuiSelectSlot/slotBase.
         // Explicit part child layers (notably shadow0) remain on each Sprite.
@@ -291,7 +324,7 @@ struct Screens::Impl {
                 mark.tileNo=index;
                 mark.screenPosition=plus(*commandPosition,{0,offset});
                 mark.show=baseNoticeVisible;
-                nodes.push_back(ImageNode{std::move(mark),7,"baseMissionNotice"});
+                pushNode(ImageNode{std::move(mark),7,"baseMissionNotice"});
             };
             if(state.baseHasCompletedMission)addNotice(0,28);
             if(!state.availableMissions.empty())addNotice(1,-28);
@@ -299,7 +332,7 @@ struct Screens::Impl {
         if(!descriptionPosition||state.selectedBaseButton<1||state.selectedBaseButton>7)return;
         if(sameBase&&previous->state.selectedBaseButton==state.selectedBaseButton&&previous->state.baseDescription==state.baseDescription){
             for(const auto& node:previous->nodes)if(const auto* description=std::get_if<BaseDescriptionNode>(&node)){
-                nodes.push_back(*description);
+                RegionScope readable(*this,Region::panel);pushNode(*description);
                 return;
             }
         }
@@ -319,7 +352,7 @@ struct Screens::Impl {
                 label->scale.y=image.scale.y;
                 label->visible=false;
             }
-            nodes.push_back(BaseDescriptionNode{std::move(image),std::move(label),localX,descriptionPosition->x});
+            {RegionScope readable(*this,Region::panel);pushNode(BaseDescriptionNode{std::move(image),std::move(label),localX,descriptionPosition->x});}
         }
     }
     void tickBaseDescription(BaseDescriptionNode& description){
@@ -354,6 +387,7 @@ struct Screens::Impl {
         }
     }
     void titleScreen(){
+    RegionScope scope(*this,Region::title);
         const Vec2 root{384,512};
         image("Main_BG.png",plus(root,title.bgPosition),1,1,0,{title.bgScale,title.bgScale},false,0,1,7,"title.bg");
         image("Main_Copyright.png",plus(root,{0,-500}));
@@ -385,6 +419,7 @@ struct Screens::Impl {
         }
     }
     void field(){
+    RegionScope scope(*this,Region::bottom);
         image("WpnBtnBG.png",{405,90},1,1,0,{1,1},false,0,1,9);
         auto left=addButton(Panel::root,1022,state.selectedWeaponLeft,{334,90},1,1,0,0,Size{64,64},0,{}, {.7f,.7f},true,9,false);
         auto right=addButton(Panel::root,1023,state.selectedWeaponRight,{480,90},1,1,0,0,Size{64,64},0,{}, {.7f,.7f},true,9,false);
@@ -409,7 +444,7 @@ struct Screens::Impl {
         addButton(Panel::root,1021,"QuickBtn.png",plus(hud,{237,-36}),2,4,4,5,Size{60,60});
         addButton(Panel::root,1026,"QuickBtn.png",plus(hud,{296,-36}),2,4,0,1,Size{60,60});
         addButton(Panel::root,1025,"QuickBtn.png",plus(hud,{355,-36}),2,4,2,3,Size{60,60});
-        if(auto* mark=tile("RaderMark.png",8,1))nodes.push_back(RadarNode{tiles.visual(*mark)});
+        if(auto* mark=tile("RaderMark.png",8,1))pushNode(RadarNode{tiles.visual(*mark)});
         quickSlots({511,29});
         updateHUD(state);
         if(state.weaponChoiceType!=0)weaponChoices();
@@ -451,6 +486,7 @@ struct Screens::Impl {
 };
 
 void Screens::Impl::buildDetail(DetailKind kind,const ItemView& entry,Vec2 origin,int absolute){
+    RegionScope scope(*this,kind==DetailKind::shop?Region::shopStock:kind==DetailKind::maintenance?Region::maintenance:state.screen==ScreenId::shop?Region::shopInventory:Region::panel);
     const bool reuse=previous&&previous->detail&&previous->detail->kind==kind&&previous->detail->revision==state.detailRevision&&previous->detail->absolute==absolute&&previous->detail->entry.dataId==entry.dataId;
     detail=reuse?std::make_shared<DetailPresentation>(*previous->detail):std::make_shared<DetailPresentation>();
     auto& d=*detail;d.kind=kind;d.revision=state.detailRevision;d.absolute=absolute;d.origin=origin;
@@ -477,7 +513,7 @@ void Screens::Impl::buildDetail(DetailKind kind,const ItemView& entry,Vec2 origi
             VisualImage image;image.tile=tiles.visual(*t);image.tileNo=0;image.useAtlas=false;d.large=std::move(image);
         }
     }
-    nodes.push_back(DetailNode{detail,d.layer});layoutDetail();
+    pushNode(DetailNode{detail,d.layer});layoutDetail();
 }
 void Screens::Impl::layoutDetail(){
     if(!detail)return;auto& d=*detail;const bool shop=d.kind==DetailKind::shop,maintenance=d.kind==DetailKind::maintenance;
@@ -496,12 +532,13 @@ void Screens::Impl::tickDetail(){
     layoutDetail();
 }
 void Screens::Impl::syncEnemyName(){
+    RegionScope scope(*this,Region::top);
     if(state.screen!=ScreenId::field)return;
     if(fieldPresentation.enemyRevision!=state.enemyNameRevision||(!fieldPresentation.enemyName&&!state.enemyName.empty())){
         const auto old=fieldPresentation.enemyName;std::erase_if(nodes,[&](const Node& node){const auto* n=std::get_if<TextNode>(&node);return n&&n->text==old;});
         fieldPresentation.enemyName.reset();fieldPresentation.enemyRevision=state.enemyNameRevision;
         if(!state.enemyName.empty()){const auto count=nodes.size();text("GuiGame.enemyName",state.enemyName,{384,956},{256,18},"Arial-BoldMT",12,TextAlign::center,{},9);if(nodes.size()!=count)fieldPresentation.enemyName=std::get<TextNode>(nodes.back()).text;}
-    }else if(fieldPresentation.enemyName&&std::none_of(nodes.begin(),nodes.end(),[&](const Node& node){const auto* n=std::get_if<TextNode>(&node);return n&&n->text==fieldPresentation.enemyName;}))nodes.push_back(TextNode{fieldPresentation.enemyName,9});
+    }else if(fieldPresentation.enemyName&&std::none_of(nodes.begin(),nodes.end(),[&](const Node& node){const auto* n=std::get_if<TextNode>(&node);return n&&n->text==fieldPresentation.enemyName;}))pushNode(TextNode{fieldPresentation.enemyName,9});
     if(fieldPresentation.enemyName)fieldPresentation.enemyName->visible=state.enemyHpRate!=0;
 }
 void Screens::Impl::tickRange(WorldRandom& random){
@@ -564,6 +601,7 @@ void Screens::Impl::bots(Vec2 origin){
     }
 }
 void Screens::Impl::inventoryDialog(Vec2 origin,bool shopMode){
+    RegionScope scope(*this,shopMode?Region::shopInventory:Region::panel);
     image("InvenBG.png",origin,1,1,0,{1,1},false,0,1,9);
     inventory(plus(origin,{24,120}),shopMode);equip(plus(origin,{-196,76}));bots(plus(origin,{-58,78}));
     if(shopMode){
@@ -579,6 +617,7 @@ void Screens::Impl::inventoryDialog(Vec2 origin,bool shopMode){
     if(!shopMode&&state.detailInventory>=0&&!state.detailItem.dataId.empty())buildDetail(DetailKind::inventory,state.detailItem,origin,state.detailInventory);
 }
 void Screens::Impl::maintenance(){
+    RegionScope scope(*this,Region::maintenance);
     const Vec2 root{384,512};image("MaintenanceBG.png",root,1,1,0,{1,1},false,0,1,3);
     inventory(plus(root,{27,63}));equip(plus(root,{-148,52}),3);bots(plus(root,{-47,52}));
     number("NumTile04.png",state.credits,plus(root,{38,-126}),0,0,3);
@@ -588,6 +627,7 @@ void Screens::Impl::maintenance(){
     if(state.detailInventory>=0&&!state.detailItem.dataId.empty())buildDetail(DetailKind::maintenance,state.detailItem,root,state.detailInventory);
 }
 void Screens::Impl::shop(){
+    RegionScope scope(*this,Region::shopStock);
     const Vec2 root{384,512};image("ShopBG.png",root,1,1,0,{1,1},false,0,1,3);
     if(state.inventoryVisible)inventoryDialog(plus(root,{0,-200}),true);
     addButton(Panel::root,2100,"Common_Btn_EXIT.png",plus(root,{256,-460}),1,2,0,1,{},0,{}, {1,1},true,3);
@@ -625,6 +665,7 @@ void Screens::Impl::shop(){
     if(state.tradeVisible)trade();
 }
 void Screens::Impl::system(){
+    RegionScope scope(*this,Region::panel);
     const Vec2 root{384,512};image("MissionList_Mid.png",root,1,1,0,{1,3.375f},false,0,1,10);
     image("MissionList_Btm.png",plus(root,{0,-140}),1,1,0,{1,1},false,0,1,10);
     image("SysMenuBG.png",plus(root,{0,140}),1,1,0,{1,1},false,0,1,10);
@@ -636,6 +677,7 @@ void Screens::Impl::system(){
     addButton(Panel::system,1030,"Common_Btn_CLOSE.png",plus(root,{136,-124}),1,2,0,1,{},0,{}, {1,1},true,10);
 }
 void Screens::Impl::trade(){
+    RegionScope scope(*this,Region::panel);
     const Vec2 root{384,512};
     addButton(Panel::trade,0,"TradeItemBG.png",root,1,1,0,0,Size{768,1024},0,state.tradeItemId,{1,1},true,13);
     const auto found=std::find_if(state.shopItems.begin(),state.shopItems.end(),[&](const auto& i){return i.dataId==state.tradeItemId;});
@@ -650,6 +692,7 @@ void Screens::Impl::trade(){
     addButton(Panel::trade,state.buyMode?2108:2109,state.buyMode?"Common_Btn_BUY.png":"Common_Btn_SELL.png",plus(root,{63,-62}),1,2,0,1,Size{100,40},0,state.tradeItemId,{1,1},true,13);
 }
 void Screens::Impl::missionList(bool command){
+    RegionScope scope(*this,Region::list);
     const Vec2 root{384,512};
     const auto available=command?std::min<std::size_t>(5,state.availableMissions.size()):0;
     const auto accepted=std::min<std::size_t>(5,state.acceptedMissions.size());
@@ -776,6 +819,7 @@ void Screens::Impl::tickCommandList(){
     positionCommandList();
 }
 void Screens::Impl::completedMission(){
+    RegionScope scope(*this,Region::panel);
     const Vec2 root{384,512};const auto& mission=state.completedMission;
     if(mission.dataId.empty())return;
     image("MissionCompletedBG.png",root,1,1,0,{1,1},false,0,1,9);
@@ -790,6 +834,7 @@ void Screens::Impl::completedMission(){
     }
 }
 void Screens::Impl::airlift(){
+    RegionScope scope(*this,Region::panel);
     const Vec2 root{384,512};unsigned count=0;for(const auto& base:state.airlifts)if(!base.dataId.empty())++count;
     const float half=float(count)*22+20;image("MissionList_Mid.png",root,1,1,0,{1,half/32},false,0,1,10);
     image("MissionList_Btm.png",plus(root,{0,-half-32}),1,1,0,{1,1},false,0,1,10);
@@ -805,6 +850,7 @@ void Screens::Impl::airlift(){
     }
 }
 void Screens::Impl::weaponChoices(){
+    RegionScope scope(*this,Region::chooser);
     if(state.weaponChoiceType!=2&&state.weaponChoiceType!=3)throw std::runtime_error("Original weapon chooser type must be2 or3");
     for(unsigned i=0;i<state.weaponChoices.size();++i){const auto& entry=state.weaponChoices[i];
         if(entry.position<0||entry.dataId.empty())throw std::runtime_error("Weapon chooser requires actual inventory position and ItemCode");
@@ -865,7 +911,12 @@ void Screens::Impl::build(){
         // Side effects are requested at their original handler event boundary.
         // GameSession applies the real state transition and may refresh Screens
         // synchronously; this old Impl remains alive through the input call.
-        host.action({screen,panel,event});
+        ScreenAction action{screen,panel,event};
+        if(event.canvasPosition){
+            const auto inventoryRegion=screen==ScreenId::shop?Region::shopInventory:screen==ScreenId::maintenance?Region::maintenance:Region::panel;
+            action.dropCoordinates=DropCoordinates{layout.ui(inventoryRegion,shopPan).inverse(*event.canvasPosition),layout.ui(Region::bottom).inverse(*event.canvasPosition)};
+        }
+        host.action(action);
         if(screen==ScreenId::slots){
             if(event.type==ButtonEventType::push&&id==1009)host.sfx(0);
             else if(event.type==ButtonEventType::pop&&(id==1001||id==1004||id==1010))host.sfx(1);
@@ -926,13 +977,13 @@ void Screens::Impl::tick(float time,WorldRandom& random){
 }
 void Screens::Impl::append(Frame& frame,float time){
     for(const auto& node:nodes)std::visit([&](const auto& n){
-        using T=std::decay_t<decltype(n)>;auto& layer=layers->at(n.layer);
+        using T=std::decay_t<decltype(n)>;auto& layer=layers->at(n.layer);layer.setPresentation(presentation(n.region),clipping(n.region));
         if constexpr(std::is_same_v<T,ImageNode>){auto image=n.image;if(n.parent)image.screenPosition=plus(n.parent->screenPosition(),n.local);layer.submitImage(image);}
         else if constexpr(std::is_same_v<T,ButtonNode>){Frame f;n.button->append(f,time);for(auto& s:f.sprites)layer.submitNonAtlas(std::move(s));}
         else if constexpr(std::is_same_v<T,TextNode>){Frame f;if(n.parent)n.text->position=plus(n.parent->screenPosition(),n.local);n.text->append(f);for(auto& s:f.sprites)layer.submitNonAtlas(std::move(s));}
         else if constexpr(std::is_same_v<T,NumberNode>)n.font->append(layer,tiles.visual(*n.tile));
         else if constexpr(std::is_same_v<T,PreviewNode>)for(const auto& sprite:n.frame.sprites)
-            layers->at(sprite.visualLayer.value_or(n.layer)).submitNonAtlas(sprite);
+            {auto& target=layers->at(sprite.visualLayer.value_or(n.layer));target.setPresentation(presentation(n.region),clipping(n.region));target.submitNonAtlas(sprite);}
         else if constexpr(std::is_same_v<T,DetailNode>){const auto& d=*n.detail;
             for(const auto& label:{d.title,d.description})if(label){Frame textFrame;label->append(textFrame);for(auto& sprite:textFrame.sprites)layer.submitNonAtlas(std::move(sprite));}
             if(d.large){auto image=*d.large;layer.submitImage(image);}
@@ -954,9 +1005,9 @@ void Screens::Impl::append(Frame& frame,float time){
             }
         }
     },node);
-    if(state.screen==ScreenId::field&&message.initialized){auto& layer=layers->at(9);layer.submitImage(message.background);if(message.text){Frame textFrame;message.text->append(textFrame);for(auto& s:textFrame.sprites)layer.submitNonAtlas(std::move(s));}}
+    if(state.screen==ScreenId::field&&message.initialized){auto& layer=layers->at(9);layer.setPresentation(layout.ui(Region::bottom),layout.clip(Region::bottom));layer.submitImage(message.background);if(message.text){Frame textFrame;message.text->append(textFrame);for(auto& s:textFrame.sprites)layer.submitNonAtlas(std::move(s));}}
     if(state.screen==ScreenId::field&&!placeName.background.tile.image.empty()&&placeName.background.show){
-        auto& layer=layers->at(9);
+        auto& layer=layers->at(9);layer.setPresentation(layout.ui(Region::banner),layout.clip(Region::banner));
         layer.submitImage(placeName.background);
         if(placeName.label){
             Frame textFrame;
@@ -967,7 +1018,10 @@ void Screens::Impl::append(Frame& frame,float time){
             for(auto& sprite:textFrame.sprites)layer.submitNonAtlas(std::move(sprite));
         }
     }
-    for(auto& layer:*layers)layer.drain().appendBatches(frame);
+    const auto first=frame.sprites.size();
+    for(auto& layer:*layers){layer.setPresentation();layer.drain().appendBatches(frame);}
+    if(layout.configuration().enabled){for(std::size_t i=first;i<frame.sprites.size();++i)transformSprite(frame.sprites[i],{},layout.configuration().content());frame.width=layout.configuration().canvas.width;frame.height=layout.configuration().canvas.height;}
+
 }
 
 void Screens::Impl::updateHUD(const ScreensState& next){
@@ -1013,7 +1067,7 @@ bool Screens::updateHUD(const ScreensState& state){
     impl_->updateHUD(state);return true;
 }
 void Screens::refresh(const ScreensState& state,float time){
-    auto next=std::make_shared<Impl>(resources_,tiles_,host_,state,time,impl_);next->build();
+    auto next=std::make_shared<Impl>(resources_,tiles_,host_,state,time,impl_,display_);next->build();
     const bool changed=!impl_||impl_->state.screen!=state.screen;
     next->previous.reset();impl_=std::move(next);
     if(changed){if(state.screen==ScreenId::title)host_.bgm("STAGE1.wav");else if(state.screen==ScreenId::slots)host_.bgm("STAGE2.wav");else if(state.screen==ScreenId::base)host_.bgm("Title.wav");else if(state.screen==ScreenId::field)host_.bgm("STAGE3.mp3");}
@@ -1029,11 +1083,32 @@ bool Screens::input(PointerPhase phase,Vec2 point,std::uintptr_t pointer,float t
         }
         return true;
     }
+    if(phase==PointerPhase::begin&&keep->layout.configuration().enabled){const auto a=keep->layout.configuration().content();if(point.x<a.x||point.x>a.x+a.width||point.y<a.y||point.y>a.y+a.height)return false;}
+    const bool verticalOwned=keep->verticalPointer==pointer&&pointer;
+    if(verticalOwned){
+        if(phase==PointerPhase::move){const float delta=point.y-keep->verticalStart.y;if(std::abs(delta)>8)keep->verticalDragging=true;if(keep->verticalDragging){keep->dispatcher.discardAll();const float direction=keep->scrollingRegion()==Region::chooser?-1.f:1.f;keep->verticalPan=std::clamp(keep->verticalOrigin+delta*direction,0.f,keep->verticalLimit());return true;}}
+        if(phase==PointerPhase::end||phase==PointerPhase::cancel){keep->verticalPointer=0;if(keep->verticalDragging){keep->verticalDragging=false;return true;}}
+    }
+    if(phase==PointerPhase::begin&&pointer&&keep->verticalLimit()>0){keep->verticalPointer=pointer;keep->verticalStart=point;keep->verticalOrigin=keep->verticalPan;keep->verticalDragging=false;}
     bool captured=false;for(const auto& key:keep->keys)if(const auto b=keep->dispatcher.find(key);b&&b->capturedPointer()==pointer&&pointer)captured=true;
-    return keep->dispatcher.input(phase,point,pointer,time)||captured;
+    if(keep->panPointer==pointer&&pointer){
+        if(phase==PointerPhase::move)keep->shopPan=std::clamp(keep->panOrigin-(point.x-keep->panStart.x),0.f,keep->layout.shopPanLimit());
+        if(phase==PointerPhase::end||phase==PointerPhase::cancel)keep->panPointer=0;
+        return true;
+    }
+    const auto mapper=[keep](const Button& button,Vec2 canvas){const auto region=keep->buttonRegion(button);if(const auto clip=keep->clipping(region);clip&&(canvas.x<clip->x||canvas.x>clip->x+clip->width||canvas.y<clip->y||canvas.y>clip->y+clip->height))return Vec2{1.e9f,1.e9f};return keep->presentation(region).inverse(canvas);};
+    const bool handled=keep->layout.configuration().enabled?keep->dispatcher.input(phase,point,pointer,time,mapper):keep->dispatcher.input(phase,point,pointer,time);
+    if(handled||captured||verticalOwned||keep->verticalPointer==pointer&&pointer)return true;
+    if(phase==PointerPhase::begin&&pointer&&keep->state.screen==ScreenId::shop&&keep->layout.shopPanLimit()>0&&!keep->state.tradeVisible){keep->panPointer=pointer;keep->panStart=point;keep->panOrigin=keep->shopPan;return true;}
+    return keep->state.tradeVisible||keep->state.systemVisible||keep->state.missionVisible||keep->state.airliftVisible;
 }
 void Screens::append(Frame& out,float time)const{if(auto keep=impl_)keep->append(out,time);}
-void Screens::discardInputs(){if(impl_)impl_->dispatcher.discardAll();}
+void Screens::discardInputs(){if(impl_){impl_->dispatcher.discardAll();impl_->panPointer=0;impl_->verticalPointer=0;impl_->verticalDragging=false;}}
+void Screens::setDisplay(DisplayConfiguration display){DisplayLayout check(display);discardInputs();display_=display;if(impl_){impl_->layout=check;impl_->shopPan=std::min(impl_->shopPan,check.shopPanLimit());}}
+Vec2 Screens::buttonScreenPosition(ButtonKey key)const{const auto button=this->button(key);if(!button)throw std::out_of_range("Unknown screen button");return impl_->presentation(impl_->buttonRegion(*button)).map(button->screenPosition());}
+void Screens::setHorizontalPan(float value){if(!impl_||!std::isfinite(value))throw std::invalid_argument("Invalid presentation pan");impl_->shopPan=std::clamp(value,0.f,impl_->layout.shopPanLimit());}
+float Screens::horizontalPanLimit()const{return impl_?impl_->layout.shopPanLimit():0;}
+
 std::vector<ButtonKey> Screens::buttons()const{return impl_?impl_->keys:std::vector<ButtonKey>{};}
 std::shared_ptr<Button> Screens::button(ButtonKey key)const{return impl_?impl_->dispatcher.find(key):nullptr;}
 std::optional<std::string> Screens::itemDescription(const ItemDescriptionValues& v,int mode){
@@ -1135,4 +1210,8 @@ std::vector<ScreenCoverage> Screens::coverage(){
         {ScreenId::field,Panel::root,"Enemy names,message lifetime,help pages/game-over native alerts","GuiGame/GuiHelp/GameMain",true}
     };
 }
+}
+
+namespace hm2::ui {void Screens::revealButton(ButtonKey key){if(!impl_||!display_.enabled)return;const auto b=button(key);if(!b)return;const auto a=display_.content();auto p=buttonScreenPosition(key);const auto region=impl_->buttonRegion(*b);if(region==Region::shopStock||region==Region::shopInventory){impl_->shopPan=std::clamp(impl_->shopPan+p.x-std::clamp(p.x,a.x+16,a.x+a.width-16),0.f,impl_->layout.shopPanLimit());}
+    if(region==Region::list||region==Region::chooser){const auto clip=impl_->clipping(region).value_or(a);const float delta=std::clamp(p.y,clip.y+24,clip.y+clip.height-24)-p.y;impl_->verticalPan=std::clamp(impl_->verticalPan+(region==Region::chooser?-delta:delta),0.f,impl_->verticalLimit());}}
 }

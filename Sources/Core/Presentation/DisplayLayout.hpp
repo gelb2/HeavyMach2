@@ -1,0 +1,39 @@
+#pragma once
+#include "Core/Types.hpp"
+#include <optional>
+
+namespace hm2 {
+// Presentation only: original HD world units, saved indices and clocks never
+// change with these values. Insets and canvas use positive-Y-up logical points.
+struct DisplayInsets {float left=0,bottom=0,right=0,top=0;};
+struct DisplayConfiguration {
+    Size canvas{768,1024};
+    DisplayInsets insets;
+    bool enabled=false,compact=false,focusZoom=false;
+    static DisplayConfiguration surface(Size,DisplayInsets={});
+    [[nodiscard]] ClipRect content()const;
+};
+struct DisplayTransform {
+    float scale=1;Vec2 offset;
+    [[nodiscard]] Vec2 map(Vec2)const;
+    [[nodiscard]] Vec2 inverse(Vec2)const;
+    [[nodiscard]] bool identity()const{return scale==1&&offset.x==0&&offset.y==0;}
+};
+enum class DisplayRegion {content,backdrop,title,slot0,slot1,slot2,bottom,top,
+    panel,maintenance,list,chooser,shopStock,shopBackdrop,shopInventory,shopFooter,banner};
+class DisplayLayout {
+    DisplayConfiguration configuration_;
+public:
+    explicit DisplayLayout(DisplayConfiguration c={}):configuration_(c){(void)c.content();}
+    [[nodiscard]] const DisplayConfiguration& configuration()const{return configuration_;}
+    [[nodiscard]] DisplayTransform ui(DisplayRegion,float horizontalPan=0)const;
+    [[nodiscard]] std::optional<ClipRect> clip(DisplayRegion,float horizontalPan=0)const;
+    [[nodiscard]] float shopPanLimit()const;
+    [[nodiscard]] float worldScale(float zoom=1)const;
+    [[nodiscard]] Size worldViewport(float zoom=1)const;
+    [[nodiscard]] DisplayTransform world(float zoom=1)const;
+};
+// Runs after the original node/rounding/atlas assembly. Never mutates textures.
+void transformSprite(Sprite&,const DisplayTransform&,std::optional<ClipRect> = {});
+void transformFrame(Frame&,const DisplayTransform&,Size,std::optional<ClipRect> = {});
+}

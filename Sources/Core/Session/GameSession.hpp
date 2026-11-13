@@ -43,6 +43,9 @@ public:
     // GameMain children tick World, GuiGame, then late GuiMapLoading.
     void tick(const std::function<void()>& tickGameUI={});
     void setActive(bool);
+    void setDisplay(DisplayConfiguration);
+    [[nodiscard]] const DisplayConfiguration& display()const;
+    [[nodiscard]] Vec2 worldCanvasPoint(Vec2 logical)const;
     void action(const ui::ScreenAction&);
     // Original GuiGame child receivers run before its HUD/world receivers.
     bool inputOverlay(PointerPhase,Vec2,std::uintptr_t);

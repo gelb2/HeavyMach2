@@ -63,6 +63,19 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
     };
     CombatSceneHooks& hooks;
     CombatMetrics metrics;
+    DisplayConfiguration display;float displayZoom=1;
+    void updateDisplay(std::optional<Vec2> target,bool advance){
+        if(!display.enabled){displayZoom=1;camera.viewport={768,1024};camera.inputMinimumY=100;return;}
+        if(display.focusZoom){
+            const auto player=playerMotion.state().position;
+            if(!target&&navigation.count())target=navigation.point(navigation.count()-1);
+            const float dx=target?(target->x-player.x):0,dy=target?(target->y-player.y):0;
+            const float wanted=std::clamp(2.f-std::max(std::abs(dx)/360.f,std::abs(dy)/240.f),1.f,1.6f);
+            if(advance)displayZoom+=(wanted-displayZoom)/100.f;
+        }else displayZoom=1;
+        const DisplayLayout layout(display);camera.viewport=layout.worldViewport(displayZoom);
+        camera.inputMinimumY=100*layout.ui(DisplayRegion::bottom).scale/layout.worldScale(displayZoom);
+    }
     DarwinWorldRandom ownRandom;
     WorldRandom* externalRandom=nullptr;
     MapPreview map;
@@ -720,6 +733,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
             movementVisual.processMyMach(playerMotion.state().position,clock.worldTime(),before,pathState(navigation));
         }
         std::optional<Vec2> target;if(const auto* e=selected())target=e->actor.motion().position;
+        updateDisplay(target,true);
         processCamera(camera,playerMotion.state().position,navigation,target);
         movementVisual.appendWorldLayers(layers[1],layers[7],&camera);
         // listEnemy is visited before map spawners append new actors to it.
@@ -758,9 +772,9 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
         setTarget(id);return true;
     }
     bool input(PointerPhase phase,Vec2 screen,std::uintptr_t id){
-        if(paused||!active||hp<1)return false;
-        if(!id||!std::isfinite(screen.x)||!std::isfinite(screen.y)||screen.y<100)return false;
         if(phase==PointerPhase::cancel){const bool was=targetPointer==id;if(was)targetPointer=0;return navigation.input(phase,screen,id,camera,playerMotion)||was;}
+        if(paused||!active||hp<1)return false;
+        if(!id||!std::isfinite(screen.x)||!std::isfinite(screen.y)||screen.y<camera.inputMinimumY)return false;
         // Original EasyMove0x12698, scoped here. Do not reassociate the
         // float operations or globally change the other camera consumers.
         const Vec2 base{camera.center.x-camera.viewport.width*.5f,camera.center.y-camera.viewport.height*.5f};
@@ -892,4 +906,9 @@ void CombatScene::setBotHP(std::uint64_t id,int value){auto* b=impl_->bot(id);if
 void CombatScene::refreshBotHPGauge(std::uint64_t id){auto* b=impl_->bot(id);if(!b)throw std::logic_error("Missing original BOT repair gauge");b->actor.refreshGaugeVisual();}
 void CombatScene::restoreBotsHP(){for(auto& b:impl_->botActors){b->actor.setHP(b->actor.info().hp);b->actor.refreshHPGauge(*impl_);}}
 void CombatScene::botPickedItem(std::uint64_t bot,std::uint64_t item){if(auto* b=impl_->bot(bot)){b->actor.pickedItem(item);++impl_->metrics.botItemCaptures;++b->itemCaptures;}}
+}
+
+namespace hm2 {
+void CombatScene::setDisplay(DisplayConfiguration display){impl_->navigation.cancel();impl_->targetPointer=0;impl_->leftFire=impl_->rightFire=false;impl_->display=display;impl_->updateDisplay({},false);}
+float CombatScene::displayZoom()const{return impl_->displayZoom;}
 }

@@ -1,6 +1,7 @@
 #import <XCTest/XCTest.h>
 #import <UIKit/UIKit.h>
 #include <cmath>
+#include <algorithm>
 
 @interface WorldInputTests:XCTestCase @end
 @implementation WorldInputTests
@@ -23,14 +24,26 @@
     const CGFloat x=(bounds.size.width-width*scale)/2+logical.x*scale,y=(bounds.size.height-height*scale)/2+(height-logical.y)*scale;
     XCUICoordinate* point=[[world coordinateWithNormalizedOffset:CGVectorMake(0,0)] coordinateWithOffset:CGVectorMake(x,y)];[point tap];
 }
+- (BOOL)fieldPointX:(double)x y:(double)y state:(NSDictionary*)state{
+    return x>[state[@"safeX"] doubleValue]+16&&x<[state[@"safeX"] doubleValue]+[state[@"safeWidth"] doubleValue]-16&&y>[state[@"fieldInputMinY"] doubleValue]+20&&y<[state[@"safeY"] doubleValue]+[state[@"safeHeight"] doubleValue]-16;
+}
+- (void)tapHelpX:(double)x world:(XCUIElement*)world{
+    const auto state=[self state:world];[self tapLogical:CGPointMake([state[@"canvasWidth"] doubleValue]*x/768,[state[@"canvasHeight"] doubleValue]*.5) world:world];
+}
 - (void)tapButton:(unsigned)identifier data:(int)data world:(XCUIElement*)world {
     [self wait:^BOOL{return [[self state:world][@"doorPhase"] intValue]==8;} description:@"original loading doors finished opening"];
-    const auto state=[self state:world];NSString* x=[NSString stringWithFormat:@"b%u_%d_x",identifier,data],*y=[NSString stringWithFormat:@"b%u_%d_y",identifier,data];
+    NSString* x=[NSString stringWithFormat:@"b%u_%d_x",identifier,data],*y=[NSString stringWithFormat:@"b%u_%d_y",identifier,data];
+    for(unsigned attempt=0;attempt<6;++attempt){const auto current=[self state:world];if(!current[y])break;const double py=[current[y] doubleValue],low=[current[@"listClipY"] doubleValue]+24,high=[current[@"listClipTop"] doubleValue]-24;if(identifier<5100||identifier>5204||py>=low&&py<=high)break;
+        const double width=[current[@"canvasWidth"] doubleValue],height=[current[@"canvasHeight"] doubleValue];const CGRect bounds=world.frame;const auto point=[&](double px,double yUp){return [[world coordinateWithNormalizedOffset:CGVectorMake(0,0)] coordinateWithOffset:CGVectorMake(px/width*bounds.size.width,(height-yUp)/height*bounds.size.height)];};
+        const double from=(low+high)*.5,to=from+(py<low?1:-1)*std::min((high-low)*.6,std::abs(py-std::clamp(py,low,high)));
+        [point(width*.5,from) pressForDuration:.05 thenDragToCoordinate:point(width*.5,to)];
+    }
+    const auto state=[self state:world];
     XCTAssertNotNil(state[x]);XCTAssertNotNil(state[y]);[self tapLogical:CGPointMake([state[x] doubleValue],[state[y] doubleValue]) world:world];
 }
 - (void)titleToSlots:(XCUIElement*)world {
     [self wait:^BOOL{return [[self state:world][@"ticks"] doubleValue]>5;} description:@"real display callbacks started"];
-    for(unsigned i=0;i<2&&[[self state:world][@"screen"] intValue]==1;++i)[self tapLogical:CGPointMake(384,512) world:world];
+    for(unsigned i=0;i<2&&[[self state:world][@"screen"] intValue]==1;++i)[self tapHelpX:384 world:world];
     [self wait:^BOOL{return [[self state:world][@"screen"] intValue]==2;} description:@"original title input opens slots"];
 }
 - (void)capture:(NSString*)name {
@@ -51,7 +64,7 @@
     XCTAssertEqual([[self state:world][@"screen"] intValue],2);XCTAssertEqual([[self state:world][@"saves"] intValue],1);XCTAssertEqualObjects([self state:world][@"slot0Name"],@"MACH");
     [self tapButton:1001 data:0 world:world];[self wait:^BOOL{return [[self state:world][@"screen"] intValue]==3;} description:@"explicit start enters base"];XCTAssertEqual([[self state:world][@"saves"] intValue],3);[self capture:@"source-base-created-save"];
     XCTAssertEqual([[self state:world][@"helpVisible"] intValue],1);XCTAssertEqual([[self state:world][@"helpPage"] intValue],0);
-    [self tapLogical:CGPointMake(384,512) world:world];[self wait:^BOOL{return [[self state:world][@"helpVisible"] intValue]==0;} description:@"first Korean base Help consumes the closing tap"];
+    [self tapHelpX:384 world:world];[self wait:^BOOL{return [[self state:world][@"helpVisible"] intValue]==0;} description:@"first Korean base Help consumes the closing tap"];
     [self tapButton:2001 data:0 world:world];[self tapButton:2001 data:0 world:world];[self wait:^BOOL{return [[self state:world][@"screen"] intValue]==4;} description:@"command center opens"];
     const int rankingSaves=[[self state:world][@"saves"] intValue];[self tapButton:5009 data:0 world:world];
     XCUIElement* ranking=app.alerts[@"랭킹"];XCTAssertTrue([ranking waitForExistenceWithTimeout:10]);XCTAssertTrue(ranking.staticTexts[@"현재 랭킹 서비스를 이용할 수 없습니다."].exists);XCTAssertEqual(ranking.buttons.count,1u);[self capture:@"ranking-service-unavailable"];[ranking.buttons[@"OK"] tap];
@@ -59,15 +72,15 @@
     [self tapButton:2005 data:0 world:world];[self tapButton:2005 data:0 world:world];[self wait:^BOOL{return [[self state:world][@"screen"] intValue]==7&&[[self state:world][@"enemyCount"] intValue]>0;} description:@"real base gate enters original field"];
     [self wait:^BOOL{return [[self state:world][@"doorPhase"] intValue]==8;} description:@"field opening completes while original world advances"];
     XCTAssertEqual([[self state:world][@"helpVisible"] intValue],1);XCTAssertEqual([[self state:world][@"helpPage"] intValue],2);XCTAssertEqual([[self state:world][@"helpGuidance"] intValue],0);
-    [self capture:@"source-initial-korean-help"];[self tapLogical:CGPointMake(700,512) world:world];[self wait:^BOOL{return [[self state:world][@"helpVisible"] intValue]==0;} description:@"fixed initial Help consumes closing tap"];
-    NSDictionary* before=[self state:world];CGPoint destination=CGPointZero;BOOL found=NO;const CGFloat offsets[][2]={{100,0},{0,100},{100,100},{-100,0},{-100,80}};
-    for(const auto& delta:offsets){const CGFloat x=[before[@"playerScreenX"] doubleValue]+delta[0],y=[before[@"playerScreenY"] doubleValue]+delta[1];if(x<20||x>748||y<120||y>1000)continue;BOOL clear=YES;
-        for(int i=0;i<[before[@"enemyCount"] intValue];++i){const CGFloat ex=[before[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],ey=[before[[NSString stringWithFormat:@"e%d_y",i]] doubleValue];if(hypot(x-ex,y-ey)<100)clear=NO;}
+    [self capture:@"source-initial-korean-help"];[self tapHelpX:700 world:world];[self wait:^BOOL{return [[self state:world][@"helpVisible"] intValue]==0;} description:@"fixed initial Help consumes closing tap"];
+    NSDictionary* before=[self state:world];CGPoint destination=CGPointZero;BOOL found=NO;const CGFloat offsets[][2]={{100,0},{0,100},{100,100},{-100,0},{-100,80},{0,-100},{100,-100},{-100,-100}};const CGFloat worldScale=[before[@"displayWorldScale"] doubleValue];XCTAssertGreaterThan(worldScale,0);
+    for(const auto& delta:offsets){const CGFloat x=[before[@"playerScreenX"] doubleValue]+delta[0]*worldScale,y=[before[@"playerScreenY"] doubleValue]+delta[1]*worldScale;if(![self fieldPointX:x y:y state:before])continue;BOOL clear=YES;
+        for(int i=0;i<[before[@"enemyCount"] intValue];++i){const CGFloat ex=[before[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],ey=[before[[NSString stringWithFormat:@"e%d_y",i]] doubleValue];if(hypot(x-ex,y-ey)<100*worldScale)clear=NO;}
         if(clear){destination=CGPointMake(x,y);found=YES;break;}}
     XCTAssertTrue(found);[self tapLogical:destination world:world];
     [self wait:^BOOL{const auto now=[self state:world];return hypot([now[@"x"] doubleValue]-[before[@"x"] doubleValue],[now[@"y"] doubleValue]-[before[@"y"] doubleValue])>5;} description:@"real UIKit touch moves Player on original terrain"];
     NSDictionary* moving=[self state:world];XCTAssertGreaterThan([moving[@"ticks"] doubleValue],[before[@"ticks"] doubleValue]);[self capture:@"source-field-after-real-touch"];
-    found=NO;unsigned long long targetID=0;CGFloat nearest=CGFLOAT_MAX;const auto targets=[self state:world];for(int i=0;i<[targets[@"enemyCount"] intValue];++i){const CGFloat x=[targets[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],y=[targets[[NSString stringWithFormat:@"e%d_y",i]] doubleValue];const CGFloat distance=hypot(x-[targets[@"playerScreenX"] doubleValue],y-[targets[@"playerScreenY"] doubleValue]);if(x>32&&x<736&&y>120&&y<980&&distance<nearest){nearest=distance;destination=CGPointMake(x,y);targetID=[targets[[NSString stringWithFormat:@"e%d_id",i]] longLongValue];found=YES;}}
+    found=NO;unsigned long long targetID=0;CGFloat nearest=CGFLOAT_MAX;const auto targets=[self state:world];for(int i=0;i<[targets[@"enemyCount"] intValue];++i){const CGFloat x=[targets[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],y=[targets[[NSString stringWithFormat:@"e%d_y",i]] doubleValue];const CGFloat distance=hypot(x-[targets[@"playerScreenX"] doubleValue],y-[targets[@"playerScreenY"] doubleValue]);if([self fieldPointX:x y:y state:targets]&&distance<nearest){nearest=distance;destination=CGPointMake(x,y);targetID=[targets[[NSString stringWithFormat:@"e%d_id",i]] longLongValue];found=YES;}}
     XCTAssertTrue(found);[self tapLogical:destination world:world];[self wait:^BOOL{const auto now=[self state:world];return [now[@"selectionTouches"] longLongValue]>[targets[@"selectionTouches"] longLongValue]&&[now[@"touchSelectedEnemy"] longLongValue]==targetID&&[now[@"emissions"] longLongValue]>[targets[@"emissions"] longLongValue];} description:@"real enemy selection ID causes additional original weapon emissions"];
     [self tapButton:1021 data:0 world:world];[self wait:^BOOL{return [[self state:world][@"paused"] intValue]==1;} description:@"system GPU menu pauses world"];
     NSDictionary* paused=[self state:world];[self wait:^BOOL{return [[self state:world][@"ticks"] doubleValue]>[paused[@"ticks"] doubleValue]+10;} description:@"display continues while world is paused"];
@@ -75,9 +88,9 @@
     [self tapButton:1030 data:0 world:world];[self wait:^BOOL{return [[self state:world][@"paused"] intValue]==0;} description:@"resume GPU control unpauses world"];
     [self tapButton:1021 data:0 world:world];[self tapButton:1029 data:0 world:world];[self wait:^BOOL{return [[self state:world][@"helpVisible"] intValue]==1&&[[self state:world][@"paused"] intValue]==1;} description:@"actual menu Help opens third Korean page and pauses world"];
     XCTAssertEqual([[self state:world][@"helpPage"] intValue],2);XCTAssertEqual([[self state:world][@"helpGuidance"] intValue],1);[self capture:@"source-menu-korean-help-guidance"];
-    [self tapLogical:CGPointMake(384,512) world:world];XCTAssertEqual([[self state:world][@"helpVisible"] intValue],1);XCTAssertEqual([[self state:world][@"helpGuidance"] intValue],0);
-    [self tapLogical:CGPointMake(100,512) world:world];XCTAssertEqual([[self state:world][@"helpPage"] intValue],1);[self tapLogical:CGPointMake(700,512) world:world];XCTAssertEqual([[self state:world][@"helpPage"] intValue],2);
-    [self tapLogical:CGPointMake(384,512) world:world];[self wait:^BOOL{return [[self state:world][@"helpVisible"] intValue]==0&&[[self state:world][@"paused"] intValue]==0;} description:@"Help closes without leaking its input to world"];
+    [self tapHelpX:384 world:world];XCTAssertEqual([[self state:world][@"helpVisible"] intValue],1);XCTAssertEqual([[self state:world][@"helpGuidance"] intValue],0);
+    [self tapHelpX:100 world:world];XCTAssertEqual([[self state:world][@"helpPage"] intValue],1);[self tapHelpX:700 world:world];XCTAssertEqual([[self state:world][@"helpPage"] intValue],2);
+    [self tapHelpX:384 world:world];[self wait:^BOOL{return [[self state:world][@"helpVisible"] intValue]==0&&[[self state:world][@"paused"] intValue]==0;} description:@"Help closes without leaking its input to world"];
 
     XCTAssertEqual([[self state:world][@"unsupported"] intValue],0);NSLog(@"HM2_SOURCE_ENTRY run=%@ movementBefore=%@ after=%@ titleSlotsNameSaveBaseFieldRealInput=1",run,before,[self state:world]);
     [app terminate];[app launch];world=app.otherElements[@"hm2.world"];XCTAssertTrue([world waitForExistenceWithTimeout:15]);[self titleToSlots:world];XCTAssertEqualObjects([self state:world][@"slot0Name"],@"MACH");
@@ -95,11 +108,11 @@
     [self wait:^BOOL{return [[self state:world][@"doorPhase"] intValue]==8;} description:@"field doors finish before real target input"];
     NSDictionary* field=[self state:world];XCTAssertEqualObjects(field[@"lastBase"],@"Base002");XCTAssertGreaterThan([field[@"playerHP"] intValue],0);XCTAssertLessThan([field[@"playerHP"] intValue],[field[@"maximumHP"] intValue]);
     const int saves=[field[@"saves"] intValue];BOOL selected=NO;unsigned long long target=0;
-    for(int i=0;i<[field[@"enemyCount"] intValue];++i){const double x=[field[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],y=[field[[NSString stringWithFormat:@"e%d_y",i]] doubleValue];if(x>0&&x<768&&y>100&&y<1024){target=[field[[NSString stringWithFormat:@"e%d_id",i]] longLongValue];[self tapLogical:CGPointMake(x,y) world:world];selected=YES;break;}}
+    for(int i=0;i<[field[@"enemyCount"] intValue];++i){const double x=[field[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],y=[field[[NSString stringWithFormat:@"e%d_y",i]] doubleValue];if([self fieldPointX:x y:y state:field]){target=[field[[NSString stringWithFormat:@"e%d_id",i]] longLongValue];[self tapLogical:CGPointMake(x,y) world:world];selected=YES;break;}}
     // Provoke the first enemy, then change target while it is still alive.
     // Finishing that single enemy can leave the Player regenerating safely.
     const auto pursuing=[self state:world];BOOL firstAlive=NO,retargeted=NO;CGFloat nearest=CGFLOAT_MAX;CGPoint next=CGPointZero;unsigned long long second=0;
-    for(int i=0;i<[pursuing[@"enemyCount"] intValue];++i){const auto id=[pursuing[[NSString stringWithFormat:@"e%d_id",i]] longLongValue];if(id==target){firstAlive=YES;continue;}const CGFloat x=[pursuing[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],y=[pursuing[[NSString stringWithFormat:@"e%d_y",i]] doubleValue],distance=hypot(x-[pursuing[@"playerScreenX"] doubleValue],y-[pursuing[@"playerScreenY"] doubleValue]);if(x>20&&x<748&&y>120&&y<1000&&distance<nearest){nearest=distance;next=CGPointMake(x,y);second=id;retargeted=YES;}}
+    for(int i=0;i<[pursuing[@"enemyCount"] intValue];++i){const auto id=[pursuing[[NSString stringWithFormat:@"e%d_id",i]] longLongValue];if(id==target){firstAlive=YES;continue;}const CGFloat x=[pursuing[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],y=[pursuing[[NSString stringWithFormat:@"e%d_y",i]] doubleValue],distance=hypot(x-[pursuing[@"playerScreenX"] doubleValue],y-[pursuing[@"playerScreenY"] doubleValue]);if([self fieldPointX:x y:y state:pursuing]&&distance<nearest){nearest=distance;next=CGPointMake(x,y);second=id;retargeted=YES;}}
     XCTAssertTrue(firstAlive&&retargeted);[self tapLogical:next world:world];XCTAssertEqual([[self state:world][@"touchSelectedEnemy"] longLongValue],static_cast<long long>(second));
     XCTAssertTrue(selected);NSLog(@"HM2_GAMEOVER_INPUT run=%@ before=%@ after=%@",run,field,[self state:world]);
     XCUIElement* destroyed=app.alerts[@"Destroy Your Mach."];XCTAssertTrue([destroyed waitForExistenceWithTimeout:60],@"Actual battle state: %@",[self state:world]);
@@ -122,6 +135,7 @@
     XCUIElement* world=app.otherElements[@"hm2.world"];XCTAssertTrue([world waitForExistenceWithTimeout:15]);[self titleToSlots:world];[self tapButton:1001 data:0 world:world];
     [self wait:^BOOL{const auto s=[self state:world];return [s[@"screen"] intValue]==3&&[s[@"doorPhase"] intValue]==8;} description:@"original-format completed-mission start reaches Base001" timeout:60];
     const auto base=[self state:world];const int saves=[base[@"saves"] intValue],items=[base[@"repairItems"] intValue];XCTAssertEqual([base[@"credits"] intValue],500);
+    if([base[@"helpVisible"] boolValue]){[self tapHelpX:384 world:world];[self wait:^BOOL{return ![[self state:world][@"helpVisible"] boolValue];} description:@"initial base help closes before mission navigation"];}
     [self tapButton:2001 data:0 world:world];[self tapButton:2001 data:0 world:world];
     [self wait:^BOOL{const auto s=[self state:world];return [s[@"completedMission"] isEqualToString:@"M002010"]&&[s[@"doorPhase"] intValue]==8;} description:@"first completed window awards first accepted eligible mission" timeout:60];
     NSDictionary* first=[self state:world];XCTAssertEqual([first[@"credits"] intValue],580);XCTAssertEqual([first[@"experience"] intValue],200);XCTAssertEqual([first[@"completedRewardCount"] intValue],2);XCTAssertEqual([first[@"saves"] intValue],saves);XCTAssertEqual([first[@"commandListVisible"] intValue],0);[self capture:@"completed-first-M002010-rewards"];
@@ -131,20 +145,20 @@
     NSDictionary* second=[self state:world];XCTAssertEqual([second[@"credits"] intValue],680);XCTAssertEqual([second[@"experience"] intValue],400);XCTAssertEqual([second[@"level"] intValue],1);XCTAssertEqual([second[@"repairItems"] intValue],items+3);XCTAssertEqual([second[@"completedRewardCount"] intValue],3);XCTAssertEqual([second[@"saves"] intValue],saves);[self capture:@"completed-second-M001010-rewards"];
     [self tapButton:5007 data:0 world:world];[self wait:^BOOL{const auto s=[self state:world];return [s[@"completedMission"] length]==0&&[s[@"commandListVisible"] intValue]==1;} description:@"last OK removes result and next Command tick displays remaining missions"];
     NSDictionary* list=[self state:world];XCTAssertEqual([list[@"credits"] intValue],680);XCTAssertEqual([list[@"acceptedCount"] intValue],2);XCTAssertEqual([list[@"saves"] intValue],saves);[self capture:@"completed-remaining-mission-list"];
-    const float acceptedY=[list[@"b5200_0_y"] floatValue];
-    const float newY=[list[@"b5100_0_y"] floatValue];
+    const float acceptedY=[list[@"b5200_0_hdY"] floatValue];
+    const float newY=[list[@"b5100_0_hdY"] floatValue];
     [self tapButton:5200 data:0 world:world];
     [self wait:^BOOL{
         const auto s=[self state:world];
-        return [s[@"b5200_0_y"] floatValue]==acceptedY+128&&s[@"b5004_0_y"]==nil;
+        return [s[@"b5200_0_hdY"] floatValue]==acceptedY+128&&s[@"b5004_0_hdY"]==nil;
     } description:@"accepted mission opens its detail without an ACCEPT button"];
     [self capture:@"command-accepted-mission-detail"];
     [self tapButton:5100 data:0 world:world];
     [self wait:^BOOL{
         const auto s=[self state:world];
-        return [s[@"b5100_0_y"] floatValue]==newY+128
-            &&[s[@"b5200_0_y"] floatValue]==acceptedY-128
-            &&[s[@"b5004_0_y"] floatValue]==newY-24-84;
+        return [s[@"b5100_0_hdY"] floatValue]==newY+128
+            &&[s[@"b5200_0_hdY"] floatValue]==acceptedY-128
+            &&[s[@"b5004_0_hdY"] floatValue]==newY-24-84;
     } description:@"new mission opens its detail, moves the accepted rows, and positions ACCEPT"];
     NSDictionary* expanded=[self state:world];
     XCTAssertEqual([expanded[@"saves"] intValue],saves);

@@ -1,5 +1,10 @@
 # HeavyMach 2 보고 사이트
 
+## HeavyMach2 고정 진입점
+
+[HeavyMach2 누적 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)를 계속 사용한다. 새 조사·계획·구현·검사 보고는 이 목록에 추가하고, 모든 새 보고서에서 같은 목록으로 돌아갈 수 있게 한다. 전체 사이트 첫 화면에서도 이 주소를 연결한다. 기존 보고서 주소와 과거 근거는 보존한다.
+
+
 ## iPhone 추가 조사·개발 계획·금지사항 — 버전282, 2026-11-13
 
 [추가 조사](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/followup.html), [개발 계획·금지사항](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/development.html), [인계](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/handover.html), 카메라·전투/UI/시간·저장·음향의 분야별 후속을 기존 네 페이지와 연결해 총10페이지로 게시했다. 근거 커밋은 iPhone 작업 브랜치의 `94985910f97ad7ce8ab1d135473e366c9ac66635`다. 추가 정적 조사·계획·금지사항 보존이며 게임 구현·새 앱 실행·실기기 설치·develop/main 릴리스는 하지 않았다. 실제 표시 크기·가독성·오디오 중단/복귀와 남은 간접 분기는 미확정 또는 다음 실행 조건으로 남겼다.
