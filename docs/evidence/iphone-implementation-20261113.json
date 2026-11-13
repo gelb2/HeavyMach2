@@ -510,5 +510,98 @@
   "remaining_native_display_scope": [
     "Opposite iPhone landscape orientation and asymmetric safe areas",
     "Original display-size and full-campaign equivalence"
-  ]
+  ],
+  "fullscreen_followup": {
+    "source_commit": "64ebe7041e3b6df2dcd7bc767a9384f60c95fe7c",
+    "core_tests": {
+      "passed": 73,
+      "failed": 0
+    },
+    "native": {
+      "iphone": {
+        "canvas": {
+          "height": 420,
+          "safeBottom": 20,
+          "safeLeft": 68,
+          "safeRight": 68,
+          "safeTop": 0,
+          "width": 912
+        },
+        "frames": 1800,
+        "scenarios": 115,
+        "weapon_definitions": 110,
+        "weapon_kinds": 5,
+        "same_frame_weapon_kinds": 5,
+        "button_failures": 0,
+        "warm_reads": 0,
+        "warm_exists": 0,
+        "repeated_frame_rgb_difference": 0,
+        "gameover_base_frame": 714
+      },
+      "ipad": {
+        "canvas": {
+          "height": 1366,
+          "safeBottom": 25,
+          "safeLeft": 0,
+          "safeRight": 0,
+          "safeTop": 0,
+          "width": 1024
+        },
+        "frames": 1200,
+        "scenarios": 115,
+        "weapon_definitions": 110,
+        "weapon_kinds": 5,
+        "same_frame_weapon_kinds": 5,
+        "button_failures": 0,
+        "warm_reads": 0,
+        "warm_exists": 0,
+        "repeated_frame_rgb_difference": 0,
+        "gameover_base_frame": 555
+      }
+    },
+    "gpu_edges": {
+      "fixture": [
+        912,
+        420
+      ],
+      "screens": 5,
+      "passed_on": [
+        "iphone_simulator",
+        "ipad_simulator"
+      ],
+      "all_four_edges_filled": true
+    },
+    "source_ui": {
+      "iphone": [
+        "movement",
+        "battle",
+        "menu_pause",
+        "mission_rewards",
+        "save_restart",
+        "gameover_return"
+      ],
+      "ipad": [
+        "movement",
+        "battle",
+        "menu_pause",
+        "mission_rewards",
+        "save_restart",
+        "gameover_return"
+      ],
+      "retargeting_policy": "up to3 live-coordinate taps in same battle; exact final requested ID required"
+    },
+    "physical_release": {
+      "installed": true,
+      "save_preservation_verified": true,
+      "screen_verification": "pending_unlock"
+    },
+    "remaining": [
+      "landscape_left Native",
+      "map-edge stretched-pixel appearance",
+      "original phone display proportions",
+      "full campaign equivalence"
+    ],
+    "all_prior_failures_preserved": true,
+    "develop_main_merged": false
+  }
 }
