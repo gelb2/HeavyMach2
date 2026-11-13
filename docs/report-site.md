@@ -5,6 +5,17 @@
 [HeavyMach2 누적 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)를 계속 사용한다. 새 조사·계획·구현·검사 보고는 이 목록에 추가하고, 모든 새 보고서에서 같은 목록으로 돌아갈 수 있게 한다. 전체 사이트 첫 화면에서도 이 주소를 연결한다. 기존 보고서 주소와 과거 근거는 보존한다.
 
 
+## iPhone 카메라·HUD 수정과 재검증 — 버전284, 2026-11-13
+
+[HeavyMach2 누적 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)와 [구현·재검증 기록](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/implementation.html)에 최신 결과를 반영했다. 실제 Player 화면 이탈과 중앙 HUD 밖 게이지 노출을 수정했다. 카메라 수정 뒤 Native 전체는 iPhone/iPad각20/20, 이후 HUD/atlas clip 수정 뒤 관련 Native는 각각4/4이며 전체C++73개도 통과했다. 원작 전체·전캠페인 동등성이나 모든 방향의 Native 검증 완료는 아니다. 실기기 설치·develop/main 병합은 하지 않았다.
+
+구현 커밋은 `57b5158f1e9ed581aef87f88957625303d679e62`, 사이트 소스는 `ba2f35989ecd7e52a16011deea67a64ae7f1ab54`다. 버전284의 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_e52dfc37d3488191a78f9f946a0a5dab`, 배포는 `appgdep_6af6eb4012ac81919e6b5c6e8c65803f`이며 succeeded다. 본인1명·그룹0·외부0을 유지했고 실제24경로 HTTP200·HTML본문/링크·payload/CSS/JS/JSON 일치를 확인했다. 로컬 Chrome에서 공통 메뉴·수정 본문·하단 문구를 확인했다. 온라인 Chrome은 로그인 화면까지 열었으므로 로그인 후 시각 검수 완료로 보고하지 않는다.
+
+기존 보고/그림/링크를 보존했다. 반복된 메뉴·하단 문구를 공통JS로 모으고 메타 JSON만 압축 형식으로 써서 archive 확장 크기268,426,240바이트를 유지했다.1,379개 파일을 소스와 대조했다. 원본 IPA·ARM·사용자 저장·분석 원문은 새로 넣지 않았다. 재생성 가능한 이전283 전달용 archive는 lsof 미사용과 소스/저장버전 보존을 확인하고 정리했다.
+
+로컬 근거는 `.local/evidence/iphone-implementation-20261113/revalidation-01/`, `revalidation-02/`, `revalidation-03/`다. 실패한 Native/CLI/카메라/HUD 증거를 유지했다. 최종 `test-counts.json`, `gameplay-comparison.json`, `site-archive-check.json`, `site-published-http.json`, `generated-cache-cleanup.json`과 양쪽 실제 전장 캡처를 보존했다. 토큰은 저장하지 않았다.
+
+
 ## iPhone 공통 구현·검사와 누적 목록 — 버전283, 2026-11-13
 
 [HeavyMach2 누적 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)에 기존 보고·측정·일반판/HD 조사·추가 조사·계획·이번 구현을 연결했다. [이번 구현과 기기별 최종 검사](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/implementation.html)와 근거 JSON도 같은 목록으로 돌아간다. 사이트 전체 첫 화면에도 고정 진입점을 추가했다. 기존 본문·그림·주소를 보존했고 초기 개발 상태는 당시 기록으로 표시했다.
