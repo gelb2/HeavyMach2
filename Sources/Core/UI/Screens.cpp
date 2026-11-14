@@ -568,6 +568,7 @@ RegionScope card(*this,Region(unsigned(Region::slot0)+i));
     void buildDetail(DetailKind,const ItemView&,Vec2,int=-1);
     void layoutDetail();
     void tickDetail();
+    void placePhoneTradeAction();
     void syncEnemyName();
     void tickRange(WorldRandom&);
     void tickFieldCredits(){
@@ -657,6 +658,28 @@ void Screens::Impl::layoutDetail(){
     if(d.title){d.title->position=plus(parent,{0,d.vertical?(shop?40.f:maintenance?47.f:62.f)*d.y:0});d.title->scale={d.x,d.y};d.title->visible=d.vertical;}
     if(d.description){d.description->position=plus(parent,{hasLarge?(weapon?32.f:76.f):0,d.vertical?(shop?-36.f:-12.f)*d.y:0});d.description->scale={d.x,d.y};d.description->visible=d.vertical;}
     if(d.large){d.large->screenPosition=plus(parent,{weapon?-76.f:-52.f,d.vertical?(shop?-36.f:-10.f)*d.y:0});d.large->scale={1,d.vertical?d.y:1};d.large->show=d.vertical;}
+}
+void Screens::Impl::placePhoneTradeAction(){
+    if(!detail||!detail->phoneArtwork)return;
+    const auto& d=*detail;const auto t=presentation(Region::phoneMenu);
+    const auto area=layout.configuration().content();const auto low=t.inverse({area.x,area.y}),high=t.inverse({area.x+area.width,area.y+area.height});
+    // The original fixed BUY/SELL position can overlap a popup after the
+    // complete popup has been fitted into a wide phone viewport. Move only
+    // the action, using the same transform for its sprite and input receiver.
+    const Vec2 center=plus(d.origin,{d.descPos.x,d.descPos.y+(d.up?93.f:-93.f)});
+    for(const auto& key:keys)if(key.id==2102||key.id==2103)if(auto b=dispatcher.find(key)){
+        const float left=center.x-192,right=center.x+192,bottom=center.y-96,top=center.y+96;
+        Vec2 at{333,237};
+        if(at.x+96>left&&at.x-96<right&&at.y+48>bottom&&at.y-48<top){
+            const float preferred=d.kind==DetailKind::shop?right+102:left-102;
+            const float other=d.kind==DetailKind::shop?left-102:right+102;
+            if(preferred>=low.x+96&&preferred<=high.x-96)at.x=preferred;
+            else if(other>=low.x+96&&other<=high.x-96)at.x=other;
+            else if(bottom-54>=low.y+48)at.y=bottom-54;
+            else if(top+54<=high.y-48)at.y=top+54;
+        }
+        at.x=std::clamp(at.x,low.x+96,high.x-96);at.y=std::clamp(at.y,low.y+48,high.y-48);b->position=at;
+    }
 }
 void Screens::Impl::tickDetail(){
     if(!detail)return;auto& d=*detail;
@@ -801,6 +824,7 @@ void Screens::Impl::phoneShop(bool maintenance){
     if(state.shopDetailVisible&&state.selectedShop>=0&&!maintenance){const auto index=std::size_t(std::max(0,state.shopPage))*24+std::size_t(state.selectedShop);if(index<state.shopItems.size())buildDetail(DetailKind::shop,state.shopItems[index],{360,240},state.selectedShop);}
     if(state.detailInventory>=0&&!state.detailItem.dataId.empty())buildDetail(maintenance?DetailKind::maintenance:DetailKind::inventory,state.detailItem,{360,240},state.detailInventory);
     if(!maintenance&&((state.shopDetailVisible&&state.selectedShop>=0)||(state.detailInventory>=0&&state.selectedInventory>=0))){RegionScope action(*this,Region::phoneMenu);if(state.selectedShop>=0)addButton(Panel::root,2102,"Common_Btn_BUY.png",{333,237},1,2,0,1,Size{120,48},0,{}, {1,1},true,13,false);else if(itemAt(state.inventory,std::size_t(std::max(0,state.inventoryPage))*25+std::size_t(state.selectedInventory)).enabled)addButton(Panel::root,2103,"Common_Btn_SELL.png",{333,237},1,2,0,1,Size{120,48},0,{}, {1,1},true,13,false);}
+    placePhoneTradeAction();
     if(state.tradeVisible)trade();setPhoneEquipment(phoneEquipment);
 }
 Vec2 Screens::Impl::phoneDropPoint(Vec2 canvas)const{
