@@ -1,5 +1,7 @@
 # HeavyMach2 iPhone 작업 인계
 
+2026-11-14 최신 사용자 재지시/점검: [비전투 일러스트·버튼·스크롤 재점검](docs/world-hud-comparison-20261114.md#비전투-일러스트버튼스크롤-재점검--2026-11-14)과TODO맨위를읽는다. 허브·상점·사령부의Phone자원선택은적용됐지만전체표시/상하스크롤금지/버튼·추가UI정책은미완료다. 현행cover1.9배가912×608을그리고188을잘라세로팬한다. 허브Phone표,상점Phone그리드/상세,사령부HD공통목록/버튼잔존을구분했다. 기존공통C++모듈에서그림변환·버튼/터치·목록/상세/추가버튼/페이지를함께관리할계획이며UIKit게임UI땜빵금지. 이번은조사/계획기록,메뉴코드/새빌드/새설치변경없음. 실제설치본은아래3666fc7이다.
+
 2026-11-14 최신 iPhone 설치: 사용자 후속 지시로3666fc7 하단HUD/포털입력 수정 정식Release를 실제 iPhone Air PaleMirror에 업데이트하고실행했다. 앱데이터8파일백업·설치직후save28,204바이트동일·PID9901·원본준비자원1,532파일일치·코드서명/dSYM UUID를확인했다. CLI서명실패는Xcode GUI Release서명으로해결했고임시pbx/scheme은원복했다. [설치 근거](docs/evidence/iphone-release-hud-portal-20261114.json). 아래새실기기미설치문장은이설치전기록이다. develop/main병합과새전캠페인/발열확인은하지않았다.
 
 2026-11-14 하단 HUD·포털 입력 수정: [후속 수정](docs/world-hud-comparison-20261114.md#하단-hud와-포털-입력-수정--2026-11-14)을 읽는다. compact 고정75 이동 차단을0으로, 실제 버튼은 Screens 선점으로 처리한다. 전장 버튼 입력 fullCanvas와 옛v1compact배치Y0→새물리Y0을 연결했다. 기존 기본HUD그리기Y0은원래구현이며새로고쳤다고과장하지않는다. 포털전수CPU는81직접표본+1원래path로82/82, C++78/78, iPad126/혼합98조건1,200frame 전후차이0. Native·Release·사이트최종상태는보고서/근거를참조한다. camera·viewport·zoom·asset·gate좌표변경없고그림겹침자체전부제거를주장하지않는다. 새실기기설치·develop/main병합없음.

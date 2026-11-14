@@ -1,0 +1,91 @@
+{
+  "date": "2026-11-14",
+  "scope": "Read-only audit of original phone menu asset choice, illustration/button/layout/extra-UI policies and remaining vertical scrolling. No new game changes or build/install.",
+  "baseline_product": "3666fc7",
+  "baseline_docs": "db18dbf",
+  "facts": [
+    {
+      "screen": "hub/base",
+      "assets": "PhoneMenu/Base001..006.jpg and matching PhoneMenu/Base001..006.tble visual Image/Button rows. Base action semantics remain HD common data.",
+      "coordinates": "Phone visual table positions/scales and root240,160; images/buttons/mission notices use artScene.",
+      "remaining": "artScene cover-scale and vertical scenePan remain; base description/dynamic notices require one layout policy."
+    },
+    {
+      "screen": "shop/maintenance",
+      "assets": "PhoneMenu/ShopBG.jpg,MaintenanceBG.jpg,ItemDesc.png,ShopCategory.png; original Phone Retina handling remains.",
+      "coordinates": "Phone grid anchors in HD-skin UI units, with HD24shop/25inventory indices retained.",
+      "remaining": "whole-scene vertical pan, detail-open scenePan correction, stock/inventory overflow offsets and restoration-added buttons9200..9205 remain; BUY/SELL adaptive placement is separate."
+    },
+    {
+      "screen": "command",
+      "assets": "PhoneMenu/CmdCenterBG.jpg selected by MenuArtwork.",
+      "coordinates": "List/mid/bottom/completion layouts and EXIT/RANKING are still assembled with HD/common anchors; original Phone layout is not fully applied.",
+      "remaining": "artBackdrop cover/crop and verticalLimit/verticalPan for mission list remain. Explicit original Phone command-button/popup/page policy is required."
+    }
+  ],
+  "geometry_example": {
+    "logical_art": [
+      480,
+      320
+    ],
+    "canvas": [
+      912,
+      420
+    ],
+    "current_cover_scale": 1.9,
+    "current_drawn_art": [
+      912,
+      608
+    ],
+    "vertical_overflow": 188,
+    "allowed_scene_pan_each_direction": 94,
+    "whole_art_fit_scale": 1.3125,
+    "whole_art_drawn": [
+      630,
+      420
+    ],
+    "remaining_horizontal_space": 282,
+    "interpretation": "Current cover/crop plus vertical pan violates the no-vertical-scroll/full-art requirement. Removing gesture alone would leave art cropped. Extra horizontal space needs menu composition without black bars, stretching, duplicate-scene fill or lost controls."
+  },
+  "common_module_plan": [
+    "Keep original asset resolution/Retina selection in MenuArtwork and the current common resource reader.",
+    "Define one common C++ menu presentation result for full-art transform, button draw/hit anchors, list/grid/detail/action/footer regions and page state. Extend/replace current layout fragments rather than adding platform-specific UI.",
+    "Screens builds existing GPU nodes and dispatches existing actions from that result; remove scenePan, automatic detail pan and forbidden vertical navigation consumers together.",
+    "Keep HD game rules,24/25item counts/indices, mission rewards/save/actions shared. Use explicit menu-local paging when content exceeds one visible panel; do not remove data to fit.",
+    "Original phone button IDs/callbacks/bounds and dynamic states must be traced from retained original evidence before final layout constants. Preserve iPad regular layout/state with regression fingerprints."
+  ],
+  "verification_needed": [
+    "Full Base001..006 illustration and facility/path/button alignment without vertical pan.",
+    "Shop categories/pages, all24stock/25inventory entries, detail animations, BUY/SELL/EXIT and equipment/BOT tabs with no forbidden vertical scrolling.",
+    "Command new/accepted/completed missions, details/rewards, ACCEPT/EXIT/RANKING and all additional controls; no art/anchor mismatch.",
+    "Shared draw/hit transforms and fresh/follow-up tick states; simultaneous cheat sessions and iPad regression."
+  ],
+  "forbidden": [
+    "UIKit/CoreGraphics game UI implementation or new app-specific layout stack",
+    "New OS-specific game source/asset renderer",
+    "Illustration pixel stretching, aspect distortion, duplicate backdrop fill or black letterboxing",
+    "Hiding/removing items/missions/buttons to avoid layout work"
+  ],
+  "source_hashes": [
+    {
+      "path": "Sources/Core/Presentation/MenuArtwork.hpp",
+      "sha256": "0644cccb40cb9e385a27849e5161836c22dcb3f6f7638292e67d7eab6de2795d"
+    },
+    {
+      "path": "Sources/Core/Presentation/MenuGridLayout.hpp",
+      "sha256": "a85a837e67b6d2b90ca47348ea3f525e54348a18ab8bd2e388bd85dab033692b"
+    },
+    {
+      "path": "Sources/Core/Presentation/DisplayLayout.cpp",
+      "sha256": "b23a32b6e53952e85393de3bc8d91a475ea6e4fa0d89d7c55e69564611be0947"
+    },
+    {
+      "path": "Sources/Core/UI/Screens.cpp",
+      "sha256": "f0deb5cccd498a55ab7844b9c335c3f673e53e7cef06cf99a07e1c1a0846693f"
+    },
+    {
+      "path": "docs/todo.md",
+      "sha256": "6fa120d53b402eb818bb472ee7f59ec662a8023896fe538cf59d711e83f10a83"
+    }
+  ]
+}
