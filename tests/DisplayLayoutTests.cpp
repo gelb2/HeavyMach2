@@ -21,6 +21,16 @@ void uniformCover(const Sprite& s,Size canvas){
  assert(near(std::sqrt(xx)/std::sqrt(yy),1.5f));
  for(const auto p:{Vec2{0,0},Vec2{canvas.width,0},Vec2{0,canvas.height},Vec2{canvas.width,canvas.height}}){const Vec2 d{p.x-o.x,p.y-o.y};const float u=(d.x*x.x+d.y*x.y)/xx,v=(d.x*y.x+d.y*y.y)/yy;assert(u>=-.0001f&&u<=1.0001f&&v>=-.0001f&&v<=1.0001f);}
 }
+void phoneMenuGeometry(){
+ for(const auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({852,393},{59,21,60,0}),DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({1280,360},{0,20,0,0})}){
+  const menu::PhoneLayout p(config);const auto a=config.content();const DisplayLayout layout(config);
+  const auto inside=[](ClipRect r,ClipRect bounds){return r.x>=bounds.x-.01f&&r.y>=bounds.y-.01f&&r.x+r.width<=bounds.x+bounds.width+.01f&&r.y+r.height<=bounds.y+bounds.height+.01f;};
+  assert(inside(p.picture,{a.x,0,a.width,config.canvas.height}));assert(near(p.picture.width/p.picture.height,1.5f));const auto full=layout.clip(DisplayRegion::phoneCanvas).value();assert(full.x==0&&full.y==0&&full.width==config.canvas.width&&full.height==config.canvas.height);
+  const auto t=layout.ui(DisplayRegion::artScene);assert(near(t.map({0,0}).x,p.picture.x)&&near(t.map({480,320}).y,p.picture.y+p.picture.height));
+  const auto dragged=layout.ui(DisplayRegion::artScene,10000);assert(near(dragged.offset.x,t.offset.x)&&near(dragged.offset.y,t.offset.y));
+  for(bool inventory:{false,true})for(unsigned i=0;i<(inventory?25u:24u);++i){const auto cell=p.cell(i,inventory);assert(inside(cell,i<(inventory?20u:16u)?p.picture:inventory?p.rightRail:p.leftRail));for(unsigned j=0;j<i;++j){const auto other=p.cell(j,inventory);assert(cell.x+cell.width<=other.x+.01f||other.x+other.width<=cell.x+.01f||cell.y+cell.height<=other.y+.01f||other.y+other.height<=cell.y+.01f);}}
+ }
+}
 void fullScreenWorld(){
  for(auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({912,420},{0,20,68,0})}){
   DisplayLayout layout(config);
@@ -35,9 +45,9 @@ void fullScreenWorld(){
 }
 struct Files:ResourceAccess{std::filesystem::path root;unsigned reads=0;mutable unsigned probes=0;explicit Files(const char* p):root(p){}Bytes read(std::string_view n)override{++reads;std::ifstream f(root/std::string(n),std::ios::binary);if(!f)throw std::runtime_error("Missing display fixture "+std::string(n));return {std::istreambuf_iterator<char>(f),{}};}bool exists(std::string_view n)const override{++probes;return std::filesystem::exists(root/std::string(n));}};
 struct Host:SessionHost,ui::ScreensHost{
- std::vector<ui::ScreenAction> events;unsigned writes=0;GameSession* game=nullptr;ui::Screens* screens=nullptr;
+ std::vector<ui::ScreenAction> events;std::vector<ui::TextRasterRequest> texts;unsigned writes=0;GameSession* game=nullptr;ui::Screens* screens=nullptr;
  void action(const ui::ScreenAction& a)override{events.push_back(a);if(game){game->action(a);if(screens)screens->refresh(game->state(),game->renderTime());}}
- ui::PreparedScreenText prepareText(const ui::TextRasterRequest& r)override{return test::preparedTextStub(r);}
+ ui::PreparedScreenText prepareText(const ui::TextRasterRequest& r)override{texts.push_back(r);return test::preparedTextStub(r);}
  ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest& r)override{return prepareText(r);}
  void bgm(std::string_view)override{}void sound(std::string_view)override{}void sfx(unsigned)override{}void sound(std::string_view,Vec2)override{}void soundID(unsigned,Vec2)override{}void alert(std::string_view)override{}void requestName(unsigned)override{}void requestDelete(unsigned)override{}bool writeSave(std::span<const std::uint8_t>,SaveReason)override{++writes;return true;}std::uint32_t absoluteTimeLow()override{return 1;}std::uint32_t unixTime()override{return 1794268800;}
 };
@@ -91,41 +101,24 @@ void entryCamera(Files& files){
  }
 }
 void phoneMenus(Files& files){
- const auto config=DisplayConfiguration::surface({912,420},{68,20,68,0});const auto area=config.content();
- Host host;PreparedTiles tiles("fullscreen-menu-test");ui::Screens screens(files,tiles,host);screens.setDisplay(config);DarwinWorldRandom random(1);
+ for(const auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({912,420},{68,20,68,0})}){
+ const auto area=config.content();const menu::PhoneLayout geometry(config);Host host;PreparedTiles tiles("fixed-menu-test");ui::Screens screens(files,tiles,host);screens.setDisplay(config);DarwinWorldRandom random(1);
  for(unsigned base=1;base<=6;++base){
-  ui::ScreensState state;state.locale="kr";state.screen=ui::ScreenId::base;state.baseId="Base00"+std::to_string(base);state.selectedBaseButton=1;state.baseDescription="설명 전체와 나가기 버튼은 겹치지 않아야 한다.";
-  screens.refresh(state,12);for(unsigned i=0;i<120;++i)screens.tick(12+float(i)/60,random);Frame frame;screens.append(frame,15);
-  bool background=false,description=false;
-  for(const auto& sprite:frame.sprites){
-   if(sprite.image=="PhoneMenu/"+state.baseId+".jpg"){background=true;assert(sprite.clip&&sprite.clip->x==0&&sprite.clip->width==config.canvas.width);uniformCover(sprite,config.canvas);}
-   if(sprite.image=="BaseTextBG.png"){description=true;const auto left=sprite.center.x-sprite.size.width*.5f,bottom=sprite.center.y-sprite.size.height*.5f,top=sprite.center.y+sprite.size.height*.5f;assert(left>=area.x&&bottom>=area.y&&top<=area.y+area.height);}
-  }
-  assert(background&&description);
-  const auto original=DataTable::parse(files.read("PhoneMenu/"+state.baseId+".tble"));const auto hd=DataTable::parse(files.read(state.baseId+".tble"));unsigned expected=0;
-  for(std::size_t row=0;row<hd.rowCount();++row)expected+=hd.value(row,"Type")=="Button";
-  assert(screens.buttons().size()==expected);
-  // Phone artwork, highlight and facilities retain their original relative
-  // positions. Pan the whole illustration to reveal cropped top/bottom roads.
-  for(const auto& key:screens.buttons()){
-   std::size_t row=0;for(;row<original.rowCount();++row)if(original.value(row,"Type")=="Button"&&original.integer(row,"ID")==int(key.id)-2000)break;assert(row<original.rowCount());
-   const auto before=screens.buttonScreenPosition(key);const auto originalTransform=DisplayLayout(config).ui(DisplayRegion::artScene);
-   assert(near(before.x,originalTransform.map({240+original.real(row,"X"),160}).x));
-   screens.revealButton(key);const auto point=screens.buttonScreenPosition(key);assert(point.x>=0&&point.x<=config.canvas.width&&point.y>=0&&point.y<=config.canvas.height);
+  ui::ScreensState state;state.locale="kr";state.screen=ui::ScreenId::base;state.baseId="Base00"+std::to_string(base);state.selectedBaseButton=1;state.baseDescription="시설 설명과 모든 도로를 화면 안에 표시한다.";state.baseHasCompletedMission=base%2==0;host.texts.clear();
+  screens.refresh(state,12);for(unsigned n=0;n<120;++n)screens.tick(12+float(n)/60,random);Frame f;screens.append(f,15);bool background=false,description=false;
+  for(const auto& sprite:f.sprites){if(sprite.image=="PhoneMenu/"+state.baseId+".jpg"){background=true;const auto b=quadBounds(sprite);assert(near(b.x,geometry.picture.x)&&near(b.y,geometry.picture.y)&&near(b.width,geometry.picture.width)&&near(b.height,geometry.picture.height));}if(sprite.image=="cpu-text:GuiBase.description"){description=true;const auto b=quadBounds(sprite);assert(b.x>=area.x-.01f&&b.x+b.width<=area.x+area.width+.01f&&b.y>=-.01f&&b.y+b.height<=geometry.footer.height+.01f);}}
+  bool guidance=false,progress=false;for(const auto& request:host.texts){if(request.sourceId=="GuiBase.location"){guidance=request.text=="시설을\n선택하세요.";assert(request.text.find(state.baseId)==std::string::npos);}if(request.sourceId=="GuiBase.progress")progress=request.text==(state.baseHasCompletedMission?"완료한 임무를\n보고하세요.":"임무를 받아\n출격하세요.");}assert(guidance&&progress);
+  assert(background&&description);float covered=0;for(const auto& image:f.sprites)if(image.image=="MissionList_Mid.png"&&image.clip&&image.clip->y==0&&image.clip->height==config.canvas.height){assert(near(image.clip->x,covered));covered+=image.clip->width;}assert(near(covered,config.canvas.width));
+  const auto phone=DataTable::parse(files.read("PhoneMenu/"+state.baseId+".tble")),hd=DataTable::parse(files.read(state.baseId+".tble"));unsigned expected=0;for(std::size_t row=0;row<hd.rowCount();++row)expected+=hd.value(row,"Type")=="Button";assert(screens.buttons().size()==expected);
+  for(const auto& key:screens.buttons()){std::size_t row=0;for(;row<phone.rowCount();++row)if(phone.value(row,"Type")=="Button"&&phone.integer(row,"ID")==int(key.id)-2000)break;assert(row<phone.rowCount());
+   const auto expected=geometry.artwork.map({240+phone.real(row,"X"),160+phone.real(row,"Y")});const auto point=screens.buttonScreenPosition(key);assert(near(point.x,expected.x)&&near(point.y,expected.y));
    host.events.clear();screens.input(PointerPhase::begin,point,701,15);screens.input(PointerPhase::end,point,701,15);assert(!host.events.empty()&&host.events.front().button.key==key);
+   // Moving an untouched menu area never pans image, facilities or paths.
+   const auto old=screens.buttonScreenPosition(key);screens.input(PointerPhase::begin,{area.x+2,100},702,16);screens.input(PointerPhase::move,{area.x+2,300},702,16.1f);screens.input(PointerPhase::end,{area.x+2,300},702,16.2f);const auto after=screens.buttonScreenPosition(key);assert(near(old.x,after.x)&&near(old.y,after.y));
   }
-  // A user drag moves image and button together without activating a facility.
-  const auto key=screens.buttons().front();host.events.clear();const Vec2 gesture{config.canvas.width*.5f,config.canvas.height*.5f};
-  screens.input(PointerPhase::begin,gesture,702,16);screens.input(PointerPhase::move,{gesture.x,gesture.y+1000},702,16.1f);screens.input(PointerPhase::end,{gesture.x,gesture.y+1000},702,16.2f);assert(std::none_of(host.events.begin(),host.events.end(),[](const auto& e){return e.button.type==ui::ButtonEventType::pop;}));
-  const auto top=screens.buttonScreenPosition(key);Frame upper;screens.append(upper,16.2f);const Sprite* bg=nullptr;for(const auto& image:upper.sprites)if(image.image=="PhoneMenu/"+state.baseId+".jpg")bg=&image;assert(bg&&near(quadBounds(*bg).y,0));
-  screens.input(PointerPhase::begin,gesture,703,17);screens.input(PointerPhase::move,{gesture.x,gesture.y-1000},703,17.1f);screens.input(PointerPhase::end,{gesture.x,gesture.y-1000},703,17.2f);const auto bottom=screens.buttonScreenPosition(key);assert(top.y>bottom.y);
-  Frame lower;screens.append(lower,17.2f);for(const auto& image:lower.sprites)if(image.image=="PhoneMenu/"+state.baseId+".jpg")assert(near(quadBounds(image).y+quadBounds(image).height,config.canvas.height));
-  screens.setDisplay(DisplayConfiguration::surface({1024,1366}));Frame tablet;screens.append(tablet,17.3f);bool hdBackground=false;for(const auto& image:tablet.sprites)hdBackground|=image.image==state.baseId+".png";assert(hdBackground);screens.setDisplay(config);
+  screens.setDisplay(DisplayConfiguration::surface({1024,1366}));Frame tablet;screens.append(tablet,17);bool hdBackground=false;for(const auto& image:tablet.sprites)hdBackground|=image.image==state.baseId+".png";assert(hdBackground);screens.setDisplay(config);
  }
- ui::ScreensState state;state.locale="kr";state.screen=ui::ScreenId::command;
- for(unsigned i=0;i<3;++i){ui::ItemView item;item.dataId="accepted"+std::to_string(i);item.name="진행 중인 임무";state.acceptedMissions.push_back(item);}
- screens.refresh(state,12);const auto clip=DisplayLayout(config).clip(DisplayRegion::list).value();
- for(const auto& key:screens.buttons())if(key.id>=5200&&key.id<=5202){const auto p=screens.buttonScreenPosition(key);assert(p.y>=clip.y+24&&p.y<=clip.y+clip.height-24);}
+ }
 }
 void allMapEdges(Files& files){
  const auto maps=Maps::parse(Chunk::parse(files.read("MapInfo.mcb")));unsigned count=0;
@@ -141,24 +134,44 @@ void phoneArtwork(Files& files){
  for(const auto screen:{ui::ScreenId::title,ui::ScreenId::slots,ui::ScreenId::command,ui::ScreenId::shop,ui::ScreenId::maintenance}){
   ui::ScreensState state;state.screen=screen;ui.refresh(state,0);Frame prep;ui.appendPreparation(prep);const std::string name=screen==ui::ScreenId::title?"PhoneMenu/Main_BG.png":screen==ui::ScreenId::slots?"PhoneMenu/SelSlot_BG.jpg":screen==ui::ScreenId::command?"PhoneMenu/CmdCenterBG.jpg":screen==ui::ScreenId::shop?"PhoneMenu/ShopBG.jpg":"PhoneMenu/MaintenanceBG.jpg";bool found=false;
   for(const auto& image:prep.sprites)if(image.image==name){found=true;const auto info=imageInfo(files.read(name));assert(info.width==(screen==ui::ScreenId::title?480u:960u)&&info.height==(screen==ui::ScreenId::title?320u:640u));assert(decodeImage(files.read(name)).width==info.width);}assert(found);
-  for(unsigned tick=0;tick<800;++tick){ui.tick(float(tick)/60,random);Frame f;ui.append(f,float(tick)/60);for(const auto& image:f.sprites)if(image.image==name){uniformCover(image,config.canvas);}}
+  for(unsigned tick=0;tick<800;++tick){ui.tick(float(tick)/60,random);Frame f;ui.append(f,float(tick)/60);for(const auto& image:f.sprites)if(image.image==name){if(screen==ui::ScreenId::title||screen==ui::ScreenId::slots)uniformCover(image,config.canvas);else{const auto b=quadBounds(image),expected=menu::PhoneLayout(config).picture;assert(near(b.x,expected.x)&&near(b.y,expected.y)&&near(b.width,expected.width)&&near(b.height,expected.height));}}}
  }
  MapLoading loading(files,nullptr,true);const auto prep=loading.preparationFrame();assert(prep.sprites.size()==1&&prep.sprites[0].image=="PhoneMenu/StageClearBG.png"&&loading.artworkViewport().width==480);
 }
 void phoneMenuGrids(Files& files){
- const auto config=DisplayConfiguration::surface({912,420},{68,20,68,0});Host host;PreparedTiles tiles("phone-menu-grids");ui::Screens ui(files,tiles,host);ui.setDisplay(config);ui::ScreensState state;state.locale="kr";state.screen=ui::ScreenId::shop;state.inventoryVisible=true;state.inventoryPages=2;
+ for(const auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({852,393},{59,21,60,0}),DisplayConfiguration::surface({912,420},{68,20,68,0})}){
+ Host host;PreparedTiles tiles("phone-menu-grids");ui::Screens ui(files,tiles,host);ui.setDisplay(config);ui::ScreensState state;state.locale="kr";state.screen=ui::ScreenId::shop;state.inventoryVisible=true;state.inventoryPages=2;
  for(unsigned i=0;i<25;++i){ui::ItemView item;item.dataId="inventory"+std::to_string(i);item.icon="Icon10011.png";item.count=1;state.inventory.push_back(item);if(i<24){item.dataId="stock"+std::to_string(i);state.shopItems.push_back(item);}}
- for(auto& item:state.equipment){item.icon="Icon10011.png";item.dataId="equipment";item.count=1;}for(auto& item:state.bots){item.icon="Icon04201.png";item.dataId="bot";item.count=1;}ui.refresh(state,0);
- const auto key=[&](unsigned id){for(const auto& k:ui.buttons())if(k.id==id)return k;throw std::runtime_error("Missing phone menu button");};
- const auto tap=[&](unsigned id){auto k=key(id);ui.revealButton(k);const auto p=ui.buttonScreenPosition(k);ui.input(PointerPhase::begin,p,900+id,1);ui.input(PointerPhase::end,p,900+id,1.1f);};
- unsigned inv=0,stock=0;for(auto k:ui.buttons()){inv+=k.id>=6000&&k.id<6025;stock+=k.id>=2200&&k.id<2224;}assert(inv==25&&stock==24);
- Frame f;ui.append(f,0);unsigned backgrounds=0;bool skin=false;for(const auto& s:f.sprites){backgrounds+=s.image=="PhoneMenu/ShopBG.jpg";assert(s.image!="ShopBG.png"&&s.image!="MaintenanceBG.png"&&s.image!="InvenBG.png"&&s.image!="ItemBox.png");if(s.image=="Icon10011.png"&&s.strip.empty())skin|=near(s.size.width,32*std::max(config.canvas.width/480,config.canvas.height/320));}assert(backgrounds==1&&skin);
- tap(9201);tap(9201);tap(9203);const auto lastStock=ui.buttonScreenPosition(key(2223)),lastInventory=ui.buttonScreenPosition(key(6024));const DisplayLayout layout(config);const auto shopClip=layout.clip(DisplayRegion::phoneStock).value(),invClip=layout.clip(DisplayRegion::phoneInventory).value();assert(lastStock.y>=shopClip.y&&lastStock.y<=shopClip.y+shopClip.height&&lastInventory.y>=invClip.y&&lastInventory.y<=invClip.y+invClip.height);
+ for(auto& item:state.equipment){item.icon="Icon10011.png";item.dataId="equipment";item.count=1;}for(auto& item:state.bots){item.icon="Icon04201.png";item.dataId="bot";item.count=1;}ui.refresh(state,0);const menu::PhoneLayout geometry(config);
+ const auto key=[&](unsigned id){for(const auto& k:ui.buttons())if(k.id==id)return k;throw std::runtime_error("Missing fixed menu button "+std::to_string(id));};
+ const auto tap=[&](unsigned id){auto k=key(id);const auto p=ui.buttonScreenPosition(k);ui.input(PointerPhase::begin,p,900+id,1);ui.input(PointerPhase::end,p,900+id,1.1f);};
+ for(bool inventory:{false,true})for(unsigned i=0;i<(inventory?25u:24u);++i){const auto k=key((inventory?6000u:2200u)+i);const auto box=geometry.cell(i,inventory);const auto p=ui.buttonScreenPosition(k);assert(near(p.x,box.x+box.width*.5f)&&near(p.y,box.y+box.height*.5f));host.events.clear();tap(k.id);assert(!host.events.empty()&&host.events.front().button.key==k&&host.events.front().button.key.dataId==(inventory?"inventory":"stock")+std::to_string(i));}
+ for(const auto& k:ui.buttons())assert(k.id<9200||k.id>9203);assert(ui.horizontalPanLimit()==0);
+ Frame f;ui.append(f,1);for(const auto& image:f.sprites){assert(image.image!="InvenBG.png"&&image.image!="ShopBG.png");if(image.image=="ItemBox.png"){const auto b=quadBounds(image);assert(b.x+b.width<=geometry.picture.x+.01f||b.x>=geometry.picture.x+geometry.picture.width-.01f);}}
+ // The supplementary fifth HD row maps back to the original25-cell consumer.
  host.events.clear();const auto begin=ui.buttonScreenPosition(key(6024)),destination=ui.buttonScreenPosition(key(6020));ui.input(PointerPhase::begin,begin,999,2);ui.input(PointerPhase::move,destination,999,2.1f);ui.input(PointerPhase::end,destination,999,2.2f);bool mapped=false;for(const auto& e:host.events)if(e.button.type==ui::ButtonEventType::move&&e.dropCoordinates){assert(near(e.dropCoordinates->inventory.x,408)&&near(e.dropCoordinates->inventory.y,192));mapped=true;}assert(mapped);
- tap(9204);assert(ui.button(key(6100))->visible&&!ui.button(key(2200))->visible);f={};ui.append(f,2);backgrounds=0;for(const auto& s:f.sprites){backgrounds+=s.image=="PhoneMenu/MaintenanceBG.jpg";assert(s.image!="MaintenanceBG.png"&&s.image!="InvenBG.png"&&s.image!="ItemBox.png");}assert(backgrounds==1);
+ tap(9204);assert(ui.button(key(6100))->visible&&!ui.button(key(2200))->visible&&!ui.button(key(2223))->visible);
  for(const auto pair:{std::pair{6100u,Vec2{188,388}},std::pair{6302u,Vec2{326,270}}}){const auto from=ui.buttonScreenPosition(key(6024)),to=ui.buttonScreenPosition(key(pair.first));host.events.clear();ui.input(PointerPhase::begin,from,1001,3);ui.input(PointerPhase::move,to,1001,3.1f);ui.input(PointerPhase::end,to,1001,3.2f);mapped=false;for(const auto& e:host.events)if(e.button.type==ui::ButtonEventType::move&&e.dropCoordinates){assert(near(e.dropCoordinates->inventory.x,pair.second.x)&&near(e.dropCoordinates->inventory.y,pair.second.y));mapped=true;}assert(mapped);}
- tap(9205);assert(ui.button(key(2200))->visible&&!ui.button(key(6100))->visible);
- std::cout<<"PHONE_MENU_GRIDS originalBakedCells/HD24and25/52OriginalAssets/noDuplicatePanels/overflowArrowInputs/equipmentTab/HDdragInverse PASS\n";
+ tap(9205);assert(ui.button(key(2223))->visible&&!ui.button(key(6100))->visible);
+ }
+ std::cout<<"PHONE_MENU_GRIDS original16/20+HD8/5/all49directHits/noScroll/HDdragInverse PASS\n";
+}
+void phoneCommandPages(Files& files){
+ const auto config=DisplayConfiguration::surface({667,375});const menu::PhoneLayout geometry(config);Host host;PreparedTiles tiles("phone-command-pages");ui::Screens screens(files,tiles,host);screens.setDisplay(config);ui::ScreensState state;state.screen=ui::ScreenId::command;state.locale="kr";
+ for(unsigned i=0;i<5;++i){ui::ItemView entry;entry.dataId="new"+std::to_string(i);entry.name="새 임무 "+std::to_string(i);state.availableMissions.push_back(entry);entry.dataId="own"+std::to_string(i);entry.name="진행 임무 "+std::to_string(i);entry.did=3;entry.total=10;state.acceptedMissions.push_back(entry);}
+ state.selectedMission=0;state.selectedMissionDataId="new0";for(unsigned n=0;n<600;++n)state.missionBody+="가";screens.refresh(state,0);
+ const auto key=[&](unsigned id){for(const auto& k:screens.buttons())if(k.id==id)return k;throw std::runtime_error("Missing command page button "+std::to_string(id));};
+ const auto tap=[&](unsigned id){const auto k=key(id);const auto p=screens.buttonScreenPosition(k);assert(p.x>=0&&p.x<=config.canvas.width&&p.y>=0&&p.y<=config.canvas.height);screens.input(PointerPhase::begin,p,30000+id,1);screens.input(PointerPhase::end,p,30000+id,1.1f);};
+ for(unsigned first:{5100u,5200u}){for(unsigned i=0;i<4;++i){host.events.clear();tap(first+i);assert(!host.events.empty()&&host.events.back().button.key.dataId==(first==5100?"new":"own")+std::to_string(i));}tap(first==5100?9401:9403);host.events.clear();tap(first+4);assert(!host.events.empty()&&host.events.back().button.key.dataId==(first==5100?"new4":"own4"));}
+ const auto lastText=[&](std::string_view id){for(auto it=host.texts.rbegin();it!=host.texts.rend();++it)if(it->sourceId==id)return it->text;throw std::runtime_error("Missing paged command text");};
+ const auto body=lastText("MissionInfo.body");tap(9405);const auto next=lastText("Command.bodyPage");assert(next.starts_with("2 / ")&&!lastText("MissionInfo.body").empty()&&!body.empty());tap(9404);assert(lastText("Command.bodyPage").starts_with("1 / "));
+ host.events.clear();tap(5004);assert(!host.events.empty()&&host.events.back().button.key.dataId=="new0");
+ Frame fixed;screens.append(fixed,1);for(const auto& image:fixed.sprites)if(image.image=="MissionInfo.png"){const auto b=quadBounds(image);const auto raw=imageInfo(files.read(image.image));assert(near(b.width/b.height,float(raw.width)/float(raw.height)));assert(b.x>=geometry.picture.x&&b.y>=geometry.picture.y&&b.x+b.width<=geometry.picture.x+geometry.picture.width+.01f&&b.y+b.height<=geometry.picture.y+geometry.picture.height+.01f);}
+ const auto point=screens.buttonScreenPosition(key(5004));screens.input(PointerPhase::begin,{config.canvas.width*.5f,100},65500,2);screens.input(PointerPhase::move,{config.canvas.width*.5f,350},65500,2.1f);screens.input(PointerPhase::end,{config.canvas.width*.5f,350},65500,2.2f);const auto after=screens.buttonScreenPosition(key(5004));assert(point.x==after.x&&point.y==after.y);
+ state.commandListVisible=false;state.completedMission.dataId="done";state.completedMission.title="임무 완료";for(unsigned i=0;i<9;++i)state.completedMission.rewards.push_back({1,int(100+i),"Icon10011.png"});screens.refresh(state,3);
+ for(unsigned page=0;page<3;++page){for(unsigned i=page*4;i<std::min(9u,page*4+4);++i)assert(lastText("Command.completed.done.reward"+std::to_string(i))==std::to_string(100+i));if(page<2)tap(9407);}
+ Frame completion;screens.append(completion,3);for(const auto& image:completion.sprites)if(image.image=="MissionCompletedBG.png"){const auto b=quadBounds(image);const auto raw=imageInfo(files.read(image.image));assert(near(b.width/b.height,float(raw.width)/float(raw.height)));}host.events.clear();tap(5007);assert(!host.events.empty()&&host.events.back().button.key.dataId=="done");
+ std::cout<<"PHONE_COMMAND_PAGES 5+5rawMissionIDs/details/accept/9rewards/complete/noScroll PASS\n";
 }
 void phoneLiveMenuSession(Files& files){
  Host host;DarwinWorldRandom random(1);SaveData saved;saved.initializeSlot(0,"Menus","kr",1794268800);progression::SlotView slot(saved.slot(0));slot.string(0x2d,16,"Base001");slot.u32(0x1b5c,5);slot.string(0x8c+8*6,6,"01001");slot.byte(0x53c+8,3);
@@ -173,14 +186,23 @@ void phoneLiveMenuSession(Files& files){
  // Open the original buy-confirmation flow, then attempt the new controls behind it.
  for(const auto& k:ui.buttons())if(k.id==2104&&k.intData==4){ui.revealButton(k);const auto p=ui.buttonScreenPosition(k);ui.input(PointerPhase::begin,p,777,game.renderTime());ui.input(PointerPhase::end,p,777,game.renderTime());break;}
  tap(2200);tap(2102);assert(game.state().tradeVisible);const auto first=ui.buttonScreenPosition(key(6000));const auto selected=game.state().selectedShop;const auto shopVisible=ui.button(key(2200))->visible;
- for(unsigned id:{9203u,9204u}){const auto p=ui.buttonScreenPosition(key(id));ui.input(PointerPhase::begin,p,888+id,game.renderTime());ui.input(PointerPhase::end,p,888+id,game.renderTime());}
+ for(unsigned id:{9204u}){const auto p=ui.buttonScreenPosition(key(id));ui.input(PointerPhase::begin,p,888+id,game.renderTime());ui.input(PointerPhase::end,p,888+id,game.renderTime());}
  assert(game.state().tradeVisible&&game.state().selectedShop==selected&&ui.button(key(2200))->visible==shopVisible);const auto after=ui.buttonScreenPosition(key(6000));assert(near(first.x,after.x)&&near(first.y,after.y));tap(2107);assert(!game.state().tradeVisible);
  assert(host.writes==writes&&Bytes(game.workingSlot().begin(),game.workingSlot().end())==before);
+ // Actual source callbacks buy and sell the original item; no success injection.
+ const auto count=[&](std::string_view id){int count=0;for(const auto& item:game.state().inventory)if(item.dataId==id)count+=item.count;return count;};
+ const auto previousCount=count("01001"),credit=game.state().credits;const auto equipmentBefore=game.state().equipment;
+ tap(2200);assert(game.state().shopItems[0].dataId=="01001");tap(2102);assert(game.state().tradeVisible&&game.state().tradeItemId=="01001"&&game.state().tradeCount==1);const auto buyPrice=game.state().tradePrice;tap(2108);
+ assert(!game.state().tradeVisible&&game.state().credits==credit-buyPrice&&count("01001")==previousCount+1);
+ unsigned sellSlot=0;for(;sellSlot<25;++sellSlot)if(game.state().inventory[sellSlot].dataId=="01001"&&game.state().inventory[sellSlot].count>0&&!game.state().inventory[sellSlot].equipped)break;assert(sellSlot<25);
+ const auto absolute=game.state().inventory[sellSlot].position;tap(6000+sellSlot);assert(game.state().detailInventory==int(sellSlot)&&game.state().detailItem.dataId=="01001");tap(2103);assert(game.state().tradeVisible&&game.state().tradeItemId=="01001");
+ while(game.state().tradeCount>1)tap(2110);const auto sellPrice=game.state().tradePrice;tap(2109);assert(!game.state().tradeVisible&&game.state().credits==credit-buyPrice+sellPrice&&count("01001")==previousCount);assert(game.state().inventory[sellSlot].dataId=="01001"&&game.state().inventory[sellSlot].position==absolute);
+ for(unsigned i=0;i<6;++i)assert(game.state().equipment[i].dataId==equipmentBefore[i].dataId);assert(host.writes==writes);
  // A reused button must restore the HD snap contract across both surface profiles.
  tap(6008);for(unsigned n=0;n<3;++n){game.tick();ui.tick(game.renderTime(),random);}const auto current=game.state();ui.setDisplay(DisplayConfiguration::surface({1024,1366}));for(auto k:ui.buttons())assert(ui.button(k)->positionSnap==ui::PositionSnap::none);ui.setDisplay(phone);for(auto k:ui.buttons())assert(ui.button(k)->positionSnap==ui::PositionSnap::none);
- // Reach the original bottom controls by panning the complete illustration.
+ // The original bottom controls are accessible without moving the illustration.
  ui.input(PointerPhase::begin,{20,200},33445,game.renderTime());ui.input(PointerPhase::move,{20,340},33445,game.renderTime());ui.input(PointerPhase::end,{20,340},33445,game.renderTime());const auto exit=ui.buttonScreenPosition(key(2100));assert(exit.y>0&&exit.y<phone.canvas.height);ui.input(PointerPhase::begin,exit,33446,game.renderTime());ui.input(PointerPhase::end,exit,33446,game.renderTime());settle();assert(game.state().screen==ui::ScreenId::base);
- std::cout<<"PHONE_LIVE_MENU SessionCallbacks/detailPushClose/tradeModalBlocksTabsAndScroll/surfaceReuse/noProgressWrites PASS\n";
+ std::cout<<"PHONE_LIVE_MENU SessionCallbacks/detailPushClose/tradeModalBlocksTabs/buyAndSellRawIDAndCredits/surfaceReuse/noPerTradeWrites PASS\n";
 }
 void session(Files& files,DisplayConfiguration config){Host host;DarwinWorldRandom random(1);GameSession game(files,host,random);assert(game.createSlot(0,"Layout","kr"));assert(game.enterField("Stage01_01",0));game.setDisplay(config);auto* scene=game.battle();assert(scene);const auto before=Bytes(game.workingSlot().begin(),game.workingSlot().end());const auto writes=host.writes;const auto old=scene->player().position;auto logical=scene->camera().toScreen({old.x,old.y+100});const auto point=game.worldCanvasPoint(logical);assert(game.inputWorld(PointerPhase::begin,point,77));game.inputWorld(PointerPhase::end,point,77);assert(near(scene->player().destination.x,old.x)&&near(scene->player().destination.y,old.y+100));assert(game.inputWorld(PointerPhase::begin,point,78));game.inputWorld(PointerPhase::end,{point.x,0},78);assert(scene->dashState().movePointer==0);assert(game.inputWorld(PointerPhase::begin,point,79));game.inputWorld(PointerPhase::cancel,{0,0},79);assert(scene->dashState().movePointer==0);
  if(config.compact&&config.insets.left>0){const Vec2 edge{config.insets.left*.5f,config.canvas.height*.75f};assert(game.inputWorld(PointerPhase::begin,edge,880));game.inputWorld(PointerPhase::end,edge,880);}
@@ -190,4 +212,4 @@ void session(Files& files,DisplayConfiguration config){Host host;DarwinWorldRand
  const auto pos=scene->player().position;const auto hp=scene->playerHP();game.setDisplay(DisplayConfiguration::surface({1024,1366}));assert(scene->player().position.x==pos.x&&scene->playerHP()==hp&&host.writes==writes);assert(game.workingSlot().size()==before.size());
 }
 }
-int main(int argc,char** argv){if(argc<2)return 77;fullScreenWorld();transforms();Files files(argv[1]);entryCamera(files);allMapEdges(files);phoneArtwork(files);phoneMenus(files);phoneMenuGrids(files);phoneLiveMenuSession(files);for(auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({852,393},{59,21,59,0}),DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({1024,1366},{0,20,0,24})}){screens(files,config);help(files,config);session(files,config);}std::cout<<"HM2_DISPLAY PASS 4 canvases / full-screen world / terrain edge coverage / HUD size / six base menus / Phone-original-art/hotspot-pan/Retina-JPEG / first mission rows / safe-area / inverse-hit / HD25+24+6 / drag / warm100 / help-scroll / common-world / no-display-save\n";}
+int main(int argc,char** argv){if(argc<2)return 77;phoneMenuGeometry();fullScreenWorld();transforms();Files files(argv[1]);entryCamera(files);allMapEdges(files);phoneArtwork(files);phoneMenus(files);phoneMenuGrids(files);phoneCommandPages(files);phoneLiveMenuSession(files);for(auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({852,393},{59,21,59,0}),DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({1024,1366},{0,20,0,24})}){screens(files,config);help(files,config);session(files,config);}std::cout<<"HM2_DISPLAY PASS 4 canvases / full-screen world / terrain edge coverage / HUD size / six base menus / Phone-original-art/contain-hotspots/Retina-JPEG / first mission rows / safe-area / inverse-hit / HD25+24+6 / drag / warm100 / help-scroll / common-world / no-display-save\n";}

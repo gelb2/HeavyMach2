@@ -1,5 +1,9 @@
 # HeavyMach2 iPhone 작업 인계
 
+2026-11-15 최신검증: 공통C++5/5, Native iPhone/iPad각8/8 통과. phone126조건2100frame/ipad126조건1200frame, iPad이전126·혼합98조건각1200frame 대조는HUD편집119번화면만변경/상태차이0. 원본PNG90장(.local/evidence/experimental-hud-implementation-20261114/captures.json)을확보했다. 다만폰107/90frame의기존검정대각선이새Experimental에서도재현돼시각합격아님. iphone_apple_audit가PlatformAppleRuntime.hpp/mm와AppleConcurrentValidationTests.mm에immutableFrame prefix/terrain/repeat진단및HQ공통Screens시각fixture를작성중(root해당파일쓰지않음). 일반/치트SimulatorRelease빌드는성공했으나그뒤허브내부ID→시설안내copy만추가돼최종Release는이후다시만든다. 메뉴copy CPU통과. 실기기설치/병합/새Site게시는아직없음. root가추가두Native selector를한묶음으로빌드·실행하고픽셀실패해결/보고게시/feature커밋까지이어간다.
+
+2026-11-15 진행 중: HUD·비전투 메뉴 코어를 feature checkpoint로 보존하고 Apple 후속 진단을 이어간다. [현행 작업 기록](docs/experimental-hud-implementation-20261114.md)을 읽는다. root는 HUDLayout/Screens의HUD영역/ScreensTests/EquipmentTests/AppleQA, iphone_background_originals는 MenuGridLayout/DisplayLayout/Screens메뉴영역/DisplayLayoutTests를 담당한다. 같은Screens파일을통째로덮지않는다. 공통HUD일부검사통과,메뉴1차컴파일수정중이며Apple최종실행은아직이다. 이전서비스기기검색실패는게임시작전기반실패다. 사용자재개뒤두시뮬기기목록정상복구를확인했다. 최종한묶음검사·캡처·실제보고게시·feature커밋전까지멈추지않고이어서진행한다. main/develop병합·실기기설치는이번추가지시없다.
+
 2026-11-14 HUD 최신 게시: 상태를5개로 세분화한11조각+패널2개 계획과 BG/게이지/숫자의 실제 구조를 보고 Site 버전2에 게시했다. 원본 클래식8장과 디코딩 미리보기9장을 포함한다. 온라인19파일/PNG17개 해시 확인. 누적 Site302의 첫화면/고정목록/이전경로 연결을 갱신했고 기존미디어는299와같다. 보고: https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/ . Experimental 구현이나 새 설치 완료가 아니다. 아래 버전1/301은 게시 이력이다.
 
 2026-11-14 최신 HUD 분석: HP·BOOSTER/SP·EXP·레벨·보유금을 각각 독립 조각으로 계획했다. 전체11조각+좌우 패널2개다. GameUI_BG에는 표식/격자/슬롯테두리/장식이 합쳐져 있고 실제 게이지·숫자는 별도 노드다. 공통 reader로 원본9개를 로컬 해석해 같은 크기의 PNG 분석 미리보기와 각 해시를 기록했다. GaugeHP/Booster 파일 존재와 현재 field의 GaugeBack 소비를 구분했다. 원본·게임 코드·설치는 변경하지 않았다.

@@ -40,6 +40,7 @@ struct Host:ScreensHost {
 };
 struct Random:WorldRandom {unsigned calls=0;std::uint32_t random()override{++calls;return 7;}};
 std::vector<ButtonKey> ids(Screens& ui,unsigned id){auto keys=ui.buttons();std::erase_if(keys,[&](const auto& k){return k.id!=id;});return keys;}
+const Sprite* hudSelectionLabel(const Frame& f){for(const auto& s:f.sprites)if(s.image.starts_with("prepared:HUDLayout.title."))return &s;return nullptr;}
 const Sprite* sprite(const Frame& f,std::string_view name){for(const auto& s:f.sprites)if(s.image==name)return &s;return nullptr;}
 struct SequenceRandom:WorldRandom {
     std::vector<std::uint32_t> values;unsigned calls=0;
@@ -433,6 +434,71 @@ void phoneHUDBottomInput(const char* root){
     const auto oldPad=hud::visualBounds(legacy,hud::controls,ipad),newPad=hud::visualBounds(hud::upgrade(legacy,ipad),hud::controls,ipad);assert(near(oldPad.x,newPad.x)&&near(oldPad.y,newPad.y));
     std::cout<<"PHONE_HUD_BOTTOM originalQuadY0/safeAreaButtonCapture/noDragButtonLeak/v1BottomEdge/ipadPreserved PASS\n";
 }
+void experimentalHUD(const char* root){
+ for(const auto display:{DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({1024,1366},{0,20,0,24})}){
+    Files files(root);Host host;PreparedTiles tiles("experimental-test");Screens ui(files,tiles,host);ui.setDisplay(display);Random random;
+    ScreensState state;state.screen=ScreenId::field;state.systemVisible=true;state.fieldUIRevision=1;state.hasWorkingSlot=true;state.hpBarWidth=270;state.hpBarFilled=120;state.spBarWidth=270;state.spBarFilled=90;state.experienceRate=.2f;state.enemyHpRate=.7f;state.enemyName="E_Tank_01";state.enemyNameRevision=1;state.radarMarks={{{0,0},0},{{160,80},1}};
+    ui.refresh(state);assert(ui.beginHUDEdit());auto switcher=ids(ui,9104).front();auto point=ui.buttonScreenPosition(switcher);ui.input(PointerPhase::begin,point,201,1);ui.input(PointerPhase::end,point,201,1.1f);assert(ui.hudConfiguration().style==hud::Style::experimental);assert(ui.applyHUDEdit());assert(host.hudWrites==1);
+    state.systemVisible=false;ui.refresh(state);auto frame=draw(ui);
+    unsigned backgrounds=0;for(const auto& sp:frame.sprites)if(sp.image=="GameUI_BG.png"){
+        ++backgrounds;assert(sp.strip.size()==4);const auto& tl=sp.strip[0];const auto& bl=sp.strip[1];assert(tl.position.y>bl.position.y&&tl.uv.y<bl.uv.y);
+    }assert(backgrounds==7);assert(sprite(frame,"RaderMark.png")&&sprite(frame,"GameUI_GaugeEXP.png"));assert(ids(ui,1021).size()==1&&ids(ui,1022).size()==1&&ids(ui,1023).size()==1&&ids(ui,1025).size()==1&&ids(ui,1026).size()==1);
+    const auto before=frame;const auto reads=files.reads,probes=files.probes,preparations=host.preparations;
+    for(unsigned i=1;i<=100;++i){state.hpBarFilled=int(120+i);state.spBarFilled=90+i;state.boosterReady=i>50;state.experienceRate=.2f+.005f*i;state.radarMarks[1].worldPosition={160.f+i,80.f+i};state.level=int(i/20);state.credits=int(i*10);ui.updateHUD(state);ui.tick(float(i+2),random);frame=draw(ui);assert(sprite(frame,"RaderMark.png")&&sprite(frame,"GameUI_GaugeEXP.png"));}
+    assert(files.reads==reads&&files.probes==probes&&host.preparations==preparations&&host.hudWrites==1);
+    assert(sprite(frame,"GameUI_GaugeEXP.png")->strip[2].position.x-sprite(frame,"GameUI_GaugeEXP.png")->strip[0].position.x>sprite(before,"GameUI_GaugeEXP.png")->strip[2].position.x-sprite(before,"GameUI_GaugeEXP.png")->strip[0].position.x);
+    auto lastMark=[](const Frame& f){const Sprite* result=nullptr;unsigned n=0;for(const auto& s:f.sprites)if(s.image=="RaderMark.png"){result=&s;++n;}assert(n==2);return result;};assert(lastMark(frame)->center.x>lastMark(before)->center.x&&lastMark(frame)->center.y>lastMark(before)->center.y);
+    auto gauge=[](const Frame& f,float y){const AtlasQuad* result=nullptr;for(const auto& s:f.sprites)if(s.image=="GameUI_GaugeBack.png"&&s.atlasBatch)for(const auto& q:s.atlasBatch->quads)if(std::abs(q.vertices[0].position.y-y)<.1f)result=&q;assert(result);return result;};const auto gaugeTransform=DisplayLayout(display).ui(DisplayRegion::bottom);assert(gauge(frame,gaugeTransform.map({0,56}).y)->vertices[0].position.x>gauge(before,gaugeTransform.map({0,56}).y)->vertices[0].position.x);assert(gauge(frame,gaugeTransform.map({0,82}).y)->vertices[0].uv.y==.75f);
+    // Functional source pixels have one owner; dragging a value must not leave another value's frame behind.
+    auto bg=decodeImage(files.read("GameUI_BG.png"));std::vector<unsigned> owners(bg.width*bg.height);for(const auto& b:hud::functionalSlices)for(int y=int(b.y);y<int(b.y+b.height);++y)for(int x=int(b.x);x<int(b.x+b.width);++x)if(bg.rgba[(std::size_t(bg.height-1-y)*bg.width+x)*4+3])assert(++owners[std::size_t(y)*bg.width+x]==1);
+    const auto hpClip=hud::originalClip(ui.hudConfiguration(),hud::hp,DisplayLayout(display));const auto maxPixel=gaugeTransform.map({278.5f,48});assert(maxPixel.x>=hpClip.x&&maxPixel.x<hpClip.x+hpClip.width);
+    // Both editor handles select their own panel and preserve image aspect.
+    state.systemVisible=true;ui.refresh(state);assert(ui.beginHUDEdit());auto editor=draw(ui);const auto* leftHandle=sprite(editor,"prepared:HUDLayout.panel.11");assert(leftHandle);const auto start=leftHandle->center;ui.input(PointerPhase::begin,start,271,120);ui.input(PointerPhase::move,{start.x+12,start.y+12},271,120.1f);ui.input(PointerPhase::end,{start.x+12,start.y+12},271,120.2f);assert(ui.hudConfiguration().experimentalPositions[hud::leftPanel]&&!ui.hudConfiguration().experimentalPositions[hud::rightPanel]);ui.cancelHUDEdit();assert(ui.beginHUDEdit());editor=draw(ui);const auto* rightHandle=sprite(editor,"prepared:HUDLayout.panel.12");assert(rightHandle);const auto rightStart=rightHandle->center;ui.input(PointerPhase::begin,rightStart,272,121);ui.input(PointerPhase::move,{rightStart.x-12,rightStart.y+12},272,121.1f);ui.input(PointerPhase::end,{rightStart.x-12,rightStart.y+12},272,121.2f);assert(ui.hudConfiguration().experimentalPositions[hud::rightPanel]&&!ui.hudConfiguration().experimentalPositions[hud::leftPanel]);ui.cancelHUDEdit();state.systemVisible=false;ui.refresh(state);
+    auto numberUV=[](const Frame& f,std::string_view name){std::vector<float> result;for(const auto& sp:f.sprites)if(sp.image==name&&sp.atlasBatch)for(const auto& q:sp.atlasBatch->quads)result.push_back(q.vertices[0].uv.x);assert(!result.empty());return result;};assert(numberUV(before,"NumTile05.png")!=numberUV(frame,"NumTile05.png")&&numberUV(before,"NumSet01b.png")!=numberUV(frame,"NumSet01b.png"));
+    // Each value gets its own transform; radar and all changing values keep updating after restart.
+    auto config=ui.hudConfiguration();config.experimentalPositions[hud::hp]=hud::Placement{0,.4f};config.experimentalPositions[hud::radar]=hud::Placement{1,1};config.experimentalPositions[hud::targetInfo]=hud::Placement{.5f,.7f};host.hudSettings[display.compact?"compact":"regular"]=hud::encode(config);
+    PreparedTiles movedTiles("experimental-moved");Screens moved(files,movedTiles,host);moved.setDisplay(display);moved.refresh(state);auto mf=draw(moved);assert(moved.hudConfiguration()==config);assert(sprite(mf,"RaderMark.png")&&sprite(mf,"prepared:GuiGame.enemyName"));
+    for(const auto& sp:mf.sprites)if(sp.image=="GameUI_GaugeBack.png"&&sp.atlasBatch)for(const auto& q:sp.atlasBatch->quads)if(q.vertices[0].color.a){assert(sp.clip&&sp.clip->width>0&&sp.clip->height>0);}
+    // Both drawers retain actual IDs through parent movement, relative offsets and all pages.
+    for(int side=2;side<=3;++side){
+        state.weaponChoiceType=side;state.weaponChoices.clear();for(int i=0;i<19;++i){ItemView entry;entry.position=30+i;entry.dataId="weapon"+std::to_string(i);entry.name=entry.dataId;state.weaponChoices.push_back(entry);}
+        config.experimentalPositions[side==2?hud::leftWeapon:hud::rightWeapon]=hud::Placement{side==2?0.f:1.f,.5f};config.experimentalPositions[side==2?hud::leftPanel:hud::rightPanel]=hud::Placement{side==2?-1.f:1.f,side==2?1.f:-1.f};host.hudSettings[display.compact?"compact":"regular"]=hud::encode(config);
+        PreparedTiles drawerTiles("drawer-"+std::to_string(side));Screens drawer(files,drawerTiles,host);drawer.setDisplay(display);drawer.refresh(state);assert(ids(drawer,1024).size()<=6&&ids(drawer,9301).size()==1);unsigned visited=0;
+        for(unsigned page=0;page<4;++page){for(unsigned tick=0;tick<35;++tick)drawer.tick(float(200+tick),random);for(const auto& k:ids(drawer,1024)){assert(k.intData==30+int(visited));const auto point=drawer.buttonScreenPosition(k);assert(point.x>=0&&point.x<=display.canvas.width&&point.y>=0&&point.y<=display.canvas.height);const auto beforeEvents=host.actions.size();drawer.input(PointerPhase::begin,point,550+visited,400+float(visited));drawer.input(PointerPhase::end,point,550+visited,400.1f+float(visited));assert(host.actions.size()>beforeEvents&&host.actions.back().button.key==k);++visited;}
+            if(visited<19){const auto next=drawer.buttonScreenPosition(ids(drawer,9301).front());drawer.input(PointerPhase::begin,next,650+page,450+float(page));drawer.input(PointerPhase::end,next,650+page,450.1f+float(page));}}
+        assert(visited==19);
+    }
+    // Choosing classic retains its original positions, and cancel cannot change either saved style.
+    const auto savedMoved=moved.hudConfiguration();state.weaponChoiceType=0;state.systemVisible=true;moved.refresh(state);assert(moved.beginHUDEdit());point=moved.buttonScreenPosition(ids(moved,9104).front());moved.input(PointerPhase::begin,point,299,300);moved.input(PointerPhase::end,point,299,300.1f);assert(moved.hudConfiguration().style==hud::Style::classic);moved.cancelHUDEdit();assert(moved.hudConfiguration()==savedMoved);
+    assert(hud::decode(hud::encode(config))==config);
+ }
+ std::cout<<"EXPERIMENTAL_HUD HP_SP_EXP_level_credits/radarWorldMarks/warm100/noIO/noTextBake/11independentPieces/real19WeaponsPaged/profileSave/cancel/classicPreserved PASS\n";
+}
+void experimentalHUDPlacementInputs(const char* root){
+ for(const auto display:{DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({1024,1366},{0,20,0,24})}){
+    Files files(root);Host host;hud::Configuration settings;settings.style=hud::Style::experimental;
+    settings.positions[hud::gauges]=hud::Placement{.1f,.9f};settings.positions[hud::combat]=hud::Placement{.4f,.4f};settings.positions[hud::controls]=hud::Placement{1,0};
+    const auto profile=display.compact?"compact":"regular";host.hudSettings[profile]=hud::encode(settings);PreparedTiles tiles("experimental-inputs");Screens ui(files,tiles,host);ui.setDisplay(display);ScreensState state;state.screen=ScreenId::field;state.systemVisible=true;ui.refresh(state);const DisplayLayout layout(display);
+    auto tap=[&](Screens& screen,unsigned id,unsigned pointer){const auto keys=ids(screen,id);assert(!keys.empty());const auto p=screen.buttonScreenPosition(keys.front());screen.input(PointerPhase::begin,p,pointer,1);screen.input(PointerPhase::end,p,pointer,1.1f);};
+    // Selecting through the toolbar and dragging empty world space recovers every widget, including one under the toolbar.
+    for(unsigned group=0;group<hud::experimentalCount;++group){assert(ui.beginHUDEdit());if(group)tap(ui,9105,300+group);
+        for(unsigned corner=0;corner<2;++corner){const auto handle=draw(ui);const auto* label=hudSelectionLabel(handle);assert(label);const Vec2 start=label->center;Vec2 delta;
+            if(group<hud::leftPanel){const auto b=hud::visualBounds(ui.hudConfiguration(),group,layout);delta={float(corner)*(display.canvas.width-b.width)-b.x,float(corner)*(display.canvas.height-b.height)-b.y};}
+            else delta={display.canvas.width*(corner?2.f:-1.f),display.canvas.height*(corner?2.f:-1.f)};
+            const Vec2 end{start.x+delta.x,start.y+delta.y};ui.input(PointerPhase::begin,start,400+group,2);ui.input(PointerPhase::move,end,400+group,2.1f);ui.input(PointerPhase::end,end,400+group,2.2f);
+            const auto actual=ui.hudConfiguration().experimentalPositions[group];assert(actual);const float want=group>=hud::leftPanel?(corner?1.f:-1.f):float(corner);if(!near(actual->x,want)||!near(actual->y,want))std::cerr<<"HUD_EDGE_FAIL profile="<<profile<<" group="<<group<<" corner="<<corner<<" actual="<<actual->x<<","<<actual->y<<" want="<<want<<std::endl;assert(near(actual->x,want)&&near(actual->y,want));
+        }
+        ui.cancelHUDEdit();assert(ui.hudConfiguration()==settings);
+    }
+    // Canceling Experimental after selecting13, then entering a Classic profile, must never index the Classic names out of range.
+    assert(ui.beginHUDEdit());tap(ui,9104,500);assert(ui.hudConfiguration().style==hud::Style::classic);assert(ui.applyHUDEdit());ui.setDisplay(display.compact?DisplayConfiguration::surface({1024,1366},{0,20,0,24}):DisplayConfiguration::surface({912,420},{68,20,68,0}));assert(ui.beginHUDEdit());auto safeFrame=draw(ui);assert(hudSelectionLabel(safeFrame));ui.cancelHUDEdit();ui.setDisplay(display);
+    // Save both complete layouts; Classic Apply and restart retain every experimental coordinate.
+    settings.style=hud::Style::experimental;for(unsigned g=0;g<hud::leftPanel;++g){const auto b=hud::groupBounds(settings,g);settings.experimentalPositions[g]=hud::draggedOrigin(g,layout,hud::baseTransform(settings,g,layout).map({b.x,b.y}),settings);}settings.experimentalPositions[hud::leftPanel]=hud::Placement{0,0};settings.experimentalPositions[hud::rightPanel]=hud::Placement{0,0};host.hudSettings[profile]=hud::encode(settings);
+    PreparedTiles bothTiles("both-layouts");Screens both(files,bothTiles,host);both.setDisplay(display);both.refresh(state);assert(both.beginHUDEdit());tap(both,9104,502);assert(both.applyHUDEdit());auto classic=both.hudConfiguration();assert(classic.style==hud::Style::classic&&classic.positions==settings.positions&&classic.experimentalPositions==settings.experimentalPositions);
+    PreparedTiles restartedTiles("both-restarted");Screens restarted(files,restartedTiles,host);restarted.setDisplay(display);restarted.refresh(state);assert(restarted.hudConfiguration()==classic);assert(restarted.beginHUDEdit());tap(restarted,9104,503);assert(restarted.applyHUDEdit());assert(restarted.hudConfiguration()==settings);
+ }
+ std::cout<<"EXPERIMENTAL_INPUT all13Selected/edgeDrags/coveredWidgetRecovery/profileCrossNoOOB/classicCustomAnd13CoordinatesAppliedRestarted PASS\n";
+}
 void movableHUD(const char* root){
     Files files(root);Host host;PreparedTiles tiles("hud-layout-test");Screens ui(files,tiles,host);
     const auto display=DisplayConfiguration::surface({912,420},{68,20,68,0});ui.setDisplay(display);
@@ -482,7 +548,7 @@ int main(int argc,char** argv){
     assert(Screens::missionDescription("Original comment",{{2,"E_Tank_01",3,5}},true)=="Original comment\n\nMission Objects\n  - destroy E_Tank_01 (3/5)\n");
     assert(!Screens::missionDescription("Original",{{1,"unresolved",0,1}},false));
     if(argc<2)return 77;
-    phoneHUDBottomInput(argv[1]);hudMeasuredGeometry(argv[1]);screenResourceOwners(argv[1]);movableHUD(argv[1]);
+    experimentalHUD(argv[1]);experimentalHUDPlacementInputs(argv[1]);phoneHUDBottomInput(argv[1]);hudMeasuredGeometry(argv[1]);screenResourceOwners(argv[1]);movableHUD(argv[1]);
     slotPreviewTranslation(argv[1]);
     fieldMessage(argv[1]);
     shopDetails(argv[1]);inventoryMaintenanceDetails(argv[1]);fieldNameRange(argv[1]);fieldCredits(argv[1]);radarMarks(argv[1]);fieldPlaceName(argv[1]);pageIndicators(argv[1]);
