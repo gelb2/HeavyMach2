@@ -3,6 +3,7 @@
 #import <QuartzCore/QuartzCore.h>
 #include "Core/Session/GameSession.hpp"
 #include <functional>
+#include <map>
 
 namespace hm2::apple {
 struct NativeRequest {
@@ -39,7 +40,9 @@ public:
     GameSession& session();
     ui::Screens& screens();
     [[nodiscard]] std::uint64_t resourceReads()const;
+    [[nodiscard]] std::map<std::string,unsigned> resourceReadCounts()const;
     [[nodiscard]] std::size_t preparedTextCount()const;
+    [[nodiscard]] std::vector<std::string> preparedTextIdentities()const;
     [[nodiscard]] NSUInteger textureUploads()const;
     [[nodiscard]] NSDictionary<NSString*,NSNumber*>* audioMetrics()const;
     [[nodiscard]] NSDictionary<NSString*,NSNumber*>* resourceMetrics()const;

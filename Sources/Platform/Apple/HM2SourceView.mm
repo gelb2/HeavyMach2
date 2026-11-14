@@ -38,6 +38,10 @@
     NSInteger _lastProfileThermalState;CFTimeInterval _lastProfileThermalSample;
 #if DEBUG
     NSString* _testInputHistoryBase64;
+    std::uint64_t _testZeroDeltaMoveFilters,_testPositiveMovesForwarded;
+    CGPoint _testLastRawCurrent,_testLastRawPrevious,_testLastFilteredCurrent,_testLastFilteredPrevious;
+    NSTimeInterval _testLastRawTimestamp,_testLastFilteredTimestamp;
+    std::uintptr_t _testLastRawPointer,_testLastFilteredPointer;unsigned _testLastRawPhase;
 #endif
 }
 + (Class)layerClass{return CAEAGLLayer.class;}
@@ -175,8 +179,22 @@
 - (void)input:(NSSet<UITouch*>*)touches phase:(hm2::PointerPhase)phase {
     if(!_runtime||!_active)return;
     try{for(UITouch* touch in touches){hm2::Vec2 logical{};const auto identifier=reinterpret_cast<std::uintptr_t>((__bridge void*)touch);
+        const CGPoint current=[touch locationInView:self],previous=[touch previousLocationInView:self];
+        const bool duplicateMove=phase==hm2::PointerPhase::move&&current.x==previous.x&&current.y==previous.y;
+#if DEBUG
+        if(_uiTesting){
+            _testLastRawCurrent=current;_testLastRawPrevious=previous;_testLastRawTimestamp=touch.timestamp;_testLastRawPointer=identifier;_testLastRawPhase=unsigned(phase);
+            if(duplicateMove){++_testZeroDeltaMoveFilters;_testLastFilteredCurrent=current;_testLastFilteredPrevious=previous;_testLastFilteredTimestamp=touch.timestamp;_testLastFilteredPointer=identifier;}
+            else if(phase==hm2::PointerPhase::move)++_testPositiveMovesForwarded;
+        }
+#endif
+        // Modern Apple compatibility policy: a moved callback whose two raw
+        // CGPoint positions are exactly equal carries no physical movement.
+        // The original EAGL adapter did not filter it. Keep every nonzero raw
+        // movement, however small, and leave original Dash/Nav rules intact.
+        if(duplicateMove)continue;
         const auto before=_uiTesting&&_runtime->session().battle()?_runtime->session().battle()->selectedEnemy():0;
-        if(_runtime->logicalPoint([touch locationInView:self],logical))_runtime->input(phase,logical,identifier);
+        if(_runtime->logicalPoint(current,logical))_runtime->input(phase,logical,identifier);
         else if(phase==hm2::PointerPhase::end||phase==hm2::PointerPhase::cancel)_runtime->input(hm2::PointerPhase::cancel,{},identifier);
         if(_uiTesting&&phase==hm2::PointerPhase::begin)if(const auto* scene=_runtime->session().battle();scene&&scene->selectedEnemy()!=before){_selectedByTouch=scene->selectedEnemy();++_selectionTouches;}
     }}catch(const std::exception& e){[self failRuntime:[NSString stringWithUTF8String:e.what()]];}[self updateTestInputHistory];[self updateTestState];
@@ -195,7 +213,8 @@
         [events addObject:@[@(unsigned(e.phase)),@(e.pointer),@(e.canvas.x),@(e.canvas.y),@(e.movePointerBefore),@(e.movePointerAfter),@(e.pathBefore),@(e.pathAfter),@(e.tapBefore),@(e.tapAfter),@(e.specialBefore),@(e.specialAfter),@(e.worldTimeBefore),@(e.worldTimeAfter),@(e.dashStartsBefore),@(e.dashStartsAfter),@(e.playerBefore.x),@(e.playerBefore.y),@(e.worldPoint.x),@(e.worldPoint.y),@(e.overlayConsumed),@(e.uiConsumed),@(e.worldConsumed),@(e.terminalCancelled)]];
     }
     const auto columns=@[@"phase",@"pointer",@"canvasX",@"canvasY",@"ownerBefore",@"ownerAfter",@"pathBefore",@"pathAfter",@"tapBefore",@"tapAfter",@"spBefore",@"spAfter",@"worldTimeBefore",@"worldTimeAfter",@"dashBefore",@"dashAfter",@"playerX",@"playerY",@"worldX",@"worldY",@"overlay",@"ui",@"world",@"terminalCancelled"];
-    NSData* data=[NSJSONSerialization dataWithJSONObject:@{@"columns":columns,@"events":events,@"capacity":@256} options:0 error:nil];_testInputHistoryBase64=[data base64EncodedStringWithOptions:0];
+    NSDictionary* apple=@{@"zeroDeltaMoveFilters":@(_testZeroDeltaMoveFilters),@"positiveMovesForwarded":@(_testPositiveMovesForwarded),@"lastRaw":@{@"x":@(_testLastRawCurrent.x),@"y":@(_testLastRawCurrent.y),@"previousX":@(_testLastRawPrevious.x),@"previousY":@(_testLastRawPrevious.y),@"timestamp":@(_testLastRawTimestamp),@"pointer":@(_testLastRawPointer),@"phase":@(_testLastRawPhase)},@"lastFiltered":@{@"x":@(_testLastFilteredCurrent.x),@"y":@(_testLastFilteredCurrent.y),@"previousX":@(_testLastFilteredPrevious.x),@"previousY":@(_testLastFilteredPrevious.y),@"timestamp":@(_testLastFilteredTimestamp),@"pointer":@(_testLastFilteredPointer)}};
+    NSData* data=[NSJSONSerialization dataWithJSONObject:@{@"columns":columns,@"events":events,@"capacity":@256,@"appleInput":apple} options:0 error:nil];_testInputHistoryBase64=[data base64EncodedStringWithOptions:0];
 #endif
 }
 - (void)updateTestState {
@@ -212,6 +231,7 @@
     [value appendFormat:@";selectionTouches=%llu;touchSelectedEnemy=%llu",_selectionTouches,_selectedByTouch];
     [value appendFormat:@";gameOverConfirmTick=%llu",_gameOverConfirmTick];
     if(_testInputHistoryBase64)[value appendFormat:@";inputHistoryBase64=%@",_testInputHistoryBase64];
+    [value appendFormat:@";zeroDeltaMoveFilters=%llu;positiveMovesForwarded=%llu;lastRawX=%.17g;lastRawY=%.17g;lastRawPreviousX=%.17g;lastRawPreviousY=%.17g;lastRawTimestamp=%.17g;lastFilteredRawX=%.17g;lastFilteredRawY=%.17g;lastFilteredRawPreviousX=%.17g;lastFilteredRawPreviousY=%.17g;lastFilteredRawTimestamp=%.17g",_testZeroDeltaMoveFilters,_testPositiveMovesForwarded,_testLastRawCurrent.x,_testLastRawCurrent.y,_testLastRawPrevious.x,_testLastRawPrevious.y,_testLastRawTimestamp,_testLastFilteredCurrent.x,_testLastFilteredCurrent.y,_testLastFilteredPrevious.x,_testLastFilteredPrevious.y,_testLastFilteredTimestamp];
     const auto working=game.workingSlot();const auto word=[&](unsigned at){return std::uint32_t(working[at])|(std::uint32_t(working[at+1])<<8)|(std::uint32_t(working[at+2])<<16)|(std::uint32_t(working[at+3])<<24);};
     const auto stringAt=[&](unsigned at,unsigned size){unsigned length=0;while(length<size&&working[at+length])++length;return std::string_view(reinterpret_cast<const char*>(working.data()+at),length);};
     const auto place=stringAt(0x2d,16),base=stringAt(0x55,16);

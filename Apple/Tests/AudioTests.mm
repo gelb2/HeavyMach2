@@ -29,15 +29,19 @@ NSData* shortWave(){
     XCTAssertTrue([audio playEffect:std::string_view("Wpn_Gun01.wav") x:0 y:0]);
     XCTAssertEqual(audio.loadedSounds,1u);XCTAssertEqual([audio.metrics[@"effectFileReads"] unsignedIntegerValue],1u);
     XCTAssertEqual([audio.metrics[@"effectColdNameConversions"] unsignedIntegerValue],1u);
+    NSArray* first=audio.preparationSnapshot;XCTAssertEqual(first.count,1u);XCTAssertEqualObjects(first[0][@"name"],@"Wpn_Gun01.wav");XCTAssertTrue([first[0][@"success"] boolValue]);
     NSDictionary* warm=audio.metrics;
     for(unsigned i=0;i<100;++i)XCTAssertTrue([audio playEffect:std::string_view("Wpn_Gun01.wav") x:0 y:0]);
     for(NSString* key in @[@"contextsCreated",@"sourcesCreated",@"buffersCreated",@"effectFileReads",@"effectDecodes",@"effectColdNameConversions"])
         XCTAssertEqualObjects(warm[key],audio.metrics[key],@"Warm lazy cache changed: %@",key);
+    XCTAssertEqualObjects(first,audio.preparationSnapshot); // Reading/hits never create preparation events.
     [audio setActive:NO];XCTAssertFalse([audio playEffect:std::string_view("SFX_Dash.wav") x:0 y:0]);XCTAssertEqual(audio.loadedSounds,1u);
     [audio setActive:YES];XCTAssertTrue([audio playEffect:std::string_view("SFX_Dash.wav") x:0 y:0]);
     XCTAssertEqual(audio.loadedSounds,2u);XCTAssertEqual(audio.ownerContextIdentity,owner);
     XCTAssertEqual([audio.metrics[@"contextsCreated"] unsignedIntegerValue],1u);
     XCTAssertEqual([audio.metrics[@"effectFileReads"] unsignedIntegerValue],2u);
+    const auto prepared=audio.preparationSnapshot;XCTAssertEqual(prepared.count,2u);XCTAssertEqualObjects(prepared[1][@"name"],@"SFX_Dash.wav");
+    for(NSDictionary* event in prepared){for(NSString* key in @[@"fileReads",@"decodes",@"sourcesCreated",@"buffersCreated"])XCTAssertEqual([event[key] unsignedIntegerValue],1u);XCTAssertEqualObjects(event[@"ownerContext"],@(owner));XCTAssertNotEqual([event[@"sourceIdentity"] unsignedIntegerValue],0u);}
 }
 - (void)testOriginalAudioFilesAndWarmEffectResources{
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;

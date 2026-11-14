@@ -694,7 +694,13 @@ std::uint64_t GameSession::resourceRevision()const{
     return p.observedResourceEpoch;
 }
 Frame GameSession::globalPreparationFrame()const{Frame frame;impl_->globalAssets.appendPreparation(frame);return frame;}
-std::vector<std::string> GameSession::orderedStartupSounds()const{return originalStartupSoundNames(impl_->weapons);}
+std::vector<std::string> GameSession::orderedStartupSounds()const{
+    auto names=originalStartupSoundNames(impl_->weapons);
+    // GameMain.start0x4f0c requests Open then Close after GlobalInfo.init,
+    // before creating World/GuiGame and refreshing the initial title.
+    for(const auto name:ScreenTransition::soundResources)names.emplace_back(name);
+    return names;
+}
 Frame GameSession::preparationFrame()const{
     Frame frame=impl_->scene?impl_->scene->preparationFrame():Frame{};
     impl_->globalAssets.appendPreparation(frame);

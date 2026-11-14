@@ -92,7 +92,24 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
     XCTAssertGreaterThan(resourceMetrics.resourcePreparationOperations,0u);XCTAssertGreaterThan(resourceMetrics.preparationReadRequests,0u);XCTAssertGreaterThan(resourceMetrics.preparationExistsRequests,0u);
     NSDictionary* before=report[@"audioBefore"];NSDictionary* after=report[@"audioAfter"];
     XCTAssertEqual([after[@"contextsCreated"] unsignedIntegerValue],1u);
-    for(NSString* key in @[@"contextsCreated",@"sourcesCreated",@"buffersCreated",@"effectFileReads",@"effectDecodes",@"contextBindCalls",@"contextClearCalls",@"contextBindFailures",@"effectNameConversions"])XCTAssertEqualObjects(before[key],after[key]);
+    for(NSString* key in @[@"contextsCreated",@"sourcesDeleted",@"buffersDeleted",@"contextBindCalls",@"contextClearCalls",@"contextBindFailures",@"effectNameConversions"])XCTAssertEqualObjects(before[key],after[key]);
+    NSDictionary* preparation=report[@"audioPreparation"];XCTAssertNotNil(preparation);NSArray* preparedBefore=preparation[@"before"],*preparedAfter=preparation[@"after"],*firstRequests=preparation[@"newCacheMisses"];
+    XCTAssertGreaterThanOrEqual(preparedAfter.count,preparedBefore.count);if(preparedAfter.count>=preparedBefore.count)XCTAssertEqualObjects([preparedAfter subarrayWithRange:NSMakeRange(0,preparedBefore.count)],preparedBefore);
+    NSMutableSet<NSString*>* seen=[NSMutableSet new];for(NSDictionary* miss in preparedAfter){
+        NSString* name=miss[@"name"];XCTAssertFalse([seen containsObject:name],@"Cached sound was prepared again: %@",name);[seen addObject:name];XCTAssertTrue([miss[@"success"] boolValue],@"First preparation failed: %@",miss);
+        for(NSString* key in @[@"fileReads",@"decodes",@"sourcesCreated",@"buffersCreated"])XCTAssertEqual([miss[key] unsignedIntegerValue],1u,@"First named cache miss must do exactly one %@: %@",key,miss);
+        XCTAssertEqual([miss[@"sourcesDeleted"] unsignedIntegerValue],0u);XCTAssertEqual([miss[@"buffersDeleted"] unsignedIntegerValue],0u);XCTAssertNotEqual([miss[@"sourceIdentity"] unsignedIntegerValue],0u);XCTAssertEqualObjects(miss[@"ownerContext"],after[@"ownerContext"]);
+        XCTAssertEqual([miss[@"loadedAfter"] unsignedIntegerValue],[miss[@"loadedBefore"] unsignedIntegerValue]+1);
+    }
+    // HD GameMain.start0x4f0c explicitly requests these names (CFStrings
+    // 0x5e08c/0x5e09c). Actual startup now prepares them before the first door
+    // transition. A future first request is accepted only with this name proof;
+    // cached repeats must contribute no read/decode/source/buffer allocation.
+    const NSSet* originalDoorRequests=[NSSet setWithArray:@[@"Loading_Open.wav",@"Loading_Close.wav"]];
+    for(NSDictionary* miss in firstRequests){XCTAssertTrue([originalDoorRequests containsObject:miss[@"name"]],@"Unexpected later cold sound: %@",miss);XCTAssertFalse([preparation[@"beforeNames"] containsObject:miss[@"name"]]);}
+    XCTAssertEqual(firstRequests.count,preparedAfter.count-preparedBefore.count);
+    for(NSString* key in @[@"loadedSounds",@"sourcesCreated",@"buffersCreated",@"effectFileReads",@"effectDecodes",@"effectColdNameConversions"]){const auto initial=[before[key] unsignedLongLongValue],final=[after[key] unsignedLongLongValue];XCTAssertGreaterThanOrEqual(final,initial);XCTAssertEqual(final-initial,firstRequests.count,@"Only the evidenced first named requests may allocate/read: %@",key);}
+    XCTAssertEqual([before[@"loadedSounds"] unsignedIntegerValue],preparedBefore.count);XCTAssertEqual([after[@"loadedSounds"] unsignedIntegerValue],seen.count);
     XCTAssertEqualObjects(before[@"currentContext"],before[@"ownerContext"]);XCTAssertEqualObjects(after[@"currentContext"],after[@"ownerContext"]);XCTAssertNotEqual([after[@"currentContext"] unsignedIntegerValue],0u);XCTAssertEqual([after[@"contextBindCalls"] unsignedIntegerValue],1u);XCTAssertEqual([after[@"contextClearCalls"] unsignedIntegerValue],0u);XCTAssertEqual([after[@"contextBindFailures"] unsignedIntegerValue],0u);XCTAssertEqual([after[@"effectNameConversions"] unsignedIntegerValue],0u);XCTAssertGreaterThan([after[@"effectByteNameRequests"] unsignedIntegerValue],0u);
     unsigned failedButtons=0;bool shop=false,mission=false,restarted=false,levelUp=false;
     for(NSDictionary* row in report[@"cases"]){XCTAssertEqual([row[@"ticks"] unsignedIntegerValue],targetFrames);XCTAssertEqual([row[@"firstFrame"] unsignedIntegerValue],1u);XCTAssertEqual([row[@"lastFrame"] unsignedIntegerValue],targetFrames);shop|=[row[@"shopPurchased"] boolValue]&&[row[@"insufficientRejected"] boolValue];mission|=[row[@"missionComplete"] boolValue];restarted|=[row[@"restarted"] boolValue];levelUp|=[row[@"level"] intValue]>[row[@"initialLevel"] intValue];failedButtons+=[row[@"buttonFailures"] unsignedIntegerValue];}
@@ -175,6 +192,8 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
             if(number==231){XCTAssertEqual([capture[@"helpPages"] intValue],0);XCTAssertEqual([capture[@"helpGuides"] intValue],0);}
         }
         NSDictionary* interruption=report[@"inputInterruption"];for(NSString* key in @[@"capturedBefore",@"discardedAfter",@"beginReachedRealHandler",@"cleanupSentNoAction",@"noExtraTick",@"noSave",@"creditPreserved",@"screenPreserved"])XCTAssertTrue([interruption[key] boolValue],@"Interruption %@ failed",key);
+        XCTAssertEqual([interruption[@"resumeFailures"] unsignedIntegerValue],0u);
+        XCTAssertEqualObjects(interruption[@"previouslyRunning"],interruption[@"explicitMenuResumes"]);
         NSDictionary* moving=report[@"cases"][58];XCTAssertEqual([moving[@"dashStarts"] unsignedIntegerValue],0u);XCTAssertGreaterThan([moving[@"distanceMoved"] doubleValue],100.0);
         XCTAssertGreaterThan([moving[@"coinPickups"] unsignedIntegerValue],0u);XCTAssertGreaterThan([moving[@"itemPickups"] unsignedIntegerValue],0u);
         XCTAssertGreaterThan([moving[@"pickupCreditGain"] intValue],0);

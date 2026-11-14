@@ -16,9 +16,13 @@
 
 ## 그림 출력과 남은 차이
 
-정식/치트 Apple 런타임은 이제 각 공통 GameSession의 orderedStartupSounds 순서로 prepareEffect를 호출한다. GuiTitle의 새 소유가 생성될 때에는 원본0x32340대로 BGM 요청 뒤 Title_TitleIn.wav→Title_Bang.wav→Title_TapToStart.wav를 준비하며 재생하지 않는다. 같은 title의 scalar refresh에는 반복하지 않는다. 실제 HD 준비 파일의 읽기 전용 조사에서 WeaponInfo213행+22 SFX는235요청·고유46개였고 title3요청을 합치면 고유48개였다. 모든 참조 파일이 존재한다. 디렉터리57 WAV와의 차이9개를 자동으로 모두 SFX에 올리지 않는다. STAGE1/2/3와 Title은 BGM이고, `Loading_Open.wav`·`Loading_Close.wav`·`SFX_GameOver.wav` 등의 생성/첫 요청 경계는 실제 호출 근거로 따로 판정한다. 이48개 수치는 참조 집합 조사 결과이며 실행·디코딩 성공 결과가 아니다.
+정식/치트 Apple 런타임은 이제 각 공통 GameSession의 orderedStartupSounds 순서로 prepareEffect를 호출한다. GuiTitle의 새 소유가 생성될 때에는 원본0x32340대로 BGM 요청 뒤 Title_TitleIn.wav→Title_Bang.wav→Title_TapToStart.wav를 준비하며 재생하지 않는다. 같은 title의 scalar refresh에는 반복하지 않는다. 실제 HD 준비 파일의 읽기 전용 조사에서 WeaponInfo213행+22 SFX는235요청·고유46개다. 아래 추가 조사에서 확인한 GameMain의 Loading_Open→Loading_Close를 합치면237요청·고유48개이며, title3요청을 합친 시작 참조는 고유50개다. 디렉터리57 WAV를 자동으로 모두 SFX에 올리지 않는다. STAGE1/2/3와 Title은 BGM이며 `SFX_GameOver.wav` 등의 나머지 요청 경계는 별도로 추적한다. 참조 집합 조사와 실제 실행·디코딩 성공 결과는 구분한다.
 
 추가 원본 조사에서 GlobalInfo.openWeaponInfo0x14bc4가 WeaponInfo의 원래 행 순서대로 fireSound를 getSound에 요청하고, GlobalInfo.init0x15ef4가22개 공통 SFX도 명시적으로 준비하는 것을 확인했다. 따라서 파일명 캐시의 lazy miss는 “정상 게임이 모든 효과음을 첫 실제 사격 때만 읽는다”는 뜻이 아니다. 디렉터리의57 WAV를 무조건 훑는 이전 동작과 전역 메타데이터가 실제 참조하는 소리를 원래 순서로 요청하는 동작을 구분한다. 같은 파일명 준비 API인 prepareEffect를 전역 참조 목록과 연결하고, 나머지 최초 요청·이후 재사용을 따로 검사한다.
+
+첫 Native 동시 검사는 시작48개와 종료50개의 read/decode/source/buffer 차이 때문에 이전 전구간 동일 assertion에서 실패했다. 이 실패를 남긴다. 이후 원본 `GameMain.init0x53b0→start0x4f0c`를 읽어 GlobalInfo 뒤 Loading_Open→Loading_Close를 getSound에 요청한 사실을 확인했다. 기존 동일 SHA의 CFString 인덱스에서0x5e08c는 `Loading_Open.wav`,0x5e09c는 `Loading_Close.wav`였다. 원본의 명시적 시작 준비가 빠졌으므로 공통 런타임 시작 목록에 이 순서를 연결했다. 실패 때 늘어난 두 파일의 실제 이름은 기존 총계만으로 확정하지 않으며 후속 이름 기록으로 대조한다.
+
+HM2Audio에는 실제 filename-cache miss 때만 이름·순서·성공과 read/decode/source/buffer 생성·삭제 변화, source/context ID를 메모리에 남기도록 추가했다. 캐시 hit/재생마다 기록하거나 파일을 쓰지 않는다. 동시 보고서는 준비 전후 이름과 추가 miss를 내보내고, Native 검사는 각 고유 첫 요청에서 read/decode/source/buffer가 각각1회인지 확인한다. 반복 재생에서 총 자원 증가량은 증명된 새 이름의 miss 수와 같아야 한다. 컨텍스트1개·같은 ID·source/buffer 삭제0·반복 cache hit의 새 읽기0 기준은 유지한다. 이 보강과 GameMain 소리 준비를 반영한 다음 Native 실행은 아직 하지 않았다.
 
 인게임 화면·버튼은 공통 C++ UI/VisualLayer가 생성한 Sprite/atlas를 HM2Renderer의 GLES1으로 출력한다. 확인한 Apple 코드에서 UIKit UIButton/UIImageView로 게임 버튼을 새로 만드는 경로는 찾지 못했다. UIKit은 창·OS 터치·이름/확인 알림을 담당한다. 이 정적 범위를 전체 구현 감사·실행 완료로 확대하지 않는다.
 
@@ -33,6 +37,8 @@ CoreGraphics가 존재한다는 사실 자체는 위반 근거가 아니다. 원
 원본 QobManager는 보여지는 receiver를 역순 호출하고 true에서 멈춘다. QobButton의 end는 false지만 원본 World는 paused 상태에서 EasyMove를 호출하지 않는다. 버튼의 반환값 하나를 근거로 모든 UI 이벤트를 World에 전달하지 않는다.
 
 현행 GameRuntime에는 World에서 시작한 포인터의 종료를 UI/도움말이 소비할 때 해당 기존 World 소유만 cancel하는 좁은 정리를 추가했다. 메뉴 뒤로 새 이동/적 선택을 전달하지 않는다. 이는 별도 소유권 결함을 막는 경계 처리다. 사용자가 보고한 경로 재지정 후 점프 실패의 원인으로 확정한 것은 아니다. 원작의 작은 move가 탭 시각을 지우는 규칙과0.5초/SP100 조건은 바꾸지 않았다.
+
+첫 실제 OS doubleTap 검사에서는 같은 canvas 위치의 move가 첫 탭 시각을 지워 두 경로 조건 모두 실패했다. 이후 Apple 경계에 raw UITouch current/previous CGPoint가 정확히 같은 moved만 제외하는 호환 정책을 추가했다. 이는 원본 EAGLView에는 없는 추가이며 양수의 작은 이동은 모두 원본 규칙으로 전달한다. DEBUG에는 제외 수와 실제 raw 좌표·시각을 남긴다. 아직 이 수정 뒤 앱 실행 결과는 없으며 사용자 물리 손의 실패율 개선을 확정하지 않는다. [입력 조사](iphone-path-jump-investigation-20261114.md)의 원본 근거·첫 실패·호환 수정 절을 함께 본다.
 
 입력 최근256개는 메모리의 고정 배열에 기록한다. phase·포인터·화면/월드 좌표·Player 위치·경로 수·이전 탭 시각·World 시간·SP·점프 시작 수와 UI/overlay/World 소비 여부를 포함한다. 기록 때문에 파일·DB·콘솔을 매 프레임 쓰지 않는다. 끝난 뒤 명시적으로 조회한 결과와 실제 OS 입력을 연결해 실패 경로를 좁힌다.
 

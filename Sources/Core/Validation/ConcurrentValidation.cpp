@@ -5,6 +5,7 @@
 #include "Core/Simulation/DarwinWorldRandom.hpp"
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 #include <limits>
 #include <map>
 #include <queue>
@@ -685,9 +686,18 @@ struct ConcurrentValidation::Impl {
             auto& game=*cases[index]->game;auto& o=observations[index];auto* scene=game.battle();
             const auto count=[&](){int result=0;for(const auto& item:game.state().inventory)if(item.dataId==o.strikeItemCode)result+=item.count;return result;};
             o.strikeCountBefore=count();Vec2 target{scene->player().position.x+100,scene->player().position.y+100};float best=std::numeric_limits<float>::max();
-            for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=scene->camera().toScreen(enemy.position);if(point.x<32||point.x>scene->camera().viewport.width-32||point.y<fieldFloor(scene->camera())+60||point.y>scene->camera().viewport.height-44)continue;const float dx=enemy.position.x-scene->player().position.x,dy=enemy.position.y-scene->player().position.y,d=dx*dx+dy*dy;if(d<best){best=d;target=enemy.position;o.strikeTargetVisibleEnemy=true;}}
+            const auto& camera=scene->camera();const float bottom=fieldFloor(camera),top=camera.viewport.height-16;
+            // fieldFloor already clears the actual original HUD/input edge.
+            // The former extra60/44 world-unit padding discarded visible
+            // enemies after compact focus zoom, then bombed an empty fallback.
+            for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=camera.toScreen(enemy.position);
+                const bool visible=point.x>=32&&point.x<=camera.viewport.width-32&&point.y>=bottom&&point.y<=top;
+                const bool priorMargin=point.x>=32&&point.x<=camera.viewport.width-32&&point.y>=bottom+60&&point.y<=camera.viewport.height-44;
+                std::printf("AIRSTRIKE_CANDIDATE case=%zu frame=%llu item=%s enemy=%llu name=%s hp=%d world=%.9g:%.9g screen=%.9g:%.9g viewport=%.9g:%.9g inputMinimumY=%.9g fieldFloor=%.9g visible=%d formerExtraMargin=%d\n",index,static_cast<unsigned long long>(counters.frames),o.strikeItemCode.c_str(),static_cast<unsigned long long>(enemy.id),enemy.name.c_str(),enemy.hp,enemy.position.x,enemy.position.y,point.x,point.y,camera.viewport.width,camera.viewport.height,camera.inputMinimumY,bottom,int(visible),int(priorMargin));
+                if(!visible)continue;const float dx=enemy.position.x-scene->player().position.x,dy=enemy.position.y-scene->player().position.y,d=dx*dx+dy*dy;if(d<best){best=d;target=enemy.position;o.strikeTargetVisibleEnemy=true;}}
             o.strikeTarget=target;const auto screen=scene->camera().toScreen(target);constexpr std::uintptr_t pointer=0x41495253;
             o.strikeTapAccepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(screen),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(screen),pointer);o.strikeCountAfter=count();o.strikeUseFrame=counters.frames;
+            std::printf("AIRSTRIKE_TAP case=%zu frame=%llu item=%s target=%.9g:%.9g screen=%.9g:%.9g selectedVisible=%d accepted=%d count=%d:%d\n",index,static_cast<unsigned long long>(counters.frames),o.strikeItemCode.c_str(),target.x,target.y,screen.x,screen.y,int(o.strikeTargetVisibleEnemy),int(o.strikeTapAccepted),o.strikeCountBefore,o.strikeCountAfter);std::fflush(stdout);
             if(o.strikeTapAccepted&&o.strikeCountAfter==o.strikeCountBefore-1)++pendingAirStrikeUses;
         }
         if(counters.frames==600)restart();

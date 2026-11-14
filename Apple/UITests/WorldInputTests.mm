@@ -69,10 +69,28 @@
 }
 - (NSArray<NSValue*>*)clearGroundPair:(NSDictionary*)state avoiding:(NSDictionary*)history{
     const double scale=[state[@"displayWorldScale"] doubleValue];NSMutableArray<NSValue*>* candidates=[NSMutableArray new];
+    if(scale<=0||![state[@"location"] isEqualToString:@"Stage01_01"])return @[];
+    // Original MapInfo.mcb Stage01_01, SHA ab697612...e6b74bc8:
+    // map half-size512; gate0(-275,-462)->Base001, gate1(449,429),
+    // gate2(-257,479), each actual trigger abs(dx)<30 && abs(dy)<30.
+    // The test stays inside the map instead of selecting portrait overscan.
+    const CGPoint gates[]={{-275,-462},{449,429},{-257,479}};
+    const CGPoint player{[state[@"x"] doubleValue],[state[@"y"] doubleValue]};
+    const auto worldPoint=[&](CGPoint canvas){return CGPointMake(player.x+(canvas.x-[state[@"playerScreenX"] doubleValue])/scale,player.y+(canvas.y-[state[@"playerScreenY"] doubleValue])/scale);};
+    const auto crossesGate=[&](CGPoint a,CGPoint b){for(const auto gate:gates){double enter=0,leave=1;bool intersects=true;
+        for(unsigned axis=0;axis<2;++axis){const double start=axis?a.y:a.x,delta=(axis?b.y:b.x)-start,center=axis?gate.y:gate.x,low=center-30,high=center+30;
+            if(delta==0){if(start<low||start>high){intersects=false;break;}}
+            else {const double first=(low-start)/delta,last=(high-start)/delta;enter=std::max(enter,std::min(first,last));leave=std::min(leave,std::max(first,last));if(enter>leave){intersects=false;break;}}
+        }if(intersects)return true;
+    }return false;};
     const double left=[state[@"safeX"] doubleValue]+36,right=[state[@"safeX"] doubleValue]+[state[@"safeWidth"] doubleValue]-36;
     const double bottom=std::max([state[@"fieldInputMinY"] doubleValue]+30,[state[@"safeY"] doubleValue]+30),top=[state[@"safeY"] doubleValue]+[state[@"safeHeight"] doubleValue]-30;
     const NSArray* columns=history[@"columns"],*events=history[@"events"];const auto wx=[columns indexOfObject:@"worldX"],wy=[columns indexOfObject:@"worldY"],consumed=[columns indexOfObject:@"world"];
     for(double y=bottom;y<top;y+=std::max(24.,48*scale))for(double x=left;x<right;x+=std::max(24.,48*scale)){
+        const auto destination=worldPoint({x,y});
+        // A160-world inset leaves all three original trigger boxes outside
+        // this convex route area. Also check the live Player's entry segment.
+        if(std::abs(destination.x)>512-160||std::abs(destination.y)>512-160||crossesGate(player,destination))continue;
         if(hypot(x-[state[@"playerScreenX"] doubleValue],y-[state[@"playerScreenY"] doubleValue])<100*scale)continue;BOOL clear=YES;
         for(int i=0;i<[state[@"enemyCount"] intValue];++i)if(hypot(x-[state[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],y-[state[[NSString stringWithFormat:@"e%d_y",i]] doubleValue])<70*scale){clear=NO;break;}
         // A replacement starts away from every recorded old path point. It
@@ -84,8 +102,11 @@
         }
         if(clear)[candidates addObject:[NSValue valueWithCGPoint:CGPointMake(x,y)]];
     }
-    double longest=0;NSArray* pair=@[];for(NSValue* a in candidates)for(NSValue* b in candidates){const auto p=a.CGPointValue,q=b.CGPointValue;const double length=hypot(p.x-q.x,p.y-q.y);if(length>longest){longest=length;pair=@[a,b];}}
+    double longest=0;NSArray* pair=@[];for(NSValue* a in candidates)for(NSValue* b in candidates){const auto p=a.CGPointValue,q=b.CGPointValue;const double length=hypot(p.x-q.x,p.y-q.y);if(length<=320*scale&&length>longest&&!crossesGate(worldPoint(p),worldPoint(q))){longest=length;pair=@[a,b];}}
     return longest>=180*scale?pair:@[];
+}
+- (void)assertPathRemainsInOriginalField:(NSDictionary*)state{
+    XCTAssertEqualObjects(state[@"location"],@"Stage01_01");XCTAssertEqual([state[@"screen"] intValue],7);XCTAssertEqual([state[@"doorPhase"] intValue],8);XCTAssertEqual([state[@"mapLoadingStep"] intValue],-1);XCTAssertFalse([state[@"paused"] boolValue]);
 }
 - (void)verifyOSPathReplacementMany:(BOOL)many{
     self.continueAfterFailure=NO;
@@ -97,14 +118,14 @@
     XCTAssertGreaterThanOrEqual([start[@"dashMaximumSP"] doubleValue],100);XCTAssertGreaterThan([start[@"dashRegeneration"] doubleValue],0);
     const auto firstPair=[self clearGroundPair:start avoiding:nil];[self attachPathState:start name:@"OS path initial fixture"];XCTAssertEqual(firstPair.count,2u);
     [[self coordinateLogical:[firstPair[0] CGPointValue] world:world] pressForDuration:.05 thenDragToCoordinate:[self coordinateLogical:[firstPair[1] CGPointValue] world:world] withVelocity:300 thenHoldForDuration:0];
-    const auto first=[self state:world];[self attachPathState:first name:@"OS first multi-waypoint drag"];
+    const auto first=[self state:world];[self attachPathState:first name:@"OS first multi-waypoint drag"];[self assertPathRemainsInOriginalField:first];
     const auto firstHistory=[self inputHistory:first];const NSArray* columns=firstHistory[@"columns"];const auto pathAfter=[columns indexOfObject:@"pathAfter"];unsigned maximumPath=0;
     if(pathAfter!=NSNotFound)for(NSArray* row in firstHistory[@"events"])maximumPath=std::max(maximumPath,[row[pathAfter] unsignedIntValue]);
     XCTAssertGreaterThan(maximumPath,1u);XCTAssertEqual([first[@"movePointer"] longLongValue],0ll);
     const auto replacement=[self clearGroundPair:first avoiding:firstHistory];XCTAssertEqual(replacement.count,2u);
     if(many)[[self coordinateLogical:[replacement[0] CGPointValue] world:world] pressForDuration:.05 thenDragToCoordinate:[self coordinateLogical:[replacement[1] CGPointValue] world:world] withVelocity:300 thenHoldForDuration:0];
     else [self tapLogical:[replacement[0] CGPointValue] world:world];
-    const auto replaced=[self state:world];[self attachPathState:replaced name:many?@"OS replacement multi-waypoint drag":@"OS replacement single waypoint"];
+    const auto replaced=[self state:world];[self attachPathState:replaced name:many?@"OS replacement multi-waypoint drag":@"OS replacement single waypoint"];[self assertPathRemainsInOriginalField:replaced];
     const auto replacedHistory=[self inputHistory:replaced];const NSArray* replacedColumns=replacedHistory[@"columns"];const auto phase=[replacedColumns indexOfObject:@"phase"],afterPath=[replacedColumns indexOfObject:@"pathAfter"];NSArray* lastEnd=nil;
     if(phase!=NSNotFound)for(NSArray* e in replacedHistory[@"events"])if([e[phase] unsignedIntValue]==2)lastEnd=e;
     XCTAssertNotNil(lastEnd);if(lastEnd&&afterPath!=NSNotFound){if(many)XCTAssertGreaterThan([lastEnd[afterPath] unsignedIntValue],1u);else XCTAssertEqual([lastEnd[afterPath] unsignedIntValue],1u);}
@@ -113,14 +134,19 @@
     // Wait for the game's actual Equipment.tickSpecial and original .5s
     // double-tap window. No runtime SP or tap timestamp is assigned by tests.
     [self wait:^BOOL{const auto s=[self state:world];return [s[@"dashSP"] doubleValue]>=100&&[s[@"worldTime"] doubleValue]>afterReplacement+.6;} description:@"original live SP regeneration and previous tap interval" timeout:60];
-    const auto before=[self state:world];const auto dashPair=[self clearGroundPair:before avoiding:nil];XCTAssertEqual(dashPair.count,2u);
+    const auto before=[self state:world];[self assertPathRemainsInOriginalField:before];const auto dashPair=[self clearGroundPair:before avoiding:nil];XCTAssertEqual(dashPair.count,2u);
     [[self coordinateLogical:[dashPair[0] CGPointValue] world:world] doubleTap];
-    const auto after=[self state:world];[self attachPathState:before name:@"OS double-tap before"];[self attachPathState:after name:@"OS double-tap after with native 256-event ring"];[self capture:many?@"path-many-then-OS-doubletap":@"path-single-then-OS-doubletap"];
+    const auto after=[self state:world];[self attachPathState:before name:@"OS double-tap before"];[self attachPathState:after name:@"OS double-tap after with native 256-event ring"];[self capture:many?@"path-many-then-OS-doubletap":@"path-single-then-OS-doubletap"];[self assertPathRemainsInOriginalField:after];
     XCTAssertGreaterThan([after[@"dashStarts"] longLongValue],[before[@"dashStarts"] longLongValue]);XCTAssertEqual([after[@"movePointer"] longLongValue],0ll);
     const auto history=[self inputHistory:after];const NSArray* finalColumns=history[@"columns"];const auto dashBefore=[finalColumns indexOfObject:@"dashBefore"],dashAfter=[finalColumns indexOfObject:@"dashAfter"],spBefore=[finalColumns indexOfObject:@"spBefore"],spAfter=[finalColumns indexOfObject:@"spAfter"];BOOL actualCost=NO;
+    NSDictionary* apple=history[@"appleInput"];XCTAssertNotNil(apple);const auto filtered=[apple[@"zeroDeltaMoveFilters"] unsignedLongLongValue];
+    XCTAssertGreaterThanOrEqual(filtered,static_cast<unsigned long long>([before[@"zeroDeltaMoveFilters"] longLongValue]));
+    // Some SDKs deliver begin/end only. Observe the count without requiring a
+    // synthetic zero-distance move; if filtered, retain exact raw evidence.
+    if(filtered){NSDictionary* raw=apple[@"lastFiltered"];XCTAssertEqual([raw[@"x"] doubleValue],[raw[@"previousX"] doubleValue]);XCTAssertEqual([raw[@"y"] doubleValue],[raw[@"previousY"] doubleValue]);XCTAssertGreaterThan([raw[@"timestamp"] doubleValue],0);}
     if(dashBefore!=NSNotFound&&dashAfter!=NSNotFound&&spBefore!=NSNotFound&&spAfter!=NSNotFound)for(NSArray* e in history[@"events"])if([e[dashBefore] unsignedLongLongValue]>=static_cast<unsigned long long>([before[@"dashStarts"] longLongValue])&&[e[dashAfter] unsignedLongLongValue]>[e[dashBefore] unsignedLongLongValue]&&std::abs([e[spBefore] doubleValue]-[e[spAfter] doubleValue]-100)<.001)actualCost=YES;
     XCTAssertTrue(actualCost,@"Actual OS begin must start Dash and consume100SP. Inspect attached native input phases/tap times.");
-    NSLog(@"HM2_OS_PATH_DASH run=%@ replacement=%@ firstMaximumPath=%u beforeDash=%@ afterDash=%@ beforeSP=%@ afterSP=%@",run,many?@"many":@"single",maximumPath,before[@"dashStarts"],after[@"dashStarts"],before[@"dashSP"],after[@"dashSP"]);[app terminate];
+    NSLog(@"HM2_OS_PATH_DASH run=%@ replacement=%@ firstMaximumPath=%u beforeDash=%@ afterDash=%@ beforeSP=%@ afterSP=%@ zeroDeltaMoveFilters=%llu positiveMovesForwarded=%@",run,many?@"many":@"single",maximumPath,before[@"dashStarts"],after[@"dashStarts"],before[@"dashSP"],after[@"dashSP"],filtered,apple[@"positiveMovesForwarded"]);[app terminate];
 }
 - (void)testOSMultiplePathThenSinglePathThenDoubleTap{[self verifyOSPathReplacementMany:NO];}
 - (void)testOSMultiplePathThenMultiplePathThenDoubleTap{[self verifyOSPathReplacementMany:YES];}
@@ -204,6 +230,79 @@
     XCTAssertEqual([[self state:world][@"saves"] intValue],1);[self capture:@"source-slot-after-confirmed-delete"];
     [app terminate];[app launch];world=app.otherElements[@"hm2.world"];XCTAssertTrue([world waitForExistenceWithTimeout:15]);[self titleToSlots:world];XCTAssertEqual([[self state:world][@"slot0Used"] intValue],0);[app terminate];
 }
+- (NSDictionary*)gameOverCombatInput:(NSDictionary*)state previousTarget:(unsigned long long)previous previousGround:(NSValue*)previousGround approach:(BOOL)approach {
+    const double scale=[state[@"displayWorldScale"] doubleValue];if(!std::isfinite(scale)||scale<=0)return nil;
+    const CGPoint player=CGPointMake([state[@"playerScreenX"] doubleValue],[state[@"playerScreenY"] doubleValue]);
+    NSMutableArray<NSDictionary*>* visible=[NSMutableArray new];double nearestDistance=INFINITY;NSDictionary* nearest=nil;
+    for(int i=0;i<[state[@"enemyCount"] intValue];++i){
+        const CGPoint point=CGPointMake([state[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],[state[[NSString stringWithFormat:@"e%d_y",i]] doubleValue]);
+        if(![self fieldPointX:point.x y:point.y state:state])continue;
+        const double distance=hypot(point.x-player.x,point.y-player.y)/scale;
+        NSDictionary* enemy=@{@"point":[NSValue valueWithCGPoint:point],@"enemy":@([state[[NSString stringWithFormat:@"e%d_id",i]] unsignedLongLongValue]),@"distance":@(distance)};
+        [visible addObject:enemy];if(distance<nearestDistance){nearestDistance=distance;nearest=enemy;}
+    }
+    const auto clear=[&](CGPoint point){
+        if(![self fieldPointX:point.x y:point.y state:state]||hypot(point.x-player.x,point.y-player.y)<40*scale)return false;
+        // Stay inside this fixture's field, away from map-edge gate triggers.
+        const double wx=[state[@"x"] doubleValue]+(point.x-player.x)/scale,wy=[state[@"y"] doubleValue]+(point.y-player.y)/scale;
+        if(std::abs(wx)>460||std::abs(wy)>460)return false;
+        for(int i=0;i<[state[@"enemyCount"] intValue];++i)if(hypot(point.x-[state[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],point.y-[state[[NSString stringWithFormat:@"e%d_y",i]] doubleValue])<115*scale)return false;
+        return !previousGround||hypot(wx-previousGround.CGPointValue.x,wy-previousGround.CGPointValue.y)>40;
+    };
+    // Approach on ground outside the original maximum100-unit selection radius.
+    // Once close, keep provoking rather than dodging away from incoming fire.
+    if(approach&&nearest&&nearestDistance>135){
+        const CGPoint enemy=[nearest[@"point"] CGPointValue];double best=INFINITY;NSValue* ground=nil;
+        for(double radius:{125.,150.,175.})for(unsigned angle=0;angle<16;++angle){const double a=double(angle)*6.283185307179586/16;
+            const CGPoint point=CGPointMake(enemy.x+std::cos(a)*radius*scale,enemy.y+std::sin(a)*radius*scale);if(!clear(point))continue;
+            const double score=hypot(point.x-player.x,point.y-player.y)/scale+radius*.25;
+            if(score<best){best=score;ground=[NSValue valueWithCGPoint:point];}
+        }
+        if(ground)return @{@"kind":@"approach",@"point":ground,@"enemy":nearest[@"enemy"]};
+    }
+    if(visible.count){
+        NSDictionary* chosen=nil;double best=INFINITY;
+        for(NSDictionary* enemy in visible){const double score=[enemy[@"distance"] doubleValue]+([enemy[@"enemy"] unsignedLongLongValue]==previous?250:0);if(score<best){best=score;chosen=enemy;}}
+        return @{@"kind":@"provoke",@"point":chosen[@"point"],@"enemy":chosen[@"enemy"]};
+    }
+    // A narrow current viewport may have no target. Explore visible clear
+    // ground with normal input; never select an offscreen telemetry position.
+    NSValue* ground=nil;double farthest=0;
+    const double left=[state[@"safeX"] doubleValue]+36,right=[state[@"safeX"] doubleValue]+[state[@"safeWidth"] doubleValue]-36;
+    const double bottom=[state[@"fieldInputMinY"] doubleValue]+30,top=[state[@"safeY"] doubleValue]+[state[@"safeHeight"] doubleValue]-30;
+    for(double y=bottom;y<top;y+=32)for(double x=left;x<right;x+=48){const CGPoint point=CGPointMake(x,y);const double distance=hypot(x-player.x,y-player.y);if(clear(point)&&distance>farthest){farthest=distance;ground=[NSValue valueWithCGPoint:point];}}
+    return ground?@{@"kind":@"explore",@"point":ground,@"enemy":@0}:nil;
+}
+- (void)continueGameOverCombat:(XCUIElement*)world alert:(XCUIElement*)destroyed {
+    // Replace the former passive60-second wait within the same wall-time
+    // budget. Only real OS ground/enemy taps drive the existing battle.
+    NSDate* deadline=[NSDate dateWithTimeIntervalSinceNow:60];NSMutableArray<NSDictionary*>* observations=[NSMutableArray new];
+    unsigned long long previousTarget=0;NSValue* previousGround=nil;unsigned step=0;
+    while([deadline timeIntervalSinceNow]>0&&!destroyed.exists){
+        const auto before=[self state:world];if([before[@"playerHP"] intValue]<=0||[before[@"gameState"] intValue]==3)break;
+        XCTAssertEqual([before[@"screen"] intValue],7);XCTAssertEqualObjects(before[@"location"],@"Stage01_01");
+        const auto input=[self gameOverCombatInput:before previousTarget:previousTarget previousGround:previousGround approach:(step%2)==0];
+        if(input){
+            const CGPoint point=[input[@"point"] CGPointValue];[self tapLogical:point world:world];
+            if([input[@"kind"] isEqualToString:@"provoke"])previousTarget=[input[@"enemy"] unsignedLongLongValue];else{
+                const double scale=[before[@"displayWorldScale"] doubleValue];
+                previousGround=[NSValue valueWithCGPoint:CGPointMake([before[@"x"] doubleValue]+(point.x-[before[@"playerScreenX"] doubleValue])/scale,[before[@"y"] doubleValue]+(point.y-[before[@"playerScreenY"] doubleValue])/scale)];
+            }
+        }else{
+            // The app may be presenting its native alert between snapshots.
+            if([destroyed waitForExistenceWithTimeout:std::min(.5,std::max(0.,[deadline timeIntervalSinceNow]))])break;
+        }
+        const auto after=[self state:world];
+        const CGPoint point=input?[input[@"point"] CGPointValue]:CGPointZero;
+        NSDictionary* requested=input?@{@"kind":input[@"kind"],@"enemy":input[@"enemy"],@"x":@(point.x),@"y":@(point.y)}:@{};
+        [observations addObject:@{@"step":@(step++),@"input":requested,@"before":@{@"x":before[@"x"]?:@"",@"y":before[@"y"]?:@"",@"HP":before[@"playerHP"]?:@"",@"selected":before[@"selectedEnemy"]?:@"",@"enemyEmissions":before[@"enemyEmissions"]?:@"",@"worldTime":before[@"worldTime"]?:@""},@"after":@{@"x":after[@"x"]?:@"",@"y":after[@"y"]?:@"",@"HP":after[@"playerHP"]?:@"",@"selected":after[@"selectedEnemy"]?:@"",@"pathCount":after[@"pathCount"]?:@"",@"enemyEmissions":after[@"enemyEmissions"]?:@"",@"worldTime":after[@"worldTime"]?:@""}}];
+    }
+    const NSTimeInterval remaining=std::max(0.,[deadline timeIntervalSinceNow]);
+    if(!destroyed.exists&&remaining>0)[destroyed waitForExistenceWithTimeout:remaining];
+    NSData* data=[NSJSONSerialization dataWithJSONObject:observations options:NSJSONWritingPrettyPrinted error:nil];XCTAttachment* attachment=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];attachment.name=@"GameOver live OS combat inputs within original60s budget";attachment.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:attachment];
+    [self attachPathState:[self state:world] name:@"GameOver final live combat state and native input history"];
+    XCTAssertTrue(destroyed.exists,@"Actual battle after active OS combat: %@",[self state:world]);
+}
 - (void)testActualGameOverAlertAndReturnToBase {
     self.continueAfterFailure=NO;XCUIApplication* app=[[XCUIApplication alloc]initWithBundleIdentifier:@"com.gelb2.heavymach2.restored"];
     NSString* run=NSUUID.UUID.UUIDString;app.launchEnvironment=@{@"HM2_UI_TESTING":@"1",@"HM2_UI_TEST_RUN":run,@"HM2_UI_TEST_FIXTURE":@"gameOver"};[app launch];
@@ -227,7 +326,7 @@
     }
     XCTAssertTrue(retargeted);
     XCTAssertTrue(selected);NSLog(@"HM2_GAMEOVER_INPUT run=%@ before=%@ after=%@",run,field,[self state:world]);
-    XCUIElement* destroyed=app.alerts[@"Destroy Your Mach."];XCTAssertTrue([destroyed waitForExistenceWithTimeout:60],@"Actual battle state: %@",[self state:world]);
+    XCUIElement* destroyed=app.alerts[@"Destroy Your Mach."];[self continueGameOverCombat:world alert:destroyed];
     XCTAssertTrue(destroyed.staticTexts[@"매크가 파괴되었습니다.\n기지로 돌아가서 매크를 수리합니다."].exists);XCTAssertEqual(destroyed.buttons.count,1u);
     NSDictionary* dead=[self state:world];XCTAssertEqual([dead[@"workingHP"] intValue],0);XCTAssertEqual([dead[@"actorState"] intValue],3);XCTAssertEqual([dead[@"gameState"] intValue],3);XCTAssertEqual([dead[@"paused"] intValue],0);XCTAssertGreaterThan([dead[@"enemyEmissions"] longLongValue],0ll);XCTAssertEqual([dead[@"saves"] intValue],saves);[self capture:@"actual-gameover-original-alert"];
     NSDate* returnStart=[NSDate date];[destroyed.buttons[@"OK"] tap];NSDate* predicateStart=[NSDate date];__block NSDictionary* returned=nil;__block NSTimeInterval wall=0,predicateWall=0;

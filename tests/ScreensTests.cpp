@@ -374,9 +374,16 @@ void hudMeasuredGeometry(const char* root){
         Host defaultHost,customHost;PreparedTiles defaultTiles("HUD-original"),customTiles("HUD-cropped");Screens original(files,defaultTiles,defaultHost),custom(files,customTiles,customHost);
         customHost.hudSettings[display.compact?"compact":"regular"]=hud::encode(identity);original.setDisplay(display);custom.setDisplay(display);
         ScreensState state;state.screen=ScreenId::field;state.fieldUIRevision=1;state.hasWorkingSlot=true;original.refresh(state);custom.refresh(state);
-        const auto originalFrame=draw(original),customFrame=draw(custom);std::vector<const Sprite*> pieces;
+        const auto originalFrame=draw(original),identityFrame=draw(custom);const auto* identitySprite=sprite(identityFrame,"GameUI_BG.png");
+        assert(identitySprite&&std::count_if(identityFrame.sprites.begin(),identityFrame.sprites.end(),[](const auto& s){return s.image=="GameUI_BG.png";})==1);
+        const auto& full=*sprite(originalFrame,"GameUI_BG.png");assert(full.strip.size()==4&&identitySprite->strip.size()==4);
+        for(unsigned i=0;i<4;++i){assert(identitySprite->strip[i].position.x==full.strip[i].position.x&&identitySprite->strip[i].position.y==full.strip[i].position.y&&identitySprite->strip[i].uv.x==full.strip[i].uv.x&&identitySprite->strip[i].uv.y==full.strip[i].uv.y);}
+        // Editing still uses the movable exact-UV pieces. A saved unchanged
+        // placement uses the original single primitive, avoiding the distinct
+        // linear-filter rounding produced by unnecessary subdivisions.
+        state.systemVisible=true;custom.refresh(state);assert(custom.beginHUDEdit());const auto customFrame=draw(custom);std::vector<const Sprite*> pieces;
         for(const auto& s:customFrame.sprites)if(s.image=="GameUI_BG.png")pieces.push_back(&s);
-        assert(pieces.size()==hud::count&&sprite(originalFrame,"GameUI_BG.png"));const auto& full=*sprite(originalFrame,"GameUI_BG.png");assert(full.strip.size()==4);
+        assert(pieces.size()==hud::count);
         for(unsigned group=0;group<hud::count;++group){const auto& piece=*pieces[group];const auto slice=hud::backgroundSlices[group];assert(piece.strip.size()==4&&!piece.atlasBatch&&piece.textureSource==full.textureSource&&piece.image==full.image);
             const auto left=base.map({slice.x,0}),right=base.map({slice.x+slice.width,256});
             assert(piece.strip[0].position.x==left.x&&piece.strip[1].position.x==left.x&&piece.strip[2].position.x==right.x&&piece.strip[3].position.x==right.x);

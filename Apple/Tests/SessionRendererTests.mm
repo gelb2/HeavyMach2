@@ -116,21 +116,30 @@ UIImage* image(NSData* rgba,CGSize size){
     hm2::DarwinWorldRandom random(1);const auto bytes=fixture.encode(random,1);XCTAssertTrue([[NSData dataWithBytes:bytes.data() length:bytes.size()] writeToURL:save atomically:YES]);
     try{
         hm2::apple::GameRuntime runtime(root,save,{});XCTAssertTrue(runtime.session().selectSlot(0));XCTAssertTrue(runtime.session().enterField("Stage01_01",0));runtime.synchronize();settle(runtime);
-        XCTAssertEqual(runtime.session().help(),nullptr);const auto baseline=runtime.resourceMetrics();
-        const auto resident=[baseline[@"residentTextures"] unsignedIntegerValue],uploads=runtime.textureUploads(),deletes=[baseline[@"textureDeletes"] unsignedIntegerValue];
+        XCTAssertEqual(runtime.session().help(),nullptr);
+        // Warm the real system menu once. Its PNGs belong to the persistent
+        // GuiGame manager, while its five live text bitmaps end on closing.
+        XCTAssertTrue(tap(runtime,1021));XCTAssertTrue(tap(runtime,1030));
+        const auto baseline=runtime.resourceMetrics();
+        const auto resident=[baseline[@"residentTextures"] unsignedIntegerValue],uploads=runtime.textureUploads();
+        const auto imageUploads=[baseline[@"imageTextureUploads"] unsignedIntegerValue],baseText=[baseline[@"textBitmaps"] unsignedIntegerValue];
         const auto saves=runtime.session().metrics().saveRequests;std::string previousOwner;
         for(unsigned cycle=0;cycle<8;++cycle){
-            const auto before=runtime.session().resourceRevision();XCTAssertTrue(tap(runtime,1021));XCTAssertTrue(tap(runtime,1029));
+            const auto before=runtime.session().resourceRevision();XCTAssertTrue(tap(runtime,1021));
+            const auto menu=runtime.resourceMetrics();const auto menuText=[menu[@"textBitmaps"] unsignedIntegerValue]-baseText;
+            XCTAssertGreaterThan(menuText,0u);XCTAssertEqual([menu[@"residentTextures"] unsignedIntegerValue],resident+menuText);
+            XCTAssertTrue(tap(runtime,1029));
             const auto* help=runtime.session().help();XCTAssertNotEqual(help,nullptr);if(!help)throw std::runtime_error("Actual system Help button did not create GuiHelp");
             const auto owner=help->tiles().identity();XCTAssertNotEqual(owner,previousOwner);previousOwner=owner;
             const auto opened=runtime.session().resourceRevision();XCTAssertGreaterThan(opened,before);
             XCTAssertEqual(help->tiles().all().size(),4u); // Three locale pages + original HelpHelp guidance.
             XCTAssertEqual([runtime.resourceMetrics()[@"residentTextures"] unsignedIntegerValue],resident+4);
-            XCTAssertEqual(runtime.textureUploads(),uploads+(cycle+1)*4);
+            XCTAssertEqual([runtime.resourceMetrics()[@"imageTextureUploads"] unsignedIntegerValue],imageUploads+(cycle+1)*4);
             for(unsigned press=0;press<2;++press){runtime.input(hm2::PointerPhase::begin,{384,512},700+press);runtime.input(hm2::PointerPhase::end,{384,512},700+press);}
             XCTAssertEqual(runtime.session().help(),nullptr);XCTAssertGreaterThan(runtime.session().resourceRevision(),opened);
             XCTAssertEqual([runtime.resourceMetrics()[@"residentTextures"] unsignedIntegerValue],resident);
-            XCTAssertEqual([runtime.resourceMetrics()[@"textureDeletes"] unsignedIntegerValue],deletes+(cycle+1)*4);
+            XCTAssertEqual([runtime.resourceMetrics()[@"textBitmaps"] unsignedIntegerValue],baseText);
+            XCTAssertEqual([runtime.resourceMetrics()[@"textureDeletes"] unsignedIntegerValue],[menu[@"textureDeletes"] unsignedIntegerValue]+menuText+4);
             const auto stableUploads=runtime.textureUploads(),stableDeletes=[runtime.resourceMetrics()[@"textureDeletes"] unsignedIntegerValue];runtime.synchronize();runtime.synchronize();
             XCTAssertEqual(runtime.textureUploads(),stableUploads);XCTAssertEqual([runtime.resourceMetrics()[@"textureDeletes"] unsignedIntegerValue],stableDeletes);
         }
@@ -145,10 +154,10 @@ UIImage* image(NSData* rgba,CGSize size){
     XCTAssertTrue([NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:&error]);
     try{
         hm2::apple::GameRuntime runtime(root,[directory URLByAppendingPathComponent:@"HeavyMach2.sav"],{});
-        const auto ordered=runtime.session().orderedStartupSounds();XCTAssertEqual(ordered.size(),235u);
-        std::set<std::string> global(ordered.begin(),ordered.end());XCTAssertEqual(global.size(),46u);
+        const auto ordered=runtime.session().orderedStartupSounds();XCTAssertEqual(ordered.size(),237u);
+        std::set<std::string> global(ordered.begin(),ordered.end());XCTAssertEqual(global.size(),48u);
         for(const auto* name:{"Title_TitleIn.wav","Title_Bang.wav","Title_TapToStart.wav"})global.emplace(name);
-        XCTAssertEqual(global.size(),48u);NSDictionary* before=runtime.audioMetrics();
+        XCTAssertEqual(global.size(),50u);NSDictionary* before=runtime.audioMetrics();
         XCTAssertEqual([before[@"loadedSounds"] unsignedIntegerValue],global.size());
         XCTAssertEqual([before[@"effectFileReads"] unsignedIntegerValue],global.size());
         XCTAssertEqual([before[@"contextsCreated"] unsignedIntegerValue],1u);
@@ -219,11 +228,13 @@ UIImage* image(NSData* rgba,CGSize size){
         XCTAssertTrue(found);if(!found)return;
         XCTAssertTrue(runtime.input(hm2::PointerPhase::begin,ground,9001));XCTAssertEqual(scene->dashState().movePointer,9001u);
         XCTAssertTrue(tap(runtime,1021));XCTAssertTrue(scene->isPaused());XCTAssertTrue(runtime.session().state().systemVisible);
-        const auto position=scene->player().position;const auto selected=scene->selectedEnemy();const auto special=scene->dashState().special;const auto time=scene->clock().worldTime();
+        const auto position=scene->player().position;const auto selected=scene->selectedEnemy();const auto special=scene->dashState().special;const auto time=scene->clock().worldTime();const auto dashStarts=scene->metrics().dashStarts;
         XCTAssertTrue(runtime.input(hm2::PointerPhase::end,ground,9001));XCTAssertEqual(scene->dashState().movePointer,0u);
         const auto history=runtime.inputHistory();XCTAssertFalse(history.empty());if(!history.empty()){XCTAssertTrue(history.back().uiConsumed);XCTAssertTrue(history.back().terminalCancelled);}
+        XCTAssertEqual(scene->dashState().special,special); // Cancel itself never spends SP.
         for(unsigned i=0;i<30;++i)runtime.tick();
-        XCTAssertTrue(scene->isPaused());XCTAssertEqual(scene->clock().worldTime(),time);XCTAssertEqual(scene->selectedEnemy(),selected);XCTAssertEqual(scene->dashState().special,special);XCTAssertEqual(scene->player().position.x,position.x);XCTAssertEqual(scene->player().position.y,position.y);
+        const auto& stats=runtime.session().state().equipmentStats;
+        XCTAssertTrue(scene->isPaused());XCTAssertEqual(scene->clock().worldTime(),time);XCTAssertEqual(scene->selectedEnemy(),selected);XCTAssertEqual(scene->dashState().special,std::min(stats.boosterMaximum,special+30*stats.boosterRegen));XCTAssertEqual(scene->metrics().dashStarts,dashStarts);XCTAssertEqual(scene->player().position.x,position.x);XCTAssertEqual(scene->player().position.y,position.y);
     }catch(const std::exception& e){XCTFail(@"World/UI ownership regression failed: %s",e.what());}
     XCTAssertTrue([NSFileManager.defaultManager removeItemAtURL:directory error:&error]);
 }
@@ -333,11 +344,65 @@ UIImage* image(NSData* rgba,CGSize size){
             if(position.x>30&&position.x<738&&position.y>240&&position.y<940){runtime->input(hm2::PointerPhase::begin,position,7);runtime->input(hm2::PointerPhase::end,position,7);if(runtime->session().battle()->selectedEnemy())break;}
         }
         XCTAssertNotEqual(runtime->session().battle()->selectedEnemy(),0u);
-        const auto reads=runtime->resourceReads();const auto prepared=runtime->preparedTextCount();const auto uploads=runtime->textureUploads();NSDictionary* audioBefore=runtime->audioMetrics();
+        const auto reads=runtime->resourceReads();NSDictionary* audioBefore=runtime->audioMetrics();
         const auto saves=runtime->session().metrics().saveRequests;
-        for(unsigned i=0;i<180;++i){runtime->tick();runtime->draw(layer);}
+        const auto ownedImages=[&]{
+            auto owned=runtime->session().preparationFrame();runtime->screens().appendPreparation(owned);
+            std::set<std::string> images;for(const auto& sprite:owned.sprites)if(!sprite.image.starts_with("@text/"))images.insert(sprite.image);
+            return images;
+        };
+        unsigned ownerChanges=0,steadyTicks=0,firstImageReads=0;
+        for(unsigned i=0;i<180;++i){
+            const auto before=runtime->resourceMetrics();const auto readsBefore=runtime->resourceReads();
+            const auto countsBefore=runtime->resourceReadCounts();const auto imagesBefore=ownedImages();const auto textBeforeList=runtime->preparedTextIdentities();const std::set<std::string> textsBefore(textBeforeList.begin(),textBeforeList.end());const auto presentationBefore=runtime->session().presentationRevision();
+            runtime->tick();
+            const auto prepared=runtime->resourceMetrics();const auto imagesAfter=ownedImages();const auto textAfterList=runtime->preparedTextIdentities();const std::set<std::string> textsAfter(textAfterList.begin(),textAfterList.end());
+            const bool ownerChanged=![before[@"worldResourceRevision"] isEqual:prepared[@"worldResourceRevision"]]||
+                ![before[@"uiResourceGeneration"] isEqual:prepared[@"uiResourceGeneration"]]||
+                presentationBefore!=runtime->session().presentationRevision();
+            if(ownerChanged){
+                ++ownerChanges;NSUInteger addedImages=0,removedImages=0,addedTexts=0,removedTexts=0;
+                for(const auto& name:imagesAfter)addedImages+=!imagesBefore.contains(name);
+                for(const auto& name:imagesBefore)removedImages+=!imagesAfter.contains(name);
+                for(const auto& name:textsAfter)addedTexts+=!textsBefore.contains(name);
+                for(const auto& name:textsBefore)removedTexts+=!textsAfter.contains(name);
+                // The renderer reads PNG bytes independently of Core Files.
+                // An owner change may prepare only genuinely new image IDs;
+                // still-owned PNGs cannot be evicted and uploaded again.
+                for(NSString* key in @[@"imageTextureUploads",@"imageResourceReads",@"imageDecodes"])
+                    XCTAssertEqual([prepared[key] unsignedIntegerValue]-[before[key] unsignedIntegerValue],addedImages,@"GPU image ownership at tick %u %@",i,key);
+                XCTAssertEqual([prepared[@"textureUploads"] unsignedIntegerValue]-[before[@"textureUploads"] unsignedIntegerValue],addedImages+addedTexts);
+                XCTAssertEqual([prepared[@"textureDeletes"] unsignedIntegerValue]-[before[@"textureDeletes"] unsignedIntegerValue],removedImages+removedTexts);
+            }
+            else{
+                ++steadyTicks;XCTAssertEqual(runtime->resourceReads(),readsBefore);
+                for(NSString* key in @[@"textureUploads",@"textureDeletes",@"imageResourceReads",@"imageDecodes",@"textBitmaps",@"textIdentities"])
+                    XCTAssertEqualObjects(before[key],prepared[key],@"Unchanged owner tick %u %@",i,key);
+            }
+            XCTAssertEqual([prepared[@"residentTextures"] unsignedIntegerValue],imagesAfter.size()+[prepared[@"textIdentities"] unsignedIntegerValue]);
+            if(runtime->resourceReads()!=readsBefore){
+                XCTAssertTrue(ownerChanged,@"Resource read without an actual owner change at tick %u",i);
+                auto owned=runtime->session().preparationFrame();runtime->screens().appendPreparation(owned);
+                for(const auto& [name,count]:runtime->resourceReadCounts()){
+                    const auto old=countsBefore.find(name);const unsigned previous=old==countsBefore.end()?0:old->second;
+                    if(count==previous)continue;
+                    XCTAssertEqual(previous,0u,@"Battle re-read an already prepared resource %s",name.c_str());
+                    XCTAssertEqual(count,1u,@"First preparation read more than once: %s",name.c_str());
+                    XCTAssertTrue(name.ends_with(".png"),@"Unexpected battle data read %s",name.c_str());
+                    XCTAssertTrue(std::any_of(owned.sprites.begin(),owned.sprites.end(),[&](const auto& sprite){return sprite.image==name;}),@"Read without a live preparation owner: %s",name.c_str());
+                    ++firstImageReads;
+                }
+            }
+            const auto drawReads=runtime->resourceReads();runtime->draw(layer);
+            XCTAssertEqual(runtime->resourceReads(),drawReads);
+            const auto drawn=runtime->resourceMetrics();
+            for(NSString* key in @[@"textureUploads",@"textureDeletes",@"imageResourceReads",@"imageDecodes",@"textBitmaps",@"textIdentities"])
+                XCTAssertEqualObjects(prepared[key],drawn[key],@"Rendering performed preparation at tick %u %@",i,key);
+        }
         XCTAssertGreaterThan(runtime->session().battle()->metrics().playerEmissions,0u);
-        XCTAssertEqual(runtime->resourceReads(),reads);XCTAssertEqual(runtime->preparedTextCount(),prepared);XCTAssertEqual(runtime->textureUploads(),uploads);XCTAssertEqual(runtime->session().metrics().saveRequests,saves);
+        XCTAssertGreaterThan(steadyTicks,0u);XCTAssertEqual(steadyTicks+ownerChanges,180u);
+        XCTAssertEqual(runtime->resourceReads()-reads,firstImageReads);XCTAssertEqual(runtime->session().metrics().saveRequests,saves);
+        NSLog(@"HM2_BATTLE_RESOURCE_BOUNDARIES ticks=180 unchangedOwners=%u changedOwners=%u firstOwnedImageReads=%u repeatedReads=0 drawPreparation=0",steadyTicks,ownerChanges,firstImageReads);
         NSDictionary* audioAfter=runtime->audioMetrics();for(NSString* key in @[@"contextsCreated",@"sourcesCreated",@"buffersCreated",@"effectFileReads",@"effectDecodes"])XCTAssertEqualObjects(audioBefore[key],audioAfter[key]);
         XCTAssertEqualObjects([NSData dataWithContentsOfURL:save],saved);
         runtime->captureNextFrame();runtime->draw(layer);NSData* pixels=runtime->pixels();const auto extent=runtime->drawableSize();XCTAssertEqual(pixels.length,std::size_t(extent.width)*std::size_t(extent.height)*4);

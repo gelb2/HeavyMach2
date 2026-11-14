@@ -135,11 +135,13 @@ void GameRuntime::synchronize(){impl_->synchronize();}
 GameSession& GameRuntime::session(){return *impl_->game;}
 ui::Screens& GameRuntime::screens(){return *impl_->ui;}
 std::uint64_t GameRuntime::resourceReads()const{std::uint64_t total=0;for(const auto& [name,count]:impl_->files.reads){(void)name;total+=count;}return total;}
+std::map<std::string,unsigned> GameRuntime::resourceReadCounts()const{return impl_->files.reads;}
 std::size_t GameRuntime::preparedTextCount()const{return impl_->textCache.size();}
+std::vector<std::string> GameRuntime::preparedTextIdentities()const{std::vector<std::string> names;names.reserve(impl_->textNames.size());for(const auto& [bitmap,name]:impl_->textNames){(void)bitmap;names.push_back(name);}return names;}
 NSUInteger GameRuntime::textureUploads()const{return impl_->renderer.textureUploads;}
 NSDictionary<NSString*,NSNumber*>* GameRuntime::audioMetrics()const{return impl_->audio.metrics;}
 NSDictionary<NSString*,NSNumber*>* GameRuntime::resourceMetrics()const{
-    auto& p=*impl_;return @{@"residentTextures":@(p.renderer.residentTextures),@"residentTextureBytes":@(p.renderer.residentTextureBytes),@"textureUploads":@(p.renderer.textureUploads),@"textureDeletes":@(p.renderer.textureDeletes),@"imageResourceReads":@(p.renderer.imageResourceReads),@"imageDecodes":@(p.renderer.imageDecodeCalls),@"textBitmaps":@(p.textCache.size()),@"textIdentities":@(p.textNames.size()),@"worldResourceRevision":@(p.game->resourceRevision()),@"uiResourceGeneration":@(p.ui->resourceGeneration()),@"hudLayoutWrites":@(p.hudLayoutWrites),@"thermalState":@(NSProcessInfo.processInfo.thermalState)};
+    auto& p=*impl_;return @{@"residentTextures":@(p.renderer.residentTextures),@"residentTextureBytes":@(p.renderer.residentTextureBytes),@"textureUploads":@(p.renderer.textureUploads),@"imageTextureUploads":@(p.renderer.imageTextureUploads),@"textureDeletes":@(p.renderer.textureDeletes),@"imageResourceReads":@(p.renderer.imageResourceReads),@"imageDecodes":@(p.renderer.imageDecodeCalls),@"textBitmaps":@(p.textCache.size()),@"textIdentities":@(p.textNames.size()),@"worldResourceRevision":@(p.game->resourceRevision()),@"uiResourceGeneration":@(p.ui->resourceGeneration()),@"hudLayoutWrites":@(p.hudLayoutWrites),@"thermalState":@(NSProcessInfo.processInfo.thermalState)};
 }
 std::vector<InputObservation> GameRuntime::inputHistory()const{const auto& p=*impl_;std::vector<InputObservation> result;const auto count=std::min(p.inputCount,p.inputRing.size());result.reserve(count);for(std::size_t i=p.inputCount-count;i<p.inputCount;++i)result.push_back(p.inputRing[i%p.inputRing.size()]);return result;}
 NSData* GameRuntime::pixels(){return impl_->renderer.readRGBA;}

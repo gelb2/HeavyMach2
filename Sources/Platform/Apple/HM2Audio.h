@@ -29,6 +29,9 @@
 @property(nonatomic,readonly) NSUInteger loadedSounds;
 @property(nonatomic,readonly) NSDictionary<NSString*,NSNumber*>* metrics;
 @property(nonatomic,readonly) NSArray<NSDictionary*>* playbackSnapshot;
+// One immutable row per actual filename-cache miss, in request order.
+// Reading this snapshot never prepares, plays, or reads an effect file.
+@property(nonatomic,readonly) NSArray<NSDictionary*>* preparationSnapshot;
 @property(nonatomic,readonly) NSString* lastError;
 @property(nonatomic,readonly) NSString* musicName;
 @property(nonatomic,readonly) BOOL musicPlaying;

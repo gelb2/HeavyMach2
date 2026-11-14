@@ -131,7 +131,7 @@ struct Screens::Impl {
     template<class T> void pushNode(T node){
         node.region=region;node.hudGroup=currentHUDGroup;
         if constexpr(std::is_same_v<T,ImageNode>){
-            if(node.tag=="hud.background"&&(hud->editing||hud->active().customized()))node.hudBackgroundParts=croppedHUDBackground(node.image);
+            if(node.tag=="hud.background"&&splitHUDBackground())node.hudBackgroundParts=croppedHUDBackground(node.image);
             if(node.tag=="title.bg")node.region=Region::backdrop;
             else if(layout.configuration().compact&&(node.tag=="menu.backdrop"||node.image.tile.image=="SelSlot_BG.png"||node.image.tile.image=="CmdCenterBG.png"))node.region=Region::backdrop;
             else if(node.tag=="title.big")node.region=Region::banner;
@@ -578,6 +578,12 @@ RegionScope card(*this,Region(unsigned(Region::slot0)+i));
     void weaponChoices();
     void tick(float time,WorldRandom& random);
     void append(Frame& out,float time);
+    bool splitHUDBackground()const{
+        if(hud->editing)return true;
+        const auto base=presentation(Region::bottom);
+        for(unsigned group=0;group<hud::count;++group){const auto t=presentation(Region::bottom,int(group));if(t.scale!=base.scale||t.offset.x!=base.offset.x||t.offset.y!=base.offset.y)return true;}
+        return false;
+    }
 };
 
 void Screens::Impl::buildDetail(DetailKind kind,const ItemView& entry,Vec2 origin,int absolute){
@@ -1102,7 +1108,7 @@ void Screens::Impl::append(Frame& frame,float time){
     for(const auto& node:nodes)std::visit([&](const auto& n){
         using T=std::decay_t<decltype(n)>;auto& layer=layers->at(n.layer);layer.setPresentation(presentation(n.region,n.hudGroup),clipping(n.region,n.hudGroup));
         if constexpr(std::is_same_v<T,ImageNode>){auto image=n.image;if(n.parent)image.screenPosition=plus(n.parent->screenPosition(),n.local);
-            if(n.tag=="hud.background"&&(hud->editing||hud->active().customized())){
+            if(n.tag=="hud.background"&&splitHUDBackground()){
                 if(!n.hudBackgroundParts)throw std::logic_error("HUD source slices were not prepared");
                 // Geometry/UV share exact source edges. Scissor retains only
                 // the outer original/safe boundary, never partitions adjacent

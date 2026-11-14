@@ -28,9 +28,10 @@ bool fileName(NSString* name){return name.length&&[name.lastPathComponent isEqua
 @implementation HM2Audio {
     NSURL* _root;hm2::audio::OpenALEffects _effects;hm2::audio::AudioQueueMusic _music;
     BOOL _active;NSUInteger _effectFileReads,_effectDecodes,_effectNameConversions,_effectColdNameConversions,_effectByteNameRequests;NSString* _musicName;NSString* _lastError;
+    NSMutableArray<NSDictionary*>* _preparationEvents;
 }
 - (instancetype)initWithResourceRoot:(NSURL*)root{
-    if(!(self=[super init]))return nil;_root=[root copy];_active=YES;
+    if(!(self=[super init]))return nil;_root=[root copy];_active=YES;_preparationEvents=[NSMutableArray new];
     if(!_effects.valid())_lastError=[NSString stringWithUTF8String:_effects.error().c_str()];return self;
 }
 - (BOOL)prepareSounds{
@@ -41,9 +42,15 @@ bool fileName(NSString* name){return name.length&&[name.lastPathComponent isEqua
 }
 - (BOOL)prepareSound:(NSString*)name{
     if(!fileName(name)||!_effects.valid())return NO;if(_effects.contains(name.UTF8String))return YES;
+    const auto before=_effects.metrics();const auto reads=_effectFileReads,decodes=_effectDecodes,loaded=_effects.loaded();
+    const auto record=[&](BOOL success){
+        const auto after=_effects.metrics();
+        [_preparationEvents addObject:@{@"ordinal":@(_preparationEvents.count+1),@"name":[name copy],@"success":@(success),@"fileReads":@(_effectFileReads-reads),@"decodes":@(_effectDecodes-decodes),@"sourcesCreated":@(after.sourcesCreated-before.sourcesCreated),@"buffersCreated":@(after.buffersCreated-before.buffersCreated),@"sourcesDeleted":@(after.sourcesDeleted-before.sourcesDeleted),@"buffersDeleted":@(after.buffersDeleted-before.buffersDeleted),@"loadedBefore":@(loaded),@"loadedAfter":@(_effects.loaded()),@"sourceIdentity":@(_effects.sourceIdentity(name.UTF8String)),@"ownerContext":@(_effects.contextIdentity())}];
+        return success;
+    };
     hm2::audio::PCM pcm;++_effectFileReads;
-    if(!decode([_root URLByAppendingPathComponent:name],pcm)){_lastError=[NSString stringWithFormat:@"Cannot read original PCM %@",name];return NO;}++_effectDecodes;
-    if(!_effects.prepare(name.UTF8String,pcm)){_lastError=[NSString stringWithUTF8String:_effects.error().c_str()];return NO;}return YES;
+    if(!decode([_root URLByAppendingPathComponent:name],pcm)){_lastError=[NSString stringWithFormat:@"Cannot read original PCM %@",name];return record(NO);}++_effectDecodes;
+    if(!_effects.prepare(name.UTF8String,pcm)){_lastError=[NSString stringWithUTF8String:_effects.error().c_str()];return record(NO);}return record(YES);
 }
 - (BOOL)play:(NSString*)name x:(float)x y:(float)y{
     if(!name.length)return NO;++_effectNameConversions;
@@ -100,4 +107,5 @@ bool fileName(NSString* name){return name.length&&[name.lastPathComponent isEqua
     NSMutableArray<NSDictionary*>* result=[NSMutableArray array];
     for(const auto& effect:_effects.playbackSnapshot())[result addObject:@{@"name":[NSString stringWithUTF8String:effect.name.c_str()],@"valid":@(effect.valid),@"playing":@(effect.playing),@"sampleOffset":@(effect.sampleOffset)}];return result;
 }
+- (NSArray<NSDictionary*>*)preparationSnapshot{return [_preparationEvents copy];}
 @end
