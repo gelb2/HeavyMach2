@@ -2,7 +2,7 @@
 
 ## 최신 구현·검증 — 2026-11-15
 
-ExperimentalHUD 11조각·좌우 선택 패널 2개, 클래식/Experimental 전환·이동·저장을 구현했다. Phone 허브·상점·사령부 전체 삽화와 버튼 배치·세로 스크롤 제거도 구현했다. CPU 5개, ASan/UBSan 3개와 관련 후속 검사, 양쪽 Native 최종 9개씩을 통과했다. 지형 결함을 찾기 전 자동 검사 10개 통과를 최종 시각 합격으로 사용하지 않았다. [변경·실패·검증 범위](experimental-hud-implementation-20261114.md).
+ExperimentalHUD 11조각·좌우 선택 패널 2개, 클래식/Experimental 전환·이동·저장을 구현했다. Phone 허브·상점·사령부 전체 삽화와 버튼 배치·세로 스크롤 제거도 구현했다. CPU 5개, ASan/UBSan 3개와 관련 후속 검사, 양쪽 Native 최종 9개씩을 통과했다. 지형 결함을 찾기 전 자동 검사 10개 통과를 최종 시각 합격으로 사용하지 않았다. [변경·실패·검증 범위](experimental-hud-implementation-20261114.md)와 [게시된 실제 화면](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/implementation.html).
 
 - [x] HP/SP/EXP 갱신·레이더 마커·메뉴 눌림 경계, 13개 배치·프로필·재시작과 원본 무기 선택을 검사했다.
 - [x] 레이더 화면 보정이 저장 앵커에 섞이는 문제를 고쳤다. 0px 이동 후 실제 Apply 저장 불변, 정확한 10px 이동과 마커 복귀를 검사했다. 버튼 겹침의 Apply 거절도 보존했다.

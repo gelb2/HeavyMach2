@@ -1,5 +1,18 @@
 # HeavyMach 2 보고 사이트
 
+## HUD·메뉴 구현 결과 게시 — 2026-11-15
+
+[ExperimentalHUD·허브·상점·사령부 구현·검증 보고](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/implementation.html)를 기존 본인 비공개 HUD Site 버전 3에 게시했다. 공통 HUD 11조각·좌우 패널 이동/저장, Phone 메뉴 전체 삽화/세로 스크롤 제거, 지형 검은 대각선 수정, CPU·GPU·측정 결과와 남은 TODO를 담았다. 최종·진단·실패 예시의 캡처 기록 104개는 원본 PNG 68개를 참조한다. 크기·화질·바이트를 바꾸지 않았다.
+
+HUD 소스는 `2367d20ebf7a3e75cb1e5ac67f39b67fa00a1c30`, 배포는 `appgdep_6af88edd3aec8191a38851326b7969a5`다. HTML/CSS/명세/PNG 총 72파일을 인증 HTTP 200으로 확인했다. PNG 68개는 로컬 SHA-256과 모두 같다. 브라우저 화면 검사는 연결 호스트가 없어 실행하지 못했다.
+
+기존 누적 Site 버전 303의 첫 화면과 [HeavyMach2 고정 목록](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)에도 연결했다. 누적 소스는 `4e05f8abf405bea1b3e4f04fa0899e6e45b2b5cd`, 배포는 `appgdep_6af88f7039708191b22975e1aedbcda3`이며 공식 상태는 둘 다 succeeded다. 두 연결 본문을 인증 HTTP로 확인했다. 누적 소스에서 변경한 파일은 압축 HTML 본문 2개뿐이며 기존 미디어는 그대로다. 접근은 두 Site 모두 본인 1명·그룹 0·외부 0을 유지한다.
+
+원본 PNG의 한 번 Git 전송이 64MiB 제한에 걸렸다. 실패한 로컬 소스 커밋은 보존하고 같은 Site의 깨끗한 기준에서 5묶음으로 동기화했다. 최종 파일 전체가 처음 준비한 파일과 같은 것을 확인했다. 현행 HUD 소스 checkout은 `.local/evidence/experimental-hud-implementation-20261114/site-batched`다. 이전 `standalone-site`는 큰 전송 실패 커밋을 보존한 작업 사본이므로 다음 게시 진입점으로 사용하지 않는다. 최종 HUD tar는 235,486,208바이트, 누적 tar는 268,427,776바이트로 각각 256MiB 안이다.
+
+[게시·HTTP·소스·정리 근거](evidence/experimental-hud-publication-20261115.json)에 결과를 보존했다. 최신 앱/심볼·원본·저장·실패 증거는 유지하고 다시 생성할 빌드 캐시와 이전 전달 압축본 합계 934,738,972바이트를 정리했다. 이번 게임 반영은 작업 브랜치의 `f3dc8a8`이며 iPhone 실기기 설치나 develop/main 병합은 하지 않았다.
+
+
 ## 수치별 분리·에셋 미리보기 게시 — HUD 버전2 / 누적 Site 버전302
 
 [수정한 HUD 보고](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/)에 독립11조각과 좌우 패널2개, 에셋의 결합/분리 표, 클래식 캡처8장과 원본 크기의 디코딩 미리보기9장을 게시했다. 게임 코드·원본 에셋·설치본은 변경하지 않았다. HP/SP 숫자 추가 표시와 현재 소비하지 않는 GaugeHP/Booster 파일을 기존 기능으로 보고하지 않는다.

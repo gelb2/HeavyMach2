@@ -1,0 +1,835 @@
+{
+  "date": "2026-11-15",
+  "productCommit": "f3dc8a8",
+  "hud": {
+    "project_id": "appgprj_6af8664612288191b813654dfb95323f",
+    "checkout_path": "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/.local/evidence/experimental-hud-implementation-20261114/site-batched",
+    "commit_sha": "2367d20ebf7a3e75cb1e5ac67f39b67fa00a1c30",
+    "archive": "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/.local/evidence/experimental-hud-implementation-20261114/hud-batch-4.tar.gz",
+    "deployment": {
+      "id": "appgdep_6af88edd3aec8191a38851326b7969a5",
+      "project_id": "appgprj_6af8664612288191b813654dfb95323f",
+      "title": "HeavyMach2 HUD 검토 보고",
+      "version_id": "appgprj_6af8664612288191b813654dfb95323f~appgver_9ed4b469551c81919049e1517042cdaf",
+      "type": "publish",
+      "status": "succeeded",
+      "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site",
+      "has_mcp": false,
+      "screenshot_asset_pointer": null,
+      "provider_deployment_id": "release---6af8674615408191b823dbb07bf7e55b",
+      "failure_message": null,
+      "env_set_revision": 0,
+      "updated_at": "2026-11-14T16:41:00.144810+00:00"
+    },
+    "version": 3
+  },
+  "primary": {
+    "project_id": "appgprj_6addbf55aea081918d3d182d7e496e88",
+    "commit_sha": "4e05f8abf405bea1b3e4f04fa0899e6e45b2b5cd",
+    "archive": "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/.local/evidence/experimental-hud-implementation-20261114/primary-implementation-index.tar.gz",
+    "deployment": {
+      "id": "appgdep_6af88f7039708191b22975e1aedbcda3",
+      "project_id": "appgprj_6addbf55aea081918d3d182d7e496e88",
+      "title": "HeavyMach 개발 보고",
+      "version_id": "appgprj_6addbf55aea081918d3d182d7e496e88~appgver_92852a8daeec81918e5be31565063146",
+      "type": "publish",
+      "status": "succeeded",
+      "url": "https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site",
+      "has_mcp": false,
+      "screenshot_asset_pointer": null,
+      "provider_deployment_id": "site---6addbf55aea081918d3d182d7e496e88",
+      "failure_message": null,
+      "env_set_revision": 0,
+      "updated_at": "2026-11-14T16:42:41.468872+00:00"
+    },
+    "version": 303
+  },
+  "audience": {
+    "ownerOnly": true,
+    "owners": 1,
+    "groups": 0,
+    "externalVisitors": 0
+  },
+  "oldPrimaryMediaUnchanged": true,
+  "largePushRecovery": {
+    "originalUnpublishedSourceCommit": "64de38ded4d277dcc05e203d97fe3e91468c0638",
+    "perPushLimitBytes": 67108864,
+    "batches": [
+      "2f200787597c14a67c5ca9dda45011415ddfef5b",
+      "3d28168ef9272232047646c2cc98dfa8a4477167",
+      "a1ece8edea1a2061176e87a8dab0b3c9bbbd8628",
+      "0794b4d6de76f542ef3ccb2850bf756c363df8a7",
+      "2367d20ebf7a3e75cb1e5ac67f39b67fa00a1c30"
+    ],
+    "originalImageBytesPreserved": true
+  },
+  "onlineBrowserVisualCheck": false,
+  "authenticatedHTTP": {
+    "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/implementation.html",
+    "verifiedFiles": 72,
+    "uniquePNGs": 68,
+    "authenticatedHTTP": true,
+    "allPNGsExact": true,
+    "onlineBrowserVisualCheck": false,
+    "browserFailure": "Browser access host unavailable",
+    "files": [
+      {
+        "path": "index.html",
+        "status": 200,
+        "bytes": 46755,
+        "mime": "text/html",
+        "sha256": "2553225ff1b57de50509641f31f660a5d08101d5d8b9d3a4e1ad2dbd229f7de0",
+        "localExact": false,
+        "htmlContentVerified": true
+      },
+      {
+        "path": "implementation.html",
+        "status": 200,
+        "bytes": 91165,
+        "mime": "text/html",
+        "sha256": "3bae49e7c1a75a5d583b3b906a231cc21740346ad441a0a40c68be8bf771f437",
+        "localExact": false,
+        "htmlContentVerified": true
+      },
+      {
+        "path": "report.css",
+        "status": 200,
+        "bytes": 1705,
+        "mime": "text/css",
+        "sha256": "29aa00bbe58be0f36c38a3e18fa9f80af6354e2e0d0d6f8c300e3df48d1ff6ff",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-captures.json",
+        "status": 200,
+        "bytes": 64511,
+        "mime": "application/json",
+        "sha256": "275049fe0794166e84c713a17f63ab522894a9fd1c49b3741afe8989839ff7f4",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/003c849091e87247921bc797a76730ef868c532166bd71619561daf5e4b84730.png",
+        "status": 200,
+        "bytes": 2818199,
+        "mime": "image/png",
+        "sha256": "003c849091e87247921bc797a76730ef868c532166bd71619561daf5e4b84730",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/00b651041e1821e582695771b5a7858d5b172b1f6ab8df43d30fd2ede3052dd8.png",
+        "status": 200,
+        "bytes": 2268832,
+        "mime": "image/png",
+        "sha256": "00b651041e1821e582695771b5a7858d5b172b1f6ab8df43d30fd2ede3052dd8",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/0200b0ffb84cb8a2f11fe2845dfac352bc705bbe04827132e43a112d00cfc612.png",
+        "status": 200,
+        "bytes": 2939259,
+        "mime": "image/png",
+        "sha256": "0200b0ffb84cb8a2f11fe2845dfac352bc705bbe04827132e43a112d00cfc612",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/047364c151a67da5a948a16738e5f62c08810624c6f22282c8ec81dcde530251.png",
+        "status": 200,
+        "bytes": 971777,
+        "mime": "image/png",
+        "sha256": "047364c151a67da5a948a16738e5f62c08810624c6f22282c8ec81dcde530251",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/0788914c02b29413ac0aac4d260ba8c87ff0fee40c173719a25c56359f419607.png",
+        "status": 200,
+        "bytes": 7788349,
+        "mime": "image/png",
+        "sha256": "0788914c02b29413ac0aac4d260ba8c87ff0fee40c173719a25c56359f419607",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/0b2b3ba50f76f9b83c2d8ea4e266810f60a44a7def6fda0acc163e3ad790e439.png",
+        "status": 200,
+        "bytes": 3427867,
+        "mime": "image/png",
+        "sha256": "0b2b3ba50f76f9b83c2d8ea4e266810f60a44a7def6fda0acc163e3ad790e439",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/0b92323fd0abab9ae7467953f88dade782e68d16ab0e6a3051baa6c99e3bcb75.png",
+        "status": 200,
+        "bytes": 2831663,
+        "mime": "image/png",
+        "sha256": "0b92323fd0abab9ae7467953f88dade782e68d16ab0e6a3051baa6c99e3bcb75",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/0f4e4b1d70467a873127210e7da7653b60ec09a529a383e0706b184f5625c9cf.png",
+        "status": 200,
+        "bytes": 7795345,
+        "mime": "image/png",
+        "sha256": "0f4e4b1d70467a873127210e7da7653b60ec09a529a383e0706b184f5625c9cf",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/13bbba355967a8925f17f8194b2df2cb30457cb03e45268cb492f696217b9d23.png",
+        "status": 200,
+        "bytes": 326022,
+        "mime": "image/png",
+        "sha256": "13bbba355967a8925f17f8194b2df2cb30457cb03e45268cb492f696217b9d23",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/14e942351971b250b0bf102bc381f68bea0a3b37d018255c69a9fd8cb2a10044.png",
+        "status": 200,
+        "bytes": 1396526,
+        "mime": "image/png",
+        "sha256": "14e942351971b250b0bf102bc381f68bea0a3b37d018255c69a9fd8cb2a10044",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/19409dfb246f26cc8a69167176ce73e42390b1565ba4bd5e08f6827c0d341f8c.png",
+        "status": 200,
+        "bytes": 45473,
+        "mime": "image/png",
+        "sha256": "19409dfb246f26cc8a69167176ce73e42390b1565ba4bd5e08f6827c0d341f8c",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/19606f89cf53c6985e51dc1540e9dd1eb0e672853bb4519f9ccbf299c1ea31ff.png",
+        "status": 200,
+        "bytes": 10694186,
+        "mime": "image/png",
+        "sha256": "19606f89cf53c6985e51dc1540e9dd1eb0e672853bb4519f9ccbf299c1ea31ff",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/20ebc01b6371e503bb2e74939e78e6ee834c0ec3f414da72ff41af115bb6d909.png",
+        "status": 200,
+        "bytes": 7849039,
+        "mime": "image/png",
+        "sha256": "20ebc01b6371e503bb2e74939e78e6ee834c0ec3f414da72ff41af115bb6d909",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/22e0b6bae5e3aaea78e83bfe114a7645fd1c2635ae21fec2d96040111946250b.png",
+        "status": 200,
+        "bytes": 2847838,
+        "mime": "image/png",
+        "sha256": "22e0b6bae5e3aaea78e83bfe114a7645fd1c2635ae21fec2d96040111946250b",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/235d3cc040ac3817c0c2b89ec0e523ce5ffc06287e2f9ac462b31bca14fcd221.png",
+        "status": 200,
+        "bytes": 8124458,
+        "mime": "image/png",
+        "sha256": "235d3cc040ac3817c0c2b89ec0e523ce5ffc06287e2f9ac462b31bca14fcd221",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/2393d01bc6f24dbf37a98040abcc97c024941acbd73bcd7ecee394d982eb89b5.png",
+        "status": 200,
+        "bytes": 5645589,
+        "mime": "image/png",
+        "sha256": "2393d01bc6f24dbf37a98040abcc97c024941acbd73bcd7ecee394d982eb89b5",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/2e47cc5b6545cc63dc500b37088fc0b2e06e348a5ed5dd20e640509c1ace4db0.png",
+        "status": 200,
+        "bytes": 2829752,
+        "mime": "image/png",
+        "sha256": "2e47cc5b6545cc63dc500b37088fc0b2e06e348a5ed5dd20e640509c1ace4db0",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/3b1afd4a4e2058250436acc14e89d7fcb453fdde3f0372e4ef112f36a8984c55.png",
+        "status": 200,
+        "bytes": 972530,
+        "mime": "image/png",
+        "sha256": "3b1afd4a4e2058250436acc14e89d7fcb453fdde3f0372e4ef112f36a8984c55",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/43098b3ce8e04b84d8b1dfec68c10a6eb174dcbcb72b21e827420b974ea0f80f.png",
+        "status": 200,
+        "bytes": 3442601,
+        "mime": "image/png",
+        "sha256": "43098b3ce8e04b84d8b1dfec68c10a6eb174dcbcb72b21e827420b974ea0f80f",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/447ba7f53f33003236fd45a02dcf02938929330c7072530e28927a7de4fe6499.png",
+        "status": 200,
+        "bytes": 7791174,
+        "mime": "image/png",
+        "sha256": "447ba7f53f33003236fd45a02dcf02938929330c7072530e28927a7de4fe6499",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/45d28a458813caaf0cf1a546f95746cbbf7230a15990da67f1ec2f7522c06c07.png",
+        "status": 200,
+        "bytes": 2896678,
+        "mime": "image/png",
+        "sha256": "45d28a458813caaf0cf1a546f95746cbbf7230a15990da67f1ec2f7522c06c07",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/475b24e09b2805e0a45284caf752b660126922d13070f8ca46fe9c862b38df4c.png",
+        "status": 200,
+        "bytes": 1160259,
+        "mime": "image/png",
+        "sha256": "475b24e09b2805e0a45284caf752b660126922d13070f8ca46fe9c862b38df4c",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/4b9d4f24b6f8aac69b6422faa77d0e61ba7e06b565b2e3c74aca7cd70c362bd1.png",
+        "status": 200,
+        "bytes": 11367262,
+        "mime": "image/png",
+        "sha256": "4b9d4f24b6f8aac69b6422faa77d0e61ba7e06b565b2e3c74aca7cd70c362bd1",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/4c4bb824ae1bc2bbde73167ab0ac8cae1ed057184fe70b29c068b3140fcc3434.png",
+        "status": 200,
+        "bytes": 2846823,
+        "mime": "image/png",
+        "sha256": "4c4bb824ae1bc2bbde73167ab0ac8cae1ed057184fe70b29c068b3140fcc3434",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/4da8c2f6e2f070ced6be842c1870a84d7240638d6a71344d34f7c7adbf34c166.png",
+        "status": 200,
+        "bytes": 2826563,
+        "mime": "image/png",
+        "sha256": "4da8c2f6e2f070ced6be842c1870a84d7240638d6a71344d34f7c7adbf34c166",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/533c56467e7b8e0e97647e272d673756aad8acbd2eab437d17a6f615762751b6.png",
+        "status": 200,
+        "bytes": 968661,
+        "mime": "image/png",
+        "sha256": "533c56467e7b8e0e97647e272d673756aad8acbd2eab437d17a6f615762751b6",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/54441c53c457a8dc6a1da8462c0b1654bfca8a49e27bdd20312ed63e390f6d33.png",
+        "status": 200,
+        "bytes": 998058,
+        "mime": "image/png",
+        "sha256": "54441c53c457a8dc6a1da8462c0b1654bfca8a49e27bdd20312ed63e390f6d33",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/6393c5b43d58415569fb6fc7cf407e0db74f7a2c69276481e70faaee834ba2f2.png",
+        "status": 200,
+        "bytes": 995574,
+        "mime": "image/png",
+        "sha256": "6393c5b43d58415569fb6fc7cf407e0db74f7a2c69276481e70faaee834ba2f2",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/75345c2c043095b042905814c1370e3d5a932b96d5e95fe5c337a16077869fb2.png",
+        "status": 200,
+        "bytes": 511050,
+        "mime": "image/png",
+        "sha256": "75345c2c043095b042905814c1370e3d5a932b96d5e95fe5c337a16077869fb2",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/7a024d484c9ed7feaed1ba8c8be41b4a02be19597f208d744d238edc4948d114.png",
+        "status": 200,
+        "bytes": 992844,
+        "mime": "image/png",
+        "sha256": "7a024d484c9ed7feaed1ba8c8be41b4a02be19597f208d744d238edc4948d114",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/7c12f019ec8f711c926d5d58b7804a8d08f5d63cde403b11f1f769d453e92290.png",
+        "status": 200,
+        "bytes": 2829848,
+        "mime": "image/png",
+        "sha256": "7c12f019ec8f711c926d5d58b7804a8d08f5d63cde403b11f1f769d453e92290",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/8307af83cd43823b10769376755c090e2d7fd1f62bf68b56780030a70f064712.png",
+        "status": 200,
+        "bytes": 328186,
+        "mime": "image/png",
+        "sha256": "8307af83cd43823b10769376755c090e2d7fd1f62bf68b56780030a70f064712",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/84d6e66182e3982f09cadaa52bf8213f2901eeed8413fa1384b215880fa2f54d.png",
+        "status": 200,
+        "bytes": 3457314,
+        "mime": "image/png",
+        "sha256": "84d6e66182e3982f09cadaa52bf8213f2901eeed8413fa1384b215880fa2f54d",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/86e6d2f3790b65eafbb2405322beb927264c815a30b937644bb990a82b9475c8.png",
+        "status": 200,
+        "bytes": 2848906,
+        "mime": "image/png",
+        "sha256": "86e6d2f3790b65eafbb2405322beb927264c815a30b937644bb990a82b9475c8",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/88655cfbf8abf6d2a03f449080b7f117acf1cf0b1d8119bd6148f43c166770fb.png",
+        "status": 200,
+        "bytes": 2938633,
+        "mime": "image/png",
+        "sha256": "88655cfbf8abf6d2a03f449080b7f117acf1cf0b1d8119bd6148f43c166770fb",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/88862ce2b3258d4d88141c5b63c18d5bcc7d08b6b37a928d5208cf1e9c84169a.png",
+        "status": 200,
+        "bytes": 3672065,
+        "mime": "image/png",
+        "sha256": "88862ce2b3258d4d88141c5b63c18d5bcc7d08b6b37a928d5208cf1e9c84169a",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/8afcc03f4c1486575a48beaa436c4ed1095457804300097a65dfca4475576d95.png",
+        "status": 200,
+        "bytes": 3317825,
+        "mime": "image/png",
+        "sha256": "8afcc03f4c1486575a48beaa436c4ed1095457804300097a65dfca4475576d95",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/93457107549129f29e2b59e8d21d55cfea31e1e06c6877d1058a21c3cc6fac96.png",
+        "status": 200,
+        "bytes": 18625,
+        "mime": "image/png",
+        "sha256": "93457107549129f29e2b59e8d21d55cfea31e1e06c6877d1058a21c3cc6fac96",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/93465196a2fec8b78507984aef6f9b336b233cf708e1e198b326bf6ca0627b09.png",
+        "status": 200,
+        "bytes": 3670742,
+        "mime": "image/png",
+        "sha256": "93465196a2fec8b78507984aef6f9b336b233cf708e1e198b326bf6ca0627b09",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/9395636184eb293dd88b29ff107982475910fd0792a349301747cabf04ba39ae.png",
+        "status": 200,
+        "bytes": 2831403,
+        "mime": "image/png",
+        "sha256": "9395636184eb293dd88b29ff107982475910fd0792a349301747cabf04ba39ae",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/97c6539c33692c6bdf9ab4a714d9c78f1d798a7c08d7f82f20b4bb3421013198.png",
+        "status": 200,
+        "bytes": 11367665,
+        "mime": "image/png",
+        "sha256": "97c6539c33692c6bdf9ab4a714d9c78f1d798a7c08d7f82f20b4bb3421013198",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/97d90529338f5c0dbf5a6c777fe68b56431fa7c6ee464dadc15097270790fba2.png",
+        "status": 200,
+        "bytes": 5332,
+        "mime": "image/png",
+        "sha256": "97d90529338f5c0dbf5a6c777fe68b56431fa7c6ee464dadc15097270790fba2",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/9896f5988f2921870bad6f2dfd154575212d6a8696201d2ab0821b7ee789c2c2.png",
+        "status": 200,
+        "bytes": 303471,
+        "mime": "image/png",
+        "sha256": "9896f5988f2921870bad6f2dfd154575212d6a8696201d2ab0821b7ee789c2c2",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/a0b4fea967bec79914258c151ea2e5813471706c3544fb0aebe48ddd165d05e0.png",
+        "status": 200,
+        "bytes": 3672577,
+        "mime": "image/png",
+        "sha256": "a0b4fea967bec79914258c151ea2e5813471706c3544fb0aebe48ddd165d05e0",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/a0c2fbbdb76643a097002f127e6c63522d75c8cf8485010ac1439dcaa0c94d0c.png",
+        "status": 200,
+        "bytes": 965281,
+        "mime": "image/png",
+        "sha256": "a0c2fbbdb76643a097002f127e6c63522d75c8cf8485010ac1439dcaa0c94d0c",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/a2ca10e737d28a5de8412431a14bf9297d9166b78dbd40f7303fc0822dd8040d.png",
+        "status": 200,
+        "bytes": 2251081,
+        "mime": "image/png",
+        "sha256": "a2ca10e737d28a5de8412431a14bf9297d9166b78dbd40f7303fc0822dd8040d",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/a33e480543e5adef6bf57ebb434eef3bad8412215b58bec6afa5c8f60c468c86.png",
+        "status": 200,
+        "bytes": 2831291,
+        "mime": "image/png",
+        "sha256": "a33e480543e5adef6bf57ebb434eef3bad8412215b58bec6afa5c8f60c468c86",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/a58fc212f9866d4c744fdd7a5b2a370ae7647575caf60d6d286165210f43792e.png",
+        "status": 200,
+        "bytes": 1012048,
+        "mime": "image/png",
+        "sha256": "a58fc212f9866d4c744fdd7a5b2a370ae7647575caf60d6d286165210f43792e",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/b218192c955a737e9e7800f02f4e918fc1dec4b902ceed78746ee3fa024d7234.png",
+        "status": 200,
+        "bytes": 301398,
+        "mime": "image/png",
+        "sha256": "b218192c955a737e9e7800f02f4e918fc1dec4b902ceed78746ee3fa024d7234",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/b2dc3d3277200f7691ea51f4590c9c9032cb43d565e5968e594548c6dbe1658c.png",
+        "status": 200,
+        "bytes": 99314,
+        "mime": "image/png",
+        "sha256": "b2dc3d3277200f7691ea51f4590c9c9032cb43d565e5968e594548c6dbe1658c",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/b6ce3efaf2852148daf545593600d123ab62bfb775acc7043da5cc4455d98f44.png",
+        "status": 200,
+        "bytes": 2764820,
+        "mime": "image/png",
+        "sha256": "b6ce3efaf2852148daf545593600d123ab62bfb775acc7043da5cc4455d98f44",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/b9aa03bb56c90d762d7c0f0bbfa98735c3d800cb127c15ba1fb5adf4a1f7aeea.png",
+        "status": 200,
+        "bytes": 969157,
+        "mime": "image/png",
+        "sha256": "b9aa03bb56c90d762d7c0f0bbfa98735c3d800cb127c15ba1fb5adf4a1f7aeea",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/bd97bfebf2fc5fa99fbd97c3e44b16ff28feb2cabb57d21026b3c7315b23d601.png",
+        "status": 200,
+        "bytes": 11367535,
+        "mime": "image/png",
+        "sha256": "bd97bfebf2fc5fa99fbd97c3e44b16ff28feb2cabb57d21026b3c7315b23d601",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/c8cb4f98c320524911ab9cec4d2e267510afed4faa3208fbd4f448e5de2b0daa.png",
+        "status": 200,
+        "bytes": 133170,
+        "mime": "image/png",
+        "sha256": "c8cb4f98c320524911ab9cec4d2e267510afed4faa3208fbd4f448e5de2b0daa",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/ccbf7822acfdbfba320f3b6c30d6aafa85de2b2fad7e3fc9f1b35e07030db539.png",
+        "status": 200,
+        "bytes": 7799690,
+        "mime": "image/png",
+        "sha256": "ccbf7822acfdbfba320f3b6c30d6aafa85de2b2fad7e3fc9f1b35e07030db539",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/d3acef3fb654b4413a82efea9d4a883e37ae603ed3e93fb0437b3a8d929507c3.png",
+        "status": 200,
+        "bytes": 3308273,
+        "mime": "image/png",
+        "sha256": "d3acef3fb654b4413a82efea9d4a883e37ae603ed3e93fb0437b3a8d929507c3",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/d9993096d5511dfc5f30397bcb2ecaf6051526279435e30fd40574a0b7025c96.png",
+        "status": 200,
+        "bytes": 1106122,
+        "mime": "image/png",
+        "sha256": "d9993096d5511dfc5f30397bcb2ecaf6051526279435e30fd40574a0b7025c96",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/e21649948efb1a12a47cd6d199a4805758059b418e48ca8ef256c9755ea37cff.png",
+        "status": 200,
+        "bytes": 3441426,
+        "mime": "image/png",
+        "sha256": "e21649948efb1a12a47cd6d199a4805758059b418e48ca8ef256c9755ea37cff",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/e2f9606b12d6a0ce20102825c09890e447c530fe9df0a060d63d317ff14d8022.png",
+        "status": 200,
+        "bytes": 2152378,
+        "mime": "image/png",
+        "sha256": "e2f9606b12d6a0ce20102825c09890e447c530fe9df0a060d63d317ff14d8022",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/e41c7d687759f9d1a7b94e99c9636048e5ac00f8983d1cbedbac8b0fae1e7b66.png",
+        "status": 200,
+        "bytes": 943770,
+        "mime": "image/png",
+        "sha256": "e41c7d687759f9d1a7b94e99c9636048e5ac00f8983d1cbedbac8b0fae1e7b66",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/e5b6c9e019d279a725517bcb63f53731fa5c845ad7a4a2c5e802bc74ddc87c9f.png",
+        "status": 200,
+        "bytes": 11298468,
+        "mime": "image/png",
+        "sha256": "e5b6c9e019d279a725517bcb63f53731fa5c845ad7a4a2c5e802bc74ddc87c9f",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/e679ee31304d27183eb33a9f1e505accb00dd90cc71989d011cfde30ba4667bd.png",
+        "status": 200,
+        "bytes": 995605,
+        "mime": "image/png",
+        "sha256": "e679ee31304d27183eb33a9f1e505accb00dd90cc71989d011cfde30ba4667bd",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/e6a704c103f2789a40daef15816c5c82a189456cefb1d1ce36a93dbb8e55a52f.png",
+        "status": 200,
+        "bytes": 73600,
+        "mime": "image/png",
+        "sha256": "e6a704c103f2789a40daef15816c5c82a189456cefb1d1ce36a93dbb8e55a52f",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/e89334e3d6672f400268f601a3b355e7c4afa5b5098be2c7aa85da7449e9a51a.png",
+        "status": 200,
+        "bytes": 3673907,
+        "mime": "image/png",
+        "sha256": "e89334e3d6672f400268f601a3b355e7c4afa5b5098be2c7aa85da7449e9a51a",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/eafdd230787964624e89d70bca3e8e2d99ae6bf414c113a44f5796a390087a2f.png",
+        "status": 200,
+        "bytes": 11367260,
+        "mime": "image/png",
+        "sha256": "eafdd230787964624e89d70bca3e8e2d99ae6bf414c113a44f5796a390087a2f",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/eb907f863db9b266d68d85cd8a88a7ff6aa50587da23d7de1a3500566e889a8c.png",
+        "status": 200,
+        "bytes": 2727882,
+        "mime": "image/png",
+        "sha256": "eb907f863db9b266d68d85cd8a88a7ff6aa50587da23d7de1a3500566e889a8c",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/ec19e2ec4fe925208446bd1efc9d573549a9cdc4c88837faac2eac95de3a7f78.png",
+        "status": 200,
+        "bytes": 400451,
+        "mime": "image/png",
+        "sha256": "ec19e2ec4fe925208446bd1efc9d573549a9cdc4c88837faac2eac95de3a7f78",
+        "localExact": true,
+        "htmlContentVerified": false
+      },
+      {
+        "path": "implementation-assets/eec04f5aff6fa434bd33f5844d298080110af43bb77712a0db8346805456b527.png",
+        "status": 200,
+        "bytes": 303564,
+        "mime": "image/png",
+        "sha256": "eec04f5aff6fa434bd33f5844d298080110af43bb77712a0db8346805456b527",
+        "localExact": true,
+        "htmlContentVerified": false
+      }
+    ]
+  },
+  "primaryAuthenticatedHTTP": [
+    {
+      "path": "report-index-content.bin",
+      "status": 200,
+      "newReportLinkVerified": true
+    },
+    {
+      "path": "heavymach2-restoration-20261110/report-index-content.bin",
+      "status": 200,
+      "newReportLinkVerified": true
+    }
+  ],
+  "archiveVerification": {
+    "batchedSourceAllFilesIdentical": true,
+    "files": 89,
+    "archives": [
+      {
+        "name": "hud-batch-4.tar.gz",
+        "tarBytes": 235486208,
+        "members": 94,
+        "sha256": "38cb8f5ae07cc6f877a64499c916912a2ec87e8dc74f066de38c5f11c1a971e6"
+      },
+      {
+        "name": "primary-implementation-index.tar.gz",
+        "tarBytes": 268427776,
+        "members": 1518,
+        "sha256": "f9ff139cbf4ec5888a323cc3f8805a4343c56269a46cbf7d233e431b5740ceb4"
+      }
+    ]
+  },
+  "cleanup": {
+    "date": "2026-11-15",
+    "removed": [
+      {
+        "path": "build/apple/Build/Intermediates.noindex",
+        "bytes": 150799860,
+        "reason": "Regenerable intermediate cache; final products and symbols retained"
+      },
+      {
+        "path": "build/apple/ModuleCache.noindex",
+        "bytes": 157,
+        "reason": "Regenerable intermediate cache; final products and symbols retained"
+      },
+      {
+        "path": "build/apple/SDKStatCaches.noindex",
+        "bytes": 3199472,
+        "reason": "Regenerable intermediate cache; final products and symbols retained"
+      },
+      {
+        "path": "build/apple/SDKExplicitPrecompiledModules",
+        "bytes": 0,
+        "reason": "Regenerable intermediate cache; final products and symbols retained"
+      },
+      {
+        "path": ".local/evidence/experimental-hud-implementation-20261114/hud-batch-0.tar.gz",
+        "bytes": 58632427,
+        "reason": "Superseded transfer archive; final published archives and all source/capture files retained"
+      },
+      {
+        "path": ".local/evidence/experimental-hud-implementation-20261114/hud-batch-1.tar.gz",
+        "bytes": 104315825,
+        "reason": "Superseded transfer archive; final published archives and all source/capture files retained"
+      },
+      {
+        "path": ".local/evidence/experimental-hud-implementation-20261114/hud-batch-2.tar.gz",
+        "bytes": 151102710,
+        "reason": "Superseded transfer archive; final published archives and all source/capture files retained"
+      },
+      {
+        "path": ".local/evidence/experimental-hud-implementation-20261114/hud-batch-3.tar.gz",
+        "bytes": 196269641,
+        "reason": "Superseded transfer archive; final published archives and all source/capture files retained"
+      },
+      {
+        "path": ".local/evidence/experimental-hud-plan-20261114/hud-review-site.tar.gz",
+        "bytes": 13201022,
+        "reason": "Superseded transfer archive; final published archives and all source/capture files retained"
+      },
+      {
+        "path": ".local/evidence/experimental-hud-plan-20261114/primary-index-links.tar.gz",
+        "bytes": 257217858,
+        "reason": "Superseded transfer archive; final published archives and all source/capture files retained"
+      }
+    ],
+    "removedBytes": 934738972,
+    "retainedExecutablesVerified": [
+      {
+        "file": "build/apple/Build/Products/Debug-iphonesimulator/HeavyMach2Source.app/HeavyMach2Source",
+        "sha256": "959658cb6c90b2944fbe453b0e3ee7ec71be2bd614c127062131abf6396f1052"
+      },
+      {
+        "file": "build/apple/Build/Products/Release-iphonesimulator/HeavyMach2Source.app/HeavyMach2Source",
+        "sha256": "a47c37d004420a150847a3cb86e857fccad6051e61dfbbca63fcd4226467b167"
+      },
+      {
+        "file": "build/apple/Build/Products/Release-iphonesimulator/HeavyMach2Validation.app/HeavyMach2Validation",
+        "sha256": "f0f71ce574c74efbd746cb80a9f3e3654bb50461faf27f042e1951bebe1690cb"
+      },
+      {
+        "file": "build/apple/Build/Products/Release-iphonesimulator/HeavyMach2Source.app.dSYM/Contents/Resources/DWARF/HeavyMach2Source",
+        "sha256": "adf4bb6dec73af0838f73d5c85f391bae4a24cc7a944f68b049fce7439c1a288"
+      },
+      {
+        "file": "build/apple/Build/Products/Release-iphonesimulator/HeavyMach2Validation.app.dSYM/Contents/Resources/DWARF/HeavyMach2Validation",
+        "sha256": "5b5a1239822df476cedf708eb383309e8c2ed0345a6b5bdcdbd8e3b4c5b9029a"
+      }
+    ],
+    "preserved": "Original IPAs, saves, source, failed/successful logs, captures, xcresults, Instruments traces and latest Source/Validation/reference products"
+  }
+}

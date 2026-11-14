@@ -4,7 +4,7 @@
 
 [현재 구현·실패 수정·남은 TODO](docs/experimental-hud-implementation-20261114.md), [검증 근거](docs/evidence/experimental-hud-implementation-20261115.json)를 우선한다. ExperimentalHUD 11조각·좌우 패널 이동/저장, Phone 허브·상점·사령부 전체 삽화/세로 스크롤 제거를 구현했다. 공통 CPU 5개, ASan/UBSan 3개와 후속 지형/레이더 경계 검사를 통과했다. 최종 Native는 양쪽 9/9다. 첫 자동 10/10 뒤 캡처에서 Retina56/360 검정이 발견되어 합격을 보류하고 수정했다. 공통 MapPreview의 보이는 사각형만 원본 UV로 제출하며 카메라/맵/유닛/이미지 비율을 보존한다. iPad 경로는 유지했다.
 
-정식·치트 Simulator Release와 패키지 1,532파일씩·dSYM UUID를 확인했다. 최신 치트 CPU 30.766초/26,182샘플, leaks CLI 한 시점 0건이다. Instruments의 이전 메모리 trace에는 heap/leak표가 없어 그 표만으로 합격 판정하지 않는다. 물리 기기 발열·복귀 정지는 남는다. 이번에 실제 iPhone 설치·develop/main 병합은 하지 않았다. 보고 HTML·원본 캡처는 기존 HUD 비공개 Site에 갱신하며 누적 첫 화면/고정 목록에 연결한다. 게시 완료 버전은 docs/report-site.md에서 확인한다.
+정식·치트 Simulator Release와 패키지 1,532파일씩·dSYM UUID를 확인했다. 최신 치트 CPU 30.766초/26,182샘플, leaks CLI 한 시점 0건이다. Instruments의 이전 메모리 trace에는 heap/leak표가 없어 그 표만으로 합격 판정하지 않는다. 물리 기기 발열·복귀 정지는 남는다. 이번에 실제 iPhone 설치·develop/main 병합은 하지 않았다. 보고 HTML·원본 PNG 68개는 기존 HUD 비공개 Site 버전 3에 게시했다. 누적 Site 303의 첫 화면/고정 목록에 연결했고 HTTP 72파일·PNG 전부의 해시를 확인했다. 현행 HUD Site 소스는 `.local/evidence/experimental-hud-implementation-20261114/site-batched`다. 큰 Git 전송 실패를 5묶음으로 나눠 복구한 기록과 정확한 Site SHA는 docs/report-site.md에서 확인한다.
 
 새 코드 작업 전에 TODO의 타이틀/로딩 HD 위쪽 정렬·인게임 메뉴/미션 스크롤 금지·가로 배너·실제 복귀 정지/발열·E-10 알림/수집 보상을 읽는다. 아래 진행 중·원인 미확정 문장은 과거 검사 단계의 기록이다.
 

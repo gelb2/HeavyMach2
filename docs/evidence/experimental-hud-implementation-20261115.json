@@ -159,9 +159,39 @@
         "path": "build/apple/SDKExplicitPrecompiledModules",
         "bytes": 0,
         "reason": "Regenerable intermediate cache; final products and symbols retained"
+      },
+      {
+        "path": ".local/evidence/experimental-hud-implementation-20261114/hud-batch-0.tar.gz",
+        "bytes": 58632427,
+        "reason": "Superseded transfer archive; final published archives and all source/capture files retained"
+      },
+      {
+        "path": ".local/evidence/experimental-hud-implementation-20261114/hud-batch-1.tar.gz",
+        "bytes": 104315825,
+        "reason": "Superseded transfer archive; final published archives and all source/capture files retained"
+      },
+      {
+        "path": ".local/evidence/experimental-hud-implementation-20261114/hud-batch-2.tar.gz",
+        "bytes": 151102710,
+        "reason": "Superseded transfer archive; final published archives and all source/capture files retained"
+      },
+      {
+        "path": ".local/evidence/experimental-hud-implementation-20261114/hud-batch-3.tar.gz",
+        "bytes": 196269641,
+        "reason": "Superseded transfer archive; final published archives and all source/capture files retained"
+      },
+      {
+        "path": ".local/evidence/experimental-hud-plan-20261114/hud-review-site.tar.gz",
+        "bytes": 13201022,
+        "reason": "Superseded transfer archive; final published archives and all source/capture files retained"
+      },
+      {
+        "path": ".local/evidence/experimental-hud-plan-20261114/primary-index-links.tar.gz",
+        "bytes": 257217858,
+        "reason": "Superseded transfer archive; final published archives and all source/capture files retained"
       }
     ],
-    "removedBytes": 153999489,
+    "removedBytes": 934738972,
     "retainedExecutablesVerified": [
       {
         "file": "build/apple/Build/Products/Debug-iphonesimulator/HeavyMach2Source.app/HeavyMach2Source",
@@ -189,5 +219,6 @@
   "physicalInstall": false,
   "developOrMainMerge": false,
   "allGameCoverageClaimed": false,
-  "onlineBrowserCheck": false
+  "onlineBrowserCheck": false,
+  "publicationEvidence": "docs/evidence/experimental-hud-publication-20261115.json"
 }
