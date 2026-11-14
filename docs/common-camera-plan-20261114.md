@@ -2,7 +2,9 @@
 
 ## 결정
 
-**줌 계산은 새 공통 모듈 `Sources/Core/Presentation/CameraPresentation.hpp/.cpp`가 담당한다. iOS·Android 앱에 줌 수식이나 기종별 분기를 넣지 않는다.**
+**줌 계산은 새 공통 C++ 모듈이 담당한다. iOS·Android 앱에는 줌 수식이나 기종별 분기를 넣지 않는다.**
+
+모듈 위치는 `Sources/Core/Presentation/CameraPresentation.hpp/.cpp`다.
 
 iPad의 현재 월드 배율1은 유지한다. 휴대폰의 대기 배율은 현재 약1.428에서 **1.0을 첫 수정 후보**로 낮춘다. 이 후보에서는 iPhone Air의 시야가 약639×294에서912×420으로 넓어진다. 원본과 동일하다고 확정한 숫자는 아니며, 구현 뒤 같은 조건의 표시·입력·경계를 검사해 채택한다. 이번 작업은 계획 수립·게시까지다. 게임 구현·새 설치는 하지 않았다.
 
