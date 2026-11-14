@@ -30,9 +30,9 @@ public:
     [[nodiscard]] DisplayTransform ui(DisplayRegion,float horizontalPan=0)const;
     [[nodiscard]] std::optional<ClipRect> clip(DisplayRegion,float horizontalPan=0)const;
     [[nodiscard]] float shopPanLimit()const;
-    [[nodiscard]] float worldScale(float zoom=1)const;
-    [[nodiscard]] Size worldViewport(float zoom=1)const;
-    [[nodiscard]] DisplayTransform world(float zoom=1)const;
+    // A camera result already contains the full HD-world-to-point scale.
+    [[nodiscard]] Size worldViewportAtScale(float finalScale)const;
+    [[nodiscard]] DisplayTransform worldAtScale(float finalScale)const;
     [[nodiscard]] Vec2 baseButtonPosition(unsigned index,unsigned count)const;
 };
 // Runs after the original node/rounding/atlas assembly. Never mutates textures.

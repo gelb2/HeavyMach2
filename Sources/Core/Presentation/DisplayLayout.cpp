@@ -66,7 +66,7 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
         return anchored({640,52},{a.x+a.width-48,a.y+18},.5f);
     }
     case DisplayRegion::content:return centered(768,1024);
-    case DisplayRegion::world:return world();
+    case DisplayRegion::world:return worldAtScale(1);
     case DisplayRegion::surface:return {};
     case DisplayRegion::baseDescription:{
         if(!configuration_.compact)return centered(768,560);
@@ -99,12 +99,16 @@ float DisplayLayout::shopPanLimit()const{
     if(!configuration_.enabled||!configuration_.compact)return 0;
     const auto t=ui(DisplayRegion::shopStock);return std::max(0.f,1536*t.scale+16-configuration_.content().width);
 }
-float DisplayLayout::worldScale(float zoom)const{
-    finite(zoom);if(zoom<=0)throw std::invalid_argument("Nonpositive world display zoom");
-    return !configuration_.enabled?1.f:(configuration_.compact?.5f:1.f)*zoom;
+Size DisplayLayout::worldViewportAtScale(float scale)const{
+    finite(scale);if(scale<=0)throw std::invalid_argument("Nonpositive final world scale");
+    if(!configuration_.enabled)return {768,1024};
+    const auto a=configuration_.compact?ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height}:configuration_.content();return {a.width/scale,a.height/scale};
 }
-Size DisplayLayout::worldViewport(float zoom)const{const auto a=configuration_.compact?ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height}:configuration_.content();const auto s=worldScale(zoom);return {a.width/s,a.height/s};}
-DisplayTransform DisplayLayout::world(float zoom)const{const auto a=configuration_.content();return {worldScale(zoom),configuration_.compact?Vec2{}:Vec2{a.x,a.y}};}
+DisplayTransform DisplayLayout::worldAtScale(float scale)const{
+    finite(scale);if(scale<=0)throw std::invalid_argument("Nonpositive final world scale");
+    if(!configuration_.enabled)return {};
+    const auto a=configuration_.content();return {scale,configuration_.compact?Vec2{}:Vec2{a.x,a.y}};
+}
 Vec2 DisplayLayout::baseButtonPosition(unsigned index,unsigned count)const{
     const auto a=configuration_.content();const float rail=std::min(220.f,a.width*.38f);
     return {a.x+rail*.5f,a.y+a.height*(1.f-(float(index)+.5f)/std::max(1u,count))};

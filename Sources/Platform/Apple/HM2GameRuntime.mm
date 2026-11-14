@@ -101,7 +101,7 @@ bool GameRuntime::input(PointerPhase phase,Vec2 point,std::uintptr_t id){
     if(const auto* scene=p.game->battle()){
         const auto before=scene->dashState();observation.movePointerBefore=before.movePointer;observation.pathBefore=before.pathCount;observation.tapBefore=before.tapTime;observation.specialBefore=before.special;
         observation.worldTimeBefore=scene->clock().worldTime();observation.dashStartsBefore=scene->metrics().dashStarts;observation.playerBefore=scene->player().position;
-        const auto logical=p.game->display().enabled?DisplayLayout(p.game->display()).world(scene->displayZoom()).inverse(point):point;
+        const auto logical=p.game->display().enabled?scene->cameraPresentation().worldToCanvas.inverse(point):point;
         const auto& camera=scene->camera();const Vec2 base{camera.center.x-camera.viewport.width*.5f,camera.center.y-camera.viewport.height*.5f};
         const Vec2 shifted{base.x+camera.offset.x,base.y+camera.offset.y};observation.worldPoint={shifted.x+logical.x,shifted.y+logical.y};
     }

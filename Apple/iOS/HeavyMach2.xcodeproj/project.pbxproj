@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A11CA0000000000000000001 /* CameraPresentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11CA0000000000000000003 /* CameraPresentation.cpp */; };
+		A11CA0000000000000000002 /* CameraPresentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11CA0000000000000000003 /* CameraPresentation.cpp */; };
 		016FCED80D64E201528A7AC2 /* LocomotionScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC4647D2C2976A4283A509AD /* LocomotionScene.cpp */; };
 		0170BE3B8C5BE0FBC7573BD3 /* Weapons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 613BC791A02B06C23C2A3BEA /* Weapons.cpp */; };
 		0766EDE5469E68F0A94467F1 /* Screens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA851BB9990AA00129E04AC /* Screens.cpp */; };
@@ -186,6 +188,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A11CA0000000000000000003 /* CameraPresentation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CameraPresentation.cpp; sourceTree = "<group>"; };
+		A11CA0000000000000000004 /* CameraPresentation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CameraPresentation.hpp; sourceTree = "<group>"; };
 		02500EBECE46105EB3FABE8A /* DisplayLayout.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DisplayLayout.hpp; sourceTree = "<group>"; };
 		043AD228C3E3A40192B65C5E /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		0578E11DBD56762668331013 /* ScreenTransition.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ScreenTransition.hpp; sourceTree = "<group>"; };
@@ -592,6 +596,8 @@
 			children = (
 				9A11F90D201FE7265367DF16 /* AssemblyPreview.cpp */,
 				ADDEAEEA7BB8B54C41E3C295 /* AssemblyPreview.hpp */,
+				A11CA0000000000000000003 /* CameraPresentation.cpp */,
+				A11CA0000000000000000004 /* CameraPresentation.hpp */,
 				E06DB341BE24022D95107498 /* DisplayLayout.cpp */,
 				02500EBECE46105EB3FABE8A /* DisplayLayout.hpp */,
 				E512BB88B19866ABD2271298 /* HUDLayout.hpp */,
@@ -870,6 +876,7 @@
 				AAE2C97ABEE691B01335359A /* CombatScene.cpp in Sources */,
 				3D25EBB05635C26601A47106 /* Dash.cpp in Sources */,
 				936C708FD04DAA8F6164D13B /* DataTable.cpp in Sources */,
+				A11CA0000000000000000001 /* CameraPresentation.cpp in Sources */,
 				C0ECBB41CA6DF0B97AD26051 /* DisplayLayout.cpp in Sources */,
 				86F46E67BA5856322CF8C0E4 /* EnemyActors.cpp in Sources */,
 				7BAB3CBC95A28A51C3EE2E16 /* EnemySpawner.cpp in Sources */,
@@ -943,6 +950,7 @@
 				B56F79F1D8121F0408543154 /* ConcurrentValidation.cpp in Sources */,
 				63983B9254B17B90537EAEFB /* Dash.cpp in Sources */,
 				87E36D97DBE0C16AB3E344FC /* DataTable.cpp in Sources */,
+				A11CA0000000000000000002 /* CameraPresentation.cpp in Sources */,
 				DA0168D7DC0E79FE2F65FF28 /* DisplayLayout.cpp in Sources */,
 				96017CD8E417490E92DF73E1 /* EnemyActors.cpp in Sources */,
 				F0576F911A458759C1C4614E /* EnemySpawner.cpp in Sources */,

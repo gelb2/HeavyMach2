@@ -172,6 +172,13 @@ void resourceAccounting(validation::ConcurrentValidation& runtime){
     assert(help->reads.size()==4&&help->exists.size()==4&&std::set<std::string>(help->reads.begin(),help->reads.end())==helpNames&&std::set<std::string>(help->exists.begin(),help->exists.end())==helpNames);
 }
 void recentRegressions(validation::ConcurrentValidation& runtime){
+    std::uint64_t synchronizedFrame=0;
+    for(unsigned i=121;i<validation::concurrentScenarioCount;++i){const auto& o=runtime.observations()[i].synchronizedWeapon;
+        std::cout<<"SYNC_WEAPON case="<<i<<" pause="<<o.pausedFrame<<" resume="<<o.resumedFrame<<" emit="<<o.emittedFrame<<" counts="<<o.emissionsAtPause<<":"<<o.emissionsAtResume<<":"<<o.emissionsAfter<<std::endl;
+        assert(o.pausedFrame&&o.resumedFrame>o.pausedFrame&&o.emittedFrame==o.resumedFrame&&o.emissionsAfter>o.emissionsAtResume&&o.emissionsAtPause==o.emissionsAtResume&&o.pausedWorldTime==o.resumedWorldTime);
+        if(synchronizedFrame)assert(synchronizedFrame==o.resumedFrame);else synchronizedFrame=o.resumedFrame;
+    }
+
     const auto metrics=runtime.metrics();assert(metrics.recentInputFramesWithCombatActivity>0&&metrics.hudFramesWithCombatActivity>0&&metrics.lifecycleFramesWithCombatActivity>0);
     for(unsigned index:{115u,116u}){const auto& o=runtime.observations()[index].recentInput;
         std::cout<<"PATH_REPLACE index="<<index<<" first="<<o.firstPathPoints<<" replacement="<<o.replacementPathPoints<<" dash="<<o.dashBefore<<":"<<o.dashAfter<<" SP="<<o.specialBefore<<":"<<o.specialAfter<<" inputs="<<o.inputs.size()<<std::endl;
@@ -185,6 +192,10 @@ void recentRegressions(validation::ConcurrentValidation& runtime){
     const auto& samples=runtime.observations()[117].recentInput.zoom;assert(samples.size()==6&&samples[1].target&&samples[3].target);
     float lo=samples.front().zoom,hi=lo;for(const auto& sample:samples){lo=std::min(lo,sample.zoom);hi=std::max(hi,sample.zoom);assert(sample.output.width==samples.front().output.width&&sample.output.height==samples.front().output.height);std::cout<<"ZOOM_CONCURRENT frame="<<sample.frame<<" selected="<<sample.target<<" zoom="<<sample.zoom<<" world="<<sample.viewport.width<<":"<<sample.viewport.height<<" output="<<sample.output.width<<":"<<sample.output.height<<std::endl;}
     if(runtime.session(117).display().focusZoom)assert(hi-lo>.01f);else assert(lo==1&&hi==1);
+    const auto& idle=runtime.observations()[120].recentInput.zoom;assert(idle.size()>=6);
+    for(const auto& sample:idle){assert(sample.zoom==1&&sample.currentZoom==1&&sample.targetZoom==1&&!sample.target&&!sample.pathCount);const auto& config=runtime.session(120).display();const auto extent=config.enabled?(config.compact?ClipRect{0,0,config.canvas.width,config.canvas.height}:config.content()):ClipRect{0,0,768,1024};assert(sample.viewport.width==extent.width&&sample.viewport.height==extent.height);}
+    std::cout<<"CAMERA_IDLE_CONCURRENT samples="<<idle.size()<<" scale="<<idle.back().zoom<<" viewport="<<idle.back().viewport.width<<":"<<idle.back().viewport.height<<std::endl;
+
 }
 void printCase38Weapons(Files& files){
     const auto items=DataTable::parse(files.read("ItemInfo.tble"));const auto weapons=Weapons::parse(DataTable::parse(files.read("WeaponInfo.tble")));const auto machines=Machines::parse(DataTable::parse(files.read("MachList.tble")));
@@ -225,7 +236,7 @@ int main(int argc,char** argv){
         resourceAccounting(runtime);recentRegressions(runtime);
         assert(failed==0&&m.commonFrameInterval&&m.activeWeaponDefinitions==110&&m.activeWeaponKinds==5&&m.maxConcurrentWeaponKinds>=5&&m.steadyReadRequests==0&&m.steadyExistsRequests==0&&m.steadyReadMisses==0&&m.steadyExistsMisses==0);return 0;
     }
-    assert(runtime.scenarioCount()==120&&runtime.metrics().combatScenarios==55);std::set<std::string> itemCodes;
+    assert(runtime.scenarioCount()==validation::concurrentScenarioCount&&runtime.metrics().combatScenarios==55);std::set<std::string> itemCodes;
     const auto originalItems=DataTable::parse(runtime.cachedResources().read("ItemInfo.tble"));std::vector<std::string> originalWeaponCodes;for(std::size_t row=0;row<originalItems.rowCount();++row)if(originalItems.value(row,"Type")=="PtWpn")originalWeaponCodes.emplace_back(originalItems.value(row,"Code").value());assert(originalWeaponCodes.size()==110);
     for(std::size_t i=0;i<55;++i){const auto& descriptor=runtime.scenarios()[i];assert(descriptor.role==validation::ScenarioRole::combat&&descriptor.weapons.size()==2);for(unsigned side=0;side<2;++side){const auto& code=descriptor.weapons[side];assert(code==originalWeaponCodes[i*2+side]);itemCodes.insert(code);assert(runtime.session(unsigned(i)).state().equipment[side+2].dataId==code);}assert(runtime.session(unsigned(i)).battle());}
     assert(itemCodes.size()==110);const auto warmReads=files.reads,warmProbes=files.probes;
@@ -255,7 +266,7 @@ int main(int argc,char** argv){
     assert(originalMenuFrames==11&&originalMenuOverlap==11&&metrics.menuActionFrames>=originalMenuFrames);
     assert(metrics.maxConcurrentWeaponKinds>=5&&metrics.framesWithFiveWeaponKinds>0);
     assert(metrics.maxConcurrentWeaponDefinitions>=5&&metrics.maxConcurrentEmittingScenarios>=5&&metrics.framesWithFiveWeaponDefinitions>0);
-    assert(runtime.frameActivity().size()==frames);for(const auto& activity:runtime.frameActivity()){assert(activity.tickedScenarios==120);std::cout<<"FRAME "<<activity.frame<<" ticked="<<activity.tickedScenarios<<" emittingScenarios="<<activity.emittingScenarios<<" weaponDefinitions="<<activity.emittedWeaponParts.size()<<" weaponKinds="<<activity.emittedWeaponKinds.size()<<" buttons="<<activity.buttons.size()<<" activeProjectiles="<<activity.activeProjectiles<<" combatProjectiles="<<activity.combatActiveProjectiles<<" combatEmit="<<activity.combatEmittingScenarios<<" combatDamage="<<activity.combatDamage<<" restart="<<activity.saveRestart<<" emissions="<<activity.emissions<<" damage="<<activity.damage<<" kills="<<activity.kills;for(const auto& part:activity.emittedWeaponParts)std::cout<<" "<<part;std::cout<<"\n";}
+    assert(runtime.frameActivity().size()==frames);for(const auto& activity:runtime.frameActivity()){assert(activity.tickedScenarios==validation::concurrentScenarioCount);std::cout<<"FRAME "<<activity.frame<<" ticked="<<activity.tickedScenarios<<" emittingScenarios="<<activity.emittingScenarios<<" weaponDefinitions="<<activity.emittedWeaponParts.size()<<" weaponKinds="<<activity.emittedWeaponKinds.size()<<" buttons="<<activity.buttons.size()<<" activeProjectiles="<<activity.activeProjectiles<<" combatProjectiles="<<activity.combatActiveProjectiles<<" combatEmit="<<activity.combatEmittingScenarios<<" combatDamage="<<activity.combatDamage<<" restart="<<activity.saveRestart<<" emissions="<<activity.emissions<<" damage="<<activity.damage<<" kills="<<activity.kills;for(const auto& part:activity.emittedWeaponParts)std::cout<<" "<<part;std::cout<<"\n";}
     for(std::size_t i=0;i<runtime.scenarioCount();++i)for(const auto& [part,count]:runtime.observations()[i].weaponEmissions)std::cout<<"WEAPON scenario="<<i<<" part="<<part<<" emissions="<<count<<"\n";
     assert(runtime.observations()[55].shopPurchased&&runtime.observations()[55].insufficientRejected);
     assert(runtime.observations()[56].missionAccepted&&runtime.observations()[56].missionComplete);
@@ -355,5 +366,5 @@ int main(int argc,char** argv){
     const auto priorTicks=runtime.observations()[0].ticks;runtime.setActive(false);runtime.tick();assert(runtime.observations()[0].ticks==priorTicks&&runtime.metrics().frames==frames);runtime.setActive(true);
     const auto missing=runtime.missingFeatures();assert(std::find(missing.begin(),missing.end(),"quick-item actual use")==missing.end()&&std::find(missing.begin(),missing.end(),"dash execution")==missing.end());
     const double seconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-begin).count();
-    std::cout<<"HM2_CONCURRENT PASS frames="<<frames<<" scenarios=120 combat=55 originalPlayerWeapons=110 firedDefinitions="<<fired.size()<<" activeWeaponKinds="<<metrics.activeWeaponKinds<<" maxSameFrameDefinitions="<<metrics.maxConcurrentWeaponDefinitions<<" maxSameFrameKinds="<<metrics.maxConcurrentWeaponKinds<<" maxSameFrameScenarios="<<metrics.maxConcurrentEmittingScenarios<<" framesFiveDefinitions="<<metrics.framesWithFiveWeaponDefinitions<<" framesFiveKinds="<<metrics.framesWithFiveWeaponKinds<<" menuFrames="<<metrics.menuActionFrames<<" menuWithCombat="<<metrics.menuFramesWithCombatActivity<<" emittingScenariosEver="<<progressed<<" emissions="<<emissions<<" damage="<<damage<<" kills="<<kills<<" completedMissions="<<complete<<" levelUps="<<levelUps<<" warmReads="<<metrics.warmReadMisses<<" warmExists="<<metrics.warmExistsMisses<<" seconds="<<seconds<<"\n";
+    std::cout<<"HM2_CONCURRENT PASS frames="<<frames<<" scenarios="<<runtime.scenarioCount()<<" combat=55 originalPlayerWeapons=110 firedDefinitions="<<fired.size()<<" activeWeaponKinds="<<metrics.activeWeaponKinds<<" maxSameFrameDefinitions="<<metrics.maxConcurrentWeaponDefinitions<<" maxSameFrameKinds="<<metrics.maxConcurrentWeaponKinds<<" maxSameFrameScenarios="<<metrics.maxConcurrentEmittingScenarios<<" framesFiveDefinitions="<<metrics.framesWithFiveWeaponDefinitions<<" framesFiveKinds="<<metrics.framesWithFiveWeaponKinds<<" menuFrames="<<metrics.menuActionFrames<<" menuWithCombat="<<metrics.menuFramesWithCombatActivity<<" emittingScenariosEver="<<progressed<<" emissions="<<emissions<<" damage="<<damage<<" kills="<<kills<<" completedMissions="<<complete<<" levelUps="<<levelUps<<" warmReads="<<metrics.warmReadMisses<<" warmExists="<<metrics.warmExistsMisses<<" seconds="<<seconds<<"\n";
 }

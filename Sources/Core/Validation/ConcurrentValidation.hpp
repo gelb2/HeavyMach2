@@ -15,9 +15,10 @@ namespace hm2::validation {
 // cases on the same clock for1800 frames; retain the tablet baseline.
 // Compact lock-on kills occur later in the measured visible field. Both852
 // and912-wide probes retain the original corpse deadline beyond frame1800;
-// all120 conditions therefore share2100 frames, without changing that clock.
+// All concurrent conditions therefore share2100 frames, without changing that clock.
 constexpr unsigned displayValidationFrames(const DisplayConfiguration& display){return display.enabled&&display.compact?2100u:1200u;}
-enum class ScenarioRole {combat,shop,mission,saveRestart,movementLoot,aidKit,airStrike,worldAudit,dash,botAttack,botPicker,help,gameOver,rankingUnavailable,completedMissions,pathReplacementSingle,pathReplacementMany,focusZoom,lifecycle,hudLayout};
+inline constexpr unsigned concurrentScenarioCount=126;
+enum class ScenarioRole {combat,shop,mission,saveRestart,movementLoot,aidKit,airStrike,worldAudit,dash,botAttack,botPicker,help,gameOver,rankingUnavailable,completedMissions,pathReplacementSingle,pathReplacementMany,focusZoom,lifecycle,hudLayout,cameraIdle,synchronizedWeapons};
 struct ScenarioDescription {std::string label;ScenarioRole role=ScenarioRole::combat;std::vector<std::string> weapons;std::string map{};};
 struct NavigationObservation {std::uint64_t frame=0;Vec2 player,world,screen;std::string lootCode;bool accepted=false,blocked=false;};
 struct PickupObservation {std::uint64_t frame=0;std::string code;int type=0,value=0;Vec2 player,item;int creditDelta=0;};
@@ -70,7 +71,7 @@ struct CompletedMissionsObservation {
     int finalCredit=0,initialRepairItems=0,repairItems=0,remainingAccepted=0;
     bool secondOKAccepted=false,finalOKAccepted=false,listImmediatelyAfterFinalOK=false,savedPayloadValid=false;
 };
-struct ZoomSample {std::uint64_t frame=0,target=0;float zoom=0;Size viewport,output;Vec2 player;};
+struct ZoomSample {std::uint64_t frame=0,target=0;float zoom=0;Size viewport,output;Vec2 player;float currentZoom=1,targetZoom=1,minimumScale=1;unsigned policy=0,pathCount=0;};
 struct RecentInputObservation {
     std::vector<NavigationObservation> inputs;
     unsigned firstPathPoints=0,replacementPathPoints=0;
@@ -94,7 +95,12 @@ struct CombatGuideSample {
     bool accepted=false;
     std::vector<std::uint64_t> queuedTargets;
 };
+struct SynchronizedWeaponObservation {
+    std::uint64_t pausedFrame=0,resumedFrame=0,emittedFrame=0,emissionsAtPause=0,emissionsAtResume=0,emissionsAfter=0;
+    double pausedWorldTime=0,resumedWorldTime=0;
+};
 struct ScenarioObservation {
+    SynchronizedWeaponObservation synchronizedWeapon;
     std::vector<CombatGuideSample> combatGuide;
     std::uint64_t ticks=0,firstFrame=0,lastFrame=0,draws=0,sounds=0,saves=0;
     std::uint64_t buttonRequests=0,buttonFailures=0;

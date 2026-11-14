@@ -729,13 +729,13 @@ std::vector<FieldItemSnapshot> GameSession::fieldItems()const{
     std::vector<FieldItemSnapshot> result;result.reserve(impl_->drops.size());
     for(const auto& drop:impl_->drops){const auto& item=drop.item;result.push_back({item.item?item.item->code:"",item.item?item.item->type:-1,item.value,item.position,item.removed,drop.pickupPlayer});}return result;
 }
-Frame GameSession::drawWorld(){auto& p=*impl_;Frame frame=p.scene?p.scene->drawFrame():Frame{};if(p.display.enabled){DisplayLayout layout(p.display);transformFrame(frame,layout.world(p.scene?p.scene->displayZoom():1),p.display.canvas,layout.clip(DisplayRegion::world));}return frame;}
+Frame GameSession::drawWorld(){auto& p=*impl_;Frame frame=p.scene?p.scene->drawFrame():Frame{};if(p.display.enabled){DisplayLayout layout(p.display);transformFrame(frame,p.scene?p.scene->cameraPresentation().worldToCanvas:layout.worldAtScale(1),p.display.canvas,layout.clip(DisplayRegion::world));}return frame;}
 void GameSession::setDisplay(DisplayConfiguration display){(void)display.content();impl_->display=display;if(impl_->scene)impl_->scene->setDisplay(display);if(impl_->help)impl_->help->setDisplay(display);}
 const DisplayConfiguration& GameSession::display()const{return impl_->display;}
-Vec2 GameSession::worldCanvasPoint(Vec2 logical)const{return DisplayLayout(impl_->display).world(impl_->scene?impl_->scene->displayZoom():1).map(logical);}
+Vec2 GameSession::worldCanvasPoint(Vec2 logical)const{return (impl_->scene?impl_->scene->cameraPresentation().worldToCanvas:DisplayLayout(impl_->display).worldAtScale(1)).map(logical);}
 bool GameSession::inputWorld(PointerPhase phase,Vec2 point,std::uintptr_t id){auto& p=*impl_;if(!p.active||!p.scene||!id)return false;
     if(p.display.enabled){const auto a=DisplayLayout(p.display).clip(DisplayRegion::world).value();const bool outside=point.x<a.x||point.x>a.x+a.width||point.y<a.y||point.y>a.y+a.height;if(outside){if(phase==PointerPhase::begin)return false;if(phase==PointerPhase::end||phase==PointerPhase::cancel)phase=PointerPhase::cancel;}
-        point=DisplayLayout(p.display).world(p.scene->displayZoom()).inverse(point);if(phase==PointerPhase::end&&point.y<p.scene->camera().inputMinimumY)phase=PointerPhase::cancel;}
+        point=p.scene->cameraPresentation().worldToCanvas.inverse(point);if(phase==PointerPhase::end&&point.y<p.scene->camera().inputMinimumY)phase=PointerPhase::cancel;}
 
     if(p.quickItems&&p.quickItems->input(phase,point,p.scene->camera(),p.scene->isPaused(),p.scene->clock().renderTime(),p.scene->clock().worldTime()))return true;
     return p.scene->input(phase,point,id);

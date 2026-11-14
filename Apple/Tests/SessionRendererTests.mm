@@ -345,6 +345,13 @@ UIImage* image(NSData* rgba,CGSize size){
         XCTAssertTrue(runtime.session().enterField("Stage01_01",0));runtime.synchronize();
         if(runtime.session().help()){runtime.input(hm2::PointerPhase::begin,{450,210},802);runtime.input(hm2::PointerPhase::end,{450,210},802);}
         capture(@"phone-fullscreen-field-idle");
+        if(const auto* idle=runtime.session().battle()){
+            XCTAssertEqual(idle->cameraPresentation().worldScale,1.f);XCTAssertEqual(idle->camera().viewport.width,912.f);XCTAssertEqual(idle->camera().viewport.height,420.f);
+            for(unsigned tick=0;tick<1200;++tick)runtime.tick();
+            XCTAssertEqual(idle->cameraPresentation().worldScale,1.f);XCTAssertEqual(idle->cameraPresentation().targetZoom,1.f);
+            NSLog(@"HM2_CAMERA_NATIVE_IDLE ticks=1200 scale=%.9f viewport=%.3fx%.3f",idle->cameraPresentation().worldScale,idle->camera().viewport.width,idle->camera().viewport.height);
+        }
+
         auto* scene=runtime.session().battle();XCTAssertTrue(scene!=nullptr);if(scene){for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=runtime.session().worldCanvasPoint(scene->camera().toScreen(enemy.position));if(point.x>68&&point.x<844&&point.y>145&&point.y<400){runtime.input(hm2::PointerPhase::begin,point,803);runtime.input(hm2::PointerPhase::end,point,803);if(scene->selectedEnemy())break;}}
             XCTAssertNotEqual(scene->selectedEnemy(),0u);capture(@"phone-fullscreen-field-target");
             const auto frame=runtime.session().drawWorld();XCTAssertEqual(frame.width,912);XCTAssertEqual(frame.height,420);XCTAssertGreaterThan(scene->metrics().playerEmissions,0u);

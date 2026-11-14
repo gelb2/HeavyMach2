@@ -38,22 +38,22 @@ void run(Files& files,const char* name,DisplayConfiguration config,bool paused) 
     for(unsigned frame=0;frame<=1200;++frame){
         if(frame)scene.tick();
         if(frame!=0&&frame!=1&&frame!=60&&frame!=120&&frame!=300&&frame!=600&&frame!=1200)continue;
-        const float zoom=scene.displayZoom(),scale=layout.worldScale(zoom);
-        const auto view=scene.camera().viewport;
+        const auto& view=scene.cameraPresentation();const float zoom=view.currentZoom,scale=view.worldScale;
+        const auto viewport=scene.camera().viewport;
         const auto player=scene.player().position;
         const auto path=scene.dashState();
         // A known distance is mapped through the same camera and display path
         // as world sprites and input, independent of animation/transparent art.
-        const auto a=layout.world(zoom).map(scene.camera().toScreen(player));
-        const auto b=layout.world(zoom).map(scene.camera().toScreen({player.x+100,player.y}));
-        const auto inverse=scene.camera().toWorld(layout.world(zoom).inverse(b));
+        const auto a=view.worldToCanvas.map(scene.camera().toScreen(player));
+        const auto b=view.worldToCanvas.map(scene.camera().toScreen({player.x+100,player.y}));
+        const auto inverse=scene.camera().toWorld(view.worldToCanvas.inverse(b));
         if(std::abs((b.x-a.x)-100*scale)>.002f||std::abs(inverse.x-player.x-100)>.002f)
             throw std::runtime_error("World/display inverse mismatch");
         std::cout<<"{\"case\":\""<<name<<"\",\"paused\":"<<(paused?"true":"false")
             <<",\"frame\":"<<frame<<",\"renderTime\":"<<scene.clock().renderTime()
             <<",\"worldTime\":"<<scene.clock().worldTime()<<",\"zoom\":"<<zoom
-            <<",\"worldScale\":"<<scale<<",\"viewportWidth\":"<<view.width
-            <<",\"viewportHeight\":"<<view.height<<",\"world100InPoints\":"<<b.x-a.x
+            <<",\"worldScale\":"<<scale<<",\"viewportWidth\":"<<viewport.width
+            <<",\"viewportHeight\":"<<viewport.height<<",\"world100InPoints\":"<<b.x-a.x
             <<",\"playerX\":"<<player.x<<",\"playerY\":"<<player.y
             <<",\"pathCount\":"<<path.pathCount<<",\"selectedEnemy\":"<<scene.selectedEnemy()
             <<",\"hp\":"<<scene.playerHP()<<"}\n";

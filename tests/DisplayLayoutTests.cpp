@@ -14,7 +14,7 @@ void fullScreenWorld(){
  for(auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({912,420},{0,20,68,0})}){
   DisplayLayout layout(config);
   for(float zoom:{1.f,1.3f,1.6f,2.f}){
-   const auto t=layout.world(zoom);const auto v=layout.worldViewport(zoom);
+   const auto t=layout.worldAtScale(zoom);const auto v=layout.worldViewportAtScale(zoom);
    const auto low=t.map({0,0}),high=t.map({v.width,v.height});
    if(!near(low.x,0)||!near(low.y,0)||!near(high.x,config.canvas.width)||!near(high.y,config.canvas.height))std::cerr<<"WORLD_LETTERBOX zoom="<<zoom<<" low="<<low.x<<","<<low.y<<" high="<<high.x<<","<<high.y<<std::endl;
    assert(near(low.x,0)&&near(low.y,0)&&near(high.x,config.canvas.width)&&near(high.y,config.canvas.height));
@@ -31,15 +31,15 @@ struct Host:SessionHost,ui::ScreensHost{
  void bgm(std::string_view)override{}void sound(std::string_view)override{}void sfx(unsigned)override{}void sound(std::string_view,Vec2)override{}void soundID(unsigned,Vec2)override{}void alert(std::string_view)override{}void requestName(unsigned)override{}void requestDelete(unsigned)override{}bool writeSave(std::span<const std::uint8_t>,SaveReason)override{++writes;return true;}std::uint32_t absoluteTimeLow()override{return 1;}std::uint32_t unixTime()override{return 1794268800;}
 };
 void transforms(){
- const DisplayLayout legacy;assert(legacy.ui(DisplayRegion::bottom).identity());assert(legacy.world().identity());
+ const DisplayLayout legacy;assert(legacy.ui(DisplayRegion::bottom).identity());assert(legacy.worldAtScale(1).identity());
  for(auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({852,393},{59,21,59,0}),DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({1024,1366},{0,20,0,24})}){
   DisplayLayout layout(config);const auto area=config.content();for(unsigned i=0;i<=unsigned(DisplayRegion::banner);++i){const auto t=layout.ui(DisplayRegion(i));for(Vec2 p: {Vec2{0,0},Vec2{384,512},Vec2{768,1024}}){auto q=t.inverse(t.map(p));assert(near(q.x,p.x)&&near(q.y,p.y));}}
-  assert(near(layout.worldViewport().width*layout.worldScale(),config.compact?config.canvas.width:area.width));
+  assert(near(layout.worldViewportAtScale(1).width*1.f,config.compact?config.canvas.width:area.width));
   Sprite source;source.center={40,80};source.size={20,30};source.clip=ClipRect{20,30,40,50};source.strip.push_back({{15,17},{.3f,.7f},{1,.5f,.25f,1}});
   auto batch=std::make_shared<AtlasBatch>();batch->quads.emplace_back();batch->quads[0].vertices[0].position={25,27};batch->quads[0].vertices[0].uv={.2f,.4f};source.atlasBatch=batch;
-  auto mapped=source;const auto t=layout.world(1.3f);transformSprite(mapped,t,area);assert(near(mapped.center.x,t.map(source.center).x));assert(near(mapped.strip[0].position.y,t.map({15,17}).y));assert(mapped.strip[0].uv.x==.3f&&mapped.atlasBatch->quads[0].vertices[0].uv.y==.4f);assert(source.atlasBatch->quads[0].vertices[0].position.x==25);
+  auto mapped=source;const auto t=layout.worldAtScale(1.3f);transformSprite(mapped,t,area);assert(near(mapped.center.x,t.map(source.center).x));assert(near(mapped.strip[0].position.y,t.map({15,17}).y));assert(mapped.strip[0].uv.x==.3f&&mapped.atlasBatch->quads[0].vertices[0].uv.y==.4f);assert(source.atlasBatch->quads[0].vertices[0].position.x==25);
  }
- const auto a=DisplayLayout(DisplayConfiguration::surface({768,1024})),b=DisplayLayout(DisplayConfiguration::surface({1024,1366}));assert(a.worldScale()==b.worldScale()&&b.worldViewport().width>a.worldViewport().width);
+ const auto a=DisplayLayout(DisplayConfiguration::surface({768,1024})),b=DisplayLayout(DisplayConfiguration::surface({1024,1366}));assert(a.worldAtScale(1).scale==b.worldAtScale(1).scale&&b.worldViewportAtScale(1).width>a.worldViewportAtScale(1).width);
  bool refused=false;try{(void)DisplayConfiguration::surface({100,100},{50,0,50,0});}catch(const std::invalid_argument&){refused=true;}assert(refused);
 }
 void screens(Files& files,DisplayConfiguration config){
@@ -70,7 +70,7 @@ void entryCamera(Files& files){
  GameSession game(files,host,random,std::move(saved));assert(game.selectSlot(0));assert(game.enterField("Stage01_01",0));const auto config=DisplayConfiguration::surface({912,420},{68,20,68,0});game.setDisplay(config);
  const auto area=config.content();const DisplayLayout layout(config);
  for(unsigned i=0;i<240;++i){game.tick();auto* scene=game.battle();assert(scene);const auto p=game.worldCanvasPoint(scene->camera().toScreen(scene->player().position));const float bottom=area.y+138*layout.ui(DisplayRegion::bottom).scale;
-   if(p.y<bottom||p.y>area.y+area.height||p.x<area.x||p.x>area.x+area.width)std::cerr<<"PLAYER_CAMERA_ESCAPE frame="<<i<<" canvas="<<p.x<<","<<p.y<<" floor="<<bottom<<" world="<<scene->player().position.x<<","<<scene->player().position.y<<" camera="<<scene->camera().center.x<<","<<scene->camera().center.y<<" zoom="<<scene->displayZoom()<<std::endl;
+   if(p.y<bottom||p.y>area.y+area.height||p.x<area.x||p.x>area.x+area.width)std::cerr<<"PLAYER_CAMERA_ESCAPE frame="<<i<<" canvas="<<p.x<<","<<p.y<<" floor="<<bottom<<" world="<<scene->player().position.x<<","<<scene->player().position.y<<" camera="<<scene->camera().center.x<<","<<scene->camera().center.y<<" zoom="<<scene->cameraPresentation().worldScale<<std::endl;
    assert(p.y>=bottom&&p.y<=area.y+area.height&&p.x>=area.x&&p.x<=area.x+area.width);
    const auto frame=game.drawWorld();assert(frame.width==config.canvas.width&&frame.height==config.canvas.height);
    const auto& terrain=frame.sprites.front();assert(terrain.clip&&terrain.clip->x==0&&terrain.clip->y==0&&terrain.clip->width==config.canvas.width&&terrain.clip->height==config.canvas.height);
@@ -103,9 +103,9 @@ void phoneMenus(Files& files){
 }
 void session(Files& files,DisplayConfiguration config){Host host;DarwinWorldRandom random(1);GameSession game(files,host,random);assert(game.createSlot(0,"Layout","kr"));assert(game.enterField("Stage01_01",0));game.setDisplay(config);auto* scene=game.battle();assert(scene);const auto before=Bytes(game.workingSlot().begin(),game.workingSlot().end());const auto writes=host.writes;const auto old=scene->player().position;auto logical=scene->camera().toScreen({old.x,old.y+100});const auto point=game.worldCanvasPoint(logical);assert(game.inputWorld(PointerPhase::begin,point,77));game.inputWorld(PointerPhase::end,point,77);assert(near(scene->player().destination.x,old.x)&&near(scene->player().destination.y,old.y+100));assert(game.inputWorld(PointerPhase::begin,point,78));game.inputWorld(PointerPhase::end,{point.x,0},78);assert(scene->dashState().movePointer==0);assert(game.inputWorld(PointerPhase::begin,point,79));game.inputWorld(PointerPhase::cancel,{0,0},79);assert(scene->dashState().movePointer==0);
  if(config.compact&&config.insets.left>0){const Vec2 edge{config.insets.left*.5f,config.canvas.height*.75f};assert(game.inputWorld(PointerPhase::begin,edge,880));game.inputWorld(PointerPhase::end,edge,880);}
- const auto initialZoom=scene->displayZoom();
- for(unsigned i=0;i<100;++i){game.tick();auto frame=game.drawWorld();assert(frame.width==config.canvas.width&&frame.height==config.canvas.height);game.appendOverlays(frame);}assert(host.writes==writes);const auto z=scene->displayZoom();const auto minimum=std::max(config.canvas.width,config.canvas.height)/(1022.f*.5f);const auto fit=config.compact?minimum:1.f;assert(config.focusZoom?(z>=fit&&z<=fit*1.6f):z==1);
- if(config.focusZoom&&config.canvas.width==912){std::cout<<"PHONE_FOCUS_ZOOM initial="<<initialZoom<<" after="<<z<<std::endl;assert(z>initialZoom+.01f);}
+ const auto initialZoom=scene->cameraPresentation().worldScale;
+ for(unsigned i=0;i<100;++i){game.tick();auto frame=game.drawWorld();assert(frame.width==config.canvas.width&&frame.height==config.canvas.height);game.appendOverlays(frame);}assert(host.writes==writes);const auto z=scene->cameraPresentation().worldScale;const auto minimum=std::min(1.f,std::max(config.canvas.width,config.canvas.height)/1022.f);assert(config.focusZoom?(z>=minimum&&z<=1.f):z==1);
+ if(config.focusZoom&&config.canvas.width==912){std::cout<<"PHONE_FOCUS_ZOOM initial="<<initialZoom<<" after="<<z<<std::endl;assert(initialZoom==1&&z<=initialZoom);}
  const auto pos=scene->player().position;const auto hp=scene->playerHP();game.setDisplay(DisplayConfiguration::surface({1024,1366}));assert(scene->player().position.x==pos.x&&scene->playerHP()==hp&&host.writes==writes);assert(game.workingSlot().size()==before.size());
 }
 }

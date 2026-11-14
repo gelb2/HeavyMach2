@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(HeavyMach2Core STATIC
+    Sources/Core/Presentation/CameraPresentation.cpp
     Sources/Core/Presentation/DisplayLayout.cpp
     Sources/Assets/Image.cpp
     Sources/Core/Data/Chunk.cpp
@@ -60,6 +61,10 @@ target_compile_options(HeavyMach2Core PRIVATE -Wall -Wextra -Wpedantic -ffp-cont
 
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(CameraPresentationTests tests/CameraPresentationTests.cpp)
+    target_link_libraries(CameraPresentationTests PRIVATE HeavyMach2Core)
+    target_compile_options(CameraPresentationTests PRIVATE -UNDEBUG)
+    add_test(NAME SharedCameraPolicyAndIsolation COMMAND CameraPresentationTests)
     add_executable(DataReaderTests tests/DataReaderTests.cpp)
     target_link_libraries(DataReaderTests PRIVATE HeavyMach2Core)
     target_compile_options(DataReaderTests PRIVATE -UNDEBUG)

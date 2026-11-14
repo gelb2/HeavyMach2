@@ -7,6 +7,7 @@
 #include "Core/Data/Machines.hpp"
 #include "Core/Data/Resources.hpp"
 #include "Core/Simulation/WorldGates.hpp"
+#include "Core/Presentation/CameraPresentation.hpp"
 #include "Core/UI/Screens.hpp"
 #include <memory>
 #include <map>
@@ -112,7 +113,7 @@ public:
     CombatScene(const CombatScene&)=delete;
     CombatScene& operator=(const CombatScene&)=delete;
     void setDisplay(DisplayConfiguration);
-    [[nodiscard]] float displayZoom()const;
+    [[nodiscard]] const CameraPresentationState& cameraPresentation()const;
     void tick();
     bool input(PointerPhase,Vec2 logical,std::uintptr_t identifier);
     bool selectEnemy(std::uint64_t,bool append=false);

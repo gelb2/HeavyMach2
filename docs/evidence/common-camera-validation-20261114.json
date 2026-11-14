@@ -1,0 +1,34 @@
+{
+  "baseline_commit": "6e1dfad",
+  "camera_baseline_code": "bfde129",
+  "core_suite": {
+    "passed": 76,
+    "total": 76,
+    "final_observation_assertions_retest": {
+      "passed": 6,
+      "total": 6
+    }
+  },
+  "ipad_parity": [
+    {
+      "scope": "ipad",
+      "original_cases": 120,
+      "frames_each": 1200,
+      "missing": [],
+      "differences": [],
+      "extra_validation_cases": 6
+    },
+    {
+      "scope": "mixed",
+      "original_cases": 92,
+      "frames_each": 1200,
+      "missing": [],
+      "differences": [],
+      "extra_validation_cases": 6
+    }
+  ],
+  "native_simulators": "running; no pass claimed",
+  "iphone_install": "pending; user save backed up",
+  "independent_review": "No outstanding mandatory defect after synchronized emission assertions were added",
+  "evidence_local": ".local/evidence/camera-implementation-20261114"
+}

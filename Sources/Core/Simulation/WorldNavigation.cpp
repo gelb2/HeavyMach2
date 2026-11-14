@@ -67,7 +67,11 @@ void constrainCamera(MapCamera& camera,Vec2 player){
         maximum={512-camera.viewport.width*.5f,512-camera.viewport.height*.5f};
         if(minimum.x>maximum.x)minimum.x=maximum.x=(minimum.x+maximum.x)*.5f;
         if(minimum.y>maximum.y)minimum.y=maximum.y=(minimum.y+maximum.y)*.5f;
-        if(camera.fillSurface){minimum.x+=1-camera.offset.x;maximum.x-=1+camera.offset.x;minimum.y+=1-camera.offset.y;maximum.y-=1+camera.offset.y;}
+        if(camera.fillSurface){minimum.x+=1-camera.offset.x;maximum.x-=1+camera.offset.x;minimum.y+=1-camera.offset.y;maximum.y-=1+camera.offset.y;
+            // Overscan is possible for an unusually wide/short compact window.
+            // Keep clamp intervals valid after the edge-rounding reservation.
+            if(minimum.x>maximum.x)minimum.x=maximum.x=(minimum.x+maximum.x)*.5f;
+            if(minimum.y>maximum.y)minimum.y=maximum.y=(minimum.y+maximum.y)*.5f;}
     }
     camera.center={std::clamp(camera.center.x,minimum.x,maximum.x),std::clamp(camera.center.y,minimum.y,maximum.y)};
     if(camera.keepFocusVisible){
