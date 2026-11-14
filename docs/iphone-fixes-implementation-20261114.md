@@ -1,6 +1,14 @@
 # iPhone 수정 진행 — 2026-11-14
 
-공통 코드와 Apple 빌드를 수정하고 첫 양 시뮬레이터 검사를 실행했다. iPhone33개 중24개, iPad33개 중25개가 통과했고 실패 원인을 수정 중이다. 후속 수정의 Apple 재실행과 Instruments는 아직이다. 사용자 발열과 실제 손 입력의 경로 재지정 후 점프 실패를 해결했다고 판정하지 않는다. [수정·측정 계획](iphone-fixes-and-profiling-plan-20261114.md), [남은 TODO](todo.md)를 함께 따른다.
+공통 코드와 Apple 빌드를 수정하고 첫 양 시뮬레이터 검사 뒤 후속 검사를 실행했다. 후속15개 중 iPhone14개·iPad14개가 통과했고 게임오버 자동 검사 수정·재검증이 남는다. 사용자의 새 설치 지시에 따라 게임 코드 `bc3323a`의 정식 Release를 실제 iPhone에 설치·실행하고 기존 저장을 보존했다. Instruments는 아직이다. 사용자 발열과 실제 손 입력의 경로 재지정 후 점프 실패를 해결했다고 판정하지 않는다. [수정·측정 계획](iphone-fixes-and-profiling-plan-20261114.md), [남은 TODO](todo.md)를 함께 따른다.
+
+## 실제 iPhone 정식 Release 설치
+
+사용자는 남은 검사보다 설치를 먼저 진행하도록 후속 지시했다. `bc3323a`의 게임 코드를 Source Release로 빌드했다. 현재 미커밋 변경은 Release에 포함되지 않는 UI 검사 코드다. CLI의 `errSecInternalComponent`와 Xcode의 팀 미선택 오류를 기록했고, 기존 개인 개발 팀을 선택한 Xcode Build For Profiling의 Release 서명을 사용했다. 임시 프로젝트 설정은 보존한 원래 파일 바이트로 복원했다.
+
+설치 전 앱 데이터7파일·7,312,065바이트를 백업했다. 서명 유효성, 실행파일/dSYM UUID, HD 자원1,479개와 준비 자원의 전체 해시 일치, 테스트 플러그인·동시 치트·UI 검사 환경 코드 제외를 확인했다. 기존 앱에 업데이트 설치한 직후 진행 저장28,204바이트를 다시 읽어 백업과 완전히 같음을 확인했다. 앱 실행과 실제 기기 프로세스 존재도 확인했다. 저장을 초기화하거나 옛 진행으로 덮어쓰지 않았다.
+
+근거는 로컬 `.local/evidence/iphone-release-bc3323a-20261114/`의 `backup-before-manifest.json`, `signed-release-verification.json`, `packaged-resource-manifest.json`, `install.json`, `save-preservation.json`, `launch.json`, `result.json`이다. 원본 저장·앱 번들·서명 자료는 커밋하거나 보고 사이트에 올리지 않는다. 남은 게임오버 자동 검사와 Instruments를 이 설치로 완료 처리하지 않는다.
 
 ## 반영한 코드
 
