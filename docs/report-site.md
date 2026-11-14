@@ -1,5 +1,13 @@
 # HeavyMach 2 보고 사이트
 
+## 허브·상점·사령부 실행 대조 — 버전299
+
+[같은 누적 보고서](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/world-hud.html#비전투-화면-실행-대조--2026-11-14)에 원본Phone 포팅판의 허브·상점 구매/임무 수락과 공통 동시 치트126조건360프레임의 메뉴18장 결과를 추가했다. **현재 메뉴 배치는 불합격이다.** 허브2버튼·상점7버튼 중심의 화면 밖 배치와 상점 하단 잘림, 사령부의HD공통배치 잔류를 기록했다. Native1/1은 캡처·기존 동작 검사이며 시각 합격이 아니다. 기존revealButton 구매 성공으로 사용자 구매 불가를 해결했다고 판정하지 않았다. 사용자 추가ExperimentalHUD·세로 스크롤 금지·가로 배너 잘림·HD 타이틀/로딩 최상단 정렬 요구도 기록했다. 제품 메뉴 구현·실기기 설치·develop/main 병합은 하지 않았다.
+
+QA커밋6d78a21, 사이트 소스fa0f854a499cd5eda0b81611df6b11f9aca80e52, 배포appgdep_6af852adc2108191a041d13f8bbad8bf, 저장버전appgprj_6addbf55aea081918d3d182d7e496e88~appgver_db61c58bf8788191a17214abaefd85a1의 succeeded와 버전299를 확인했다. 본인1명·그룹0·외부0 접근을 유지했다. 로컬22페이지·압축본문·첫/고정 누적 목록·앵커·JS구문을 확인했다. 새 온라인 브라우저 시각검수는 하지 않았다. 원본Phone은 같은IPA를 기존11/10호환실행기로 재패키징해 상세의숫자서식오류를벗어났고, 저장26,344바이트는 검사 전 해시로 정확히 복구했다. 원본IPA·호환앱·원시저장은 게시하지 않았다.
+
+전달tar member는268,424,704바이트다. 게시성공뒤이전298전달압축본257,212,492바이트와 이번 검사가 끝난 Xcode중간캐시66,970,394바이트를 제거했다. 최신전달본·제품·원본·저장백업·실패/성공 로그와 화면은 유지했다. 로컬 근거는 `.local/evidence/iphone-menu-visual-qa-20261114/`의 `site-publication.json`, `site-archive.json`, `cleanup.json`, `save-preservation.json`이다.
+
 ## 하단 HUD·포털 수정 정식판 아이폰 설치 — 버전298
 
 [같은 수정 보고서](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/world-hud.html#하단-hud와-포털-입력-수정--2026-11-14)에 사용자 후속 설치 요청과 실제 iPhone 설치·실행을 추가했다. 제품3666fc7·설치기록99f98ce다. 데이터8파일을 먼저 백업했고 설치 직후 진행 저장28,204바이트 완전 일치를 확인했다. 서명·dSYM UUID·원본준비자원1,532파일·치트심벌 제외와 실제PID9901 재확인을 기록했다. CLI서명실패는XcodeRelease서명으로해결했고pbx/스킴설정은원래바이트로복원했다. 이 설치를 전 캠페인 플레이·발열 검증이나 develop/main 병합으로 확대하지 않는다.
