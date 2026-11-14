@@ -7,6 +7,7 @@ Use after functional implementation/validation is ready. Raw trace stays local.
 import argparse
 import hashlib
 import json
+import plistlib
 from pathlib import Path
 import re
 import subprocess
@@ -36,6 +37,13 @@ if not binary.is_file():
 expected = 'HeavyMach2Source' if args.kind == 'source' else 'HeavyMach2Validation'
 if binary.name != expected:
     parser.error('Binary name does not match the requested normal/validation target')
+process_name = expected
+info_path = binary.parent / 'Info.plist'
+if info_path.is_file():
+    info = plistlib.loads(info_path.read_bytes())
+    if info.get('CFBundleExecutable') != expected:
+        parser.error('App metadata does not match the exact binary')
+    process_name = info.get('CFBundleDisplayName') or info.get('CFBundleName') or expected
 
 def read_command(command):
     return subprocess.check_output(command, text=True, stderr=subprocess.STDOUT).strip()
@@ -51,12 +59,12 @@ if args.dsym:
         parser.error('Binary and dSYM UUIDs differ')
 out.mkdir(parents=True, exist_ok=False)
 command = ['xcrun', 'xctrace', 'record', '--device', args.device,
-           '--template', args.template, '--attach', expected,
+           '--template', args.template, '--attach', process_name,
            '--time-limit', f'{args.seconds}s', '--output', str(out / 'recording.trace')]
 if args.template == 'Allocations':
     command += ['--instrument', 'Leaks']
 manifest = {
-    'kind': args.kind, 'target_process_requested': expected, 'device_requested': args.device,
+    'kind': args.kind, 'target_process_requested': process_name, 'binary_executable': expected, 'device_requested': args.device,
     'template': args.template, 'seconds_requested': args.seconds,
     'source_head': read_command(['git', '-C', str(ROOT), 'rev-parse', 'HEAD']),
     'binary': str(binary), 'binary_sha256': hashlib.sha256(binary.read_bytes()).hexdigest(),
@@ -66,7 +74,7 @@ manifest = {
     'started_unix': time.time(),
 }
 (out / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
-print(f'Attaching {args.template} to {expected}; output remains local: {out}', flush=True)
+print(f'Attaching {args.template} to {process_name}; output remains local: {out}', flush=True)
 try:
     with (out / 'record.log').open('w') as log:
         result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT,

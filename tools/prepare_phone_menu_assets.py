@@ -10,7 +10,7 @@ import re
 import zipfile
 ROOT=Path(__file__).resolve().parents[1]
 PHONE_SHA='23ff9c74c7d890cc6f28952b4845f6c616bae4bb7207a393f80ed9ed76062d32'
-MENU={'MissionNotice.png','Main_BG.png','Main_Copyright.png','Main_Episode.png','Main_TapToStart.png','Main_Title.png','Main_TitleBig.png','StageClearBG.png','SelSlot_BG.jpg','CmdCenterBG.jpg','ShopBG.jpg','MaintenanceBG.jpg','Btn_CmdCenter.png','Btn_Shop.png','Btn_Maintenance.png','Btn_ExitBase.png','Btn_GoRuinField.png','Btn_GoSkyway.png','Btn_GoWasteland.png','Btn_GoSeaside.png'}
+MENU={'ItemDesc.png','ShopCategory.png','MissionNotice.png','Main_BG.png','Main_Copyright.png','Main_Episode.png','Main_TapToStart.png','Main_Title.png','Main_TitleBig.png','StageClearBG.png','SelSlot_BG.jpg','CmdCenterBG.jpg','ShopBG.jpg','MaintenanceBG.jpg','Btn_CmdCenter.png','Btn_Shop.png','Btn_Maintenance.png','Btn_ExitBase.png','Btn_GoRuinField.png','Btn_GoSkyway.png','Btn_GoWasteland.png','Btn_GoSeaside.png'}
 def original_source():
     provenance=json.loads((ROOT/'docs/source-provenance.json').read_text())
     entry=next(x for x in provenance['files'] if x['sha256']==PHONE_SHA)

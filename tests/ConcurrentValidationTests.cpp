@@ -113,7 +113,7 @@ struct Host final:validation::ValidationHost {
     bool pressButton(unsigned i,unsigned id,int data=0)override{
         assert(runtime);++presses[i];
         if(nativeUI){refresh(i);auto& view=*interfaces.at(i);auto& game=runtime->session(i);
-            for(const auto& key:view.screens->buttons())if(key.id==id&&key.intData==data){auto button=view.screens->button(key);if(!button||!button->visible||!button->active)continue;
+            for(const auto& key:view.screens->buttons())if(key.id==id&&key.intData==data){view.screens->revealButton(key);auto button=view.screens->button(key);if(!button||!button->visible||!button->active)continue;
                 const auto eventKey=std::pair{id,data};const auto before=view.events[eventKey];view.screens->revealButton(key);const auto point=view.screens->buttonScreenPosition(key);const std::uintptr_t pointer=10000+i;
                 if(!game.inputOverlay(PointerPhase::begin,point,pointer))view.screens->input(PointerPhase::begin,point,pointer,game.renderTime());
                 if(!game.inputOverlay(PointerPhase::end,point,pointer))view.screens->input(PointerPhase::end,point,pointer,game.renderTime());return view.events[eventKey]>before;

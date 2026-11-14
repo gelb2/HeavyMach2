@@ -1,5 +1,6 @@
 #include "Core/Presentation/DisplayLayout.hpp"
 #include "Core/Presentation/VisualLayer.hpp"
+#include "Core/Presentation/MenuGridLayout.hpp"
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
@@ -39,6 +40,9 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
     const auto fit=[&](float w,float h){return std::min({nominal,a.width/w,a.height/h});};
     const auto centered=[&](float w,float h){return anchored({384,512},center,fit(w,h));};
     switch(region){
+    case DisplayRegion::phoneMenu:case DisplayRegion::phoneStock:case DisplayRegion::phoneInventory:case DisplayRegion::phoneStockHeader:case DisplayRegion::phoneEquipment:{
+        auto t=ui(DisplayRegion::artScene,pan);t.scale*=2.f/3.f;return t;
+    }
     case DisplayRegion::artBackdrop:case DisplayRegion::artScene:{
         const auto canvas=configuration_.canvas;const float scale=std::max(canvas.width/480,canvas.height/320);
         const float travel=std::max(0.f,320*scale-canvas.height)*.5f;
@@ -86,6 +90,11 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
 std::optional<ClipRect> DisplayLayout::clip(DisplayRegion region,float pan)const{
     if(!configuration_.enabled)return {};
     if(configuration_.compact&&(region==DisplayRegion::world||region==DisplayRegion::backdrop||region==DisplayRegion::artBackdrop||region==DisplayRegion::artScene))return ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};
+    if(configuration_.compact&&menu::menuRegion(region)){
+        const auto canvas=ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};
+        if(region!=DisplayRegion::phoneStock&&region!=DisplayRegion::phoneInventory)return canvas;
+        const auto source=region==DisplayRegion::phoneStock?menu::stockWindow:menu::inventoryWindow;const auto t=ui(DisplayRegion::phoneMenu,pan);const auto p=t.map({source.x,source.y});return intersection(canvas,{p.x,p.y,source.width*t.scale,source.height*t.scale});
+    }
     auto result=configuration_.compact&&region==DisplayRegion::bottom?ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height}:configuration_.content();
     if(region==DisplayRegion::bottom){
         // HD gauge tiles slide through the original screen's left edge.

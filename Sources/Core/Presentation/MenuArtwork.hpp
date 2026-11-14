@@ -14,7 +14,7 @@ inline std::string background(const DisplayConfiguration& c,std::string_view hd)
     return phoneAsset(hd);
 }
 inline bool retina(std::string_view name){
-    return name=="PhoneMenu/SelSlot_BG.jpg"||name=="PhoneMenu/CmdCenterBG.jpg"||name=="PhoneMenu/ShopBG.jpg"||name=="PhoneMenu/MaintenanceBG.jpg"||name=="PhoneMenu/Main_Title.png"||name=="PhoneMenu/Main_Episode.png";
+    return name=="PhoneMenu/ItemDesc.png"||name=="PhoneMenu/ShopCategory.png"||name=="PhoneMenu/SelSlot_BG.jpg"||name=="PhoneMenu/CmdCenterBG.jpg"||name=="PhoneMenu/ShopBG.jpg"||name=="PhoneMenu/MaintenanceBG.jpg"||name=="PhoneMenu/Main_Title.png"||name=="PhoneMenu/Main_Episode.png";
 }
 struct Title {float bigStart,bigEnd,bigStep,titleIn,episodeIn,prompt;Vec2 root,main,episode,tap,copyright,bgStart;};
 inline Title title(const DisplayConfiguration& c){

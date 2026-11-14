@@ -188,6 +188,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A11CA0000000000000000007 /* MenuGridLayout.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MenuGridLayout.hpp; sourceTree = "<group>"; };
 		A11CA0000000000000000005 /* MenuArtwork.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MenuArtwork.hpp; sourceTree = "<group>"; };
 		A11CA0000000000000000006 /* ResourceName.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ResourceName.hpp; sourceTree = "<group>"; };
 		A11CA0000000000000000003 /* CameraPresentation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CameraPresentation.cpp; sourceTree = "<group>"; };
@@ -602,6 +603,7 @@
 				A11CA0000000000000000003 /* CameraPresentation.cpp */,
 				A11CA0000000000000000004 /* CameraPresentation.hpp */,
 				A11CA0000000000000000005 /* MenuArtwork.hpp */,
+				A11CA0000000000000000007 /* MenuGridLayout.hpp */,
 				E06DB341BE24022D95107498 /* DisplayLayout.cpp */,
 				02500EBECE46105EB3FABE8A /* DisplayLayout.hpp */,
 				E512BB88B19866ABD2271298 /* HUDLayout.hpp */,

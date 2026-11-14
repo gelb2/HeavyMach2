@@ -64,6 +64,6 @@ HM1의 현행 `prepare_unit_data.md`는 원본 보존, 공통 reader가 읽는 �
 
 전장·유닛·부품·무기·인게임/HUD/아이템 버튼과 게임 데이터는 HD 공통 자원을 유지한다. 비전투 배경만 원본 Phone2.0.1의 제목·로딩·슬롯·기지·사령부·상점·정비 그림을 사용한다. 원본 이름·확장자·인코딩·바이트를 `PhoneMenu/` 아래 보존한다. 공통 C++ 표시 profile이 작은 창에서 선택하며 Apple 전용 게임 분기를 만들지 않는다.
 
-`prepare_hd_assets.py` 다음에 `prepare_phone_menu_assets.py`를 실행한다. 두 번째 도구는 승인한 원본 IPA SHA256과 50개 파일의 해시를 검사하고 원본 바이트만 복사한다. 이후 HD 준비 도구도 이 하위 명세와 원본을 대조한다. 이미지 재생성·재압축·확장자 변경은 없다. 기존 공통 JPEG decoder를 쓰고 원본 Retina wrapper 여부를 메뉴별로 구분한다. PNG 자원 준비 절차는 유지한다.
+`prepare_hd_assets.py` 다음에 `prepare_phone_menu_assets.py`를 실행한다. 두 번째 도구는 승인한 원본 IPA SHA256과 52개 파일의 해시를 검사하고 원본 바이트만 복사한다. 이후 HD 준비 도구도 이 하위 명세와 원본을 대조한다. 이미지 재생성·재압축·확장자 변경은 없다. 기존 공통 JPEG decoder를 쓰고 원본 Retina wrapper 여부를 메뉴별로 구분한다. PNG 자원 준비 절차는 유지한다.
 
 기지 그림·강조·버튼은 Phone 원본 tble의 같은 좌표·배율과 하나의 장면 변환을 사용한다. HD에 없는 기능 ID를 추가하지 않는다. 상점24개/페이지·인벤토리25칸을 보존하기 위해 HD UI 패널 부분은 기존 GPU quad와 clip으로 남긴다. 해당 UI 패널은 원본 Phone 전체 배경 위에 놓으며 그림 파일을 잘라 다시 만들지 않는다. 자세한 적용·검사는 [화면 수정](iphone-surface-art-fix-20261114.md)에 기록한다.

@@ -153,7 +153,7 @@ struct ConcurrentRuntime::Impl:validation::ValidationHost {
     bool pressButton(unsigned index,unsigned id,int intData)override{
         refresh(index);auto& view=*interfaces.at(index);auto& game=runner->session(index);
         for(const auto& key:view.screens->buttons())if(key.id==id&&key.intData==intData){
-            auto button=view.screens->button(key);if(!button||!button->visible||!button->active)continue;
+            view.screens->revealButton(key);auto button=view.screens->button(key);if(!button||!button->visible||!button->active)continue;
             const auto eventKey=std::pair{id,intData};const auto before=view.events[eventKey];
             view.screens->revealButton(key);const auto point=view.screens->buttonScreenPosition(key);const std::uintptr_t pointer=10000+index;
             if(!game.inputOverlay(PointerPhase::begin,point,pointer))view.screens->input(PointerPhase::begin,point,pointer,game.renderTime());if(!game.inputOverlay(PointerPhase::end,point,pointer))view.screens->input(PointerPhase::end,point,pointer,game.renderTime());return view.events[eventKey]>before;
