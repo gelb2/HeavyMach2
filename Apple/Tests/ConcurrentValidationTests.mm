@@ -44,17 +44,7 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
     // shop refusal observation is frame355. Keep its acceptance assertions.
     [self runFrames:360 fullCoverage:NO];
 }
-- (void)testClassicHUDPlanningCaptures {[self runHUDPlanningCaptures:NO];}
-- (void)testExperimentalHUDCaptures {[self runHUDPlanningCaptures:YES];}
-- (void)testBlackDiagonalScenario107Frame90Diagnostic {[self runHUDPlanningCaptures:YES diagnoseBlackDiagonal:YES];}
-- (void)testNonCombatCommonScreensGPUFixtures {[self runHUDPlanningCaptures:NO diagnoseBlackDiagonal:NO commonScreensFixtures:YES];}
-- (void)runHUDPlanningCaptures:(BOOL)experimental {
-    [self runHUDPlanningCaptures:experimental diagnoseBlackDiagonal:NO];
-}
-- (void)runHUDPlanningCaptures:(BOOL)experimental diagnoseBlackDiagonal:(BOOL)diagnostic {
-    [self runHUDPlanningCaptures:experimental diagnoseBlackDiagonal:diagnostic commonScreensFixtures:NO];
-}
-- (void)runHUDPlanningCaptures:(BOOL)experimental diagnoseBlackDiagonal:(BOOL)diagnostic commonScreensFixtures:(BOOL)fixtures {
+- (void)testClassicHUDPlanningCaptures {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];
     UIWindowScene* scene=nil;const auto deadline=[NSDate dateWithTimeIntervalSinceNow:10];
@@ -71,59 +61,25 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
     HM2ConcurrentTimer* timer=[HM2ConcurrentTimer new];auto* live=runtime.get();__block unsigned frames=0;__block NSString* failure=nil;
     timer.callback=^(CADisplayLink* link){@autoreleasepool{try{
         live->tick();++frames;
-        if(experimental&&frames==2&&!live->selectScenarioExperimentalHUD(107))throw std::runtime_error("Actual HUD editor style selection/apply failed");
-        if(!fixtures&&frames==25&&!live->pressScenarioButton(107,1022))throw std::runtime_error("Left original weapon button unavailable");
+        if(frames==25&&!live->pressScenarioButton(107,1022))throw std::runtime_error("Left original weapon button unavailable");
         // Original GameSession toggles an open chooser closed on either
         // weapon button. Close it first, then open the right chooser.
-        if(!fixtures&&frames==60){if(!live->pressScenarioButton(107,1022)||live->validation().session(107).state().weaponChoiceType!=0)throw std::runtime_error("Original chooser did not close");}
-        if(!fixtures&&frames==61&&!live->pressScenarioButton(107,1023))throw std::runtime_error("Right original weapon button unavailable");
+        if(frames==60){if(!live->pressScenarioButton(107,1022)||live->validation().session(107).state().weaponChoiceType!=0)throw std::runtime_error("Original chooser did not close");}
+        if(frames==61&&!live->pressScenarioButton(107,1023))throw std::runtime_error("Right original weapon button unavailable");
         live->draw(layer,viewport);
-        if(!fixtures&&(frames==(experimental?10u:1u)||frames==55||frames==90)){const unsigned index=107;
+        if(frames==1||frames==55||frames==90){const unsigned index=107;
             const auto type=live->validation().session(index).state().weaponChoiceType;
             if(frames==55&&type!=2)throw std::runtime_error("Left weapon chooser missing");
             if(frames==90&&type!=3)throw std::runtime_error("Right weapon chooser missing");
             NSMutableDictionary* observed=[live->captureScenarioUI(index,layer) mutableCopy];observed[@"weaponChoiceType"]=@(type);observed[@"choices"]=@(live->validation().session(index).state().weaponChoices.size());[observations addObject:observed];
-            attachPixels(self,live->pixels(),live->drawableSize(),[NSString stringWithFormat:@"%@ HUD frame%u chooser%d %.0fx%.0f",experimental?@"Experimental":@"Classic",frames,type,viewport.width,viewport.height]);
+            attachPixels(self,live->pixels(),live->drawableSize(),[NSString stringWithFormat:@"Classic HUD planning frame%u chooser%d %.0fx%.0f",frames,type,viewport.width,viewport.height]);
         }
-        if(diagnostic&&frames==90){
-            [link invalidate];
-            NSMutableDictionary<NSString*,NSData*>* images=[NSMutableDictionary new];
-            NSDictionary* result=live->diagnoseScenarioRendering(107,layer,images);
-            XCTAssertEqual([result[@"frameBefore"] unsignedIntegerValue],90u);XCTAssertEqual([result[@"frameAfter"] unsignedIntegerValue],90u);
-            XCTAssertFalse([result[@"extraSimulationTick"] boolValue]);XCTAssertEqual(live->validation().scenarioCount(),126u);
-            for(NSString* key in @[@"imageReads",@"imageDecodes",@"textureUploads"])XCTAssertEqual([result[key] unsignedIntegerValue],0u);
-            for(NSString* key in @[@"full",@"repeat",@"terrain-only",@"origin-before",@"origin-after",@"terrain-variant-nonstrip",@"terrain-variant-degenerate-six",@"terrain-variant-cpu-clipped"])XCTAssertNotNil(images[key]);
-            XCTAssertEqual([result[@"terrainVariants"] count],3u);
-            XCTAssertEqual([result[@"terrainVariants"][2][@"differentRGBPixelsFromOriginalTerrain"] unsignedIntegerValue],0u,@"Production terrain must preserve the proven visible-quad UV mapping");
-            if(viewport.width>viewport.height)for(NSDictionary* pixel in result[@"terrainOnlySamples"])XCTAssertFalse([pixel[@"black"] boolValue],@"Wide terrain has a reproduced black diagonal at %@",pixel);
-
-            for(NSString* name in [[images allKeys] sortedArrayUsingSelector:@selector(compare:)])attachPixels(self,images[name],live->drawableSize(),[@"Black diagonal frame90 " stringByAppendingString:name]);
-            NSError* error=nil;NSData* json=[NSJSONSerialization dataWithJSONObject:result options:NSJSONWritingPrettyPrinted|NSJSONWritingSortedKeys error:&error];XCTAssertNotNil(json,@"%@",error);
-            if(json){XCTAttachment* attachment=[XCTAttachment attachmentWithData:json uniformTypeIdentifier:@"public.json"];attachment.name=@"Black diagonal immutable scenario107 frame90 diagnostic";attachment.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:attachment];}
-        }
-        if(fixtures&&frames==60){
-            [link invalidate];NSMutableDictionary<NSString*,NSData*>* images=[NSMutableDictionary new];
-            NSDictionary* result=live->captureNonCombatCommonScreensFixtures(layer,images);
-            XCTAssertTrue([result[@"fixtureState"] boolValue]);XCTAssertFalse([result[@"originalPlaythrough"] boolValue]);XCTAssertTrue([result[@"gameTickFixed"] boolValue]);
-            XCTAssertEqual([result[@"gameTickBefore"] unsignedIntegerValue],60u);XCTAssertEqual([result[@"gameTickAfter"] unsignedIntegerValue],60u);XCTAssertEqual([result[@"scenarios"] unsignedIntegerValue],126u);
-            XCTAssertEqualObjects(result[@"saveWritesBefore"],result[@"saveWritesAfter"]);NSArray* rows=result[@"fixtures"];XCTAssertEqual(rows.count,4u);
-            for(NSDictionary* row in rows){const unsigned variant=[row[@"fixture"] unsignedIntValue];XCTAssertEqual([row[@"uiSettleTicks"] unsignedIntegerValue],variant==3?96u:32u);XCTAssertTrue([row[@"fixtureState"] boolValue]);XCTAssertFalse([row[@"originalPlaythrough"] boolValue]);
-                XCTAssertEqual([row[@"availableMissions"] unsignedIntegerValue],5u);XCTAssertEqual([row[@"acceptedMissions"] unsignedIntegerValue],5u);
-                if(variant==2)XCTAssertEqual([row[@"completedRewards"] unsignedIntegerValue],9u);
-                for(NSDictionary* page in row[@"pages"]){bool actionPresent=variant==1||variant==3,koreanInk=false;for(NSDictionary* button in page[@"buttons"]){const bool visible=[button[@"visible"] boolValue];if(visible)XCTAssertTrue([button[@"centerInsideCanvas"] boolValue],@"%@",button);const unsigned id=[button[@"id"] unsignedIntValue];if(variant==1&&id==5004)XCTAssertFalse(visible);if(visible&&[button[@"active"] boolValue])actionPresent|=(variant==0&&id==5004)||(variant==2&&id==5007);}
-                    for(NSDictionary* font in page[@"nativeText"]){NSString* text=font[@"text"];if([font[@"submittedInThisFrame"] boolValue]&&([text containsString:@"임무"]||[text containsString:@"가"])){XCTAssertGreaterThan([font[@"inkPixels"] unsignedIntegerValue],0u);XCTAssertGreaterThan([font[@"resolvedFont"] length],0u);koreanInk=true;}}
-                    XCTAssertTrue(actionPresent);XCTAssertTrue(koreanInk);XCTAssertNotNil(images[page[@"captureName"]]);}
-            }
-            for(NSString* name in [[images allKeys] sortedArrayUsingSelector:@selector(compare:)])attachPixels(self,images[name],live->drawableSize(),name);
-            NSError* error=nil;NSData* json=[NSJSONSerialization dataWithJSONObject:result options:NSJSONWritingPrettyPrinted|NSJSONWritingSortedKeys error:&error];XCTAssertNotNil(json,@"%@",error);
-            if(json){XCTAttachment* a=[XCTAttachment attachmentWithData:json uniformTypeIdentifier:@"public.json"];a.name=@"Common Screens visual fixtures only - HQ and hub native Korean GPU";a.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:a];}
-        }
-        if(frames>=(fixtures?60u:90u)){[link invalidate];[complete fulfill];}
+        if(frames>=90){[link invalidate];[complete fulfill];}
     }catch(const std::exception& e){failure=[NSString stringWithUTF8String:e.what()];[link invalidate];[complete fulfill];}}};
     CADisplayLink* display=[CADisplayLink displayLinkWithTarget:timer selector:@selector(frame:)];display.preferredFramesPerSecond=60;[display addToRunLoop:NSRunLoop.mainRunLoop forMode:NSRunLoopCommonModes];
-    [self waitForExpectations:@[complete] timeout:180];[display invalidate];timer.callback=nil;XCTAssertNil(failure);XCTAssertEqual(frames,fixtures?60u:90u);XCTAssertEqual(observations.count,fixtures?0u:3u);
-    NSDictionary* record=@{@"observations":observations,@"scenarios":@(live->validation().scenarioCount()),@"frames":@(frames),@"experimentalImplemented":@(experimental),@"actualClassicGPU":@(!experimental&&!fixtures),@"commonScreensVisualFixture":@(fixtures)};
-    NSData* data=[NSJSONSerialization dataWithJSONObject:record options:NSJSONWritingPrettyPrinted|NSJSONWritingSortedKeys error:nil];XCTAttachment* a=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];a.name=fixtures?@"Common Screens fixture shared clock metadata":@"Classic HUD planning capture metadata";a.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:a];
+    [self waitForExpectations:@[complete] timeout:180];[display invalidate];timer.callback=nil;XCTAssertNil(failure);XCTAssertEqual(frames,90u);XCTAssertEqual(observations.count,3u);
+    NSDictionary* record=@{@"observations":observations,@"scenarios":@(live->validation().scenarioCount()),@"frames":@(frames),@"experimentalImplemented":@NO,@"actualClassicGPU":@YES};
+    NSData* data=[NSJSONSerialization dataWithJSONObject:record options:NSJSONWritingPrettyPrinted|NSJSONWritingSortedKeys error:nil];XCTAttachment* a=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];a.name=@"Classic HUD planning capture metadata";a.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:a];
     runtime->setActive(false);runtime.reset();window.hidden=YES;window.rootViewController=nil;NSError* error=nil;XCTAssertTrue([NSFileManager.defaultManager removeItemAtURL:directory error:&error]);
 }
 - (void)runFrames:(unsigned)targetFrames fullCoverage:(BOOL)fullCoverage {
@@ -153,19 +109,6 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
                 for(unsigned index:{55u,56u}){
                     NSDictionary* observation=live->captureScenarioUI(index,layer);[menuObservations addObject:observation];
                     attachPixels(self,live->pixels(),live->drawableSize(),[NSString stringWithFormat:@"Menu audit scenario%u frame%u full size",index,frames]);
-                }
-                if(frames==360){
-                    // Re-submit the existing source only after both original
-                    // menu captures. No scenario input or game tick is added.
-                    [link invalidate];NSMutableDictionary<NSString*,NSData*>* images=[NSMutableDictionary new];
-                    NSDictionary* result=live->diagnoseScenarioRendering(56,layer,images);
-                    XCTAssertEqual([result[@"scenario"] unsignedIntegerValue],56u);XCTAssertEqual([result[@"frameBefore"] unsignedIntegerValue],360u);XCTAssertEqual([result[@"frameAfter"] unsignedIntegerValue],360u);
-                    XCTAssertFalse([result[@"extraSimulationTick"] boolValue]);XCTAssertTrue([result[@"immutableSourceFrame"] boolValue]);
-                    if(viewport.width>viewport.height){for(NSDictionary* pixel in result[@"terrainOnlySamples"])XCTAssertFalse([pixel[@"black"] boolValue],@"Scenario56 Retina terrain has a black diagonal at %@",pixel);XCTAssertEqual([result[@"terrainVariants"][2][@"differentRGBPixelsFromOriginalTerrain"] unsignedIntegerValue],0u);}
-                    for(NSString* key in @[@"imageReads",@"imageDecodes",@"textureUploads"])XCTAssertEqual([result[key] unsignedIntegerValue],0u);
-                    for(NSString* name in [[images allKeys] sortedArrayUsingSelector:@selector(compare:)])attachPixels(self,images[name],live->drawableSize(),[@"Black diagonal scenario56 frame360 " stringByAppendingString:name]);
-                    NSError* error=nil;NSData* json=[NSJSONSerialization dataWithJSONObject:result options:NSJSONWritingPrettyPrinted|NSJSONWritingSortedKeys error:&error];XCTAssertNotNil(json,@"%@",error);
-                    if(json){XCTAttachment* a=[XCTAttachment attachmentWithData:json uniformTypeIdentifier:@"public.json"];a.name=@"Black diagonal immutable scenario56 frame360 diagnostic";a.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:a];}
                 }
             }
             if(frames%300==0){const auto metrics=live->validation().metrics();NSLog(@"HM2_CONCURRENT_PROGRESS frame=%u cases=%lu weaponDefinitions=%lu weaponKinds=%lu menuOverlap=%llu/%llu",frames,(unsigned long)metrics.activeScenarios,(unsigned long)metrics.activeWeaponDefinitions,(unsigned long)metrics.activeWeaponKinds,metrics.menuFramesWithCombatActivity,metrics.menuActionFrames);}

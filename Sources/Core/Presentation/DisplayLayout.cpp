@@ -43,9 +43,7 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
     case DisplayRegion::phoneMenu:case DisplayRegion::phoneStock:case DisplayRegion::phoneInventory:case DisplayRegion::phoneStockHeader:case DisplayRegion::phoneEquipment:{
         auto t=ui(DisplayRegion::artScene,pan);t.scale*=2.f/3.f;return t;
     }
-    case DisplayRegion::phoneStockExtra:case DisplayRegion::phoneInventoryExtra:case DisplayRegion::phoneCanvas:return {};
-    case DisplayRegion::artScene:if(configuration_.compact)return menu::PhoneLayout(configuration_).artwork;[[fallthrough]];
-    case DisplayRegion::artBackdrop:{
+    case DisplayRegion::artBackdrop:case DisplayRegion::artScene:{
         const auto canvas=configuration_.canvas;const float scale=std::max(canvas.width/480,canvas.height/320);
         const float travel=std::max(0.f,320*scale-canvas.height)*.5f;
         return anchored({240,160},{canvas.width*.5f,canvas.height*.5f+(region==DisplayRegion::artScene?std::clamp(pan,-travel,travel):0.f)},scale);
@@ -91,9 +89,6 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
 }
 std::optional<ClipRect> DisplayLayout::clip(DisplayRegion region,float pan)const{
     if(!configuration_.enabled)return {};
-    if(configuration_.compact&&region==DisplayRegion::phoneCanvas)return ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};
-    if(configuration_.compact&&region==DisplayRegion::phoneStockExtra)return menu::PhoneLayout(configuration_).leftRail;
-    if(configuration_.compact&&region==DisplayRegion::phoneInventoryExtra)return menu::PhoneLayout(configuration_).rightRail;
     if(configuration_.compact&&(region==DisplayRegion::world||region==DisplayRegion::backdrop||region==DisplayRegion::artBackdrop||region==DisplayRegion::artScene))return ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};
     if(configuration_.compact&&menu::menuRegion(region)){
         const auto canvas=ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};

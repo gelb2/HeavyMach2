@@ -26,15 +26,8 @@ public:
     // QA observation only: render an already composed live scenario at full
     // surface size, without revealButton, input, or an extra simulation tick.
     [[nodiscard]] NSDictionary* captureScenarioUI(unsigned scenario,CAEAGLLayer*);
-    // QA only: re-submit the immutable source frame and ordered prefixes.
-    // Pixel buffers are returned separately so the report remains JSON-only.
-    [[nodiscard]] NSDictionary* diagnoseScenarioRendering(unsigned scenario,CAEAGLLayer*,NSMutableDictionary<NSString*,NSData*>* captures);
-    // Explicit common-Screens visual fixtures, not original campaign playback.
-    [[nodiscard]] NSDictionary* captureNonCombatCommonScreensFixtures(CAEAGLLayer*,NSMutableDictionary<NSString*,NSData*>* captures);
     // QA input through the existing Screens dispatcher; never changes game data directly.
     [[nodiscard]] bool pressScenarioButton(unsigned scenario,unsigned id,int intData=0);
-    // QA: choose a saved HUD style through the actual common editor inputs.
-    [[nodiscard]] bool selectScenarioExperimentalHUD(unsigned scenario);
     void captureNextFrame();
     [[nodiscard]] NSData* pixels()const;
     [[nodiscard]] NSData* legacyComparisonPixels()const;

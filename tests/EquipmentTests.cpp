@@ -92,14 +92,13 @@ void botRegistration(Data& d){
     std::cout<<"Bot3 register/replace/base gate/return order and full-inventory original loss PASS\n";
 }
 void originalPartCaches(Data& d){
-    const auto reads=d.reads;unsigned mounted=0,legs=0;int maximumSpecialWidth=0;
+    const auto reads=d.reads;unsigned mounted=0;
     for(const auto& [id,item]:d.defs.items())if(item.type==10||item.type==11||item.type==12){
         Fixture f(d);const int pos=f.add(d,id);const unsigned slot=item.type==11?0:item.type==12?1:2;assert(f.equipment.equip(pos,slot,item.type==10));
-        if(item.type==12){++legs;assert(f.equipment.stats().specialMaximum>=180&&f.equipment.stats().specialMaximum<=320);assert(f.equipment.stats().specialBarWidth>=82&&f.equipment.stats().specialBarWidth<=146);maximumSpecialWidth=std::max(maximumSpecialWidth,f.equipment.stats().specialBarWidth);}
         const auto mounts=f.equipment.mounts(d.models,d.parts);assert(mounts.size()==6);const auto pose=d.models.mountedPose(mounts);assert(pose.size()==6);
         assert(std::any_of(pose.begin(),pose.end(),[&](const auto& p){return p.part==&d.models.part(item.stringParameter);}));++mounted;
     }
-    assert(d.reads==reads&&mounted>100&&legs==23&&maximumSpecialWidth==146);std::cout<<"HUD_SP_BOUNDS original23Legs/commonReader/realEquip/max146 PASS\n";std::cout<<"Original item->strParam->common Models cache mounts="<<mounted<<" warmReads=0 PASS\n";
+    assert(d.reads==reads&&mounted>100);std::cout<<"Original item->strParam->common Models cache mounts="<<mounted<<" warmReads=0 PASS\n";
 }
 }
 int main(int argc,char** argv){assert(argc==2);Data data(argv[1]);originalRestoreAndEquip(data);swapArrangeAndQuick(data);stockAndTrading(data);botRegistration(data);originalPartCaches(data);std::cout<<"HM2_EQUIPMENT originalItems="<<data.defs.items().size()<<" PASS (memory only; item use not implemented here)\n";}
