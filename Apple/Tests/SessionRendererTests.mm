@@ -5,6 +5,7 @@
 #include "Platform/Apple/HM2TextRasterizer.h"
 #include "Platform/Apple/HM2Resources.hpp"
 #include "Core/Presentation/HUDLayout.hpp"
+#include "Core/Progression/Progression.hpp"
 #include "Assets/Image.hpp"
 #include "Core/Presentation/VisualLayer.hpp"
 #include "Core/Simulation/DarwinWorldRandom.hpp"
@@ -62,6 +63,52 @@ UIImage* image(NSData* rgba,CGSize size){
 }
 @interface SessionRendererTests:XCTestCase @end
 @implementation SessionRendererTests
+- (void)testPhoneBottomHUDAndOriginalPortalRoutes {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];
+    HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,912,420)];surface.contentScaleFactor=1;controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];surface.frame=CGRectMake(0,0,912,420);
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    struct Case {const char* map;int gate;bool path;};
+    for(const auto test:{Case{"Stage01_01",0,false},Case{"Stage01_03",1,true}}){@autoreleasepool{
+        NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];NSError* error=nil;
+        XCTAssertTrue([NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:&error]);
+        NSURL* save=[directory URLByAppendingPathComponent:@"HeavyMach2.sav"];hm2::SaveData fixture;fixture.initializeSlot(0,"PORTAL","kr",1794268800);fixture.slot(0)[0x1b5c]=5;
+        hm2::DarwinWorldRandom random(1);const auto bytes=fixture.encode(random,1);XCTAssertTrue([[NSData dataWithBytes:bytes.data() length:bytes.size()] writeToURL:save atomically:YES]);
+        try{
+            hm2::apple::GameRuntime runtime(root,save,{},[]{return 1u;});runtime.setDisplay(hm2::DisplayConfiguration::surface({912,420},{68,20,68,0}));
+            XCTAssertTrue(runtime.session().selectSlot(0));XCTAssertTrue(runtime.session().enterField(test.map,test.gate));runtime.synchronize();settle(runtime,layer);
+            auto* scene=runtime.session().battle();XCTAssertNotEqual(scene,nullptr);if(!scene)continue;
+            scene->setPaused(true);for(unsigned i=0;i<600;++i)runtime.tick();scene->setPaused(false);runtime.synchronize();
+            // The actual HUD quick-slot hit extends below the20pt safe inset.
+            for(const auto& key:runtime.screens().buttons())if(key.id==6200){auto point=runtime.screens().buttonScreenPosition(key);point.y-=10;XCTAssertGreaterThan(point.y,0);XCTAssertLessThan(point.y,20);
+                XCTAssertTrue(runtime.input(hm2::PointerPhase::begin,point,9200));XCTAssertTrue(runtime.inputHistory().back().uiConsumed);XCTAssertFalse(runtime.inputHistory().back().worldConsumed);
+                runtime.input(hm2::PointerPhase::cancel,point,9200);
+                // This real quick-slot press arms Repair. Toggle the same
+                // original item off before testing ground navigation.
+                if(runtime.session().state().selectedQuick==0){runtime.input(hm2::PointerPhase::begin,point,9202);runtime.input(hm2::PointerPhase::cancel,point,9202);}
+                XCTAssertEqual(runtime.session().state().selectedQuick,-1);break;}
+            const auto gates=scene->gates();const auto at=std::find_if(gates.begin(),gates.end(),[&](const auto& g){return g.definition.number==test.gate;});XCTAssertTrue(at!=gates.end());if(at==gates.end())continue;
+            const auto gate=at->definition;const auto end=runtime.session().worldCanvasPoint(scene->camera().toScreen(gate.position));
+            const auto start=test.path?runtime.session().worldCanvasPoint(scene->camera().toScreen({gate.position.x,gate.position.y+150})):end;
+            XCTAssertTrue(runtime.input(hm2::PointerPhase::begin,start,9201));XCTAssertFalse(runtime.inputHistory().back().uiConsumed);XCTAssertTrue(runtime.inputHistory().back().worldConsumed);XCTAssertEqual(scene->dashState().movePointer,9201u);XCTAssertGreaterThan(scene->dashState().pathCount,0u);
+            if(test.path){XCTAssertTrue(runtime.input(hm2::PointerPhase::move,end,9201));XCTAssertFalse(runtime.inputHistory().back().uiConsumed);}
+            XCTAssertTrue(runtime.input(hm2::PointerPhase::end,end,9201));XCTAssertFalse(runtime.inputHistory().back().uiConsumed);XCTAssertEqual(scene->dashState().movePointer,0u);
+            runtime.captureNextFrame();runtime.draw(layer);NSData* pixels=runtime.pixels();XCTAssertEqual(pixels.length,912u*420u*4u);if(pixels.length){XCTAttachment* attachment=[XCTAttachment attachmentWithImage:image(pixels,CGSizeMake(912,420))];attachment.name=test.path?@"Phone-original-path-portal":@"Phone-bottom-portal";attachment.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:attachment];}
+            unsigned ticks=0;while(!runtime.session().mapLoading()&&runtime.session().screenTransition().phase==8&&ticks<600){runtime.tick();runtime.draw(layer);++ticks;}
+            XCTAssertLessThan(ticks,600u);XCTAssertTrue(runtime.session().mapLoading()!=nullptr||runtime.session().screenTransition().phase!=8);
+            auto live=hm2::Bytes(runtime.session().workingSlot().begin(),runtime.session().workingSlot().end());hm2::progression::SlotView slot(live);XCTAssertTrue(slot.string(0x2d,16)==gate.linkMap);
+            // Finish the real loader/doors and decode the actual atomic save.
+            const bool base=gate.linkMap.starts_with("Base");ticks=0;
+            while((runtime.session().mapLoading()||runtime.session().screenTransition().phase!=8||runtime.session().state().screen!=(base?hm2::ui::ScreenId::base:hm2::ui::ScreenId::field))&&ticks<600){runtime.tick();runtime.draw(layer);++ticks;}
+            XCTAssertLessThan(ticks,600u);XCTAssertTrue(runtime.session().mapLoading()==nullptr);XCTAssertEqual(runtime.session().screenTransition().phase,8);
+            if(base)XCTAssertTrue(runtime.session().battle()==nullptr);else{XCTAssertNotEqual(runtime.session().battle(),nullptr);if(runtime.session().battle()){XCTAssertFalse(runtime.session().battle()->isPaused());XCTAssertGreaterThan(runtime.session().battle()->playerHP(),0);}}
+            NSData* persisted=[NSData dataWithContentsOfURL:save];XCTAssertEqual(persisted.length,hm2::SaveData::byteCount);
+            if(persisted.length==hm2::SaveData::byteCount){hm2::DarwinWorldRandom check(99);auto decoded=hm2::SaveData::decode({static_cast<const std::uint8_t*>(persisted.bytes),persisted.length},check,false);hm2::progression::SlotView disk(decoded.slot(0));XCTAssertTrue(disk.string(0x2d,16)==gate.linkMap);XCTAssertEqual(disk.u32(0x68),unsigned(gate.linkGate));}
+
+        }catch(const std::exception& e){XCTFail(@"Phone bottom HUD/portal regression failed: %s",e.what());}
+        XCTAssertTrue([NSFileManager.defaultManager removeItemAtURL:directory error:&error]);
+    }}window.hidden=YES;
+}
 - (void)testPhoneLoweredCameraOriginalLayerCoverage {
     // Investigation only: manually supplied camera snapshots do not change
     // Scene/CameraPresentation, map data, gates, viewport, UVs or source sizes.

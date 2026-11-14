@@ -63,7 +63,11 @@ inline Placement draggedOrigin(unsigned group,const DisplayLayout& layout,Vec2 o
 inline Configuration upgrade(Configuration config,const DisplayLayout& layout){
     if(!config.legacySafeArea)return config;
     Configuration result;
-    for(unsigned i=0;i<count;++i)if(config.positions[i]){const auto t=transform(config,i,layout);const auto b=bounds[i];result.positions[i]=draggedOrigin(i,layout,t.map({b.x,b.y}));}
+    for(unsigned i=0;i<count;++i)if(config.positions[i]){const auto t=transform(config,i,layout);const auto b=bounds[i];result.positions[i]=draggedOrigin(i,layout,t.map({b.x,b.y}));
+        // A legacy bottom-edge placement means bottom-aligned, not an
+        // intentional20/34pt gap. Preserve interior user positions and iPad.
+        if(layout.configuration().compact&&config.positions[i]->y==0)result.positions[i]->y=0;
+    }
     return result;
 }
 inline Bytes encode(const Configuration& config){

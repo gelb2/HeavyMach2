@@ -412,6 +412,27 @@ void screenResourceOwners(const char* root){
     assert(legacy.all().empty()); // Former shared map no longer retains departed Title/Base resources.
     std::cout<<"SCREEN_RESOURCE_OWNERS sameScreenReuse/titleBaseRelease/hiddenGuiGameRetained/revisionRelease/preparedTextReachability PASS\n";
 }
+void phoneHUDBottomInput(const char* root){
+    Files files(root);Host host;PreparedTiles tiles("phone-bottom-input");Screens ui(files,tiles,host);
+    const auto config=DisplayConfiguration::surface({912,420},{68,20,68,0});const DisplayLayout layout(config);ui.setDisplay(config);
+    ScreensState state;state.screen=ScreenId::field;state.fieldUIRevision=1;state.hasWorkingSlot=true;ui.refresh(state);
+    const auto frame=draw(ui);const auto* background=sprite(frame,"GameUI_BG.png");assert(background&&background->strip.size()==4);
+    float bottom=1.e9f;for(const auto& v:background->strip)bottom=std::min(bottom,v.position.y);assert(bottom==0);
+    const auto key=ids(ui,6200).front();auto point=ui.buttonScreenPosition(key);point.y-=10;
+    assert(point.y>0&&point.y<config.insets.bottom);
+    assert(ui.input(PointerPhase::begin,point,9120,1));assert(ui.button(key)->capturedPointer()==9120);
+    assert(ui.input(PointerPhase::end,point,9120,1.1f));assert(!ui.button(key)->capturedPointer());
+    assert(!host.actions.empty()&&host.actions.back().button.key.id==6200);
+    // A world drag crossing this button must not press it without a begin.
+    const auto actions=host.actions.size();assert(!ui.input(PointerPhase::move,point,9121,2));assert(!ui.input(PointerPhase::end,point,9121,2.1f));assert(host.actions.size()==actions);
+    // Full-canvas input is specific to compact fields, not every menu.
+    state.screen=ScreenId::base;ui.refresh(state);assert(!ui.input(PointerPhase::begin,{-1,10},9122,3));
+    hud::Configuration legacy;legacy.legacySafeArea=true;legacy.positions[hud::controls]=hud::Placement{.5f,0};
+    const auto upgraded=hud::upgrade(legacy,layout);assert(hud::visualBounds(upgraded,hud::controls,layout).y==0);
+    const DisplayLayout ipad(DisplayConfiguration::surface({1024,1366},{0,20,0,24}));
+    const auto oldPad=hud::visualBounds(legacy,hud::controls,ipad),newPad=hud::visualBounds(hud::upgrade(legacy,ipad),hud::controls,ipad);assert(near(oldPad.x,newPad.x)&&near(oldPad.y,newPad.y));
+    std::cout<<"PHONE_HUD_BOTTOM originalQuadY0/safeAreaButtonCapture/noDragButtonLeak/v1BottomEdge/ipadPreserved PASS\n";
+}
 void movableHUD(const char* root){
     Files files(root);Host host;PreparedTiles tiles("hud-layout-test");Screens ui(files,tiles,host);
     const auto display=DisplayConfiguration::surface({912,420},{68,20,68,0});ui.setDisplay(display);
@@ -461,7 +482,7 @@ int main(int argc,char** argv){
     assert(Screens::missionDescription("Original comment",{{2,"E_Tank_01",3,5}},true)=="Original comment\n\nMission Objects\n  - destroy E_Tank_01 (3/5)\n");
     assert(!Screens::missionDescription("Original",{{1,"unresolved",0,1}},false));
     if(argc<2)return 77;
-    hudMeasuredGeometry(argv[1]);screenResourceOwners(argv[1]);movableHUD(argv[1]);
+    phoneHUDBottomInput(argv[1]);hudMeasuredGeometry(argv[1]);screenResourceOwners(argv[1]);movableHUD(argv[1]);
     slotPreviewTranslation(argv[1]);
     fieldMessage(argv[1]);
     shopDetails(argv[1]);inventoryMaintenanceDetails(argv[1]);fieldNameRange(argv[1]);fieldCredits(argv[1]);radarMarks(argv[1]);fieldPlaceName(argv[1]);pageIndicators(argv[1]);

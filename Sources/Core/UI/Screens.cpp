@@ -1392,7 +1392,7 @@ bool Screens::input(PointerPhase phase,Vec2 point,std::uintptr_t pointer,float t
     }
     const bool artScene=menu::phone(keep->layout.configuration())&&(keep->state.screen==ScreenId::base||keep->phoneMenu());
     const auto sceneTravel=[&]{const auto& c=keep->layout.configuration();const auto scale=keep->layout.ui(Region::artScene).scale;return std::max(0.f,320*scale-c.canvas.height)*.5f;};
-    if(phase==PointerPhase::begin&&keep->layout.configuration().enabled){const auto& c=keep->layout.configuration();const auto a=artScene?ClipRect{0,0,c.canvas.width,c.canvas.height}:c.content();if(point.x<a.x||point.x>a.x+a.width||point.y<a.y||point.y>a.y+a.height)return false;}
+    if(phase==PointerPhase::begin&&keep->layout.configuration().enabled){const auto& c=keep->layout.configuration();const bool fullSurface=artScene||(c.compact&&keep->state.screen==ScreenId::field);const auto a=fullSurface?ClipRect{0,0,c.canvas.width,c.canvas.height}:c.content();if(point.x<a.x||point.x>a.x+a.width||point.y<a.y||point.y>a.y+a.height)return false;}
     const bool sceneOwned=keep->scenePanPointer==pointer&&pointer;
     if(sceneOwned){
         if(phase==PointerPhase::move){const float delta=point.y-keep->scenePanStart.y;if(std::abs(delta)>8)keep->sceneDragging=true;if(keep->sceneDragging){keep->dispatcher.discardAll();keep->scenePan=std::clamp(keep->scenePanOrigin+delta,-sceneTravel(),sceneTravel());return true;}}

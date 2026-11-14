@@ -71,7 +71,10 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
         const auto& view=presentation.snapshot();const DisplayLayout layout(display);
         camera.fillSurface=view.fillSurface;camera.viewport=view.viewport;
         const float uiRatio=layout.ui(DisplayRegion::bottom).scale/view.worldScale;
-        camera.inputMinimumY=100*uiRatio+(display.compact?layout.ui(DisplayRegion::bottom).offset.y/view.worldScale:0);camera.lowerOverscan=view.fillSurface?0.f:94*uiRatio;
+        // Compact surfaces have movable HUD groups. The UI dispatcher owns
+        // actual button hits; a fixed bottom strip would block exposed world
+        // points even after a group has moved. Retain the HD floor on regular.
+        camera.inputMinimumY=display.compact?0.f:100*uiRatio;camera.lowerOverscan=view.fillSurface?0.f:94*uiRatio;
         camera.fitWorld=true;camera.keepFocusVisible=camera.viewport.width<768||camera.viewport.height<1024;
         camera.focusMinimumY=138*uiRatio+(display.compact?layout.ui(DisplayRegion::bottom).offset.y/view.worldScale:0);camera.focusRadius=float(machines.machine("Player").radius);
         camera.focusLeft=display.compact?display.insets.left/view.worldScale:0;camera.focusRight=display.compact?display.insets.right/view.worldScale:0;
