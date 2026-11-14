@@ -1,5 +1,13 @@
 # HeavyMach 2 보고 사이트
 
+## 2026-11-15 최신 보강 — 실물·원문 대조와 Phone 배치/HD 상품
+
+[하네스 계획](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/presentation-harness.html)과 [정본](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/design-asset-rules.html)에 커밋 검사 전 치트빌드 시뮬레이터 실물/요구 원문 대조를 추가했다. 90% 미만은 탈락하고 에셋 선택/소비부터 코드 누락까지 조사한다. 90% 이상도 필수 위반을 면제하지 않는다. iPhone 허브·사령부·상점 버튼 배치는 Phone 원본을 참고하고 상품 그림/게임 데이터는 HD를 쓴다.
+
+문서1d008e7, Site 소스acf097a, HUD 버전7·배포appgdep_6af8e90530b88191a90c74369f272b70의 succeeded를 확인했다. 기존 누적 Site304의 같은 링크를 유지했다. 게임/검사/훅 소스 변경과 치트빌드 실행·실물 대조는 하지 않았다. 이번 완료 범위는 정본/계획 보강과 게시다.
+
+인증 HTTP 11파일에서 두 보강 본문·근거 JSON·원본 실패 PNG·누적 연결을 확인했다. 본인1명·그룹0·외부0 접근을 유지한다. 온라인 브라우저 시각 검수는 하지 않았다. [게시 근거](evidence/visual-review-plan-publication-20261115.json)를 따른다.
+
 ## 2026-11-15 최신 보강 — 에이전트 작업 전 훅·커밋 전 검사
 
 [같은 하네스 계획](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/presentation-harness.html)에 에이전트 작업 전 훅과 커밋 전 검사 설계를 추가했다. 요청 수신·첫 수정 전·수정 후 기록을 규칙/파일/실제 검사/stage 트리로 연결하고, 기록 누락과 오래된 결과를 거부하는 계획이다. 훅 설치와 실제 발동 시험은 아직 하지 않았다.
