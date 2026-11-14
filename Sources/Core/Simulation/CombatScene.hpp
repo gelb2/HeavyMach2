@@ -17,7 +17,7 @@ class VisualLayer;
 struct WeaponInfo;
 class Particle;
 struct TileImage;
-struct CombatEnemySnapshot {std::uint64_t id=0;std::string name;Vec2 position;int hp=0;bool targetingPlayer=false,corpse=false;std::size_t activeParts=0;MachineKind kind=MachineKind::bipod;bool boss=false,moveToTarget=false;};
+struct CombatEnemySnapshot {std::uint64_t id=0;std::string name;Vec2 position;int hp=0;bool targetingPlayer=false,corpse=false;std::size_t activeParts=0;MachineKind kind=MachineKind::bipod;bool boss=false,moveToTarget=false;float crashTime=0;};
 struct CombatBotSetup {std::string machine;int savedHP=0;};
 struct MissionFieldObject {
     enum class Kind {item,enemy};
@@ -100,6 +100,7 @@ struct CombatSetup {
     float initialRenderTime=0;
     double initialWorldTime=0; // World.gameTime survives map/base hide and setStage.
     WorldRandom* random=nullptr; // If supplied, must outlive this scene.
+    PreparedTiles* sharedAssets=nullptr; // Session/global owner; must outlive this scene.
 };
 // Restored HD battle consumer. Platform display adaptation, menus, persistence
 // and cheat setup remain separate consumers of this same game state.
@@ -128,6 +129,8 @@ public:
     void botPickedItem(std::uint64_t bot,std::uint64_t item);
     Particle* allocateParticle(); // Existing world pool/reset/RNG only.
     [[nodiscard]] const TileImage* preparedTile(std::string_view)const;
+    // Explicit repair-item use boundary, never a draw/shot cache fallback.
+    [[nodiscard]] const TileImage* prepareRepairEffect(std::string_view originalIcon);
     [[nodiscard]] bool isPaused()const;
     void startAirStrike(const WeaponInfo*,float fireDelay,Vec2 target);
     [[nodiscard]] std::size_t activeAirStrikes()const;
@@ -156,6 +159,8 @@ public:
     [[nodiscard]] std::size_t activeProjectiles()const;
     [[nodiscard]] std::size_t visibleParticles()const;
     [[nodiscard]] Frame preparationFrame()const;
+    [[nodiscard]] Frame globalPreparationFrame()const;
+    [[nodiscard]] std::uint64_t resourceRevision()const;
     // Draw-time trail/effect emission is intentional. Call once per rendered
     // scene, not as a getter from telemetry or tests that merely inspect state.
     Frame drawFrame();

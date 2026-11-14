@@ -12,6 +12,12 @@ from urllib.parse import quote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 PAGES = {
+    'docs/iphone-fixes-implementation-20261114.md': 'fixes.html',
+    'docs/iphone-fixes-and-profiling-plan-20261114.md': 'fixes-plan.html',
+    'docs/iphone-apple-runtime-audit-20261114.md': 'apple-audit.html',
+    'docs/original-resource-loading-audit-20261114.md': 'resource-loading.html',
+    'docs/iphone-path-jump-investigation-20261114.md': 'path-jump.html',
+    'docs/iphone-background-asset-research-20261114.md': 'background-art.html',
     'docs/iphone-implementation-20261113.md': 'implementation.html',
     'docs/universal-design-audit-results-20261113.md': 'index.html',
     'docs/universal-design-audit-plan-20261113.md': 'plan.html',
@@ -24,7 +30,8 @@ PAGES = {
     'docs/iphone-universal-runtime-followup-20261113.md': 'runtime-followup.html',
     'docs/iphone-universal-ui-followup-20261113.md': 'ui-followup.html',
 }
-LABELS = ['iPhone 구현·검사', '초기 조사', '조사 범위', '패키지 비교', '초기 로직 비교', '추가 조사',
+LABELS = ['11/14 수정·검사', '수정·측정 계획', 'Apple 자원·음향', '원본 에셋 수명', '점프 조사', '배경·버튼 조사',
+          'iPhone 구현·검사', '초기 조사', '조사 범위', '패키지 비교', '초기 로직 비교', '추가 조사',
           '개발 계획·금지사항', '작업 인계', '카메라·전투', '시간·저장·음향', 'UI·입력']
 CSS = '''
 :root{--paper:#f3f1eb;--ink:#222923;--muted:#687069;--line:#d5d9ce;--accent:#ad471d}

@@ -5,6 +5,14 @@
 
 @interface WorldInputTests:XCTestCase @end
 @implementation WorldInputTests
+- (void)setUp{
+    [super setUp];XCUIDevice.sharedDevice.orientation=UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPad?UIDeviceOrientationPortrait:UIDeviceOrientationLandscapeRight;
+}
+- (void)tearDown{
+    // A failing path test must not leave the following test in another
+    // device's reference orientation.
+    XCUIDevice.sharedDevice.orientation=UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPad?UIDeviceOrientationPortrait:UIDeviceOrientationLandscapeRight;[super tearDown];
+}
 - (NSDictionary<NSString*,NSString*>*)state:(XCUIElement*)world {
     NSMutableDictionary* result=[NSMutableDictionary new];
     for(NSString* field in [(NSString*)world.value componentsSeparatedByString:@";"]){NSRange delimiter=[field rangeOfString:@"="];if(delimiter.location!=NSNotFound)result[[field substringToIndex:delimiter.location]]=[field substringFromIndex:delimiter.location+1];}
@@ -18,12 +26,13 @@
     XCTestExpectation* expectation=[[XCTNSPredicateExpectation alloc]initWithPredicate:predicate object:nil];expectation.expectationDescription=description;
     [self waitForExpectations:@[expectation] timeout:timeout];
 }
-- (void)tapLogical:(CGPoint)logical world:(XCUIElement*)world {
+- (XCUICoordinate*)coordinateLogical:(CGPoint)logical world:(XCUIElement*)world {
     const auto state=[self state:world];const CGRect bounds=world.frame;const CGFloat width=[state[@"canvasWidth"] doubleValue],height=[state[@"canvasHeight"] doubleValue];
     XCTAssertGreaterThan(width,0);XCTAssertGreaterThan(height,0);const CGFloat scale=MIN(bounds.size.width/width,bounds.size.height/height);
     const CGFloat x=(bounds.size.width-width*scale)/2+logical.x*scale,y=(bounds.size.height-height*scale)/2+(height-logical.y)*scale;
-    XCUICoordinate* point=[[world coordinateWithNormalizedOffset:CGVectorMake(0,0)] coordinateWithOffset:CGVectorMake(x,y)];[point tap];
+    return [[world coordinateWithNormalizedOffset:CGVectorMake(0,0)] coordinateWithOffset:CGVectorMake(x,y)];
 }
+- (void)tapLogical:(CGPoint)logical world:(XCUIElement*)world {[[self coordinateLogical:logical world:world] tap];}
 - (BOOL)fieldPointX:(double)x y:(double)y state:(NSDictionary*)state{
     return x>[state[@"safeX"] doubleValue]+16&&x<[state[@"safeX"] doubleValue]+[state[@"safeWidth"] doubleValue]-16&&y>[state[@"fieldInputMinY"] doubleValue]+20&&y<[state[@"safeY"] doubleValue]+[state[@"safeHeight"] doubleValue]-16;
 }
@@ -33,7 +42,7 @@
 - (void)tapButton:(unsigned)identifier data:(int)data world:(XCUIElement*)world {
     [self wait:^BOOL{return [[self state:world][@"doorPhase"] intValue]==8;} description:@"original loading doors finished opening"];
     NSString* x=[NSString stringWithFormat:@"b%u_%d_x",identifier,data],*y=[NSString stringWithFormat:@"b%u_%d_y",identifier,data];
-    for(unsigned attempt=0;attempt<6;++attempt){const auto current=[self state:world];if(!current[y])break;const double py=[current[y] doubleValue],low=[current[@"listClipY"] doubleValue]+24,high=[current[@"listClipTop"] doubleValue]-24;if(identifier<5100||identifier>5204||py>=low&&py<=high)break;
+    for(unsigned attempt=0;attempt<6;++attempt){const auto current=[self state:world];if(!current[y])break;const double py=[current[y] doubleValue],low=[current[@"listClipY"] doubleValue]+24,high=[current[@"listClipTop"] doubleValue]-24;if(identifier<5100||identifier>5204||(py>=low&&py<=high))break;
         const double width=[current[@"canvasWidth"] doubleValue],height=[current[@"canvasHeight"] doubleValue];const CGRect bounds=world.frame;const auto point=[&](double px,double yUp){return [[world coordinateWithNormalizedOffset:CGVectorMake(0,0)] coordinateWithOffset:CGVectorMake(px/width*bounds.size.width,(height-yUp)/height*bounds.size.height)];};
         const double from=(low+high)*.5,to=from+(py<low?1:-1)*std::min((high-low)*.6,std::abs(py-std::clamp(py,low,high)));
         [point(width*.5,from) pressForDuration:.05 thenDragToCoordinate:point(width*.5,to)];
@@ -48,6 +57,101 @@
 }
 - (void)capture:(NSString*)name {
     XCTAttachment* shot=[XCTAttachment attachmentWithScreenshot:XCUIScreen.mainScreen.screenshot];shot.name=name;shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];
+}
+- (NSDictionary*)inputHistory:(NSDictionary*)state{
+    NSData* bytes=[[NSData alloc]initWithBase64EncodedString:state[@"inputHistoryBase64"]?:@"" options:0];
+    return bytes?[NSJSONSerialization JSONObjectWithData:bytes options:0 error:nil]:@{@"columns":@[],@"events":@[]};
+}
+- (void)attachPathState:(NSDictionary*)state name:(NSString*)name{
+    NSMutableDictionary* scalar=[state mutableCopy];[scalar removeObjectForKey:@"inputHistoryBase64"];
+    NSData* data=[NSJSONSerialization dataWithJSONObject:@{@"state":scalar,@"nativeInputHistory":[self inputHistory:state]} options:NSJSONWritingPrettyPrinted error:nil];
+    XCTAttachment* attachment=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];attachment.name=name;attachment.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:attachment];
+}
+- (NSArray<NSValue*>*)clearGroundPair:(NSDictionary*)state avoiding:(NSDictionary*)history{
+    const double scale=[state[@"displayWorldScale"] doubleValue];NSMutableArray<NSValue*>* candidates=[NSMutableArray new];
+    const double left=[state[@"safeX"] doubleValue]+36,right=[state[@"safeX"] doubleValue]+[state[@"safeWidth"] doubleValue]-36;
+    const double bottom=std::max([state[@"fieldInputMinY"] doubleValue]+30,[state[@"safeY"] doubleValue]+30),top=[state[@"safeY"] doubleValue]+[state[@"safeHeight"] doubleValue]-30;
+    const NSArray* columns=history[@"columns"],*events=history[@"events"];const auto wx=[columns indexOfObject:@"worldX"],wy=[columns indexOfObject:@"worldY"],consumed=[columns indexOfObject:@"world"];
+    for(double y=bottom;y<top;y+=std::max(24.,48*scale))for(double x=left;x<right;x+=std::max(24.,48*scale)){
+        if(hypot(x-[state[@"playerScreenX"] doubleValue],y-[state[@"playerScreenY"] doubleValue])<100*scale)continue;BOOL clear=YES;
+        for(int i=0;i<[state[@"enemyCount"] intValue];++i)if(hypot(x-[state[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],y-[state[[NSString stringWithFormat:@"e%d_y",i]] doubleValue])<70*scale){clear=NO;break;}
+        // A replacement starts away from every recorded old path point. It
+        // therefore exercises a new path instead of truncating a nearby one.
+        if(clear&&wx!=NSNotFound&&wy!=NSNotFound&&consumed!=NSNotFound)for(NSArray* e in events)if([e[consumed] boolValue]){
+            const double oldX=[state[@"playerScreenX"] doubleValue]+([e[wx] doubleValue]-[state[@"x"] doubleValue])*scale;
+            const double oldY=[state[@"playerScreenY"] doubleValue]+([e[wy] doubleValue]-[state[@"y"] doubleValue])*scale;
+            if(hypot(x-oldX,y-oldY)<45*scale){clear=NO;break;}
+        }
+        if(clear)[candidates addObject:[NSValue valueWithCGPoint:CGPointMake(x,y)]];
+    }
+    double longest=0;NSArray* pair=@[];for(NSValue* a in candidates)for(NSValue* b in candidates){const auto p=a.CGPointValue,q=b.CGPointValue;const double length=hypot(p.x-q.x,p.y-q.y);if(length>longest){longest=length;pair=@[a,b];}}
+    return longest>=180*scale?pair:@[];
+}
+- (void)verifyOSPathReplacementMany:(BOOL)many{
+    self.continueAfterFailure=NO;
+    XCUIApplication* app=[[XCUIApplication alloc]initWithBundleIdentifier:@"com.gelb2.heavymach2.restored"];NSString* run=NSUUID.UUID.UUIDString;
+    app.launchEnvironment=@{@"HM2_UI_TESTING":@"1",@"HM2_UI_TEST_RUN":run,@"HM2_UI_TEST_FIXTURE":@"recentInput"};[app launch];
+    XCUIElement* world=app.otherElements[@"hm2.world"];XCTAssertTrue([world waitForExistenceWithTimeout:15]);[self titleToSlots:world];[self tapButton:1001 data:0 world:world];
+    [self wait:^BOOL{const auto s=[self state:world];return [s[@"screen"] intValue]==7&&[s[@"doorPhase"] intValue]==8&&![s[@"helpVisible"] boolValue];} description:@"isolated original-format field start, doors open" timeout:60];
+    const auto start=[self state:world];if(UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPad)XCTAssertGreaterThan([start[@"canvasHeight"] doubleValue],[start[@"canvasWidth"] doubleValue]);else XCTAssertGreaterThan([start[@"canvasWidth"] doubleValue],[start[@"canvasHeight"] doubleValue]);
+    XCTAssertGreaterThanOrEqual([start[@"dashMaximumSP"] doubleValue],100);XCTAssertGreaterThan([start[@"dashRegeneration"] doubleValue],0);
+    const auto firstPair=[self clearGroundPair:start avoiding:nil];[self attachPathState:start name:@"OS path initial fixture"];XCTAssertEqual(firstPair.count,2u);
+    [[self coordinateLogical:[firstPair[0] CGPointValue] world:world] pressForDuration:.05 thenDragToCoordinate:[self coordinateLogical:[firstPair[1] CGPointValue] world:world] withVelocity:300 thenHoldForDuration:0];
+    const auto first=[self state:world];[self attachPathState:first name:@"OS first multi-waypoint drag"];
+    const auto firstHistory=[self inputHistory:first];const NSArray* columns=firstHistory[@"columns"];const auto pathAfter=[columns indexOfObject:@"pathAfter"];unsigned maximumPath=0;
+    if(pathAfter!=NSNotFound)for(NSArray* row in firstHistory[@"events"])maximumPath=std::max(maximumPath,[row[pathAfter] unsignedIntValue]);
+    XCTAssertGreaterThan(maximumPath,1u);XCTAssertEqual([first[@"movePointer"] longLongValue],0ll);
+    const auto replacement=[self clearGroundPair:first avoiding:firstHistory];XCTAssertEqual(replacement.count,2u);
+    if(many)[[self coordinateLogical:[replacement[0] CGPointValue] world:world] pressForDuration:.05 thenDragToCoordinate:[self coordinateLogical:[replacement[1] CGPointValue] world:world] withVelocity:300 thenHoldForDuration:0];
+    else [self tapLogical:[replacement[0] CGPointValue] world:world];
+    const auto replaced=[self state:world];[self attachPathState:replaced name:many?@"OS replacement multi-waypoint drag":@"OS replacement single waypoint"];
+    const auto replacedHistory=[self inputHistory:replaced];const NSArray* replacedColumns=replacedHistory[@"columns"];const auto phase=[replacedColumns indexOfObject:@"phase"],afterPath=[replacedColumns indexOfObject:@"pathAfter"];NSArray* lastEnd=nil;
+    if(phase!=NSNotFound)for(NSArray* e in replacedHistory[@"events"])if([e[phase] unsignedIntValue]==2)lastEnd=e;
+    XCTAssertNotNil(lastEnd);if(lastEnd&&afterPath!=NSNotFound){if(many)XCTAssertGreaterThan([lastEnd[afterPath] unsignedIntValue],1u);else XCTAssertEqual([lastEnd[afterPath] unsignedIntValue],1u);}
+    XCTAssertEqual([replaced[@"movePointer"] longLongValue],0ll);
+    const double afterReplacement=[replaced[@"worldTime"] doubleValue];
+    // Wait for the game's actual Equipment.tickSpecial and original .5s
+    // double-tap window. No runtime SP or tap timestamp is assigned by tests.
+    [self wait:^BOOL{const auto s=[self state:world];return [s[@"dashSP"] doubleValue]>=100&&[s[@"worldTime"] doubleValue]>afterReplacement+.6;} description:@"original live SP regeneration and previous tap interval" timeout:60];
+    const auto before=[self state:world];const auto dashPair=[self clearGroundPair:before avoiding:nil];XCTAssertEqual(dashPair.count,2u);
+    [[self coordinateLogical:[dashPair[0] CGPointValue] world:world] doubleTap];
+    const auto after=[self state:world];[self attachPathState:before name:@"OS double-tap before"];[self attachPathState:after name:@"OS double-tap after with native 256-event ring"];[self capture:many?@"path-many-then-OS-doubletap":@"path-single-then-OS-doubletap"];
+    XCTAssertGreaterThan([after[@"dashStarts"] longLongValue],[before[@"dashStarts"] longLongValue]);XCTAssertEqual([after[@"movePointer"] longLongValue],0ll);
+    const auto history=[self inputHistory:after];const NSArray* finalColumns=history[@"columns"];const auto dashBefore=[finalColumns indexOfObject:@"dashBefore"],dashAfter=[finalColumns indexOfObject:@"dashAfter"],spBefore=[finalColumns indexOfObject:@"spBefore"],spAfter=[finalColumns indexOfObject:@"spAfter"];BOOL actualCost=NO;
+    if(dashBefore!=NSNotFound&&dashAfter!=NSNotFound&&spBefore!=NSNotFound&&spAfter!=NSNotFound)for(NSArray* e in history[@"events"])if([e[dashBefore] unsignedLongLongValue]>=static_cast<unsigned long long>([before[@"dashStarts"] longLongValue])&&[e[dashAfter] unsignedLongLongValue]>[e[dashBefore] unsignedLongLongValue]&&std::abs([e[spBefore] doubleValue]-[e[spAfter] doubleValue]-100)<.001)actualCost=YES;
+    XCTAssertTrue(actualCost,@"Actual OS begin must start Dash and consume100SP. Inspect attached native input phases/tap times.");
+    NSLog(@"HM2_OS_PATH_DASH run=%@ replacement=%@ firstMaximumPath=%u beforeDash=%@ afterDash=%@ beforeSP=%@ afterSP=%@",run,many?@"many":@"single",maximumPath,before[@"dashStarts"],after[@"dashStarts"],before[@"dashSP"],after[@"dashSP"]);[app terminate];
+}
+- (void)testOSMultiplePathThenSinglePathThenDoubleTap{[self verifyOSPathReplacementMany:NO];}
+- (void)testOSMultiplePathThenMultiplePathThenDoubleTap{[self verifyOSPathReplacementMany:YES];}
+- (void)testOSBackgroundReturnKeepsMenuPaused{
+    self.continueAfterFailure=NO;XCUIApplication* app=[[XCUIApplication alloc]initWithBundleIdentifier:@"com.gelb2.heavymach2.restored"];NSString* run=NSUUID.UUID.UUIDString;
+    app.launchEnvironment=@{@"HM2_UI_TESTING":@"1",@"HM2_UI_TEST_RUN":run,@"HM2_UI_TEST_FIXTURE":@"recentInput"};[app launch];
+    XCUIElement* world=app.otherElements[@"hm2.world"];XCTAssertTrue([world waitForExistenceWithTimeout:15]);[self titleToSlots:world];[self tapButton:1001 data:0 world:world];
+    [self wait:^BOOL{const auto s=[self state:world];return [s[@"screen"] intValue]==7&&[s[@"doorPhase"] intValue]==8&&![s[@"paused"] boolValue]&&![s[@"helpVisible"] boolValue];} description:@"live isolated field before real OS background" timeout:60];
+    for(unsigned cycle=0;cycle<3;++cycle){
+        const auto before=[self state:world];const auto saves=[before[@"saves"] longLongValue];
+        [XCUIDevice.sharedDevice pressButton:XCUIDeviceButtonHome];
+        [self wait:^BOOL{return app.state==XCUIApplicationStateRunningBackground||app.state==XCUIApplicationStateRunningBackgroundSuspended;} description:@"Home actually backgrounds the application"];
+        [app activate];world=app.otherElements[@"hm2.world"];
+        [self wait:^BOOL{const auto s=[self state:world];return world.exists&&[s[@"paused"] boolValue]&&[s[@"systemVisible"] boolValue]&&s[@"b1030_0_x"]&&s[@"b1030_0_y"];} description:@"OS foreground returns to paused GPU system menu with Resume1030"];
+        const auto paused=[self state:world];[self attachPathState:paused name:[NSString stringWithFormat:@"OS background cycle%u returned menu",cycle+1]];
+        XCTAssertEqual([paused[@"saves"] longLongValue],saves);const auto pausedTicks=[paused[@"ticks"] longLongValue];
+        [self wait:^BOOL{return [[self state:world][@"ticks"] longLongValue]>=pausedTicks+12;} description:@"display callbacks continue while foreground World remains paused"];
+        const auto held=[self state:world];[self attachPathState:held name:[NSString stringWithFormat:@"OS background cycle%u twelve paused callbacks",cycle+1]];
+        XCTAssertTrue([held[@"paused"] boolValue]);XCTAssertTrue([held[@"systemVisible"] boolValue]);XCTAssertNotNil(held[@"b1030_0_x"]);
+        XCTAssertEqualWithAccuracy([held[@"worldTime"] doubleValue],[paused[@"worldTime"] doubleValue],.000000001);
+        XCTAssertEqualWithAccuracy([held[@"x"] doubleValue],[paused[@"x"] doubleValue],.000001);XCTAssertEqualWithAccuracy([held[@"y"] doubleValue],[paused[@"y"] doubleValue],.000001);
+        XCTAssertEqual([held[@"saves"] longLongValue],saves);
+        [self tapButton:1030 data:0 world:world];
+        [self wait:^BOOL{const auto s=[self state:world];return ![s[@"paused"] boolValue]&&![s[@"systemVisible"] boolValue]&&[s[@"worldTime"] doubleValue]>[held[@"worldTime"] doubleValue];} description:@"actual GPU Resume touch restarts World time"];
+        const auto resumed=[self state:world];XCTAssertEqual([resumed[@"saves"] longLongValue],saves);
+        NSMutableDictionary* original=[before mutableCopy],*after=[resumed mutableCopy];[original removeObjectForKey:@"inputHistoryBase64"];[after removeObjectForKey:@"inputHistoryBase64"];
+        NSData* data=[NSJSONSerialization dataWithJSONObject:@{@"kind":@"OS Home and foreground activation",@"telephoneInterruptionTested":@NO,@"run":run,@"cycle":@(cycle+1),@"before":original,@"resumed":after} options:NSJSONWritingPrettyPrinted error:nil];
+        XCTAttachment* attachment=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];attachment.name=[NSString stringWithFormat:@"OS background actual resume cycle%u",cycle+1];attachment.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:attachment];
+        NSLog(@"HM2_OS_BACKGROUND cycle=%u run=%@ pausedWorldTime=%@ heldWorldTime=%@ resumedWorldTime=%@ unchangedSaves=%lld",cycle+1,run,paused[@"worldTime"],held[@"worldTime"],resumed[@"worldTime"],saves);
+    }
+    [app terminate];
 }
 - (void)testRealTouchMovesPlayerOnOriginalTerrain {
     self.continueAfterFailure=NO;XCUIApplication* app=[[XCUIApplication alloc]initWithBundleIdentifier:@"com.gelb2.heavymach2.restored"];

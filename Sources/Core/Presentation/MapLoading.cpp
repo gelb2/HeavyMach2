@@ -1,7 +1,11 @@
 #include "Core/Presentation/MapLoading.hpp"
 #include <stdexcept>
 namespace hm2 {
-MapLoading::MapLoading(ResourceAccess& resources){tiles_.prepare(resources,"StageClearBG.png");}
+MapLoading::MapLoading(ResourceAccess& resources,PreparedTiles* shared):tiles_(shared?shared:&standaloneTiles_){
+    // GuiMapLoading.init0x2da14 uses ResMgr_Tile.sharedMgr. Ending a fade
+    // releases its image node; it does not discard this shared tile.
+    tiles_->prepare(resources,"StageClearBG.png");
+}
 void MapLoading::tick(const MapLoadingCallbacks& host){
     if(state_.removed)return;
     switch(state_.step){
@@ -15,9 +19,11 @@ void MapLoading::tick(const MapLoadingCallbacks& host){
     }
 }
 void MapLoading::append(Frame& frame)const{
-    if(state_.removed)return;const auto* tile=tiles_.lookup("StageClearBG.png");if(!tile)return;
-    VisualImage image;image.tile=tiles_.visual(*tile);image.screenPosition={384,512};image.alpha=state_.alpha;image.useAtlas=false;
+    if(state_.removed)return;const auto* tile=tiles_->lookup("StageClearBG.png");if(!tile)return;
+    VisualImage image;image.tile=tiles_->visual(*tile);image.screenPosition={384,512};image.alpha=state_.alpha;image.useAtlas=false;
     VisualLayer layer;layer.submitImage(image);auto result=layer.drain();for(auto& sprite:result.nonAtlas)sprite.visualLayer=13;std::move(result).appendBatches(frame);
 }
-Frame MapLoading::preparationFrame()const{Frame result;tiles_.appendPreparation(result);return result;}
+Frame MapLoading::preparationFrame()const{
+    Frame result;if(const auto* tile=tiles_->lookup("StageClearBG.png")){Sprite image;image.image=tile->name;image.size=tile->pixels;image.textureSource=tile->textureSource;result.sprites.push_back(std::move(image));}return result;
+}
 }

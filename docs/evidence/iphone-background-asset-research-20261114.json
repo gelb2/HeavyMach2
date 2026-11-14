@@ -1,0 +1,1031 @@
+{
+  "scope": "read-only original phone2.0.1/HD1.0.3 artwork/table metadata; no runtime execution",
+  "originals": [
+    {
+      "version": "phone201",
+      "ipa_sha256": "23ff9c74c7d890cc6f28952b4845f6c616bae4bb7207a393f80ed9ed76062d32",
+      "hash_after_read": "23ff9c74c7d890cc6f28952b4845f6c616bae4bb7207a393f80ed9ed76062d32",
+      "unchanged": true
+    },
+    {
+      "version": "hd103",
+      "ipa_sha256": "7eeb36590b3c19a28741e21671379029d9023864ceb241a5b8560eef045112d2",
+      "hash_after_read": "7eeb36590b3c19a28741e21671379029d9023864ceb241a5b8560eef045112d2",
+      "unchanged": true
+    }
+  ],
+  "profiles": {
+    "phone201": {
+      "artwork": [
+        {
+          "name": "Main_BG.png",
+          "format": "CgBI PNG",
+          "pixels": [
+            480,
+            320
+          ],
+          "bytes": 253415,
+          "sha256": "12beca7ac34cd3229e840b3d82dc2a59724292a5488b06648ee82ec3c3dab37d",
+          "decoded_rgba_sha256": "ea4fce696c81cb427378d3d4c6d0967eacd6e802c6f7650564c251010b1d6b1f"
+        },
+        {
+          "name": "StageClearBG.png",
+          "format": "CgBI PNG",
+          "pixels": [
+            480,
+            320
+          ],
+          "bytes": 271802,
+          "sha256": "b0ca74d08fe6339beeac06cd98cec7859ee314f2b3514001fd3fc60d0843269e",
+          "decoded_rgba_sha256": "434ac519312fd3833a71d2776e2ae68ddaddae9cde0e20ec4193f18d31dcf83d"
+        },
+        {
+          "name": "Base001.jpg",
+          "format": "JPEG",
+          "pixels": [
+            480,
+            320
+          ],
+          "bytes": 58155,
+          "sha256": "99d334fe14833bf9614be904adc724a740af571464c8da0a0b567a194d97a00a",
+          "decoded_rgba_sha256": "26f16afe66bbc0069759aecb8606601b79eddc9acf911a7631ed2e730026b9b5"
+        },
+        {
+          "name": "Base002.jpg",
+          "format": "JPEG",
+          "pixels": [
+            480,
+            320
+          ],
+          "bytes": 63073,
+          "sha256": "849bb85660422cf558472bfd3f84c6a621309acf94445ce16c722f7f5133909b",
+          "decoded_rgba_sha256": "ac1680f6aff4b2744b2355888dfaa8d924462bf58c8b66bc9d0c1594a274ea92"
+        },
+        {
+          "name": "Base003.jpg",
+          "format": "JPEG",
+          "pixels": [
+            480,
+            320
+          ],
+          "bytes": 45590,
+          "sha256": "a5c3f20d4beb248b9a41a248d378b23d4a1eb5fbedb5676eb881fd5f19d0e90c",
+          "decoded_rgba_sha256": "b0604928a346b9d196a45d25233487a48e25e24fdb7d15b76a05387840c60b22"
+        },
+        {
+          "name": "Base004.jpg",
+          "format": "JPEG",
+          "pixels": [
+            480,
+            320
+          ],
+          "bytes": 54574,
+          "sha256": "f35ff4553f9e452eeb19ace9137eee5eb03752a2d7adcaaea4f4e4b0dba443b5",
+          "decoded_rgba_sha256": "de2194a5dc52a582bb115560fcc14246c12bb0a48da21a593360e63bbdac6c2d"
+        },
+        {
+          "name": "Base005.jpg",
+          "format": "JPEG",
+          "pixels": [
+            480,
+            320
+          ],
+          "bytes": 52693,
+          "sha256": "dd19c2ee87f6f64b6ec94e2e4364bc35e878e8d8493cb6510164f8ab168d719a",
+          "decoded_rgba_sha256": "a4c99a345f4f89f2a65c90e61c365fce5cb60fe038378dfa15b5fc0448551f47"
+        },
+        {
+          "name": "Base006.jpg",
+          "format": "JPEG",
+          "pixels": [
+            480,
+            320
+          ],
+          "bytes": 50930,
+          "sha256": "4d88c0fe5957d744533abdf9ffd778581430a9934194e5ad3cb32aab45536a80",
+          "decoded_rgba_sha256": "f7e6442c48f23c5aef4b3cf4972d3aa21b60060d21c7a56f6b0ccab435b38780"
+        }
+      ],
+      "title_vs_loading_same_decoded_pixels": false
+    },
+    "hd103": {
+      "artwork": [
+        {
+          "name": "Main_BG.png",
+          "format": "CgBI PNG",
+          "pixels": [
+            768,
+            1024
+          ],
+          "bytes": 870824,
+          "sha256": "d34b109ac8ccdb73f90a419b60840d350ab7c3d53acad40194f0c8eb3b809a36",
+          "decoded_rgba_sha256": "4e533508f009fe86050b819d511accd3e1e030d80950a87dbf339c050cc60185"
+        },
+        {
+          "name": "StageClearBG.png",
+          "format": "CgBI PNG",
+          "pixels": [
+            768,
+            1024
+          ],
+          "bytes": 1229096,
+          "sha256": "bcfb560c3f42ce0e391157a7553a18b2ac8d3d37acf2ad74a7c27ba194ec5219",
+          "decoded_rgba_sha256": "df3c2bed661e3ad7b0d135db6c61dca042d0ebcb9c0136386cad99d5e08cde51"
+        },
+        {
+          "name": "Base001.png",
+          "format": "CgBI PNG",
+          "pixels": [
+            768,
+            1024
+          ],
+          "bytes": 807837,
+          "sha256": "53e096185974b0a3c6b31af0b33a8327c2ef0494952e71afce4b3ea1936da037",
+          "decoded_rgba_sha256": "68497aee83d7d30c70a84799e6f0a4ec2a9c7f4926401ca40e1c138ad7066f02"
+        },
+        {
+          "name": "Base002.png",
+          "format": "CgBI PNG",
+          "pixels": [
+            768,
+            1024
+          ],
+          "bytes": 833369,
+          "sha256": "4f555f008fa1619a51bef78c1dfe7e0974c32c21b73f263cba57b97843c222c9",
+          "decoded_rgba_sha256": "3fd9b86940bc1a1cf037a22fdac32588306e1eeff0a0f2a38219bd46e4ad29c5"
+        },
+        {
+          "name": "Base003.png",
+          "format": "CgBI PNG",
+          "pixels": [
+            768,
+            1024
+          ],
+          "bytes": 733457,
+          "sha256": "018eaee898ae75b0f1d084f7c815259e833bf343a6c64b9632a1daf3354380e4",
+          "decoded_rgba_sha256": "3f79d4f83bfad9d5b72fa589f523b4b0a4f4b4efca671d76ee5504907e981bb0"
+        },
+        {
+          "name": "Base004.png",
+          "format": "CgBI PNG",
+          "pixels": [
+            768,
+            1024
+          ],
+          "bytes": 808263,
+          "sha256": "49cfa1f79d1c204957a9d10d15136743af939fcb5c3cc0e255781e408ebdf8a5",
+          "decoded_rgba_sha256": "d16e66180acaebc0944945b08046d68f483be323b4d0c66c75bc0a884dec6c1f"
+        },
+        {
+          "name": "Base005.png",
+          "format": "CgBI PNG",
+          "pixels": [
+            768,
+            1024
+          ],
+          "bytes": 805795,
+          "sha256": "b09ce730b3f99519a5617c5fc0a5cc67376b9e1d8d168dbe7137f8b2cc5debdd",
+          "decoded_rgba_sha256": "6742900c64ebad3ff0965ebc365ffa1059e82d94e6dd149755323cced28b850a"
+        },
+        {
+          "name": "Base006.png",
+          "format": "CgBI PNG",
+          "pixels": [
+            768,
+            1024
+          ],
+          "bytes": 543405,
+          "sha256": "199635a1db19f466b367b99473cad1cdc92832c137d44a227b8be0b3a7175fa6",
+          "decoded_rgba_sha256": "6d2d1a4d9fca67abb348e497ed1b17ab8572793db6b67e181a73a86433ec7ad4"
+        }
+      ],
+      "title_vs_loading_same_decoded_pixels": false
+    }
+  },
+  "base_geometry": [
+    {
+      "version": "phone201",
+      "base": 1,
+      "table_sha256": "b26953269dff0c6ed10a6ca58ae87226001818b712f671857193939f595fe176",
+      "button_geometry": [
+        {
+          "id": 3,
+          "x": -160.0,
+          "y": 10.0,
+          "scale": 0.85
+        },
+        {
+          "id": 2,
+          "x": 180.0,
+          "y": 64.0,
+          "scale": 0.5
+        },
+        {
+          "id": 1,
+          "x": 38.0,
+          "y": 64.0,
+          "scale": 0.7
+        },
+        {
+          "id": 4,
+          "x": 196.0,
+          "y": 140.0,
+          "scale": 1.0
+        },
+        {
+          "id": 5,
+          "x": -152.0,
+          "y": -132.0,
+          "scale": 1.0
+        }
+      ],
+      "button_count": 5,
+      "has_maintenance_id3": true,
+      "description_origin": [
+        119.0,
+        -70.0
+      ]
+    },
+    {
+      "version": "phone201",
+      "base": 2,
+      "table_sha256": "bd7533ea89bb3fb529fa35946e5356be77d3889baf97ea6f12541f1ef580d567",
+      "button_geometry": [
+        {
+          "id": 3,
+          "x": 195.0,
+          "y": 40.0,
+          "scale": 0.5
+        },
+        {
+          "id": 2,
+          "x": -100.0,
+          "y": 34.0,
+          "scale": 0.75
+        },
+        {
+          "id": 1,
+          "x": 38.0,
+          "y": 84.0,
+          "scale": 0.75
+        },
+        {
+          "id": 4,
+          "x": 196.0,
+          "y": 140.0,
+          "scale": 1.0
+        },
+        {
+          "id": 5,
+          "x": -152.0,
+          "y": -90.0,
+          "scale": 1.0
+        },
+        {
+          "id": 6,
+          "x": -152.0,
+          "y": -132.0,
+          "scale": 1.0
+        }
+      ],
+      "button_count": 6,
+      "has_maintenance_id3": true,
+      "description_origin": [
+        119.0,
+        -90.0
+      ]
+    },
+    {
+      "version": "phone201",
+      "base": 3,
+      "table_sha256": "ea9e218d5b43693bca10c71e2611ce75d4d8368068ac5947597a6feb3028fba4",
+      "button_geometry": [
+        {
+          "id": 3,
+          "x": -160.0,
+          "y": 0.0,
+          "scale": 0.7
+        },
+        {
+          "id": 2,
+          "x": 180.0,
+          "y": 24.0,
+          "scale": 0.75
+        },
+        {
+          "id": 1,
+          "x": 8.0,
+          "y": 64.0,
+          "scale": 0.85
+        },
+        {
+          "id": 4,
+          "x": 196.0,
+          "y": 140.0,
+          "scale": 1.0
+        },
+        {
+          "id": 5,
+          "x": -152.0,
+          "y": -90.0,
+          "scale": 1.0
+        },
+        {
+          "id": 6,
+          "x": -152.0,
+          "y": -132.0,
+          "scale": 1.0
+        }
+      ],
+      "button_count": 6,
+      "has_maintenance_id3": true,
+      "description_origin": [
+        119.0,
+        -70.0
+      ]
+    },
+    {
+      "version": "phone201",
+      "base": 4,
+      "table_sha256": "757f750f69d49ad2db24cc98d26c03be9446432b07050b6ad382d12543afba76",
+      "button_geometry": [
+        {
+          "id": 3,
+          "x": -160.0,
+          "y": 10.0,
+          "scale": 0.7
+        },
+        {
+          "id": 2,
+          "x": 178.0,
+          "y": -64.0,
+          "scale": 0.85
+        },
+        {
+          "id": 1,
+          "x": 38.0,
+          "y": 64.0,
+          "scale": 0.8
+        },
+        {
+          "id": 4,
+          "x": 196.0,
+          "y": 140.0,
+          "scale": 1.0
+        }
+      ],
+      "button_count": 4,
+      "has_maintenance_id3": true,
+      "description_origin": [
+        -30.0,
+        -80.0
+      ]
+    },
+    {
+      "version": "phone201",
+      "base": 5,
+      "table_sha256": "a8b917f8e48021355dc1e0bcd74a39db9d94f5f61242348cd8ee6db6f7a8fcb9",
+      "button_geometry": [
+        {
+          "id": 3,
+          "x": 156.0,
+          "y": -47.0,
+          "scale": 0.85
+        },
+        {
+          "id": 2,
+          "x": 120.0,
+          "y": 34.0,
+          "scale": 0.7
+        },
+        {
+          "id": 1,
+          "x": -77.0,
+          "y": 60.0,
+          "scale": 0.85
+        },
+        {
+          "id": 4,
+          "x": 196.0,
+          "y": 140.0,
+          "scale": 1.0
+        },
+        {
+          "id": 5,
+          "x": -152.0,
+          "y": -132.0,
+          "scale": 1.0
+        }
+      ],
+      "button_count": 5,
+      "has_maintenance_id3": true,
+      "description_origin": [
+        -80.0,
+        -50.0
+      ]
+    },
+    {
+      "version": "phone201",
+      "base": 6,
+      "table_sha256": "d63670ce4d1a5de65476e49e309c83870e877ff866100fd3cb0a6c58dfb2d707",
+      "button_geometry": [
+        {
+          "id": 3,
+          "x": -160.0,
+          "y": 10.0,
+          "scale": 0.7
+        },
+        {
+          "id": 2,
+          "x": 190.0,
+          "y": 10.0,
+          "scale": 0.6
+        },
+        {
+          "id": 1,
+          "x": 38.0,
+          "y": 10.0,
+          "scale": 0.8
+        },
+        {
+          "id": 4,
+          "x": 196.0,
+          "y": 140.0,
+          "scale": 1.0
+        },
+        {
+          "id": 5,
+          "x": -152.0,
+          "y": -90.0,
+          "scale": 1.0
+        },
+        {
+          "id": 6,
+          "x": -152.0,
+          "y": -132.0,
+          "scale": 1.0
+        }
+      ],
+      "button_count": 6,
+      "has_maintenance_id3": true,
+      "description_origin": [
+        119.0,
+        -90.0
+      ]
+    },
+    {
+      "version": "hd103",
+      "base": 1,
+      "table_sha256": "ab554838a7bc83d785e19864daca3e55585cf87512c40e4b919dd6226c6fc4de",
+      "button_geometry": [
+        {
+          "id": 2,
+          "x": -260.0,
+          "y": 180.0,
+          "scale": 1.0
+        },
+        {
+          "id": 1,
+          "x": 75.0,
+          "y": 360.0,
+          "scale": 0.8
+        },
+        {
+          "id": 5,
+          "x": -252.0,
+          "y": 32.0,
+          "scale": 1.0
+        },
+        {
+          "id": 4,
+          "x": 280.0,
+          "y": -460.0,
+          "scale": 1.0
+        }
+      ],
+      "button_count": 4,
+      "has_maintenance_id3": false,
+      "description_origin": [
+        0.0,
+        -200.0
+      ]
+    },
+    {
+      "version": "hd103",
+      "base": 2,
+      "table_sha256": "a2a42238c67dffbe1d87dcc960d8992518886f8d6913273a93bfe79cbb238e13",
+      "button_geometry": [
+        {
+          "id": 2,
+          "x": -152.0,
+          "y": 208.0,
+          "scale": 1.0
+        },
+        {
+          "id": 1,
+          "x": 96.0,
+          "y": 299.0,
+          "scale": 1.0
+        },
+        {
+          "id": 5,
+          "x": 272.0,
+          "y": 20.0,
+          "scale": 1.0
+        },
+        {
+          "id": 6,
+          "x": 272.0,
+          "y": -40.0,
+          "scale": 1.0
+        },
+        {
+          "id": 4,
+          "x": 280.0,
+          "y": -460.0,
+          "scale": 1.0
+        }
+      ],
+      "button_count": 5,
+      "has_maintenance_id3": false,
+      "description_origin": [
+        0.0,
+        -200.0
+      ]
+    },
+    {
+      "version": "hd103",
+      "base": 3,
+      "table_sha256": "5b3ffb102698ee195e16318692beb7a64b5c2f432b8fb941866cd0703824c449",
+      "button_geometry": [
+        {
+          "id": 2,
+          "x": -274.0,
+          "y": 228.0,
+          "scale": 0.85
+        },
+        {
+          "id": 1,
+          "x": 2.0,
+          "y": 292.0,
+          "scale": 1.0
+        },
+        {
+          "id": 5,
+          "x": 272.0,
+          "y": 20.0,
+          "scale": 1.0
+        },
+        {
+          "id": 6,
+          "x": 272.0,
+          "y": -40.0,
+          "scale": 1.0
+        },
+        {
+          "id": 4,
+          "x": 280.0,
+          "y": -460.0,
+          "scale": 1.0
+        }
+      ],
+      "button_count": 5,
+      "has_maintenance_id3": false,
+      "description_origin": [
+        0.0,
+        -200.0
+      ]
+    },
+    {
+      "version": "hd103",
+      "base": 4,
+      "table_sha256": "0f86dd7013450dcb2160c0a8a34d6e838ee1ab54d3912ff4448cd7baa08e0c9e",
+      "button_geometry": [
+        {
+          "id": 3,
+          "x": -160.0,
+          "y": 10.0,
+          "scale": 0.7
+        },
+        {
+          "id": 2,
+          "x": 178.0,
+          "y": -64.0,
+          "scale": 0.85
+        },
+        {
+          "id": 1,
+          "x": 38.0,
+          "y": 64.0,
+          "scale": 0.8
+        },
+        {
+          "id": 4,
+          "x": 280.0,
+          "y": -460.0,
+          "scale": 1.0
+        }
+      ],
+      "button_count": 4,
+      "has_maintenance_id3": true,
+      "description_origin": [
+        0.0,
+        -200.0
+      ]
+    },
+    {
+      "version": "hd103",
+      "base": 5,
+      "table_sha256": "83d636b5f44b1ebd880cc47939b6e44f8dc058534bf46441a74e9a4f13a51080",
+      "button_geometry": [
+        {
+          "id": 2,
+          "x": 251.0,
+          "y": 184.0,
+          "scale": 1.0
+        },
+        {
+          "id": 1,
+          "x": -124.0,
+          "y": 320.0,
+          "scale": 1.0
+        },
+        {
+          "id": 5,
+          "x": 272.0,
+          "y": -20.0,
+          "scale": 1.0
+        },
+        {
+          "id": 4,
+          "x": 280.0,
+          "y": -460.0,
+          "scale": 1.0
+        }
+      ],
+      "button_count": 4,
+      "has_maintenance_id3": false,
+      "description_origin": [
+        0.0,
+        -200.0
+      ]
+    },
+    {
+      "version": "hd103",
+      "base": 6,
+      "table_sha256": "683f29688e3cfd76f6907ff0583f1709f9db034e638e5648de9cb95d27cad575",
+      "button_geometry": [
+        {
+          "id": 2,
+          "x": -246.0,
+          "y": 339.0,
+          "scale": 1.0
+        },
+        {
+          "id": 1,
+          "x": 70.0,
+          "y": 334.0,
+          "scale": 1.0
+        },
+        {
+          "id": 5,
+          "x": -272.0,
+          "y": 120.0,
+          "scale": 1.0
+        },
+        {
+          "id": 6,
+          "x": -272.0,
+          "y": 60.0,
+          "scale": 1.0
+        },
+        {
+          "id": 4,
+          "x": 280.0,
+          "y": -460.0,
+          "scale": 1.0
+        }
+      ],
+      "button_count": 5,
+      "has_maintenance_id3": false,
+      "description_origin": [
+        0.0,
+        -200.0
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "version": "phone201",
+      "address": "0x3575c",
+      "name": "FUN_0003575c",
+      "exports": [
+        {
+          "kind": "pseudo",
+          "evidence_id": "ev_18fb2f3246a6b1b41990fa6ba41dea146b9feafaa6f6e6e02541b04d37a476d0",
+          "sha256": "2794e46ac15b526a71907071b8c295bf8d46624374c22f6129770cf8ac3f2d09",
+          "prior_manifest_hash_present": true
+        },
+        {
+          "kind": "assembly",
+          "evidence_id": "ev_22ce140c22fd7f1ffab7194e310ce406724e7a0b5398b037dc258a7ede9c9df8",
+          "sha256": "6fb874296cd50669b8c227ef37a3536dc4072946af65ff53ff4daf21cee0f3f8",
+          "prior_manifest_hash_present": true
+        }
+      ]
+    },
+    {
+      "version": "phone201",
+      "address": "0x454f0",
+      "name": "FUN_000454f0",
+      "exports": [
+        {
+          "kind": "pseudo",
+          "evidence_id": "ev_cdbf603f3395563c7900c2e6f017801dc3a0d82289e494d0eb96d832c87e67ce",
+          "sha256": "02ecb364e69be1e88a3055fb1f827ad16a7e007f2497377523f5a45d243cd7ef",
+          "prior_manifest_hash_present": true
+        },
+        {
+          "kind": "assembly",
+          "evidence_id": "ev_5a1c7b9d10cb69c358aca93bbf00c26d4dca18c4ebd4403238ca2ad769df7ac3",
+          "sha256": "cd276321d8357987ec3fc320859c14c834c128bc0d99f07ee218aba0b6ad4e7a",
+          "prior_manifest_hash_present": true
+        }
+      ]
+    },
+    {
+      "version": "phone201",
+      "address": "0x3b568",
+      "name": "FUN_0003b568",
+      "exports": [
+        {
+          "kind": "pseudo",
+          "evidence_id": "ev_238d3d1de61d48246ece9450719804153a6714f740e716ede03fa9b9718aab8f",
+          "sha256": "b8736efa9345a1fe483536eec6f5f5f3e1d135fe5847f579ba03eb801fac8a47",
+          "prior_manifest_hash_present": true
+        },
+        {
+          "kind": "assembly",
+          "evidence_id": "ev_35d533cd1252db8940c709c98a30ba304b24c8d23611460cd35436298050d596",
+          "sha256": "95d6c1a3c213e60ab8b91464531e79d5209cf08aea64571defc3c470634f6fc8",
+          "prior_manifest_hash_present": true
+        }
+      ]
+    },
+    {
+      "version": "phone201",
+      "address": "0x3b754",
+      "name": "FUN_0003b754",
+      "exports": [
+        {
+          "kind": "pseudo",
+          "evidence_id": "ev_5c9acbd9a74aed55d6d9d51660d7a03fe7bdc21cb00e587b0dbb7cd17834c211",
+          "sha256": "5a950ccb0440e5214d1b14044f1751b03bf647c555318d20dfd16ef6fdd8613b",
+          "prior_manifest_hash_present": true
+        },
+        {
+          "kind": "assembly",
+          "evidence_id": "ev_48ca4497c811df852094027bfa89454d4046aef1426a38afb317d565bde985b6",
+          "sha256": "b9d32449f3a6c589acb7286cc900e42852144f4aa6010ab42bc0d6afbe49ae06",
+          "prior_manifest_hash_present": true
+        }
+      ]
+    },
+    {
+      "version": "phone201",
+      "address": "0x520c0",
+      "name": "FUN_000520c0",
+      "exports": [
+        {
+          "kind": "pseudo",
+          "evidence_id": "ev_42190d4481bdbcbae4e9a6b86ffe09113d1b3b79ec0190ed5bd165e4bd8233d4",
+          "sha256": "bb21a33c08408df139bd5fda4493ac73b15a1116f4125ed286a89a5ae2852601",
+          "prior_manifest_hash_present": true
+        },
+        {
+          "kind": "assembly",
+          "evidence_id": "ev_63035580daf36e8a538924b0d73a1d62c2038289dd974d86e35ea0c98b45633d",
+          "sha256": "8c8825bd1480bbfa8b9f8909a20bd7c1421ec23981a333c2cec2f6d4c08c14e7",
+          "prior_manifest_hash_present": true
+        }
+      ]
+    },
+    {
+      "version": "phone201",
+      "address": "0x40fc",
+      "name": "EAGLView::initWithCoder:",
+      "exports": [
+        {
+          "kind": "pseudo",
+          "evidence_id": "ev_371786af44d8803d39921e72cbf96d39086571c119a93abeca1d9447860c8685",
+          "sha256": "08fa05a91f40ea8998f3f2eb311905d5a87c662eb830d3ed0b37375e1d757ad6",
+          "prior_manifest_hash_present": true
+        },
+        {
+          "kind": "assembly",
+          "evidence_id": "ev_0f4c5797acb216a374f44e24a8f3f9fd6f5f25fb33e98e109c74cfec27fbff7f",
+          "sha256": "adc1c69efe2692d9ce81dd80f0724d6258cafae73498ff7d6eaf8377a9ab9b55",
+          "prior_manifest_hash_present": true
+        }
+      ]
+    },
+    {
+      "version": "phone201",
+      "address": "0x3ce8",
+      "name": "EAGLView::_createSurface",
+      "exports": [
+        {
+          "kind": "pseudo",
+          "evidence_id": "ev_2c43cf8db6d8b604855ce42f9150526ee3154d7c10407e1ecca78de7a62384de",
+          "sha256": "d1c06c067e3a59ec3041c974093caad2c31b8e7c723a12729639b1b1b17cb542",
+          "prior_manifest_hash_present": true
+        },
+        {
+          "kind": "assembly",
+          "evidence_id": "ev_36caa7aa453ddb68e6dabb0837d82155d39c0493d7be942be7b1a933a0cb0d5e",
+          "sha256": "6bc3f83b74237635df7a9b87a2cfd6a31685c9bf7b64c4d7b4105c745cd9a756",
+          "prior_manifest_hash_present": true
+        }
+      ]
+    },
+    {
+      "version": "hd103",
+      "address": "0x246d4",
+      "name": "GuiBase::init",
+      "exports": [
+        {
+          "kind": "pseudo",
+          "evidence_id": "ev_2462a313073660aa5f5e351e4224d0c9ea66ba572178156e268270bbac1d62b8",
+          "sha256": "28a9043f229527074aa6fdfdf34e985feacce5feede87cbf360351f6301b9b2d",
+          "prior_manifest_hash_present": false
+        },
+        {
+          "kind": "assembly",
+          "evidence_id": "ev_20cf5759fb544db678cf556b2aee69cf7abe2aae8ea613ee275ee5f209643fc0",
+          "sha256": "f49e7a1cee8c833942de65094c1e7a6bf5dce67689b412304e12b59ae0e4e642",
+          "prior_manifest_hash_present": false
+        }
+      ]
+    },
+    {
+      "version": "hd103",
+      "address": "0x24664",
+      "name": "GuiBase::dealloc",
+      "exports": [
+        {
+          "kind": "pseudo",
+          "evidence_id": "ev_ee1ea920a276669f1328492080c5ee4b161b972860a109d3deb134473d72f427",
+          "sha256": "88fe85fc7b689d62e0b414c0863e9694ac8504a04dee51510e8ff852700dc682",
+          "prior_manifest_hash_present": false
+        },
+        {
+          "kind": "assembly",
+          "evidence_id": "ev_e5384c72b3ca80fa68576a3090f3fdcc791eaba0dcefb3fa39ef044532274a17",
+          "sha256": "b15fe77a3e7c361a90da869635df7b726f5ed344ef18d5fbc3e97b63dce06480",
+          "prior_manifest_hash_present": false
+        }
+      ]
+    },
+    {
+      "version": "hd103",
+      "address": "0x32340",
+      "name": "GuiTitle::init",
+      "exports": [
+        {
+          "kind": "pseudo",
+          "evidence_id": "ev_742edaeca3b89e2cdafd10a17b637674e514e1f3693db7cd0646822e0af2eed8",
+          "sha256": "84312a55d40952e46bfd8dec74cc53adb561c9b892e8ab371fe4971841a9c581",
+          "prior_manifest_hash_present": false
+        },
+        {
+          "kind": "assembly",
+          "evidence_id": "ev_e6e7a987a076e97c08bfeaa53bae591f67fc3b6d42964e9f190764a6c1aa841b",
+          "sha256": "15d9e76c242978796b9d9dca38e57c6ec715acb994470c068f7ceba6afbc1e1c",
+          "prior_manifest_hash_present": false
+        }
+      ]
+    },
+    {
+      "version": "hd103",
+      "address": "0x322e8",
+      "name": "GuiTitle::dealloc",
+      "exports": [
+        {
+          "kind": "pseudo",
+          "evidence_id": "ev_7759d63b983457308c7c31cd38fbd4e11aa1e994b0007f255aecdd39a0e94892",
+          "sha256": "d14ec86b29581bb99f584a880c3bd2e42614a344292db93a3f87cebb7b20913b",
+          "prior_manifest_hash_present": false
+        },
+        {
+          "kind": "assembly",
+          "evidence_id": "ev_b289c480d40d86beaa279498fa2377d6c42bc869a2c337443194f9a75416a29b",
+          "sha256": "294b910aa6e120f915c5c8ad39c4052069a310c0c6d9e75722c6ebd919a053d1",
+          "prior_manifest_hash_present": false
+        }
+      ]
+    },
+    {
+      "version": "hd103",
+      "address": "0x2da14",
+      "name": "GuiMapLoading::init",
+      "exports": [
+        {
+          "kind": "pseudo",
+          "evidence_id": "ev_dfecd0d061190dd64c9de8d142f2bbceba072f339e1cc04a3c55991d078faca6",
+          "sha256": "273ca34197d15fb95308c88d447539008ac26f4deb82a0473c2ad108fb0dd0bd",
+          "prior_manifest_hash_present": false
+        },
+        {
+          "kind": "assembly",
+          "evidence_id": "ev_d56dde57ce9bfb3ced7b55cdb33e7f4fa54d234d1dad4325f4d0f80f01eae867",
+          "sha256": "c652a2a54a7ce56e597c2799dd90beea6a2361cf804c9c95f906a538f3b4271b",
+          "prior_manifest_hash_present": false
+        }
+      ]
+    },
+    {
+      "version": "hd103",
+      "address": "0x2d730",
+      "name": "GuiMapLoading::tick",
+      "exports": [
+        {
+          "kind": "pseudo",
+          "evidence_id": "ev_97471b81f3c51a595fda11adde4c8570dab3de6d99cc5dc46f5621a758a35c4a",
+          "sha256": "9c078bf760c4f6cbf7baff4c9b85d435265be30fc0561fcd58c9566ee1762b20",
+          "prior_manifest_hash_present": false
+        },
+        {
+          "kind": "assembly",
+          "evidence_id": "ev_1db12c9df97c195d31187594075f69926c5058514be2f5ec4c96b0806a36d632",
+          "sha256": "0f882b1749cd9dff6224e4e5cd68d2a6c9c998327182f03668477873f9850307",
+          "prior_manifest_hash_present": false
+        }
+      ]
+    },
+    {
+      "version": "hd103",
+      "address": "0x2d9cc",
+      "name": "GuiMapLoading::dealloc",
+      "exports": [
+        {
+          "kind": "pseudo",
+          "evidence_id": "ev_d9413754317aa5a9b425cb046bd24256fd8af47a1f808a99d1dfdfce5b91c895",
+          "sha256": "32c75e674687c9750d6bb316ac38bfa389c30b66d8a4aee5ab8bf01f46a44b9c",
+          "prior_manifest_hash_present": false
+        },
+        {
+          "kind": "assembly",
+          "evidence_id": "ev_5e70f1053770c20a5890a6ac1f5773991a18f161fea9869ddd918f8bc875c32d",
+          "sha256": "8e016f99e5bcd460276c7b5383a67dd9b239c09b9471323594d3e696e51b3182",
+          "prior_manifest_hash_present": false
+        }
+      ]
+    },
+    {
+      "version": "hd103",
+      "address": "0x3f56c",
+      "name": "ResMgr_Tile::getTile:",
+      "exports": [
+        {
+          "kind": "pseudo",
+          "evidence_id": "ev_e6e7ad9a2e23722a7875753c1abe0f4eb60995c09cf5e1fad4e7a27e397fd5de",
+          "sha256": "ed35bea192dd1bc92b833a03a3a8b749d91c34a6ee8f4188544bc42a0032d3e1",
+          "prior_manifest_hash_present": false
+        },
+        {
+          "kind": "assembly",
+          "evidence_id": "ev_c144c316d49d92d15d0a16a4d3ff2d7be6b845873a47ea628aa1400b42819fc8",
+          "sha256": "b3bd9afc9c48615c8b224ffef306c02a4a0c73b7ab890c3565b89231f61df3f8",
+          "prior_manifest_hash_present": false
+        }
+      ]
+    },
+    {
+      "version": "hd103",
+      "address": "0x3fabc",
+      "name": "ResMgr_Tile::dealloc",
+      "exports": [
+        {
+          "kind": "pseudo",
+          "evidence_id": "ev_ccea6a2d0e2a0f6dca2ef2eae35b5077deefe2fd84d0094e63cd60f9773dcef8",
+          "sha256": "283d14ef0fee4712085f4b41e88802f0d5067a550a7940377a33ae589a4a5f48",
+          "prior_manifest_hash_present": false
+        },
+        {
+          "kind": "assembly",
+          "evidence_id": "ev_f3ad9132bfbd8292ae9acec5179906ab71c1d4449215ddf3cf13725b7d9a6a28",
+          "sha256": "08d68efa2085aef4bfa55f20092b188e58530d499674d2361205577e125451f2",
+          "prior_manifest_hash_present": false
+        }
+      ]
+    }
+  ],
+  "runtime_executed": false,
+  "original_bytes_exported": false,
+  "recommendation": "Keep HD game/UI action set; classify presentation artwork explicitly at platform boundary, resolve logical artwork role through common loader; do not use entire phone tables or compact flag alone.",
+  "limits": [
+    "no artwork visual composition equivalence or actual device execution in this research",
+    "ultrawide crop/stretch/extension policy not established by 2011 original functions",
+    "full cache lifecycle equivalence requires additional complete owner graph and runtime measurement"
+  ]
+}

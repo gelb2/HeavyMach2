@@ -5,6 +5,14 @@
 #include <algorithm>
 
 namespace hm2::validation {
+// The same original-format start is shared by the concurrent input cases and
+// UUID-isolated OS touch tests. No live SP, tap time or outcome is injected.
+inline SaveData recentInputFixture(std::uint32_t timestamp){
+    SaveData data;data.initializeSlot(0,"InputRegression","kr",timestamp);progression::SlotView slot(data.slot(0));slot.u32(0x1b5c,5);
+    for(unsigned i=0;i<3;++i){slot.string(0x63a+i*6,6,"");slot.u32(0x64c+i*4,0);}
+    slot.u32(0x604+2*4,std::uint32_t(-1));slot.u32(0x604+3*4,std::uint32_t(-1));
+    return data;
+}
 // Original-format starting data for a real damage/OS-alert/return-to-base
 // validation. It never mutates a live actor or injects a death result.
 inline SaveData gameOverFixture(std::uint32_t timestamp){

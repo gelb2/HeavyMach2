@@ -51,6 +51,7 @@ add_library(HeavyMach2Core STATIC
     Sources/Core/Presentation/MapLoading.cpp
     Sources/Core/Presentation/VisualLayer.cpp
     Sources/Core/Presentation/PreparedTiles.cpp
+    Sources/Core/Presentation/SharedAssetPreparation.cpp
     Sources/Core/Presentation/PlayerMapPreview.cpp
     Sources/Core/Presentation/AssemblyPreview.cpp
     Sources/Core/Presentation/MapPreview.cpp)
@@ -117,6 +118,10 @@ if(BUILD_TESTING)
     target_link_libraries(TextTests PRIVATE HeavyMach2Core)
     target_compile_options(TextTests PRIVATE -UNDEBUG)
     add_test(NAME OriginalGPUText COMMAND TextTests)
+    add_executable(SharedAssetPreparationTests tests/SharedAssetPreparationTests.cpp)
+    target_link_libraries(SharedAssetPreparationTests PRIVATE HeavyMach2Core)
+    target_compile_options(SharedAssetPreparationTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalSharedAssetPreparation COMMAND SharedAssetPreparationTests)
     add_executable(ImpactTests tests/ImpactTests.cpp)
     target_link_libraries(ImpactTests PRIVATE HeavyMach2Core)
     target_compile_options(ImpactTests PRIVATE -UNDEBUG)
@@ -179,6 +184,10 @@ if(BUILD_TESTING)
         target_link_libraries(DashSessionTests PRIVATE HeavyMach2Core)
         target_compile_options(DashSessionTests PRIVATE -UNDEBUG)
         add_test(NAME OriginalDashSession COMMAND DashSessionTests "${HM2_HD_RESOURCES}")
+        add_executable(LifecycleSessionTests tests/LifecycleSessionTests.cpp)
+        target_link_libraries(LifecycleSessionTests PRIVATE HeavyMach2Core)
+        target_compile_options(LifecycleSessionTests PRIVATE -UNDEBUG)
+        add_test(NAME LifecyclePauseAndMenu COMMAND LifecycleSessionTests "${HM2_HD_RESOURCES}")
         add_executable(EnemyActorSceneTests tests/EnemyActorSceneTests.cpp)
         target_link_libraries(EnemyActorSceneTests PRIVATE HeavyMach2Core)
         target_compile_options(EnemyActorSceneTests PRIVATE -UNDEBUG)

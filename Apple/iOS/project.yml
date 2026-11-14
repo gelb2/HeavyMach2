@@ -42,6 +42,7 @@ targetTemplates:
       - sdk: CoreGraphics.framework
       - sdk: CoreText.framework
       - sdk: AudioToolbox.framework
+      - sdk: AVFAudio.framework
       - sdk: CoreAudio.framework
       - sdk: CoreFoundation.framework
 targets:
@@ -79,6 +80,7 @@ targets:
       - sdk: ImageIO.framework
       - sdk: CoreGraphics.framework
       - sdk: AudioToolbox.framework
+      - sdk: AVFAudio.framework
       - sdk: CoreAudio.framework
       - sdk: CoreText.framework
     settings:

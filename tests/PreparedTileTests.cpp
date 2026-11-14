@@ -23,4 +23,17 @@ int main(){
     cache.prepareWorldEffects(files);const auto* explosion=cache.lookup("Efx_Explode02.png");assert(explosion&&explosion->columns==6&&explosion->rows==4&&explosion->origin.y==-44);
     const auto tile=cache.visual(*explosion);assert(tile.origin.y==-44&&tile.identity=="shared:Efx_Explode02.png");
     Frame prep;cache.appendPreparation(prep);assert(prep.sprites.size()==10); // 2 fixtures plus eight original effects, missing stays nil
+    // World-local splits/origins cannot mutate a GlobalInfo-owned texture.
+    PreparedTiles global("global"),world("world",&global);
+    auto* globalEffect=global.prepare(files,"Efx_Explode02.png");globalEffect->columns=4;
+    auto* globalOnly=global.prepare(files,"GlobalOnly.png");
+    const auto beforeScope=world.revision();assert(world.lookup("GlobalOnly.png")==globalOnly);
+    const auto beforeLookupReads=files.reads,beforeLookupChecks=files.checks;
+    for(unsigned i=0;i<100;++i)assert(world.lookup("GlobalOnly.png")==globalOnly);
+    assert(files.reads==beforeLookupReads&&files.checks==beforeLookupChecks&&world.revision()==beforeScope);
+    world.prepareWorldEffects(files);const auto* localEffect=world.lookup("Efx_Explode02.png");
+    assert(localEffect!=globalEffect&&localEffect->columns==6&&localEffect->rows==4&&localEffect->origin.y==-44);
+    assert(globalEffect->columns==4&&globalEffect->rows==1&&globalEffect->origin.y==0&&world.revision()>beforeScope);
+    Frame localOwned;world.appendPreparation(localOwned);assert(localOwned.sprites.size()==8);
+    const auto sharedChange=world.revision();global.prepare(files,"LateShared.png");assert(world.revision()>sharedChange);
 }

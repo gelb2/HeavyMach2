@@ -10,7 +10,7 @@ TileImage* PreparedTiles::prepareShadow(ResourceAccess& resources,std::string_vi
     const auto* original=prepare(resources,name);std::optional<TileImage> shadow;
     if(original){shadow=*original;shadow->name=key;shadow->pixelFormat=3;
         shadow->textureSource={std::string(name),TextureVariant::originalHalfAlpha};shadow->color={0,0,0,1};shadow->origin={};shadow->forRetina=false;}
-    const auto it=tiles_.emplace(key,std::move(shadow)).first;
+    const auto it=tiles_.emplace(key,std::move(shadow)).first;++revision_;
     return it->second?&*it->second:nullptr;
 }
 const TileImage* PreparedTiles::lookupShadow(std::string_view name)const{
@@ -24,7 +24,7 @@ TileImage* PreparedTiles::prepare(ResourceAccess& resources,std::string_view nam
     if(it==tiles_.end()){
         std::optional<TileImage> prepared;
         if(resources.exists(name)){TileImage image;image.name=name;image.pixels=AssemblyPreview::pngSize(resources.read(name));prepared=std::move(image);}
-        it=tiles_.emplace(std::string(name),std::move(prepared)).first;
+        it=tiles_.emplace(std::string(name),std::move(prepared)).first;++revision_;
     }
     return it->second?&*it->second:nullptr;
 }
@@ -33,7 +33,10 @@ TileImage* PreparedTiles::lookup(std::string_view name){
 }
 const TileImage* PreparedTiles::lookup(std::string_view name)const{
     if(name.empty())return nullptr;
-    const auto it=tiles_.find(name);if(it==tiles_.end())throw std::runtime_error("Texture was not prepared: "+std::string(name));
+    const auto it=tiles_.find(name);if(it==tiles_.end()){
+        if(fallback_)return fallback_->lookup(name);
+        throw std::runtime_error("Texture was not prepared: "+std::string(name));
+    }
     return it->second?&*it->second:nullptr;
 }
 VisualTile PreparedTiles::visual(const TileImage& image)const{

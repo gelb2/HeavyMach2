@@ -7,6 +7,7 @@
 - (instancetype)initWithResourceRoot:(NSURL*)root;
 - (void)prepareFrame:(const hm2::Frame&)frame;
 - (void)prepareText:(const hm2::ui::TextBitmap&)bitmap identifier:(const std::string&)identifier;
+- (void)retainPreparedTextures:(const hm2::Frame&)owners;
 - (void)drawFrame:(const hm2::Frame&)frame layer:(CAEAGLLayer*)layer;
 - (BOOL)logicalPoint:(CGPoint)point result:(hm2::Vec2*)result;
 - (void)captureNextFrame;
@@ -21,5 +22,8 @@
 @property(nonatomic,readonly) NSUInteger drawCalls;
 @property(nonatomic,readonly) NSUInteger atlasDrawCalls;
 @property(nonatomic,readonly) NSUInteger contextIdentity;
+@property(nonatomic,readonly) NSUInteger residentTextures;
+@property(nonatomic,readonly) NSUInteger textureDeletes;
+@property(nonatomic,readonly) NSUInteger residentTextureBytes;
 @property(nonatomic,readonly) CGSize drawableSize;
 @end

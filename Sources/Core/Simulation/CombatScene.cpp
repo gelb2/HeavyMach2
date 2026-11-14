@@ -3,6 +3,7 @@
 #include "Core/Simulation/DarwinWorldRandom.hpp"
 #include "Core/Data/Weapons.hpp"
 #include "Core/Presentation/PreparedTiles.hpp"
+#include "Core/Presentation/SharedAssetPreparation.hpp"
 #include "Core/Presentation/Visibility.hpp"
 #include "Core/Simulation/EnemySpawner.hpp"
 #include "Core/Simulation/EnemyActors.hpp"
@@ -66,11 +67,15 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
     DisplayConfiguration display;float displayZoom=1;
     void updateDisplay(std::optional<Vec2> target,bool advance){
         if(!display.enabled){displayZoom=1;camera.viewport={768,1024};camera.inputMinimumY=100;camera.fitWorld=camera.keepFocusVisible=camera.fillSurface=false;camera.lowerOverscan=94;return;}
+        // Fit the finite original map once, then apply the original variable
+        // focus factor above that base. Clamping the factor itself to this
+        // minimum erased its whole1..1.6 range on a wide phone.
+        const float fit=display.compact?std::max(display.canvas.width,display.canvas.height)/(1022.f*.5f):1.f;
         if(display.focusZoom){
             const auto player=playerMotion.state().position;
             if(!target&&navigation.count())target=navigation.point(navigation.count()-1);
             const float dx=target?(target->x-player.x):0,dy=target?(target->y-player.y):0;
-            const float wanted=std::clamp(2.f-std::max(std::abs(dx)/360.f,std::abs(dy)/240.f),1.f,1.6f);
+            const float wanted=fit*std::clamp(2.f-std::max(std::abs(dx)/360.f,std::abs(dy)/240.f),1.f,1.6f);
             if(advance)displayZoom+=(wanted-displayZoom)/100.f;
         }else displayZoom=1;
         const DisplayLayout layout(display);
@@ -78,8 +83,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
         if(camera.fillSurface){
             // A finite1024-unit original field must cover the fixed output.
             // Reserve one world unit for terrain center rounding at an edge.
-            const float minimum=std::max(display.canvas.width,display.canvas.height)/(1022.f*.5f);
-            displayZoom=std::max(displayZoom,minimum);
+            displayZoom=std::max(displayZoom,fit);
         }
         camera.viewport=layout.worldViewport(displayZoom);
         const float uiRatio=layout.ui(DisplayRegion::bottom).scale/layout.worldScale(displayZoom);
@@ -89,6 +93,9 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
         camera.focusMinimumY=138*uiRatio+(display.compact?display.insets.bottom/layout.worldScale(displayZoom):0);camera.focusRadius=float(machines.machine("Player").radius);
         camera.focusLeft=display.compact?display.insets.left/layout.worldScale(displayZoom):0;camera.focusRight=display.compact?display.insets.right/layout.worldScale(displayZoom):0;
     }
+    ResourceAccess& resources;
+    std::unique_ptr<PreparedTiles> ownedSharedAssets;
+    PreparedTiles* sharedAssets=nullptr;
     DarwinWorldRandom ownRandom;
     WorldRandom* externalRandom=nullptr;
     MapPreview map;
@@ -96,7 +103,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
     Machines machines;
     PlayerEquipment equipment;
     Weapons weapons;
-    PreparedTiles tiles{"world"};
+    PreparedTiles tiles;
     TerrainCollision terrain;
     GameClock clock;
     MapCamera camera;
@@ -146,11 +153,13 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
     std::size_t spawning=0;
 
     Impl(ResourceAccess& r,CombatSceneHooks& h,const CombatSetup& setup)
-    :hooks(h),ownRandom(setup.randomSeed),externalRandom(setup.random),map(r,setup.map),
+    :hooks(h),resources(r),ownedSharedAssets(setup.sharedAssets?nullptr:std::make_unique<PreparedTiles>("standalone-shared")),
+     sharedAssets(setup.sharedAssets?setup.sharedAssets:ownedSharedAssets.get()),ownRandom(setup.randomSeed),externalRandom(setup.random),map(r,setup.map),
      models(Models::parse(Chunk::parse(r.read("PartsInfo.mcb")),Chunk::parse(r.read("MachInfo.mcb")))),
      machines(Machines::parse(DataTable::parse(r.read("MachList.tble")))),
      equipment(PlayerEquipment::parse(DataTable::parse(r.read("ItemInfo.tble")))),
-     weapons(Weapons::parse(DataTable::parse(r.read("WeaponInfo.tble")))),terrain(map.map()),clock(setup.initialRenderTime,setup.initialWorldTime),hp(setup.playerHP),saveAllowed(setup.isSave),pool(setup.initialRenderTime,static_cast<EnemyActorHost&>(*this)){
+     weapons(Weapons::parse(DataTable::parse(r.read("WeaponInfo.tble")))),tiles("world",sharedAssets),terrain(map.map()),clock(setup.initialRenderTime,setup.initialWorldTime),hp(setup.playerHP),saveAllowed(setup.isSave),pool(setup.initialRenderTime,static_cast<EnemyActorHost&>(*this)){
+        if(ownedSharedAssets)prepareOriginalWeaponAssets(r,*sharedAssets,weapons);
         stateChangeTime=setup.initialRenderTime;
         const auto gate=std::find_if(map.map().gates.begin(),map.map().gates.end(),[&](const auto& g){return g.number==setup.gate;});
         if(gate==map.map().gates.end())throw std::runtime_error("Original map gate is missing");
@@ -166,26 +175,17 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
         playerMounts=equipment.mounts(models,setup.equipment);playerParts.resize(playerMounts.size());playerShadows.resize(playerMounts.size());
         playerKind=machines.machine("Player").kind;
         for(std::size_t i=0;i<playerMounts.size();++i)playerAnimationSlots.push_back(i);
-        tiles.prepareWorldEffects(r);
+        sharedAssets->prepareWorldEffects(r);
         movementVisual.prepare(r,tiles);navigation.observe(this);
         if(auto* t=tiles.prepare(r,"Target.png")){t->columns=2;t->rows=1;}
-        for(const auto* name:{"Efx_Dash.png","Efx_LevelUp.png","Airplane.png","BulletShell.png","Efx_Trail04.png","Efx_Trail02.png","Efx_Nuclear.png","PickItem.png"})tiles.prepare(r,name);
         for(const auto& [name,w]:weapons.all()){
+            (void)w;
             metrics.playerWeaponEmissions.emplace(name,0);metrics.enemyWeaponEmissions.emplace(name,0);
-            if(!w.bulletImage.empty())tiles.prepare(r,w.bulletImage);
-            if(!w.effectImage.empty())if(auto* t=tiles.prepare(r,w.effectImage)){t->columns=w.effectColumns;t->rows=1;}
-            if(!w.explodeImage.empty())tiles.prepare(r,w.explodeImage);
         }
-        // These are original persistent world resource splits, including images
-        // also mentioned by weapon rows. Restore them after generic prewarming.
-        tiles.prepareWorldEffects(r);
-        // Explicit preparation: field equipment changes only use this cache.
-        // Traverse the common PartsInfo catalogue, not a list of spare units.
-        for(const auto& [name,part]:models.parts()){
-            (void)name;if(auto* tile=tiles.prepare(r,partImage(part))){tile->columns=std::max(1u,part.tileCount);tile->rows=1;}
-            if(part.tileCount)tiles.prepareShadow(r,partImage(part));
-        }
-        if(auto* tile=tiles.prepare(r,"HPGauge.png")){tile->columns=1;tile->rows=2;}
+        // Player.init0xbcdc uses the shared manager for the field gauge and
+        // pickup notice. Other VFX request their own shared tile when created.
+        if(auto* tile=sharedAssets->prepare(r,"HPGauge.png")){tile->columns=1;tile->rows=2;}
+        sharedAssets->prepare(r,"PickItem.png");
         for(auto& visible:playerHPVisible)visible=imageVisibility(tiles.lookup("HPGauge.png"));
         hooks.prepareTiles(r,tiles);
         prepareParts(r,playerMounts,playerParts,playerShadows);
@@ -201,7 +201,6 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
             const auto& info=machines.machine(s.model);
             if(!EnemyActor::supports(info.kind))throw std::runtime_error("Original map enemy kind has no restored consumer");
             spawners.emplace_back(s,info.attack!=0);
-            const auto mounts=models.modelMounts(s.model);std::vector<VisibilityState> unused(mounts.size()),shadow(mounts.size());prepareParts(r,mounts,unused,shadow);
         }
         WorldGateNames gateNames(r);gates=std::make_unique<WorldGates>(r,tiles,map.map().gates,setup.openEventGate,gateNames,[this](const ui::TextRasterRequest& request){return hooks.prepareWorldText(request);});
         // setStage calls addMissionObjects after openMap and before Player/BOT.
@@ -218,7 +217,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
         playerMotion=BipodMotion(playerPosition,playerDirection,equipment.item(setup.equipment[1]).parameter3);
         playerContact.position=playerPosition;
         effects=std::make_unique<WeaponEffects>(pool,WeaponEffectResources{
-            tiles.lookup("Efx_Fire.png"),tiles.lookup("Efx_Damage.png"),tiles.lookup("BulletShell.png"),tiles.lookup("Efx_Trail04.png"),tiles.lookup("Efx_Trail02.png")});
+            tiles.lookup("Efx_Fire.png"),tiles.lookup("Efx_Damage.png"),nullptr,nullptr,nullptr});
         for(auto& visible:particleVisible)visible.visual=true;
         camera.center={gate->position.x+140,gate->position.y};
         processCamera(camera,playerMotion.state().position,navigation);
@@ -227,7 +226,8 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
             const auto found=machines.all().find(saved.machine);if(found==machines.all().end())continue;
             const float x=playerPosition.x+(randomUnit(rng())*100.f-50.f),y=playerPosition.y+(randomUnit(rng())*100.f-50.f);
             auto b=std::make_shared<FriendlyBot>(nextID++,models,weapons,found->second,Vec2{x,y},clock.worldTime(),rng());
-            b->actor.setSlotIndex(slot);for(std::size_t i=0;i<b->parts.size();++i){const auto& part=models.part(b->actor.mounts()[i].part);b->parts[i]=originalPartVisibility(tiles.lookup(partImage(part)),part);b->shadows[i]=imageVisibility(part.tileCount?tiles.lookupShadow(partImage(part)):nullptr);}
+            b->actor.setSlotIndex(slot);prepareParts(r,b->actor.mounts(),b->parts,b->shadows);
+            if(auto* gauge=sharedAssets->prepare(r,"HPGauge.png")){gauge->columns=1;gauge->rows=2;}
             for(auto& v:b->gauge)v=imageVisibility(tiles.lookup("HPGauge.png"));
             if(saved.savedHP){b->actor.setHP(saved.savedHP);b->actor.refreshHPGauge(*this);}
             botActors.push_back(std::move(b));++metrics.botSpawns;
@@ -271,7 +271,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
     Enemy& addEnemy(const MachineInfo& info,Vec2 position,std::optional<std::size_t> source,bool boss){
         auto e=std::make_unique<Enemy>(nextID++,source,models,weapons,info,position,clock.worldTime(),rng());
         e->actor.setBoss(boss);++metrics.enemySpawnsByKind.at(e->actor.info().kind);
-        for(std::size_t i=0;i<e->parts.size();++i){const auto& part=models.part(e->actor.mounts()[i].part);e->parts[i]=originalPartVisibility(tiles.lookup(partImage(part)),part);e->shadows[i]=imageVisibility(part.tileCount?tiles.lookupShadow(partImage(part)):nullptr);}
+        prepareParts(resources,e->actor.mounts(),e->parts,e->shadows);
         e->targetVisibility=imageVisibility(tiles.lookup("Target.png"));
         actors.push_back(std::move(e));
         return *actors.back();
@@ -382,11 +382,13 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
         const WeaponTarget* target()const override{if(hostile)return scene.player();if(auto* b=scene.bot(owner))return scene.target(b->actor.state().target);return scene.selectedTarget();}
         void damage(const WeaponInfo&,std::uint64_t id,int amount)override{const auto* victim=scene.bot(owner)?scene.enemy(id):nullptr;const int before=victim?victim->actor.state().hp:0;scene.damage(id,amount);if(victim&&victim->actor.state().hp<before){const auto removed=std::uint64_t(before-victim->actor.state().hp);scene.metrics.botEnemyHPRemoved+=removed;if(auto* bot=scene.bot(owner))bot->enemyHPRemoved+=removed;}}
         TileImage* preparedTile(std::string_view name)override{return scene.tiles.lookup(name);}
+        TileImage* prepareOriginalTile(std::string_view name,TileImage*)override{return scene.sharedAssets->prepare(scene.resources,name);}
         void fireSound(const WeaponInfo& info,Vec2 p)override{scene.fireSound(info,p);}
         void attachProjectile(WeaponProjectile p)override{++scene.metrics.projectilesCreated;scene.dynamic.push_back({{},std::make_shared<Projectile>(std::move(p),owner),{},false,{}});}
         void trailAttached(const Trail&)override{auto trail=scene.effects->trails().back();scene.dynamic.push_back({trail,{},imageVisibility(trail->state().tile),false,{}});}
     };
     TileImage* preparedTile(std::string_view name)override{return tiles.lookup(name);}
+    TileImage* prepareOriginalTile(std::string_view name)override{return sharedAssets->prepare(resources,name);}
     Particle* allocateParticle(float time)override{auto* p=pool.allocate(time,rng());metrics.particleAllocations=pool.allocations();return p;}
     void sound(unsigned id)override{soundID(id,{});}
     void createBullet(const AirStrikeBullet& shot)override{
@@ -517,7 +519,10 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
         const auto oldCanonical=canonicalWeapon(before),newCanonical=canonicalWeapon(after);
         if(!newCanonical)throw std::runtime_error("New weapon has no common equipment mount");
         auto fresh=after[*newCanonical];
-        const auto* tile=tiles.lookup(partImage(models.part(fresh.part))); // Prepared only.
+        const auto& freshPart=models.part(fresh.part);
+        auto* tile=tiles.prepare(resources,partImage(freshPart));
+        if(tile){tile->columns=std::max(1u,freshPart.tileCount);tile->rows=1;}
+        const auto* shadow=freshPart.tileCount?tiles.prepareShadow(resources,partImage(freshPart)):nullptr;
         const auto newInfo=weapons.all().find(fresh.part);
         std::optional<std::size_t> removed;
         if(oldCanonical){
@@ -557,8 +562,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
         }
         const auto index=playerMounts.size();playerMounts.push_back(std::move(fresh));
         playerParts.push_back(originalPartVisibility(tile,models.part(playerMounts.back().part)));
-        const auto& shadowPart=models.part(playerMounts.back().part);
-        playerShadows.push_back(imageVisibility(shadowPart.tileCount?tiles.lookupShadow(partImage(shadowPart)):nullptr));
+        playerShadows.push_back(imageVisibility(shadow));
         animationSlots.push_back(*newCanonical);playerAnimationSlots=std::move(animationSlots);
         equipmentCodes=std::move(codes);
         if(newInfo!=weapons.all().end())playerWeapons.push_back({index,&newInfo->second,WeaponController(clock.worldTime()),1,slot==2});
@@ -688,7 +692,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
         void nuclearFlash(Vec2 position)override{
             // 0x71d0, CFString0x5e0fc -> Efx_Nuclear.png.
             if(auto* p=scene.pool.allocate(scene.clock.renderTime(),scene.rng())){
-                auto& s=p->state();s.blendType=2;s.life=.25f;s.tile=scene.tiles.lookup("Efx_Nuclear.png");
+                auto& s=p->state();s.blendType=2;s.life=.25f;s.tile=scene.sharedAssets->prepare(scene.resources,"Efx_Nuclear.png");
                 s.position=position;s.scale={.1f,.1f};s.scaleVelocity=.25f;p->start(scene.clock.renderTime());
             }
         }
@@ -838,7 +842,7 @@ void CombatScene::refreshPlayerHPGauge(){impl_->refreshPlayerHPGauge();}
 void CombatScene::showLevelUpEffect(){
     auto& p=*impl_;++p.metrics.levelUpEffectRequests;
     auto* effect=allocateParticle();if(!effect)return;
-    const auto* tile=p.tiles.lookup("Efx_LevelUp.png");if(!tile)throw std::logic_error("Missing prepared original level-up effect");
+    auto* tile=p.sharedAssets->prepare(p.resources,"Efx_LevelUp.png");if(tile){tile->columns=1;tile->rows=1;}
     auto& s=effect->state();s.tile=tile;s.tileNumber=0;s.life=2.f;s.blendType=2;s.scale={.5f,.5f};s.scaleVelocity=.006f;s.position=p.playerMotion.state().position;
     effect->start(p.clock.renderTime());++p.metrics.levelUpEffectsCreated;
 }
@@ -857,6 +861,7 @@ void CombatScene::setPickupNoticeText(std::string_view text,double worldTime){
 }
 Particle* CombatScene::allocateParticle(){auto* particle=impl_->pool.allocate(impl_->clock.renderTime(),impl_->rng());impl_->metrics.particleAllocations=impl_->pool.allocations();return particle;}
 const TileImage* CombatScene::preparedTile(std::string_view name)const{return impl_->tiles.lookup(name);}
+const TileImage* CombatScene::prepareRepairEffect(std::string_view name){return impl_->sharedAssets->prepare(impl_->resources,name);}
 bool CombatScene::isPaused()const{return impl_->paused;}
 void CombatScene::startAirStrike(const WeaponInfo* weapon,float delay,Vec2 target){impl_->startAirStrike(weapon,delay,target);}
 std::size_t CombatScene::activeAirStrikes()const{std::size_t count=0;for(const auto& node:impl_->dynamic)if(node.airStrike&&!node.airStrike->state().removed)++count;return count;}
@@ -888,7 +893,7 @@ std::vector<CombatEnemySnapshot> CombatScene::enemies()const{
     std::vector<CombatEnemySnapshot> out;
     for(const auto& e:impl_->actors)if(!e->removed){
         std::size_t parts=0;for(std::size_t i=0;i<e->actor.mounts().size();++i)if(e->actor.partActive(i))++parts;
-        out.push_back({e->id,e->actor.info().name,e->actor.motion().position,e->actor.state().hp,e->actor.state().targetPlayer,e->actor.motion().state==2,parts,e->actor.info().kind,e->actor.isBoss(),e->actor.state().moveToTarget});
+        out.push_back({e->id,e->actor.info().name,e->actor.motion().position,e->actor.state().hp,e->actor.state().targetPlayer,e->actor.motion().state==2,parts,e->actor.info().kind,e->actor.isBoss(),e->actor.state().moveToTarget,e->crashTime});
     }
     return out;
 }
@@ -907,7 +912,9 @@ float CombatScene::selectedEnemyHpRate()const{
 std::size_t CombatScene::spawnerCount()const{return impl_->spawners.size();}
 std::size_t CombatScene::activeProjectiles()const{std::size_t n=0;for(const auto& d:impl_->dynamic)if(d.projectile&&!d.projectile->value.motion.state().removed)++n;return n;}
 std::size_t CombatScene::visibleParticles()const{std::size_t n=0;for(const auto& p:impl_->pool.particles())if(p.state().show)++n;return n;}
-Frame CombatScene::preparationFrame()const{auto frame=impl_->map.compose(impl_->camera);impl_->tiles.appendPreparation(frame);auto gates=impl_->gates->preparationFrame();frame.sprites.insert(frame.sprites.end(),std::make_move_iterator(gates.sprites.begin()),std::make_move_iterator(gates.sprites.end()));return frame;}
+Frame CombatScene::preparationFrame()const{auto frame=impl_->map.compose(impl_->camera);if(impl_->ownedSharedAssets)impl_->sharedAssets->appendPreparation(frame);impl_->tiles.appendPreparation(frame);auto gates=impl_->gates->preparationFrame();frame.sprites.insert(frame.sprites.end(),std::make_move_iterator(gates.sprites.begin()),std::make_move_iterator(gates.sprites.end()));return frame;}
+std::uint64_t CombatScene::resourceRevision()const{return impl_->tiles.revision();}
+Frame CombatScene::globalPreparationFrame()const{Frame frame;impl_->sharedAssets->appendPreparation(frame);return frame;}
 Frame CombatScene::drawFrame(){return impl_->draw();}
 }
 

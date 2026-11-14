@@ -2,6 +2,8 @@
 
 ## iPhone 수정·측정 순서 — 2026-11-14
 
+현재 [공통 구현·검사 기록](iphone-fixes-implementation-20261114.md): 코어75개 범위와 ASan/UBSan11개를 확인했고 Apple 컴파일을 통과했다. 실제 새 앱·OS 생명주기·음향·GPU·Instruments 검증은 아직 남아 있다. 아래 사용자 관측 항목은 해당 실행까지 완료로 바꾸지 않는다.
+
 - [x] 최근 사용자 피드백과 실제 소비 코드, HeavyMach1의 Instruments/HUD 근거를 읽고 [수정·동시 검사·측정 계획](iphone-fixes-and-profiling-plan-20261114.md)을 기록했다. xctrace 템플릿 존재도 확인했다. 실제 trace 수집·기능 수정 완료는 아니다.
 - [ ] 계획에 따라 에셋 로드·재사용·렌더러 전달과 스택을 감사하고, 경로 재지정 후 점프·가변 줌·배경/버튼 대응·HUD 편집을 공통 코드에서 구현한다. 원작 reader·조립·캐시 수명·GPU 전달 절차를 준수한다.
 - [ ] 구현을 마친 뒤 치트빌드와 iPhone/iPad 시뮬레이터의 동시 기능 검사를 실행한다. 그다음 실제 기기 Release에서 Instruments Allocations/Leaks·CPU·프레임·가능한 GPU/전력/열 상태를 측정한다. 비교용 수정 전 Release와 기존 실패·저장을 보존한다. 일반 플레이와 동시 치트 부하는 따로 보고한다.

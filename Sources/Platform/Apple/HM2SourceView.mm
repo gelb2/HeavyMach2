@@ -1,5 +1,6 @@
 #import "HM2SourceView.h"
 #include "Platform/Apple/HM2GameRuntime.hpp"
+#include "Platform/Apple/HM2Profiling.hpp"
 #include <deque>
 #include <memory>
 #if DEBUG
@@ -19,6 +20,7 @@
 - (void)updateDisplay;
 - (void)completeNativeRequest;
 - (void)updateTestState;
+- (void)updateTestInputHistory;
 - (void)failRuntime:(NSString*)message;
 @end
 @implementation HM2SourceDisplayTarget
@@ -33,11 +35,15 @@
     NSURL* _saveFile;
     BOOL _active,_requestInFlight,_uiTesting,_startupErrorShown;
     std::uint64_t _frames,_selectionTouches,_selectedByTouch,_gameOverConfirmTick;
+    NSInteger _lastProfileThermalState;CFTimeInterval _lastProfileThermalSample;
+#if DEBUG
+    NSString* _testInputHistoryBase64;
+#endif
 }
 + (Class)layerClass{return CAEAGLLayer.class;}
 - (instancetype)initWithFrame:(CGRect)frame {
     if(!(self=[super initWithFrame:frame]))return nil;
-    self.multipleTouchEnabled=YES;self.contentScaleFactor=UIScreen.mainScreen.scale;_active=YES;
+    self.multipleTouchEnabled=YES;self.contentScaleFactor=UIScreen.mainScreen.scale;_active=YES;_lastProfileThermalState=-1;
     CAEAGLLayer* layer=(CAEAGLLayer*)self.layer;layer.opaque=YES;
     layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
     _resourceRoot=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];
@@ -62,10 +68,11 @@
     // Only a fresh UUID-isolated UI-test save can receive a starting fixture.
     // Production saves and existing test saves are never replaced here.
     NSString* fixtureName=NSProcessInfo.processInfo.environment[@"HM2_UI_TEST_FIXTURE"];
-    if(_uiTesting&&!_startupError&&![manager fileExistsAtPath:_saveFile.path]&&([fixtureName isEqualToString:@"gameOver"]||[fixtureName isEqualToString:@"completedMissions"])){
+    if(_uiTesting&&!_startupError&&![manager fileExistsAtPath:_saveFile.path]&&([fixtureName isEqualToString:@"gameOver"]||[fixtureName isEqualToString:@"completedMissions"]||[fixtureName isEqualToString:@"recentInput"])){
         try{
             hm2::SaveData fixture;
             if([fixtureName isEqualToString:@"gameOver"])fixture=hm2::validation::gameOverFixture(1794268800);
+            else if([fixtureName isEqualToString:@"recentInput"]){fixture=hm2::validation::recentInputFixture(1794268800);hm2::progression::SlotView(fixture.slot(0)).string(0x2d,16,"Stage01_01");}
             else{if(!_resourceRoot)throw std::runtime_error("Missing completed-mission UI fixture resources");hm2::apple::Files files(_resourceRoot.fileSystemRepresentation);fixture=hm2::validation::completedMissionFixture(files,1794268800);}
             hm2::DarwinWorldRandom random(1);const auto bytes=fixture.encode(random,1);NSData* data=[NSData dataWithBytes:bytes.data() length:bytes.size()];
             if(![data writeToURL:_saveFile options:NSDataWritingAtomic error:&error])_startupError=error.localizedDescription?:@"Cannot create isolated UI fixture.";
@@ -85,7 +92,7 @@
 #if DEBUG
     // Reuse the original World.setStage/save clock seam. Fix only the input
     // seed in the isolated fixture; damage, RNG calls and outcomes stay live.
-    if(_uiTesting&&([NSProcessInfo.processInfo.environment[@"HM2_UI_TEST_FIXTURE"] isEqualToString:@"gameOver"]||[NSProcessInfo.processInfo.environment[@"HM2_UI_TEST_FIXTURE"] isEqualToString:@"completedMissions"]))testTime=[] {return 1u;};
+    if(_uiTesting&&([NSProcessInfo.processInfo.environment[@"HM2_UI_TEST_FIXTURE"] isEqualToString:@"gameOver"]||[NSProcessInfo.processInfo.environment[@"HM2_UI_TEST_FIXTURE"] isEqualToString:@"completedMissions"]||[NSProcessInfo.processInfo.environment[@"HM2_UI_TEST_FIXTURE"] isEqualToString:@"recentInput"]))testTime=[] {return 1u;};
 #endif
     try{_runtime=std::make_unique<hm2::apple::GameRuntime>(_resourceRoot,_saveFile,[weakSelf](const hm2::apple::NativeRequest& request){[weakSelf enqueueRequest:request];},std::move(testTime));}
     catch(const std::exception& e){_startupError=[NSString stringWithUTF8String:e.what()];}
@@ -150,6 +157,15 @@
 }
 - (void)display:(CADisplayLink*)link {
     if(!_active||!self.window||self.bounds.size.width<=0||self.bounds.size.height<=0)return;
+    const auto profile=hm2::apple::profilingLog();if(os_signpost_enabled(profile)){
+        os_signpost_event_emit(profile,OS_SIGNPOST_ID_EXCLUSIVE,"DisplayCallback","timestamp=%f target=%f",link.timestamp,link.targetTimestamp);
+        // Only while an enabled profiling subscriber is recording. Sample at
+        // most1Hz and emit initial/change states; this is not a temperature.
+        if(_lastProfileThermalState<0||link.timestamp-_lastProfileThermalSample>=1.){
+            _lastProfileThermalSample=link.timestamp;const NSInteger thermal=NSProcessInfo.processInfo.thermalState;
+            if(thermal!=_lastProfileThermalState){_lastProfileThermalState=thermal;os_signpost_event_emit(profile,OS_SIGNPOST_ID_EXCLUSIVE,"ThermalState","state=%ld",long(thermal));}
+        }
+    }
     if(_runtime){
         try{_runtime->tick();_runtime->draw((CAEAGLLayer*)self.layer);++_frames;}
         catch(const std::exception& e){[self failRuntime:[NSString stringWithUTF8String:e.what()]];}
@@ -163,13 +179,25 @@
         if(_runtime->logicalPoint([touch locationInView:self],logical))_runtime->input(phase,logical,identifier);
         else if(phase==hm2::PointerPhase::end||phase==hm2::PointerPhase::cancel)_runtime->input(hm2::PointerPhase::cancel,{},identifier);
         if(_uiTesting&&phase==hm2::PointerPhase::begin)if(const auto* scene=_runtime->session().battle();scene&&scene->selectedEnemy()!=before){_selectedByTouch=scene->selectedEnemy();++_selectionTouches;}
-    }}catch(const std::exception& e){[self failRuntime:[NSString stringWithUTF8String:e.what()]];}[self updateTestState];
+    }}catch(const std::exception& e){[self failRuntime:[NSString stringWithUTF8String:e.what()]];}[self updateTestInputHistory];[self updateTestState];
 }
 - (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event{[self input:touches phase:hm2::PointerPhase::begin];}
 - (void)touchesMoved:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event{[self input:touches phase:hm2::PointerPhase::move];}
 - (void)touchesEnded:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event{[self input:touches phase:hm2::PointerPhase::end];}
 - (void)touchesCancelled:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event{[self input:touches phase:hm2::PointerPhase::cancel];}
-- (void)setActive:(BOOL)active{_active=active;_display.paused=!active;if(_runtime)_runtime->setActive(active);}
+- (void)setActive:(BOOL)active{if(_active==active)return;_active=active;_display.paused=!active;if(_runtime)_runtime->setActive(active);}
+- (void)updateTestInputHistory{
+#if DEBUG
+    if(!_uiTesting||!_runtime)return;
+    // Serialize only after an actual OS input batch. Display callbacks reuse
+    // this bounded memory snapshot; production never creates accessibility data.
+    NSMutableArray* events=[NSMutableArray new];for(const auto& e:_runtime->inputHistory()){
+        [events addObject:@[@(unsigned(e.phase)),@(e.pointer),@(e.canvas.x),@(e.canvas.y),@(e.movePointerBefore),@(e.movePointerAfter),@(e.pathBefore),@(e.pathAfter),@(e.tapBefore),@(e.tapAfter),@(e.specialBefore),@(e.specialAfter),@(e.worldTimeBefore),@(e.worldTimeAfter),@(e.dashStartsBefore),@(e.dashStartsAfter),@(e.playerBefore.x),@(e.playerBefore.y),@(e.worldPoint.x),@(e.worldPoint.y),@(e.overlayConsumed),@(e.uiConsumed),@(e.worldConsumed),@(e.terminalCancelled)]];
+    }
+    const auto columns=@[@"phase",@"pointer",@"canvasX",@"canvasY",@"ownerBefore",@"ownerAfter",@"pathBefore",@"pathAfter",@"tapBefore",@"tapAfter",@"spBefore",@"spAfter",@"worldTimeBefore",@"worldTimeAfter",@"dashBefore",@"dashAfter",@"playerX",@"playerY",@"worldX",@"worldY",@"overlay",@"ui",@"world",@"terminalCancelled"];
+    NSData* data=[NSJSONSerialization dataWithJSONObject:@{@"columns":columns,@"events":events,@"capacity":@256} options:0 error:nil];_testInputHistoryBase64=[data base64EncodedStringWithOptions:0];
+#endif
+}
 - (void)updateTestState {
 #if DEBUG
     if(!_uiTesting)return;
@@ -180,8 +208,10 @@
     const hm2::DisplayLayout layout(game.display());const auto safe=game.display().content();const auto listClip=layout.clip(hm2::DisplayRegion::list).value_or(safe);
     [value appendFormat:@";safeX=%.6f;safeY=%.6f;safeWidth=%.6f;safeHeight=%.6f;listClipY=%.6f;listClipTop=%.6f",safe.x,safe.y,safe.width,safe.height,listClip.y,listClip.y+listClip.height];
     [value appendFormat:@";doorPhase=%d;helpVisible=%d;helpPage=%d;helpGuidance=%d;mapLoadingStep=%d",game.screenTransition().phase,game.help()!=nullptr,game.help()?game.help()->state().page:-1,game.help()?game.help()->state().guidanceVisible:false,game.mapLoading()?game.mapLoading()->state().step:-1];
+    [value appendFormat:@";systemVisible=%d",state.systemVisible];
     [value appendFormat:@";selectionTouches=%llu;touchSelectedEnemy=%llu",_selectionTouches,_selectedByTouch];
     [value appendFormat:@";gameOverConfirmTick=%llu",_gameOverConfirmTick];
+    if(_testInputHistoryBase64)[value appendFormat:@";inputHistoryBase64=%@",_testInputHistoryBase64];
     const auto working=game.workingSlot();const auto word=[&](unsigned at){return std::uint32_t(working[at])|(std::uint32_t(working[at+1])<<8)|(std::uint32_t(working[at+2])<<16)|(std::uint32_t(working[at+3])<<24);};
     const auto stringAt=[&](unsigned at,unsigned size){unsigned length=0;while(length<size&&working[at+length])++length;return std::string_view(reinterpret_cast<const char*>(working.data()+at),length);};
     const auto place=stringAt(0x2d,16),base=stringAt(0x55,16);
@@ -190,6 +220,7 @@
     [value appendFormat:@";completedMission=%s;completedRewardCount=%lu;commandListVisible=%d;commandListRevision=%llu;credits=%d;experience=%u;level=%d;repairItems=%d;acceptedCount=%lu",state.completedMission.dataId.c_str(),state.completedMission.rewards.size(),state.commandListVisible,state.commandListRevision,state.credits,word(0x70),state.level,repairItems,state.acceptedMissions.size()];
     if(const auto* scene=game.battle()){const auto& p=scene->player();const auto& m=scene->metrics();[value appendFormat:@";x=%.6f;y=%.6f;destX=%.6f;destY=%.6f;playerHP=%d;emissions=%llu;damage=%llu;kills=%llu;selectedEnemy=%llu;paused=%d;worldTime=%.9f",p.position.x,p.position.y,p.destination.x,p.destination.y,scene->playerHP(),m.playerEmissions,m.damageCalls,m.kills,scene->selectedEnemy(),scene->isPaused(),scene->clock().worldTime()];
         [value appendFormat:@";actorState=%d;gameState=%d;enemyEmissions=%llu",p.state,scene->gameState(),m.enemyEmissions];
+        const auto dash=scene->dashState();[value appendFormat:@";dashStarts=%llu;dashSP=%.9f;dashMaximumSP=%.9f;dashRegeneration=%.9f;dashTapTime=%.9f;pathCount=%u;movePointer=%llu",m.dashStarts,dash.special,state.equipmentStats.boosterMaximum,state.equipmentStats.boosterRegen,dash.tapTime,dash.pathCount,static_cast<unsigned long long>(dash.movePointer)];
         [value appendFormat:@";displayWorldScale=%.6f;fieldInputMinY=%.6f",layout.worldScale(scene->displayZoom()),layout.world(scene->displayZoom()).offset.y+scene->camera().inputMinimumY*layout.worldScale(scene->displayZoom())];
         const auto playerScreen=game.worldCanvasPoint(scene->camera().toScreen(p.position));[value appendFormat:@";playerScreenX=%.6f;playerScreenY=%.6f",playerScreen.x,playerScreen.y];
         unsigned index=0;for(const auto& e:scene->enemies())if(e.hp>0&&!e.corpse){const auto point=game.worldCanvasPoint(scene->camera().toScreen(e.position));[value appendFormat:@";e%u_x=%.6f;e%u_y=%.6f;e%u_id=%llu",index,point.x,index,point.y,index,e.id];++index;}[value appendFormat:@";enemyCount=%u",index];

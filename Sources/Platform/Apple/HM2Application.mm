@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import <OpenGLES/EAGL.h>
+#import <AVFAudio/AVFAudio.h>
 #import "HM2SourceView.h"
 #include "Platform/Apple/HM2ConcurrentRuntime.hpp"
 #include <memory>
@@ -107,20 +108,33 @@
 @interface HM2SceneDelegate:UIResponder<UIWindowSceneDelegate>
 @property(nonatomic,strong)UIWindow* window;
 @end
-@implementation HM2SceneDelegate
+@implementation HM2SceneDelegate {
+    BOOL _sceneActive,_audioInterrupted;
+}
 - (void)scene:(UIScene*)scene willConnectToSession:(UISceneSession*)session options:(UISceneConnectionOptions*)options {
     if(![scene isKindOfClass:UIWindowScene.class])return;
     self.window=[[UIWindow alloc]initWithWindowScene:(UIWindowScene*)scene];
     self.window.rootViewController=[HM2Controller new];[self.window makeKeyAndVisible];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(audioInterrupted:) name:AVAudioSessionInterruptionNotification object:nil];
 }
 - (void)setGameActive:(BOOL)active {
+    _sceneActive=active;
     UIView* view=self.window.rootViewController.view;
-    if([view respondsToSelector:@selector(setActive:)])[(HM2SourceView*)view setActive:active];
+    if([view respondsToSelector:@selector(setActive:)])[(HM2SourceView*)view setActive:_sceneActive&&!_audioInterrupted];
+}
+- (void)audioInterrupted:(NSNotification*)notification {
+    // Session interruption can begin while the Scene is still foreground.
+    // Ending the interruption must never reactivate a background Scene.
+    if(!NSThread.isMainThread){__weak HM2SceneDelegate* weakSelf=self;dispatch_async(dispatch_get_main_queue(),^{[weakSelf audioInterrupted:notification];});return;}
+    NSNumber* type=notification.userInfo[AVAudioSessionInterruptionTypeKey];if(!type)return;
+    _audioInterrupted=type.unsignedIntegerValue==AVAudioSessionInterruptionTypeBegan;
+    [self setGameActive:_sceneActive];
 }
 - (void)sceneWillResignActive:(UIScene*)scene{[self setGameActive:NO];}
 - (void)sceneDidEnterBackground:(UIScene*)scene{[self setGameActive:NO];}
 - (void)sceneDidBecomeActive:(UIScene*)scene{[self setGameActive:YES];}
 - (void)sceneDidDisconnect:(UIScene*)scene{[self setGameActive:NO];self.window=nil;}
+- (void)dealloc{[NSNotificationCenter.defaultCenter removeObserver:self];}
 @end
 @interface HM2AppDelegate:UIResponder<UIApplicationDelegate> @end
 @implementation HM2AppDelegate

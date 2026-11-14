@@ -79,6 +79,19 @@ ClipRect intersect(ClipRect a,ClipRect b){
 }
 struct ConcurrentValidation::Impl {
     struct Case;
+    struct ResourceSnapshot {const GameSession* game=nullptr;std::uint64_t gameRevision=0,uiRevision=0;};
+    struct CaseResources final:ResourceAccess {
+        struct Request {std::string name;bool exists=false,sourceMiss=false;};
+        Impl& owner;unsigned index;mutable std::optional<ResourceSnapshot> before;mutable std::string stage;mutable std::vector<Request> requests;
+        CaseResources(Impl& o,unsigned i):owner(o),index(i){}
+        void note(std::string_view name,bool exists,bool miss)const{
+            if(!owner.resources.warm)return;
+            if(!before){before=owner.resourceSnapshot(index);stage=owner.resourceStage;}
+            requests.push_back({std::string(name),exists,miss});
+        }
+        Bytes read(std::string_view name)override{note(name,false,!owner.resources.bytes.contains(name));return owner.resources.read(name);}
+        bool exists(std::string_view name)const override{note(name,true,!owner.resources.present.contains(name));return owner.resources.exists(name);}
+    };
     struct Adapter final:SessionHost {
         Impl& owner;unsigned index;Bytes saved;std::vector<std::string> alerts;
         Adapter(Impl& o,unsigned i):owner(o),index(i){}
@@ -104,15 +117,34 @@ struct ConcurrentValidation::Impl {
         std::uint32_t unixTime()override{return owner.host.unixTime();}
     };
     struct Case {
-        Adapter adapter;DarwinWorldRandom random;std::unique_ptr<GameSession> game;
+        Adapter adapter;CaseResources resources;DarwinWorldRandom random;std::unique_ptr<GameSession> game;
         std::uint64_t priorEmissions=0,priorPlayerEmissions=0,priorDamage=0,priorKills=0;
         int initialLevel=0;std::set<std::string> emitted;
         std::uint64_t worldTarget=0,lastWorldStrike=0;bool worldEnemyFired=false,worldStrikeUsed=false;
         std::uint64_t gameOverInitialTarget=0;bool gameOverRetargeted=false;
         std::map<std::string,std::uint64_t,std::less<>> lastWeaponCounts;
-        Case(Impl& owner,unsigned index):adapter(owner,index),random(index+1){}
+        std::array<Vec2,3> regressionPath{};Vec2 regressionTap;
+        Case(Impl& owner,unsigned index):adapter(owner,index),resources(owner,index),random(index+1){}
     };
     CachedResources resources;ValidationHost& host;Weapons catalog;
+    std::string resourceStage="external";std::vector<ResourceActivity> resourceActivity;
+    ResourceSnapshot resourceSnapshot(unsigned index){const auto& c=*cases.at(index);return {c.game.get(),c.game?c.game->resourceRevision():0,host.scenarioUIResourceRevision(index)};}
+    void beginResourceOperation(unsigned index,std::string_view stage){
+        auto& trace=cases.at(index)->resources;if(trace.before)finishResourceOperation(index);
+        trace.before=resourceSnapshot(index);trace.stage=stage;
+    }
+    void finishResourceOperation(unsigned index){
+        auto& trace=cases.at(index)->resources;if(!trace.before)return;
+        const auto before=*trace.before,after=resourceSnapshot(index);const bool changed=before.game!=after.game||before.gameRevision!=after.gameRevision||before.uiRevision!=after.uiRevision;
+        if(!trace.requests.empty()||changed){
+            ResourceActivity row;row.frame=counters.frames;row.scenario=index;row.stage=trace.stage;row.gameRevisionBefore=before.gameRevision;row.gameRevisionAfter=after.gameRevision;row.uiRevisionBefore=before.uiRevision;row.uiRevisionAfter=after.uiRevision;row.gameOwnerChanged=before.game!=after.game;row.preparation=changed;
+            for(const auto& request:trace.requests){auto& names=request.exists?row.exists:row.reads;names.push_back(request.name);if(request.sourceMiss)(request.exists?row.sourceExistsMisses:row.sourceReadMisses).push_back(request.name);}
+            if(changed){++counters.resourcePreparationOperations;counters.preparationReadRequests+=row.reads.size();counters.preparationExistsRequests+=row.exists.size();counters.preparationReadMisses+=row.sourceReadMisses.size();counters.preparationExistsMisses+=row.sourceExistsMisses.size();}
+            else{counters.steadyReadRequests+=row.reads.size();counters.steadyExistsRequests+=row.exists.size();counters.steadyReadMisses+=row.sourceReadMisses.size();counters.steadyExistsMisses+=row.sourceExistsMisses.size();}
+            resourceActivity.push_back(std::move(row));
+        }
+        trace.before.reset();trace.requests.clear();trace.stage.clear();
+    }
     std::map<std::string,int,std::less<>> botRadii;std::map<std::string,std::vector<std::string>,std::less<>> botThreats;
     std::vector<ScenarioDescription> descriptions;std::vector<ScenarioObservation> observations;
     std::vector<std::unique_ptr<Case>> cases;ConcurrentMetrics counters;
@@ -121,13 +153,14 @@ struct ConcurrentValidation::Impl {
     std::vector<Frame> sourceFrames;std::vector<FrameActivity> activity;std::vector<ButtonActivity> pendingButtons;std::size_t shopIndex=0,missionIndex=0,restartIndex=0,movementIndex=0;
     std::vector<std::size_t> aidKitIndices,airStrikeIndices,worldIndices,botIndices,helpIndices;std::size_t dashIndex=0,gameOverIndex=112,rankingIndex=113,completedMissionIndex=114;std::uint64_t pendingAidKitUses=0,pendingAirStrikeUses=0,pendingBotRepairs=0,pendingHelpInputs=0;
     std::optional<double> compactPausedWorldTime;
+    std::uint64_t pendingRecentInputEvents=0,pendingHUDInputEvents=0,pendingLifecycleEvents=0;
     int shopCreditBefore=0,shopItemsBefore=0,shopCreditAfter=0,shopItemsAfter=0;unsigned repairButton=0;
     static int repairCount(GameSession& game){int count=0;for(const auto& item:game.state().inventory)if(item.dataId=="01001")count+=item.count;return count;}
     explicit Impl(ResourceAccess& source,ValidationHost& sink):resources(source),host(sink),catalog(Weapons::parse(DataTable::parse(resources.read("WeaponInfo.tble")))){
         const auto items=DataTable::parse(resources.read("ItemInfo.tble"));std::vector<WeaponStart> weapons;
         for(std::size_t row=0;row<items.rowCount();++row)if(items.value(row,"Type")=="PtWpn")weapons.push_back({std::string(items.value(row,"Code").value_or("")),std::string(items.value(row,"strParam").value_or("")),items.integer(row,"Lv")});
         if(weapons.size()!=110)throw std::runtime_error("Expected original HD110 player-weapon items; no enemy weapons may be substituted");
-        descriptions.reserve(115);observations.resize(115);cases.reserve(115);
+        descriptions.reserve(120);observations.resize(120);cases.reserve(120);
         for(std::size_t i=0;i<weapons.size();i+=2){const std::span pair(weapons.data()+i,std::size_t(2));
             add({"combat "+pair[0].code+" + "+pair[1].code,ScenarioRole::combat,{pair[0].code,pair[1].code}},startSave(pair,host.unixTime()),true);
         }
@@ -218,6 +251,15 @@ struct ConcurrentValidation::Impl {
         add({"Command ordered completion / rewards / 5007 / saved payload restore",ScenarioRole::completedMissions,{}},completedMissionFixture(resources,host.unixTime()),false);
         observations[completedMissionIndex].completedMissions.savesBefore=observations[completedMissionIndex].saves;
         observations[completedMissionIndex].completedMissions.initialRepairItems=repairCount(*cases[completedMissionIndex]->game);
+        // Append-only regression sessions; all original115 IDs/fixtures remain.
+        for(const auto role:{ScenarioRole::pathReplacementSingle,ScenarioRole::pathReplacementMany,ScenarioRole::focusZoom,ScenarioRole::lifecycle,ScenarioRole::hudLayout}){
+            auto recent=recentInputFixture(host.unixTime());
+            // No weapon registration in these input-only fixtures; no target
+            // is killed before the lock-on/camera observation can complete.
+            const char* label=role==ScenarioRole::pathReplacementSingle?"path replace single / actual doubletap":role==ScenarioRole::pathReplacementMany?"path replace many / actual doubletap":role==ScenarioRole::focusZoom?"real target / variable camera / fixed output":role==ScenarioRole::lifecycle?"inactive / menu / explicit resume / no save":"HUD GPU edit / Apply / stored profile reload";
+            const auto index=cases.size();add({label,role,{},"Stage01_01"},std::move(recent),true,false);
+            observations[index].recentInput.savesBefore=observations[index].saves;
+        }
         // Pre-read the actual future Base002 consumer using an independent
         // preparation session. Its state, RNG, writes and HP never enter cases.
         struct PreparationHost final:SessionHost {
@@ -239,7 +281,7 @@ struct ConcurrentValidation::Impl {
     }
     void add(ScenarioDescription description,SaveData save,bool field,bool visitBase=true,std::string_view map="Stage01_01",int gate=0){
         const auto index=unsigned(cases.size());descriptions.push_back(std::move(description));
-        auto value=std::make_unique<Case>(*this,index);value->game=std::make_unique<GameSession>(resources,value->adapter,value->random,std::move(save));
+        auto value=std::make_unique<Case>(*this,index);value->game=std::make_unique<GameSession>(value->resources,value->adapter,value->random,std::move(save));
         if(!value->game->selectSlot(0))throw std::runtime_error("Validation selectSlot save failed");if(visitBase)value->game->enterBase();
         value->initialLevel=value->game->state().level;observations[index].initialLevel=value->initialLevel;
         if(field){observations[index].missionAccepted=value->game->acceptMission("M001010");if(!value->game->enterField(map,gate))throw std::runtime_error("Validation original field unavailable");if(descriptions.back().map.empty())descriptions.back().map=map;}
@@ -310,6 +352,44 @@ struct ConcurrentValidation::Impl {
         for(int at:path){const auto p=point(at);const auto screen=camera.toScreen(p);if(screen.x<16||screen.x>camera.viewport.width-16||screen.y<bottom||screen.y>top||!clearSegment(player,p))break;if(std::hypot(p.x-player.x,p.y-player.y)>=32)nextPoint=p;}
         return nextPoint?navigate(*nextPoint):false;
     }
+    static bool compactWeaponGuideCase(std::size_t index){return index==30||index==35||index==38||index==50;}
+    void guideCompactWeapon(std::size_t index){
+        if((counters.frames-1)%31)return;
+        auto& game=*cases[index]->game;auto* scene=game.battle();if(!scene||scene->isPaused()||scene->playerHP()<1)return;
+        const WeaponInfo* pending=nullptr;for(const auto& weapon:scene->playerWeapons())if(!scene->metrics().playerWeaponEmissions.at(weapon.part)){
+            const auto& info=catalog.weapon(weapon.part);if(!pending||info.kind==WeaponKind::missile)pending=&info;
+        }
+        if(!pending)return;
+        CombatGuideSample sample;sample.frame=counters.frames;sample.player=scene->player().position;sample.pendingPart=pending->part;sample.pendingRange=pending->shotRange;sample.viewport={scene->camera().viewport.width,scene->camera().viewport.height};
+        const bool queueSelection=index==35||index==38;
+        if(queueSelection&&scene->metrics().playerEmissions==0){
+            float naturalReload=0;for(const auto& weapon:scene->playerWeapons())naturalReload=std::max(naturalReload,catalog.weapon(weapon.part).reloadDelay);
+            if(scene->clock().worldTime()<double(naturalReload)){sample.action="wait-original-initial-reload";observations[index].combatGuide.push_back(std::move(sample));return;}
+        }
+        std::optional<CombatEnemySnapshot> far,nearest;float farDistance=-1,nearDistance=std::numeric_limits<float>::max();
+        std::vector<CombatEnemySnapshot> visible;
+        for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){
+            ++sample.living;const float distance=std::hypot(enemy.position.x-sample.player.x,enemy.position.y-sample.player.y);
+            if(distance<nearDistance){nearest=enemy;nearDistance=distance;}
+            const auto point=scene->camera().toScreen(enemy.position);if(point.x<16||point.x>scene->camera().viewport.width-16||point.y<fieldFloor(scene->camera())||point.y>scene->camera().viewport.height-16)continue;
+            ++sample.visible;if(distance<float(pending->shotRange)){visible.push_back(enemy);if(distance>farDistance){far=enemy;farDistance=distance;}}
+        }
+        if(far){
+            sample.target=far->id;sample.targetPosition=far->position;sample.distance=farDistance;
+            if(queueSelection&&visible.size()>1){
+                // The original drag queue advances after the fast gun kills
+                // its first target. The later missile controller can then
+                // see the next live target in that same ordinary Player tick.
+                // Do not remove equipment or manufacture a firing target.
+                sample.action="drag-visible-enemy-queue";constexpr std::uintptr_t pointer=0x57454150;auto point=game.worldCanvasPoint(scene->camera().toScreen(far->position));sample.accepted=game.inputWorld(PointerPhase::begin,point,pointer);sample.queuedTargets.push_back(far->id);
+                for(const auto& enemy:visible)if(enemy.id!=far->id){point=game.worldCanvasPoint(scene->camera().toScreen(enemy.position));game.inputWorld(PointerPhase::move,point,pointer);sample.queuedTargets.push_back(enemy.id);}
+                game.inputWorld(PointerPhase::end,point,pointer);
+            }else if(scene->selectedEnemy()!=far->id){sample.action="single-visible-enemy-tap";const auto point=game.worldCanvasPoint(scene->camera().toScreen(far->position));constexpr std::uintptr_t pointer=0x57454150;sample.accepted=game.inputWorld(PointerPhase::begin,point,pointer);game.inputWorld(PointerPhase::end,point,pointer);}
+            else sample.action="keep-selected-target";
+        }else if(nearest){sample.target=nearest->id;sample.targetPosition=nearest->position;sample.distance=nearDistance;sample.action="ground-approach-unseen-target";sample.accepted=approachTarget(index,nearest->position);}
+        else sample.action="no-living-target";
+        sample.selectedAfter=scene->selectedEnemy();observations[index].combatGuide.push_back(std::move(sample));
+    }
     void guideWorld(std::size_t index){
         auto& c=*cases[index];auto& game=*c.game;auto* scene=game.battle();if(!scene||scene->playerHP()<1)return;
         if(game.state().hpRate<.65f)worldQuick(index,0,scene->player().position);
@@ -338,6 +418,49 @@ struct ConcurrentValidation::Impl {
                     constexpr std::uintptr_t pointer=0x54555252;game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(point),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(point),pointer);}break;}
         }
         if(!c.worldEnemyFired&&scene->metrics().enemyEmissionsByKind.at(kind)>0){c.worldEnemyFired=true;scene->selectEnemy(c.worldTarget);scene->selectEnemy(c.worldTarget);}
+    }
+    Vec2 regressionGround(GameSession& game,std::optional<Vec2> away={}){
+        auto& scene=*game.battle();const auto& camera=scene.camera();
+        for(float y=fieldFloor(camera)+24;y<camera.viewport.height-16;y+=40)for(float x=24;x<camera.viewport.width-16;x+=40){
+            const Vec2 world=camera.toWorld({x,y});const auto player=scene.player().position;const float dx=world.x-player.x,dy=world.y-player.y;if(dx*dx+dy*dy<14400)continue;
+            if(away){const float ax=world.x-away->x,ay=world.y-away->y;if(ax*ax+ay*ay<8100)continue;}
+            bool clear=true;for(const auto& e:scene.enemies())if(e.hp>0&&!e.corpse){const float ex=world.x-e.position.x,ey=world.y-e.position.y;if(ex*ex+ey*ey<3600)clear=false;}
+            if(clear)return world;
+        }
+        throw std::runtime_error("Input regression has no visible clear ground");
+    }
+    bool regressionInput(unsigned index,PointerPhase phase,Vec2 world){
+        auto& game=*cases[index]->game;const auto screen=game.worldCanvasPoint(game.battle()->camera().toScreen(world));const bool accepted=game.inputWorld(phase,screen,0x52454752+index);
+        observations[index].recentInput.inputs.push_back({counters.frames,game.battle()->player().position,world,screen,"",accepted,false});return accepted;
+    }
+    void guideRecent(){
+        for(unsigned index=115;index<cases.size();++index){auto& c=*cases[index];auto& game=*c.game;auto* scene=game.battle();if(!scene)continue;auto& o=observations[index].recentInput;const auto role=descriptions[index].role;const auto beforeInputs=o.inputs.size();const auto beforeHUD=observations[index].hudLayout.inputs;
+            if(role==ScenarioRole::pathReplacementSingle||role==ScenarioRole::pathReplacementMany){
+                if(counters.frames==80||counters.frames==100){
+                    c.regressionPath[0]=regressionGround(game);c.regressionPath[1]=regressionGround(game,c.regressionPath[0]);c.regressionPath[2]=c.regressionPath[0];
+                    regressionInput(index,PointerPhase::begin,c.regressionPath[0]);
+                    if(counters.frames==100&&role==ScenarioRole::pathReplacementSingle){regressionInput(index,PointerPhase::end,c.regressionPath[0]);o.replacementPathPoints=scene->dashState().pathCount;}
+                }
+                if(counters.frames==81||counters.frames==82||(role==ScenarioRole::pathReplacementMany&&(counters.frames==101||counters.frames==102)))regressionInput(index,PointerPhase::move,c.regressionPath[counters.frames%20]);
+                if(counters.frames==83||(role==ScenarioRole::pathReplacementMany&&counters.frames==103)){regressionInput(index,PointerPhase::end,c.regressionPath[2]);if(counters.frames==83)o.firstPathPoints=scene->dashState().pathCount;else o.replacementPathPoints=scene->dashState().pathCount;}
+                if(counters.frames==140){c.regressionTap=regressionGround(game);regressionInput(index,PointerPhase::begin,c.regressionTap);regressionInput(index,PointerPhase::end,c.regressionTap);}
+                if(counters.frames==150){o.dashBefore=scene->metrics().dashStarts;o.specialBefore=scene->dashState().special;regressionInput(index,PointerPhase::begin,c.regressionTap);regressionInput(index,PointerPhase::end,c.regressionTap);o.dashAfter=scene->metrics().dashStarts;o.specialAfter=scene->dashState().special;o.dashFrame=counters.frames;}
+            }else if(role==ScenarioRole::focusZoom){
+                if(counters.frames==100||counters.frames==250){const auto player=scene->player().position;float best=counters.frames==100?std::numeric_limits<float>::max():-1;std::optional<Vec2> chosen;
+                    for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto screen=scene->camera().toScreen(enemy.position);if(screen.x<16||screen.x>scene->camera().viewport.width-16||screen.y<fieldFloor(scene->camera())||screen.y>scene->camera().viewport.height-16)continue;const float dx=enemy.position.x-player.x,dy=enemy.position.y-player.y,d=dx*dx+dy*dy;if(d<1600)continue;if(counters.frames==100?d<best:d>best){best=d;chosen=enemy.position;}}
+                    if(chosen){regressionInput(index,PointerPhase::begin,*chosen);regressionInput(index,PointerPhase::end,*chosen);}
+                }
+                if(counters.frames==99||counters.frames==100||counters.frames==249||counters.frames==250||counters.frames==400||counters.frames==500)o.zoom.push_back({counters.frames,scene->selectedEnemy(),scene->displayZoom(),scene->camera().viewport,game.display().canvas,scene->player().position});
+            }else if(role==ScenarioRole::lifecycle){
+                if(counters.frames==400){o.interruptedFrame=counters.frames;o.worldTimeAtInterrupt=scene->clock().worldTime();game.setActive(false);o.inactivePaused=scene->isPaused();o.inactiveMenu=game.state().systemVisible;}
+                if(counters.frames==450){o.reactivatedFrame=counters.frames;o.worldTimeAtReactivate=scene->clock().worldTime();game.setActive(true);o.reactivatedPaused=scene->isPaused();o.reactivatedMenu=game.state().systemVisible;}
+                if(counters.frames==470){o.worldTimeBeforeResume=scene->clock().worldTime();press(index,1021);o.manuallyResumed=!scene->isPaused()&&!game.state().systemVisible;o.resumedFrame=counters.frames;}
+                if(counters.frames==480)o.worldTimeAfterResume=scene->clock().worldTime();
+            }else if(role==ScenarioRole::hudLayout)host.exerciseHUDLayout(index,game,observations[index].hudLayout,counters.frames);
+            pendingRecentInputEvents+=o.inputs.size()-beforeInputs;pendingHUDInputEvents+=observations[index].hudLayout.inputs-beforeHUD;
+            if(o.interruptedFrame==counters.frames||o.reactivatedFrame==counters.frames||o.resumedFrame==counters.frames)++pendingLifecycleEvents;
+            o.savesAfter=observations[index].saves;
+        }
     }
     void guideDash(){
         if(counters.frames!=100&&counters.frames!=110)return;auto& game=*cases[dashIndex]->game;auto* scene=game.battle();
@@ -515,6 +638,7 @@ struct ConcurrentValidation::Impl {
         else if(o.listFrame&&!o.exitFrame&&counters.frames>=o.listFrame+8){o.exitFrame=counters.frames;press(completedMissionIndex,2100);}
     }
     void schedule(){
+        guideRecent();
         for(const auto index:worldIndices)guideWorld(index);guideDash();guideBots();guideHelp();guideGameOver();guideRanking();guideCompletedMissions();
         // In the compact batch, pause/resume one real railgun battle through
         // the enlarged HUD while all other sessions keep advancing. This
@@ -597,7 +721,7 @@ struct ConcurrentValidation::Impl {
             }
         }
         if(const auto* battle=game.battle()){observed.playerHP=battle->playerHP();if(observed.playerHP>0)++observed.aliveTicks;const auto& m=battle->metrics();observed.emissions=value.priorEmissions+m.emissions;observed.playerEmissions=value.priorPlayerEmissions+m.playerEmissions;observed.damage=value.priorDamage+m.damageCalls;observed.kills=value.priorKills+m.kills;observed.strikeRequests=m.airStrikeRequests;observed.strikeProjectiles=m.airStrikeProjectiles;observed.strikeDamageCalls=m.airStrikeDamageCalls;observed.strikeEnemyHPRemoved=m.airStrikeEnemyHPRemoved;observed.strikeTicks=m.airStrikeTicks;observed.activeStrikes=battle->activeAirStrikes();
-            unsigned k=0;for(const auto kind:{MachineKind::vehicle,MachineKind::turret,MachineKind::aircraft}){observed.enemySpawns[k]=m.enemySpawnsByKind.at(kind);observed.enemyEmissions[k]=m.enemyEmissionsByKind.at(kind);observed.enemyDamage[k]=m.enemyDamageCallsByKind.at(kind);observed.enemyKills[k]=m.enemyKillsByKind.at(kind);observed.enemyRemovals[k]=m.enemyRemovalsByKind.at(kind);++k;}
+            unsigned k=0;for(const auto kind:{MachineKind::vehicle,MachineKind::turret,MachineKind::aircraft}){observed.enemySpawns[k]=m.enemySpawnsByKind.at(kind);observed.enemyEmissions[k]=m.enemyEmissionsByKind.at(kind);observed.enemyDamage[k]=m.enemyDamageCallsByKind.at(kind);observed.enemyKills[k]=m.enemyKillsByKind.at(kind);observed.enemyRemovals[k]=m.enemyRemovalsByKind.at(kind);if(observed.enemyKills[k]&&!observed.firstKillFrames[k]){observed.firstKillFrames[k]=counters.frames;observed.firstKillWorldTimes[k]=battle->clock().worldTime();for(const auto& corpse:battle->enemies())if(corpse.kind==kind&&corpse.corpse){observed.firstCrashDeadlines[k]=corpse.crashTime;break;}}if(observed.enemyRemovals[k]&&!observed.firstRemovalFrames[k]){observed.firstRemovalFrames[k]=counters.frames;observed.firstRemovalWorldTimes[k]=battle->clock().worldTime();}++k;}
             if(counters.frames==1){observed.firstSpawns=observed.enemySpawns;for(const auto& enemy:battle->enemies())if(enemy.boss)++observed.bossSpawns;}
             observed.dashStarts=m.dashStarts;observed.dashMoveTicks=m.dashMoveTicks;observed.dashParticles=m.dashParticleAllocations;observed.dashRandomCalls=m.dashRandomCalls;
             if(descriptions[i].role==ScenarioRole::dash&&observed.dashInputFrame){const auto p=battle->player().position;const float dx=p.x-observed.dashStartPosition.x,dy=p.y-observed.dashStartPosition.y;observed.dashMaxDisplacement=std::max(observed.dashMaxDisplacement,std::sqrt(dx*dx+dy*dy));}
@@ -614,7 +738,7 @@ struct ConcurrentValidation::Impl {
         auto restored=SaveData::decode(value.adapter.saved,value.random,false);
         const bool equal=std::equal(originalSlot.begin(),originalSlot.end(),restored.slot(0).begin());
         if(const auto* scene=game.battle()){const auto& m=scene->metrics();value.priorEmissions+=m.emissions;value.priorPlayerEmissions+=m.playerEmissions;value.priorDamage+=m.damageCalls;value.priorKills+=m.kills;}
-        value.game=std::make_unique<GameSession>(resources,value.adapter,value.random,std::move(restored));value.game->setDisplay(display);
+        value.game=std::make_unique<GameSession>(value.resources,value.adapter,value.random,std::move(restored));value.game->setDisplay(display);
         const bool selected=value.game->selectSlot(0);value.game->enterBase();const bool field=value.game->enterField("Stage01_01",0);
         observations[restartIndex].restarted=equal&&selected&&field;
         value.lastWeaponCounts=value.game->battle()->metrics().playerWeaponEmissions;
@@ -622,8 +746,8 @@ struct ConcurrentValidation::Impl {
     }
     Frame compose(Size viewport){
         if(!std::isfinite(viewport.width)||!std::isfinite(viewport.height)||viewport.width<=0||viewport.height<=0)throw std::invalid_argument("Invalid concurrent viewport");
-        if(sourceFrameNumber!=counters.frames){for(std::size_t i=0;i<cases.size();++i){sourceFrames[i]=cases[i]->game->drawWorld();host.appendScenarioUI(unsigned(i),*cases[i]->game,sourceFrames[i]);cases[i]->game->appendOverlays(sourceFrames[i]);if(descriptions[i].role==ScenarioRole::help){for(const auto& image:sourceFrames[i].sprites){if(image.image.starts_with("HelpScr")){++observations[i].help.drawFrames;observations[i].help.lastImage=image.image;}if(image.image=="HelpHelp.png")++observations[i].help.guideDrawFrames;}}++observations[i].draws;}
-            sourceFrameNumber=counters.frames;++counters.drawFrames;}
+        if(sourceFrameNumber!=counters.frames){resourceStage="draw";for(std::size_t i=0;i<cases.size();++i){beginResourceOperation(unsigned(i),"draw");sourceFrames[i]=cases[i]->game->drawWorld();host.appendScenarioUI(unsigned(i),*cases[i]->game,sourceFrames[i]);cases[i]->game->appendOverlays(sourceFrames[i]);if(descriptions[i].role==ScenarioRole::help){for(const auto& image:sourceFrames[i].sprites){if(image.image.starts_with("HelpScr")){++observations[i].help.drawFrames;observations[i].help.lastImage=image.image;}if(image.image=="HelpHelp.png")++observations[i].help.guideDrawFrames;}}++observations[i].draws;finishResourceOperation(unsigned(i));}
+            resourceStage="external";sourceFrameNumber=counters.frames;++counters.drawFrames;}
         Frame out;out.width=viewport.width;out.height=viewport.height;
         const unsigned columns=unsigned(std::ceil(std::sqrt(float(cases.size())*viewport.width/viewport.height*(1024.f/768.f))));
         const unsigned rows=unsigned((cases.size()+columns-1)/columns);const float paneWidth=viewport.width/float(columns),paneHeight=viewport.height/float(rows);
@@ -641,14 +765,15 @@ struct ConcurrentValidation::Impl {
 };
 ConcurrentValidation::ConcurrentValidation(ResourceAccess& r,ValidationHost& h):impl_(std::make_unique<Impl>(r,h)){}
 ConcurrentValidation::~ConcurrentValidation()=default;
-void ConcurrentValidation::tick(){auto& p=*impl_;if(!p.active)return;p.resources.warm=true;++p.counters.frames;p.schedule();
-    FrameActivity activity;activity.frame=p.counters.frames;activity.buttons=std::move(p.pendingButtons);p.pendingButtons.clear();activity.saveRestart=p.counters.frames==600&&p.observations[p.restartIndex].restarted;activity.aidKitUses=p.pendingAidKitUses;p.pendingAidKitUses=0;activity.airStrikeUses=p.pendingAirStrikeUses;p.pendingAirStrikeUses=0;activity.botRepairs=p.pendingBotRepairs;p.pendingBotRepairs=0;activity.helpInputRequests=p.pendingHelpInputs;p.pendingHelpInputs=0;std::set<std::string> frameWeapons;
-    for(std::size_t i=0;i<p.cases.size();++i){auto& c=*p.cases[i];auto& observed=p.observations[i];
-        if(p.display.enabled&&p.descriptions[i].role==ScenarioRole::combat&&i!=38&&(p.counters.frames-1)%31==0)if(auto* scene=c.game->battle()){
+void ConcurrentValidation::tick(){auto& p=*impl_;if(!p.active)return;p.resources.warm=true;++p.counters.frames;p.resourceStage="schedule";for(unsigned i=0;i<p.cases.size();++i)p.beginResourceOperation(i,"schedule");p.schedule();for(unsigned i=0;i<p.cases.size();++i)p.finishResourceOperation(i);p.resourceStage="tick";
+    FrameActivity activity;activity.frame=p.counters.frames;activity.recentInputEvents=p.pendingRecentInputEvents;activity.hudInputEvents=p.pendingHUDInputEvents;activity.lifecycleEvents=p.pendingLifecycleEvents;p.pendingRecentInputEvents=p.pendingHUDInputEvents=p.pendingLifecycleEvents=0;activity.buttons=std::move(p.pendingButtons);p.pendingButtons.clear();activity.saveRestart=p.counters.frames==600&&p.observations[p.restartIndex].restarted;activity.aidKitUses=p.pendingAidKitUses;p.pendingAidKitUses=0;activity.airStrikeUses=p.pendingAirStrikeUses;p.pendingAirStrikeUses=0;activity.botRepairs=p.pendingBotRepairs;p.pendingBotRepairs=0;activity.helpInputRequests=p.pendingHelpInputs;p.pendingHelpInputs=0;std::set<std::string> frameWeapons;
+    for(std::size_t i=0;i<p.cases.size();++i){p.beginResourceOperation(unsigned(i),"tick");auto& c=*p.cases[i];auto& observed=p.observations[i];
+        if(p.display.enabled&&p.display.compact&&Impl::compactWeaponGuideCase(i))p.guideCompactWeapon(i);
+        if(p.display.enabled&&p.descriptions[i].role==ScenarioRole::combat&&i!=38&&!(p.display.compact&&Impl::compactWeaponGuideCase(i))&&(p.counters.frames-1)%31==0)if(auto* scene=c.game->battle()){
             bool fired=false,missing=false;for(const auto& w:scene->playerWeapons()){const bool emitted=scene->metrics().playerWeaponEmissions.at(w.part)>0;fired|=emitted;missing|=!emitted;}
             if(fired&&missing){float closest=std::numeric_limits<float>::max();std::uint64_t target=0;const auto player=scene->player().position;for(const auto& e:scene->enemies())if(e.hp>0&&!e.corpse){const auto point=scene->camera().toScreen(e.position);if(point.x<16||point.x>scene->camera().viewport.width-16||point.y<Impl::fieldFloor(scene->camera())||point.y>scene->camera().viewport.height-16)continue;const float dx=e.position.x-player.x,dy=e.position.y-player.y,d=dx*dx+dy*dy;if(d<closest){closest=d;target=e.id;}}if(target){scene->selectEnemy(target);scene->selectEnemy(target);}}
         }
-        if(i==38)if(auto* scene=c.game->battle()){
+        if(i==38&&!(p.display.enabled&&p.display.compact))if(auto* scene=c.game->battle()){
             // Real target selection gives each side a firing opportunity:
             // farther visible Tank while Missile309 has never emitted, then
             // nearest visible Tank while Gun106 has never emitted. Neither
@@ -661,13 +786,13 @@ void ConcurrentValidation::tick(){auto& p=*impl_;if(!p.active)return;p.resources
                 if(target&&target!=scene->selectedEnemy())scene->selectEnemy(target);
             }
         }
-        if(auto* scene=c.game->battle()){const auto& d=p.descriptions[i];const bool representative=d.role==ScenarioRole::worldAudit&&(d.map=="Stage01_02"||d.map=="Stage02_07"||d.map=="Stage03_04");if(d.role!=ScenarioRole::airStrike&&d.role!=ScenarioRole::dash&&d.role!=ScenarioRole::gameOver&&!representative&&!scene->selectedEnemy())for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=scene->camera().toScreen(enemy.position);if(point.x<0||point.x>scene->camera().viewport.width||point.y<100||point.y>scene->camera().viewport.height)continue;const bool botRole=d.role==ScenarioRole::botAttack||d.role==ScenarioRole::botPicker;const bool incoming=std::any_of(observed.bots.begin(),observed.bots.end(),[](const auto& b){return b.hpRemoved>0;});if(botRole&&!incoming&&p.botThreats.contains(enemy.name))continue;scene->selectEnemy(enemy.id);break;}}
+        if(auto* scene=c.game->battle()){const auto& d=p.descriptions[i];const bool representative=d.role==ScenarioRole::worldAudit&&(d.map=="Stage01_02"||d.map=="Stage02_07"||d.map=="Stage03_04");if(!(p.display.enabled&&p.display.compact&&Impl::compactWeaponGuideCase(i))&&int(d.role)<int(ScenarioRole::pathReplacementSingle)&&d.role!=ScenarioRole::airStrike&&d.role!=ScenarioRole::dash&&d.role!=ScenarioRole::gameOver&&!representative&&!scene->selectedEnemy())for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=scene->camera().toScreen(enemy.position);if(point.x<0||point.x>scene->camera().viewport.width||point.y<100||point.y>scene->camera().viewport.height)continue;const bool botRole=d.role==ScenarioRole::botAttack||d.role==ScenarioRole::botPicker;const bool incoming=std::any_of(observed.bots.begin(),observed.bots.end(),[](const auto& b){return b.hpRemoved>0;});if(botRole&&!incoming&&p.botThreats.contains(enemy.name))continue;scene->selectEnemy(enemy.id);break;}}
         const bool movement=i==p.movementIndex;const bool botCase=p.descriptions[i].role==ScenarioRole::botAttack||p.descriptions[i].role==ScenarioRole::botPicker;const auto beforeBots=observed.bots;
         if(movement)p.guideMovement();
         const auto beforeEmissions=observed.playerEmissions,beforeDamage=observed.damage,beforeKills=observed.kills;
         const Vec2 beforePosition=(movement||botCase)?c.game->battle()->player().position:Vec2{};
         const int beforeHP=movement?c.game->battle()->playerHP():0,beforeCredit=(movement||botCase)?c.game->state().credits:0,beforeInventory=(movement||botCase)?p.inventoryCount(*c.game):0;
-        c.game->tick([&p,&c,i]{p.host.tickScenarioUI(unsigned(i),*c.game,c.random);});if(observed.ticks==0)observed.firstFrame=p.counters.frames;observed.lastFrame=p.counters.frames;++observed.ticks;++activity.tickedScenarios;p.observe(i);
+        c.game->tick([&p,&c,i]{p.host.tickScenarioUI(unsigned(i),*c.game,c.random);});if(observed.ticks==0)observed.firstFrame=p.counters.frames;observed.lastFrame=p.counters.frames;++observed.ticks;++activity.tickedScenarios;p.observe(i);p.finishResourceOperation(unsigned(i));
         if(p.descriptions[i].role==ScenarioRole::gameOver){const auto& o=observed.gameOver;activity.gameOverEvents+=(o.deathFrame==p.counters.frames)+(o.requestFrame==p.counters.frames)+(o.confirmFrame==p.counters.frames)+(o.baseFrame==p.counters.frames);}
         if(p.descriptions[i].role==ScenarioRole::rankingUnavailable&&observed.ranking.frame==p.counters.frames)activity.rankingNotices=observed.ranking.notices;
         if(p.descriptions[i].role==ScenarioRole::completedMissions){const auto& o=observed.completedMissions;activity.completedMissionEvents+=(o.popupFrames[0]==p.counters.frames)+(o.popupFrames[1]==p.counters.frames)+(o.okFrames[1]==p.counters.frames)+(o.baseFrame==p.counters.frames);}
@@ -697,8 +822,9 @@ void ConcurrentValidation::tick(){auto& p=*impl_;if(!p.active)return;p.resources
         if(const auto* scene=c.game->battle()){activity.activeProjectiles+=scene->activeProjectiles();if(i<p.counters.combatScenarios)activity.combatActiveProjectiles+=scene->activeProjectiles();}
         if(const auto* scene=c.game->battle())for(const auto& [part,count]:scene->metrics().playerWeaponEmissions){auto [old,inserted]=c.lastWeaponCounts.try_emplace(part,0);(void)inserted;const auto previousCount=old->second;if(count>previousCount){frameWeapons.insert(part);observed.weaponEmissions[part]+=count-previousCount;}old->second=count;}
     }
+    p.resourceStage="external";
     const bool otherCombat=activity.combatEmittingScenarios||activity.combatActiveProjectiles||activity.combatDamage;
-    if(otherCombat){if(activity.completedMissionEvents)++p.counters.completedMissionFramesWithCombatActivity;if(activity.gameOverEvents)++p.counters.gameOverFramesWithCombatActivity;if(activity.rankingNotices)++p.counters.rankingFramesWithCombatActivity;if(activity.botEmissions||activity.botItemContacts||activity.botRewardArrivals||activity.botHPRemoved||activity.botRepairs)++p.counters.botFramesWithCombatActivity;if(activity.helpInputRequests||std::any_of(activity.buttons.begin(),activity.buttons.end(),[&p](const auto& b){return p.descriptions.at(b.scenario).role==ScenarioRole::help;}))++p.counters.helpFramesWithCombatActivity;if(activity.airStrikeUses)++p.counters.airStrikeFramesWithCombatActivity;if(activity.aidKitUses)++p.counters.aidKitFramesWithCombatActivity;if(activity.movementLootMoving)++p.counters.movementFramesWithCombatActivity;if(activity.movementLootPickups)++p.counters.pickupFramesWithCombatActivity;if(activity.movementLootInjury)++p.counters.injuryFramesWithCombatActivity;if(activity.movementLootMoving&&activity.movementLootEmissions)++p.counters.movementEmissionFramesWithCombatActivity;}
+    if(otherCombat){if(activity.recentInputEvents)++p.counters.recentInputFramesWithCombatActivity;if(activity.hudInputEvents)++p.counters.hudFramesWithCombatActivity;if(activity.lifecycleEvents)++p.counters.lifecycleFramesWithCombatActivity;if(activity.completedMissionEvents)++p.counters.completedMissionFramesWithCombatActivity;if(activity.gameOverEvents)++p.counters.gameOverFramesWithCombatActivity;if(activity.rankingNotices)++p.counters.rankingFramesWithCombatActivity;if(activity.botEmissions||activity.botItemContacts||activity.botRewardArrivals||activity.botHPRemoved||activity.botRepairs)++p.counters.botFramesWithCombatActivity;if(activity.helpInputRequests||std::any_of(activity.buttons.begin(),activity.buttons.end(),[&p](const auto& b){return p.descriptions.at(b.scenario).role==ScenarioRole::help;}))++p.counters.helpFramesWithCombatActivity;if(activity.airStrikeUses)++p.counters.airStrikeFramesWithCombatActivity;if(activity.aidKitUses)++p.counters.aidKitFramesWithCombatActivity;if(activity.movementLootMoving)++p.counters.movementFramesWithCombatActivity;if(activity.movementLootPickups)++p.counters.pickupFramesWithCombatActivity;if(activity.movementLootInjury)++p.counters.injuryFramesWithCombatActivity;if(activity.movementLootMoving&&activity.movementLootEmissions)++p.counters.movementEmissionFramesWithCombatActivity;}
     if(!activity.buttons.empty()){++p.counters.menuActionFrames;if(activity.combatEmittingScenarios||activity.combatActiveProjectiles||activity.combatDamage)++p.counters.menuFramesWithCombatActivity;}
     std::set<WeaponKind> kinds;for(const auto& part:frameWeapons)kinds.insert(p.catalog.weapon(part).kind);activity.emittedWeaponKinds.assign(kinds.begin(),kinds.end());
     activity.emittedWeaponParts.assign(frameWeapons.begin(),frameWeapons.end());p.counters.maxConcurrentEmittingScenarios=std::max(p.counters.maxConcurrentEmittingScenarios,activity.emittingScenarios);p.counters.maxConcurrentWeaponDefinitions=std::max(p.counters.maxConcurrentWeaponDefinitions,std::uint64_t(frameWeapons.size()));p.counters.maxConcurrentWeaponKinds=std::max(p.counters.maxConcurrentWeaponKinds,std::uint64_t(kinds.size()));if(frameWeapons.size()>=5)++p.counters.framesWithFiveWeaponDefinitions;if(kinds.size()>=5)++p.counters.framesWithFiveWeaponKinds;p.activity.push_back(std::move(activity));
@@ -708,13 +834,15 @@ Frame ConcurrentValidation::drawFrame(Size viewport){return impl_->compose(viewp
 Frame ConcurrentValidation::scenarioFrame(unsigned i)const{if(impl_->sourceFrameNumber!=impl_->counters.frames)throw std::logic_error("Capture a scenario only after its common frame draw");return impl_->sourceFrames.at(i);}
 GameSession& ConcurrentValidation::session(unsigned i){return *impl_->cases.at(i)->game;}
 ResourceAccess& ConcurrentValidation::cachedResources(){return impl_->resources;}
+ResourceAccess& ConcurrentValidation::scenarioResources(unsigned index){return impl_->cases.at(index)->resources;}
+const std::vector<ResourceActivity>& ConcurrentValidation::resourceActivity()const{return impl_->resourceActivity;}
 std::size_t ConcurrentValidation::scenarioCount()const{return impl_->cases.size();}
 const std::vector<ScenarioDescription>& ConcurrentValidation::scenarios()const{return impl_->descriptions;}
 const std::vector<ScenarioObservation>& ConcurrentValidation::observations()const{return impl_->observations;}
 const std::vector<FrameActivity>& ConcurrentValidation::frameActivity()const{return impl_->activity;}
 ConcurrentMetrics ConcurrentValidation::metrics()const{const auto& p=*impl_;auto result=p.counters;result.activeScenarios=p.active?p.cases.size():0;result.underlyingReads=p.resources.reads;result.underlyingExists=p.resources.probes;result.warmReadMisses=p.resources.readMisses;result.warmExistsMisses=p.resources.probeMisses;result.warmReadNames=p.resources.warmReadNames;result.warmExistsNames=p.resources.warmExistsNames;
     std::set<std::string> activeWeapons;std::uint64_t first=0,last=std::numeric_limits<std::uint64_t>::max();for(std::size_t i=0;i<p.observations.size();++i){const auto& o=p.observations[i];first=std::max(first,o.firstFrame);last=std::min(last,o.lastFrame);for(const auto& part:o.emittedWeaponParts)activeWeapons.insert(part);}result.commonFrameInterval=first>0&&first<=last;result.activeWeaponDefinitions=activeWeapons.size();std::set<WeaponKind> kinds;for(const auto& part:activeWeapons)kinds.insert(p.catalog.weapon(part).kind);result.activeWeaponKinds=kinds.size();return result;}
-std::vector<std::string> ConcurrentValidation::supported()const{return {"110 original PtWpn items /55 independently saved real battles","same-frame session ticks and shared sprite-frame compositor","original target / weapon / damage / death / mission / EXP consumers","scheduled real shop purchase and insufficient-credit refusal","original save encode/decode and restart without condition reinjection","one source-frame consumption per tick, including viewport recomposition","real ground-pointer movement and actual enemy-drop pickup on the same frame clock","six original AidKit consumers and three real AirStrike/bullet consumers","38 original field entries and common vehicle / turret / aircraft consumers","original ground double tap / SP / dash movement / shared particle consumer","six original BOT registrations / real attack and pickup / damage and repair observations","four original KR Help conditions / actual menu and overlay-end input / pause and resume","real enemy damage / GameOver token / original doors / Base002 save","Command5009 / localized ranking unavailable notice / no save"};}
+std::vector<std::string> ConcurrentValidation::supported()const{return {"110 original PtWpn items /55 independently saved real battles","same-frame session ticks and shared sprite-frame compositor","original target / weapon / damage / death / mission / EXP consumers","scheduled real shop purchase and insufficient-credit refusal","original save encode/decode and restart without condition reinjection","one source-frame consumption per tick, including viewport recomposition","real ground-pointer movement and actual enemy-drop pickup on the same frame clock","six original AidKit consumers and three real AirStrike/bullet consumers","38 original field entries and common vehicle / turret / aircraft consumers","original ground double tap / SP / dash movement / shared particle consumer","six original BOT registrations / real attack and pickup / damage and repair observations","four original KR Help conditions / actual menu and overlay-end input / pause and resume","real enemy damage / GameOver token / original doors / Base002 save","Command5009 / localized ranking unavailable notice / no save","actual path replacement variants and doubletap / camera focus / inactive manual resume / GPU HUD Apply and stored profile reload"};}
 std::vector<std::string> ConcurrentValidation::missingFeatures()const{return {"all23 Player bottom equipment movement checks","all BOT combat outcomes and death after owner removal attribution","all mission types and all60 mission completion","all stages and final campaign completion","original port-app visual/input/audio equivalence","OS interruption / audio-route transition"};}
 }
 

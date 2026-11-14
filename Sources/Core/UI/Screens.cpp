@@ -19,18 +19,30 @@ Owner owner(ScreenId screen,Panel panel){return (Owner(screen)<<16)|Owner(panel)
 const ItemView emptyItem;
 const ItemView& itemAt(const std::vector<ItemView>& items,std::size_t index){return index<items.size()?items[index]:emptyItem;}
 using Region=DisplayRegion;
-struct ImageNode {VisualImage image;unsigned layer=7;std::string tag;std::shared_ptr<Button> parent{};Vec2 local{};Region region=Region::content;};
-struct ButtonNode {std::shared_ptr<Button> button;unsigned layer=7;Region region=Region::content;};
-struct TextNode {std::shared_ptr<Text> text;unsigned layer=7;std::shared_ptr<Button> parent{};Vec2 local{};Region region=Region::content;};
-struct NumberNode {std::shared_ptr<ImageFont> font;TileImage* tile;unsigned layer=7;std::string tag;Region region=Region::content;};
-struct PreviewNode {Frame frame;Vec2 origin;unsigned slot;std::uint64_t revision;unsigned layer=7;Region region=Region::content;};
-struct RadarNode {VisualTile tile;unsigned layer=9;Region region=Region::content;};
+std::shared_ptr<const std::array<Sprite,hud::count>> croppedHUDBackground(VisualImage image){
+    // Resolve the original Tile2D non-atlas geometry/UV/blend once when its
+    // owner is built. A moved HUD crops only that existing texture's quad.
+    VisualLayer original(1);original.submitImage(image);const auto resolved=original.drain();
+    if(resolved.nonAtlas.size()!=1||resolved.nonAtlas.front().strip.size()!=4)throw std::logic_error("Original HUD background requires one Tile2D quad");
+    const auto& full=resolved.nonAtlas.front();auto pieces=std::make_shared<std::array<Sprite,hud::count>>();
+    const auto interpolate=[](const StripVertex& a,const StripVertex& b,float t){auto result=a;result.position={std::lerp(a.position.x,b.position.x,t),std::lerp(a.position.y,b.position.y,t)};result.uv={std::lerp(a.uv.x,b.uv.x,t),std::lerp(a.uv.y,b.uv.y,t)};return result;};
+    for(unsigned group=0;group<hud::count;++group){auto& piece=(*pieces)[group];piece=full;const auto slice=hud::backgroundSlices[group];const float left=slice.x/image.tile.content.width,right=(slice.x+slice.width)/image.tile.content.width;
+        piece.strip={interpolate(full.strip[0],full.strip[2],left),interpolate(full.strip[1],full.strip[3],left),interpolate(full.strip[0],full.strip[2],right),interpolate(full.strip[1],full.strip[3],right)};
+    }
+    return pieces;
+}
+struct ImageNode {VisualImage image;unsigned layer=7;std::string tag;std::shared_ptr<Button> parent{};Vec2 local{};Region region=Region::content;int hudGroup=-1;std::shared_ptr<const std::array<Sprite,hud::count>> hudBackgroundParts;};
+struct ButtonNode {std::shared_ptr<Button> button;unsigned layer=7;Region region=Region::content;int hudGroup=-1;};
+struct TextNode {std::shared_ptr<Text> text;unsigned layer=7;std::shared_ptr<Button> parent{};Vec2 local{};Region region=Region::content;int hudGroup=-1;};
+struct NumberNode {std::shared_ptr<ImageFont> font;TileImage* tile;unsigned layer=7;std::string tag;Region region=Region::content;int hudGroup=-1;};
+struct PreviewNode {Frame frame;Vec2 origin;unsigned slot;std::uint64_t revision;unsigned layer=7;Region region=Region::content;int hudGroup=-1;};
+struct RadarNode {VisualTile tile;unsigned layer=9;Region region=Region::content;int hudGroup=-1;};
 struct BaseDescriptionNode {
     VisualImage background;
     std::shared_ptr<Text> text;
     float localX;
     float targetX;
-    unsigned layer=7;Region region=Region::content;
+    unsigned layer=7;Region region=Region::content;int hudGroup=-1;
 };
 enum class DetailKind {shop,inventory,maintenance};
 struct DetailPresentation {
@@ -39,7 +51,7 @@ struct DetailPresentation {
     unsigned layer=9;std::shared_ptr<Button> background;
     std::shared_ptr<Text> title,description;std::optional<VisualImage> large;
 };
-struct DetailNode {std::shared_ptr<DetailPresentation> detail;unsigned layer=9;Region region=Region::content;};
+struct DetailNode {std::shared_ptr<DetailPresentation> detail;unsigned layer=9;Region region=Region::content;int hudGroup=-1;};
 struct FieldPresentation {
     std::uint64_t identity=0,enemyRevision=0;bool range[2]={false,false};
     std::shared_ptr<Text> enemyName;
@@ -76,10 +88,40 @@ struct TitlePresentation {
     bool titleSound=false,episodeSound=false,startSound=false;
 };
 }
+struct Screens::HUDState {
+    std::map<std::string,hud::Configuration> saved;
+    std::string profile,error;
+    hud::Configuration draft;
+    bool editing=false,rebuild=false;
+    std::uintptr_t dragPointer=0;unsigned selected=hud::gauges;Vec2 dragStart,dragOrigin;
+    void selectProfile(const DisplayConfiguration& display,ScreensHost& host){
+        const std::string next=display.compact?"compact":"regular";
+        if(next==profile)return;
+        editing=false;dragPointer=0;profile=next;error.clear();
+        if(saved.contains(profile))return;
+        hud::Configuration config;
+        try{if(auto data=host.loadHUDLayout(profile))config=hud::decode(*data);}
+        catch(const std::exception&){error="HUD 설정을 읽지 못했습니다. 기본 배치를 표시합니다.";}
+        saved.emplace(profile,config);
+    }
+    const hud::Configuration& active()const{return editing?draft:saved.at(profile);}
+    void begin(){draft=saved.at(profile);editing=true;dragPointer=0;rebuild=true;}
+    void cancel(){editing=false;dragPointer=0;error.clear();rebuild=true;}
+    void reset(){if(editing){draft={};dragPointer=0;error.clear();rebuild=true;}}
+    bool apply(ScreensHost& host){
+        if(!editing)return false;
+        bool success=false;try{success=host.saveHUDLayout(profile,hud::encode(draft));}catch(const std::exception&){}
+        if(!success){error="HUD 배치를 저장하지 못했습니다. 다시 적용해 주세요.";rebuild=true;return false;}
+        saved[profile]=draft;cancel();return true;
+    }
+};
 struct Screens::Impl {
-    ResourceAccess& resources;PreparedTiles& tiles;ScreensHost& host;ScreensState state;
+    std::shared_ptr<std::uint64_t> resourceGeneration;
+    ResourceAccess& resources;PreparedTiles& tiles;std::shared_ptr<PreparedTiles> tileOwner;ScreensHost& host;ScreensState state;
     std::vector<Node> nodes;
     DisplayLayout layout;
+    std::shared_ptr<HUDState> hud;int currentHUDGroup=-1;
+    std::map<const Button*,int> buttonHUDGroups;
     Region region=Region::content;
     float verticalPan=0,verticalOrigin=0;Vec2 verticalStart;std::uintptr_t verticalPointer=0;bool verticalDragging=false;
     float shopPan=0,panOrigin=0;Vec2 panStart;std::uintptr_t panPointer=0;
@@ -87,8 +129,9 @@ struct Screens::Impl {
     std::map<const Button*,Region> buttonRegions;
     struct RegionScope {Impl& self;Region before;RegionScope(Impl& p,Region value):self(p),before(p.region){p.region=value;}~RegionScope(){self.region=before;}};
     template<class T> void pushNode(T node){
-        node.region=region;
+        node.region=region;node.hudGroup=currentHUDGroup;
         if constexpr(std::is_same_v<T,ImageNode>){
+            if(node.tag=="hud.background"&&(hud->editing||hud->active().customized()))node.hudBackgroundParts=croppedHUDBackground(node.image);
             if(node.tag=="title.bg")node.region=Region::backdrop;
             else if(layout.configuration().compact&&(node.tag=="menu.backdrop"||node.image.tile.image=="SelSlot_BG.png"||node.image.tile.image=="CmdCenterBG.png"))node.region=Region::backdrop;
             else if(node.tag=="title.big")node.region=Region::banner;
@@ -101,15 +144,48 @@ struct Screens::Impl {
             if(state.screen==ScreenId::shop&&id==2100)node.region=Region::shopFooter;
             if(state.screen==ScreenId::shop&&id==2103)node.region=Region::shopInventory;
             if(state.screen==ScreenId::command&&(id==5009||id==2100))node.region=Region::bottom;
-            buttonRegions[node.button.get()]=node.region;
+            buttonRegions[node.button.get()]=node.region;buttonHUDGroups[node.button.get()]=node.hudGroup;
         }
+        if(node.region==Region::top)node.hudGroup=-1;
         nodes.push_back(std::move(node));
     }
     Region scrollingRegion()const{return state.weaponChoiceType?Region::chooser:Region::list;}
     float verticalLimit()const{if(!layout.configuration().enabled)return 0;const auto r=scrollingRegion();if(!layout.configuration().compact&&r==Region::list)return 0;if(r==Region::list&&state.screen!=ScreenId::command&&!state.missionVisible)return 0;const float height=r==Region::chooser?std::max(1024.f,float(state.weaponChoices.size())*36+200):listTop-listBottom+12;return std::max(0.f,height*layout.ui(r).scale-layout.clip(r)->height);}
     DisplayTransform presentation(Region r)const{auto t=layout.ui(r,r==Region::list||r==Region::chooser?verticalPan:shopPan);if(r==Region::list&&layout.configuration().enabled&&layout.configuration().compact)t.offset.y+=(1024-listTop)*t.scale-8;return t;}
-    std::optional<ClipRect> clipping(Region r)const{return layout.clip(r,shopPan);}
+    DisplayTransform presentation(Region r,int group)const{
+        auto t=presentation(r);if(group<0||!hud)return t;
+        const auto base=layout.ui(Region::bottom),custom=hud::transform(hud->active(),unsigned(group),layout);
+        // A normalized setting roundtrip can introduce subpixel float noise
+        // at its exact original position. Keep identity geometry bit-exact.
+        const auto delta=[](float a,float b){return std::abs(a-b)<.0001f?0.f:a-b;};
+        t.offset.x+=delta(custom.offset.x,base.offset.x);t.offset.y+=delta(custom.offset.y,base.offset.y);return t;
+    }
+    std::optional<ClipRect> clipping(Region r,int group=-1)const{
+        if(group>=0&&hud&&hud->active().customized()){
+            const auto a=layout.configuration().enabled?layout.configuration().content():ClipRect{0,0,768,1024};
+            const auto t=presentation(Region::bottom,group);return hud::intersect(a,{t.offset.x,a.y,768*t.scale,a.height});
+        }
+        return layout.clip(r,shopPan);
+    }
+    int buttonHUDGroup(const Button& b)const{const auto i=buttonHUDGroups.find(&b);return i==buttonHUDGroups.end()?-1:i->second;}
+
     Region buttonRegion(const Button& button)const{const auto found=buttonRegions.find(&button);return found==buttonRegions.end()?Region::content:found->second;}
+    bool applyHUDEdit(){
+        if(!hud->editing)return false;
+        struct Hit {int group;ClipRect rect;};std::vector<Hit> hits;
+        for(const auto& key:keys)if(const auto button=dispatcher.find(key);button&&button->visible){
+            const int group=buttonHUDGroup(*button);if(group<0)continue;
+            const auto t=presentation(buttonRegion(*button),group);const auto b=button->bounds();const auto p=button->screenPosition();
+            const auto low=t.map({p.x+b.left,p.y+b.bottom});hits.push_back({group,{low.x,low.y,(b.right-b.left)*t.scale,(b.top-b.bottom)*t.scale}});
+        }
+        for(std::size_t i=0;i<hits.size();++i)for(std::size_t j=i+1;j<hits.size();++j){
+            const auto& a=hits[i];const auto& b=hits[j];if(a.group==b.group||(!hud->draft.positions[a.group]&&!hud->draft.positions[b.group]))continue;
+            if(std::min(a.rect.x+a.rect.width,b.rect.x+b.rect.width)>std::max(a.rect.x,b.rect.x)&&std::min(a.rect.y+a.rect.height,b.rect.y+b.rect.height)>std::max(a.rect.y,b.rect.y)){
+                hud->error="버튼이 겹칩니다. HUD 조각을 옮겨 주세요.";hud->rebuild=true;return false;
+            }
+        }
+        return hud->apply(host);
+    }
 
     ButtonDispatcher dispatcher;
     std::vector<ButtonKey> keys;
@@ -126,8 +202,9 @@ struct Screens::Impl {
     std::vector<CommandNode> commandNodes;
     float commandSelectedRowY=0;
     bool baseNoticeVisible=true;
-    Impl(ResourceAccess& r,PreparedTiles& t,ScreensHost& h,const ScreensState& s,float time,std::shared_ptr<Impl> old,DisplayConfiguration display)
-        :resources(r),tiles(t),host(h),state(s),layout(display),previous(std::move(old)),now(time){
+    Impl(ResourceAccess& r,PreparedTiles& t,ScreensHost& h,const ScreensState& s,float time,std::shared_ptr<Impl> old,DisplayConfiguration display,std::shared_ptr<HUDState> hudState,std::shared_ptr<PreparedTiles> ownerTiles,std::shared_ptr<std::uint64_t> generation)
+        :resourceGeneration(std::move(generation)),resources(r),tiles(t),tileOwner(std::move(ownerTiles)),host(h),state(s),layout(display),hud(std::move(hudState)),previous(std::move(old)),now(time){
+        ++*resourceGeneration;
         if(previous&&previous->state.screen==s.screen){title=previous->title;message=previous->message;layers=previous->layers;shopPan=std::min(previous->shopPan,layout.shopPanLimit());if(previous->state.weaponChoiceType==s.weaponChoiceType&&previous->state.missionVisible==s.missionVisible)verticalPan=std::min(previous->verticalPan,verticalLimit());}
         else{title.start=time;layers=std::make_shared<std::array<VisualLayer,14>>();}
         if(previous){fieldPresentation=previous->fieldPresentation;placeName=previous->placeName;}
@@ -141,7 +218,8 @@ struct Screens::Impl {
         }
         if(fieldPresentation.identity!=s.fieldUIRevision){fieldPresentation={};fieldPresentation.identity=s.fieldUIRevision;}
     }
-    void hideMessage(){message.hiding=true;message.text.reset();}
+    ~Impl(){++*resourceGeneration;}
+    void hideMessage(){message.hiding=true;if(message.text){message.text.reset();++*resourceGeneration;}}
     void syncMessage(){
         if(state.screen!=ScreenId::field)return;
         auto& m=message;
@@ -152,7 +230,7 @@ struct Screens::Impl {
         if(m.revision==state.messageRevision)return;m.revision=state.messageRevision;
         if(!state.messageVisible){hideMessage();return;}
         m.background.tileNo=unsigned(state.messageBackground);m.background.scale={1,1};m.background.show=true;m.hiding=false;m.autoHide=state.messageAutoHide;
-        m.text.reset();TextRasterRequest request{"GuiGame.message",state.message,"TrebuchetMS-Bold",{512,24},16,TextAlign::center,false,0};
+        m.text.reset();++*resourceGeneration;TextRasterRequest request{"GuiGame.message",state.message,"TrebuchetMS-Bold",{512,24},16,TextAlign::center,false,0};
         auto prepared=host.prepareText(request);if(!prepared.bitmap||!(prepared.bitmap->request==request))throw std::runtime_error("Message text preparation changed the original request");
         m.text=std::make_shared<Text>(std::move(prepared.image),std::move(prepared.bitmap));m.text->setColor(255,255,255);m.text->position=m.background.screenPosition;
         m.start=float(state.messageWorldTime);host.sfx(10);
@@ -197,11 +275,11 @@ struct Screens::Impl {
     std::shared_ptr<Text> prepareText(const TextRasterRequest& request){
         auto prepared=host.prepareText(request);
         if(!prepared.bitmap||!(prepared.bitmap->request==request))throw std::runtime_error("UI text preparation changed the original request");
-        return std::make_shared<Text>(std::move(prepared.image),std::move(prepared.bitmap));
+        auto result=std::make_shared<Text>(std::move(prepared.image),std::move(prepared.bitmap));++*resourceGeneration;return result;
     }
     void syncPlaceName(){
         if(state.screen!=ScreenId::field||placeName.revision==state.fieldPlaceRevision)return;
-        placeName={};
+        placeName={};++*resourceGeneration;
         placeName.revision=state.fieldPlaceRevision;
         if(!placeName.revision)return;
         if(auto* background=tile("PlaceNameBG.png")){
@@ -225,6 +303,7 @@ struct Screens::Impl {
         x=distance>.1f?x+distance/12.f:destination;
         if(x>=900.f){
             background.show=false;
+            if(placeName.shadow||placeName.label)++*resourceGeneration;
             placeName.shadow.reset();
             placeName.label.reset();
         }
@@ -431,6 +510,7 @@ RegionScope card(*this,Region(unsigned(Region::slot0)+i));
     }
     void field(){
     RegionScope scope(*this,Region::bottom);
+        const auto previousGroup=currentHUDGroup;currentHUDGroup=hud::combat;
         image("WpnBtnBG.png",{405,90},1,1,0,{1,1},false,0,1,9);
         auto left=addButton(Panel::root,1022,state.selectedWeaponLeft,{334,90},1,1,0,0,Size{64,64},0,{}, {.7f,.7f},true,9,false);
         auto right=addButton(Panel::root,1023,state.selectedWeaponRight,{480,90},1,1,0,0,Size{64,64},0,{}, {.7f,.7f},true,9,false);
@@ -442,7 +522,7 @@ RegionScope card(*this,Region(unsigned(Region::slot0)+i));
         weaponTile(left,state.selectedWeaponLeft);weaponTile(right,state.selectedWeaponRight);
         image("OutofRange.png",{334,90},1,1,0,{1,1},false,0,1,9,"hud.rangeLeft");
         image("OutofRange.png",{480,90},1,1,0,{1,1},false,0,1,9,"hud.rangeRight");
-        const Vec2 hud{384,128};image("GameUI_BG.png",hud,1,1,0,{1,1},false,0,1,9);
+        const Vec2 hud{384,128};currentHUDGroup=-1;image("GameUI_BG.png",hud,1,1,0,{1,1},false,0,1,9,"hud.background");currentHUDGroup=hm2::hud::gauges;
         image("GameUI_GaugeBack.png",plus(hud,{float(state.hpBarWidth)-398,-80}),1,4,0,{1,1},true,0,1,9,"hud.hpBack");
         image("GameUI_GaugeBack.png",plus(hud,{float(state.hpBarFilled)-398,-80}),1,4,1,{1,1},true,0,1,9,"hud.hp");
         image("GameUI_GaugeBack.png",plus(hud,{float(state.spBarWidth)-398,-54}),1,4,0,{1,1},true,0,1,9,"hud.spBack");
@@ -452,13 +532,16 @@ RegionScope card(*this,Region(unsigned(Region::slot0)+i));
         image("EnemyGauge.png",{384-128*(1-state.enemyHpRate),957},1,2,0,{state.enemyHpRate,1},false,0,1,9,"hud.enemy");
         number("NumTile05.png",std::bit_cast<std::int32_t>(std::uint32_t(state.level)+1),plus(hud,{-364,-106}),9,.5f,9,false,"hud.level");
         number("NumSet01b.png",fieldPresentation.displayedCredits,plus(hud,{-122,-37}),6,1,9,false,"hud.displayedCredits");
+        currentHUDGroup=hm2::hud::controls;
         addButton(Panel::root,1021,"QuickBtn.png",plus(hud,{237,-36}),2,4,4,5,Size{60,60});
         addButton(Panel::root,1026,"QuickBtn.png",plus(hud,{296,-36}),2,4,0,1,Size{60,60});
         addButton(Panel::root,1025,"QuickBtn.png",plus(hud,{355,-36}),2,4,2,3,Size{60,60});
+        currentHUDGroup=hm2::hud::combat;
         if(auto* mark=tile("RaderMark.png",8,1))pushNode(RadarNode{tiles.visual(*mark)});
-        quickSlots({511,29});
+        currentHUDGroup=hm2::hud::controls;quickSlots({511,29});
         updateHUD(state);
-        if(state.weaponChoiceType!=0)weaponChoices();
+        currentHUDGroup=hm2::hud::combat;if(state.weaponChoiceType!=0)weaponChoices();
+        currentHUDGroup=previousGroup;
     }
     void updateHUD(const ScreensState&);
     void build();
@@ -489,6 +572,7 @@ RegionScope card(*this,Region(unsigned(Region::slot0)+i));
     void tickCommandList();
     void completedMission();
     void system();
+    void hudEditor();
     void airlift();
     void trade();
     void weaponChoices();
@@ -546,6 +630,7 @@ void Screens::Impl::syncEnemyName(){
     RegionScope scope(*this,Region::top);
     if(state.screen!=ScreenId::field)return;
     if(fieldPresentation.enemyRevision!=state.enemyNameRevision||(!fieldPresentation.enemyName&&!state.enemyName.empty())){
+        ++*resourceGeneration;
         const auto old=fieldPresentation.enemyName;std::erase_if(nodes,[&](const Node& node){const auto* n=std::get_if<TextNode>(&node);return n&&n->text==old;});
         fieldPresentation.enemyName.reset();fieldPresentation.enemyRevision=state.enemyNameRevision;
         if(!state.enemyName.empty()){const auto count=nodes.size();text("GuiGame.enemyName",state.enemyName,{384,956},{256,18},"Arial-BoldMT",12,TextAlign::center,{},9);if(nodes.size()!=count)fieldPresentation.enemyName=std::get<TextNode>(nodes.back()).text;}
@@ -688,6 +773,21 @@ void Screens::Impl::system(){
         text("DlgSystemMenu."+std::to_string(ids[i]),labels[i],at,{360,24},"TrebuchetMS-Bold",20,TextAlign::center,{140.f/255,240.f/255,1,1},10);
     }
     addButton(Panel::system,1030,"Common_Btn_CLOSE.png",plus(root,{136,-124}),1,2,0,1,{},0,{}, {1,1},true,10);
+    // Restoration feature. Keep its identity separate from original menu IDs.
+    const Vec2 edit{384,316};
+    addButton(Panel::system,9100,"Btn_Mission.png",edit,1,2,0,1,{},0,{}, {1,1},true,10);
+    text("HUDLayout.entry","HUD 배치",edit,{360,24},"TrebuchetMS-Bold",20,TextAlign::center,{140.f/255,240.f/255,1,1},10);
+}
+void Screens::Impl::hudEditor(){
+    RegionScope scope(*this,Region::panel);
+    text("HUDLayout.title","HUD 조각을 화면 하단으로 끌어 배치하세요.",{384,720},{640,32},"TrebuchetMS-Bold",20,TextAlign::center,{},13);
+    constexpr unsigned ids[]={9101,9102,9103};
+    constexpr const char* labels[]={"기본 배치","취소","적용"};
+    for(unsigned i=0;i<3;++i){const Vec2 p{160+224.f*float(i),654};
+        addButton(Panel::system,ids[i],"Btn_Mission.png",p,1,2,0,1,Size{190,42},0,{}, {.4f,1},true,13,false);
+        text("HUDLayout.tool."+std::to_string(i),labels[i],p,{192,24},"TrebuchetMS-Bold",18,TextAlign::center,{140.f/255,240.f/255,1,1},13);
+    }
+    if(!hud->error.empty())text("HUDLayout.error",hud->error,{384,598},{640,52},"TrebuchetMS-Bold",16,TextAlign::center,{1,.5f,.4f,1},13);
 }
 void Screens::Impl::trade(){
     RegionScope scope(*this,Region::panel);
@@ -915,7 +1015,7 @@ void Screens::Impl::build(){
             if(state.inventoryVisible)inventoryDialog({384,512});
             if(state.missionVisible)missionList(false);
             if(state.airliftVisible)airlift();
-            if(state.systemVisible)system();
+            if(hud->editing)hudEditor();else if(state.systemVisible)system();
             break;
         }
         default:throw std::runtime_error("Unknown original screen ID");
@@ -928,10 +1028,16 @@ void Screens::Impl::build(){
         // Side effects are requested at their original handler event boundary.
         // GameSession applies the real state transition and may refresh Screens
         // synchronously; this old Impl remains alive through the input call.
+        if(id>=9100&&id<=9103){
+            if(event.type==ButtonEventType::pop){
+                if(id==9100){dispatcher.discardAll();hud->begin();}else if(id==9101)hud->reset();else if(id==9102)hud->cancel();else applyHUDEdit();
+                host.sfx(0);
+            }return;
+        }
         ScreenAction action{screen,panel,event};
         if(event.canvasPosition){
             const auto inventoryRegion=screen==ScreenId::shop?Region::shopInventory:screen==ScreenId::maintenance?Region::maintenance:Region::panel;
-            action.dropCoordinates=DropCoordinates{layout.ui(inventoryRegion,shopPan).inverse(*event.canvasPosition),layout.ui(Region::bottom).inverse(*event.canvasPosition)};
+            action.dropCoordinates=DropCoordinates{layout.ui(inventoryRegion,shopPan).inverse(*event.canvasPosition),presentation(Region::bottom,hm2::hud::controls).inverse(*event.canvasPosition)};
         }
         host.action(action);
         if(screen==ScreenId::slots){
@@ -994,8 +1100,15 @@ void Screens::Impl::tick(float time,WorldRandom& random){
 }
 void Screens::Impl::append(Frame& frame,float time){
     for(const auto& node:nodes)std::visit([&](const auto& n){
-        using T=std::decay_t<decltype(n)>;auto& layer=layers->at(n.layer);layer.setPresentation(presentation(n.region),clipping(n.region));
-        if constexpr(std::is_same_v<T,ImageNode>){auto image=n.image;if(n.parent)image.screenPosition=plus(n.parent->screenPosition(),n.local);layer.submitImage(image);}
+        using T=std::decay_t<decltype(n)>;auto& layer=layers->at(n.layer);layer.setPresentation(presentation(n.region,n.hudGroup),clipping(n.region,n.hudGroup));
+        if constexpr(std::is_same_v<T,ImageNode>){auto image=n.image;if(n.parent)image.screenPosition=plus(n.parent->screenPosition(),n.local);
+            if(n.tag=="hud.background"&&(hud->editing||hud->active().customized())){
+                if(!n.hudBackgroundParts)throw std::logic_error("HUD source slices were not prepared");
+                // Geometry/UV share exact source edges. Scissor retains only
+                // the outer original/safe boundary, never partitions adjacent
+                // full-size quads with floor/ceil-rounded internal scissors.
+                for(unsigned group=0;group<hud::count;++group){layer.setPresentation(presentation(n.region,int(group)),clipping(n.region,int(group)));layer.submitNonAtlas(n.hudBackgroundParts->at(group));}
+            }else layer.submitImage(image);}
         else if constexpr(std::is_same_v<T,ButtonNode>){Frame f;n.button->append(f,time);for(auto& s:f.sprites)layer.submitNonAtlas(std::move(s));}
         else if constexpr(std::is_same_v<T,TextNode>){Frame f;if(n.parent)n.text->position=plus(n.parent->screenPosition(),n.local);n.text->append(f);for(auto& s:f.sprites)layer.submitNonAtlas(std::move(s));}
         else if constexpr(std::is_same_v<T,NumberNode>)n.font->append(layer,tiles.visual(*n.tile));
@@ -1052,7 +1165,7 @@ void Screens::Impl::updateHUD(const ScreensState& next){
     state.fieldWorldTime=next.fieldWorldTime;state.fieldUIRevision=next.fieldUIRevision;state.hasWorkingSlot=next.hasWorkingSlot;
     state.outOfRangeTimeLeft=next.outOfRangeTimeLeft;state.outOfRangeTimeRight=next.outOfRangeTimeRight;
     state.enemyName=next.enemyName;state.enemyNameRevision=next.enemyNameRevision;
-    if(fieldPresentation.identity!=next.fieldUIRevision){const auto oldName=fieldPresentation.enemyName;std::erase_if(nodes,[&](const Node& node){const auto* n=std::get_if<TextNode>(&node);return n&&n->text==oldName;});fieldPresentation={};fieldPresentation.identity=next.fieldUIRevision;}
+    if(fieldPresentation.identity!=next.fieldUIRevision){++*resourceGeneration;const auto oldName=fieldPresentation.enemyName;std::erase_if(nodes,[&](const Node& node){const auto* n=std::get_if<TextNode>(&node);return n&&n->text==oldName;});fieldPresentation={};fieldPresentation.identity=next.fieldUIRevision;}
     syncEnemyName();
     for(auto& node:nodes){
         if(auto* n=std::get_if<ImageNode>(&node)){auto& v=n->image;
@@ -1079,20 +1192,50 @@ void Screens::Impl::updateHUD(const ScreensState& next){
         }
     }
 }
-Screens::Screens(ResourceAccess& r,PreparedTiles& t,ScreensHost& h):resources_(r),tiles_(t),host_(h){}
+Screens::Screens(ResourceAccess& r,PreparedTiles& t,ScreensHost& h):hud_(std::make_shared<HUDState>()),resources_(r),tiles_(t),host_(h){}
 bool Screens::updateHUD(const ScreensState& state){
     if(!impl_||impl_->state.screen!=state.screen)return false;
     impl_->updateHUD(state);return true;
 }
 void Screens::refresh(const ScreensState& state,float time){
-    auto next=std::make_shared<Impl>(resources_,tiles_,host_,state,time,impl_,display_);next->build();
+    const auto priorOwnerRevision=tileOwnerRevision_;
+    hud_->selectProfile(display_,host_);
+    if(hud_->editing&&(state.screen!=ScreenId::field||!state.systemVisible)){hud_->cancel();hud_->rebuild=false;}
+    if(fieldTiles_&&fieldTileRevision_!=state.fieldUIRevision)fieldTiles_.reset();
+    if(state.screen==ScreenId::field){
+        if(!fieldTiles_){fieldTiles_=std::make_shared<PreparedTiles>("screens.field."+std::to_string(++tileOwnerRevision_));fieldTileRevision_=state.fieldUIRevision;}
+        activeTiles_=fieldTiles_;
+    }else if(!activeTiles_||tileScreen_!=state.screen||(impl_&&impl_->state.baseId!=state.baseId)){activeTiles_=std::make_shared<PreparedTiles>("screens.owner."+std::to_string(++tileOwnerRevision_));}
+    tileScreen_=state.screen;
+    auto next=std::make_shared<Impl>(resources_,*activeTiles_,host_,state,time,impl_,display_,hud_,activeTiles_,resourceGeneration_);next->build();
     const bool changed=!impl_||impl_->state.screen!=state.screen;
     next->previous.reset();impl_=std::move(next);
     if(changed){if(state.screen==ScreenId::title)host_.bgm("STAGE1.wav");else if(state.screen==ScreenId::slots)host_.bgm("STAGE2.wav");else if(state.screen==ScreenId::base)host_.bgm("Title.wav");else if(state.screen==ScreenId::field)host_.bgm("STAGE3.mp3");}
+    if(state.screen==ScreenId::title&&tileOwnerRevision_!=priorOwnerRevision){
+        // GuiTitle.init0x32340: after BGM, request these three cached sounds
+        // in the original order. Do not play them or repeat on scalar refresh.
+        for(const auto* name:{"Title_TitleIn.wav","Title_Bang.wav","Title_TapToStart.wav"})host_.prepareSound(name);
+    }
 }
 void Screens::tick(float time,WorldRandom& random){if(auto keep=impl_)keep->tick(time,random);}
 bool Screens::input(PointerPhase phase,Vec2 point,std::uintptr_t pointer,float time){
     const auto keep=impl_;if(!keep)return false;
+    if(hud_->editing){
+        const auto rebuild=[&]{if(hud_->rebuild){hud_->rebuild=false;refresh(keep->state,time);}};
+        const auto toolMap=[keep](const Button& button,Vec2 canvas){return button.key().id>=9101&&button.key().id<=9103?keep->presentation(keep->buttonRegion(button)).inverse(canvas):Vec2{1.e9f,1.e9f};};
+        bool toolCaptured=false;for(const auto& key:keep->keys)if(key.id>=9101&&key.id<=9103)if(auto b=keep->dispatcher.find(key);b&&b->capturedPointer()==pointer)toolCaptured=true;
+        if(hud_->dragPointer==pointer&&pointer){
+            if(phase==PointerPhase::move){const Vec2 origin{hud_->dragOrigin.x+point.x-hud_->dragStart.x,hud_->dragOrigin.y+point.y-hud_->dragStart.y};hud_->draft.positions[hud_->selected]=hud::draggedOrigin(hud_->selected,keep->layout,origin);}
+            if(phase==PointerPhase::end||phase==PointerPhase::cancel)hud_->dragPointer=0;
+            return true;
+        }
+        const bool tool=keep->dispatcher.input(phase,point,pointer,time,toolMap);
+        if(tool||toolCaptured){rebuild();return true;}
+        if(phase==PointerPhase::begin&&pointer){
+            for(unsigned i=hud::count;i>0;--i){const auto b=hud::visualBounds(hud_->draft,i-1,keep->layout);if(point.x>=b.x&&point.x<=b.x+b.width&&point.y>=b.y&&point.y<=b.y+b.height){hud_->selected=i-1;hud_->dragPointer=pointer;hud_->dragStart=point;hud_->dragOrigin={b.x,b.y};break;}}
+        }
+        rebuild();return true;
+    }
     if(keep->state.screen==ScreenId::title){
         if(phase==PointerPhase::end){
             const bool ready=keep->title.start+10<=time;
@@ -1114,16 +1257,39 @@ bool Screens::input(PointerPhase phase,Vec2 point,std::uintptr_t pointer,float t
         if(phase==PointerPhase::end||phase==PointerPhase::cancel)keep->panPointer=0;
         return true;
     }
-    const auto mapper=[keep](const Button& button,Vec2 canvas){const auto region=keep->buttonRegion(button);if(const auto clip=keep->clipping(region);clip&&(canvas.x<clip->x||canvas.x>clip->x+clip->width||canvas.y<clip->y||canvas.y>clip->y+clip->height))return Vec2{1.e9f,1.e9f};return keep->presentation(region).inverse(canvas);};
-    const bool handled=keep->layout.configuration().enabled?keep->dispatcher.input(phase,point,pointer,time,mapper):keep->dispatcher.input(phase,point,pointer,time);
-    if(handled||captured||verticalOwned||keep->verticalPointer==pointer&&pointer)return true;
+    const auto mapper=[keep](const Button& button,Vec2 canvas){const auto region=keep->buttonRegion(button);const auto group=keep->buttonHUDGroup(button);if(const auto clip=keep->clipping(region,group);clip&&(canvas.x<clip->x||canvas.x>clip->x+clip->width||canvas.y<clip->y||canvas.y>clip->y+clip->height))return Vec2{1.e9f,1.e9f};return keep->presentation(region,group).inverse(canvas);};
+    const bool handled=(keep->layout.configuration().enabled||hud_->active().customized())?keep->dispatcher.input(phase,point,pointer,time,mapper):keep->dispatcher.input(phase,point,pointer,time);
+    if(hud_->rebuild){hud_->rebuild=false;refresh(keep->state,time);return true;}
+    if(handled||captured||verticalOwned||(keep->verticalPointer==pointer&&pointer))return true;
     if(phase==PointerPhase::begin&&pointer&&keep->state.screen==ScreenId::shop&&keep->layout.shopPanLimit()>0&&!keep->state.tradeVisible){keep->panPointer=pointer;keep->panStart=point;keep->panOrigin=keep->shopPan;return true;}
     return keep->state.tradeVisible||keep->state.systemVisible||keep->state.missionVisible||keep->state.airliftVisible;
 }
 void Screens::append(Frame& out,float time)const{if(auto keep=impl_)keep->append(out,time);}
-void Screens::discardInputs(){if(impl_){impl_->dispatcher.discardAll();impl_->panPointer=0;impl_->verticalPointer=0;impl_->verticalDragging=false;}}
+void Screens::appendPreparation(Frame& out)const{
+    if(activeTiles_)activeTiles_->appendPreparation(out);
+    if(fieldTiles_&&fieldTiles_!=activeTiles_)fieldTiles_->appendPreparation(out);
+    const auto keep=impl_;if(!keep)return;
+    const auto text=[&](const std::shared_ptr<Text>& label){if(label){auto copy=*label;copy.visible=true;copy.append(out);}};
+    for(const auto& node:keep->nodes)std::visit([&](const auto& n){using T=std::decay_t<decltype(n)>;
+        if constexpr(std::is_same_v<T,TextNode>)text(n.text);
+        else if constexpr(std::is_same_v<T,PreviewNode>)out.sprites.insert(out.sprites.end(),n.frame.sprites.begin(),n.frame.sprites.end());
+        else if constexpr(std::is_same_v<T,BaseDescriptionNode>)text(n.text);
+        else if constexpr(std::is_same_v<T,DetailNode>){text(n.detail->title);text(n.detail->description);}
+    },node);
+    text(keep->fieldPresentation.enemyName);text(keep->message.text);text(keep->placeName.label);text(keep->placeName.shadow);
+    if(!keep->placeName.background.tile.image.empty()){Sprite resource;resource.image=keep->placeName.background.tile.image;resource.textureSource=keep->placeName.background.tile.textureSource;out.sprites.push_back(std::move(resource));}
+}
+const TileImage* Screens::preparedTile(std::string_view name)const{return activeTiles_?activeTiles_->lookup(name):nullptr;}
+void Screens::discardInputs(){if(impl_){impl_->dispatcher.discardAll();impl_->panPointer=0;impl_->verticalPointer=0;impl_->verticalDragging=false;hud_->dragPointer=0;}}
 void Screens::setDisplay(DisplayConfiguration display){DisplayLayout check(display);discardInputs();display_=display;if(impl_){const auto state=impl_->state;const auto now=impl_->now;refresh(state,now);}}
-Vec2 Screens::buttonScreenPosition(ButtonKey key)const{const auto button=this->button(key);if(!button)throw std::out_of_range("Unknown screen button");return impl_->presentation(impl_->buttonRegion(*button)).map(button->screenPosition());}
+Vec2 Screens::buttonScreenPosition(ButtonKey key)const{const auto button=this->button(key);if(!button)throw std::out_of_range("Unknown screen button");return impl_->presentation(impl_->buttonRegion(*button),impl_->buttonHUDGroup(*button)).map(button->screenPosition());}
+bool Screens::hudEditing()const{return hud_->editing;}
+const hud::Configuration& Screens::hudConfiguration()const{return hud_->active();}
+std::string Screens::hudEditorError()const{return hud_->error;}
+bool Screens::beginHUDEdit(){if(!impl_||impl_->state.screen!=ScreenId::field||!impl_->state.systemVisible)return false;hud_->begin();hud_->rebuild=false;const auto state=impl_->state;const auto now=impl_->now;discardInputs();refresh(state,now);return true;}
+bool Screens::applyHUDEdit(){if(!impl_||!hud_->editing)return false;const bool ok=impl_->applyHUDEdit();hud_->rebuild=false;const auto state=impl_->state;const auto now=impl_->now;refresh(state,now);return ok;}
+void Screens::cancelHUDEdit(){if(!impl_||!hud_->editing)return;hud_->cancel();hud_->rebuild=false;const auto state=impl_->state;const auto now=impl_->now;refresh(state,now);}
+void Screens::resetHUDEdit(){if(!impl_||!hud_->editing)return;hud_->reset();hud_->rebuild=false;const auto state=impl_->state;const auto now=impl_->now;refresh(state,now);}
 void Screens::setHorizontalPan(float value){if(!impl_||!std::isfinite(value))throw std::invalid_argument("Invalid presentation pan");impl_->shopPan=std::clamp(value,0.f,impl_->layout.shopPanLimit());}
 float Screens::horizontalPanLimit()const{return impl_?impl_->layout.shopPanLimit():0;}
 

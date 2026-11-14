@@ -57,6 +57,20 @@ int main(){
     changed=request;changed.alignment=TextAlign::right;cache.prepare(rasterizer,changed);assert(rasterizer.calls==3);
     changed=request;changed.dimensions.width=120;cache.prepare(rasterizer,changed);assert(rasterizer.calls==4);
     changed=request;changed.fontName="Arial-BoldMT";cache.prepare(rasterizer,changed);assert(rasterizer.calls==5);
+    const auto reclaimed=cache.discardUnused();
+    assert(reclaimed.size()==4&&cache.size()==1); // Live Text retains original bitmap.
+    assert(cache.prepare(rasterizer,request)==bitmap&&rasterizer.calls==5);
+    {
+        TextPreparationCache lifetime;std::weak_ptr<const TextBitmap> weak;
+        {
+            auto held=lifetime.prepare(rasterizer,request);weak=held;
+            Text owner("prepared:lifetime",held);held.reset();
+            assert(lifetime.discardUnused().empty()&&!weak.expired());
+            Frame retained;owner.append(retained);assert(retained.sprites.size()==1);
+        }
+        assert(!weak.expired()); // Cache still owns it until the release boundary.
+        assert(lifetime.discardUnused().size()==1&&lifetime.size()==0&&weak.expired());
+    }
     cache.clear();assert(cache.size()==0&&bitmap->alpha.size()==128*32);
     auto retinaRequest=request;retinaRequest.retina=true;retinaRequest.originalDeviceType=3;
     Text retina("prepared:retina",cache.prepare(rasterizer,retinaRequest));Frame rf;retina.append(rf);

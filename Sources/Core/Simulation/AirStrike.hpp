@@ -13,9 +13,10 @@ struct AirStrikeBullet {
 };
 struct AirStrikeHost {
     virtual ~AirStrikeHost()=default;
-    // Already-prepared common tiles only. Target's original2x1 split is set by
-    // this actor when its pooled marker actually exists; no file IO here.
+    // Prepared-only fixture lookup; live creation uses the explicit original
+    // shared-manager request below, never a draw-time fallback.
     virtual TileImage* preparedTile(std::string_view)=0;
+    virtual TileImage* prepareOriginalTile(std::string_view name){return preparedTile(name);}
     // Existing world pool allocate/reset, including its shared-world RNG.
     virtual Particle* allocateParticle(float renderTime)=0;
     virtual void sound(unsigned originalSfx)=0;

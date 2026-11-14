@@ -36,6 +36,10 @@ struct QuickItemsHost {
     // Must call the existing world pool.allocate/reset, including its RNG.
     virtual Particle* allocateParticle(float renderTime)=0;
     virtual const TileImage* preparedTile(std::string_view originalName)=0;
+    // GobHvMach.useRepairItem0xc7e4 requests this one icon from the shared
+    // manager after obtaining a particle. Existing prepared-only fixtures can
+    // keep their explicit cache; the live Scene adapter prepares the request.
+    virtual const TileImage* prepareRepairEffect(std::string_view originalName){return preparedTile(originalName);}
     virtual void selectQuick(int)=0;
     virtual void message(std::string_view originalDescriptionKey,int background,bool autoHide)=0;
     virtual void hideMessage()=0;

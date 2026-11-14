@@ -4,6 +4,7 @@
 #include "Core/Progression/QuickItems.hpp"
 #include "Core/Presentation/PartSprites.hpp"
 #include "Core/Presentation/Visibility.hpp"
+#include "Core/Presentation/SharedAssetPreparation.hpp"
 #include <algorithm>
 #include <atomic>
 #include <bit>
@@ -32,6 +33,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
     std::string displayLocale;
     DataTable itemTable;Descriptions descriptions;progression::Definitions definitions;
     Weapons weapons;Models models;PlayerEquipment parts;
+    PreparedTiles globalAssets{"global-shared"};
     Maps maps;Machines machines;
     std::unique_ptr<progression::Progression> progress;
     std::unique_ptr<progression::Equipment> equipment;
@@ -49,7 +51,11 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
     std::uint64_t nextPreviewRevision=0;
     ui::ScreensState view;SessionMetrics metrics;
     GameClock clock;double worldTime=0;bool active=true,dirty=true,worldSaveAllowed=false;
-    std::uint64_t presentationRevision=0;
+    std::uint64_t presentationRevision=0,resourceRevision=0;
+    mutable std::uint64_t observedResourceEpoch=0,observedRelease=0,observedShared=0,observedWorld=0;
+    mutable const CombatScene* observedWorldOwner=nullptr;
+    mutable std::string observedHelpOwner;
+    bool interruptionPending=false;
     int loadedSlot=-1;std::string mapName,selectedMissionId;
     std::uint64_t gameOverToken=0;
     int commandState=-1,commandCurState=-1;bool presentingCompletedMission=false;
@@ -80,7 +86,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
     Impl(ResourceAccess& r,SessionHost& h,WorldRandom& rng,std::optional<SaveData> initial,std::string_view locale)
     :resources(r),host(h),random(rng),data(initial?std::move(*initial):SaveData{}),displayLocale(originalDisplayLocale(locale)),itemTable(table(r,"ItemInfo.tble")),descriptions(Descriptions::parse(table(r,"Description_"+displayLocale+".tble"))),
     definitions(progression::Definitions::parse(itemTable,table(r,"ItemRegen.tble"),table(r,"MissionList.tble"),[&r](std::string_view n){return table(r,n);},displayLocale)),
-    weapons(Weapons::parse(table(r,"WeaponInfo.tble"))),models(Models::parse(Chunk::parse(r.read("PartsInfo.mcb")),Chunk::parse(r.read("MachInfo.mcb")))),parts(PlayerEquipment::parse(itemTable)),maps(Maps::parse(Chunk::parse(r.read("MapInfo.mcb")))),machines(Machines::parse(table(r,"MachList.tble"))),transition(r){view.locale=displayLocale;view.fieldUIRevision=1;}
+    weapons(Weapons::parse(table(r,"WeaponInfo.tble"))),models(Models::parse(Chunk::parse(r.read("PartsInfo.mcb")),Chunk::parse(r.read("MachInfo.mcb")))),parts(PlayerEquipment::parse(itemTable)),maps(Maps::parse(Chunk::parse(r.read("MapInfo.mcb")))),machines(Machines::parse(table(r,"MachList.tble"))),transition(r){prepareOriginalWeaponAssets(r,globalAssets,weapons);view.locale=displayLocale;view.fieldUIRevision=1;}
     Slot slot(){return Slot(working);}
     std::string base() {return slot().string(0x55,16);}
     void changed(progression::Change change)override{
@@ -141,6 +147,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
     void refreshPlayerHP()override{} // Same live-slot HUD, no new persistence event.
     Particle* allocateParticle(float)override{return scene?scene->allocateParticle():nullptr;}
     const TileImage* preparedTile(std::string_view name)override{return scene?scene->preparedTile(name):nullptr;}
+    const TileImage* prepareRepairEffect(std::string_view name)override{return scene?scene->prepareRepairEffect(name):nullptr;}
     void selectQuick(int selected)override{view.selectedQuick=selected;dirty=true;}
     void message(std::string_view key,int background,bool autoHide)override{view.messageVisible=true;view.messageBackground=background;view.messageAutoHide=autoHide;view.messageWorldTime=scene?scene->clock().worldTime():view.messageWorldTime;++view.messageRevision;view.message.clear();view.message=descriptions.lookup(key).value_or("");dirty=true;}
     void hideMessage()override{view.messageVisible=false;view.messageWorldTime=scene?scene->clock().worldTime():view.messageWorldTime;++view.messageRevision;view.message.clear();dirty=true;}
@@ -170,7 +177,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         else{
             host.sound("Title_TitleIn.wav",{});linkMap=gate.linkMap;linkGateId=gate.linkGate;
             scene->setIsSave(!gate.eventOnly);worldSaveAllowed=!gate.eventOnly;scene->setGameState(1);
-            mapLoading=std::make_unique<MapLoading>(resources);dirty=true;
+            mapLoading=std::make_unique<MapLoading>(resources,&globalAssets);dirty=true;
         }
     }
     void playerDied()override{dirty=true;}
@@ -199,8 +206,10 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         const auto setBounds=[](VisibilityState& state,const TileImage* tile){
             if(tile)state.bounds={-tile->pixels.width*.5f,-tile->pixels.height*.5f,tile->pixels.width*.5f,tile->pixels.height*.5f};
         };
-        setBounds(drop.root,worldTiles->lookup("Efx_Item2.png"));
-        setBounds(drop.icon,worldTiles->lookup(drop.item.item->iconImage()));
+        // GobFieldItem.initWithItem0x81dc requests only this item's shared
+        // effect/icon at creation, before its first collection/draw pass.
+        setBounds(drop.root,globalAssets.prepare(resources,"Efx_Item2.png"));
+        setBounds(drop.icon,globalAssets.prepare(resources,drop.item.item->iconImage()));
         drops.push_back(std::move(drop));
     }
     void placeMissionItem(std::string_view code,Vec2 position,WorldRandom& rng)override{
@@ -213,8 +222,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         progress->killed(info.name,info.experience,mapName);
     }
     void prepareTiles(ResourceAccess& r,PreparedTiles& cache)override{
-        worldTiles=&cache;cache.prepare(r,"Efx_Item2.png");
-        for(const auto& [code,item]:definitions.items())cache.prepare(r,item.iconImage());
+        (void)r;worldTiles=&cache;
     }
     void tickItems(double worldTime,float,Vec2 player,WorldRandom& rng)override{
         std::erase_if(drops,[](const auto& drop){return drop.item.removed;});
@@ -248,7 +256,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         view.completedMission={};view.commandListRevision=0;view.commandListVisible=id!=ui::ScreenId::command;
         commandCurState=-1;commandState=id==ui::ScreenId::command?0:-1;
         commandAvailableRows.clear();commandAcceptedRows.clear();
-        if(id==ui::ScreenId::title&&scene){worldSaveAllowed=scene->isSave();quickItems.reset();scene.reset();drops.clear();worldTiles=nullptr;}
+        if(id==ui::ScreenId::title&&scene){worldSaveAllowed=scene->isSave();quickItems.reset();releaseScene();drops.clear();worldTiles=nullptr;}
         if(id!=ui::ScreenId::field)closeDialogs();
         if(id==ui::ScreenId::slots){slotPreviews={};view.selectedSlot=-1;for(unsigned i=0;i<3;++i){Slot candidate(data.slot(i));if(candidate.byte(8)&&(view.selectedSlot<0||std::bit_cast<std::int32_t>(Slot(data.slot(unsigned(view.selectedSlot))).u32(4))<std::bit_cast<std::int32_t>(candidate.u32(4))))view.selectedSlot=int(i);}}
         clearSelection();selectedMissionId.clear();view.selectedMission=-1;view.missionBody.clear();view.selectedShop=-1;hideShopDetail();
@@ -405,6 +413,19 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         help->setDisplay(display);help->setPage(2);if(!navigation)help->setLayer(9);dirty=true;
     }
     void closeDialogs(){view.inventoryVisible=view.missionVisible=view.airliftVisible=view.systemVisible=view.tradeVisible=false;view.weaponChoiceType=0;if(scene)scene->setPaused(false);}
+    void pauseForInterruption(){
+        if(!interruptionPending||!scene||view.screen!=ui::ScreenId::field)return;
+        if(scene->playerHP()<1){interruptionPending=false;return;}
+        scene->setPaused(true);
+        if(mapLoading||transition.state().phase!=8)return;
+        // Keep an already-open paused dialog; otherwise provide explicit Resume
+        // through the existing system menu. Foregrounding never closes it.
+        if(!help&&!view.inventoryVisible&&!view.missionVisible&&!view.airliftVisible&&!view.tradeVisible&&!view.weaponChoiceType){
+            view.systemVisible=true;dirty=true;
+        }
+        interruptionPending=false;
+    }
+    void releaseScene(){if(scene){scene.reset();++resourceRevision;}}
     int inventoryPosition(int cell)const{return view.inventoryPage*25+cell;}
     bool validIdentity(const ui::ButtonKey& key,const progression::Item* item)const{return key.dataId.empty()||(item&&key.dataId==item->code);}
     void drag(Vec2,Vec2);
@@ -538,7 +559,7 @@ ui::PreparedScreenText SessionHost::prepareWorldText(const ui::TextRasterRequest
 GameSession::GameSession(ResourceAccess& r,SessionHost& h,WorldRandom& rng,std::optional<SaveData> data,std::string_view locale):impl_(std::make_unique<Impl>(r,h,rng,std::move(data),locale)){}
 GameSession::~GameSession()=default;
 void GameSession::tick(const std::function<void()>& tickGameUI){
-    auto& p=*impl_;if(!p.active)return;p.clock.step();
+    auto& p=*impl_;if(!p.active)return;p.pauseForInterruption();p.clock.step();
     // GameMain updates its own closing/opening state before QobBase children.
     p.transition.tick({[this,&p](int target){
         if(target==int(ui::ScreenId::base))enterBase();
@@ -547,6 +568,7 @@ void GameSession::tick(const std::function<void()>& tickGameUI){
             if(!enterField(map,gate))throw std::runtime_error("Cannot restore requested original field");
         }else p.screen(ui::ScreenId(target));
     },[&p](std::string_view name){p.host.sound(name,{});}});
+    p.pauseForInterruption();
     if(p.scene){p.scene->tick();p.worldTime=p.scene->clock().worldTime();}
     p.tickCommand();
     p.tickSlotPreviews();
@@ -555,13 +577,17 @@ void GameSession::tick(const std::function<void()>& tickGameUI){
         // GuiMapLoading is a later GameMain child. Its callbacks execute only
         // after the previous World's tick has returned, never inside a gate.
         p.mapLoading->tick({[&p]{p.quickItems.reset();p.retiredWorld=std::move(p.scene);p.drops.clear();p.worldTiles=nullptr;},
-            [&p]{p.retiredWorld.reset();}, // Retain old tile ownership until the separate clearTileResMgr phase.
+            [&p]{if(p.retiredWorld){p.retiredWorld.reset();++p.resourceRevision;}}, // Original clearTileResMgr phase.
             [this,&p]{if(!enterField(p.linkMap,p.linkGateId))throw std::runtime_error("Cannot restore linked original field");}});
         if(p.mapLoading->state().removed){p.mapLoading.reset();p.dirty=true;}
     }
+    p.pauseForInterruption();
 }
 void GameSession::setActive(bool active){
-    auto& p=*impl_;p.active=active;
+    auto& p=*impl_;const bool resigning=p.active&&!active;p.active=active;
+    if(resigning&&((p.scene&&p.view.screen==ui::ScreenId::field&&p.scene->playerHP()>0)||p.mapLoading||
+        (p.transition.state().phase!=8&&p.transition.state().requestedScreen==int(ui::ScreenId::field))))p.interruptionPending=true;
+    p.pauseForInterruption();
     if(!active){const bool hadTargets=p.view.extInventory!=-1||p.view.extEquipment!=-1||p.view.extBot!=-1||p.view.extQuick!=-1;
         p.view.extInventory=p.view.extEquipment=p.view.extBot=p.view.extQuick=-1;if(hadTargets)p.dirty=true;
     }
@@ -580,7 +606,7 @@ bool GameSession::selectSlot(unsigned index){
     auto& p=*impl_;if(index>=3||!p.data.slot(index)[8])return false;
     p.gameOverToken=0;
     const auto previousStats=p.equipment?p.equipment->stats():progression::EquipStats{};
-    p.quickItems.reset();p.scene.reset();p.drops.clear();p.worldTiles=nullptr;p.equipment.reset();p.progress.reset();
+    p.quickItems.reset();p.releaseScene();p.drops.clear();p.worldTiles=nullptr;p.equipment.reset();p.progress.reset();
     std::copy(p.data.slot(index).begin(),p.data.slot(index).end(),p.working.begin());p.loadedSlot=int(index);p.view.selectedSlot=int(index);
     p.progress=std::make_unique<progression::Progression>(p.slot(),p.definitions,p);p.progress->screen(int(p.view.screen));p.progress->restore();
     p.equipment=std::make_unique<progression::Equipment>(p.slot(),p.progress->inventory,p.definitions,p.weapons,p.itemTable,p,&p,previousStats);p.equipment->restore();
@@ -588,7 +614,7 @@ bool GameSession::selectSlot(unsigned index){
     return save(SaveReason::selectSlot);
 }
 void GameSession::enterBase(){
-    auto& p=*impl_;if(!p.progress)throw std::logic_error("No original working slot selected");if(p.scene){p.worldSaveAllowed=p.scene->isSave();p.worldTime=p.scene->clock().worldTime();}p.quickItems.reset();p.scene.reset();p.drops.clear();p.worldTiles=nullptr;
+    auto& p=*impl_;if(!p.progress)throw std::logic_error("No original working slot selected");if(p.scene){p.worldSaveAllowed=p.scene->isSave();p.worldTime=p.scene->clock().worldTime();}p.quickItems.reset();p.releaseScene();p.drops.clear();p.worldTiles=nullptr;
     p.gameOverToken=0;
     auto s=p.slot();auto current=s.string(0x2d,16);if(!current.starts_with("Base")){current="Base001";s.string(0x2d,16,current);}s.string(0x55,16,current);
     s.hp(p.equipment->stats().maximumHP());for(unsigned i=0;i<3;++i)s.u32(0x64c+i*4,0);
@@ -603,7 +629,7 @@ bool GameSession::enterField(std::string_view map,int gate){
     // World.setStage reseeds from mach_absolute_time before creating its pool.
     p.slot().string(0x2d,16,map);p.slot().u32(0x68,std::uint32_t(gate));
     if(p.scene){p.worldSaveAllowed=p.scene->isSave();p.worldTime=p.scene->clock().worldTime();}
-    p.quickItems.reset();p.random.reseed(p.host.absoluteTimeLow());p.scene.reset();p.drops.clear();p.worldTiles=nullptr;
+    p.quickItems.reset();p.random.reseed(p.host.absoluteTimeLow());p.releaseScene();p.drops.clear();p.worldTiles=nullptr;
     CombatSetup setup;
     // openMap reads event gates. addMissionObjects uses the same accepted list
     // and preserves the action order for the shared world RNG.
@@ -619,6 +645,7 @@ bool GameSession::enterField(std::string_view map,int gate){
     }
     setup.map=map;setup.gate=gate;setup.playerHP=p.slot().hp();setup.equipment=p.equipment->codes();setup.random=&p.random;setup.initialRenderTime=p.clock.renderTime();setup.initialWorldTime=p.worldTime;setup.offsetInsideGate=true;setup.isSave=p.worldSaveAllowed;
     for(unsigned i=0;i<3;++i){const auto code=p.slot().string(0x63a+i*6,6);const auto* item=p.definitions.findItem(code);if(item)setup.botSlots[i]={item->stringParameter,std::bit_cast<std::int32_t>(p.slot().u32(0x64c+i*4))};}
+    setup.sharedAssets=&p.globalAssets;
     auto scene=std::make_unique<CombatScene>(p.resources,p,setup);p.scene=std::move(scene);p.scene->setDisplay(p.display);p.quickItems=std::make_unique<progression::QuickItems>(p.progress->inventory,p.slot(),p.weapons,p);p.mapName=map;p.screen(ui::ScreenId::field);p.closeDialogs();
     p.slot().string(0x3d,24,p.maps.map(map).description);
     p.view.fieldPlaceName=p.slot().string(0x3d,24);
@@ -654,8 +681,24 @@ std::span<const std::uint8_t> GameSession::workingSlot()const{return impl_->work
 CombatScene* GameSession::battle(){return impl_->scene.get();}
 float GameSession::renderTime()const{return impl_->clock.renderTime();}
 std::uint64_t GameSession::presentationRevision()const{return impl_->presentationRevision;}
+std::uint64_t GameSession::resourceRevision()const{
+    auto& p=*impl_;const auto* owner=p.scene?p.scene.get():p.retiredWorld.get();
+    const auto shared=p.globalAssets.revision(),world=owner?owner->resourceRevision():0;
+    // GuiHelp owns a distinct original tile manager. Its unique identity also
+    // distinguishes replacement when the allocator reuses the same address.
+    const std::string_view help=p.help?p.help->tiles().identity():std::string_view{};
+    if(p.observedRelease!=p.resourceRevision||p.observedShared!=shared||p.observedWorld!=world||p.observedWorldOwner!=owner||p.observedHelpOwner!=help){
+        ++p.observedResourceEpoch;p.observedRelease=p.resourceRevision;p.observedShared=shared;p.observedWorld=world;p.observedWorldOwner=owner;
+        p.observedHelpOwner=help;
+    }
+    return p.observedResourceEpoch;
+}
+Frame GameSession::globalPreparationFrame()const{Frame frame;impl_->globalAssets.appendPreparation(frame);return frame;}
+std::vector<std::string> GameSession::orderedStartupSounds()const{return originalStartupSoundNames(impl_->weapons);}
 Frame GameSession::preparationFrame()const{
     Frame frame=impl_->scene?impl_->scene->preparationFrame():Frame{};
+    impl_->globalAssets.appendPreparation(frame);
+    if(impl_->retiredWorld){auto retained=impl_->retiredWorld->preparationFrame();frame.sprites.insert(frame.sprites.end(),std::make_move_iterator(retained.sprites.begin()),std::make_move_iterator(retained.sprites.end()));}
     if(impl_->help){auto prepared=impl_->help->preparationFrame();frame.sprites.insert(frame.sprites.end(),std::make_move_iterator(prepared.sprites.begin()),std::make_move_iterator(prepared.sprites.end()));}
     if(impl_->mapLoading){auto fade=impl_->mapLoading->preparationFrame();frame.sprites.insert(frame.sprites.end(),std::make_move_iterator(fade.sprites.begin()),std::make_move_iterator(fade.sprites.end()));}
     auto loading=impl_->transition.preparationFrame();frame.sprites.insert(frame.sprites.end(),std::make_move_iterator(loading.sprites.begin()),std::make_move_iterator(loading.sprites.end()));

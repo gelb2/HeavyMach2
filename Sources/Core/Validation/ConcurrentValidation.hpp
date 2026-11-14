@@ -13,8 +13,11 @@
 namespace hm2::validation {
 // Compact framing changes genuine movement/search completion times. Keep all
 // cases on the same clock for1800 frames; retain the tablet baseline.
-constexpr unsigned displayValidationFrames(const DisplayConfiguration& display){return display.enabled&&display.compact?1800u:1200u;}
-enum class ScenarioRole {combat,shop,mission,saveRestart,movementLoot,aidKit,airStrike,worldAudit,dash,botAttack,botPicker,help,gameOver,rankingUnavailable,completedMissions};
+// Compact lock-on kills occur later in the measured visible field. Both852
+// and912-wide probes retain the original corpse deadline beyond frame1800;
+// all120 conditions therefore share2100 frames, without changing that clock.
+constexpr unsigned displayValidationFrames(const DisplayConfiguration& display){return display.enabled&&display.compact?2100u:1200u;}
+enum class ScenarioRole {combat,shop,mission,saveRestart,movementLoot,aidKit,airStrike,worldAudit,dash,botAttack,botPicker,help,gameOver,rankingUnavailable,completedMissions,pathReplacementSingle,pathReplacementMany,focusZoom,lifecycle,hudLayout};
 struct ScenarioDescription {std::string label;ScenarioRole role=ScenarioRole::combat;std::vector<std::string> weapons;std::string map{};};
 struct NavigationObservation {std::uint64_t frame=0;Vec2 player,world,screen;std::string lootCode;bool accepted=false,blocked=false;};
 struct PickupObservation {std::uint64_t frame=0;std::string code;int type=0,value=0;Vec2 player,item;int creditDelta=0;};
@@ -67,7 +70,32 @@ struct CompletedMissionsObservation {
     int finalCredit=0,initialRepairItems=0,repairItems=0,remainingAccepted=0;
     bool secondOKAccepted=false,finalOKAccepted=false,listImmediatelyAfterFinalOK=false,savedPayloadValid=false;
 };
+struct ZoomSample {std::uint64_t frame=0,target=0;float zoom=0;Size viewport,output;Vec2 player;};
+struct RecentInputObservation {
+    std::vector<NavigationObservation> inputs;
+    unsigned firstPathPoints=0,replacementPathPoints=0;
+    std::uint64_t dashBefore=0,dashAfter=0,dashFrame=0,interruptedFrame=0,reactivatedFrame=0,resumedFrame=0;
+    float specialBefore=0,specialAfter=0;
+    double worldTimeAtInterrupt=0,worldTimeAtReactivate=0,worldTimeBeforeResume=0,worldTimeAfterResume=0;
+    bool inactivePaused=false,inactiveMenu=false,reactivatedPaused=false,reactivatedMenu=false,manuallyResumed=false;
+    std::uint64_t savesBefore=0,savesAfter=0;
+    std::vector<ZoomSample> zoom;
+};
+struct HUDLayoutObservation {
+    bool menuOpened=false,editorOpened=false,dragMoved=false,applied=false,reloaded=false,resumed=false;
+    std::uint64_t inputs=0;Vec2 dragBegin,dragDelta,menuBefore,menuAfter;Bytes appliedSettings;
+};
+struct CombatGuideSample {
+    std::uint64_t frame=0,target=0,selectedAfter=0;
+    Vec2 player,targetPosition,viewport;
+    std::string action,pendingPart;
+    float distance=0,pendingRange=0;
+    unsigned living=0,visible=0;
+    bool accepted=false;
+    std::vector<std::uint64_t> queuedTargets;
+};
 struct ScenarioObservation {
+    std::vector<CombatGuideSample> combatGuide;
     std::uint64_t ticks=0,firstFrame=0,lastFrame=0,draws=0,sounds=0,saves=0;
     std::uint64_t buttonRequests=0,buttonFailures=0;
     std::uint64_t emissions=0,playerEmissions=0,damage=0,kills=0;
@@ -97,6 +125,8 @@ struct ScenarioObservation {
     // The first tick is the real spawner pass, before newly appended actors tick.
     // Later totals can include legitimate respawns and must not replace it.
     std::array<std::uint64_t,3> firstSpawns{},enemySpawns{},enemyEmissions{},enemyDamage{},enemyKills{},enemyRemovals{};
+    std::array<std::uint64_t,3> firstKillFrames{},firstRemovalFrames{};
+    std::array<double,3> firstKillWorldTimes{},firstCrashDeadlines{},firstRemovalWorldTimes{};
     std::uint64_t bossSpawns=0,worldQuickUses=0;
     std::uint64_t dashStarts=0,dashMoveTicks=0,dashParticles=0,dashRandomCalls=0,dashSounds=0,dashInputFrame=0;
     float dashSPBefore=0,dashSPAfter=0,dashMaxDisplacement=0;
@@ -104,8 +134,15 @@ struct ScenarioObservation {
     bool dashInputAccepted=false;
     std::array<WeaponSwapObservation,2> botWeaponSwaps{};
     std::array<BotObservation,3> bots{};std::string botThreatName;std::uint64_t botThreatEmissions=0;HelpObservation help;GameOverObservation gameOver;RankingObservation ranking;CompletedMissionsObservation completedMissions;
+    RecentInputObservation recentInput;HUDLayoutObservation hudLayout;
 };
 struct ButtonActivity {unsigned scenario=0,id=0;int intData=0;bool delivered=false;};
+struct ResourceActivity {
+    std::uint64_t frame=0;unsigned scenario=0;std::string stage;
+    std::uint64_t gameRevisionBefore=0,gameRevisionAfter=0,uiRevisionBefore=0,uiRevisionAfter=0;
+    bool gameOwnerChanged=false,preparation=false;
+    std::vector<std::string> reads,exists,sourceReadMisses,sourceExistsMisses;
+};
 struct FrameActivity {
     std::uint64_t frame=0,tickedScenarios=0,emittingScenarios=0,emissions=0,damage=0,kills=0;
     std::vector<std::string> emittedWeaponParts;
@@ -115,6 +152,7 @@ struct FrameActivity {
     bool saveRestart=false,movementLootMoving=false;
     std::uint64_t movementLootEmissions=0,movementLootPickups=0,movementLootInjury=0;
     int movementLootCreditGain=0;
+    std::uint64_t recentInputEvents=0,hudInputEvents=0,lifecycleEvents=0;
     std::uint64_t aidKitUses=0,airStrikeUses=0,botEmissions=0,botItemContacts=0,botRewardArrivals=0,botHPRemoved=0,botRepairs=0,helpInputRequests=0,gameOverEvents=0,rankingNotices=0,completedMissionEvents=0;
 };
 struct ConcurrentMetrics {
@@ -127,7 +165,10 @@ struct ConcurrentMetrics {
     std::uint64_t movementFramesWithCombatActivity=0,pickupFramesWithCombatActivity=0,injuryFramesWithCombatActivity=0;
     std::uint64_t movementEmissionFramesWithCombatActivity=0,aidKitFramesWithCombatActivity=0,airStrikeFramesWithCombatActivity=0;
     std::uint64_t botFramesWithCombatActivity=0,helpFramesWithCombatActivity=0,gameOverFramesWithCombatActivity=0,rankingFramesWithCombatActivity=0,completedMissionFramesWithCombatActivity=0;
+    std::uint64_t recentInputFramesWithCombatActivity=0,hudFramesWithCombatActivity=0,lifecycleFramesWithCombatActivity=0;
     std::vector<std::string> warmReadNames,warmExistsNames;
+    std::uint64_t resourcePreparationOperations=0,preparationReadRequests=0,preparationExistsRequests=0,steadyReadRequests=0,steadyExistsRequests=0;
+    std::uint64_t preparationReadMisses=0,preparationExistsMisses=0,steadyReadMisses=0,steadyExistsMisses=0;
 };
 struct ValidationHost {
     virtual ~ValidationHost()=default;
@@ -141,6 +182,8 @@ struct ValidationHost {
     virtual void appendScenarioUI(unsigned,GameSession&,Frame&){}
     virtual void tickScenarioUI(unsigned,GameSession&,WorldRandom&){}
     virtual void sessionRestarted(unsigned,GameSession&){}
+    virtual void exerciseHUDLayout(unsigned,GameSession&,HUDLayoutObservation&,std::uint64_t){}
+    virtual std::uint64_t scenarioUIResourceRevision(unsigned){return 0;}
     // Native host performs real Screens begin/end. CPU hosts may use the same
     // ScreenAction consumer; return false when the requested button is absent.
     virtual bool pressButton(unsigned scenario,unsigned id,int intData=0)=0;
@@ -165,11 +208,13 @@ public:
     [[nodiscard]] Frame scenarioFrame(unsigned)const;
     GameSession& session(unsigned);
     ResourceAccess& cachedResources();
+    ResourceAccess& scenarioResources(unsigned);
     [[nodiscard]] std::size_t scenarioCount()const;
     [[nodiscard]] const std::vector<ScenarioDescription>& scenarios()const;
     [[nodiscard]] const std::vector<ScenarioObservation>& observations()const;
     [[nodiscard]] ConcurrentMetrics metrics()const;
     [[nodiscard]] const std::vector<FrameActivity>& frameActivity()const;
+    [[nodiscard]] const std::vector<ResourceActivity>& resourceActivity()const;
     [[nodiscard]] std::vector<std::string> supported()const;
     [[nodiscard]] std::vector<std::string> missingFeatures()const;
 };

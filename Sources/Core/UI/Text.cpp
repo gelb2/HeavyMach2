@@ -67,6 +67,15 @@ std::shared_ptr<const TextBitmap> TextPreparationCache::prepare(TextRasterizer& 
         throw std::runtime_error("Rasterizer changed original text layout");
     measureTextInk(*b);entries_.push_back(b);return b;
 }
+std::vector<const TextBitmap*> TextPreparationCache::discardUnused(){
+    std::vector<const TextBitmap*> discarded;
+    std::erase_if(entries_,[&](const auto& entry){if(entry.use_count()!=1)return false;discarded.push_back(entry.get());return true;});
+    return discarded;
+}
+std::shared_ptr<const TextBitmap> TextPreparationCache::retain(const TextBitmap* bitmap)const{
+    for(const auto& entry:entries_)if(entry.get()==bitmap)return entry;
+    return {};
+}
 Text::Text(std::string image,std::shared_ptr<const TextBitmap> bitmap):image_(std::move(image)),bitmap_(std::move(bitmap)){
     if(image_.empty()||!bitmap_)throw std::runtime_error("Missing prepared text resource");
     const auto l=textRasterLayout(bitmap_->request);

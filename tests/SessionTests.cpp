@@ -1,4 +1,5 @@
 #include "PreparedTextStub.hpp"
+#include "ResourceBoundaryLedger.hpp"
 #include "Core/Session/GameSession.hpp"
 #include "Core/Progression/Progression.hpp"
 #include "Core/Simulation/DarwinWorldRandom.hpp"
@@ -13,9 +14,10 @@ using namespace hm2;
 namespace {
 struct Files:ResourceAccess {
     std::filesystem::path root;unsigned reads=0;mutable unsigned probes=0;
+    std::vector<std::string> readRequests;mutable std::vector<std::pair<std::string,bool>> probeRequests;
     explicit Files(std::filesystem::path p):root(std::move(p)){}
-    Bytes read(std::string_view name)override{++reads;std::ifstream in(root/std::string(name),std::ios::binary);if(!in)throw std::runtime_error("Missing original test asset "+std::string(name));return Bytes(std::istreambuf_iterator<char>(in),{});}
-    bool exists(std::string_view name)const override{++probes;return std::filesystem::exists(root/std::string(name));}
+    Bytes read(std::string_view name)override{++reads;readRequests.emplace_back(name);std::ifstream in(root/std::string(name),std::ios::binary);if(!in)throw std::runtime_error("Missing original test asset "+std::string(name));return Bytes(std::istreambuf_iterator<char>(in),{});}
+    bool exists(std::string_view name)const override{++probes;const bool present=std::filesystem::exists(root/std::string(name));probeRequests.emplace_back(name,present);return present;}
 };
 struct Host:SessionHost {
     ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest& r)override{return test::preparedTextStub(r);}
@@ -75,10 +77,14 @@ int main(int argc,char** argv){
     assert(session.state().screen==ui::ScreenId::field&&session.battle());assert(host.writes.size()==afterBase);
     assert(std::abs(session.battle()->player().position.x+275)<.0001f&&std::abs(session.battle()->player().position.y+412)<.0001f);
     assert(std::abs(session.battle()->player().angle-1.57079637f)<.00001f);
-    const auto reads=files.reads,probes=files.probes;
-    for(unsigned i=0;i<600;++i){session.tick();if(!session.battle()->selectedEnemy())for(const auto& e:session.battle()->enemies())if(e.hp>0){session.battle()->selectEnemy(e.id);break;}session.drawWorld();}
+    test::ResourceBoundaryLedger battleResources(session,files);
+    for(unsigned i=0;i<600;++i){
+        battleResources.run([&]{session.tick();if(!session.battle()->selectedEnemy())for(const auto& e:session.battle()->enemies())if(e.hp>0){session.battle()->selectEnemy(e.id);break;}});
+        battleResources.draw([&]{return session.drawWorld();});
+    }
     assert(session.battle()->metrics().playerEmissions>0&&session.battle()->metrics().enemyEmissions>0);
-    assert(files.reads==reads&&files.probes==probes&&host.writes.size()==afterBase); // no shot/tick storage or asset IO
+    assert(battleResources.steadyActions>500&&battleResources.draws==600&&host.writes.size()==afterBase); // No shot/tick storage; first-use resources only at owner preparation.
+    battleResources.report("Session battle");
     button(session,ui::ScreenId::field,1021);const auto paused=session.battle()->clock().worldTime();session.tick();assert(session.battle()->clock().worldTime()==paused&&session.state().systemVisible);
     button(session,ui::ScreenId::field,1030);session.tick();assert(session.battle()->clock().worldTime()>paused&&!session.state().systemVisible);
     const auto beforeInactive=session.renderTime();session.setActive(false);session.tick();assert(session.renderTime()==beforeInactive);session.setActive(true);
@@ -207,13 +213,14 @@ int main(int argc,char** argv){
         auto* battle=aid.battle();const auto& initial=aid.state();const int maximum=initial.equipmentStats.baseHP+initial.equipmentStats.bonusHP;
         const int beforeHP=battle->playerHP(),beforeCount=countItem(aid,aidCodes[kit]);assert(beforeCount==5);
         const auto reads=aidFiles.reads,probes=aidFiles.probes;const auto writes=aidHost.writes.size();const auto randomCalls=aidRng.calls();
+        test::ResourceBoundaryLedger resources(aid,aidFiles);const auto resourceEpoch=aid.resourceRevision();
         const auto allocations=battle->metrics().particleAllocations;
         const auto repairs=std::count(aidHost.sounds.begin(),aidHost.sounds.end(),13u);
         action(aid,6200,ui::ButtonEventType::pop);assert(aid.state().selectedQuick==-1);
         action(aid,6200,ui::ButtonEventType::push);assert(aid.state().selectedQuick==0&&!aid.state().message.empty()&&aid.state().messageVisible&&!aid.state().messageAutoHide&&aid.state().messageBackground==0);
         const auto messageRevision=aid.state().messageRevision;
         const auto logical=battle->camera().toScreen(battle->player().position);
-        assert(aid.inputWorld(PointerPhase::begin,logical,88));
+        resources.run([&]{assert(aid.inputWorld(PointerPhase::begin,logical,88));});
         const int healed=kit<3?aidAmount[kit]:maximum*aidAmount[kit]/100;
         assert(battle->playerHP()==std::min(maximum,beforeHP+healed));
         std::array<std::uint8_t,SaveData::slotSize> copied{};std::copy(aid.workingSlot().begin(),aid.workingSlot().end(),copied.begin());progression::SlotView actual(copied);
@@ -221,8 +228,10 @@ int main(int argc,char** argv){
         assert(countItem(aid,aidCodes[kit])==4&&aid.state().quick[0].count==4&&aid.state().selectedQuick==-1&&aid.state().message.empty()&&!aid.state().messageVisible&&aid.state().messageRevision==messageRevision+1);
         assert(battle->metrics().particleAllocations==allocations+1&&aidRng.calls()==randomCalls+1);
         assert(std::count(aidHost.sounds.begin(),aidHost.sounds.end(),13u)==repairs+1);
-        assert(aidHost.writes.size()==writes&&aidFiles.reads==reads&&aidFiles.probes==probes);
-        aid.tick();const auto frame=aid.drawWorld();
+        assert(aidHost.writes.size()==writes&&aidFiles.reads==reads+1&&aidFiles.probes==probes+1&&aid.resourceRevision()>resourceEpoch);
+        const auto repairName=std::string("Icon")+aidCodes[kit]+".png";
+        assert((resources.requestedNames==std::set<std::string,std::less<>>{repairName}));
+        resources.run([&]{aid.tick();});const auto frame=resources.draw([&]{return aid.drawWorld();});
         const auto bots=battle->bots();assert(bots.size()==1&&bots.front().name=="Bot_P01");
         assert(imageCount(frame,"HPGauge.png")==2+2*bots.size()&&imageCount(frame,std::string("Icon")+aidCodes[kit]+".png")==1);
         std::size_t playerGauges=0,botGauges=0;
@@ -246,6 +255,12 @@ int main(int argc,char** argv){
             }
         }
         assert(playerGauges==1&&botGauges==bots.size());
+        // Reuse through a second real repair, after all first-use HP/UI checks.
+        const auto warmEpoch=aid.resourceRevision();const auto* icon=battle->preparedTile(repairName);const int replayHP=battle->playerHP();const auto replayRNG=aidRng.calls();
+        resources.run([&]{action(aid,6200,ui::ButtonEventType::push);assert(aid.inputWorld(PointerPhase::begin,battle->camera().toScreen(battle->player().position),89));});
+        assert(battle->playerHP()==std::min(maximum,replayHP+healed)&&countItem(aid,aidCodes[kit])==3&&aidRng.calls()==replayRNG+1);
+        assert(battle->preparedTile(repairName)==icon&&aid.resourceRevision()==warmEpoch&&aidFiles.reads==reads+1&&aidFiles.probes==probes+1&&aidHost.writes.size()==writes);
+        resources.report(repairName);
         // Arm/toggle the actual AirStrike selector without a world target.
         const int airCount=countItem(aid,"02004");const auto unsupported=aid.metrics().unsupportedActions;
         action(aid,6201,ui::ButtonEventType::push);assert(countItem(aid,"02004")==airCount&&aid.state().selectedQuick==1&&aid.metrics().unsupportedActions==unsupported);
@@ -259,26 +274,30 @@ int main(int argc,char** argv){
         for(unsigned i=0;i<200;++i)if(original.string(0x8c+i*6,6)==airCodes[strike]){original.string(0x8c+i*6,6,"");original.byte(0x53c+i,0);}
         original.string(0x8c+5*6,6,airCodes[strike]);original.byte(0x53c+5,5);original.string(0x61c,6,airCodes[strike]);
         GameSession air(airFiles,airHost,airRng,start);assert(air.selectSlot(0)&&air.enterField("Stage01_01",0));air.tick();auto* battle=air.battle();
+        for(unsigned i=0;air.help()&&i<6;++i){air.inputOverlay(PointerPhase::begin,{384,512},700+i);air.inputOverlay(PointerPhase::end,{384,512},700+i);}assert(!air.help());
         auto enemies=battle->enemies();assert(!enemies.empty());auto target=enemies.front();float nearest=1e30f;
         for(const auto& enemy:enemies){const auto logical=battle->camera().toScreen(enemy.position);if(logical.x<0||logical.x>768||logical.y<100||logical.y>1024)continue;
             const auto player=battle->player().position;const float dx=enemy.position.x-player.x,dy=enemy.position.y-player.y;const float d=dx*dx+dy*dy;if(d<nearest){nearest=d;target=enemy;}}
         assert(nearest<1e30f);const auto logical=battle->camera().toScreen(target.position);(void)air.state(); // Finish initial UI preparation before frame/use IO gate.
-        const auto reads=airFiles.reads,probes=airFiles.probes;const auto writes=airHost.writes.size();const auto randomCalls=airRng.calls();const auto allocations=battle->metrics().particleAllocations;
+        test::ResourceBoundaryLedger resources(air,airFiles);
+        const auto writes=airHost.writes.size();const auto randomCalls=airRng.calls();const auto allocations=battle->metrics().particleAllocations;
         const auto sfx9=std::count(airHost.sounds.begin(),airHost.sounds.end(),9u);
-        action(air,6200,ui::ButtonEventType::push);assert(countItem(air,airCodes[strike])==5&&air.state().selectedQuick==0);
-        assert(air.inputWorld(PointerPhase::begin,logical,91));assert(countItem(air,airCodes[strike])==4&&air.state().selectedQuick==-1);
+        resources.run([&]{action(air,6200,ui::ButtonEventType::push);});assert(countItem(air,airCodes[strike])==5&&air.state().selectedQuick==0);
+        resources.run([&]{assert(air.inputWorld(PointerPhase::begin,logical,91));});assert(countItem(air,airCodes[strike])==4&&air.state().selectedQuick==-1);
         assert(battle->activeAirStrikes()==1&&battle->metrics().airStrikeRequests==1&&battle->metrics().airStrikeProjectiles==0);
         assert(airRng.calls()==randomCalls+1&&battle->metrics().particleAllocations==allocations+1&&std::count(airHost.sounds.begin(),airHost.sounds.end(),9u)==sfx9+1);
         const auto frozenWorld=battle->clock().worldTime();const auto actorTicks=battle->metrics().airStrikeTicks;
-        battle->setPaused(true);for(unsigned i=0;i<3;++i)air.tick();
+        battle->setPaused(true);for(unsigned i=0;i<3;++i)resources.run([&]{air.tick();});
         assert(battle->clock().worldTime()==frozenWorld&&battle->metrics().airStrikeTicks==actorTicks+3&&battle->metrics().airStrikeProjectiles==0);
-        battle->setPaused(false);const auto inactiveTicks=battle->metrics().airStrikeTicks;air.setActive(false);air.tick();assert(battle->metrics().airStrikeTicks==inactiveTicks);air.setActive(true);
-        bool plane=false,marker=false;for(unsigned i=0;i<360;++i){air.tick();const auto frame=air.drawWorld();plane|=imageCount(frame,"Airplane.png")>0;marker|=imageCount(frame,"Target.png")>0;}
+        battle->setPaused(false);const auto inactiveTicks=battle->metrics().airStrikeTicks;resources.run([&]{air.setActive(false);air.tick();});assert(battle->metrics().airStrikeTicks==inactiveTicks);resources.run([&]{air.setActive(true);});
+        assert(air.state().systemVisible&&battle->isPaused());resources.run([&]{action(air,1021);});assert(!battle->isPaused());
+        bool plane=false,marker=false;for(unsigned i=0;i<360;++i){resources.run([&]{air.tick();});const auto frame=resources.draw([&]{return air.drawWorld();});plane|=imageCount(frame,"Airplane.png")>0;marker|=imageCount(frame,"Target.png")>0;}
         std::cout<<"HM2_SESSION_AIRSTRIKE "<<airCodes[strike]<<" projectiles="<<battle->metrics().airStrikeProjectiles<<" actualDamageCalls="<<battle->metrics().airStrikeDamageCalls<<" enemyHPRemoved="<<battle->metrics().airStrikeEnemyHPRemoved<<" plane="<<plane<<" marker="<<marker<<" remaining="<<battle->activeAirStrikes()<<"\n";
         assert(battle->metrics().playerEmissions==0&&battle->metrics().airStrikeEnemyHPRemoved>0&&battle->metrics().airStrikeProjectiles==airShots[strike]&&battle->metrics().airStrikeDamageCalls>0&&battle->activeAirStrikes()==0&&plane&&marker);
-        assert(airFiles.reads==reads&&airFiles.probes==probes&&airHost.writes.size()==writes&&countItem(air,airCodes[strike])==4);
+        assert(airHost.writes.size()==writes&&countItem(air,airCodes[strike])==4&&resources.steadyActions>350&&resources.draws==360);
+        resources.report(airCodes[strike]);
     }
     std::cout<<"HM2_SESSION six actual AidKit quick/world input HP+slot+gauge/particle/count/SFX/save+IO gates PASS\n";
     std::cout<<"HM2_SESSION menu phases/mission/trade/drag/actualFrame weapon replacement/independent save-bit/scalarRevision/originalIcons PASS\n";
-    std::cout<<"HM2_SESSION slots/base/mission/battle shared RNG, independent game state, explicit save/failure, warmIO=0 PASS\n";
+    std::cout<<"HM2_SESSION slots/base/mission/battle shared RNG, independent game state, explicit save/failure, firstUseOwned/steadyIO0/drawIO0 PASS\n";
 }
