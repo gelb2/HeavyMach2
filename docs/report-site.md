@@ -1,5 +1,11 @@
 # HeavyMach 2 보고 사이트
 
+## 수치별 분리·에셋 미리보기 게시 — HUD 버전2 / 누적 Site 버전302
+
+[수정한 HUD 보고](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/)에 독립11조각과 좌우 패널2개, 에셋의 결합/분리 표, 클래식 캡처8장과 원본 크기의 디코딩 미리보기9장을 게시했다. 게임 코드·원본 에셋·설치본은 변경하지 않았다. HP/SP 숫자 추가 표시와 현재 소비하지 않는 GaugeHP/Booster 파일을 기존 기능으로 보고하지 않는다.
+
+HUD 소스6c84f87e23626cb885b48da038061800a79e8ace / 배포appgdep_6af86a73907881918cdc46ec70e7a8b3, 기존 누적 Site 소스19c17356f959bde310faf012711b186f0106f855 / 배포appgdep_6af86adfd300819194f1d3c249e905fc의 succeeded를 확인했다. HUD의 HTML·CSS·PNG17개 총19파일을 인증 HTTP200으로 확인했다. PNG17개와 CSS는 로컬 해시가 같다. HTML은 서비스 삽입 코드 때문에 파일 해시 동일 대신 본문과 figure17개를 확인했다. 기존 첫화면·고정 목록·이전 HUD 경로·월드HUD 페이지의 새 보고 연결도 인증 HTTP로 확인했다. 기존 미디어는 이전299와 같다. 이번 온라인 브라우저 시각 검수는 하지 않았다.
+
 ## HUD 보고 게시 완료·수치별 분리 계획
 
 [ExperimentalHUD 보고](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/)는 본인만 접근하는 비공개 Site다. 최초 버전1/소스7133d5a1a59c7e8b3256958cd36adbd2066632ce, 배포appgdep_6af8674615408191b823dbb07bf7e55b의 succeeded를 확인했다. 원본 클래식 캡처8개와 CSS를 인증 HTTP로 읽어 로컬 해시와 대조했고 HTML 본문/8개 figure도 확인했다. 온라인 브라우저 시각 검수는 하지 않았다. 과거300 게시 실패/승인대기는 아래 이력으로 보존한다.
