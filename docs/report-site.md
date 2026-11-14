@@ -1,6 +1,18 @@
 # HeavyMach 2 보고 사이트
 
-## ExperimentalHUD 계획·원본 캡처8장 — 버전300 게시 실패
+## HUD 보고 게시 완료·수치별 분리 계획
+
+[ExperimentalHUD 보고](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/)는 본인만 접근하는 비공개 Site다. 최초 버전1/소스7133d5a1a59c7e8b3256958cd36adbd2066632ce, 배포appgdep_6af8674615408191b823dbb07bf7e55b의 succeeded를 확인했다. 원본 클래식 캡처8개와 CSS를 인증 HTTP로 읽어 로컬 해시와 대조했고 HTML 본문/8개 figure도 확인했다. 온라인 브라우저 시각 검수는 하지 않았다. 과거300 게시 실패/승인대기는 아래 이력으로 보존한다.
+
+기존 Site는 버전301/소스2dc3588c444b9b8c0c3c15aaef5b8d78f77e249c, 배포appgdep_6af86831b810819193edc992d0a6501f가 succeeded다. 기존 첫화면과 HeavyMach2 고정 목록은 위 보고로 연결하고 예전 experimental-hud.html 경로도 링크/자동이동을 제공한다. 기존 미디어는299와 동일하게 보존했다. tar member268,426,752바이트로256MiB 한도 안이다.
+
+보고 전용 Site ID는 `appgprj_6af8664612288191b813654dfb95323f`, 소스는 `.local/evidence/experimental-hud-plan-20261114/standalone-site`다. 기존 주 보고 Site와 모두 본인1명·그룹0·외부0 접근을 유지한다. 게임 구현·iPhone 설치·develop/main 병합은 이번 문서 작업에 포함하지 않았다.
+
+최신 계획은 상태 전체를 묶는7조각에서 HP·BOOSTER/SP·EXP·레벨·보유금을 각각 나누는11조각+좌우 패널2개로 수정했다. BG에 합쳐진 표식과 별도 게이지/숫자를 구분하고 원본9개의 같은 크기 디코딩 미리보기를 추가한다. 원본 파일을 수정하거나 게임 코드에 분석용 ImageIO/CoreGraphics를 추가하지 않았다.
+
+최신 빌드 정리:281항목/1,970,885,331바이트 삭제, 유지 실행파일9개·원본IPA6개 해시 확인. 저장·로그·캡처·xcresult·Instruments 기록은 보존했다. [정리 근거](evidence/latest-build-cleanup-20261114.json).
+
+## 과거 기록: ExperimentalHUD 계획·원본 캡처8장 — 버전300 게시 실패
 
 계획·TODO·실제 클래식 캡처 근거는 작업 브랜치ec2e236에 커밋·푸시했다. [원고](experimental-hud-plan-20261114.md)는 기능 UI/정보 유지·장식 제거, 7조각·좌우 무기 선택 패널2개의 이동/저장, 레이더 상시 표시·새 숨김 기능 금지를 포함한다. 기존3조각이나 Experimental 구현 완료로 혼동하지 않는다. 새6장과 이전포털2장의 원본 PNG를 바꾸지 않고 보고서에 넣었다. Safari 로컬 미리보기에서 본문·원본 이미지·분석 번호 표시를 확인했다. 원본8파일 해시 일치와23페이지·누적 목록 링크를 검사했다.
 
