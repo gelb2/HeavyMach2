@@ -170,9 +170,11 @@ def main():
         body = render(text, source, ref)
         payload[page] = {'html': body}
         source_url = 'https://github.com/gelb2/HeavyMach2/blob/' + quote(ref, safe='') + '/' + source_name
+        navigation = ('<details><summary>관련 조사 문서</summary><div id="report-navigation"></div></details>'
+                      if page == 'camera-baseline.html' else '<div id="report-navigation"></div>')
         full = ('<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
                 '<title>' + html.escape(title) + '</title><link rel="stylesheet" href="report.css"><script src="report.js" defer></script></head><body data-page="' + page + '"><main>'
-                '<a href="../heavymach2-restoration-20261110/#report-log">HeavyMach2 누적 보고 목록</a><div id="report-navigation"></div>' +
+                '<a href="../heavymach2-restoration-20261110/#report-log">HeavyMach2 누적 보고 목록</a>' + navigation +
                 '<p class="meta" id="load-status">문서를 불러오는 중입니다.</p><div id="report-content"></div>' +
                 '<noscript><p>문서 표시에는 JavaScript가 필요합니다. 아래 GitHub 원고에서도 읽을 수 있습니다.</p></noscript>' +
                 '<footer><p id="report-footer-note"></p>'
