@@ -191,6 +191,7 @@ NSDictionary* ConcurrentRuntime::verifyInactiveInputDiscard(){
     std::shared_ptr<ui::Button> held;for(const auto& key:view.screens->buttons())if(key.id==2100){auto button=view.screens->button(key);if(button&&button->visible&&button->active){held=button;break;}}
     if(!held)throw std::runtime_error("Missing real shop close button for interruption");
     const auto beforeFrames=p.runner->metrics().frames,beforeWrites=p.saveWrites;const int credit=game.state().credits;const auto screen=game.state().screen;
+    view.screens->revealButton(held->key());
     const auto point=view.screens->buttonScreenPosition(held->key());const auto beforeEvents=view.events[std::pair{2100u,0}];
     view.screens->input(PointerPhase::begin,point,900000,game.renderTime());const bool captured=held->capturedPointer()==900000&&held->pressed();
     std::vector<unsigned> running;for(unsigned i=0;i<p.runner->scenarioCount();++i)if(const auto* scene=p.runner->session(i).battle();scene&&scene->playerHP()>0&&!scene->isPaused())running.push_back(i);
