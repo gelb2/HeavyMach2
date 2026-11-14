@@ -33,7 +33,7 @@
     NSString* _startupError;
     NSURL* _resourceRoot;
     NSURL* _saveFile;
-    BOOL _active,_requestInFlight,_uiTesting,_startupErrorShown;
+    BOOL _active,_audioActive,_requestInFlight,_uiTesting,_startupErrorShown;
     std::uint64_t _frames,_selectionTouches,_selectedByTouch,_gameOverConfirmTick;
     NSInteger _lastProfileThermalState;CFTimeInterval _lastProfileThermalSample;
 #if DEBUG
@@ -47,7 +47,7 @@
 + (Class)layerClass{return CAEAGLLayer.class;}
 - (instancetype)initWithFrame:(CGRect)frame {
     if(!(self=[super initWithFrame:frame]))return nil;
-    self.multipleTouchEnabled=YES;self.contentScaleFactor=UIScreen.mainScreen.scale;_active=YES;_lastProfileThermalState=-1;
+    self.multipleTouchEnabled=YES;self.contentScaleFactor=UIScreen.mainScreen.scale;_active=_audioActive=YES;_lastProfileThermalState=-1;
     CAEAGLLayer* layer=(CAEAGLLayer*)self.layer;layer.opaque=YES;
     layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
     _resourceRoot=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];
@@ -204,6 +204,11 @@
 - (void)touchesEnded:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event{[self input:touches phase:hm2::PointerPhase::end];}
 - (void)touchesCancelled:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event{[self input:touches phase:hm2::PointerPhase::cancel];}
 - (void)setActive:(BOOL)active{if(_active==active)return;_active=active;_display.paused=!active;if(_runtime)_runtime->setActive(active);}
+- (void)setAudioActive:(BOOL)active{
+    if(_audioActive==active)return;_audioActive=active;
+    try{if(_runtime)_runtime->setAudioActive(active);}catch(const std::exception& e){[self failRuntime:[NSString stringWithUTF8String:e.what()]];}
+    [self updateTestState];
+}
 - (void)updateTestInputHistory{
 #if DEBUG
     if(!_uiTesting||!_runtime)return;
@@ -223,6 +228,8 @@
     if(!_runtime){self.accessibilityValue=_startupError?[@"error=" stringByAppendingString:_startupError]:@"loading=1";return;}
     auto& game=_runtime->session();const auto& state=game.state();const auto& metrics=game.metrics();
     NSMutableString* value=[NSMutableString stringWithFormat:@"ticks=%llu;screen=%u;selectedSlot=%d;saves=%llu;saveCompletions=%llu;unsupported=%llu;slot0Used=%d;slot1Used=%d;slot2Used=%d;slot0Name=%s",_frames,unsigned(state.screen),state.selectedSlot,metrics.saveRequests,metrics.saveCompletions,metrics.unsupportedActions,state.slots[0].used,state.slots[1].used,state.slots[2].used,state.slots[0].name.c_str()];
+    [value appendFormat:@";applicationActive=%d;audioOutputActive=%d",_active,_audioActive];
+    [value appendFormat:@";sessionRenderTime=%.9f;doorTopY=%.9f;doorBottomY=%.9f",game.renderTime(),game.screenTransition().top.y,game.screenTransition().bottom.y];
     [value appendFormat:@";canvasWidth=%.6f;canvasHeight=%.6f",game.display().canvas.width,game.display().canvas.height];
     const hm2::DisplayLayout layout(game.display());const auto safe=game.display().content();const auto listClip=layout.clip(hm2::DisplayRegion::list).value_or(safe);
     [value appendFormat:@";safeX=%.6f;safeY=%.6f;safeWidth=%.6f;safeHeight=%.6f;listClipY=%.6f;listClipTop=%.6f",safe.x,safe.y,safe.width,safe.height,listClip.y,listClip.y+listClip.height];

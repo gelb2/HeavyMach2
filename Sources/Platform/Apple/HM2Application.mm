@@ -5,6 +5,7 @@
 #import "HM2SourceView.h"
 #include "Platform/Apple/HM2ConcurrentRuntime.hpp"
 #include <memory>
+#include <cstdint>
 
 #ifndef HM2_VALIDATION
 #define HM2_VALIDATION 0
@@ -15,6 +16,7 @@
 #if HM2_VALIDATION
 @interface HM2PreviewView:UIView
 - (void)setActive:(BOOL)active;
+- (void)setAudioActive:(BOOL)active;
 - (void)display:(CADisplayLink*)link;
 @end
 @interface HM2DisplayTarget:NSObject
@@ -85,6 +87,7 @@
     if(!_validationFinished)_concurrent->setActive(active);else _display.paused=YES;
 
 }
+- (void)setAudioActive:(BOOL)active{if(!_validationFinished)_concurrent->setAudioActive(active);}
 - (void)dealloc{[_display invalidate];}
 @end
 #endif
@@ -107,9 +110,12 @@
 
 @interface HM2SceneDelegate:UIResponder<UIWindowSceneDelegate>
 @property(nonatomic,strong)UIWindow* window;
+- (BOOL)reactivateForegroundAudioSession;
+- (void)recoverForegroundAudioSession;
 @end
 @implementation HM2SceneDelegate {
-    BOOL _sceneActive,_audioInterrupted;
+    BOOL _sceneActive,_audioInterrupted,_audioActivationNeeded;
+    std::uint64_t _audioStateRevision;
 }
 - (void)scene:(UIScene*)scene willConnectToSession:(UISceneSession*)session options:(UISceneConnectionOptions*)options {
     if(![scene isKindOfClass:UIWindowScene.class])return;
@@ -120,19 +126,57 @@
 - (void)setGameActive:(BOOL)active {
     _sceneActive=active;
     UIView* view=self.window.rootViewController.view;
-    if([view respondsToSelector:@selector(setActive:)])[(HM2SourceView*)view setActive:_sceneActive&&!_audioInterrupted];
+    // Scene activity owns rendering/input. Audio interruption pauses combat
+    // through the common runtime while foreground menus continue responding.
+    if([view respondsToSelector:@selector(setActive:)])[(HM2SourceView*)view setActive:_sceneActive];
+    if([view respondsToSelector:@selector(setAudioActive:)])[(HM2SourceView*)view setAudioActive:_sceneActive&&!_audioInterrupted];
+}
+- (BOOL)reactivateForegroundAudioSession {
+    // This is OS session ownership, not an effect player/context replacement.
+    // An interruption Begin has no guaranteed matching Ended notification.
+    // Retry at actual foreground/Ended boundaries, never on display callbacks.
+    NSError* error=nil;const BOOL ready=[AVAudioSession.sharedInstance setActive:YES error:&error];
+    NSLog(@"HM2_AUDIO_SESSION_REACTIVATE ready=%d error=%ld sceneActive=%d",ready,(long)error.code,_sceneActive);
+    return ready;
+}
+- (void)recoverForegroundAudioSession {
+    if(!_sceneActive)return;
+    const auto revision=_audioStateRevision;const BOOL ready=[self reactivateForegroundAudioSession];
+    // A synchronous OS call may deliver a newer interruption/background event.
+    // Its state wins over the result of the older activation attempt.
+    if(!_sceneActive||revision!=_audioStateRevision)return;
+    _audioInterrupted=!ready;_audioActivationNeeded=!ready;
 }
 - (void)audioInterrupted:(NSNotification*)notification {
     // Session interruption can begin while the Scene is still foreground.
     // Ending the interruption must never reactivate a background Scene.
     if(!NSThread.isMainThread){__weak HM2SceneDelegate* weakSelf=self;dispatch_async(dispatch_get_main_queue(),^{[weakSelf audioInterrupted:notification];});return;}
     NSNumber* type=notification.userInfo[AVAudioSessionInterruptionTypeKey];if(!type)return;
-    _audioInterrupted=type.unsignedIntegerValue==AVAudioSessionInterruptionTypeBegan;
+    if(type.unsignedIntegerValue!=AVAudioSessionInterruptionTypeBegan&&type.unsignedIntegerValue!=AVAudioSessionInterruptionTypeEnded)return;
+    ++_audioStateRevision;_audioActivationNeeded=YES;
+    if(type.unsignedIntegerValue==AVAudioSessionInterruptionTypeBegan){
+        const NSNumber* reason=notification.userInfo[AVAudioSessionInterruptionReasonKey];
+        const BOOL suspended=[notification.userInfo[AVAudioSessionInterruptionWasSuspendedKey] boolValue]||(reason&&reason.unsignedIntegerValue==AVAudioSessionInterruptionReasonAppWasSuspended);
+        // The legacy suspension reason describes the prior background period,
+        // not a new call. A delayed report must not freeze an already restored
+        // foreground or override a newer ordinary interruption still pending.
+        if(suspended){
+            if(_sceneActive&&!_audioInterrupted)[self recoverForegroundAudioSession];
+        }else _audioInterrupted=YES;
+    }else if(type.unsignedIntegerValue==AVAudioSessionInterruptionTypeEnded){
+        if(_sceneActive)[self recoverForegroundAudioSession];else _audioInterrupted=NO;
+    }
     [self setGameActive:_sceneActive];
 }
-- (void)sceneWillResignActive:(UIScene*)scene{[self setGameActive:NO];}
-- (void)sceneDidEnterBackground:(UIScene*)scene{[self setGameActive:NO];}
-- (void)sceneDidBecomeActive:(UIScene*)scene{[self setGameActive:YES];}
+- (void)sceneWillResignActive:(UIScene*)scene{++_audioStateRevision;_audioActivationNeeded=YES;[self setGameActive:NO];}
+- (void)sceneDidEnterBackground:(UIScene*)scene{++_audioStateRevision;_audioActivationNeeded=YES;[self setGameActive:NO];}
+- (void)sceneDidBecomeActive:(UIScene*)scene{
+    _sceneActive=YES;
+    if(_audioInterrupted||_audioActivationNeeded)[self recoverForegroundAudioSession];
+    // Keep a reentrant background change inactive. Becoming active restores
+    // the view clock/input; shared GameSession still requires manual Resume.
+    [self setGameActive:_sceneActive];
+}
 - (void)sceneDidDisconnect:(UIScene*)scene{[self setGameActive:NO];self.window=nil;}
 - (void)dealloc{[NSNotificationCenter.defaultCenter removeObserver:self];}
 @end

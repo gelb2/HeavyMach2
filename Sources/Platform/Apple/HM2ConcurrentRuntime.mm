@@ -51,7 +51,7 @@ struct ConcurrentRuntime::Impl:validation::ValidationHost {
     std::vector<std::unique_ptr<UI>> interfaces;
     std::unique_ptr<ui::TextRasterizer> rasterizer=makeTextRasterizer();ui::TextPreparationCache textCache;
     std::map<const ui::TextBitmap*,std::string> textNames;
-    bool preparing=true,active=true,resourcesDirty=true;std::uint64_t presented=0,saveWrites=0,nextTextIdentity=0,ownerBoundaryEvents=0;
+    bool preparing=true,active=true,audioActive=true,resourcesDirty=true;std::uint64_t presented=0,saveWrites=0,nextTextIdentity=0,ownerBoundaryEvents=0;
     std::uint64_t steadyDrawImageReads=0,steadyDrawImageDecodes=0,steadyDrawTextureUploads=0;
     NSUInteger warmUploads=0,warmImageUploads=0,warmImageReads=0,warmImageDecodes=0;NSDictionary* warmAudio;NSArray<NSDictionary*>* warmAudioPreparations;NSData* legacyComparison;NSDictionary* interruption;
     unsigned maxPlaying=0,maxProgressing=0;NSArray<NSString*>* progressingNames=@[];
@@ -160,7 +160,7 @@ struct ConcurrentRuntime::Impl:validation::ValidationHost {
         }
         return false;
     }
-    void sound(unsigned,std::string_view name,Vec2 p)override{if(!name.empty()&&![audio playEffect:name x:p.x y:p.y])throw std::runtime_error(audio.lastError.UTF8String);}
+    void sound(unsigned,std::string_view name,Vec2 p)override{if(!active||!audioActive)return;if(!name.empty()&&![audio playEffect:name x:p.x y:p.y])throw std::runtime_error(audio.lastError.UTF8String);}
     void soundID(unsigned index,unsigned id,Vec2 p)override{if(id<22){++soundIDRequests[id];sound(index,audio::soundFilename(id),p);}}
     bool writeSave(unsigned index,std::span<const std::uint8_t> bytes,SaveReason)override{
         NSURL* path=[directory URLByAppendingPathComponent:[NSString stringWithFormat:@"scenario-%03u.sav",index]];NSError* error=nil;
@@ -178,7 +178,12 @@ ConcurrentRuntime::ConcurrentRuntime(NSURL* root,NSURL* directory):impl_(std::ma
 ConcurrentRuntime::~ConcurrentRuntime(){[impl_->audio setActive:NO];}
 void ConcurrentRuntime::tick(){auto& p=*impl_;if(!p.active)return;const auto begin=std::chrono::steady_clock::now();p.sampleAudio();p.runner->tick();p.releaseExpiredOwners();p.tickCost=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-begin).count();}
 void ConcurrentRuntime::draw(CAEAGLLayer* layer,Size viewport){auto& p=*impl_;const auto begin=std::chrono::steady_clock::now();const auto frame=p.runner->drawFrame(viewport);p.releaseExpiredOwners();const auto reads=p.renderer.imageResourceReads,decodes=p.renderer.imageDecodeCalls,uploads=p.renderer.textureUploads;[p.renderer drawFrame:frame layer:layer];p.steadyDrawImageReads+=p.renderer.imageResourceReads-reads;p.steadyDrawImageDecodes+=p.renderer.imageDecodeCalls-decodes;p.steadyDrawTextureUploads+=p.renderer.textureUploads-uploads;++p.presented;const auto& activity=p.runner->frameActivity();const auto frameNumber=activity.empty()?0:activity.back().frame;if(const auto scenario=capturedScenario(unsigned(frameNumber)))p.retainSnapshot(unsigned(frameNumber),p.runner->scenarioFrame(*scenario));p.costs.push_back(p.tickCost+std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-begin).count());}
-void ConcurrentRuntime::setActive(bool active){auto& p=*impl_;if(!active)for(auto& view:p.interfaces)if(view->screens)view->screens->discardInputs();p.active=active;p.runner->setActive(active);[p.audio setActive:active];}
+void ConcurrentRuntime::setActive(bool active){auto& p=*impl_;if(!active)for(auto& view:p.interfaces)if(view->screens)view->screens->discardInputs();p.active=active;p.runner->setActive(active);[p.audio setActive:active&&p.audioActive];}
+void ConcurrentRuntime::setAudioActive(bool active){
+    auto& p=*impl_;if(p.audioActive==active)return;p.audioActive=active;
+    if(!active){for(auto& view:p.interfaces)if(view->screens)view->screens->discardInputs();p.runner->setActive(false);p.runner->setActive(p.active);}
+    [p.audio setActive:p.active&&active];
+}
 NSDictionary* ConcurrentRuntime::verifyInactiveInputDiscard(){
     auto& p=*impl_;unsigned index=0;for(;index<p.runner->scenarioCount();++index)if(p.runner->scenarios()[index].role==validation::ScenarioRole::shop)break;
     if(index==p.runner->scenarioCount())throw std::runtime_error("Missing real shop interruption case");

@@ -24,7 +24,13 @@
 - (void)wait:(BOOL(^)(void))condition description:(NSString*)description timeout:(NSTimeInterval)timeout {
     NSPredicate* predicate=[NSPredicate predicateWithBlock:^BOOL(id object,NSDictionary* bindings){return condition();}];
     XCTestExpectation* expectation=[[XCTNSPredicateExpectation alloc]initWithPredicate:predicate object:nil];expectation.expectationDescription=description;
-    [self waitForExpectations:@[expectation] timeout:timeout];
+    const auto result=[XCTWaiter waitForExpectations:@[expectation] timeout:timeout];
+    if(result!=XCTWaiterResultCompleted){
+        XCUIApplication* app=[[XCUIApplication alloc]initWithBundleIdentifier:@"com.gelb2.heavymach2.restored"];XCUIElement* world=app.otherElements[@"hm2.world"];
+        const auto actual=[self state:world];[self attachPathState:actual name:[@"Wait failure: " stringByAppendingString:description]];
+        NSMutableDictionary* scalar=[actual mutableCopy];[scalar removeObjectForKey:@"inputHistoryBase64"];
+        XCTFail(@"%@ (wait result %ld), actual state: %@",description,(long)result,scalar);
+    }
 }
 - (XCUICoordinate*)coordinateLogical:(CGPoint)logical world:(XCUIElement*)world {
     const auto state=[self state:world];const CGRect bounds=world.frame;const CGFloat width=[state[@"canvasWidth"] doubleValue],height=[state[@"canvasHeight"] doubleValue];
@@ -179,6 +185,29 @@
     }
     [app terminate];
 }
+- (void)testOSBackgroundReturnKeepsHubInteractive{
+    self.continueAfterFailure=NO;XCUIApplication* app=[[XCUIApplication alloc]initWithBundleIdentifier:@"com.gelb2.heavymach2.restored"];NSString* run=NSUUID.UUID.UUIDString;
+    app.launchEnvironment=@{@"HM2_UI_TESTING":@"1",@"HM2_UI_TEST_RUN":run,@"HM2_UI_TEST_FIXTURE":@"completedMissions"};[app launch];
+    XCUIElement* world=app.otherElements[@"hm2.world"];XCTAssertTrue([world waitForExistenceWithTimeout:15]);[self titleToSlots:world];[self tapButton:1001 data:0 world:world];
+    [self wait:^BOOL{const auto s=[self state:world];return [s[@"screen"] intValue]==3&&[s[@"doorPhase"] intValue]==8;} description:@"original-format base save opens hub" timeout:60];
+    if([[self state:world][@"helpVisible"] boolValue]){[self tapHelpX:384 world:world];[self wait:^BOOL{return ![[self state:world][@"helpVisible"] boolValue];} description:@"original first-base Help closes"] ;}
+    for(unsigned cycle=0;cycle<3;++cycle){
+        const auto before=[self state:world];const auto beforeTicks=[before[@"ticks"] longLongValue];const auto credits=[before[@"credits"] longLongValue];
+        [XCUIDevice.sharedDevice pressButton:XCUIDeviceButtonHome];[self wait:^BOOL{return app.state==XCUIApplicationStateRunningBackground||app.state==XCUIApplicationStateRunningBackgroundSuspended;} description:@"hub actually enters OS background"];
+        [app activate];world=app.otherElements[@"hm2.world"];
+        [self wait:^BOOL{const auto s=[self state:world];return world.exists&&[s[@"screen"] intValue]==3&&[s[@"ticks"] longLongValue]>=beforeTicks+12;} description:@"foreground hub display callbacks recover"];
+        [self tapButton:2002 data:0 world:world];[self tapButton:2002 data:0 world:world];[self wait:^BOOL{const auto s=[self state:world];return [s[@"screen"] intValue]==6&&[s[@"doorPhase"] intValue]==8;} description:@"foreground hub Shop button and doors respond"];
+        if([[self state:world][@"helpVisible"] boolValue]){[self tapHelpX:384 world:world];[self wait:^BOOL{return ![[self state:world][@"helpVisible"] boolValue];} description:@"original first-shop Help closes"];}
+        [self tapButton:2100 data:0 world:world];
+        NSPredicate* returned=[NSPredicate predicateWithBlock:^BOOL(id object,NSDictionary* bindings){const auto s=[self state:world];return [s[@"screen"] intValue]==3&&[s[@"doorPhase"] intValue]==8;}];
+        XCTNSPredicateExpectation* exit=[[XCTNSPredicateExpectation alloc]initWithPredicate:returned object:nil];const auto result=[XCTWaiter waitForExpectations:@[exit] timeout:15];
+        [self attachPathState:[self state:world] name:[NSString stringWithFormat:@"OS foreground hub exit state cycle%u",cycle+1]];
+        XCTAssertEqual(result,XCTWaiterResultCompleted,@"Actual Shop close and doors: %@",[self state:world]);
+        const auto after=[self state:world];XCTAssertEqual([after[@"credits"] longLongValue],credits);XCTAssertEqualObjects(after[@"location"],before[@"location"]);
+        [self attachPathState:after name:[NSString stringWithFormat:@"OS foreground hub Shop and return cycle%u",cycle+1]];
+        NSLog(@"HM2_OS_BACKGROUND_HUB cycle=%u beforeTicks=%@ afterTicks=%@ shopAndReturn=1",cycle+1,before[@"ticks"],after[@"ticks"]);
+    }[app terminate];
+}
 - (void)testRealTouchMovesPlayerOnOriginalTerrain {
     self.continueAfterFailure=NO;XCUIApplication* app=[[XCUIApplication alloc]initWithBundleIdentifier:@"com.gelb2.heavymach2.restored"];
     NSString* run=NSUUID.UUID.UUIDString;app.launchEnvironment=@{@"HM2_UI_TESTING":@"1",@"HM2_UI_TEST_RUN":run};[app launch];
@@ -233,19 +262,41 @@
 - (NSDictionary*)gameOverCombatInput:(NSDictionary*)state previousTarget:(unsigned long long)previous previousGround:(NSValue*)previousGround approach:(BOOL)approach {
     const double scale=[state[@"displayWorldScale"] doubleValue];if(!std::isfinite(scale)||scale<=0)return nil;
     const CGPoint player=CGPointMake([state[@"playerScreenX"] doubleValue],[state[@"playerScreenY"] doubleValue]);
+    const CGPoint playerWorld=CGPointMake([state[@"x"] doubleValue],[state[@"y"] doubleValue]);
+    const auto worldPoint=[&](CGPoint point){return CGPointMake(playerWorld.x+(point.x-player.x)/scale,playerWorld.y+(point.y-player.y)/scale);};
+    const auto avoidsGates=[&](CGPoint destination){
+        // Actual Stage01_01 MapInfo.mcb gates (SHA256 ab697612198efce5f9d9e9d8a085fc9f0a51cca683489c57b7edc3ade6b74bc8).
+        // WorldGates::tick links inside +/-30 on both axes. Keep the entire
+        // approach segment outside that box plus15 for observation/touch delay.
+        constexpr double gates[][2]={{-275,-462},{449,429},{-257,479}};
+        for(const auto& gate:gates){
+            double enter=0,leave=1;
+            const double start[]={playerWorld.x,playerWorld.y},end[]={destination.x,destination.y};
+            bool intersects=true;
+            for(unsigned axis=0;axis<2;++axis){
+                const double delta=end[axis]-start[axis],low=gate[axis]-45,high=gate[axis]+45;
+                if(std::abs(delta)<1e-9){if(start[axis]<low||start[axis]>high){intersects=false;break;}}
+                else{double a=(low-start[axis])/delta,b=(high-start[axis])/delta;if(a>b)std::swap(a,b);enter=std::max(enter,a);leave=std::min(leave,b);if(enter>leave){intersects=false;break;}}
+            }
+            if(intersects)return false;
+        }
+        return true;
+    };
     NSMutableArray<NSDictionary*>* visible=[NSMutableArray new];double nearestDistance=INFINITY;NSDictionary* nearest=nil;
     for(int i=0;i<[state[@"enemyCount"] intValue];++i){
         const CGPoint point=CGPointMake([state[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],[state[[NSString stringWithFormat:@"e%d_y",i]] doubleValue]);
         if(![self fieldPointX:point.x y:point.y state:state])continue;
         const double distance=hypot(point.x-player.x,point.y-player.y)/scale;
-        NSDictionary* enemy=@{@"point":[NSValue valueWithCGPoint:point],@"enemy":@([state[[NSString stringWithFormat:@"e%d_id",i]] unsignedLongLongValue]),@"distance":@(distance)};
+        id identifier=state[[NSString stringWithFormat:@"e%d_id",i]];
+        XCTAssertTrue([identifier isKindOfClass:NSString.class],@"World accessibility enemy ID must be NSString; got %@: %@",[identifier class],identifier);
+        NSDictionary* enemy=@{@"point":[NSValue valueWithCGPoint:point],@"enemy":@(static_cast<unsigned long long>([identifier longLongValue])),@"distance":@(distance)};
         [visible addObject:enemy];if(distance<nearestDistance){nearestDistance=distance;nearest=enemy;}
     }
     const auto clear=[&](CGPoint point){
         if(![self fieldPointX:point.x y:point.y state:state]||hypot(point.x-player.x,point.y-player.y)<40*scale)return false;
         // Stay inside this fixture's field, away from map-edge gate triggers.
-        const double wx=[state[@"x"] doubleValue]+(point.x-player.x)/scale,wy=[state[@"y"] doubleValue]+(point.y-player.y)/scale;
-        if(std::abs(wx)>460||std::abs(wy)>460)return false;
+        const CGPoint destination=worldPoint(point);const double wx=destination.x,wy=destination.y;
+        if(std::abs(wx)>460||std::abs(wy)>460||!avoidsGates(destination))return false;
         for(int i=0;i<[state[@"enemyCount"] intValue];++i)if(hypot(point.x-[state[[NSString stringWithFormat:@"e%d_x",i]] doubleValue],point.y-[state[[NSString stringWithFormat:@"e%d_y",i]] doubleValue])<115*scale)return false;
         return !previousGround||hypot(wx-previousGround.CGPointValue.x,wy-previousGround.CGPointValue.y)>40;
     };
@@ -262,8 +313,15 @@
     }
     if(visible.count){
         NSDictionary* chosen=nil;double best=INFINITY;
-        for(NSDictionary* enemy in visible){const double score=[enemy[@"distance"] doubleValue]+([enemy[@"enemy"] unsignedLongLongValue]==previous?250:0);if(score<best){best=score;chosen=enemy;}}
-        return @{@"kind":@"provoke",@"point":chosen[@"point"],@"enemy":chosen[@"enemy"]};
+        for(NSDictionary* enemy in visible){
+            XCTAssertTrue([enemy[@"enemy"] isKindOfClass:NSNumber.class],@"Constructed enemy ID must be NSNumber; got %@: %@",[enemy[@"enemy"] class],enemy[@"enemy"]);
+            const auto identifier=static_cast<unsigned long long>([enemy[@"enemy"] longLongValue]);
+            // Selecting the current target again enables original follow
+            // movement. That route needs the same gate check as ground taps.
+            if(identifier==static_cast<unsigned long long>([state[@"selectedEnemy"] longLongValue])&&!avoidsGates(worldPoint([enemy[@"point"] CGPointValue])))continue;
+            const double score=[enemy[@"distance"] doubleValue]+(identifier==previous?250:0);if(score<best){best=score;chosen=enemy;}
+        }
+        if(chosen)return @{@"kind":@"provoke",@"point":chosen[@"point"],@"enemy":chosen[@"enemy"]};
     }
     // A narrow current viewport may have no target. Explore visible clear
     // ground with normal input; never select an offscreen telemetry position.
@@ -283,8 +341,9 @@
         XCTAssertEqual([before[@"screen"] intValue],7);XCTAssertEqualObjects(before[@"location"],@"Stage01_01");
         const auto input=[self gameOverCombatInput:before previousTarget:previousTarget previousGround:previousGround approach:(step%2)==0];
         if(input){
+            XCTAssertTrue([input[@"enemy"] isKindOfClass:NSNumber.class],@"Combat input enemy ID must be NSNumber; got %@: %@",[input[@"enemy"] class],input[@"enemy"]);
             const CGPoint point=[input[@"point"] CGPointValue];[self tapLogical:point world:world];
-            if([input[@"kind"] isEqualToString:@"provoke"])previousTarget=[input[@"enemy"] unsignedLongLongValue];else{
+            if([input[@"kind"] isEqualToString:@"provoke"])previousTarget=static_cast<unsigned long long>([input[@"enemy"] longLongValue]);else{
                 const double scale=[before[@"displayWorldScale"] doubleValue];
                 previousGround=[NSValue valueWithCGPoint:CGPointMake([before[@"x"] doubleValue]+(point.x-[before[@"playerScreenX"] doubleValue])/scale,[before[@"y"] doubleValue]+(point.y-[before[@"playerScreenY"] doubleValue])/scale)];
             }

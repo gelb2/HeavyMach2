@@ -238,6 +238,68 @@ UIImage* image(NSData* rgba,CGSize size){
     }catch(const std::exception& e){XCTFail(@"World/UI ownership regression failed: %s",e.what());}
     XCTAssertTrue([NSFileManager.defaultManager removeItemAtURL:directory error:&error]);
 }
+- (void)testAudioInterruptionKeepsMenusAndDoorsLiveAndRequiresWorldResume{
+    self.continueAfterFailure=NO;
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];NSError* error=nil;
+    XCTAssertTrue([NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:&error]);
+    NSURL* save=[directory URLByAppendingPathComponent:@"HeavyMach2.sav"];
+    hm2::SaveData fixture;fixture.initializeSlot(0,"AUDIO","kr",1794268800);fixture.slot(0)[0x1b5c]=5;
+    hm2::DarwinWorldRandom fixtureRandom(1);const auto encoded=fixture.encode(fixtureRandom,1);
+    XCTAssertTrue([[NSData dataWithBytes:encoded.data() length:encoded.size()] writeToURL:save atomically:YES]);
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];
+    HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,384,512)];surface.contentScaleFactor=1;
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];surface.frame=CGRectMake(0,0,384,512);[surface layoutIfNeeded];
+    try{
+        hm2::apple::GameRuntime runtime(root,save,{},[]{return 1u;});XCTAssertTrue(runtime.session().selectSlot(0));runtime.session().enterBase();runtime.synchronize();settle(runtime,layer);
+        const auto base=runtime.session().state();XCTAssertEqual(base.screen,hm2::ui::ScreenId::base);XCTAssertEqual(base.baseId,std::string("Base001"));XCTAssertEqual(runtime.session().help(),nullptr);
+        NSDictionary* audio=runtime.audioMetrics();XCTAssertEqual([audio[@"contextsCreated"] unsignedIntegerValue],1u);XCTAssertNotEqual([audio[@"ownerContext"] unsignedLongLongValue],0ull);
+        const auto checkAudioOwner=[&]{
+            NSDictionary* now=runtime.audioMetrics();
+            for(NSString* key in @[@"ownerContext",@"contextsCreated",@"devicesOpened",@"sourcesCreated",@"buffersCreated",@"sourcesDeleted",@"buffersDeleted",@"loadedSounds",@"effectFileReads",@"effectDecodes"])
+                XCTAssertEqualObjects(audio[key],now[key],@"Audio interruption changed persistent SFX owner/cache %@",key);
+        };
+        const auto saves=runtime.session().metrics().saveRequests;const float menuTime=runtime.session().renderTime();
+        runtime.setAudioActive(false);
+        for(unsigned frame=0;frame<12;++frame){runtime.tick();runtime.draw(layer);}
+        XCTAssertGreaterThan(runtime.session().renderTime(),menuTime);
+        XCTAssertEqual(runtime.session().metrics().saveRequests,saves);checkAudioOwner();
+        XCTAssertTrue(tap(runtime,2002,layer));XCTAssertTrue(tap(runtime,2002,layer));
+        XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::shop);XCTAssertEqual(runtime.session().help(),nullptr);
+        XCTAssertEqual(runtime.session().screenTransition().phase,8);XCTAssertEqual(runtime.session().metrics().saveRequests,saves);
+        const float shopTime=runtime.session().renderTime();XCTAssertTrue(tap(runtime,2100,layer));
+        XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::base);XCTAssertEqual(runtime.session().screenTransition().phase,8);
+        XCTAssertGreaterThan(runtime.session().renderTime(),shopTime);XCTAssertEqual(runtime.session().state().baseId,std::string("Base001"));
+        XCTAssertEqual(runtime.session().state().credits,base.credits);XCTAssertEqual(runtime.session().state().hpRate,base.hpRate);
+        XCTAssertEqual(runtime.session().metrics().saveRequests,saves+1);XCTAssertEqual(runtime.session().metrics().saveCompletions,saves+1);
+        NSData* written=[NSData dataWithContentsOfURL:save];XCTAssertNotNil(written);XCTAssertEqual(written.length,hm2::SaveData::byteCount);
+        hm2::DarwinWorldRandom decodeRandom(1);const auto decoded=hm2::SaveData::decode({static_cast<const std::uint8_t*>(written.bytes),written.length},decodeRandom,false);
+        const auto disk=decoded.slot(0),memory=runtime.session().envelope().slot(0);
+        XCTAssertTrue(std::equal(disk.begin(),disk.end(),memory.begin(),memory.end()));
+        XCTAssertEqualObjects(runtime.audioMetrics()[@"effectPlayRequests"],audio[@"effectPlayRequests"]); // Muted menu/door SFX never reach playback.
+        runtime.setAudioActive(true);checkAudioOwner();XCTAssertEqualObjects(runtime.audioMetrics()[@"currentContext"],audio[@"ownerContext"]);
+
+        // The same live Runtime now exercises the battlefield interruption.
+        // No live HP, world clock, RNG or game outcome is assigned by the test.
+        XCTAssertTrue(runtime.session().enterField("Stage01_01",0));runtime.synchronize();settle(runtime,layer);
+        auto* scene=runtime.session().battle();XCTAssertNotEqual(scene,nullptr);if(!scene)throw std::runtime_error("Audio interruption field was not created");
+        const auto fieldSaves=runtime.session().metrics().saveRequests;const auto position=scene->player().position;const auto worldTime=scene->clock().worldTime();const auto hp=scene->playerHP();const auto fieldTime=runtime.session().renderTime();
+        runtime.setAudioActive(false);XCTAssertTrue(scene->isPaused());XCTAssertTrue(runtime.session().state().systemVisible);
+        for(unsigned frame=0;frame<12;++frame){runtime.tick();runtime.draw(layer);}
+        XCTAssertEqual(runtime.session().battle(),scene);XCTAssertTrue(scene->isPaused());XCTAssertTrue(runtime.session().state().systemVisible);
+        XCTAssertEqual(scene->clock().worldTime(),worldTime);XCTAssertEqual(scene->player().position.x,position.x);XCTAssertEqual(scene->player().position.y,position.y);XCTAssertEqual(scene->playerHP(),hp);
+        XCTAssertGreaterThan(runtime.session().renderTime(),fieldTime);XCTAssertEqual(runtime.session().metrics().saveRequests,fieldSaves);checkAudioOwner();
+        runtime.setAudioActive(true);checkAudioOwner();XCTAssertTrue(scene->isPaused());XCTAssertTrue(runtime.session().state().systemVisible);
+        const float restoredTime=runtime.session().renderTime();for(unsigned frame=0;frame<12;++frame){runtime.tick();runtime.draw(layer);}
+        XCTAssertEqual(scene->clock().worldTime(),worldTime);XCTAssertEqual(scene->player().position.x,position.x);XCTAssertEqual(scene->player().position.y,position.y);XCTAssertEqual(scene->playerHP(),hp);
+        XCTAssertGreaterThan(runtime.session().renderTime(),restoredTime);XCTAssertTrue(tap(runtime,1030,layer));XCTAssertFalse(scene->isPaused());XCTAssertFalse(runtime.session().state().systemVisible);
+        runtime.tick();runtime.draw(layer);XCTAssertGreaterThan(scene->clock().worldTime(),worldTime);XCTAssertEqual(runtime.session().metrics().saveRequests,fieldSaves);checkAudioOwner();
+        XCTAssertEqualObjects(runtime.audioMetrics()[@"currentContext"],audio[@"ownerContext"]);XCTAssertEqual(runtime.session().metrics().unsupportedActions,0u);
+        NSLog(@"HM2_AUDIO_UI_LIFECYCLE mutedShopDoors=1 originalBaseSave=1 pausedFieldRenderTicks=24 explicitResume1030=1 persistentSFXContext1=1 cacheRereads=0");
+    }catch(const std::exception& e){XCTFail(@"Audio/UI lifecycle regression failed: %s",e.what());}
+    window.hidden=YES;window.rootViewController=nil;XCTAssertTrue([NSFileManager.defaultManager removeItemAtURL:directory error:&error]);
+}
 - (void)testPreparedTextureOwnersReleaseAndReload{
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     HM2Renderer* renderer=[[HM2Renderer alloc]initWithResourceRoot:root];

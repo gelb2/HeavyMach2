@@ -1,5 +1,32 @@
 # iPhone 수정 진행 — 2026-11-14
 
+## 설치 후 피드백과 후속 코드 — 아직 iPhone 미설치
+
+사용자는 `bc3323a` 설치 후 백그라운드 복귀 때 허브 버튼과 게임 전체가 멈춘다고 보고했다. 기존 Scene handler가 오디오 중단 flag로 display link·입력까지 함께 막는 경로를 확인했다. 종료 알림 누락과 늦은 중단 알림의 새 Native 검사3개는 수정 전 양 시뮬레이터에서 실패했다. Apple은 Begin에 대응하는 Ended가 보장되지 않는다고 설명한다. [공식 중단 처리](https://developer.apple.com/library/archive/documentation/Audio/Conceptual/AudioSessionProgrammingGuide/HandlingAudioInterruptions/HandlingAudioInterruptions.html).
+
+후속 코드에서는 Scene 활성과 오디오 사용 상태를 분리했다. 오디오가 중단돼도 foreground 메뉴·문 전환은 갱신한다. 전투 중단은 기존 공통 GameSession의 pause/menu를 사용하며, 오디오가 돌아왔다는 이유만으로 전투를 재개하지 않는다. 활성화가 필요한 상태와 중단 사건 순서를 추적해 background Ended·늦은 suspension·활성화 도중 새 Begin을 처리한다. 실제 foreground/Ended 경계에서만 기존 OS 오디오 세션을 재활성화한다. OpenAL 컨텍스트·효과음 source/buffer·원본 AudioQueue BGM을 다른 재생기로 바꾸지 않았다.
+
+| 확인 | 결과와 범위 |
+|---|---|
+| 음향·Scene 중단 Native | 양쪽에서 음향5개·Scene 순서7개 통과 |
+| 실제 공통 Runtime 무음 UI | 양쪽에서 Base→Shop→Base의 실제 버튼·문 전환, 원래 저장1회·저장 decode 일치, SFX 재생 요청0·기존 컨텍스트1개 유지 통과 |
+| 실제 공통 Runtime 전투 | 무음 중 렌더 시간은 진행하고 월드 시각/위치/HP는 정지. 음향 복귀 뒤에도 실제 Resume1030 전까지 정지 유지 통과 |
+| 실제 OS Home·전장 복귀 | 양쪽 각각3회 정지 메뉴·렌더 콜백·수동 재개 통과 |
+| 실제 OS Home·허브 복귀 | 허브에서 상점 진입까지 작동했으나 문 전환 완료의15초 기준은 양쪽 실패. 전체 허브 복귀 검사 통과로 처리하지 않음 |
+| iPhone 사용자 정지 해결 | 후속 코드를 아직 실제 iPhone에 설치하지 않아 미확인 |
+
+허브 실패의 추가 진단에서는 Source의 `applicationActive=1`·`audioOutputActive=1`, 진행한 callback740/770회·Session renderTime 약12.28/12.78초를 확인했다. 문은 phase7이고 topY1399.72/1232.31로 이동 중이었다. 정지된 앱이라고 판정하지 않는다. 실제 Simulator Time Profiler에서는 GLRendererFloat의 소프트웨어 래스터 경로를 확인했다. 요청20초 중 테스트 종료까지2.55초만 기록했으므로 장시간 성능·발열이나 실기기 원인으로 확대하지 않는다.15초 실패는 그대로 보존하며 시간 기준을 늘려 통과시킨 것으로 보고하지 않는다.
+
+실제 iPhone의 기존 프로세스에는 이름과 PID로 Time Profiler 부착을 시도했으나 Instruments가 대상을 찾지 못해 trace가 생성되지 않았다. 실기기 메모리·누수·발열 측정 결과는 아직 없다. 별도의 게임오버 OS 검사는 iPad에서 통과했으나 iPhone의60초 전투 관측 안에는 파괴 알림이 나타나지 않아 남아 있다.
+
+로컬 증거는 `.local/evidence/foreground-freeze-20261114/`의 `lifecycle-red-batch`, `lifecycle-fixed-batch`, `foreground-separated-batch`, `hub-diagnostic-batch`, `hub-clock-diagnostic-batch`, `hub-simulator-time-profile.trace`와 해당 export다. 화면·입력·원래 실패·사용자 저장은 보존했다. 일반판 초기/대기 줌 비교와 시뮬레이터/실기기 성능·허브 검사·아이폰 정지 재검증은 [TODO](todo.md)에 남긴다.
+
+## 저장 슬롯에서 바로 전장으로 진입한 이유
+
+공통 `GameSession::action`의 슬롯 시작은 저장된 위치 문자열이 `Base`로 시작하면 기지, 그 외에는 저장된 맵/게이트의 전장을 요청한다. iPhone 전용 저장 형식·슬롯 선택·화면 전환 분기는 없다. 이 분기는 iPhone 개발 전 [원본 슬롯 진입 복원](source-entry-restoration-20261110.md)에 이미 연결돼 있었다.
+
+공통 SaveData decoder로 읽은 최신 설치 전/직후 iPhone 저장은 둘 다 `Stage01_01`, 마지막 기지는 `Base001`, 게이트0이었다.11월13일 보관 iPad 백업은 `Base002`, 마지막 기지도 `Base002`, 게이트1이었다. 세 파일 모두 체크섬이 유효하다. 저장 위치가 달라 두 진입 결과가 달랐으며, 설치 때 위치를 바꾼 것은 아니다. 현재 실시간 iPad 저장이 이 백업과 같다고 주장하지 않는다. 원본 저장은 수정하지 않았다. 로컬 근거는 `slot-entry-save-analysis.json`이다.
+
 공통 코드와 Apple 빌드를 수정하고 첫 양 시뮬레이터 검사 뒤 후속 검사를 실행했다. 후속15개 중 iPhone14개·iPad14개가 통과했고 게임오버 자동 검사 수정·재검증이 남는다. 사용자의 새 설치 지시에 따라 게임 코드 `bc3323a`의 정식 Release를 실제 iPhone에 설치·실행하고 기존 저장을 보존했다. Instruments는 아직이다. 사용자 발열과 실제 손 입력의 경로 재지정 후 점프 실패를 해결했다고 판정하지 않는다. [수정·측정 계획](iphone-fixes-and-profiling-plan-20261114.md), [남은 TODO](todo.md)를 함께 따른다.
 
 ## 실제 iPhone 정식 Release 설치

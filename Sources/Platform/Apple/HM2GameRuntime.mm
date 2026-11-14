@@ -25,7 +25,7 @@ struct GameRuntime::Impl:SessionHost,ui::ScreensHost {
     std::unique_ptr<ui::TextRasterizer> rasterizer=makeTextRasterizer();ui::TextPreparationCache textCache;
     std::map<const ui::TextBitmap*,std::string> textNames;
     std::unique_ptr<GameSession> game;std::unique_ptr<ui::Screens> ui;
-    std::uint64_t revision=0,resourceRevision=0,uiResourceGeneration=0,nextTextIdentity=0,hudLayoutWrites=0;CombatScene* preparedWorld=nullptr;bool active=true;
+    std::uint64_t revision=0,resourceRevision=0,uiResourceGeneration=0,nextTextIdentity=0,hudLayoutWrites=0;CombatScene* preparedWorld=nullptr;bool active=true,audioActive=true;
     std::array<std::uintptr_t,16> worldPointers{};
     std::array<InputObservation,256> inputRing{};std::size_t inputCount=0;
     Impl(NSURL* root,NSURL* save,std::function<void(const NativeRequest&)> callback,std::function<std::uint32_t()> time):saveURL(save),request(std::move(callback)),absoluteTime(std::move(time)),files(root.fileSystemRepresentation){
@@ -43,7 +43,7 @@ struct GameRuntime::Impl:SessionHost,ui::ScreensHost {
         ui=std::make_unique<ui::Screens>(files,tiles,*this);synchronize();
     }
     void notify(NativeRequest value){if(request)request(value);}
-    void sound(std::string_view n,Vec2 p)override{if(!n.empty()&&![audio playEffect:n x:p.x y:p.y])throw std::runtime_error(audio.lastError.UTF8String);}
+    void sound(std::string_view n,Vec2 p)override{if(!active||!audioActive)return;if(!n.empty()&&![audio playEffect:n x:p.x y:p.y])throw std::runtime_error(audio.lastError.UTF8String);}
     void soundID(unsigned id,Vec2 p)override{sound(audio::soundFilename(id),p);}
     void sound(std::string_view n)override{sound(n,{});}
     void sfx(unsigned id)override{soundID(id,{});}
@@ -130,7 +130,19 @@ bool GameRuntime::confirmDelete(unsigned slot){const bool result=impl_->game->de
 bool GameRuntime::confirmGameOver(std::uint64_t token){const bool result=impl_->game->confirmGameOver(token);impl_->synchronize();return result;}
 bool GameRuntime::logicalPoint(CGPoint point,Vec2& logical)const{return [impl_->renderer logicalPoint:point result:&logical];}
 std::string GameRuntime::nativeText(std::string_view key)const{return impl_->game->originalText(key);}
-void GameRuntime::setActive(bool active){if(!active){impl_->ui->discardInputs();impl_->worldPointers={};}impl_->active=active;impl_->game->setActive(active);[impl_->audio setActive:active];}
+void GameRuntime::setActive(bool active){if(!active){impl_->ui->discardInputs();impl_->worldPointers={};}impl_->active=active;impl_->game->setActive(active);[impl_->audio setActive:active&&impl_->audioActive];}
+void GameRuntime::setAudioActive(bool active){
+    auto& p=*impl_;if(p.audioActive==active)return;p.audioActive=active;
+    if(!active){
+        p.ui->discardInputs();p.worldPointers={};
+        // Use the same common interruption pause/menu, then restore only the
+        // foreground UI clock. Restoring audio never presses World Resume.
+        p.game->setActive(false);p.game->setActive(p.active);
+    }
+    [p.audio setActive:p.active&&active];
+    // Background callbacks must not issue GL preparation commands.
+    if(p.active)p.synchronize();
+}
 void GameRuntime::synchronize(){impl_->synchronize();}
 GameSession& GameRuntime::session(){return *impl_->game;}
 ui::Screens& GameRuntime::screens(){return *impl_->ui;}

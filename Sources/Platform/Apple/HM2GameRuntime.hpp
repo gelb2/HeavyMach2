@@ -35,6 +35,7 @@ public:
     bool logicalPoint(CGPoint,Vec2&)const;
     [[nodiscard]] std::string nativeText(std::string_view)const;
     void setActive(bool);
+    void setAudioActive(bool);
     void setDisplay(DisplayConfiguration);
     void synchronize();
     GameSession& session();
