@@ -1,0 +1,691 @@
+{
+  "schema": "hm2-original-world-hud-20261114",
+  "date": "2026-11-14",
+  "scope": "HD1.0.3 and Phone2.0.1 armv7 static original-binary/asset comparison. No new runtime/implementation/install.",
+  "hd": {
+    "schema_version": 1,
+    "date": "2026-11-14",
+    "scope": "Original HeavyMach2 HD1.0.3 static viewport, HUD placement and input evidence; no original execution",
+    "source": {
+      "original_executable_bytes": 414720,
+      "original_executable_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+      "manifest_sha256": "c7546217f67d64a4f294adade3342e6ac089fcd095128ae8821021a1456155c6",
+      "manifest_target_sha256_matches_binary": true,
+      "original_ipa_sha256": "7eeb36590b3c19a28741e21671379029d9023864ceb241a5b8560eef045112d2",
+      "original_ipa_matches_source_provenance": true
+    },
+    "verification": {
+      "method": "Verify manifest Evidence IDs and target SHA against retained REA evidence JSON; compare each raw_result.value byte-for-byte with saved pseudo/asm; independently hash unchanged target; inspect constants/CFString via Mach-O VM-to-file segment mapping; inspect PNG directly inside hash-verified original IPA.",
+      "function_exports_verified": 12,
+      "manifest_contains_individual_export_file_sha256": false,
+      "export_file_sha256_note": "Export file SHA256 values below were computed during this review; export-manifest.json carries target SHA256 and Evidence IDs, not individual export file digests.",
+      "fresh_decompile": false,
+      "original_executed": false,
+      "product_modified": false,
+      "original_bytes_or_decompiler_bodies_embedded": false
+    },
+    "verified_functions": [
+      {
+        "address": "0x3514",
+        "owner": "EAGLView",
+        "selector": "_createSurface",
+        "exports": [
+          {
+            "kind": "pseudo",
+            "bytes": 2695,
+            "sha256": "fbf6ff06cc188268dfa7319a5c04084feb7f6d6ef0e75abb9f51c6173e9e2489",
+            "evidence_id": "ev_2bbacd40ab640a294f4260cde5e2c180212323b4b439eb8a9a56838ed5dc1e2a",
+            "manifest_evidence_id_match": true,
+            "manifest_target_sha256_match": true,
+            "raw_result_exact_file_match": true
+          },
+          {
+            "kind": "assembly",
+            "bytes": 4868,
+            "sha256": "b2a1ce5e0602e836b1e6f28441906e7b55830740c98b631bdc72e4a619127be6",
+            "evidence_id": "ev_dd01b28eb3e69e4b9e202c48c6cac15a7045b75b0edb842d2658316d5f37e668",
+            "manifest_evidence_id_match": true,
+            "manifest_target_sha256_match": true,
+            "raw_result_exact_file_match": true
+          }
+        ]
+      },
+      {
+        "address": "0x2730",
+        "owner": "DefaultAppDelegate",
+        "selector": "applicationDidFinishLaunching:",
+        "exports": [
+          {
+            "kind": "pseudo",
+            "bytes": 1354,
+            "sha256": "f0ccb3ef50796f04b0b71b16eb9234ce434ef2edb9e17196d1d86cff77ce8c4b",
+            "evidence_id": "ev_fae1ab58f80ff09887756747e399a20db8787811a4643be810a6626c322a169e",
+            "manifest_evidence_id_match": true,
+            "manifest_target_sha256_match": true,
+            "raw_result_exact_file_match": true
+          },
+          {
+            "kind": "assembly",
+            "bytes": 2240,
+            "sha256": "c3255717ed1ec35a593eccbd2be5157f1ef44fe232c8301929f40d1fa2fc8fda",
+            "evidence_id": "ev_daa298720ccdec63edf10f0618c3e746979e5c0c9cbc7c7dc16691a28ff1c028",
+            "manifest_evidence_id_match": true,
+            "manifest_target_sha256_match": true,
+            "raw_result_exact_file_match": true
+          }
+        ]
+      },
+      {
+        "address": "0x11208",
+        "owner": "GobWorld",
+        "selector": "init",
+        "exports": [
+          {
+            "kind": "pseudo",
+            "bytes": 3605,
+            "sha256": "5bf129d208f01720f16db1dcc6b28f49f038171b3b4b42849f73526b13ceef6a",
+            "evidence_id": "ev_75b10fc4ab5459775be567a1986f62479091f22598f00f7c321d9be6aca63b84",
+            "manifest_evidence_id_match": true,
+            "manifest_target_sha256_match": true,
+            "raw_result_exact_file_match": true
+          },
+          {
+            "kind": "assembly",
+            "bytes": 6576,
+            "sha256": "095d497763c6f0a3a0f456350a3e77818f1add020adfbf1bfb5b98e06116a488",
+            "evidence_id": "ev_a771f224e429f1cf850ab5b02f51fb9d29a492212840c9cd1e5164997e0aebe8",
+            "manifest_evidence_id_match": true,
+            "manifest_target_sha256_match": true,
+            "raw_result_exact_file_match": true
+          }
+        ]
+      },
+      {
+        "address": "0x29c9c",
+        "owner": "GuiGame",
+        "selector": "init",
+        "exports": [
+          {
+            "kind": "pseudo",
+            "bytes": 14329,
+            "sha256": "ad04ed4f20508a9bc68661bebe13f8433802446046cee5de94ea65c4a33307d5",
+            "evidence_id": "ev_6d363a43cf24516cd59abd3f341842e8c95e98c4ead141e9076eba1b4f81b0ea",
+            "manifest_evidence_id_match": true,
+            "manifest_target_sha256_match": true,
+            "raw_result_exact_file_match": true
+          },
+          {
+            "kind": "assembly",
+            "bytes": 24465,
+            "sha256": "1a9fdc5e51bbaf42a0ce9dcc8bee1d4a430da6746c23aefe1b337e058e62450d",
+            "evidence_id": "ev_c898b17ed17c495ce858b253ce493ee5dc953d03625081aedeb0afe50ff44aa1",
+            "manifest_evidence_id_match": true,
+            "manifest_target_sha256_match": true,
+            "raw_result_exact_file_match": true
+          }
+        ]
+      },
+      {
+        "address": "0x11cac",
+        "owner": "GobWorld",
+        "selector": "processCamera",
+        "exports": [
+          {
+            "kind": "pseudo",
+            "bytes": 4933,
+            "sha256": "c34479e2f2c993be101bc2d29f544252326081cb9a6703ab8c38018594b2e10c",
+            "evidence_id": "ev_492bd6752cb56b039e6b20cfd06b5e3ff57aef3ea5b1cc521ab1dad788ae58a9",
+            "manifest_evidence_id_match": true,
+            "manifest_target_sha256_match": true,
+            "raw_result_exact_file_match": true
+          },
+          {
+            "kind": "assembly",
+            "bytes": 7073,
+            "sha256": "11463c13b3b05727d5cb10e1e9358b3b506b81aa5f2fc0688b174e426eac6e36",
+            "evidence_id": "ev_05b1b102c8298c7b05efbcd67fdfd56a4f8075303dd1ed09e851f494f727b3bb",
+            "manifest_evidence_id_match": true,
+            "manifest_target_sha256_match": true,
+            "raw_result_exact_file_match": true
+          }
+        ]
+      },
+      {
+        "address": "0x12698",
+        "owner": "GobWorld",
+        "selector": "onTap_EasyMove:State:ID:",
+        "exports": [
+          {
+            "kind": "pseudo",
+            "bytes": 15284,
+            "sha256": "c9afddea5fc10dbe33113ad681c2fdf2de0d0161a829d56a6531d178c24c5970",
+            "evidence_id": "ev_ba2234ac416af75fc2d49f657ba67ab1bd879886874042853889d53bdb893bf1",
+            "manifest_evidence_id_match": true,
+            "manifest_target_sha256_match": true,
+            "raw_result_exact_file_match": true
+          },
+          {
+            "kind": "assembly",
+            "bytes": 22282,
+            "sha256": "7910bfc4c6dcf0f1484ef6d1637ab434c64ce382af8c4dcb42fb1dd61cde498f",
+            "evidence_id": "ev_32cca0faf8527980c381dd9af1c58789fb2b779bbdb7d098aca73007dd40507f",
+            "manifest_evidence_id_match": true,
+            "manifest_target_sha256_match": true,
+            "raw_result_exact_file_match": true
+          }
+        ]
+      }
+    ],
+    "findings": [
+      {
+        "id": "full_surface_viewport",
+        "evidence_type": "static assembly corroborated by pseudocode",
+        "address": "0x3514",
+        "selector": "EAGLView._createSurface",
+        "result": "On initial current-surface path, glViewport and glScissor both use origin0,0 and the full rounded layer-bounds width/height. No HUD-height subtraction in this inspected path.",
+        "assembly_call_sites": {
+          "glViewport": "0x3696",
+          "glScissor": "0x36a6"
+        }
+      },
+      {
+        "id": "full_screen_projection",
+        "evidence_type": "static assembly corroborated by pseudocode",
+        "address": "0x2730",
+        "selector": "DefaultAppDelegate.applicationDidFinishLaunching:",
+        "result": "Reads UIScreen.bounds and calls glOrthof(0,width,0,height,-1,1), then modelview. The inspected projection does not reserve a separate lower HUD viewport.",
+        "assembly_call_site": "0x277a"
+      },
+      {
+        "id": "world_camera_size",
+        "evidence_type": "static literal and assembly",
+        "address": "0x11208",
+        "selector": "GobWorld.init",
+        "result": "QobCamera.setScreenWidth:Height receives768,1024; camera attached to World and installed as mainCam.",
+        "width": 768,
+        "height": 1024,
+        "width_literal_address": "0x11514",
+        "width_hex": "0x44400000",
+        "height_instruction_address": "0x11426",
+        "height_hex": "0x44800000",
+        "call_address": "0x1142a"
+      },
+      {
+        "id": "legacy_camera_bounds",
+        "evidence_type": "static assembly/literals corroborated by pseudocode",
+        "address": "0x11cac",
+        "selector": "GobWorld.processCamera",
+        "x_min": -128,
+        "x_max": 128,
+        "y_min": -94,
+        "y_max": 0,
+        "literal_addresses": {
+          "x_min": "0x11f94",
+          "x_max": "0x11f98",
+          "y_min": "0x11f9c"
+        },
+        "result": "Follow/ease then clamp these camera-position limits; function returns when no camera object or World paused. Separate from GL viewport dimensions."
+      },
+      {
+        "id": "input_guard_and_inverse",
+        "evidence_type": "static assembly corroborated by named getter calls in pseudocode",
+        "address": "0x12698",
+        "selector": "GobWorld.onTap_EasyMove:State:ID:",
+        "guard_screen_y_lt": 100,
+        "guard_instructions": "0x126a6..0x126c0",
+        "guard_literal_address": "0x12968",
+        "guard_hex": "0x42c80000",
+        "guard_precedes_camera_conversion": true,
+        "coordinate_formula": "world.x=screen.x+camera.pos.x-camera.halfScr.x+camera.offsetX; world.y=screen.y+camera.pos.y-camera.halfScr.y+camera.offsetY",
+        "result": "Rejects the original input-screen Y below100 before camera-coordinate conversion. This is an input guard, not proof of a shortened draw viewport. No subtraction of HUD100 from input Y in this inspected conversion."
+      },
+      {
+        "id": "hud_overlay_geometry",
+        "evidence_type": "static assembly/CFString mapping plus original resource header/alpha",
+        "address": "0x29c9c",
+        "selector": "GuiGame.init",
+        "resource_name": "GameUI_BG.png",
+        "cfstring_address": "0x5f0cc",
+        "cfstring_data_address": "0x4c08c",
+        "resource_reference_instruction": "0x29edc..0x29ee4",
+        "reference_literal_address": "0x2a6f8",
+        "reference_literal_value": "0x351e6",
+        "reference_pc_value": "0x29ee6",
+        "position": [
+          384,
+          128
+        ],
+        "position_instructions": {
+          "x": "0x29f02 literal0x2a6fc",
+          "y": "0x29efc immediate0x43000000"
+        },
+        "layer": 9,
+        "layer_call_address": "0x29f1c",
+        "nominal_unscaled_quad": [
+          0,
+          0,
+          768,
+          256
+        ],
+        "result": "The original HUD background nominal quad spans the full768 width at the bottom, over the full world viewport. The PNG contains transparency, so this is not an opaque768x256 rectangle."
+      }
+    ],
+    "hud_asset": {
+      "ipa_member": "Payload/HM2HD.app/GameUI_BG.png",
+      "bytes": 164588,
+      "sha256": "e4b23422c10f28b95d2adbfc631e576a23ff4ca19c4ce94d3488876d48a3d9a6",
+      "width": 768,
+      "height": 256,
+      "png_bit_depth": 8,
+      "png_color_type": 6,
+      "cgbi": true,
+      "matching_package_names": [
+        "Payload/HM2HD.app/GameUI_BG.png"
+      ],
+      "nonzero_alpha_bounds_png_top_down_inclusive": [
+        0,
+        118,
+        767,
+        255
+      ],
+      "fully_transparent_top_rows": 118,
+      "nonzero_alpha_world_y_extent_inclusive": [
+        0,
+        137
+      ],
+      "bottom94": {
+        "png_top_down_rows_inclusive": [
+          162,
+          255
+        ],
+        "world_rows_inclusive": [
+          0,
+          93
+        ],
+        "columns": 768,
+        "rows": 94,
+        "pixels": 72192,
+        "fully_opaque_pixels_alpha255": 69955,
+        "partially_transparent_pixels_alpha1to254": 2237,
+        "fully_transparent_pixels_alpha0": 0,
+        "minimum_alpha": 5,
+        "maximum_alpha": 255,
+        "columns_opaque_for_all94_rows": 647,
+        "columns_nonzero_for_all94_rows": 768,
+        "rows_opaque_across_all768_columns": 67,
+        "all768_columns_fully_opaque_for_entire94_rows": false,
+        "method": "PNG IDAT decompressed in memory; CgBI raw-deflate and PNG scanline filters0..4 reversed; inspected alpha byte of original RGBA-format8bit pixels. No output image or source-byte modification."
+      }
+    },
+    "interpretation": {
+      "world_excludes_hud_height": false,
+      "hud_is_overlay": true,
+      "nominal_hud_spans_full_width": true,
+      "opaque_full_height_256": false,
+      "camera_lower_allowance_is_distinct_from_hud_quad_height": true,
+      "bottom94_alpha_conclusion": "Original HUD alpha coverage of the original94-unit lower allowance is measured above; fixed HUD placement can conceal underlying map pixels only where its alpha is opaque. It does not change the World viewport or input guard."
+    },
+    "limitations": [
+      "Static inspection of the specified HD1.0.3 functions and original PNG only; no original app execution, device or simulator operation.",
+      "Named pseudocode signatures can misidentify floating-point argument registers; numeric input guard and HUD position were corroborated with assembly and original binary literals.",
+      "The full-width HUD statement describes its nominal quad and nonzero-alpha extent, not a solid opaque rectangle or one full-width input receiver.",
+      "Alpha statistics describe GameUI_BG.png alone at original placement; other HUD child sprites, blend state, camera offsets, map transparency and composed final framebuffer are separate.",
+      "The inspected full-surface initialization and camera/HUD code support overlay layout; this is not an exhaustive search for every possible later GL viewport/scissor call.",
+      "This review does not claim the installed restoration or original Phone build was executed or measured."
+    ]
+  },
+  "phone": {
+    "schema": "hm2-original-phone-world-hud-v1",
+    "version": "2.0.1",
+    "binary": {
+      "sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a"
+    },
+    "ipa_sha256": "23ff9c74c7d890cc6f28952b4845f6c616bae4bb7207a393f80ed9ed76062d32",
+    "manifest": {
+      "sha256": "0607f95c55e4f125da91102f9242a5a33957016aa956af9bd79988782cebc5b4"
+    },
+    "verified_pseudo_corpus_count": 1077,
+    "verified_focused_files": [
+      {
+        "address": "0x3ce8",
+        "kind": "pseudo",
+        "sha256": "d1c06c067e3a59ec3041c974093caad2c31b8e7c723a12729639b1b1b17cb542",
+        "evidence_id": "ev_2c43cf8db6d8b604855ce42f9150526ee3154d7c10407e1ecca78de7a62384de"
+      },
+      {
+        "address": "0x3ce8",
+        "kind": "assembly",
+        "sha256": "6bc3f83b74237635df7a9b87a2cfd6a31685c9bf7b64c4d7b4105c745cd9a756",
+        "evidence_id": "ev_36caa7aa453ddb68e6dabb0837d82155d39c0493d7be942be7b1a933a0cb0d5e"
+      },
+      {
+        "address": "0x40fc",
+        "kind": "pseudo",
+        "sha256": "08fa05a91f40ea8998f3f2eb311905d5a87c662eb830d3ed0b37375e1d757ad6",
+        "evidence_id": "ev_371786af44d8803d39921e72cbf96d39086571c119a93abeca1d9447860c8685"
+      },
+      {
+        "address": "0x40fc",
+        "kind": "assembly",
+        "sha256": "adc1c69efe2692d9ce81dd80f0724d6258cafae73498ff7d6eaf8377a9ab9b55",
+        "evidence_id": "ev_0f4c5797acb216a374f44e24a8f3f9fd6f5f25fb33e98e109c74cfec27fbff7f"
+      },
+      {
+        "address": "0x2e480",
+        "kind": "pseudo",
+        "sha256": "4634ea2ba2cea2f9bc8940b599dcfdca1730044e4bbe9704fa8106da2979a45b",
+        "evidence_id": "ev_e22288bff314718d2b1bdff1a355b7c093712a4a68bfaaf19b0b1ada875cdab9"
+      },
+      {
+        "address": "0x2e480",
+        "kind": "assembly",
+        "sha256": "5e493689d4ad37fc2571854fdac535b3cc3fb93e2be4078273b2f2c3904d99c9",
+        "evidence_id": "ev_47c0ef3ee78e83a958d61d4fd40949be50b7f901aff1549eb6e404f599b8de01"
+      },
+      {
+        "address": "0x2f9c8",
+        "kind": "pseudo",
+        "sha256": "59ba37e87617ec658c73955f4fc702e943693d610f65e7e7375f9b3b5fc106df",
+        "evidence_id": "ev_2923c9ba18f3e6120a28a60bbb22d91308a731fee0fe6f799a02e5c4a67e7294"
+      },
+      {
+        "address": "0x2f9c8",
+        "kind": "assembly",
+        "sha256": "0938e16ca18153ca7bf412a5b0703870297cb7449f59b537e92e806d19ec5403",
+        "evidence_id": "ev_d10dc76d8bb7f530260a6dd89507e1e2c586bd6c642ef16e44c3e4226a27119a"
+      },
+      {
+        "address": "0x55fc",
+        "kind": "pseudo",
+        "sha256": "2a19f10beac1b7393d58cc6092d1b2ff6c307e9df5be7cf16c2921dd1501fc96",
+        "evidence_id": "ev_bea090879f2fc6de9e12b2069fedbe9dde4a7e57585300dc5790aae50a1f3923"
+      },
+      {
+        "address": "0x55fc",
+        "kind": "assembly",
+        "sha256": "5a830224adb5da355e6143f426f12a4f32eb4ebc049a0201b676970bb1bf0fb0",
+        "evidence_id": "ev_1996a6dfa54519ed93e135de45b86ec6fa27dd8b0e9f82e577665631bfd5f403"
+      },
+      {
+        "address": "0x4be74",
+        "kind": "pseudo",
+        "sha256": "f7f1af7069df8b7a04cf637b4a09c03383b7bf4273cd3e14d2d97c3e9698f656",
+        "evidence_id": "ev_c879fa096fe43190191d9c87b4171b97973e7240ca20bba4d445d64fdd5a8d23"
+      },
+      {
+        "address": "0x4be74",
+        "kind": "assembly",
+        "sha256": "64161692a02cdbe1787e49e3513766fd45df2cf07ba31a54c1f65c1a8253e596",
+        "evidence_id": "ev_6102e7269d0cdc22b5df06887a98efc976f281c7067b03540db3926bc78d438a"
+      },
+      {
+        "address": "0x4be84",
+        "kind": "pseudo",
+        "sha256": "a745d6d1bf773e633bd36223b14597cfce6d97e4afe626452e9a3a55168e3b80",
+        "evidence_id": "ev_d9f9197afeab78a2cf4a4d23825022dda8671673855d21c4edcd07a76aee7a38"
+      },
+      {
+        "address": "0x4be84",
+        "kind": "assembly",
+        "sha256": "ebe430c7ccebfc88fee61d52e5365afe7a7a0b836eaaa811abfa54e64e6437c7",
+        "evidence_id": "ev_7ad24242dc39b2dec424e08d45e256458738c45035c71358da4f32ed15b292d9"
+      },
+      {
+        "address": "0x4be98",
+        "kind": "pseudo",
+        "sha256": "400c260f039787e38fde70083f44391c0ae2ccd975acedb46c327ea2ac886f9f",
+        "evidence_id": "ev_13c690e59a75fb9dea3915e97f1a56a2e0cb8442bb19da4ddaaf803792e9ddb3"
+      },
+      {
+        "address": "0x4be98",
+        "kind": "assembly",
+        "sha256": "c90b023c31d2a718755fd6edf910b04eb735862eb6370dc33add4d9c3593ec4f",
+        "evidence_id": "ev_0b3cb2c0a91152bd808bfc6c4d277b271c8c66fe325703bfe56af607f65a6942"
+      },
+      {
+        "address": "0x4bebc",
+        "kind": "pseudo",
+        "sha256": "7f7aa414576c45707752a866e8ada0821a153e4f318b1d9055d23b30ed8045c9",
+        "evidence_id": "ev_f777f9b4f975b32a3bc70bd0615c0be32123a1e40accd42f9aeaa7bbcd5d25ed"
+      },
+      {
+        "address": "0x4bebc",
+        "kind": "assembly",
+        "sha256": "ce7377c87e3b7620c431a444735e268712b4ea31c6b4b914f42d4f6ae40b1e82",
+        "evidence_id": "ev_13c1b31093d1ffd8f69dacce242946e84b7df9bf37c77f1531ec7d639c325213"
+      },
+      {
+        "address": "0x4c7e4",
+        "kind": "pseudo",
+        "sha256": "152834bb73571f6824b38ca3174777569b223627d7f95a3587c5238dc349007f",
+        "evidence_id": "ev_47da5cbc390bd103e36a98b8c582f025fc956bbddb00ff101e1f3bde0dc3cd9a"
+      },
+      {
+        "address": "0x4c7e4",
+        "kind": "assembly",
+        "sha256": "51f5cda8b17c2e34764d1a8efb3e16636021a05bec19e2fbb7e7da2c8fe62cc3",
+        "evidence_id": "ev_4b21125927e70e50e8eb5f6e1ad7bca848445f668ba939d3d18a3ee8b01d09bb"
+      },
+      {
+        "address": "0x4e0e4",
+        "kind": "pseudo",
+        "sha256": "298639d307a74d748bbea6ad4aac9044b478201a998206b0e169e9d447e3ce91",
+        "evidence_id": "ev_cfee2913cb7a31c9402643955721adc16040707a28758b9566614cd61b9c1ded"
+      },
+      {
+        "address": "0x4e0e4",
+        "kind": "assembly",
+        "sha256": "e1b134526f1c4397ffbc66a153a53c614ba3b88b868fd09fa2c709fbbfd7f99e",
+        "evidence_id": "ev_5090e569461ca36e25689ba2064d6d8e88c0ff8b9f65f055b1315999f7d6551d"
+      },
+      {
+        "address": "0x4e07c",
+        "kind": "pseudo",
+        "sha256": "cea1c993f39a10b07f32eab08d7cb118f6b17d39fb1c9ef848a03a76e463f801",
+        "evidence_id": "ev_cf7f2a64bb29f1aafbb4a305df22eb488dc881dfa801139de0f99b810a93baaf"
+      },
+      {
+        "address": "0x4e07c",
+        "kind": "assembly",
+        "sha256": "41014a1e5fb84ad2cad0117f73a7129f129a2384943545b5b8ec37d2ef71778d",
+        "evidence_id": "ev_93f4201c928b73fb7d763b0e89e535ad9f42266a54a1cb5bbe39d370858ba18f"
+      },
+      {
+        "address": "0x4ef90",
+        "kind": "pseudo",
+        "sha256": "d9f27acf21d087dce5edfba985b6225a212260b56030ea15259d51f9bc676bd1",
+        "evidence_id": "ev_c4a03b3ba97cc333017096e9db7b1856306f39bfe1eac6c7c58bda399022fcec"
+      },
+      {
+        "address": "0x4ef90",
+        "kind": "assembly",
+        "sha256": "c65142711f348084ea5b296d5da09a765e9d47b12a11ba67113a6e0be51b782e",
+        "evidence_id": "ev_3db8c5a78447f6925976df12a7c606d5a88f7a9d7608f694c47406393f5f8bab"
+      },
+      {
+        "address": "0x520c0",
+        "kind": "pseudo",
+        "sha256": "bb21a33c08408df139bd5fda4493ac73b15a1116f4125ed286a89a5ae2852601",
+        "evidence_id": "ev_42190d4481bdbcbae4e9a6b86ffe09113d1b3b79ec0190ed5bd165e4bd8233d4"
+      },
+      {
+        "address": "0x520c0",
+        "kind": "assembly",
+        "sha256": "8c8825bd1480bbfa8b9f8909a20bd7c1421ec23981a333c2cec2f6d4c08c14e7",
+        "evidence_id": "ev_63035580daf36e8a538924b0d73a1d62c2038289dd974d86e35ea0c98b45633d"
+      },
+      {
+        "address": "0x4b4b8",
+        "kind": "pseudo",
+        "sha256": "bbeeaca952b777bb13aa2c1213954ba8b27540ba2d1d38306c869085bd196876",
+        "evidence_id": "ev_e2a54dd229cd970f4e09986a96c9446b55f42a091538b2e1a02c70eaef0b935a"
+      },
+      {
+        "address": "0x4b4b8",
+        "kind": "assembly",
+        "sha256": "01c21a3ee7d18fe768849f2e15bf1c6086ca4775970914e4431fe26b32ce1028",
+        "evidence_id": "ev_ef6ab04953476821a8d15d85a930bb2a64e7a936499a369f01654c4e8a1e4702"
+      },
+      {
+        "address": "0x4b850",
+        "kind": "pseudo",
+        "sha256": "02e8527b2fc1e08394645e84dff3042574a3fb68a344612bb8ae3c80d5421a98",
+        "evidence_id": "ev_cfe48256e54731f79a6d7fb48948c7854dc36749674c9b356b65d42036ec3d26"
+      },
+      {
+        "address": "0x4b850",
+        "kind": "assembly",
+        "sha256": "5738761fac9f85fb03154054d1132826422b38da4497d33923dfbb4b1a298998",
+        "evidence_id": "ev_44d615ce6daad80770b62fcb687a988aa806f5c7212584e0340e5b6a26e2935c"
+      },
+      {
+        "address": "0x5a418",
+        "kind": "pseudo",
+        "sha256": "8b297476d4a406bd867c3f70567f2865b496dd921d1a90e17e2f2eb56700ee65",
+        "evidence_id": "ev_dfc85368bd6eda174f07d8d29819097764b9775b576a373ba2c4af1ba2b2c2cd"
+      },
+      {
+        "address": "0x5a418",
+        "kind": "assembly",
+        "sha256": "ed99fea71154fa9bab03f5f85c3f9c7d74d50883ad64e570546c2690cbf1c144",
+        "evidence_id": "ev_ce18bffc71901c6e020e65f32193e68c9b716164edd42d069b9eeb30466b96bf"
+      },
+      {
+        "address": "0x57124",
+        "kind": "pseudo",
+        "sha256": "6d9879bd65c14765d5f5ccb786307f1f31ab2168f2120dca1566c6a40ef792d7",
+        "evidence_id": "ev_de69a9511bd0c20479af3205645dd7c5ba85092909952f63484b1c8f3b0a08d9"
+      },
+      {
+        "address": "0x57124",
+        "kind": "assembly",
+        "sha256": "efaa835b9e0ed03b37a2c5bfbe437cb04b4151342b78177e2f7ac87bc0b1976b",
+        "evidence_id": "ev_bfda4188571e334d14e9301ca27e5fdfdd7fa096053555275bc8bef3fb75d0fc"
+      },
+      {
+        "address": "0x5a1dc",
+        "kind": "pseudo",
+        "sha256": "1f768c19204ff4002c822f1702c41eee0c72022c21828a0d845e9215623ebd26",
+        "evidence_id": "ev_b9eb547d882bc5e2ac585334f3fc13cf94d800155033961a8f857feda9981050"
+      },
+      {
+        "address": "0x5a1dc",
+        "kind": "assembly",
+        "sha256": "e9760dd0f1337d7eb5f532155333c9f79d9478618bc2a61fcb5cb15aaa3dd39b",
+        "evidence_id": "ev_6618c7067e77c8dc4ae65c5cd9011a59a3040f56342a1ff82fe9b468b9b53bb6"
+      }
+    ],
+    "direct_gl_call_search": [
+      {
+        "address": "0x3ce8",
+        "line": 136,
+        "call": "_glViewport(0,0,(int)uVar9,(int)uVar11);"
+      },
+      {
+        "address": "0x3ce8",
+        "line": 138,
+        "call": "_glScissor(0,0,(int)uVar9,(int)uVar11);"
+      },
+      {
+        "address": "0x40fc",
+        "line": 61,
+        "call": "_glOrthof(0,uVar5,0,uStack_a0);"
+      }
+    ],
+    "literal_reads": [
+      {
+        "address": "0x5a404",
+        "hex": "0000e4c2",
+        "float32": -114.0
+      },
+      {
+        "address": "0x5a5cc",
+        "hex": "000020c2",
+        "float32": -40.0
+      },
+      {
+        "address": "0x5a5d0",
+        "hex": "000080c3",
+        "float32": -256.0
+      },
+      {
+        "address": "0x5a5d4",
+        "hex": "00008043",
+        "float32": 256.0
+      }
+    ],
+    "assets": [
+      {
+        "member": "Payload/HeavyMach2.app/GameUI_BG.png",
+        "sha256": "a43a3b930d05c95384d44c1001e76696b850635e942fcb952db8649b7836e276",
+        "bytes": 43673,
+        "alpha": {
+          "pixels": [
+            480,
+            64
+          ],
+          "logical_dimensions": [
+            480.0,
+            64.0
+          ],
+          "bottom_logical_rows": 40,
+          "sample_pixels": 19200,
+          "nonopaque_pixels": 558,
+          "min_alpha": 240,
+          "max_alpha": 255,
+          "decoder": "PNG row filters; CgBI raw deflate; RGBA alpha channel only; no texture upload/runtime"
+        }
+      },
+      {
+        "member": "Payload/HeavyMach2.app/GameUI_BG@2x.png",
+        "sha256": "d80eae84c26e62c3ba563b28d11c09bbc5635dabb88ea2836fd6726f5d911150",
+        "bytes": 140996,
+        "alpha": {
+          "pixels": [
+            960,
+            128
+          ],
+          "logical_dimensions": [
+            480.0,
+            64.0
+          ],
+          "bottom_logical_rows": 40,
+          "sample_pixels": 76800,
+          "nonopaque_pixels": 0,
+          "min_alpha": 255,
+          "max_alpha": 255,
+          "decoder": "PNG row filters; CgBI raw deflate; RGBA alpha channel only; no texture upload/runtime"
+        }
+      }
+    ],
+    "findings": {
+      "viewport": "EAGL bounds full width/height; manager half-screen set from same full bounds; no HUD subtraction in these paths",
+      "projection": "full UIScreen bounds with orientation swap",
+      "hud": "layer9; GameUI_BG centered at local(0,-128); GUI camera influence recursively disabled by 0x55fc; 480x320 gives screen center(240,32), spans x0..480,y0..64. @2x is pixel density, not doubled logical size",
+      "input": "0x4e0e4 subtracts full half-screen; 0x5a1dc rejects centeredY<-114 before dividing by zoom and adding camera+offset; 320high gives bottom46 logical units",
+      "camera": "minY=-256+halfScreenY/zoom-40/zoom, maxY=256-halfScreenY/zoom; 0x57124 clamps camera to these bounds; zoom transform0x4e07c centers on full half-screen",
+      "mask_inference": "at lower camera limit, nominal map bottom projects to40 screen units, underneath the64-high HUD; actual opacity of bottom40 separately recorded"
+    },
+    "limitations": [
+      "Static binary/decompiler/assembly and local PNG-byte analysis only. No original runtime launched in this task.",
+      "Direct GL search covers verified1077 exported bodies; indirect calls are not an exhaustive state proof.",
+      "Phone2.0.1 armv7 and HD1.0.3 are the selected versions, not every historic release.",
+      "Map-bound arithmetic does not establish every original runtime texture/raster edge pixel."
+    ]
+  },
+  "local_evidence": [
+    {
+      "name": "hd-findings.json",
+      "sha256": "540bde0123551340eb880bb500f3ad95bfe2503bb555a1a5ac74324b50ad6a08"
+    },
+    {
+      "name": "phone-findings.json",
+      "sha256": "af73a520efcb7df97910b35718f491b47dd6c98fa0daf83d03b5a7709887a866"
+    },
+    {
+      "name": "audit_phone.py",
+      "sha256": "670e5f9c9ff33beeab6f85dd730aa64b1929299fe1a51e19c26c9fe740ead50f"
+    }
+  ],
+  "decision": "Both originals draw the full world framebuffer with full-width HUD overlay. Preserve distinct camera/input/HUD values. Do not adopt a HUD-subtracted viewport or camera-only lowering from this evidence."
+}
