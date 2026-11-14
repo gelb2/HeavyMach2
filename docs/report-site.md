@@ -1,5 +1,11 @@
 # HeavyMach 2 보고 사이트
 
+## iPad 보존·SOLID 경계 보강 — 버전290, 2026-11-14
+
+같은 [공통 줌 계획](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/camera-plan.html)에 regular 고정/compact 거리 정책, Scene별 상태 격리, SOLID 책임 경계와 iPad 전후 대조 기준을 추가했다. 배율1뿐 아니라 표시·입력·전투/진행·저장/시간/RNG·동시 세션·화면 재구성을 보존 조건으로 명시했다. 새 iPad 회귀는 완료·병합·설치 전 해결한다. 기준 소스는 `bfde129`, 계획 커밋은 `a31473f`다. 게임 코드와 새 검사 결과를 추가한 작업은 아니다.
+
+사이트 소스는 `9b73740b2adb51408f3734397c41469d670c817f`, 배포는 `appgdep_6af7eaf5c0d88191bb2e28827cd363d7`, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_51ed9fd419f0819180fdcac67d7483b0`이며 공식 succeeded를 확인했다. 기존 본인 비공개 접근을 유지했고 Safari 온라인에서 정책 격리·SOLID·실패 처리 본문을 확인했다. 최초 게시 호출의 결과 보관 오류 뒤 Site289가 최신이고 신규 저장버전이 없음을 조회했으며, 다시 게시해 이번 버전을 확인했다. Site289의 이전 전달 압축본은 게시 성공 후 제거해 최신1개만 남겼다.
+
 ## 공통 줌 수정 계획과 빌드 정리 — 버전289, 2026-11-14
 
 [공통 C++ 줌 수정 계획](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/camera-plan.html)을 고정 보고 목록과 기존 원인 조사 보고서에 연결했다. 새 `CameraPresentation`의 책임, 기존 Scene/Session/Layout의 수정 위치, iPad 배율1 보존·휴대폰 대기1.0 후보, 앱별 줌 분기 금지와 동시 검사 기준을 기록했다. 게임 구현·새 앱 설치는 하지 않았다.
