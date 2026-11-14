@@ -1,5 +1,13 @@
 # HeavyMach 2 보고 사이트
 
+## 2026-11-15 최신 게시 — 디자인·에셋 정본과 로컬 하네스 계획
+
+[디자인·에셋 정본](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/design-asset-rules.html) 50개 규칙과 [로컬 하네스·자동 훅 계획](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/presentation-harness.html)을 게시했다. Base001~006의 원본 테이블 12개를 공통 reader로 읽고 실제 배경·시설 참조를 기록했다. 검사 계획은 6개 기지×두 기기×허브/사령부/상점의 최소 36개 조건이며 상세·거래·임무 등 상태별 검사를 추가한다. 실패 예시 3장은 전수 검사 범위를 뜻하지 않는다. 전수 화면 검사와 하네스/훅 구현은 아직 하지 않았다.
+
+HUD Site 버전5·소스55b0bae·배포appgdep_6af8e2c8e5bc8191811a326d5a0b8eed와 누적 Site 버전304·소스8c9bc66·배포appgdep_6af8e0983ec08191a2e5abdf49f8bf88의 succeeded를 확인했다. 기존 첫 화면과 HeavyMach2 고정 누적 목록에서 새 문서로 연결한다. 두 Site 모두 본인1명·그룹0·외부0 접근을 유지한다. 인증 HTTP로 문서·출처 JSON·원본 실패 PNG·두 누적 목록 등 11개 파일을 확인했다. 온라인 브라우저 시각 검수나 게임 전수 검사 완료로 보고하지 않는다.
+
+제품 롤백 d7d201c는 유지한다. 이후 변경은 문서·출처 조사·보고뿐이며 게임/검사/훅 소스 변경, 앱 빌드/설치, develop/main 병합은 없다. [게시 근거](evidence/presentation-harness-publication-20261115.json)를 따른다. 아래 버전2/302 복구는 당시 완료한 롤백 기록이다.
+
 ## 2026-11-15 게시 롤백
 
 ExperimentalUI 이후 구현과 보고를 사용자 지시로 철회했다. HUD Site는 기존 저장 버전 2, 누적 Site는 기존 저장 버전 302로 재배포했으며 두 배포는 succeeded다. 새 구현 보고와 완료 연결은 현재 게시본에 없다. 이전 저장 버전 3/303과 실패 자료는 이력에 보존했다.

@@ -1,5 +1,11 @@
 # HeavyMach2 iPhone 작업 인계
 
+## 2026-11-15 최신 게시·전수 조사 범위
+
+[로컬 하네스 계획](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/presentation-harness.html)과 [디자인·에셋 정본](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/design-asset-rules.html)을 기존 비공개 Site에 게시했다. HUD 버전5·누적 Site304의 배포 succeeded와 인증 HTTP 11개 파일을 확인했다. 기존 HeavyMach2 고정 보고 목록에서 연결한다.
+
+원본 테이블 12개에서 Base001~006 모두의 실제 배경/시설 참조를 조사했다. 계획은 두 기기의 허브·사령부·상점 진입을 최소 36개 조건으로 다루며 상태별 검사를 추가한다. 실패 캡처 3장은 검사 범위가 아니다. Phone Base002/005 시설 그림의 교차 참조도 원본대로 기록했다. 파일 조사만 완료했으며 전수 화면 검사·하네스/훅 구현은 미실행이다. 게임/검사/훅 소스는 d7d201c와 같고 새 빌드·설치·develop/main 병합은 없다. [게시 근거](docs/evidence/presentation-harness-publication-20261115.json)를 따른다.
+
 ## 2026-11-15 후속 — 정본·하네스 계획
 
 롤백 d7d201c 이후 사용자는 레터박스 금지·기기별 원본 에셋·검사/성공 판정과 작업 시 자동 발동 훅의 계획, 디자인·에셋 요구 정본 작성을 지시했다. [정본](docs/design-and-asset-rules.md)과 [로컬 하네스 계획](docs/presentation-harness-plan-20261115.md)을 읽는다. 하네스는 이 Mac의 로컬 도구·Git/빌드/설치 경로로 계획하며 서버 추가는 범위 밖이다. 아직 훅/게임 구현은 하지 않았다. 이 문서 작업이 철회한 ExperimentalUI의 개발 재개를 의미하지 않는다.
