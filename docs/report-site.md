@@ -1,5 +1,13 @@
 # HeavyMach 2 보고 사이트
 
+## iPhone 기본 줌 조사 — 버전287, 2026-11-14
+
+[기본 줌 과확대 원인·측정·수정 기준](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/camera-baseline.html)을 기존 누적 보고 목록에 추가했다. 공통 코어49표본과 원본 REA10파일을 대조했고, 설치본과 같은 카메라 코드에서 화면 채움 배율과 대기 계수1.6의 곱셈을 확인했다. 기본 배율 수정·새 앱 설치는 하지 않았다. 카메라 초기화 직후 표본과 실제 사용자가 보는 첫 전장 프레임의 시점을 같다고 단정하지 않는다.
+
+근거 커밋은 `f3ecb3c`, 사이트 소스는 `a8f3d05c795226adbafd959be79305c0eb1acc32`, 버전287이다. 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_cf481ea93be88191a9786fb2c6fd6499`, 배포는 `appgdep_6af7e11831a08191b3a023bde234cc6f`이며 공식 succeeded를 확인했다. 기존 본인1명·그룹0·외부0 접근 범위를 유지했다. Safari에서 온라인 본문·수치표·원본 분석과 수정 기준을 확인했다.
+
+새 페이지를 포함한18페이지와 목록을 연결했다. 기존 보고/이미지는 보존했다. 배포 한도를 맞추기 위해 기존 HM2 조사 JSON5파일의 공백만 줄였고 파싱한 값의 동일성과 전후 해시를 기록했다. 최종 tar 확장 크기는268,413,440바이트다. 로컬 근거는 `.local/evidence/camera-baseline-20261114/`의 `report-local-verification.json`, `archive-verification.json`, `site-publication.json`이다.
+
 ## iPhone 정식판 설치·직접 검사 — 버전286, 2026-11-14
 
 [기존 구현 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/implementation.html#2026-11-14-iphone-정식판-설치와-직접-검사)와 [누적 보고 목록](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)을 갱신했다. 게임 소스64ebe70과 동일한 Release를 다시 빌드·서명·설치·실행했고 저장28,204바이트 보존을 확인했다. 실제 기지 설명/EXIT 분리·사령부 첫3행·이동/BOT 추종·E_Tank_06 공격 피해·파괴 후 기지 복귀를 관측했다. 관측 중 출력 영역/HUD 크기는 유지됐고 검은 레터박스나 크래시는 없었다. 맵 가장자리 외형·가로 왼쪽·원작 표시 비례·전 캠페인은 남는다. 기록 커밋은1a07444다.
