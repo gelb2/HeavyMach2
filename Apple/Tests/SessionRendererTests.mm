@@ -62,6 +62,54 @@ UIImage* image(NSData* rgba,CGSize size){
 }
 @interface SessionRendererTests:XCTestCase @end
 @implementation SessionRendererTests
+- (void)testPhoneLoweredCameraOriginalLayerCoverage {
+    // Investigation only: manually supplied camera snapshots do not change
+    // Scene/CameraPresentation, map data, gates, viewport, UVs or source sizes.
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];
+    HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,912,420)];surface.contentScaleFactor=1;
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];surface.frame=CGRectMake(0,0,912,420);[surface layoutIfNeeded];
+    try {
+        hm2::apple::Files files(root.fileSystemRepresentation);const auto maps=hm2::Maps::parse(hm2::Chunk::parse(files.read("MapInfo.mcb")));
+        HM2Renderer* renderer=[[HM2Renderer alloc]initWithResourceRoot:root];HUDIdentityHost host(renderer);
+        hm2::PreparedTiles tiles("lower-camera-coverage");hm2::ui::Screens ui(files,tiles,host);const auto display=hm2::DisplayConfiguration::surface({912,420},{68,20,68,0});ui.setDisplay(display);
+        hm2::ui::ScreensState state;state.screen=hm2::ui::ScreenId::field;state.locale="kr";ui.refresh(state,0);hm2::Frame preparation;ui.appendPreparation(preparation);[renderer prepareFrame:preparation];
+        hm2::ui::TextBitmap marker;marker.layout.width=marker.layout.height=1;marker.layout.content={1,1};marker.alpha={255};const std::string markerName="@text/camera-coverage-marker";[renderer prepareText:marker identifier:markerName];
+        hm2::Sprite markerSprite;markerSprite.image=markerName;markerSprite.center={456,210};markerSprite.size={912,420};markerSprite.color={1,0,1,1};
+        const auto capture=[&](const hm2::Frame& frame){[renderer prepareFrame:frame];[renderer drawFrame:frame layer:layer];[renderer captureNextFrame];[renderer drawFrame:frame layer:layer];NSData* bytes=[renderer.readRGBA copy];XCTAssertEqual(bytes.length,912u*420u*4u);return bytes;};
+        NSMutableArray* observations=[NSMutableArray new];unsigned mapCount=0,backgrounds=0,loweredLeaking=0,loweredHUDLeaking=0,extraBackgroundScales=0,originalSizeLoweredGaps=0,originalSizeLoweredHUDGaps=0;
+        for(const auto& [name,map]:maps.all())if(name.starts_with("Stage")) {@autoreleasepool {
+            (void)map;++mapCount;hm2::MapPreview preview(files,name);const bool hasBG=files.exists(name+"BG.jpg");backgrounds+=hasBG;
+            for(unsigned backdropMode=0;backdropMode<(hasBG?2u:1u);++backdropMode)for(float drop:{0.f,94.f})for(bool drawHUD:{false,true}) {
+                hm2::MapCamera camera;camera.viewport={912,420};camera.center={0,-301-drop};camera.fillSurface=true;camera.backgroundWorld={camera.center.x*.94f,camera.center.y*.94f};
+                auto frame=preview.compose(camera);
+                if(backdropMode==1){auto originalCamera=camera;originalCamera.fillSurface=false;const auto original=preview.compose(originalCamera);frame.sprites.front()=original.sprites.front();const auto info=hm2::imageInfo(files.read(name+"BG.jpg"));hm2::VisualImage visual;visual.tile.image=name+"BG.jpg";visual.tile.content={float(info.width),float(info.height)};visual.tile.storage={1,1};while(visual.tile.storage.width<info.width)visual.tile.storage.width*=2;while(visual.tile.storage.height<info.height)visual.tile.storage.height*=2;visual.screenPosition=frame.sprites.front().center;visual.scale={2,2};frame.sprites.front().strip=hm2::originalTileSprite(visual).strip;}
+                const auto groundInfo=hm2::imageInfo(files.read(name+(files.exists(name+".jpg")?".jpg":".png")));
+                XCTAssertEqual(groundInfo.width,1024u);XCTAssertEqual(groundInfo.height,1024u);const auto& ground=frame.sprites.back();XCTAssertEqual(ground.size.width,1024.f);XCTAssertEqual(ground.size.height,1024.f);XCTAssertEqual(ground.strip.size(),4u);
+                for(const auto& sprite:frame.sprites)for(const auto& vertex:sprite.strip){XCTAssertGreaterThanOrEqual(vertex.uv.x,0.f);XCTAssertLessThanOrEqual(vertex.uv.x,1.f);XCTAssertGreaterThanOrEqual(vertex.uv.y,0.f);XCTAssertLessThanOrEqual(vertex.uv.y,1.f);}
+                float bgScale=0;if(hasBG){const auto info=hm2::imageInfo(files.read(name+"BG.jpg"));bgScale=frame.sprites.front().size.width/(float(info.width)*2);XCTAssertEqual(frame.sprites.front().size.height/(float(info.height)*2),bgScale);if(bgScale!=1)++extraBackgroundScales;}
+                if(drawHUD)ui.append(frame,15);NSData* normal=capture(frame);auto marked=frame;marked.sprites.insert(marked.sprites.begin(),markerSprite);NSData* withMarker=capture(marked);
+                const auto* a=static_cast<const unsigned char*>(normal.bytes);const auto* b=static_cast<const unsigned char*>(withMarker.bytes);unsigned exposed=0,blackExposed=0;unsigned minimum=420,maximum=0,minX=912,maxX=0;
+                for(unsigned y=0;y<420;++y)for(unsigned x=0;x<912;++x){const auto at=(y*912+x)*4;const bool changes=std::abs(int(a[at])-int(b[at]))>1||std::abs(int(a[at+1])-int(b[at+1]))>1||std::abs(int(a[at+2])-int(b[at+2]))>1;if(changes){++exposed;minimum=std::min(minimum,y);maximum=std::max(maximum,y);minX=std::min(minX,x);maxX=std::max(maxX,x);if(unsigned(a[at])+a[at+1]+a[at+2]<=3)++blackExposed;}}
+                // Baseline coverage and intentional lower-camera gaps are
+                // assertions of the experiment, not relaxed release criteria.
+                // This test verifies the measured investigation outcome. The strict
+                // candidate criterion stays exposed==0 AND no extra BG scale;
+                // a passing investigation is not a passing camera candidate.
+                if(backdropMode==0){if(hasBG){XCTAssertEqual(blackExposed,0u);XCTAssertGreaterThan(exposed,0u);XCTAssertEqual(minX,911u);XCTAssertEqual(maxX,911u);}else if(drop==0)XCTAssertEqual(exposed,0u,@"Baseline opaque terrain %s",name.c_str());else {XCTAssertGreaterThan(exposed,30000u,@"Missing backdrop must remain observable %s",name.c_str());if(drawHUD)++loweredHUDLeaking;else++loweredLeaking;}}
+                else {XCTAssertEqual(bgScale,1.f);if(drop==94){XCTAssertGreaterThan(exposed,0u,@"Original768-wide backdrop cannot fill912-wide lower gap %s",name.c_str());if(drawHUD)++originalSizeLoweredHUDGaps;else++originalSizeLoweredGaps;}}
+                [observations addObject:@{@"map":@(name.c_str()),@"drop":@(drop),@"HUD":@(drawHUD),@"hasOriginalBackdrop":@(hasBG),@"additionalBackgroundScale":@(bgScale),@"originalBackdropSizeMode":@(backdropMode==1),@"strictNoExpansionCandidatePass":@(exposed==0&&bgScale<=1),@"exposedPixels":@(exposed),@"firstExposedColumn":@(minX),@"lastExposedColumn":@(maxX),@"blackExposedPixels":@(blackExposed),@"firstExposedRow":@(minimum),@"lastExposedRow":@(maximum),@"terrainWidth":@(groundInfo.width),@"terrainHeight":@(groundInfo.height)}];
+                NSLog(@"HM2_LOWER_CAMERA map=%s drop=%.0f HUD=%d BG=%d mode=%u extraBGScale=%.5f exposed=%u black=%u rows=%u..%u columns=%u..%u",name.c_str(),drop,drawHUD,hasBG,backdropMode,bgScale,exposed,blackExposed,minimum,maximum,minX,maxX);
+                if((name=="Stage01_01"||name=="Stage02_06")&&drawHUD){XCTAttachment* shot=[XCTAttachment attachmentWithImage:image(normal,renderer.drawableSize)];shot.name=[NSString stringWithFormat:@"camera-%s-drop%.0f-backdropMode%u-HUD",name.c_str(),drop,backdropMode];shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];}
+                [renderer retainPreparedTextures:marked];
+            }
+        }}
+        XCTAssertEqual(mapCount,38u);XCTAssertEqual(backgrounds,5u);XCTAssertEqual(loweredLeaking,33u);XCTAssertEqual(loweredHUDLeaking,33u);XCTAssertEqual(extraBackgroundScales,20u);XCTAssertEqual(originalSizeLoweredGaps,5u);XCTAssertEqual(originalSizeLoweredHUDGaps,5u);
+        NSDictionary* report=@{@"maps":@(mapCount),@"originalBackdrops":@(backgrounds),@"loweredMapsExposingGap":@(loweredLeaking),@"loweredMapsExposingGapWithHUD":@(loweredHUDLeaking),@"viewportWidth":@912,@"viewportHeight":@420,@"cameraDrop":@94,@"additionalBackgroundScales":@(extraBackgroundScales),@"originalSizeBackdropMapsExposingGap":@(originalSizeLoweredGaps),@"originalSizeBackdropMapsExposingGapWithHUD":@(originalSizeLoweredHUDGaps),@"observations":observations};
+        NSData* data=[NSJSONSerialization dataWithJSONObject:report options:NSJSONWritingSortedKeys error:nullptr];XCTAttachment* receipt=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];receipt.name=@"original-layer-lowered-camera-coverage-report";receipt.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:receipt];
+    }catch(const std::exception& e){XCTFail(@"Lower camera resource investigation: %s",e.what());}
+    window.hidden=YES;window.rootViewController=nil;
+}
 - (void)testCustomHUDIdentityMatchesDefaultPixelsAtFractionalBoundaries{
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     struct Case{hm2::DisplayConfiguration display;CGFloat drawableScale;};
