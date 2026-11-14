@@ -1,5 +1,14 @@
 # HeavyMach 2 보고 사이트
 
+## 하단 HUD·포털 수정 정식판 아이폰 설치 — 버전298
+
+[같은 수정 보고서](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/world-hud.html#하단-hud와-포털-입력-수정--2026-11-14)에 사용자 후속 설치 요청과 실제 iPhone 설치·실행을 추가했다. 제품3666fc7·설치기록99f98ce다. 데이터8파일을 먼저 백업했고 설치 직후 진행 저장28,204바이트 완전 일치를 확인했다. 서명·dSYM UUID·원본준비자원1,532파일·치트심벌 제외와 실제PID9901 재확인을 기록했다. CLI서명실패는XcodeRelease서명으로해결했고pbx/스킴설정은원래바이트로복원했다. 이 설치를 전 캠페인 플레이·발열 검증이나 develop/main 병합으로 확대하지 않는다.
+
+사이트 소스 `e034def16d2ca761afc53cdb5ab2265d7784b23a`, 배포 `appgdep_6af84ac5f03481919a2695aa4c615fa5`, 저장버전 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_b333ca5ca7f481918008d9203cdf8cb2`의 공식 succeeded와 버전298을 확인했다. 본인1명·그룹0·외부0 접근을 유지했다. 로컬22페이지·gzip·첫/누적 목록·앵커·JS 구문을 확인했고 새 온라인 브라우저 시각검수는 하지 않았다. 원본IPA·원시저장·서명 비밀은 게시하지 않았다.
+
+서버 전달 tar member는268,420,096바이트로한도이내다. 게시성공뒤이전297전달압축본만제거하고최신298전달본을남겼다. 설치/실행을확인한뒤해당Xcode전용중간캐시37,748,741바이트도제거했고서명된Release앱·dSYM·원본·저장백업·실패/성공근거는유지했다. 로컬 근거는 `.local/evidence/iphone-release-hud-portal-20261114/`의 `result.json`, `signed-release-verification.json`, `save-preservation.json`, `site-publication.json`, `build-cleanup.json`이다.
+
+
 ## 하단 HUD·포털 입력 수정 — 버전297
 
 [수정 결과](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/world-hud.html#하단-hud와-포털-입력-수정--2026-11-14)를 기존 첫 화면과 HeavyMach2 고정 누적 목록에 연결했다. 제품3666fc7의 compact 하단 입력·HUD v1 배치 수정, CPU82포털(81개 직접 표본+1개 원래 경로), C++78/78, iPad126/혼합98조건 각1,200프레임 전후 차이0과 정식/치트 Release 자원1,532파일 일치를 기록했다. Native 첫 묶음은 양쪽6/7이며 검사에서 켜 놓은 Repair모드를 정상 버튼 조작으로 해제한 후, 목적지 도착·실제 저장까지 보강한 새 포털 검사만 양쪽1/1 재통과했다. 앞선6개 성공 재사용과 동시 치트126조건/iPhone2,100·iPad1,200프레임을 구분했다. 물리 기기 업데이트·develop/main 병합은 하지 않았다.
