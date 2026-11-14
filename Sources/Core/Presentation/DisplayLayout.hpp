@@ -21,7 +21,7 @@ struct DisplayTransform {
 };
 enum class DisplayRegion {content,backdrop,title,slot0,slot1,slot2,bottom,top,
     panel,maintenance,list,chooser,shopStock,shopBackdrop,shopInventory,shopFooter,banner,
-    world,surface,baseDescription};
+    world,surface,baseDescription,artBackdrop,artScene,artContent};
 class DisplayLayout {
     DisplayConfiguration configuration_;
 public:

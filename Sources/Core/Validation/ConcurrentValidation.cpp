@@ -368,7 +368,7 @@ struct ConcurrentValidation::Impl {
             for(int i=0;i<count;++i)if(std::isfinite(cost[i])&&cost[i]<std::numeric_limits<float>::max()){const auto p=point(i);const float d=std::hypot(p.x-target.x,p.y-target.y);if(d<nearest){nearest=d;goal=i;}}
         }
         std::vector<int> path;for(int at=goal;at>=0;at=parent[at]){path.push_back(at);if(at==start)break;}std::reverse(path.begin(),path.end());std::optional<Vec2> nextPoint;
-        for(int at:path){const auto p=point(at);const auto screen=camera.toScreen(p);if(screen.x<16||screen.x>camera.viewport.width-16||screen.y<bottom||screen.y>top||!clearSegment(player,p))break;if(std::hypot(p.x-player.x,p.y-player.y)>=32)nextPoint=p;}
+        for(int at:path){const auto p=point(at);const auto screen=camera.toScreen(p);if(screen.x<16||screen.x>camera.viewport.width-16||screen.y<bottom||screen.y>top||!clearSegment(player,p))continue;if(std::hypot(p.x-player.x,p.y-player.y)>=32)nextPoint=p;}
         return nextPoint?navigate(*nextPoint):false;
     }
     static bool compactWeaponGuideCase(std::size_t index){return index==30||index==35||index==38||index==50;}
@@ -389,8 +389,12 @@ struct ConcurrentValidation::Impl {
         std::vector<CombatEnemySnapshot> visible;
         for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){
             ++sample.living;const float distance=std::hypot(enemy.position.x-sample.player.x,enemy.position.y-sample.player.y);
-            if(distance<nearDistance){nearest=enemy;nearDistance=distance;}
-            const auto point=scene->camera().toScreen(enemy.position);if(point.x<16||point.x>scene->camera().viewport.width-16||point.y<fieldFloor(scene->camera())||point.y>scene->camera().viewport.height-16)continue;
+            const auto point=scene->camera().toScreen(enemy.position);
+            // At the finite bottom edge a nearer enemy may be behind HUD.
+            // Approach an enemy above the input floor, bringing more of the
+            // field into view through ordinary movement instead of overscan.
+            if(point.y>=fieldFloor(scene->camera())&&distance<nearDistance){nearest=enemy;nearDistance=distance;}
+            if(point.x<16||point.x>scene->camera().viewport.width-16||point.y<fieldFloor(scene->camera())||point.y>scene->camera().viewport.height-16)continue;
             ++sample.visible;if(distance<float(pending->shotRange)){visible.push_back(enemy);if(distance>farDistance){far=enemy;farDistance=distance;}}
         }
         if(far){
@@ -675,7 +679,7 @@ struct ConcurrentValidation::Impl {
             const auto& weapon=weapons.front();const auto& info=catalog.weapon(weapon.part);const auto enemies=scene->enemies();
             const auto target=std::find_if(enemies.begin(),enemies.end(),[&](const auto& e){return e.id==scene->selectedEnemy()&&e.hp>0&&!e.corpse;});
             const auto player=scene->player().position;
-            if(target!=enemies.end()&&std::hypot(target->position.x-player.x,target->position.y-player.y)<float(info.shotRange)-8&&scene->player().weaponReady){
+            if(target!=enemies.end()&&std::hypot(target->position.x-player.x,target->position.y-player.y)<float(info.shotRange)&&scene->player().weaponReady){
                 const float elapsed=float(scene->clock().worldTime()+double(GameClock::increment)-double(weapon.fireTime));
                 if((weapon.fireLeft>0||elapsed>=info.reloadDelay)&&elapsed>=info.shotDelay){
                     if(!press(i,1021)||!scene->isPaused())throw std::logic_error("Synchronized menu pause failed");
@@ -684,9 +688,9 @@ struct ConcurrentValidation::Impl {
                 }
             }
             if(target==enemies.end()&&(counters.frames-1)%31==0){
-                const CombatEnemySnapshot* nearest=nullptr;float distance=std::numeric_limits<float>::max();
-                for(const auto& enemy:enemies)if(enemy.hp>0&&!enemy.corpse){const float d=std::hypot(enemy.position.x-player.x,enemy.position.y-player.y);if(d<distance){distance=d;nearest=&enemy;}}
-                if(nearest){const auto screen=scene->camera().toScreen(nearest->position);if(screen.x>=16&&screen.x<=scene->camera().viewport.width-16&&screen.y>=fieldFloor(scene->camera())&&screen.y<=scene->camera().viewport.height-16){const auto point=game.worldCanvasPoint(screen);constexpr std::uintptr_t pointer=0x53594e43;game.inputWorld(PointerPhase::begin,point,pointer);game.inputWorld(PointerPhase::end,point,pointer);}else approachTarget(i,nearest->position);}
+                const CombatEnemySnapshot *nearest=nullptr,*visible=nullptr;float distance=std::numeric_limits<float>::max(),visibleDistance=distance;
+                for(const auto& enemy:enemies)if(enemy.hp>0&&!enemy.corpse){const float d=std::hypot(enemy.position.x-player.x,enemy.position.y-player.y);if(d<distance){distance=d;nearest=&enemy;}const auto screen=scene->camera().toScreen(enemy.position);if(screen.x>=16&&screen.x<=scene->camera().viewport.width-16&&screen.y>=fieldFloor(scene->camera())&&screen.y<=scene->camera().viewport.height-16&&d<visibleDistance){visible=&enemy;visibleDistance=d;}}
+                if(visible){const auto point=game.worldCanvasPoint(scene->camera().toScreen(visible->position));constexpr std::uintptr_t pointer=0x53594e43;game.inputWorld(PointerPhase::begin,point,pointer);game.inputWorld(PointerPhase::end,point,pointer);}else if(nearest)approachTarget(i,nearest->position);
             }
         }
     }

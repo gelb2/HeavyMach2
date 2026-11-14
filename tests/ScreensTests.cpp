@@ -390,7 +390,7 @@ void hudMeasuredGeometry(const char* root){
             assert(piece.strip[0].position.y==right.y&&piece.strip[1].position.y==left.y);
             assert(piece.strip[0].uv.x==slice.x/768&&piece.strip[2].uv.x==(slice.x+slice.width)/768&&piece.strip[0].uv.y==full.strip[0].uv.y&&piece.strip[1].uv.y==full.strip[1].uv.y);
             if(group){assert(pieces[group-1]->strip[2].position.x==piece.strip[0].position.x&&pieces[group-1]->strip[2].uv.x==piece.strip[0].uv.x);}
-            if(display.enabled)assert(piece.clip==full.clip); // Outer clip only; no internal rounded scissor edges.
+            if(display.enabled){assert(piece.clip&&full.clip);const auto shared=hud::intersect(*piece.clip,*full.clip);assert(near(shared.x,full.clip->x)&&near(shared.y,full.clip->y)&&near(shared.width,full.clip->width)&&near(shared.height,full.clip->height));} // Expanded canvas clip retains the original visible pixels.
         }
     }
     const DisplayLayout phone(DisplayConfiguration::surface({912,420},{68,20,68,0}));hud::Configuration low,high;low.positions[hud::controls]=hud::Placement{.5f,0};high.positions[hud::controls]=hud::Placement{.5f,1};
@@ -438,7 +438,11 @@ void movableHUD(const char* root){
     const auto writes=host.hudWrites;restored.setDisplay(DisplayConfiguration::surface({1024,1366},{0,25,0,0}));assert(!restored.hudConfiguration().customized()&&host.hudWrites==writes);
     restored.setDisplay(display);assert(restored.hudConfiguration()==saved);
     hud::Configuration invalid;invalid.positions[0]=hud::Placement{std::numeric_limits<float>::quiet_NaN(),0};bool rejected=false;try{(void)hud::encode(invalid);}catch(const std::invalid_argument&){rejected=true;}assert(rejected);
-    for(std::string bad:{"{\"version\":2,\"positions\":[null,null,null]}","{\"version\":1,\"positions\":[[2,0],null,null]}","{\"version\":1,\"positions\":[null,null,null]}extra"}){rejected=false;try{(void)hud::decode(Bytes(bad.begin(),bad.end()));}catch(const std::invalid_argument&){rejected=true;}assert(rejected);}
+    for(std::string bad:{"{\"version\":3,\"positions\":[null,null,null]}","{\"version\":1,\"positions\":[[2,0],null,null]}","{\"version\":1,\"positions\":[null,null,null]}extra"}){rejected=false;try{(void)hud::decode(Bytes(bad.begin(),bad.end()));}catch(const std::invalid_argument&){rejected=true;}assert(rejected);}
+    // Existing v1 sidecars keep their actual visual origin after migration.
+    hud::Configuration old;old.legacySafeArea=true;old.positions[hud::controls]=hud::Placement{.7f,.8f};const DisplayLayout layout(display);
+    const auto legacy=hud::visualBounds(old,hud::controls,layout);const auto upgraded=hud::upgrade(hud::decode(hud::encode(old)),layout);const auto migrated=hud::visualBounds(upgraded,hud::controls,layout);assert(!upgraded.legacySafeArea&&near(legacy.x,migrated.x)&&near(legacy.y,migrated.y));
+    for(const Vec2 edge:{Vec2{0,0},Vec2{1,0},Vec2{0,1},Vec2{1,1}}){hud::Configuration corner;corner.positions[hud::controls]=hud::Placement{edge.x,edge.y};Host edgeHost;edgeHost.hudSettings["compact"]=hud::encode(corner);PreparedTiles edgeTiles("edge");Screens edgeUI(files,edgeTiles,edgeHost);edgeUI.setDisplay(display);edgeUI.refresh(state);const auto b=hud::visualBounds(edgeUI.hudConfiguration(),hud::controls,layout);assert(near(b.x,edge.x*(display.canvas.width-b.width))&&near(b.y,edge.y*(display.canvas.height-b.height)));const auto clip=hud::originalClip(corner,hud::controls,layout);assert(b.x>=clip.x-.01f&&b.y>=clip.y-.01f&&b.x+b.width<=clip.x+clip.width+.01f&&b.y+b.height<=clip.y+clip.height+.01f);}
     std::cout<<"HUD_LAYOUT originalGPUgroups/drawHitTransform/dragNoWrites/applyFailureRetry/cancel/default/profile/restart/warm60 PASS\n";
 }
 }

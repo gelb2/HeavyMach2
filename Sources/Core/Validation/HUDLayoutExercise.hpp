@@ -10,7 +10,7 @@ inline void exerciseHUDLayoutFrame(ui::Screens& screens,GameSession& game,HUDLay
     if(frame==300){press(1021);o.menuOpened=game.state().systemVisible&&game.battle()&&game.battle()->isPaused();}
     if(frame==310){press(9100);o.editorOpened=screens.hudEditing();}
     if(frame==320&&screens.hudEditing())if(const auto point=buttonPoint(1021)){
-        const DisplayLayout layout(game.display());const auto group=hud::visualBounds(screens.hudConfiguration(),hud::controls,layout),area=hud::safe(layout);
+        const DisplayLayout layout(game.display());const auto group=hud::visualBounds(screens.hudConfiguration(),hud::controls,layout),area=hud::placementArea(layout);
         // Original768-wide HD canvas has no horizontal travel at its right
         // edge. Move above the weapon hit rectangles there; wider surfaces
         // have genuine space to move right without covering another button.

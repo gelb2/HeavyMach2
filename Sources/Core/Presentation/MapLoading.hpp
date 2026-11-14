@@ -12,8 +12,11 @@ class MapLoading {
     PreparedTiles standaloneTiles_{"global-shared"};
     PreparedTiles* tiles_;
     MapLoadingState state_;
+    bool phoneArtwork_=false;
+    std::string imageName_="StageClearBG.png";
 public:
-    explicit MapLoading(ResourceAccess&,PreparedTiles* shared=nullptr);
+    explicit MapLoading(ResourceAccess&,PreparedTiles* shared=nullptr,bool phoneArtwork=false);
+    [[nodiscard]] Size artworkViewport()const{return phoneArtwork_?Size{480,320}:Size{768,1024};}
     MapLoading(const MapLoading&)=delete;
     MapLoading& operator=(const MapLoading&)=delete;
     void tick(const MapLoadingCallbacks&);

@@ -58,6 +58,7 @@ struct VisualLayerFrame {
     void appendBatches(Frame&)const &;
     void appendBatches(Frame&)&&;
 };
+[[nodiscard]] Sprite originalTileSprite(const VisualImage&);
 [[nodiscard]] Blend originalTileBlend(unsigned type,unsigned pixelFormat);
 [[nodiscard]] Blend originalAtlasBlend(unsigned type,unsigned pixelFormat);
 [[nodiscard]] std::uint8_t originalAtlasColorByte(float);

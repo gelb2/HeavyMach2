@@ -36,10 +36,10 @@ void compactIdleAndFocus(){
     }
 }
 void wideSurfaceAndValidation(){
-    CameraPresentation view;view.configure(DisplayConfiguration::surface({1280,360}));assert(view.snapshot().edgeOverscan&&view.snapshot().fillSurface&&view.snapshot().worldScale==1);
-    for(unsigned i=0;i<1200;++i)view.advance({{},Vec2{1000,0},{}});assert(view.snapshot().worldScale==1&&view.snapshot().viewport.width==1280);
+    CameraPresentation view;view.configure(DisplayConfiguration::surface({1280,360}));assert(!view.snapshot().edgeOverscan&&view.snapshot().fillSurface&&near(view.snapshot().worldScale,1280.f/1022));
+    for(unsigned i=0;i<1200;++i)view.advance({{},Vec2{1000,0},{}});assert(near(view.snapshot().worldScale,1280.f/1022)&&near(view.snapshot().viewport.width,1022));
     view.configure(DisplayConfiguration::surface({912,420}));bool failed=false;try{view.advance({{},Vec2{std::numeric_limits<float>::quiet_NaN(),0},{}});}catch(const std::invalid_argument&){failed=true;}assert(failed);
     auto fixed=DisplayConfiguration::surface({912,420});fixed.focusZoom=false;view.configure(fixed);view.advance({{},Vec2{1000,0},{}});assert(view.snapshot().worldScale==1);
 }
 }
-int main(){regularIsolation();compactIdleAndFocus();wideSurfaceAndValidation();std::cout<<"HM2_CAMERA_POLICY PASS legacy/regular parity; per-instance isolation; idle1200; target priority; path zoom; inverse input; rotation reset; bounded overscan\n";}
+int main(){regularIsolation();compactIdleAndFocus();wideSurfaceAndValidation();std::cout<<"HM2_CAMERA_POLICY PASS legacy/regular parity; per-instance isolation; idle1200; target priority; path zoom; inverse input; rotation reset; finite source bounds without overscan\n";}

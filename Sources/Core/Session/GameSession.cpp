@@ -177,7 +177,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         else{
             host.sound("Title_TitleIn.wav",{});linkMap=gate.linkMap;linkGateId=gate.linkGate;
             scene->setIsSave(!gate.eventOnly);worldSaveAllowed=!gate.eventOnly;scene->setGameState(1);
-            mapLoading=std::make_unique<MapLoading>(resources,&globalAssets);dirty=true;
+            mapLoading=std::make_unique<MapLoading>(resources,&globalAssets,display.enabled&&display.compact);dirty=true;
         }
     }
     void playerDied()override{dirty=true;}
@@ -715,9 +715,10 @@ const ScreenTransitionState& GameSession::screenTransition()const{return impl_->
 const ui::Help* GameSession::help()const{return impl_->help.get();}
 void GameSession::appendOverlays(Frame& frame)const{
     const auto& p=*impl_;if(p.help)p.help->append(frame);
-    Frame overlays;p.transition.append(overlays);if(p.mapLoading)p.mapLoading->append(overlays);
+    Frame overlays;p.transition.append(overlays);
     if(p.display.enabled){const auto c=p.display.canvas;const float scale=std::max(c.width/768,c.height/1024);transformFrame(overlays,{scale,{c.width*.5f-384*scale,c.height*.5f-512*scale}},c,ClipRect{0,0,c.width,c.height});}
     frame.sprites.insert(frame.sprites.end(),std::make_move_iterator(overlays.sprites.begin()),std::make_move_iterator(overlays.sprites.end()));
+    if(p.mapLoading){Frame fade;p.mapLoading->append(fade);if(p.display.enabled){const auto c=p.display.canvas,reference=p.mapLoading->artworkViewport();const float scale=std::max(c.width/reference.width,c.height/reference.height);transformFrame(fade,{scale,{c.width*.5f-reference.width*.5f*scale,c.height*.5f-reference.height*.5f*scale}},c,ClipRect{0,0,c.width,c.height});}frame.sprites.insert(frame.sprites.end(),std::make_move_iterator(fade.sprites.begin()),std::make_move_iterator(fade.sprites.end()));}
 }
 bool GameSession::inputOverlay(PointerPhase phase,Vec2 point,std::uintptr_t id){
     auto& p=*impl_;if(!p.active||!p.help)return false;

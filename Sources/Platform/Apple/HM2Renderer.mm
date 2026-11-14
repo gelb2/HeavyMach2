@@ -1,5 +1,6 @@
 #import "HM2Renderer.h"
 #import <OpenGLES/ES1/gl.h>
+#include "Core/Data/ResourceName.hpp"
 #import <OpenGLES/ES1/glext.h>
 #import <OpenGLES/EAGL.h>
 #include "Assets/Image.hpp"
@@ -67,7 +68,7 @@ GLenum factor(hm2::BlendFactor value){
             continue;
         }
         NSString* name=[NSString stringWithUTF8String:sourceName.c_str()];
-        if(![name.lastPathComponent isEqualToString:name])throw std::runtime_error("Invalid image resource path");
+        if(!hm2::validResourceName(sourceName))throw std::runtime_error("Invalid image resource path");
         NSURL* url=[_root URLByAppendingPathComponent:name];
         ++_imageResourceReads;NSData* encoded=[NSData dataWithContentsOfURL:url];
         if(!encoded)throw std::runtime_error("Cannot read original image: "+sprite.image);
@@ -172,7 +173,7 @@ GLenum factor(hm2::BlendFactor value){
                     glEnable(GL_SCISSOR_TEST);glScissor(left,bottom,std::max(0,right-left),std::max(0,top-bottom));
                 }else glDisable(GL_SCISSOR_TEST);
             }
-            const auto found=_textures.find(s.image);if(found==_textures.end())throw std::runtime_error("Frame uses unprepared original texture");
+            const auto found=_textures.find(s.image);if(found==_textures.end())throw std::runtime_error("Frame uses unprepared original texture: "+s.image);
             glBlendFunc(factor(s.blend.source),factor(s.blend.destination));
             glColor4f(s.color.r,s.color.g,s.color.b,s.color.a);
             const auto& texture=found->second;

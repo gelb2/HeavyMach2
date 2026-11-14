@@ -67,8 +67,11 @@ def prepare(output):
                 if 'pixels' not in record:
                     raise ValueError('PNG IHDR missing')
             files.append(record)
-    if {file.name for file in output.iterdir()} - names - {'manifest.json'}:
+    if {file.name for file in output.iterdir()} - names - {'manifest.json', 'PhoneMenu'}:
         raise ValueError('Unexpected prepared files; refusing to package unlisted data')
+    if (output / 'PhoneMenu').exists():
+        from prepare_phone_menu_assets import verify_prepared
+        verify_prepared(output / 'PhoneMenu')
     record = {'profile': 'hd103', 'ipa_sha256': digest, 'unchanged_resource_bytes': True,
               'original_executable_included': False, 'files': sorted(files, key=lambda x: x['name'])}
     (output / 'manifest.json').write_text(json.dumps(record, ensure_ascii=False, indent=2) + '\n')

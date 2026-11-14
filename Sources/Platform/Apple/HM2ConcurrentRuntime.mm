@@ -286,4 +286,4 @@ NSData* ConcurrentRuntime::legacyComparisonPixels()const{return impl_->legacyCom
 CGSize ConcurrentRuntime::drawableSize()const{return impl_->renderer.drawableSize;}
 }
 
-namespace hm2::apple {void ConcurrentRuntime::setDisplay(DisplayConfiguration display){impl_->runner->setDisplay(display);for(auto& view:impl_->interfaces)if(view->screens)view->screens->setDisplay(display);}}
+namespace hm2::apple {void ConcurrentRuntime::setDisplay(DisplayConfiguration display){auto& p=*impl_;p.runner->setDisplay(display);for(auto& view:p.interfaces)if(view->screens){view->screens->setDisplay(display);p.prepare(*view->screens,view->tiles,0);}p.resourcesDirty=true;p.releaseExpiredOwners();}}

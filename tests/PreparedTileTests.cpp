@@ -18,6 +18,7 @@ int main(){
     assert(files.reads==reads&&files.checks==checks);
     bool rejected=false;try{cache.lookup("Unprepared.png");}catch(...){rejected=true;}assert(rejected);
     rejected=false;try{cache.prepare(files,"../outside.png");}catch(...){rejected=true;}assert(rejected);
+    for(const auto bad:{"PhoneMenu/../outside.png","PhoneMenu/sub/a.png","/absolute.png","PhoneMenu/.."}){rejected=false;try{cache.prepare(files,bad);}catch(...){rejected=true;}assert(rejected);}
     files.fail=true;rejected=false;try{cache.prepare(files,"Retry.png");}catch(...){rejected=true;}assert(rejected);
     files.fail=false;assert(cache.prepare(files,"Retry.png"));
     cache.prepareWorldEffects(files);const auto* explosion=cache.lookup("Efx_Explode02.png");assert(explosion&&explosion->columns==6&&explosion->rows==4&&explosion->origin.y==-44);

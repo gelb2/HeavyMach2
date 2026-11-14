@@ -65,6 +65,7 @@ bool sameStorage(const VisualTile& a,const VisualTile& b){
         a.storage.width==b.storage.width&&a.storage.height==b.storage.height;
 }
 }
+Sprite originalTileSprite(const VisualImage& image){return nonAtlasImage(image);}
 Blend originalTileBlend(unsigned type,unsigned format){
     switch(type){
         case 0:return {format==1?BlendFactor::one:BlendFactor::sourceAlpha,BlendFactor::oneMinusSourceAlpha};

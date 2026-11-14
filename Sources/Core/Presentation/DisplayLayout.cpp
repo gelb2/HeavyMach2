@@ -39,6 +39,12 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
     const auto fit=[&](float w,float h){return std::min({nominal,a.width/w,a.height/h});};
     const auto centered=[&](float w,float h){return anchored({384,512},center,fit(w,h));};
     switch(region){
+    case DisplayRegion::artBackdrop:case DisplayRegion::artScene:{
+        const auto canvas=configuration_.canvas;const float scale=std::max(canvas.width/480,canvas.height/320);
+        const float travel=std::max(0.f,320*scale-canvas.height)*.5f;
+        return anchored({240,160},{canvas.width*.5f,canvas.height*.5f+(region==DisplayRegion::artScene?std::clamp(pan,-travel,travel):0.f)},scale);
+    }
+    case DisplayRegion::artContent:return anchored({240,160},center,std::min(a.width/480,a.height/320));
     case DisplayRegion::backdrop:{const auto c=configuration_.compact?ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height}:a;return anchored({384,512},{c.x+c.width*.5f,c.y+c.height*.5f},std::max(c.width/768,c.height/1024));}
     case DisplayRegion::title:return configuration_.compact?anchored({384,202},center,std::min(nominal,a.width/560)):centered(768,1024);
     case DisplayRegion::slot0:case DisplayRegion::slot1:case DisplayRegion::slot2:{
@@ -47,7 +53,7 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
         const float scale=std::min({nominal,std::max(1.f,a.width-24)/(3*512+32),std::max(1.f,a.height-72)/256});
         return anchored({384,760-float(index)*240},{a.x+a.width*(float(index)+.5f)/3,a.y+a.height*.57f},scale);
     }
-    case DisplayRegion::bottom:return anchored({384,0},{center.x,a.y},configuration_.compact?std::min({.75f,a.width/768,a.height/256}):1.f);
+    case DisplayRegion::bottom:return anchored({384,0},{center.x,configuration_.compact?0.f:a.y},configuration_.compact?std::min({.75f,a.width/768,a.height/256}):1.f);
     case DisplayRegion::top:return anchored({384,1024},{center.x,a.y+a.height},ui(DisplayRegion::bottom).scale);
     case DisplayRegion::banner:return anchored({384,512},center,configuration_.compact?ui(DisplayRegion::bottom).scale:1.f);
     case DisplayRegion::panel:return centered(768,560);
@@ -79,8 +85,8 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
 }
 std::optional<ClipRect> DisplayLayout::clip(DisplayRegion region,float pan)const{
     if(!configuration_.enabled)return {};
-    if(configuration_.compact&&(region==DisplayRegion::world||region==DisplayRegion::backdrop))return ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};
-    auto result=configuration_.content();
+    if(configuration_.compact&&(region==DisplayRegion::world||region==DisplayRegion::backdrop||region==DisplayRegion::artBackdrop||region==DisplayRegion::artScene))return ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};
+    auto result=configuration_.compact&&region==DisplayRegion::bottom?ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height}:configuration_.content();
     if(region==DisplayRegion::bottom){
         // HD gauge tiles slide through the original screen's left edge.
         // Move that768-wide boundary with HUD instead of exposing the hidden

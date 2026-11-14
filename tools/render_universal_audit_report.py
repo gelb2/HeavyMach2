@@ -12,6 +12,7 @@ from urllib.parse import quote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 PAGES = {
+    'docs/iphone-surface-art-fix-20261114.md': 'surface-art.html',
     'docs/common-camera-plan-20261114.md': 'camera-plan.html',
     'docs/camera-baseline-investigation-20261114.md': 'camera-baseline.html',
     'docs/iphone-fixes-implementation-20261114.md': 'fixes.html',
@@ -32,7 +33,7 @@ PAGES = {
     'docs/iphone-universal-runtime-followup-20261113.md': 'runtime-followup.html',
     'docs/iphone-universal-ui-followup-20261113.md': 'ui-followup.html',
 }
-LABELS = ['공통 줌 수정 계획', '기본 줌 조사', '11/14 수정·검사', '수정·측정 계획', 'Apple 자원·음향', '원본 에셋 수명', '점프 조사', '배경·버튼 조사',
+LABELS = ['화면 늘림·배경·HUD 수정', '공통 줌 수정 계획', '기본 줌 조사', '11/14 수정·검사', '수정·측정 계획', 'Apple 자원·음향', '원본 에셋 수명', '점프 조사', '배경·버튼 조사',
           'iPhone 구현·검사', '초기 조사', '조사 범위', '패키지 비교', '초기 로직 비교', '추가 조사',
           '개발 계획·금지사항', '작업 인계', '카메라·전투', '시간·저장·음향', 'UI·입력']
 CSS = '''
@@ -172,7 +173,7 @@ def main():
         payload[page] = {'html': body}
         source_url = 'https://github.com/gelb2/HeavyMach2/blob/' + quote(ref, safe='') + '/' + source_name
         navigation = ('<details><summary>관련 조사 문서</summary><div id="report-navigation"></div></details>'
-                      if page in {'camera-baseline.html', 'camera-plan.html'} else '<div id="report-navigation"></div>')
+                      if page in {'surface-art.html', 'camera-baseline.html', 'camera-plan.html'} else '<div id="report-navigation"></div>')
         full = ('<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
                 '<title>' + html.escape(title) + '</title><link rel="stylesheet" href="report.css"><script src="report.js" defer></script></head><body data-page="' + page + '"><main>'
                 '<a href="../heavymach2-restoration-20261110/#report-log">HeavyMach2 누적 보고 목록</a>' + navigation +

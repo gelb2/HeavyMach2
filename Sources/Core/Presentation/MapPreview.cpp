@@ -1,5 +1,6 @@
 #include "Core/Presentation/MapPreview.hpp"
 #include "Assets/Image.hpp"
+#include "Core/Presentation/VisualLayer.hpp"
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
@@ -8,6 +9,14 @@ namespace hm2 {
 namespace {
 void valid(const MapCamera& c){if(!std::isfinite(c.viewport.width)||!std::isfinite(c.viewport.height)||c.viewport.width<=0||c.viewport.height<=0||!std::isfinite(c.center.x)||!std::isfinite(c.center.y)||!std::isfinite(c.offset.x)||!std::isfinite(c.offset.y))throw std::runtime_error("Invalid map camera");}
 Size imageSize(ResourceAccess& r,std::string_view name){const auto image=decodeImage(r.read(name));return {float(image.width),float(image.height)};}
+void originalQuad(Sprite& sprite,Size pixels){
+    VisualImage image;image.tile.image=sprite.image;image.tile.content=pixels;image.tile.storage={1,1};
+    while(image.tile.storage.width<pixels.width)image.tile.storage.width*=2;
+    while(image.tile.storage.height<pixels.height)image.tile.storage.height*=2;
+    image.screenPosition=sprite.center;image.scale={sprite.size.width/pixels.width,sprite.size.height/pixels.height};
+    sprite.strip=originalTileSprite(image).strip;
+}
+
 }
 Vec2 MapCamera::toScreen(Vec2 p)const {valid(*this);return {p.x-center.x+viewport.width/2-offset.x,p.y-center.y+viewport.height/2-offset.y};}
 Vec2 MapCamera::toWorld(Vec2 p)const {valid(*this);return {p.x+center.x-viewport.width/2+offset.x,p.y+center.y-viewport.height/2+offset.y};}
@@ -25,20 +34,24 @@ Frame MapPreview::compose(const MapCamera& camera)const{
     const auto p=camera.toScreen({});
     if(!background_.empty()){
         const auto center=camera.toScreen(camera.backgroundWorld);Size size{backgroundSize_.width*2,backgroundSize_.height*2};
-        if(camera.fillSurface){const float cover=std::max({1.f,(camera.viewport.width+2*std::abs(center.x-camera.viewport.width*.5f))/size.width,(camera.viewport.height+2*std::abs(center.y-camera.viewport.height*.5f))/size.height});size={size.width*cover,size.height*cover};}
+        if(camera.fillSurface){
+            // The original parallax backdrop can be narrower than a wide
+            // canvas. Cover uniformly with the complete image, preserving its
+            // aspect ratio and UVs; world/terrain/unit scale stays unchanged.
+            const float cover=std::max({1.f,camera.viewport.width/size.width,camera.viewport.height/size.height});
+            size={size.width*cover,size.height*cover};
+            const float halfX=size.width*.5f,halfY=size.height*.5f;
+            auto bounded=center;
+            if(size.width>=camera.viewport.width)bounded.x=std::clamp(bounded.x,camera.viewport.width-halfX,halfX);
+            if(size.height>=camera.viewport.height)bounded.y=std::clamp(bounded.y,camera.viewport.height-halfY,halfY);
+            Sprite background{background_,bounded,size};originalQuad(background,backgroundSize_);frame.sprites.push_back(std::move(background));
+        }else
         frame.sprites.push_back({background_,center,size});
     }
     // setFixedPos:YES on HD nonretina rounds the translated terrain center to
     // integral original coordinates. Background and other units remain unrounded.
     Sprite terrain{foreground_,{std::round(p.x),std::round(p.y)},foregroundSize_};
-    if(camera.fillSurface&&background_.empty()){
-        // Preserve every original terrain pixel/coordinate. Only the camera's
-        // edge overscan samples the existing GPU CLAMP_TO_EDGE texture; no
-        // new terrain, mirrored tiles, assets or collision data are generated.
-        const float left=terrain.center.x-foregroundSize_.width*.5f,bottom=terrain.center.y-foregroundSize_.height*.5f;
-        const float x0=std::min(0.f,left),y0=std::min(0.f,bottom),x1=std::max(camera.viewport.width,left+foregroundSize_.width),y1=std::max(camera.viewport.height,bottom+foregroundSize_.height);
-        for(Vec2 point:{Vec2{x0,y0},Vec2{x1,y0},Vec2{x0,y1},Vec2{x1,y1}})terrain.strip.push_back({point,{(point.x-left)/foregroundSize_.width,1-(point.y-bottom)/foregroundSize_.height},{1,1,1,1}});
-    }
+    if(camera.fillSurface)originalQuad(terrain,foregroundSize_);
     frame.sprites.push_back(std::move(terrain));
     return frame;
 }

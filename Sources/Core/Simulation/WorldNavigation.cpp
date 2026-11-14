@@ -84,14 +84,10 @@ void constrainCamera(MapCamera& camera,Vec2 player){
         const float lx=std::max(minimum.x,low.x),hx=std::min(maximum.x,high.x);
         const float ly=std::max(minimum.y,low.y),hy=std::min(maximum.y,high.y);
         if(lx<=hx)camera.center.x=std::clamp(camera.center.x,lx,hx);
+        else if(camera.fillSurface&&low.x<=high.x)camera.center.x=std::clamp(std::clamp(camera.center.x,low.x,high.x),minimum.x,maximum.x);
         if(ly<=hy)camera.center.y=std::clamp(camera.center.y,ly,hy);
-        if(camera.fillSurface){
-            // At a gate the actor may be too close to the finite map edge to
-            // fit above HUD. Keep it in the playable area; MapPreview covers
-            // this overscan using the original background/edge sampling.
-            if(low.x<=high.x)camera.center.x=std::clamp(camera.center.x,low.x,high.x);
-            if(low.y<=high.y)camera.center.y=std::clamp(camera.center.y,low.y,high.y);
-        }
+        else if(camera.fillSurface&&low.y<=high.y)camera.center.y=std::clamp(std::clamp(camera.center.y,low.y,high.y),minimum.y,maximum.y);
+
     }
     camera.backgroundWorld={(camera.center.x+camera.offset.x)*.94f,(camera.center.y+camera.offset.y)*.94f};
 }

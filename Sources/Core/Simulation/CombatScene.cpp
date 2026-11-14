@@ -71,9 +71,9 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
         const auto& view=presentation.snapshot();const DisplayLayout layout(display);
         camera.fillSurface=view.fillSurface;camera.viewport=view.viewport;
         const float uiRatio=layout.ui(DisplayRegion::bottom).scale/view.worldScale;
-        camera.inputMinimumY=100*uiRatio+(display.compact?display.insets.bottom/view.worldScale:0);camera.lowerOverscan=94*uiRatio;
+        camera.inputMinimumY=100*uiRatio+(display.compact?layout.ui(DisplayRegion::bottom).offset.y/view.worldScale:0);camera.lowerOverscan=view.fillSurface?0.f:94*uiRatio;
         camera.fitWorld=true;camera.keepFocusVisible=camera.viewport.width<768||camera.viewport.height<1024;
-        camera.focusMinimumY=138*uiRatio+(display.compact?display.insets.bottom/view.worldScale:0);camera.focusRadius=float(machines.machine("Player").radius);
+        camera.focusMinimumY=138*uiRatio+(display.compact?layout.ui(DisplayRegion::bottom).offset.y/view.worldScale:0);camera.focusRadius=float(machines.machine("Player").radius);
         camera.focusLeft=display.compact?display.insets.left/view.worldScale:0;camera.focusRight=display.compact?display.insets.right/view.worldScale:0;
     }
     ResourceAccess& resources;

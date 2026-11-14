@@ -22,11 +22,15 @@ PreparedAlphaImage prepareOriginalPartAlpha(const DecodedImage& image){
         out.alpha[std::size_t(y)*out.storageWidth+x]=image.rgba[(std::size_t(y)*out.width+x)*4+3]>>1;
     return out;
 }
-DecodedImage decodeImage(std::span<const std::uint8_t> encoded) {
+EncodedImageInfo imageInfo(std::span<const std::uint8_t> encoded){
     if(encoded.empty()||encoded.size()>std::size_t(std::numeric_limits<int>::max()))throw std::runtime_error("Invalid encoded image size");
-    const int bytes=int(encoded.size());int width=0,height=0,channels=0;
-    if(!stbi_info_from_memory(encoded.data(),bytes,&width,&height,&channels)||width<1||height<1||width>16384||height>16384)
+    int width=0,height=0,channels=0;
+    if(!stbi_info_from_memory(encoded.data(),int(encoded.size()),&width,&height,&channels)||width<1||height<1||width>16384||height>16384)
         throw std::runtime_error("Invalid original image header");
+    return {unsigned(width),unsigned(height),unsigned(channels)};
+}
+DecodedImage decodeImage(std::span<const std::uint8_t> encoded) {
+    const auto info=imageInfo(encoded);const int bytes=int(encoded.size());int width=int(info.width),height=int(info.height),channels=int(info.sourceChannels);
     stbi_convert_iphone_png_to_rgb_thread(1);stbi_set_unpremultiply_on_load_thread(1);
     std::unique_ptr<stbi_uc,decltype(&stbi_image_free)> pixels(stbi_load_from_memory(encoded.data(),bytes,&width,&height,&channels,4),stbi_image_free);
     if(!pixels)throw std::runtime_error(std::string("Cannot decode original image: ")+stbi_failure_reason());

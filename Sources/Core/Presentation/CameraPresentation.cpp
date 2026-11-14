@@ -1,4 +1,5 @@
 #include "Core/Presentation/CameraPresentation.hpp"
+#include "Core/Presentation/HUDLayout.hpp"
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
@@ -24,9 +25,10 @@ void CameraPresentation::configure(DisplayConfiguration display){
     state_.idleScale=idleScale;
     if(display.compact){
         const float cover=std::max(display.canvas.width,display.canvas.height)/finiteMapSpan;
-        // An extremely wide/short surface uses the existing map edge sampler,
-        // not a larger idle unit size. No new world geometry is created.
-        state_.minimumScale=std::min(idleScale,cover);state_.edgeOverscan=cover>idleScale;
+        // Every visible point remains inside the original finite map. Even
+        // extreme compact aspect ratios use one uniform scale, never pixels
+        // stretched beyond the source image or a letterbox.
+        state_.idleScale=std::max(idleScale,cover);state_.minimumScale=cover;state_.edgeOverscan=false;
     }
     project();
 }
@@ -41,8 +43,18 @@ void CameraPresentation::project(){
 }
 void CameraPresentation::advance(CameraFocus focus){
     if(state_.policy!=CameraPolicy::compactFocus)return;
-    distance_.target=std::max(state_.minimumScale/state_.idleScale,requestedFocus(focus));
-    distance_.current+=(distance_.target-distance_.current)/100.f;
+    float minimum=state_.minimumScale;
+    const float bottomDistance=focus.player.y+512;
+    if(bottomDistance>0){
+        // A finite map cannot pan below its bottom edge. Keep the player's
+        // center above the default HUD at that edge while zooming out. User
+        // placements remain intentional overlays and do not change the world.
+        const DisplayLayout layout(display_);const float scale=state_.worldScale;
+        const float left=(focus.player.x-512)*scale+display_.canvas.width,right=(focus.player.x+512)*scale;
+        for(unsigned group=0;group<hud::count;++group){const auto b=hud::visualBounds({},group,layout);if(left<=b.x+b.width&&right>=b.x)minimum=std::max(minimum,std::min(state_.idleScale,(b.y+b.height+2)/bottomDistance));}
+    }
+    distance_.target=std::max(minimum/state_.idleScale,requestedFocus(focus));
+    distance_.current=std::max(minimum/state_.idleScale,distance_.current+(distance_.target-distance_.current)/100.f);
     state_.currentZoom=distance_.current;state_.targetZoom=distance_.target;project();
 }
 }
