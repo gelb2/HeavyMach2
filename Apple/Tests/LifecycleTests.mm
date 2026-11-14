@@ -30,7 +30,7 @@
 @end
 @implementation HM2ActivationProbe
 - (void)setActive:(BOOL)active{self.gameActive=active;}
-- (void)setAudioActive:(BOOL)active{self.audioActive=active;}
+- (void)setAudioActive:(BOOL)active{_audioActive=active;}
 @end
 
 @interface LifecycleTests:XCTestCase @end

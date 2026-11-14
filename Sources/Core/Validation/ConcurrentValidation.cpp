@@ -308,12 +308,19 @@ struct ConcurrentValidation::Impl {
         // are observations of actual world state, never actor-position writes.
         const auto loot=game.fieldItems();const Vec2 player=scene->player().position;const FieldItemSnapshot* nearest=nullptr;float best=std::numeric_limits<float>::max();
         for(const auto& item:loot)if(!item.removed){const float dx=item.position.x-player.x,dy=item.position.y-player.y,d=dx*dx+dy*dy;if(d<best){best=d;nearest=&item;}}
+        if(game.display().enabled&&game.display().compact&&observed.coinPickups&&!observed.itemPickups){
+            // Once a genuine coin contact is covered, approach a genuine
+            // inventory drop. Nearest-coin taps can oscillate at a wall.
+            best=std::numeric_limits<float>::max();
+            for(const auto& item:loot)if(!item.removed&&item.type!=0){const float d=std::hypot(item.position.x-player.x,item.position.y-player.y);if(d<best){best=d;nearest=&item;}}
+        }
         //31 ticks are .5146s. Keep this walking/pickup condition outside the
         // restored <.5s Dash gesture; the independent Dash case tests that path.
         if((counters.frames-1)%31!=0)return;
         // Walk into the field while firing before the first genuine kill/drop.
         const Vec2 destination=nearest?nearest->position:Vec2{observed.startPosition.x,observed.startPosition.y+100};
         if(!nearest&&counters.frames>60)return;
+        if(nearest&&game.display().enabled&&game.display().compact){approachTarget(movementIndex,destination);return;}
         const Vec2 projected=scene->camera().toScreen(destination);
         const Vec2 screen{std::clamp(projected.x,16.f,scene->camera().viewport.width-16),std::clamp(projected.y,fieldFloor(scene->camera()),scene->camera().viewport.height-16)};
         const Vec2 requested=scene->camera().toWorld(screen);constexpr std::uintptr_t pointer=0x4c4f4f54;
