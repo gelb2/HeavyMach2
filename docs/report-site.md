@@ -1,5 +1,13 @@
 # HeavyMach 2 보고 사이트
 
+## iPhone 정식빌드 설치 반영 — 버전293
+
+같은 [화면 수정 보고서](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/surface-art.html)에 사용자 후속 지시와 실제 iPhone 설치·실행·저장28,204바이트 동일성을 추가했다. 게임 코드는2f1e5ef이며 설치 기록은ee69ada다. 기존 첫 화면과 누적 목록을 유지했다.
+
+사이트 소스 `b173be5346ff8343733b09ab9456b3f89b0cde96`, 저장버전 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_7548985d6c2c8191add4544d52fdd886`, 배포 `appgdep_6af82036a74c81918e2cd96fc66dc382`의 공식 succeeded를 확인했다. 기존 본인 비공개 접근을 유지했다. 로컬 HTML/gzip본문·고정 목록의 설치 상태를 확인했고 새 온라인 브라우저 시각검수는 하지 않았다. 이번 설치를 전체 실기기 캠페인·발열 검사로 확대하지 않는다.
+
+로컬 근거: `.local/evidence/iphone-release-surface-20261114/`의 `result.json`, `signed-release-verification.json`, `backup-manifest.json`, `save-preservation.json`, `site-publication.json`. 저장과 이전 실패는 보존했고 설치 뒤 사용 완료한 기기 빌드 중간 캐시39,584,827바이트를 제거했다.
+
 ## 화면 늘림·Phone 배경·HUD 끝단 수정 — 버전292
 
 [화면 수정 결과](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/surface-art.html)를 기존 첫 화면과 [HeavyMach2 누적 목록](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)에 연결했다. 게임 구현2f1e5ef와 결과 원고0fed66e를 기준으로20개 연결 문서를 갱신했다. C++77/77·양 시뮬레이터 최종5/5·126조건 동시 실행·원본 자원52파일·정식/치트 Release 패키지 결과와 미확인을 기록했다.
