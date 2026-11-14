@@ -87,5 +87,16 @@
       "path": "docs/todo.md",
       "sha256": "6fa120d53b402eb818bb472ee7f59ec662a8023896fe538cf59d711e83f10a83"
     }
-  ]
+  ],
+  "user_report_after_audit": {
+    "installed_product": "3666fc7",
+    "observation": "상점·사령부의 현재 상하 스크롤 임시 대응 상태에서 아이템 구매 불가",
+    "classification": "User observation; not yet independently reproduced or root-caused",
+    "required_followup": [
+      "Shop item selection/detail/BUY draw-hit mapping and eligibility",
+      "Currency/inventory mutation and save result",
+      "Command list/detail/accept/completion/reward button alignment and input"
+    ],
+    "status": "Open"
+  }
 }
