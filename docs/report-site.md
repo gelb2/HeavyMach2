@@ -1,5 +1,15 @@
 # HeavyMach 2 보고 사이트
 
+## 화면 늘림·Phone 배경·HUD 끝단 수정 — 버전292
+
+[화면 수정 결과](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/surface-art.html)를 기존 첫 화면과 [HeavyMach2 누적 목록](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)에 연결했다. 게임 구현2f1e5ef와 결과 원고0fed66e를 기준으로20개 연결 문서를 갱신했다. C++77/77·양 시뮬레이터 최종5/5·126조건 동시 실행·원본 자원52파일·정식/치트 Release 패키지 결과와 미확인을 기록했다.
+
+사이트 소스는 `dca1202d76e23038d44c56a12db0711616f4ded4`, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_02839c7a8ae481919ed6998a99392c36`, 배포는 `appgdep_6af81e359ab48191bd2d343d104e1a8b`다. 공식 succeeded와 현재 버전292를 확인했다. 본인1명·그룹0·외부0 접근을 유지했다. HTML·gzip 본문·페이지20개·첫 화면/누적 목록/복귀 링크·JavaScript 구문을 로컬에서 확인했다. 새 온라인 브라우저 시각 검수는 수행하지 않았다. 이번 수정본의 실기기 설치와 develop/main 병합도 하지 않았다.
+
+서버 archive는1,389파일·268,339,200바이트다. 기존 JSON을 의미 변경 없이 compact 저장해 공간을 확보했고 사이트 경로·과거 보고/이미지를 보존했다. 최신 게시 성공 후 이전291 archive257,196,998바이트와 사용 완료한 Xcode 중간 캐시/중복 분석 실행파일246,759,950바이트를 정리했다. 최신 앱·dSYM·원본·사용자 저장·실패 로그·GPU 캡처·trace는 보존했다. 토큰은 기록하지 않았다.
+
+로컬 근거: `.local/evidence/iphone-surface-art-20261114/`의 `site-publication-final.json`, `site-archive-final.json`, `report-render-final.json`, `site-json-compaction.json`, `build-cleanup-final.json`. 세 항목의 코드/실행 근거는 [구조화 결과](evidence/iphone-surface-art-20261114.json)에 있다.
+
 ## 공통 카메라 구현·아이폰 설치 결과 — 버전291, 2026-11-14
 
 [공통 카메라 결과](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/camera-plan.html)와 기존 누적 보고 목록을 갱신했다. 정식14e9ddb의 설치/실행·저장28,204바이트 보존, 공통77/77·수정 Native양쪽8/8·iPad전후 지문 대조, 실제 Instruments 측정 범위와 남은 실패를 구분했다. 설치 후 사용자 추가3항목(늘림 금지·원본 iPhone 비전투 배경·HUD 화면 끝 배치)은 미반영으로 명시했다.
