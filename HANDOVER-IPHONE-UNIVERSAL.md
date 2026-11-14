@@ -1,5 +1,7 @@
 # HeavyMach2 iPhone 작업 인계
 
+2026-11-14 최신 실기기 설치: 사용자 후속 지시로2f1e5ef 기반 정식Release를 실제 iPhone Air PaleMirror에 설치·실행했다. 앱 데이터8파일을 백업했고 설치 직후 저장28,204바이트는 완전 일치했다. HD1,478+Phone52파일 해시·서명·dSYM UUID·치트심벌 제외와 실제 프로세스를 확인했다. CLI서명errSecInternalComponent를 Xcode Release서명으로 해결하고 임시 프로젝트 설정을 원복했다. [설치 결과](docs/evidence/iphone-release-surface-20261114.json). 아래 이번수정 실기기미설치 문장은 설치 전 기록이다. develop/main 병합은 하지 않았다.
+
 2026-11-14 최신 마감: 화면3항목과 BUY/SELL 상세창 겹침을2f1e5ef까지 수정·푸시했다. C++77/77·최종Native양쪽5/5(GPU4+126조건동시1),iPhone2,100/iPad1,200프레임 통과. 이전 iPad120/혼합92조건의 게임 상태 차이0이며119번 HUD 안내 문구만 그림이 다르다. 정식/치트Release의HD1,478+Phone52파일 해시와 dSYM을 확인했다. Instruments CPU30.814초/27,742표본과 메모리trace30.803초를 보존하되 누수0·실기기 발열 개선은 판정하지 않는다. [최종 결과](docs/iphone-surface-art-fix-20261114.md)와 [구조화 근거](docs/evidence/iphone-surface-art-20261114.json)를 읽는다. 이번 수정의 실기기 설치·develop/main 병합은 하지 않았다. 아래 미완료 문장은 과거 checkpoint다.
 
 2026-11-14 상점·정비 중복 패널 후속: [화면 수정](docs/iphone-surface-art-fix-20261114.md)의 최신 상태를 읽는다. 원본Phone52파일·같은HD아이콘/버튼·원본격자와24/25추가행·상세/탭/드롭을 공통 코드로 연결했다. 최신C++77/77, 새GPU양쪽4/4를 확인했다. 같은build의126조건/생명주기Native는실행중이다. 상점패널중복상태의이전13/13과혼동하지않는다. 실기기는이번수정미설치이며다른게임·develop/main은변경하지않는다.
