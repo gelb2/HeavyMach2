@@ -103,5 +103,14 @@
       "sha256": "003c849091e87247921bc797a76730ef868c532166bd71619561daf5e4b84730",
       "status": "rejected-original-capture; not current product or success"
     }
-  ]
+  ],
+  "fullScopeCensus": "docs/evidence/hub-artwork-census-20261115.json",
+  "negativeFixtureCountIsNotCoverage": true,
+  "minimumContexts": {
+    "bases": 6,
+    "deviceClasses": 2,
+    "hubCommandShopContexts": 36,
+    "allStateVariantsStillRequired": true,
+    "runtimeExecuted": false
+  }
 }

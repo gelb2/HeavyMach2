@@ -6,6 +6,31 @@
 
 사용자 요청은 다음 세 가지다. 레터박스 금지의 실제 검사·성공/실패 기준, iPhone/iPad 원본 배경의 실제 소비 검사·성공/실패 기준, 해당 영역을 작업할 때 검사가 자동으로 발동하는 방법이다. 원작 자원·진행 저장을 보존하고 기존 공통 C++ 게임 스택을 유지한다. Python/Node는 기존 오프라인 검사 역할이다.
 
+## 전수 검사 범위 — 실패 예시 3장과 구분
+
+**검사 대상은 원본에 등록된 모든 기지다. 현재 Base001~Base006 전부를 iPhone/iPad 각각 검사한다.** 아래 실패 예시 3장은 전체 검사 수나 허브 종류 수를 뜻하지 않는다.
+
+공통 C++ DataTable reader로 두 판본의 기지 테이블 12개를 읽었다. 이는 실행 화면 검사가 아닌 파일·참조 전수 조사다. [원본 참조·SHA 목록](evidence/hub-artwork-census-20261115.json)을 보존한다.
+
+| 기지 | iPhone 허브 배경 | iPhone 시설 강조 그림의 실제 원본 참조 | iPad 허브 배경 | 사령부·상점 검사 경로 |
+| --- | --- | --- | --- | --- |
+| Base001 | `PhoneMenu/Base001.jpg` | Base001_Maintenance.png, Base001_Shop.png, Base001_CmdCenter.png | `Base001.png` | 두 기기에서 각각 실제 진입·복귀 |
+| Base002 | `PhoneMenu/Base002.jpg` | Base005_Maintenance.png, Base005_Shop.png, Base005_CmdCenter.png | `Base002.png` | 두 기기에서 각각 실제 진입·복귀 |
+| Base003 | `PhoneMenu/Base003.jpg` | Base003_Maintenance.png, Base003_Shop.png, Base003_CmdCenter.png | `Base003.png` | 두 기기에서 각각 실제 진입·복귀 |
+| Base004 | `PhoneMenu/Base004.jpg` | Base004_Maintenance.png, Base004_Shop.png, Base004_CmdCenter.png | `Base004.png` | 두 기기에서 각각 실제 진입·복귀 |
+| Base005 | `PhoneMenu/Base005.jpg` | Base002_Maintenance.png, Base002_Shop.png, Base002_CmdCenter.png | `Base005.png` | 두 기기에서 각각 실제 진입·복귀 |
+| Base006 | `PhoneMenu/Base006.jpg` | Base006_Maintenance.png, Base006_Shop.png, Base006_CmdCenter.png | `Base006.png` | 두 기기에서 각각 실제 진입·복귀 |
+
+- 허브 6개×기기 2종=12개 표시 조건을 검사한다. 각각 선택 전·시설/길 선택·설명·임무 알림·버튼/입력을 포함한다.
+- 각 기지에서 사령부와 상점의 실제 진입 경로를 두 기기에서 확인한다. 세 화면만으로 최소 36개 기지/기기/화면 조건이다. 상세·거래·임무·빈/최대 목록·페이지·복귀 상태는 각 조건에서 확장한다. **36은 캡처 상한이나 전체 테스트 수가 아니다.**
+- 현재 사령부 내부 배경은 Phone CmdCenterBG.jpg/HD CmdCenterBG.png, 상점은 Phone ShopBG.jpg/HD ShopBG.png다. 파일이 공통이어도 한 기지 검사로 다른 기지의 진입·상태·입력을 대신하지 않는다.
+- Phone Base002는 Base005 계열 시설 그림을, Base005는 Base002 계열을 참조한다. 원본 참조를 기지 번호로 추측해 교정하지 않는다. HD의 Image ID/파일 대응도 명세 그대로 읽는다.
+- 파일 존재나 준비 명세 통과를 전수 실행 합격으로 쓰지 않는다. HD 기지 버튼 ID는 합계 27개이며 이 공통 게임 기능 집합을 입력에 연결한다. Phone 표에 그림/버튼이 있다는 이유로 게임 기능을 임의 추가하지 않는다.
+- 실행 시 등록 기지·자원을 다시 열거한다. 여섯 기지만 하드코딩하고 끝내지 않는다. 새 기지·빠진 시나리오·기기별 누락을 실패시킨다.
+- 정비와 공유 입력/자원 소비가 영향을 받으면 실제 진입 조건을 추적해 추가한다. 광고 행은 이미지로 로드하지 않으며 광고 금지는 유지한다.
+
+현재 이 전수 화면 검사는 **계획/미실행**이다. 실제로 수행한 것은 기지 테이블·자원 참조 조사다.
+
 ## 현재 확인한 빈틈
 
 - HeavyMach2의 `.githooks/pre-commit`은 IPA·gitleaks, `pre-push`는 IPA·브랜치 흐름·gitleaks·LFS만 검사한다. `core.hooksPath=.githooks`는 설정돼 있지만 화면·에셋 합격 여부를 검사하지 않는다.
@@ -78,7 +103,7 @@ Git 훅은 로컬 명령에 연결되는 장치이며 Git 자체가 우회 옵�
 
 필수 결과값은 `unmapped_canvas_pixels=0`, `filler_panel_pixels=0`, `nonuniform_scale_violations=0`, `edge_replication_commands=0`, `required_content_clipping=0`, `required_button_failures=0`, `asset_source_mismatches=0`으로 계획한다. 각 픽셀이 원작 그림 또는 요구된 실제 기능 UI의 어느 부분에 대응하는지 설명되지 않으면 빈 화면으로 취급한다. 원본 패널 파일을 사용했다는 사실만으로 여백 채움을 승인하지 않는다. 내용·입력으로 정한 기능 영역 밖의 검은 면은 filler로 분류한다. 성공 영역 마스크를 넓혀 철회된 검은 면을 새로 허용하는 변경은 검사 약화로 검출해야 한다. 이 결과값을 실제로 산출하는 관측기와 검출기는 아직 구현 전이다.
 
-### 반드시 거부할 실패 예시
+### 반드시 거부할 실패 예시 — 전수 검사 범위와 별개
 
 - 철회한 Phone 허브의 검은 좌우 영역.
 - 철회한 Phone 사령부의 검은 좌우/하단 패널과 원본 그림 축소 배치.
