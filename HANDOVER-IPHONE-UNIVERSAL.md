@@ -1,5 +1,7 @@
 # HeavyMach2 iPhone 작업 인계
 
+2026-11-14 최신 비교 조사: [월드·HUD·포털 비교](docs/world-hud-comparison-20261114.md)를 읽는다. 기기 앱 설치URL을 기록과 대조해 iPad11/12 계열·iPhone2f1e5ef를 식별했다. 양쪽 모두 월드 위 HUD이며, iPad legacy camera하단여유94와 Phone0·고정이동하한75 차이를 확인했다. CPU38전장82포털×3구성·대표7포털×9목표×3=189이동조건을 조사했다. Phone중심20차단·유효진입사각전체하한밑6, 대표포털성공 legacy7/7·Phone0/7·현행iPadfixture7/7이다. 열린경계 반올림 분류 오류를 수정하고 실패를 보존했다. 조사 결과이며 제품/포털/뷰포트/에셋수정·실기기플레이·새앱설치는없다. HUD편집제거보류, 입력하한과실제HUD영역정합을다음수정기준으로남겼다.
+
 2026-11-14 최신 실기기 설치: 사용자 후속 지시로2f1e5ef 기반 정식Release를 실제 iPhone Air PaleMirror에 설치·실행했다. 앱 데이터8파일을 백업했고 설치 직후 저장28,204바이트는 완전 일치했다. HD1,478+Phone52파일 해시·서명·dSYM UUID·치트심벌 제외와 실제 프로세스를 확인했다. CLI서명errSecInternalComponent를 Xcode Release서명으로 해결하고 임시 프로젝트 설정을 원복했다. [설치 결과](docs/evidence/iphone-release-surface-20261114.json). 아래 이번수정 실기기미설치 문장은 설치 전 기록이다. develop/main 병합은 하지 않았다.
 
 2026-11-14 최신 마감: 화면3항목과 BUY/SELL 상세창 겹침을2f1e5ef까지 수정·푸시했다. C++77/77·최종Native양쪽5/5(GPU4+126조건동시1),iPhone2,100/iPad1,200프레임 통과. 이전 iPad120/혼합92조건의 게임 상태 차이0이며119번 HUD 안내 문구만 그림이 다르다. 정식/치트Release의HD1,478+Phone52파일 해시와 dSYM을 확인했다. Instruments CPU30.814초/27,742표본과 메모리trace30.803초를 보존하되 누수0·실기기 발열 개선은 판정하지 않는다. [최종 결과](docs/iphone-surface-art-fix-20261114.md)와 [구조화 근거](docs/evidence/iphone-surface-art-20261114.json)를 읽는다. 이번 수정의 실기기 설치·develop/main 병합은 하지 않았다. 아래 미완료 문장은 과거 checkpoint다.
