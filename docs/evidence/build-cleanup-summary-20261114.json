@@ -110,5 +110,15 @@
       "open_handles": 0
     }
   ],
-  "local_full_record": ".local/evidence/build-cleanup-20261114/"
+  "local_full_record": ".local/evidence/build-cleanup-20261114/",
+  "post_publication_cleanup": {
+    "path": "report-site-clarity.tar.gz",
+    "bytes": 257186610,
+    "sha256": "dba0939c4e23a83351d2184441819b4ef4949803b94348fab188445470358985",
+    "reason": "Site288 superseded by confirmed successful shared-camera-plan deployment; latest archive retained",
+    "retained": "report-site-common-plan-final.tar.gz",
+    "saved_source": "93542f069b151ca3b093f3895a408e51712de7cf",
+    "new_saved_source": "fb77277af7fefdf475944ec88f028e213e7775c3"
+  },
+  "old_artifact_bytes_including_post_publication": 3552915809
 }

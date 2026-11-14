@@ -1,5 +1,13 @@
 # HeavyMach 2 보고 사이트
 
+## 공통 줌 수정 계획과 빌드 정리 — 버전289, 2026-11-14
+
+[공통 C++ 줌 수정 계획](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/camera-plan.html)을 고정 보고 목록과 기존 원인 조사 보고서에 연결했다. 새 `CameraPresentation`의 책임, 기존 Scene/Session/Layout의 수정 위치, iPad 배율1 보존·휴대폰 대기1.0 후보, 앱별 줌 분기 금지와 동시 검사 기준을 기록했다. 게임 구현·새 앱 설치는 하지 않았다.
+
+계획 전에 오래된 빌드/캐시/전달 압축본 약3.30GB를 정리했다. 게시 성공 뒤 이전 Site288 전달 압축본도 삭제해 이전 생성물 삭제 합계는3,552,915,809바이트다. 전달 압축본은 이번 최신1개만 남겼다. 원본·사용자 저장·실패 검사 증거와 최신 앱/심볼은 보존했다. [정리 요약](evidence/build-cleanup-summary-20261114.json).
+
+계획 커밋은 `21b8359`, 문면 보완은 `ab2b700`, 사이트 소스는 `fb77277af7fefdf475944ec88f028e213e7775c3`다. 배포 `appgdep_6af7e65f3c448191a63385946d0d0a2d`, 저장버전 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_cdee92b03a1c819182e488467207f65a`의 공식 succeeded를 확인했다. 기존 본인 비공개 접근을 유지했고 Safari 온라인에서 결정·담당 파일 표·배율 후보·정리 결과를 확인했다. 로컬 기록은 `common-plan-package-verification.json`, `common-plan-publication.json`과 `build-cleanup-20261114/post-publication-archive-cleanup.json`이다.
+
 ## 기본 줌 보고서의 결론 보강 — 버전288, 2026-11-14
 
 사용자가 보고서의 핵심과 결론이 불명확하다고 지적했다. 같은 [기본 줌 보고서](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/camera-baseline.html)의 첫 화면을 결론·원인·고칠 내용·현재 미완료 범위 순서로 고쳤다. 관련 문서 목록은 접고 수치표는 근거로 뒤에 배치했다. 기본 줌 구현 오류와 수정 필요, 게임 배율 수정·새 설치 미완료를 명시했다. 문서 수정 커밋은 `f0cf6eb`이며 게임 코드는 바꾸지 않았다.
