@@ -281,6 +281,18 @@ NSDictionary* ConcurrentRuntime::verifyRepeatedRendering(CAEAGLLayer* layer,Size
     return @{@"renderPath":@"originalOrderedScissor",@"experimentalBatchingAdopted":@NO,@"sameCachedFrame":@YES,@"sourceSprites":@(frame.sprites.size()),@"firstDrawCalls":@(middle-before),@"repeatDrawCalls":@(p.renderer.drawCalls-middle),@"comparedPixels":@(repeated.length/4),@"differentRGBPixels":@(different),@"maxRGBDifference":@(maximum)};
 }
 bool ConcurrentRuntime::captureStoredFrame(unsigned number,CAEAGLLayer* layer){auto& p=*impl_;const auto found=p.sampledFrames.find(number);if(found==p.sampledFrames.end())return false;[p.renderer captureNextFrame];[p.renderer drawFrame:found->second layer:layer];return true;}
+NSDictionary* ConcurrentRuntime::captureScenarioUI(unsigned index,CAEAGLLayer* layer){
+    auto& p=*impl_;auto& game=p.runner->session(index);auto& view=*p.interfaces.at(index);
+    const auto frame=p.runner->scenarioFrame(index);
+    [p.renderer captureNextFrame];[p.renderer drawFrame:frame layer:layer];
+    NSMutableArray* buttons=[NSMutableArray new];const auto& display=game.display();
+    for(const auto& key:view.screens->buttons()){
+        const auto button=view.screens->button(key);if(!button)continue;
+        const auto point=view.screens->buttonScreenPosition(key);
+        [buttons addObject:@{@"id":@(key.id),@"data":@(key.intData),@"dataId":native(key.dataId),@"visible":@(button->visible),@"active":@(button->active),@"x":@(point.x),@"y":@(point.y),@"centerInsideCanvas":@(point.x>=0&&point.y>=0&&point.x<display.canvas.width&&point.y<display.canvas.height)}];
+    }
+    return @{@"scenario":@(index),@"frame":@(p.runner->metrics().frames),@"screen":@(int(game.state().screen)),@"credits":@(game.state().credits),@"width":@(display.canvas.width),@"height":@(display.canvas.height),@"buttons":buttons,@"extraSimulationTick":@NO,@"revealButtonDuringCapture":@NO,@"visualPassAsserted":@NO};
+}
 void ConcurrentRuntime::captureNextFrame(){[impl_->renderer captureNextFrame];}
 NSData* ConcurrentRuntime::pixels()const{return impl_->renderer.readRGBA;}
 NSData* ConcurrentRuntime::legacyComparisonPixels()const{return impl_->legacyComparison;}

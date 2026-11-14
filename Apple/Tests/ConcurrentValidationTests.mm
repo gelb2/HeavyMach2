@@ -57,6 +57,7 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
     XCTestExpectation* completed=[self expectationWithDescription:@"All live scenarios share the same display callbacks"];
     HM2ConcurrentTimer* timer=[HM2ConcurrentTimer new];__block unsigned frames=0;__block NSString* failure=nil;
     auto* live=runtime.get();
+    NSMutableArray* menuObservations=[NSMutableArray new];
     const hm2::Size viewport{float(surface.bounds.size.width),float(surface.bounds.size.height)};
     const bool portrait=UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPad;
     if(portrait?viewport.width>=viewport.height:viewport.width<=viewport.height){XCTFail(@"Test scene orientation differs from current iPhone-landscape / iPad-portrait contract: %.1fx%.1f",viewport.width,viewport.height);window.hidden=YES;return;}
@@ -66,6 +67,12 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
     timer.callback=^(CADisplayLink* link){@autoreleasepool{
         try{
             live->tick();++frames;if(fullCoverage&&frames==300)(void)live->verifyInactiveInputDiscard();if(frames==targetFrames)live->captureNextFrame();live->draw(layer,viewport);
+            if(!fullCoverage&&(frames==1||frames==180||frames==347||frames==349||frames==350||frames==351||frames==354||frames==355||frames==360)){
+                for(unsigned index:{55u,56u}){
+                    NSDictionary* observation=live->captureScenarioUI(index,layer);[menuObservations addObject:observation];
+                    attachPixels(self,live->pixels(),live->drawableSize(),[NSString stringWithFormat:@"Menu audit scenario%u frame%u full size",index,frames]);
+                }
+            }
             if(frames%300==0){const auto metrics=live->validation().metrics();NSLog(@"HM2_CONCURRENT_PROGRESS frame=%u cases=%lu weaponDefinitions=%lu weaponKinds=%lu menuOverlap=%llu/%llu",frames,(unsigned long)metrics.activeScenarios,(unsigned long)metrics.activeWeaponDefinitions,(unsigned long)metrics.activeWeaponKinds,metrics.menuFramesWithCombatActivity,metrics.menuActionFrames);}
             if(frames>=targetFrames){[link invalidate];[completed fulfill];}
         }catch(const std::exception& e){failure=[NSString stringWithUTF8String:e.what()];[link invalidate];[completed fulfill];}
@@ -78,7 +85,7 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
     attachPixels(self,runtime->pixels(),runtime->drawableSize(),@"Same-frame repeated original GPU");
     XCTAssertEqual([comparison[@"differentRGBPixels"] unsignedIntegerValue],0u);
     XCTAssertEqualObjects(comparison[@"repeatDrawCalls"],comparison[@"firstDrawCalls"]);
-    NSMutableDictionary* report=[runtime->report() mutableCopy];report[@"renderComparison"]=comparison;const auto& actual=runtime->validation().session(0).display();report[@"gameCanvas"]=@{@"width":@(actual.canvas.width),@"height":@(actual.canvas.height),@"safeLeft":@(actual.insets.left),@"safeBottom":@(actual.insets.bottom),@"safeRight":@(actual.insets.right),@"safeTop":@(actual.insets.top)};NSError* error=nil;NSData* data=[NSJSONSerialization dataWithJSONObject:report options:NSJSONWritingPrettyPrinted|NSJSONWritingSortedKeys error:&error];XCTAssertNotNil(data);
+    NSMutableDictionary* report=[runtime->report() mutableCopy];report[@"menuVisualObservations"]=menuObservations;report[@"renderComparison"]=comparison;const auto& actual=runtime->validation().session(0).display();report[@"gameCanvas"]=@{@"width":@(actual.canvas.width),@"height":@(actual.canvas.height),@"safeLeft":@(actual.insets.left),@"safeBottom":@(actual.insets.bottom),@"safeRight":@(actual.insets.right),@"safeTop":@(actual.insets.top)};NSError* error=nil;NSData* data=[NSJSONSerialization dataWithJSONObject:report options:NSJSONWritingPrettyPrinted|NSJSONWritingSortedKeys error:&error];XCTAssertNotNil(data);
     if(data){XCTAttachment* attachment=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];attachment.name=@"HM2 real display-clock concurrent report";attachment.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:attachment];}
     XCTAssertEqual(frames,targetFrames);XCTAssertEqual([report[@"scenarios"] unsignedIntegerValue],hm2::validation::concurrentScenarioCount);XCTAssertEqual([report[@"combatScenarios"] unsignedIntegerValue],55u);
     XCTAssertTrue([report[@"commonFrameInterval"] boolValue]);

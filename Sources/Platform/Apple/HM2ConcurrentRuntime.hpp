@@ -23,6 +23,9 @@ public:
     // Same cached frame, one renderer/context, no simulation/UI/VFX advance.
     [[nodiscard]] NSDictionary* verifyRepeatedRendering(CAEAGLLayer*,Size viewport);
     [[nodiscard]] bool captureStoredFrame(unsigned frame,CAEAGLLayer*);
+    // QA observation only: render an already composed live scenario at full
+    // surface size, without revealButton, input, or an extra simulation tick.
+    [[nodiscard]] NSDictionary* captureScenarioUI(unsigned scenario,CAEAGLLayer*);
     void captureNextFrame();
     [[nodiscard]] NSData* pixels()const;
     [[nodiscard]] NSData* legacyComparisonPixels()const;
