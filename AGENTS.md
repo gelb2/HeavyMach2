@@ -23,3 +23,5 @@
 15. iPhone·유니버설 작업을 시작하거나 이어받을 때 [현행 iPhone 인계](HANDOVER-IPHONE-UNIVERSAL.md), [개발 기준·계획·금지사항](docs/iphone-development-contract.md), [추가 조사와 미확정](docs/iphone-followup-investigation-20261113.md)을 실제로 읽는다. 사용자의 2026-11-13 지시에 따라 근거·계획·금지사항을 대화 기억에만 두지 않는다. 이전 조사·현재 iPad 동작·저장을 보존하고, 함수 export를 전체 의미 검증이나 iPhone 개발 완료로 보고하지 않는다.
 
 16. 사용자 지시(2026-11-13): iPhone 검은색 레터박스를 금지한다. 전장과 메뉴·전환을 화면 전체에 표시한다. 안전 영역을 검은 테두리로 만들지 않는다. 공격/줌 중 출력 영역의 크기 변화·맵 밖 노출과 작은 HUD를 함께 수정·검증한다. [iPhone 개발 기준](docs/iphone-development-contract.md)을 따른다.
+
+17. 디자인·화면 배치·HUD·기기별 그림·에셋 생성/로드/패키징 작업은 [디자인·에셋 규칙 정본](docs/design-and-asset-rules.md)을 먼저 읽는다. 최신 사용자 수정과 화면별 예외를 이 문서에 반영하며 옛 계획을 우선하지 않는다. [로컬 하네스·훅 계획](docs/presentation-harness-plan-20261115.md)은 아직 구현 전이다. 문서 존재나 doctor/컴파일 성공으로 자동 강제·시각 합격을 주장하지 않는다.
