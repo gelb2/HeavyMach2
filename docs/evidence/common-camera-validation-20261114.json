@@ -2,12 +2,8 @@
   "baseline_commit": "6e1dfad",
   "camera_baseline_code": "bfde129",
   "core_suite": {
-    "passed": 76,
-    "total": 76,
-    "final_observation_assertions_retest": {
-      "passed": 6,
-      "total": 6
-    }
+    "passed": 77,
+    "total": 77
   },
   "ipad_parity": [
     {
@@ -28,7 +24,88 @@
     }
   ],
   "native_simulators": "running; no pass claimed",
-  "iphone_install": "pending; user save backed up",
+  "iphone_install": {
+    "normal_release_source_commit": "14e9ddb",
+    "validation_followup_commit": "e56a1ae",
+    "installed": true,
+    "launched": true,
+    "save_bytes": 28204,
+    "save_before_after_identical": true,
+    "resources_verified": 1479,
+    "resource_hash_mismatches": 0
+  },
   "independent_review": "No outstanding mandatory defect after synchronized emission assertions were added",
-  "evidence_local": ".local/evidence/camera-implementation-20261114"
+  "evidence_local": ".local/evidence/camera-implementation-20261114",
+  "source_commit": "14e9ddb",
+  "validation_followup_commit": "e56a1ae",
+  "first_native_batch": {
+    "iphone": {
+      "passed": 7,
+      "total": 16
+    },
+    "ipad": {
+      "passed": 8,
+      "total": 16
+    },
+    "failures": [
+      "iPhone inventory-drop route did not reach item; validation route corrected and CPU retested",
+      "Lifecycle test probe recursively called its own setter; corrected to backing ivar",
+      "Existing foreground hub15s transition deadline remains failed on both simulators"
+    ],
+    "scope": "Full126 concurrent plus relevant Native/OS UI tests; not full campaign"
+  },
+  "native_corrected_batch": {
+    "iphone": {
+      "passed": 8,
+      "total": 8,
+      "frames": 2100,
+      "concurrent_cases": 126
+    },
+    "ipad": {
+      "passed": 8,
+      "total": 8,
+      "frames": 1200,
+      "concurrent_cases": 126
+    }
+  },
+  "standalone_cheat_release_build": "succeeded",
+  "known_visual_limit": "Existing repeated edge pixels remain visible outside finite map near the bottom gate",
+  "instruments": {
+    "validation_simulator_cpu": {
+      "duration_seconds": 20.847442,
+      "sample_rows": 19373,
+      "target": "HM2 Validation Release",
+      "scope": "126 concurrent worlds; raw CPU samples retained; not phone performance"
+    },
+    "validation_simulator_allocations": {
+      "duration_seconds": 21.442039,
+      "persistent_bytes_display": "6.69 MiB",
+      "persistent_count": 22057,
+      "transient_count": 12426285,
+      "total_bytes_display": "4.06 GiB",
+      "total_count": 12448342,
+      "meaning": "Allocations tracked during attached interval; not whole process RSS",
+      "leaks_completed_checks_observed": 1,
+      "leaked_objects_observed": 0
+    },
+    "physical_normal_cpu": {
+      "duration_seconds": 19.087838,
+      "sample_weight_ms": 594,
+      "target": "HM2 Source normal Release",
+      "connection": "GUI attach after CLI name/PID lookup failures",
+      "observed_stack": [
+        "HM2SourceView display",
+        "GameRuntime draw",
+        "HM2Renderer drawFrame",
+        "GLEngine",
+        "AppleMetalGLRenderer"
+      ],
+      "scope": "after fresh launch; no scripted combat, no thermal or full campaign conclusion"
+    }
+  },
+  "new_user_requirements_pending": [
+    "Remove stretched/repeated edge pixels",
+    "Use original phone background illustrations outside battle",
+    "Allow HUD placement to physical canvas edges without safe-area constraint"
+  ]
 }
