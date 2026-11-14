@@ -1,5 +1,11 @@
 # HeavyMach 2 보고 사이트
 
+## 공통 카메라 구현·아이폰 설치 결과 — 버전291, 2026-11-14
+
+[공통 카메라 결과](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/camera-plan.html)와 기존 누적 보고 목록을 갱신했다. 정식14e9ddb의 설치/실행·저장28,204바이트 보존, 공통77/77·수정 Native양쪽8/8·iPad전후 지문 대조, 실제 Instruments 측정 범위와 남은 실패를 구분했다. 설치 후 사용자 추가3항목(늘림 금지·원본 iPhone 비전투 배경·HUD 화면 끝 배치)은 미반영으로 명시했다.
+
+보고 커밋0769b77, 사이트 소스dabefe57364f1e91c6d0bd7b002f231ffd72cc58, 배포appgdep_6af7fb00c80c8191b824a3d62c5ebd39, 저장버전appgprj_6addbf55aea081918d3d182d7e496e88~appgver_382b9fe73fc08191a6e5c5ea1e76c3f7의 공식 succeeded를 확인했다. 기존 본인 비공개 접근을 유지했다. 첫 전달은 macOS 확장 속성의 PAX 헤더 때문에256MiB 한도를 넘었다. 같은 정적 파일을 ustar로 포장해 metadata만 제외한268,425,728바이트의 archive로 게시했다. 원본 IPA·사용자 저장·trace는 포함하지 않았다. 로컬 근거는 camera-implementation-20261114/site-publication.json이다.
+
 ## iPad 보존·SOLID 경계 보강 — 버전290, 2026-11-14
 
 같은 [공통 줌 계획](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/camera-plan.html)에 regular 고정/compact 거리 정책, Scene별 상태 격리, SOLID 책임 경계와 iPad 전후 대조 기준을 추가했다. 배율1뿐 아니라 표시·입력·전투/진행·저장/시간/RNG·동시 세션·화면 재구성을 보존 조건으로 명시했다. 새 iPad 회귀는 완료·병합·설치 전 해결한다. 기준 소스는 `bfde129`, 계획 커밋은 `a31473f`다. 게임 코드와 새 검사 결과를 추가한 작업은 아니다.
