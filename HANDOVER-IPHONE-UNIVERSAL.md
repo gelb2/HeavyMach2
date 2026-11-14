@@ -1,5 +1,9 @@
 # HeavyMach2 iPhone 작업 인계
 
+## 2026-11-15 에이전트 훅 설계 보강
+
+사용자는 Git 훅과 에이전트 하네스 훅을 구분하고, 작업 전 발동과 커밋 전 검증의 계획을 요구했다. [하네스 계획의 설계 정정](docs/presentation-harness-plan-20261115.md#설계-정정--에이전트-훅과-커밋-전-입증)에 요청/도구 전후 이벤트, 현재 런타임·신뢰/로딩 확인, 경로/중첩 도구 검사, 수정 전후 기록과 stage/후보/실제 검사 결과 연결, 고장/누락/만료 거부를 추가했다. 허브 에이전트 훅 설정은 비어 있고 HM2 설정은 없다. 이번에도 설치·설정 변경·실제 발동·앱 빌드·개발 재개는 하지 않았다. 아래 게시 버전5/304는 보강 전 게시 이력이다.
+
 ## 2026-11-15 최신 게시·전수 조사 범위
 
 [로컬 하네스 계획](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/presentation-harness.html)과 [디자인·에셋 정본](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/design-asset-rules.html)을 기존 비공개 Site에 게시했다. HUD 버전5·누적 Site304의 배포 succeeded와 인증 HTTP 11개 파일을 확인했다. 기존 HeavyMach2 고정 보고 목록에서 연결한다.

@@ -112,5 +112,36 @@
     "hubCommandShopContexts": 36,
     "allStateVariantsStillRequired": true,
     "runtimeExecuted": false
+  },
+  "agentHookDesign": {
+    "status": "planned-not-installed",
+    "reasonForPreviousGap": "work start was mapped to Git lifecycle and file watching, not agent request and pre-tool lifecycle",
+    "officialReference": "https://learn.chatgpt.com/docs/hooks",
+    "installedCLI": "0.167.0-alpha.3.2",
+    "activeConversationRuntimeVersionVerified": false,
+    "projectHookConfigurationExists": false,
+    "hubHookEvents": {},
+    "plannedEvents": [
+      "SessionStart",
+      "UserPromptSubmit",
+      "PreToolUse",
+      "PostToolUse",
+      "Stop"
+    ],
+    "actualRuntimeProbeExecuted": false,
+    "preCommitRequires": [
+      "hook active and matching configuration",
+      "start before guarded mutation",
+      "pre/post event chain for staged changes",
+      "recomputed required coverage",
+      "actual same-candidate verification",
+      "matching staged tree and external inputs",
+      "no subsequent source,rule,test,asset change"
+    ],
+    "hookErrorsMayAllowToolExecution": true,
+    "hookLogAloneIsNotAcceptance": true,
+    "unobservedMutationStatus": "UNATTESTED",
+    "independentTamperProofBoundary": false,
+    "otherRepositoriesModified": false
   }
 }
