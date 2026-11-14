@@ -1,5 +1,11 @@
 # HeavyMach 2 보고 사이트
 
+## 2026-11-15 최신 보강 — 에이전트 작업 전 훅·커밋 전 검사
+
+[같은 하네스 계획](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/presentation-harness.html)에 에이전트 작업 전 훅과 커밋 전 검사 설계를 추가했다. 요청 수신·첫 수정 전·수정 후 기록을 규칙/파일/실제 검사/stage 트리로 연결하고, 기록 누락과 오래된 결과를 거부하는 계획이다. 훅 설치와 실제 발동 시험은 아직 하지 않았다.
+
+HUD Site 버전6·소스e90f218·배포appgdep_6af8e6431c448191b09e492f699393ce는 succeeded다. 기존 누적 Site304의 같은 링크로 접근한다. 본인1명·그룹0·외부0 접근을 유지하고 인증 HTTP 11파일에서 새 본문·전수 기지·원본 실패 이미지와 누적 연결을 확인했다. 온라인 브라우저 시각 검사와 에이전트 훅 실제 발동 검사는 미실행이다. 문서 커밋d518822와 [게시 근거](evidence/agent-hook-design-publication-20261115.json)를 따른다. 게임/검사/Git 훅 소스와 롤백 상태는 유지한다.
+
 ## 2026-11-15 최신 게시 — 디자인·에셋 정본과 로컬 하네스 계획
 
 [디자인·에셋 정본](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/design-asset-rules.html) 50개 규칙과 [로컬 하네스·자동 훅 계획](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/presentation-harness.html)을 게시했다. Base001~006의 원본 테이블 12개를 공통 reader로 읽고 실제 배경·시설 참조를 기록했다. 검사 계획은 6개 기지×두 기기×허브/사령부/상점의 최소 36개 조건이며 상세·거래·임무 등 상태별 검사를 추가한다. 실패 예시 3장은 전수 검사 범위를 뜻하지 않는다. 전수 화면 검사와 하네스/훅 구현은 아직 하지 않았다.
