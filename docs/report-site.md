@@ -1,5 +1,13 @@
 # HeavyMach 2 보고 사이트
 
+## 하단 카메라의 원본 자원 GPU 검사 — 버전295
+
+[시뮬레이터 검사 결과](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/lower-camera.html)를 첫 화면과 고정 누적 목록에 추가했다. 커밋7c4e404다. iPhone Air 시뮬레이터에서38맵172조건을 실제GLES로측정했다. 원작그리기크기를유지한94단위하강은38맵모두빈영역을남긴다. 배경없는33맵과384×512원본BG가있는5맵을분리했고현재BG추가균일배율1.1875도별도로기록했다. 조사Native1/1통과와카메라후보불합격을구분했다. 실제Scene이동/포털/실기기/모든줌검사로보고하지않는다.
+
+사이트 소스 `ebcc9cf5d70fd795b3bfc95dd7fd9b268b19c254`, 저장버전 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_79882ab388e08191896dd780fdc1d649`, 배포 `appgdep_6af83476aa8881919a7e5ad0a22d4f34`의 공식 succeeded를 확인했다. 본인1명·그룹0 접근을 유지했다.22개문서·최종수치·첫화면/누적목록/복귀링크·JavaScript구문을로컬검사했다. 새온라인브라우저시각검수는하지않았다. 정상GPU캡처6장·원본·실패/최종xcresult는로컬에보존하며게임자원이나IPA를사이트에추가하지않았다.
+
+로컬 근거: `.local/evidence/lower-camera-simulator-20261114/`의 `coverage-report-final.json`, `test-summary-03.json`, `captures-03/manifest.json`, `site-publication.json`. 초기컴파일실패와0개검사제외,2차바탕누출발견실패를보존했다. 후보합격기준인누출0/추가확대없음은완화하지않았다. 완료된중간빌드캐시70,915,720바이트와이전294전달archive는정리하고최신빌드/심볼·이번전달본·증거는보존했다.
+
 ## 월드·HUD·포털 입력 비교 — 버전294
 
 [비교 결과](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/world-hud.html)를 기존 첫 화면과 HeavyMach2 누적 보고 목록에 연결했다. 조사 커밋은af395f1이다. 두 기기의 설치URL·기존 설치 기록·과거/현재 소스와 CPU38전장82포털×3구성, 대표7포털×9목표×3의189개 이동 조건을 대조했다. HUD 분리·이동 제거를 보류하고 고정 입력 하한과 실제 HUD 영역의 정합을 다음 수정 기준으로 기록했다. 제품 소스·기기 설치본·포털/맵 좌표는 변경하지 않았다. 실기기 직접 플레이나 과거 iPad 실행파일 재실행으로 보고하지 않는다.
