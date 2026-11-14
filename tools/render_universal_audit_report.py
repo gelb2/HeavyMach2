@@ -12,6 +12,7 @@ from urllib.parse import quote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 PAGES = {
+    'docs/experimental-hud-plan-20261114.md': 'experimental-hud.html',
     'docs/lower-camera-simulator-20261114.md': 'lower-camera.html',
     'docs/world-hud-comparison-20261114.md': 'world-hud.html',
     'docs/iphone-surface-art-fix-20261114.md': 'surface-art.html',
@@ -35,7 +36,7 @@ PAGES = {
     'docs/iphone-universal-runtime-followup-20261113.md': 'runtime-followup.html',
     'docs/iphone-universal-ui-followup-20261113.md': 'ui-followup.html',
 }
-LABELS = ['하단 카메라 시뮬레이터', '월드·HUD·포털 비교', '화면 늘림·배경·HUD 수정', '공통 줌 수정 계획', '기본 줌 조사', '11/14 수정·검사', '수정·측정 계획', 'Apple 자원·음향', '원본 에셋 수명', '점프 조사', '배경·버튼 조사',
+LABELS = ['ExperimentalHUD 계획', '하단 카메라 시뮬레이터', '월드·HUD·포털 비교', '화면 늘림·배경·HUD 수정', '공통 줌 수정 계획', '기본 줌 조사', '11/14 수정·검사', '수정·측정 계획', 'Apple 자원·음향', '원본 에셋 수명', '점프 조사', '배경·버튼 조사',
           'iPhone 구현·검사', '초기 조사', '조사 범위', '패키지 비교', '초기 로직 비교', '추가 조사',
           '개발 계획·금지사항', '작업 인계', '카메라·전투', '시간·저장·음향', 'UI·입력']
 CSS = '''

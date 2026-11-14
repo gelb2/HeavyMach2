@@ -281,6 +281,7 @@ NSDictionary* ConcurrentRuntime::verifyRepeatedRendering(CAEAGLLayer* layer,Size
     return @{@"renderPath":@"originalOrderedScissor",@"experimentalBatchingAdopted":@NO,@"sameCachedFrame":@YES,@"sourceSprites":@(frame.sprites.size()),@"firstDrawCalls":@(middle-before),@"repeatDrawCalls":@(p.renderer.drawCalls-middle),@"comparedPixels":@(repeated.length/4),@"differentRGBPixels":@(different),@"maxRGBDifference":@(maximum)};
 }
 bool ConcurrentRuntime::captureStoredFrame(unsigned number,CAEAGLLayer* layer){auto& p=*impl_;const auto found=p.sampledFrames.find(number);if(found==p.sampledFrames.end())return false;[p.renderer captureNextFrame];[p.renderer drawFrame:found->second layer:layer];return true;}
+bool ConcurrentRuntime::pressScenarioButton(unsigned index,unsigned id,int data){return impl_->pressButton(index,id,data);}
 NSDictionary* ConcurrentRuntime::captureScenarioUI(unsigned index,CAEAGLLayer* layer){
     auto& p=*impl_;auto& game=p.runner->session(index);auto& view=*p.interfaces.at(index);
     const auto frame=p.runner->scenarioFrame(index);

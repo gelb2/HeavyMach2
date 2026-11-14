@@ -26,6 +26,8 @@ public:
     // QA observation only: render an already composed live scenario at full
     // surface size, without revealButton, input, or an extra simulation tick.
     [[nodiscard]] NSDictionary* captureScenarioUI(unsigned scenario,CAEAGLLayer*);
+    // QA input through the existing Screens dispatcher; never changes game data directly.
+    [[nodiscard]] bool pressScenarioButton(unsigned scenario,unsigned id,int intData=0);
     void captureNextFrame();
     [[nodiscard]] NSData* pixels()const;
     [[nodiscard]] NSData* legacyComparisonPixels()const;

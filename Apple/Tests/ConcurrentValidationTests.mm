@@ -44,6 +44,44 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
     // shop refusal observation is frame355. Keep its acceptance assertions.
     [self runFrames:360 fullCoverage:NO];
 }
+- (void)testClassicHUDPlanningCaptures {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];
+    UIWindowScene* scene=nil;const auto deadline=[NSDate dateWithTimeIntervalSinceNow:10];
+    do{for(UIScene* candidate in UIApplication.sharedApplication.connectedScenes)if([candidate isKindOfClass:UIWindowScene.class]&&candidate.activationState==UISceneActivationStateForegroundActive){scene=(UIWindowScene*)candidate;break;}if(!scene)[NSRunLoop.mainRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:.01]];}while(!scene&&deadline.timeIntervalSinceNow>0);
+    XCTAssertNotNil(scene);if(!scene)return;
+    UIWindow* window=[[UIWindow alloc]initWithWindowScene:scene];window.frame=scene.coordinateSpace.bounds;
+    HM2ConcurrentController* controller=[HM2ConcurrentController new];HM2ConcurrentSurface* surface=[[HM2ConcurrentSurface alloc]initWithFrame:window.bounds];surface.contentScaleFactor=1;
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];[surface layoutIfNeeded];
+    std::unique_ptr<hm2::apple::ConcurrentRuntime> runtime;
+    try{runtime=std::make_unique<hm2::apple::ConcurrentRuntime>(root,directory);}catch(const std::exception& e){XCTFail(@"HUD capture preparation failed: %s",e.what());window.hidden=YES;return;}
+    const hm2::Size viewport{float(surface.bounds.size.width),float(surface.bounds.size.height)};const auto safe=surface.safeAreaInsets;
+    runtime->setDisplay(hm2::DisplayConfiguration::surface(viewport,{float(safe.left),float(safe.bottom),float(safe.right),float(safe.top)}));
+    NSMutableArray* observations=[NSMutableArray new];XCTestExpectation* complete=[self expectationWithDescription:@"HUD and weapon chooser original GPU captures"];
+    HM2ConcurrentTimer* timer=[HM2ConcurrentTimer new];auto* live=runtime.get();__block unsigned frames=0;__block NSString* failure=nil;
+    timer.callback=^(CADisplayLink* link){@autoreleasepool{try{
+        live->tick();++frames;
+        if(frames==25&&!live->pressScenarioButton(107,1022))throw std::runtime_error("Left original weapon button unavailable");
+        // Original GameSession toggles an open chooser closed on either
+        // weapon button. Close it first, then open the right chooser.
+        if(frames==60){if(!live->pressScenarioButton(107,1022)||live->validation().session(107).state().weaponChoiceType!=0)throw std::runtime_error("Original chooser did not close");}
+        if(frames==61&&!live->pressScenarioButton(107,1023))throw std::runtime_error("Right original weapon button unavailable");
+        live->draw(layer,viewport);
+        if(frames==1||frames==55||frames==90){const unsigned index=107;
+            const auto type=live->validation().session(index).state().weaponChoiceType;
+            if(frames==55&&type!=2)throw std::runtime_error("Left weapon chooser missing");
+            if(frames==90&&type!=3)throw std::runtime_error("Right weapon chooser missing");
+            NSMutableDictionary* observed=[live->captureScenarioUI(index,layer) mutableCopy];observed[@"weaponChoiceType"]=@(type);observed[@"choices"]=@(live->validation().session(index).state().weaponChoices.size());[observations addObject:observed];
+            attachPixels(self,live->pixels(),live->drawableSize(),[NSString stringWithFormat:@"Classic HUD planning frame%u chooser%d %.0fx%.0f",frames,type,viewport.width,viewport.height]);
+        }
+        if(frames>=90){[link invalidate];[complete fulfill];}
+    }catch(const std::exception& e){failure=[NSString stringWithUTF8String:e.what()];[link invalidate];[complete fulfill];}}};
+    CADisplayLink* display=[CADisplayLink displayLinkWithTarget:timer selector:@selector(frame:)];display.preferredFramesPerSecond=60;[display addToRunLoop:NSRunLoop.mainRunLoop forMode:NSRunLoopCommonModes];
+    [self waitForExpectations:@[complete] timeout:180];[display invalidate];timer.callback=nil;XCTAssertNil(failure);XCTAssertEqual(frames,90u);XCTAssertEqual(observations.count,3u);
+    NSDictionary* record=@{@"observations":observations,@"scenarios":@(live->validation().scenarioCount()),@"frames":@(frames),@"experimentalImplemented":@NO,@"actualClassicGPU":@YES};
+    NSData* data=[NSJSONSerialization dataWithJSONObject:record options:NSJSONWritingPrettyPrinted|NSJSONWritingSortedKeys error:nil];XCTAttachment* a=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];a.name=@"Classic HUD planning capture metadata";a.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:a];
+    runtime->setActive(false);runtime.reset();window.hidden=YES;window.rootViewController=nil;NSError* error=nil;XCTAssertTrue([NSFileManager.defaultManager removeItemAtURL:directory error:&error]);
+}
 - (void)runFrames:(unsigned)targetFrames fullCoverage:(BOOL)fullCoverage {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];
