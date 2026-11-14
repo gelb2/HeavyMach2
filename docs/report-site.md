@@ -1,5 +1,14 @@
 # HeavyMach 2 보고 사이트
 
+## 하단 HUD·포털 입력 수정 — 버전297
+
+[수정 결과](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/world-hud.html#하단-hud와-포털-입력-수정--2026-11-14)를 기존 첫 화면과 HeavyMach2 고정 누적 목록에 연결했다. 제품3666fc7의 compact 하단 입력·HUD v1 배치 수정, CPU82포털(81개 직접 표본+1개 원래 경로), C++78/78, iPad126/혼합98조건 각1,200프레임 전후 차이0과 정식/치트 Release 자원1,532파일 일치를 기록했다. Native 첫 묶음은 양쪽6/7이며 검사에서 켜 놓은 Repair모드를 정상 버튼 조작으로 해제한 후, 목적지 도착·실제 저장까지 보강한 새 포털 검사만 양쪽1/1 재통과했다. 앞선6개 성공 재사용과 동시 치트126조건/iPhone2,100·iPad1,200프레임을 구분했다. 물리 기기 업데이트·develop/main 병합은 하지 않았다.
+
+사이트 소스 `c1a11fc0a19e80f2aed6d37842a59a8a31fd9f6f`, 배포 `appgdep_6af8461d31008191b84aeb1a1f5d7d35`, 저장버전 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_dd5c6c052ca481919044f41daed30b9c`의 공식 succeeded와 버전297을 확인했다. 기존 본인1명·그룹0·외부0 접근을 유지했다. 로컬22페이지·gzip본문·앵커·첫/누적 목록·JS 구문을 검사했고 새 온라인 브라우저 시각검수는 하지 않았다. 원본IPA·원시저장·전체디컴파일은게시하지않았다.
+
+전달 archive의 tar member 크기는268,419,072바이트다. 게시 성공 뒤 이전296 전달 압축본을 제거하고 이번 전달본을 남겼다. 완료한 비교용 baseline source/build17,452,179바이트와 Xcode 중간 캐시148,516,422바이트도 정리했다. 최신 정식·치트/검사 제품·dSYM·사용자 저장·원본·실패/성공 로그·비교 지문·GPU 캡처는 보존했다. 로컬 근거는 `.local/evidence/phone-hud-portal-fix-20261114/`의 `site-publication.json`, `site-archive.json`, `baseline-cleanup.json`, `build-cleanup.json`이다.
+
+
 ## 원본 HD·iPhone 월드·HUD 확인 — 버전296
 
 [월드·HUD 보고서의 원본 비교](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/world-hud.html#원본-hd와-원본-iphone-확인)를 기존 첫 화면과 HeavyMach2 누적 목록에 연결했다. HD1.0.3·Phone2.0.1 원본 실행파일·REA export·어셈블리·PNG를 대조했다. 두 원본 모두 전체 화면 월드 위에 하단 전체폭 HUD를 겹친다. 별도 HUD 제외 viewport를 사용하지 않는다는 근거, HD 입력100/하단여유94와 Phone 입력46/하단여유40, HUD 원본 픽셀·논리 크기·알파의 차이를 기록했다. 조사 원고는c7ef38a다. 게임 코드·원본실행·새 앱 설치·develop/main 병합을 수행하지 않았다.
