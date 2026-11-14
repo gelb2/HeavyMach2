@@ -7,7 +7,9 @@
 #include "Core/Audio/SoundIDs.hpp"
 #include "Core/Validation/SessionFixtures.hpp"
 #include "Core/Validation/HUDLayoutExercise.hpp"
+#include "Core/Presentation/VisualLayer.hpp"
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <ctime>
 #include <map>
@@ -282,6 +284,14 @@ NSDictionary* ConcurrentRuntime::verifyRepeatedRendering(CAEAGLLayer* layer,Size
 }
 bool ConcurrentRuntime::captureStoredFrame(unsigned number,CAEAGLLayer* layer){auto& p=*impl_;const auto found=p.sampledFrames.find(number);if(found==p.sampledFrames.end())return false;[p.renderer captureNextFrame];[p.renderer drawFrame:found->second layer:layer];return true;}
 bool ConcurrentRuntime::pressScenarioButton(unsigned index,unsigned id,int data){return impl_->pressButton(index,id,data);}
+bool ConcurrentRuntime::selectScenarioExperimentalHUD(unsigned index){
+    auto& p=*impl_;if(!p.pressButton(index,1021,0))return false;p.refresh(index);auto& screens=*p.interfaces.at(index)->screens;
+    if(!screens.beginHUDEdit())return false;
+    const auto tap=[&](unsigned id){for(const auto& key:screens.buttons())if(key.id==id){const auto at=screens.buttonScreenPosition(key);screens.input(PointerPhase::begin,at,50000+index,0);screens.input(PointerPhase::end,at,50000+index,.1f);return true;}return false;};
+    if(screens.hudConfiguration().style!=hud::Style::experimental&&!tap(9104))return false;
+    if(!tap(9103)||screens.hudEditing()||screens.hudConfiguration().style!=hud::Style::experimental)return false;
+    return p.pressButton(index,1030,0);
+}
 NSDictionary* ConcurrentRuntime::captureScenarioUI(unsigned index,CAEAGLLayer* layer){
     auto& p=*impl_;auto& game=p.runner->session(index);auto& view=*p.interfaces.at(index);
     const auto frame=p.runner->scenarioFrame(index);
@@ -292,7 +302,140 @@ NSDictionary* ConcurrentRuntime::captureScenarioUI(unsigned index,CAEAGLLayer* l
         const auto point=view.screens->buttonScreenPosition(key);
         [buttons addObject:@{@"id":@(key.id),@"data":@(key.intData),@"dataId":native(key.dataId),@"visible":@(button->visible),@"active":@(button->active),@"x":@(point.x),@"y":@(point.y),@"centerInsideCanvas":@(point.x>=0&&point.y>=0&&point.x<display.canvas.width&&point.y<display.canvas.height)}];
     }
-    return @{@"scenario":@(index),@"frame":@(p.runner->metrics().frames),@"screen":@(int(game.state().screen)),@"credits":@(game.state().credits),@"width":@(display.canvas.width),@"height":@(display.canvas.height),@"buttons":buttons,@"extraSimulationTick":@NO,@"revealButtonDuringCapture":@NO,@"visualPassAsserted":@NO};
+    return @{@"scenario":@(index),@"frame":@(p.runner->metrics().frames),@"screen":@(int(game.state().screen)),@"credits":@(game.state().credits),@"width":@(display.canvas.width),@"height":@(display.canvas.height),@"buttons":buttons,@"extraSimulationTick":@NO,@"revealButtonDuringCapture":@NO,@"experimentalHUD":@(view.screens->hudConfiguration().style==hud::Style::experimental),@"visualPassAsserted":@NO};
+}
+NSDictionary* ConcurrentRuntime::diagnoseScenarioRendering(unsigned index,CAEAGLLayer* layer,NSMutableDictionary<NSString*,NSData*>* captures){
+    auto& p=*impl_;const auto simulationBefore=p.runner->metrics().frames;
+    const auto frame=p.runner->scenarioFrame(index); // Copy, never edit sourceFrames.
+    const auto reads=p.renderer.imageResourceReads,decodes=p.renderer.imageDecodeCalls,uploads=p.renderer.textureUploads;
+    const auto render=[&](const Frame& value)->NSData*{[p.renderer captureNextFrame];[p.renderer drawFrame:value layer:layer];return [p.renderer.readRGBA copy];};
+    NSData* first=render(frame);captures[@"full"]=first;
+    NSData* repeat=render(frame);captures[@"repeat"]=repeat;
+    if(first.length!=repeat.length)throw std::runtime_error("Scenario diagnostic changed drawable dimensions");
+    const auto* a=static_cast<const std::uint8_t*>(first.bytes);const auto* b=static_cast<const std::uint8_t*>(repeat.bytes);
+    std::uint64_t different=0;unsigned maximum=0;
+    for(std::size_t i=0;i<first.length;i+=4){bool changed=false;for(unsigned c=0;c<3;++c){const unsigned delta=unsigned(std::abs(int(a[i+c])-int(b[i+c])));maximum=std::max(maximum,delta);changed|=delta!=0;}different+=changed;}
+    const auto size=p.renderer.drawableSize;const auto width=std::size_t(size.width),height=std::size_t(size.height);
+    const std::array<Vec2,3> points={Vec2{std::min(100.f,frame.width*.25f),std::min(100.f,frame.height*.25f)},Vec2{frame.width*(300.f/912),frame.height*(80.f/420)},Vec2{frame.width*(650.f/912),frame.height*(40.f/420)}};
+    const auto samples=[&](NSData* bytes)->NSArray*{
+        if(bytes.length!=width*height*4)throw std::runtime_error("Invalid diagnostic RGBA byte count");
+        const auto* data=static_cast<const std::uint8_t*>(bytes.bytes);NSMutableArray* result=[NSMutableArray new];
+        for(const auto point:points){const auto x=std::min(width-1,std::size_t(point.x/frame.width*width)),top=std::min(height-1,std::size_t(point.y/frame.height*height));const auto offset=((height-1-top)*width+x)*4;
+            [result addObject:@{@"topLeftLogicalX":@(point.x),@"topLeftLogicalY":@(point.y),@"pixelX":@(x),@"pixelTopY":@(top),@"rgb":@[@(data[offset]),@(data[offset+1]),@(data[offset+2])],@"black":@(data[offset]==0&&data[offset+1]==0&&data[offset+2]==0)}];}
+        return result;
+    };
+    const auto vector=[](Vec2 value)->NSArray*{return @[@(value.x),@(value.y)];};
+    const auto color=[](Color value)->NSArray*{return @[@(value.r),@(value.g),@(value.b),@(value.a)];};
+    NSMutableArray* geometry=[NSMutableArray new];
+    for(std::size_t i=0;i<frame.sprites.size();++i){const auto& sprite=frame.sprites[i];NSMutableArray* strip=[NSMutableArray new],*quads=[NSMutableArray new],*indices=[NSMutableArray new];
+        for(const auto& v:sprite.strip)[strip addObject:@{@"xy":vector(v.position),@"uv":vector(v.uv),@"rgba":color(v.color)}];
+        if(sprite.atlasBatch)for(const auto& quad:sprite.atlasBatch->quads){NSMutableArray* vertices=[NSMutableArray new];for(const auto& v:quad.vertices)[vertices addObject:@{@"xy":vector(v.position),@"uv":vector(v.uv),@"rgbaBytes":@[@(v.color.r),@(v.color.g),@(v.color.b),@(v.color.a)]}];[quads addObject:vertices];}
+        if(sprite.atlasBatch)for(const auto value:sprite.atlasBatch->indices)[indices addObject:@(value)];
+        id clip=NSNull.null;if(sprite.clip){const auto c=*sprite.clip;clip=@[@(c.x),@(c.y),@(c.width),@(c.height)];}
+        [geometry addObject:@{@"index":@(i),@"image":native(sprite.image),@"textureSource":native(sprite.textureSource.image),@"textureVariant":@(int(sprite.textureSource.variant)),@"center":vector(sprite.center),@"size":@[@(sprite.size.width),@(sprite.size.height)],@"angle":@(sprite.angle),@"tile":@(sprite.tile),@"columns":@(sprite.columns),@"rows":@(sprite.rows),@"reverseY":@(sprite.reverseY),@"rgba":color(sprite.color),@"blendSource":@(int(sprite.blend.source)),@"blendDestination":@(int(sprite.blend.destination)),@"clip":clip,@"strip":strip,@"atlasQuads":quads,@"atlasIndices":indices,@"atlas":@(bool(sprite.atlasBatch))}];
+    }
+    Frame terrain;terrain.width=frame.width;terrain.height=frame.height;NSMutableArray* terrainIndices=[NSMutableArray new];
+    for(std::size_t i=0;i<frame.sprites.size();++i)if(frame.sprites[i].image=="Stage01_01.jpg"){terrain.sprites.push_back(frame.sprites[i]);[terrainIndices addObject:@(i)];}
+    if(terrain.sprites.empty())throw std::runtime_error("Scenario diagnostic original terrain is missing");
+    NSData* terrainPixels=render(terrain);captures[@"terrain-only"]=terrainPixels;
+    if(terrain.sprites.size()!=1)throw std::runtime_error("Terrain representation diagnostic requires exactly one original image");
+    const auto& originalTerrain=terrain.sprites.front();auto canonical=originalTerrain.strip;
+    if(canonical.empty()){
+        if(originalTerrain.angle!=0||originalTerrain.tile!=0||originalTerrain.columns!=1||originalTerrain.rows!=1)throw std::runtime_error("Terrain diagnostic cannot canonicalize a rotated or tiled image");
+        const float left=originalTerrain.center.x-originalTerrain.size.width*.5f,right=originalTerrain.center.x+originalTerrain.size.width*.5f;
+        const float bottom=originalTerrain.center.y-originalTerrain.size.height*.5f,top=originalTerrain.center.y+originalTerrain.size.height*.5f;
+        const float vTop=originalTerrain.reverseY?1.f:0.f,vBottom=originalTerrain.reverseY?0.f:1.f;
+        canonical={{{left,top},{0,vTop},originalTerrain.color},{{left,bottom},{0,vBottom},originalTerrain.color},{{right,top},{1,vTop},originalTerrain.color},{{right,bottom},{1,vBottom},originalTerrain.color}};
+    }
+    if(canonical.size()!=4||canonical[0].position.x!=canonical[1].position.x||canonical[2].position.x!=canonical[3].position.x||canonical[0].position.y!=canonical[2].position.y||canonical[1].position.y!=canonical[3].position.y)
+        throw std::runtime_error("Terrain diagnostic requires an axis-aligned original quad");
+    const auto lerpVertex=[](const StripVertex& x,const StripVertex& y,float t){const auto lerp=[t](float a,float b){return a+(b-a)*t;};return StripVertex{{lerp(x.position.x,y.position.x),lerp(x.position.y,y.position.y)},{lerp(x.uv.x,y.uv.x),lerp(x.uv.y,y.uv.y)},{lerp(x.color.r,y.color.r),lerp(x.color.g,y.color.g),lerp(x.color.b,y.color.b),lerp(x.color.a,y.color.a)}};};
+    NSMutableArray* terrainVariants=[NSMutableArray new];
+    for(unsigned mode=0;mode<3;++mode){
+        Frame altered=terrain;auto& sprite=altered.sprites.front();NSString* name=nil;
+        if(mode==0){name=@"terrain-variant-nonstrip";sprite.strip.clear();}
+        else if(mode==1){name=@"terrain-variant-degenerate-six";sprite.strip={canonical[0],canonical[1],canonical[2],canonical[2],canonical[1],canonical[3]};}
+        else{
+            name=@"terrain-variant-cpu-clipped";const auto clip=sprite.clip.value_or(ClipRect{0,0,frame.width,frame.height});
+            const float sourceLeft=canonical[0].position.x,sourceRight=canonical[2].position.x,sourceBottom=canonical[1].position.y,sourceTop=canonical[0].position.y;
+            const float left=std::max({0.f,clip.x,sourceLeft}),right=std::min({frame.width,clip.x+clip.width,sourceRight});
+            const float bottom=std::max({0.f,clip.y,sourceBottom}),top=std::min({frame.height,clip.y+clip.height,sourceTop});
+            if(left>=right||bottom>=top||sourceLeft>=sourceRight||sourceBottom>=sourceTop)throw std::runtime_error("Terrain diagnostic has no visible quad intersection");
+            const auto vertex=[&](float x,float y){const float tx=(x-sourceLeft)/(sourceRight-sourceLeft),ty=(y-sourceBottom)/(sourceTop-sourceBottom);auto result=lerpVertex(lerpVertex(canonical[1],canonical[3],tx),lerpVertex(canonical[0],canonical[2],tx),ty);result.position={x,y};return result;};
+            sprite.strip={vertex(left,top),vertex(left,bottom),vertex(right,top),vertex(right,bottom)};sprite.center={(left+right)*.5f,(bottom+top)*.5f};sprite.size={right-left,top-bottom};
+        }
+        NSData* pixels=render(altered);captures[name]=pixels;const auto* baseline=static_cast<const std::uint8_t*>(terrainPixels.bytes);const auto* changed=static_cast<const std::uint8_t*>(pixels.bytes);std::uint64_t difference=0;unsigned maxDifference=0;
+        for(std::size_t i=0;i<pixels.length;i+=4){bool differs=false;for(unsigned c=0;c<3;++c){const unsigned delta=unsigned(std::abs(int(baseline[i+c])-int(changed[i+c])));differs|=delta!=0;maxDifference=std::max(maxDifference,delta);}difference+=differs;}
+        NSMutableArray* vertices=[NSMutableArray new];for(const auto& v:sprite.strip)[vertices addObject:@{@"xy":vector(v.position),@"uv":vector(v.uv),@"rgba":color(v.color)}];
+        [terrainVariants addObject:@{@"captureName":name,@"qaGeometryVariant":@YES,@"changesOriginalFrame":@NO,@"changesRendererStatePolicy":@NO,@"originalStripVertices":@(originalTerrain.strip.size()),@"center":vector(sprite.center),@"size":@[@(sprite.size.width),@(sprite.size.height)],@"strip":vertices,@"samples":samples(pixels),@"differentRGBPixelsFromOriginalTerrain":@(difference),@"maxRGBDifferenceFromOriginalTerrain":@(maxDifference)}];
+    }
+    Frame prefix;prefix.width=frame.width;prefix.height=frame.height;
+    NSData* previous=render(prefix);NSArray* previousSamples=samples(previous);NSMutableArray* prefixes=[NSMutableArray new];
+    [prefixes addObject:@{@"spriteCount":@0,@"samples":previousSamples}];
+    id culprit=NSNull.null;NSMutableArray* firstTransitions=[NSMutableArray new];for(unsigned i=0;i<points.size();++i)[firstTransitions addObject:NSNull.null];
+    bool originCaptured=false;
+    for(std::size_t i=0;i<frame.sprites.size();++i){@autoreleasepool{
+        prefix.sprites.push_back(frame.sprites[i]);NSData* current=render(prefix);NSArray* currentSamples=samples(current);
+        NSMutableArray* changedSamples=[NSMutableArray new];
+        for(unsigned j=0;j<points.size();++j)if(![previousSamples[j][@"black"] boolValue]&&[currentSamples[j][@"black"] boolValue]){
+            [changedSamples addObject:@(j)];if(firstTransitions[j]==NSNull.null)firstTransitions[j]=@(i);
+        }
+        [prefixes addObject:@{@"spriteCount":@(i+1),@"lastSprite":@(i),@"samples":currentSamples,@"nonBlackToBlackSamples":changedSamples}];
+        // Preserve an origin pair even when terrain itself is already black;
+        // this is explicitly distinct from a nonblack-to-black culprit.
+        if(!originCaptured&&frame.sprites[i].image=="Stage01_01.jpg"){captures[@"origin-before"]=previous;captures[@"origin-after"]=current;originCaptured=true;}
+        if(culprit==NSNull.null&&changedSamples.count){culprit=@{@"sprite":geometry[i],@"sampleIndices":changedSamples,@"prefixCountBefore":@(i),@"prefixCountAfter":@(i+1)};captures[@"culprit-before"]=previous;captures[@"culprit-after"]=current;}
+        previous=current;previousSamples=currentSamples;
+    }}
+    std::uint64_t prefixDifference=0;const auto* finalPrefix=static_cast<const std::uint8_t*>(previous.bytes);
+    for(std::size_t i=0;i<first.length;i+=4)prefixDifference+=a[i]!=finalPrefix[i]||a[i+1]!=finalPrefix[i+1]||a[i+2]!=finalPrefix[i+2];
+    const auto simulationAfter=p.runner->metrics().frames;
+    return @{@"scenario":@(index),@"frameBefore":@(simulationBefore),@"frameAfter":@(simulationAfter),@"extraSimulationTick":@(simulationAfter!=simulationBefore),@"immutableSourceFrame":@YES,@"width":@(frame.width),@"height":@(frame.height),@"drawableWidth":@(width),@"drawableHeight":@(height),@"sourceSprites":@(frame.sprites.size()),@"differentRGBPixels":@(different),@"maxRGBDifference":@(maximum),@"fullVsCompletePrefixDifferentRGBPixels":@(prefixDifference),@"fullSamples":samples(first),@"repeatSamples":samples(repeat),@"terrainOnlySamples":samples(terrainPixels),@"terrainVariants":terrainVariants,@"terrainSpriteIndices":terrainIndices,@"firstNonBlackToBlackSpritePerSample":firstTransitions,@"firstNonBlackToBlack":culprit,@"sprites":geometry,@"prefixes":prefixes,@"imageReads":@(p.renderer.imageResourceReads-reads),@"imageDecodes":@(p.renderer.imageDecodeCalls-decodes),@"textureUploads":@(p.renderer.textureUploads-uploads),@"visualPassAsserted":@NO};
+}
+NSDictionary* ConcurrentRuntime::captureNonCombatCommonScreensFixtures(CAEAGLLayer* layer,NSMutableDictionary<NSString*,NSData*>* captures){
+    auto& p=*impl_;const auto frameBefore=p.runner->metrics().frames,writesBefore=p.saveWrites;
+    const auto display=p.runner->session(0).display();const float time=p.runner->session(0).renderTime();
+    struct FixtureHost final:ui::ScreensHost {
+        Impl& owner;std::vector<ui::PreparedScreenText> texts;std::vector<ui::ScreenAction> actions;
+        explicit FixtureHost(Impl& value):owner(value){}
+        ui::PreparedScreenText prepareText(const ui::TextRasterRequest& request)override{auto result=owner.text(request);texts.push_back(result);return result;}
+        void action(const ui::ScreenAction& event)override{actions.push_back(event);} // Observe; never route fixture data to GameSession.
+        void bgm(std::string_view)override{}void sound(std::string_view)override{}void sfx(unsigned)override{}
+    };
+    struct NoGameRandom final:WorldRandom {std::uint32_t random()override{throw std::runtime_error("Command/base visual fixture requested game RNG");}};
+    NSMutableArray* fixtures=[NSMutableArray new];
+    for(unsigned variant=0;variant<4;++variant){
+        FixtureHost host(p);PreparedTiles tiles("explicit-common-screens-fixture"+std::to_string(variant));
+        ui::Screens screens(p.runner->cachedResources(),tiles,host);screens.setDisplay(display);
+        ui::ScreensState state;state.screen=variant==3?ui::ScreenId::base:ui::ScreenId::command;state.locale="kr";state.baseId="Base001";
+        for(unsigned i=0;i<5;++i){ui::ItemView item;item.dataId="new"+std::to_string(i);item.name="새 임무 "+std::to_string(i);state.availableMissions.push_back(item);item.dataId="own"+std::to_string(i);item.name="진행 임무 "+std::to_string(i);item.did=3;item.total=10;state.acceptedMissions.push_back(item);}
+        state.selectedMission=variant==0?0:5;state.selectedMissionDataId=variant==0?"new0":"own0";
+        state.missionTitle=variant==0?"새 임무 0":"진행 임무 0";for(unsigned n=0;n<600;++n)state.missionBody+="가";
+        if(variant==2){state.selectedMission=-1;state.commandListVisible=false;state.completedMission.dataId="done";state.completedMission.title="임무 완료";for(unsigned i=0;i<9;++i)state.completedMission.rewards.push_back({1,int(100+i),"Icon10011.png"});}
+        if(variant==3){state.selectedMission=-1;state.selectedMissionDataId.clear();state.baseHasCompletedMission=true;state.selectedBaseButton=1;state.baseDescription="사령부에서 새 임무를 받고 완료한 임무를 보고하세요.";}
+        const unsigned settleTicks=variant==3?96:32;
+        screens.refresh(state,time);NoGameRandom random;for(unsigned n=0;n<settleTicks;++n)screens.tick(time,random);
+        const unsigned pages=variant==2&&display.compact?3:1;
+        NSMutableArray* pageRows=[NSMutableArray new];
+        for(unsigned page=0;page<pages;++page){
+            if(page){bool found=false;for(const auto& key:screens.buttons())if(key.id==9407){const auto at=screens.buttonScreenPosition(key);screens.input(PointerPhase::begin,at,0x514100+page,time);screens.input(PointerPhase::end,at,0x514100+page,time);found=true;break;}if(!found)throw std::runtime_error("Common completion fixture lacks reward-page control");}
+            Frame prepared;screens.appendPreparation(prepared);[p.renderer prepareFrame:prepared];
+            Frame frame;frame.width=display.canvas.width;frame.height=display.canvas.height;screens.append(frame,time);
+            [p.renderer captureNextFrame];[p.renderer drawFrame:frame layer:layer];
+            NSString* name=[NSString stringWithFormat:@"common-Screens-visual-fixture-%@-page%u",variant==0?@"HQ-available-new0":variant==1?@"HQ-accepted-own0":variant==2?@"HQ-completed-nine-rewards":@"Base001-facilities",page+1];captures[name]=[p.renderer.readRGBA copy];
+            NSMutableArray* buttons=[NSMutableArray new],*clips=[NSMutableArray new],*images=[NSMutableArray new],*fonts=[NSMutableArray new];std::set<std::string> fontNames,submittedImages;
+            for(const auto& key:screens.buttons()){const auto button=screens.button(key);if(!button)continue;const auto at=screens.buttonScreenPosition(key);const auto bounds=button->bounds();
+                [buttons addObject:@{@"id":@(key.id),@"dataId":native(key.dataId),@"visible":@(button->visible),@"active":@(button->active),@"canvasCenter":@[@(at.x),@(at.y)],@"localHitBoundsLTRB":@[@(bounds.left),@(bounds.bottom),@(bounds.right),@(bounds.top)],@"centerInsideCanvas":@(at.x>=0&&at.y>=0&&at.x<display.canvas.width&&at.y<display.canvas.height)}];}
+            for(const auto& sprite:frame.sprites){submittedImages.insert(sprite.image);[images addObject:native(sprite.image)];if(sprite.clip){const auto c=*sprite.clip;[clips addObject:@{@"image":native(sprite.image),@"canvasClip":@[@(c.x),@(c.y),@(c.width),@(c.height)]}];}}
+            for(const auto& text:host.texts)if(fontNames.insert(text.image).second){const auto& bitmap=*text.bitmap;const auto& request=bitmap.request;NSMutableArray* cascades=[NSMutableArray new];for(const auto& font:bitmap.metrics.cascadeFontNames)[cascades addObject:native(font)];const auto ink=std::count_if(bitmap.alpha.begin(),bitmap.alpha.end(),[](std::uint8_t value){return value!=0;});
+                [fonts addObject:@{@"image":native(text.image),@"sourceId":native(request.sourceId),@"text":native(request.text),@"submittedInThisFrame":@(submittedImages.contains(text.image)),@"requestedFont":native(request.fontName),@"resolvedFont":native(bitmap.metrics.resolvedFontName),@"cascadeFonts":cascades,@"fontSize":@(request.fontSize),@"requestedDimensions":@[@(request.dimensions.width),@(request.dimensions.height)],@"drawnDimensions":@[@(bitmap.metrics.drawnSize.width),@(bitmap.metrics.drawnSize.height)],@"inkPixels":@(ink),@"inkBands":@(bitmap.metrics.inkBands.size()),@"osVersion":native(bitmap.metrics.osVersion)}];}
+            [pageRows addObject:@{@"captureName":name,@"page":@(page+1),@"buttons":buttons,@"renderClips":clips,@"renderImages":images,@"nativeText":fonts,@"sourceSprites":@(frame.sprites.size())}];
+        }
+        [fixtures addObject:@{@"fixture":@(variant),@"fixtureState":@YES,@"kind":variant==3?@"common Screens hub visual fixture":@"common Screens HQ visual fixture",@"originalPlaythrough":@NO,@"uiSettleTicks":@(settleTicks),@"gameTick":@(frameBefore),@"availableMissions":@(state.availableMissions.size()),@"acceptedMissions":@(state.acceptedMissions.size()),@"selectedMission":@(state.selectedMission),@"selectedMissionDataId":native(state.selectedMissionDataId),@"selectedBaseButton":@(state.selectedBaseButton),@"baseDescription":native(state.baseDescription),@"completedRewards":@(state.completedMission.rewards.size()),@"observedUIActions":@(host.actions.size()),@"pages":pageRows}];
+    }
+    // Fixture GUI owners expire here, through the existing ownership sweep.
+    p.resourcesDirty=true;p.releaseExpiredOwners();
+    return @{@"fixtureState":@YES,@"originalPlaythrough":@NO,@"gameTickBefore":@(frameBefore),@"gameTickAfter":@(p.runner->metrics().frames),@"gameTickFixed":@(frameBefore==p.runner->metrics().frames),@"uiSettleTicksByFixture":@[@32,@32,@32,@96],@"width":@(display.canvas.width),@"height":@(display.canvas.height),@"compact":@(display.compact),@"scenarios":@(p.runner->scenarioCount()),@"saveWritesBefore":@(writesBefore),@"saveWritesAfter":@(p.saveWrites),@"fixtures":fixtures,@"visualPassAsserted":@NO};
 }
 void ConcurrentRuntime::captureNextFrame(){[impl_->renderer captureNextFrame];}
 NSData* ConcurrentRuntime::pixels()const{return impl_->renderer.readRGBA;}

@@ -21,6 +21,24 @@ void uniformCover(const Sprite& s,Size canvas){
  assert(near(std::sqrt(xx)/std::sqrt(yy),1.5f));
  for(const auto p:{Vec2{0,0},Vec2{canvas.width,0},Vec2{0,canvas.height},Vec2{canvas.width,canvas.height}}){const Vec2 d{p.x-o.x,p.y-o.y};const float u=(d.x*x.x+d.y*x.y)/xx,v=(d.x*y.x+d.y*y.y)/yy;assert(u>=-.0001f&&u<=1.0001f&&v>=-.0001f&&v<=1.0001f);}
 }
+void originalTerrainRectangle(const Sprite& s,Size canvas){
+ assert(s.angle==0&&s.tile==0&&s.columns==1&&s.rows==1&&!s.reverseY);
+ assert(s.color.r==1&&s.color.g==1&&s.color.b==1&&s.color.a==1&&s.blend.source==BlendFactor::one&&s.blend.destination==BlendFactor::oneMinusSourceAlpha);
+ const float left=s.center.x-s.size.width*.5f,bottom=s.center.y-s.size.height*.5f;
+ const float right=left+s.size.width,top=bottom+s.size.height;
+ const auto b=quadBounds(s);assert(b.width>0&&b.height>0);
+ const float clippedLeft=std::max(0.f,left),clippedBottom=std::max(0.f,bottom),clippedRight=std::min(canvas.width,right),clippedTop=std::min(canvas.height,top);
+ assert(near(b.x,clippedLeft)&&near(b.y,clippedBottom)&&near(b.x+b.width,clippedRight)&&near(b.y+b.height,clippedTop));
+ if(!s.strip.empty()){
+  assert(s.strip.size()==4);
+  for(const auto& v:s.strip){assert(v.position.x>=0&&v.position.x<=canvas.width&&v.position.y>=0&&v.position.y<=canvas.height);
+   // A visible point must sample the exact same original image point. The
+   // submitted view intersection must never stretch the remaining image.
+   assert(near(v.uv.x,(v.position.x-left)/s.size.width)&&near(v.uv.y,(top-v.position.y)/s.size.height));
+   assert(v.uv.x>=0&&v.uv.x<=1&&v.uv.y>=0&&v.uv.y<=1&&v.color.r==1&&v.color.g==1&&v.color.b==1&&v.color.a==1);
+  }
+ }else assert(left>=0&&bottom>=0&&right<=canvas.width&&top<=canvas.height);
+}
 void phoneMenuGeometry(){
  for(const auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({852,393},{59,21,60,0}),DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({1280,360},{0,20,0,0})}){
   const menu::PhoneLayout p(config);const auto a=config.content();const DisplayLayout layout(config);
@@ -97,7 +115,7 @@ void entryCamera(Files& files){
    for(unsigned group=0;group<hud::count;++group){const auto b=hud::visualBounds({},group,layout);assert(!(p.x>=b.x&&p.x<=b.x+b.width&&p.y>=b.y&&p.y<=b.y+b.height));}
    const auto frame=game.drawWorld();assert(frame.width==config.canvas.width&&frame.height==config.canvas.height);
    const auto& terrain=frame.sprites.front();assert(terrain.clip&&terrain.clip->x==0&&terrain.clip->y==0&&terrain.clip->width==config.canvas.width&&terrain.clip->height==config.canvas.height);
-   assert(terrain.strip.size()==4);for(const auto& v:terrain.strip)assert(v.uv.x>=0&&v.uv.x<=1&&v.uv.y>=0&&v.uv.y<=1);assert(terrain.center.x-terrain.size.width*.5f<=0&&terrain.center.y-terrain.size.height*.5f<=0&&terrain.center.x+terrain.size.width*.5f>=config.canvas.width&&terrain.center.y+terrain.size.height*.5f>=config.canvas.height);
+   originalTerrainRectangle(terrain,{frame.width,frame.height});assert(terrain.center.x-terrain.size.width*.5f<=0&&terrain.center.y-terrain.size.height*.5f<=0&&terrain.center.x+terrain.size.width*.5f>=config.canvas.width&&terrain.center.y+terrain.size.height*.5f>=config.canvas.height);
  }
 }
 void phoneMenus(Files& files){
@@ -124,9 +142,22 @@ void allMapEdges(Files& files){
  const auto maps=Maps::parse(Chunk::parse(files.read("MapInfo.mcb")));unsigned count=0;
  for(const auto& [name,map]:maps.all()){if(!name.starts_with("Stage"))continue;MapPreview preview(files,name);++count;
   for(const auto canvas:{Size{912,420},Size{1280,360}}){CameraPresentation policy;const auto config=DisplayConfiguration::surface(canvas);policy.configure(config);const auto view=policy.snapshot();
-   for(const Vec2 corner:{Vec2{-512,-512},Vec2{512,-512},Vec2{-512,512},Vec2{512,512}}){MapCamera c;c.viewport=view.viewport;c.fitWorld=c.fillSurface=true;c.lowerOverscan=0;c.center=corner;constrainCamera(c,corner);const auto frame=preview.compose(c);const auto& ground=frame.sprites.front();if(!(ground.center.x-ground.size.width*.5f<=.01f&&ground.center.y-ground.size.height*.5f<=.01f&&ground.center.x+ground.size.width*.5f>=c.viewport.width-.01f&&ground.center.y+ground.size.height*.5f>=c.viewport.height-.01f))std::cerr<<"MAP_COVER "<<name<<" image="<<ground.image<<" center="<<ground.center.x<<","<<ground.center.y<<" size="<<ground.size.width<<","<<ground.size.height<<" viewport="<<c.viewport.width<<","<<c.viewport.height<<std::endl;assert(ground.strip.size()==4);for(const auto& v:ground.strip)assert(v.uv.x>=0&&v.uv.x<=1&&v.uv.y>=0&&v.uv.y<=1);assert(ground.center.x-ground.size.width*.5f<=.01f&&ground.center.y-ground.size.height*.5f<=.01f&&ground.center.x+ground.size.width*.5f>=c.viewport.width-.01f&&ground.center.y+ground.size.height*.5f>=c.viewport.height-.01f);}
+   for(const Vec2 corner:{Vec2{-512,-512},Vec2{512,-512},Vec2{-512,512},Vec2{512,512}}){MapCamera c;c.viewport=view.viewport;c.fitWorld=c.fillSurface=true;c.lowerOverscan=0;c.center=corner;constrainCamera(c,corner);const auto frame=preview.compose(c);const auto& ground=frame.sprites.front();if(!(ground.center.x-ground.size.width*.5f<=.01f&&ground.center.y-ground.size.height*.5f<=.01f&&ground.center.x+ground.size.width*.5f>=c.viewport.width-.01f&&ground.center.y+ground.size.height*.5f>=c.viewport.height-.01f))std::cerr<<"MAP_COVER "<<name<<" image="<<ground.image<<" center="<<ground.center.x<<","<<ground.center.y<<" size="<<ground.size.width<<","<<ground.size.height<<" viewport="<<c.viewport.width<<","<<c.viewport.height<<std::endl;originalTerrainRectangle(ground,{frame.width,frame.height});assert(ground.center.x-ground.size.width*.5f<=.01f&&ground.center.y-ground.size.height*.5f<=.01f&&ground.center.x+ground.size.width*.5f>=c.viewport.width-.01f&&ground.center.y+ground.size.height*.5f>=c.viewport.height-.01f);}
   }
  }assert(count==38);
+}
+void clippedTerrainCases(Files& files){
+ MapPreview preview(files,"Stage01_01");unsigned empty=0,whole=0,partial=0;
+ for(const auto viewport:{Size{1200.5f,1300.25f},Size{300.5f,170.25f}})
+ for(const auto center:{Vec2{0,0},Vec2{-600.25f,0},Vec2{600.25f,0},Vec2{0,-600.25f},Vec2{0,600.25f},Vec2{4096.25f,4096.75f}}){
+  MapCamera camera;camera.viewport=viewport;camera.center=center;camera.offset={.25f,-.4f};const auto original=preview.compose(camera);assert(original.sprites.size()==1);const auto source=original.sprites.front();assert(source.strip.empty());
+  camera.fillSurface=true;const auto visible=preview.compose(camera);const auto sourceRect=quadBounds(source);const float left=std::max(0.f,sourceRect.x),right=std::min(viewport.width,sourceRect.x+sourceRect.width),bottom=std::max(0.f,sourceRect.y),top=std::min(viewport.height,sourceRect.y+sourceRect.height);
+  if(left>=right||bottom>=top){assert(visible.sprites.empty());++empty;continue;}
+  assert(visible.sprites.size()==1);const auto& image=visible.sprites.front();assert(image.image==source.image&&image.center.x==source.center.x&&image.center.y==source.center.y&&image.size.width==source.size.width&&image.size.height==source.size.height&&image.angle==source.angle&&image.blend.source==source.blend.source&&image.blend.destination==source.blend.destination);
+  originalTerrainRectangle(image,viewport);if(image.strip.empty())++whole;else ++partial;
+ }
+ assert(empty&&whole&&partial>=4);
+ std::cout<<"TERRAIN_VISIBLE_QUAD fourEdges/nonintegerCameraOffset/UVOriginalPixelMapping/whole/empty/noCameraOrScaleChange PASS\n";
 }
 void phoneArtwork(Files& files){
  assert(validResourceName("PhoneMenu/Main_BG.png"));for(const auto bad:{"/Main_BG.png","../Main_BG.png","PhoneMenu/../Main_BG.png","PhoneMenu/sub/Main_BG.png","PhoneMenu/..","PhoneMenu/","PhoneMenu\\Main_BG.png"})assert(!validResourceName(bad));assert(!validResourceName(std::string_view("PhoneMenu/a\0.png",16)));
@@ -212,4 +243,4 @@ void session(Files& files,DisplayConfiguration config){Host host;DarwinWorldRand
  const auto pos=scene->player().position;const auto hp=scene->playerHP();game.setDisplay(DisplayConfiguration::surface({1024,1366}));assert(scene->player().position.x==pos.x&&scene->playerHP()==hp&&host.writes==writes);assert(game.workingSlot().size()==before.size());
 }
 }
-int main(int argc,char** argv){if(argc<2)return 77;phoneMenuGeometry();fullScreenWorld();transforms();Files files(argv[1]);entryCamera(files);allMapEdges(files);phoneArtwork(files);phoneMenus(files);phoneMenuGrids(files);phoneCommandPages(files);phoneLiveMenuSession(files);for(auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({852,393},{59,21,59,0}),DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({1024,1366},{0,20,0,24})}){screens(files,config);help(files,config);session(files,config);}std::cout<<"HM2_DISPLAY PASS 4 canvases / full-screen world / terrain edge coverage / HUD size / six base menus / Phone-original-art/contain-hotspots/Retina-JPEG / first mission rows / safe-area / inverse-hit / HD25+24+6 / drag / warm100 / help-scroll / common-world / no-display-save\n";}
+int main(int argc,char** argv){if(argc<2)return 77;phoneMenuGeometry();fullScreenWorld();transforms();Files files(argv[1]);entryCamera(files);allMapEdges(files);clippedTerrainCases(files);phoneArtwork(files);phoneMenus(files);phoneMenuGrids(files);phoneCommandPages(files);phoneLiveMenuSession(files);for(auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({852,393},{59,21,59,0}),DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({1024,1366},{0,20,0,24})}){screens(files,config);help(files,config);session(files,config);}std::cout<<"HM2_DISPLAY PASS 4 canvases / full-screen world / terrain edge coverage / HUD size / six base menus / Phone-original-art/contain-hotspots/Retina-JPEG / first mission rows / safe-area / inverse-hit / HD25+24+6 / drag / warm100 / help-scroll / common-world / no-display-save\n";}

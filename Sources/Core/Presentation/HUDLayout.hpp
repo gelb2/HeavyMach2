@@ -23,7 +23,8 @@ inline constexpr std::array<ClipRect,count> bounds{{{0,0,288,124},{288,0,224,138
 inline constexpr std::array<ClipRect,count> backgroundSlices{{{0,0,288,256},{288,0,212,256},{500,0,268,256}}};
 enum class Style {classic,experimental};
 enum ExperimentalGroup : unsigned {hp,booster,experience,level,credits,leftWeapon,rightWeapon,quickFive,menuThree,radar,targetInfo,leftPanel,rightPanel,experimentalCount};
-inline constexpr std::array<ClipRect,experimentalCount> experimentalBounds{{{0,40,280,27},{0,66,278,29},{28,0,245,37},{0,0,40,37},{169,75,129,31},{277,56,114,72},{423,56,114,72},{487,0,281,59},{581,62,187,60},{369,0,80,80},{256,940,256,40},{77,116,512,252},{222,116,512,252}}};
+// QuickBtn normal2 ends at768, pressed3 at771; the last60-wide hit ends at769.
+inline constexpr std::array<ClipRect,experimentalCount> experimentalBounds{{{0,40,280,27},{0,66,278,29},{28,0,245,37},{0,0,40,37},{169,75,129,31},{277,56,114,72},{423,56,114,72},{487,0,281,59},{581,62,190,60},{369,0,80,80},{256,940,256,40},{77,116,512,252},{222,116,512,252}}};
 // Functional pieces sampled from the original texture, in positive-Y-up pixels.
 inline constexpr std::array<ClipRect,experimentalCount> functionalSlices{{{0,54,48,12},{0,78,78,17},{40,0,233,37},{0,0,40,37},{169,75,129,31},{0,0,0,0},{0,0,0,0},{487,0,281,59},{0,0,0,0},{369,0,80,80},{0,0,0,0},{0,0,0,0},{0,0,0,0}}};
 struct Placement {float x=0,y=0;bool operator==(const Placement&)const=default;};
@@ -42,6 +43,21 @@ inline const auto& position(const Configuration& c,unsigned g){return c.style==S
 inline DisplayTransform baseTransform(const Configuration& c,unsigned g,const DisplayLayout& l){return l.ui(c.style==Style::experimental&&g==targetInfo?DisplayRegion::top:DisplayRegion::bottom);}
 inline ClipRect placementArea(const DisplayLayout& layout){
     const auto& c=layout.configuration();return c.enabled?ClipRect{0,0,c.canvas.width,c.canvas.height}:ClipRect{0,0,768,1024};
+}
+inline ClipRect unionBounds(ClipRect a,ClipRect b){
+    const float x=std::min(a.x,b.x),y=std::min(a.y,b.y);
+    return {x,y,std::max(a.x+a.width,b.x+b.width)-x,std::max(a.y+a.height,b.y+b.height)-y};
+}
+// Geometry only. A runtime consumer supplies its current original primitives.
+// Retain the requested scale/position when already contained or too large to
+// fit; never shrink or independently clamp members of the group.
+inline DisplayTransform containBounds(DisplayTransform t,ClipRect logical,ClipRect area){
+    const float width=logical.width*t.scale,height=logical.height*t.scale;
+    if(width>area.width||height>area.height)return t;
+    const auto p=t.map({logical.x,logical.y});
+    t.offset.x+=std::clamp(p.x,area.x,area.x+area.width-width)-p.x;
+    t.offset.y+=std::clamp(p.y,area.y,area.y+area.height-height)-p.y;
+    return t;
 }
 inline ClipRect legacyPlacementArea(const DisplayLayout& layout){
     const auto& c=layout.configuration();const auto a=c.enabled?c.content():ClipRect{0,0,768,1024};

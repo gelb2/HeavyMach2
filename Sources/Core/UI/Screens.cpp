@@ -185,6 +185,14 @@ struct Screens::Impl {
         // at its exact original position. Keep identity geometry bit-exact.
         const auto delta=[](float a,float b){return std::abs(a-b)<.0001f?0.f:a-b;};
         t.offset.x+=delta(custom.offset.x,base.offset.x);t.offset.y+=delta(custom.offset.y,base.offset.y);
+        if(experimental()&&unsigned(group)==hud::radar){
+            auto bounds=hud::experimentalBounds[hud::radar];
+            for(const auto& mark:state.radarMarks){
+                const Vec2 p{409.f+mark.worldPosition.x*.0625f,40.f+mark.worldPosition.y*.0625f};
+                bounds=hud::unionBounds(bounds,{p.x-4,p.y-4,8,8});
+            }
+            t=hud::containBounds(t,bounds,hud::placementArea(layout));
+        }
         if(experimental()&&unsigned(group)>=hud::leftPanel){const auto b=chooserBounds.value_or(hud::experimentalBounds[unsigned(group)]);const auto a=hud::placementArea(layout);const auto p=t.map({b.x,b.y});t.offset.x+=std::clamp(p.x,a.x,a.x+std::max(0.f,a.width-b.width*t.scale))-p.x;t.offset.y+=std::clamp(p.y,a.y,a.y+std::max(0.f,a.height-b.height*t.scale))-p.y;}
         return t;
     }
@@ -1517,6 +1525,16 @@ bool Screens::input(PointerPhase phase,Vec2 point,std::uintptr_t pointer,float t
         const auto rebuild=[&]{if(hud_->rebuild){hud_->rebuild=false;refresh(keep->state,time);}};
         const auto toolMap=[keep](const Button& button,Vec2 canvas){return button.key().id>=9101&&button.key().id<=9105?keep->presentation(keep->buttonRegion(button)).inverse(canvas):Vec2{1.e9f,1.e9f};};
         bool toolCaptured=false;for(const auto& key:keep->keys)if(key.id>=9101&&key.id<=9105)if(auto b=keep->dispatcher.find(key);b&&b->capturedPointer()==pointer)toolCaptured=true;
+        const auto dragOrigin=[keep](unsigned group,Vec2 painted){
+            if(keep->experimental()&&group==hud::radar){
+                // Current markers can translate the painted group inward.
+                // Editing retains its requested grid anchor and applies only
+                // the pointer delta; that display correction is never saved.
+                const auto bounds=hud::groupBounds(keep->hud->active(),group);
+                return hud::transform(keep->hud->active(),group,keep->layout).map({bounds.x,bounds.y});
+            }
+            return painted;
+        };
         if(hud_->dragPointer==pointer&&pointer){
             if(phase==PointerPhase::move){const Vec2 origin{hud_->dragOrigin.x+point.x-hud_->dragStart.x,hud_->dragOrigin.y+point.y-hud_->dragStart.y};if(keep->experimental()&&hud_->selected>=hud::leftPanel){const auto a=hud::placementArea(keep->layout);hud::position(hud_->draft,hud_->selected)=hud::Placement{std::clamp(hud_->dragPlacement.x+(point.x-hud_->dragStart.x)/a.width,-1.f,1.f),std::clamp(hud_->dragPlacement.y+(point.y-hud_->dragStart.y)/a.height,-1.f,1.f)};}else hud::position(hud_->draft,hud_->selected)=hud::draggedOrigin(hud_->selected,keep->layout,origin,hud_->draft);}
             if(phase==PointerPhase::end||phase==PointerPhase::cancel)hud_->dragPointer=0;
@@ -1525,14 +1543,14 @@ bool Screens::input(PointerPhase phase,Vec2 point,std::uintptr_t pointer,float t
         // A fixed editor handle recovers a selected group even when HUD
         // artwork, another group or the toolbar covers its original handle.
         if(phase==PointerPhase::begin&&pointer){const auto t=keep->presentation(Region::panel);const auto p=t.map({128,402});
-            if(point.x>=p.x&&point.x<=p.x+512*t.scale&&point.y>=p.y&&point.y<=p.y+64*t.scale){const auto b=hud::groupBounds(hud_->draft,hud_->selected);const auto g=keep->presentation(keep->experimental()&&hud_->selected==hud::targetInfo?Region::top:Region::bottom,int(hud_->selected));hud_->dragPointer=pointer;hud_->dragStart=point;hud_->dragOrigin=g.map({b.x,b.y});hud_->dragPlacement=hud::position(hud_->draft,hud_->selected).value_or(hud::Placement{});return true;}
+            if(point.x>=p.x&&point.x<=p.x+512*t.scale&&point.y>=p.y&&point.y<=p.y+64*t.scale){const auto b=hud::groupBounds(hud_->draft,hud_->selected);const auto g=keep->presentation(keep->experimental()&&hud_->selected==hud::targetInfo?Region::top:Region::bottom,int(hud_->selected));hud_->dragPointer=pointer;hud_->dragStart=point;hud_->dragOrigin=dragOrigin(hud_->selected,g.map({b.x,b.y}));hud_->dragPlacement=hud::position(hud_->draft,hud_->selected).value_or(hud::Placement{});return true;}
         }
         const bool tool=keep->dispatcher.input(phase,point,pointer,time,toolMap);
         if(tool||toolCaptured){rebuild();return true;}
         if(phase==PointerPhase::begin&&pointer){
             bool found=false;
-            for(unsigned i=hud::groupCount(hud_->draft);i>0;--i){auto logical=hud::groupBounds(hud_->draft,i-1);if(keep->experimental()&&i-1>=hud::leftPanel)logical={i-1==hud::leftPanel?logical.x:logical.x+logical.width-256,logical.y+36,256,32};const auto t=keep->presentation(i-1==hud::targetInfo&&keep->experimental()?Region::top:Region::bottom,int(i-1));const auto pos=t.map({logical.x,logical.y});const ClipRect b{pos.x,pos.y,logical.width*t.scale,logical.height*t.scale};if(point.x>=b.x&&point.x<=b.x+b.width&&point.y>=b.y&&point.y<=b.y+b.height){hud_->selected=i-1;hud_->dragPointer=pointer;hud_->dragStart=point;hud_->dragOrigin={b.x,b.y};hud_->dragPlacement=hud::position(hud_->draft,i-1).value_or(hud::Placement{});found=true;break;}}
-            if(!found){const auto logical=hud::groupBounds(hud_->draft,hud_->selected);const auto t=keep->presentation(keep->experimental()&&hud_->selected==hud::targetInfo?Region::top:Region::bottom,int(hud_->selected));hud_->dragPointer=pointer;hud_->dragStart=point;hud_->dragOrigin=t.map({logical.x,logical.y});hud_->dragPlacement=hud::position(hud_->draft,hud_->selected).value_or(hud::Placement{});}
+            for(unsigned i=hud::groupCount(hud_->draft);i>0;--i){auto logical=hud::groupBounds(hud_->draft,i-1);if(keep->experimental()&&i-1>=hud::leftPanel)logical={i-1==hud::leftPanel?logical.x:logical.x+logical.width-256,logical.y+36,256,32};const auto t=keep->presentation(i-1==hud::targetInfo&&keep->experimental()?Region::top:Region::bottom,int(i-1));const auto pos=t.map({logical.x,logical.y});const ClipRect b{pos.x,pos.y,logical.width*t.scale,logical.height*t.scale};if(point.x>=b.x&&point.x<=b.x+b.width&&point.y>=b.y&&point.y<=b.y+b.height){hud_->selected=i-1;hud_->dragPointer=pointer;hud_->dragStart=point;hud_->dragOrigin=dragOrigin(i-1,{b.x,b.y});hud_->dragPlacement=hud::position(hud_->draft,i-1).value_or(hud::Placement{});found=true;break;}}
+            if(!found){const auto logical=hud::groupBounds(hud_->draft,hud_->selected);const auto t=keep->presentation(keep->experimental()&&hud_->selected==hud::targetInfo?Region::top:Region::bottom,int(hud_->selected));hud_->dragPointer=pointer;hud_->dragStart=point;hud_->dragOrigin=dragOrigin(hud_->selected,t.map({logical.x,logical.y}));hud_->dragPlacement=hud::position(hud_->draft,hud_->selected).value_or(hud::Placement{});}
         }
         rebuild();return true;
     }

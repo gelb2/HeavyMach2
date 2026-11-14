@@ -1,5 +1,13 @@
 # HeavyMach2 iPhone 작업 인계
 
+## 2026-11-15 HUD·메뉴 최종 구현과 검사
+
+[현재 구현·실패 수정·남은 TODO](docs/experimental-hud-implementation-20261114.md), [검증 근거](docs/evidence/experimental-hud-implementation-20261115.json)를 우선한다. ExperimentalHUD 11조각·좌우 패널 이동/저장, Phone 허브·상점·사령부 전체 삽화/세로 스크롤 제거를 구현했다. 공통 CPU 5개, ASan/UBSan 3개와 후속 지형/레이더 경계 검사를 통과했다. 최종 Native는 양쪽 9/9다. 첫 자동 10/10 뒤 캡처에서 Retina56/360 검정이 발견되어 합격을 보류하고 수정했다. 공통 MapPreview의 보이는 사각형만 원본 UV로 제출하며 카메라/맵/유닛/이미지 비율을 보존한다. iPad 경로는 유지했다.
+
+정식·치트 Simulator Release와 패키지 1,532파일씩·dSYM UUID를 확인했다. 최신 치트 CPU 30.766초/26,182샘플, leaks CLI 한 시점 0건이다. Instruments의 이전 메모리 trace에는 heap/leak표가 없어 그 표만으로 합격 판정하지 않는다. 물리 기기 발열·복귀 정지는 남는다. 이번에 실제 iPhone 설치·develop/main 병합은 하지 않았다. 보고 HTML·원본 캡처는 기존 HUD 비공개 Site에 갱신하며 누적 첫 화면/고정 목록에 연결한다. 게시 완료 버전은 docs/report-site.md에서 확인한다.
+
+새 코드 작업 전에 TODO의 타이틀/로딩 HD 위쪽 정렬·인게임 메뉴/미션 스크롤 금지·가로 배너·실제 복귀 정지/발열·E-10 알림/수집 보상을 읽는다. 아래 진행 중·원인 미확정 문장은 과거 검사 단계의 기록이다.
+
 2026-11-15 최신검증: 공통C++5/5, Native iPhone/iPad각8/8 통과. phone126조건2100frame/ipad126조건1200frame, iPad이전126·혼합98조건각1200frame 대조는HUD편집119번화면만변경/상태차이0. 원본PNG90장(.local/evidence/experimental-hud-implementation-20261114/captures.json)을확보했다. 다만폰107/90frame의기존검정대각선이새Experimental에서도재현돼시각합격아님. iphone_apple_audit가PlatformAppleRuntime.hpp/mm와AppleConcurrentValidationTests.mm에immutableFrame prefix/terrain/repeat진단및HQ공통Screens시각fixture를작성중(root해당파일쓰지않음). 일반/치트SimulatorRelease빌드는성공했으나그뒤허브내부ID→시설안내copy만추가돼최종Release는이후다시만든다. 메뉴copy CPU통과. 실기기설치/병합/새Site게시는아직없음. root가추가두Native selector를한묶음으로빌드·실행하고픽셀실패해결/보고게시/feature커밋까지이어간다.
 
 2026-11-15 진행 중: HUD·비전투 메뉴 코어를 feature checkpoint로 보존하고 Apple 후속 진단을 이어간다. [현행 작업 기록](docs/experimental-hud-implementation-20261114.md)을 읽는다. root는 HUDLayout/Screens의HUD영역/ScreensTests/EquipmentTests/AppleQA, iphone_background_originals는 MenuGridLayout/DisplayLayout/Screens메뉴영역/DisplayLayoutTests를 담당한다. 같은Screens파일을통째로덮지않는다. 공통HUD일부검사통과,메뉴1차컴파일수정중이며Apple최종실행은아직이다. 이전서비스기기검색실패는게임시작전기반실패다. 사용자재개뒤두시뮬기기목록정상복구를확인했다. 최종한묶음검사·캡처·실제보고게시·feature커밋전까지멈추지않고이어서진행한다. main/develop병합·실기기설치는이번추가지시없다.
