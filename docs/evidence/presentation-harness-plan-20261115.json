@@ -143,5 +143,20 @@
     "unobservedMutationStatus": "UNATTESTED",
     "independentTamperProofBoundary": false,
     "otherRepositoriesModified": false
+  },
+  "visualRequirementsReview": {
+    "status": "planned-not-executed",
+    "order": "after same-candidate cheat simulator run and before staged commit gate",
+    "requirementsFrozenBeforeWork": true,
+    "originalRequirementsComparedToActualOutput": true,
+    "actualImageInspectionRequired": true,
+    "actualInputAndStateEvidenceRequired": true,
+    "minimumMatchPercentage": 90,
+    "belowThreshold": "reject and investigate asset provenance/selection/consumption through code omissions",
+    "atOrAboveThresholdDoesNotWaiveMandatoryRequirements": true,
+    "unverifiedOrPartiallyMetRequirementCountsAsSatisfied": false,
+    "phoneMenuButtonLayoutReference": "original Phone version",
+    "shopProductArtworkAndGameData": "shared HD version",
+    "actualRuntimeShopTextureVerified": false
   }
 }
