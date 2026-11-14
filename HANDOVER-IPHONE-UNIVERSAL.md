@@ -1,5 +1,7 @@
 # HeavyMach2 iPhone 작업 인계
 
+2026-11-14 최신 iPhone 설치: 사용자 후속 지시로3666fc7 하단HUD/포털입력 수정 정식Release를 실제 iPhone Air PaleMirror에 업데이트하고실행했다. 앱데이터8파일백업·설치직후save28,204바이트동일·PID9901·원본준비자원1,532파일일치·코드서명/dSYM UUID를확인했다. CLI서명실패는Xcode GUI Release서명으로해결했고임시pbx/scheme은원복했다. [설치 근거](docs/evidence/iphone-release-hud-portal-20261114.json). 아래새실기기미설치문장은이설치전기록이다. develop/main병합과새전캠페인/발열확인은하지않았다.
+
 2026-11-14 하단 HUD·포털 입력 수정: [후속 수정](docs/world-hud-comparison-20261114.md#하단-hud와-포털-입력-수정--2026-11-14)을 읽는다. compact 고정75 이동 차단을0으로, 실제 버튼은 Screens 선점으로 처리한다. 전장 버튼 입력 fullCanvas와 옛v1compact배치Y0→새물리Y0을 연결했다. 기존 기본HUD그리기Y0은원래구현이며새로고쳤다고과장하지않는다. 포털전수CPU는81직접표본+1원래path로82/82, C++78/78, iPad126/혼합98조건1,200frame 전후차이0. Native·Release·사이트최종상태는보고서/근거를참조한다. camera·viewport·zoom·asset·gate좌표변경없고그림겹침자체전부제거를주장하지않는다. 새실기기설치·develop/main병합없음.
 
 2026-11-14 원본 후속 확인: [월드·HUD 비교의 원본 절](docs/world-hud-comparison-20261114.md#원본-hd와-원본-iphone-확인)을 읽는다. HD1.0.3·Phone2.0.1 모두 전체 화면 월드 위에 하단 전체폭 HUD를 겹친다. HUD 높이를 뺀 viewport는 확인되지 않았다. HD 입력 하한100·하단여유94, Phone320높이 입력하한46·하단여유40/zoom이다. 원본 HUD는 각각768×256·논리480×64이며 현재 Phone의912폭/중앙576HUD와 구분한다. 정적 REA/assembly·원본자원 분석이며 새 원본실행·제품수정·설치는없다.
