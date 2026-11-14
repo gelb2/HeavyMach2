@@ -1,5 +1,14 @@
 # HeavyMach 2 보고 사이트
 
+## 원본 HD·iPhone 월드·HUD 확인 — 버전296
+
+[월드·HUD 보고서의 원본 비교](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/world-hud.html#원본-hd와-원본-iphone-확인)를 기존 첫 화면과 HeavyMach2 누적 목록에 연결했다. HD1.0.3·Phone2.0.1 원본 실행파일·REA export·어셈블리·PNG를 대조했다. 두 원본 모두 전체 화면 월드 위에 하단 전체폭 HUD를 겹친다. 별도 HUD 제외 viewport를 사용하지 않는다는 근거, HD 입력100/하단여유94와 Phone 입력46/하단여유40, HUD 원본 픽셀·논리 크기·알파의 차이를 기록했다. 조사 원고는c7ef38a다. 게임 코드·원본실행·새 앱 설치·develop/main 병합을 수행하지 않았다.
+
+사이트 소스 `c11b99dc8c812a8e465772a1663893d557099e49`, 배포 `appgdep_6af8394ced0c8191910ce29e22e1e152`, 저장버전 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_3072881cb9d08191873aed4648b3a97c`의 공식 succeeded와 버전296을 확인했다. 기존 본인1명·그룹0·외부0 접근을 유지했다. 로컬22개 HTML/gzip본문·기존 첫 화면/누적 목록/복귀 링크·새 원본 절 앵커·JS 구문을 확인했고 새 온라인 브라우저 시각검수는 하지 않았다. 버전 조회 첫 호출의project_id 누락은 정정해 같은 저장버전을 조회했다.
+
+원본IPA·전체디컴파일·원시저장은게시하지않았다. 전달 archive는268,417,536바이트의tar member 범위로256MiB한도이내다. Site296 성공후이전295전달압축본만제거했고최신전달본·원본·실패·조사증거는보존했다. 로컬 근거는 `.local/evidence/original-world-hud-20261114/`의 `hd-findings.json`, `phone-findings.json`, `site-publication.json`, `site-archive.json`이다.
+
+
 ## 하단 카메라의 원본 자원 GPU 검사 — 버전295
 
 [시뮬레이터 검사 결과](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/lower-camera.html)를 첫 화면과 고정 누적 목록에 추가했다. 커밋7c4e404다. iPhone Air 시뮬레이터에서38맵172조건을 실제GLES로측정했다. 원작그리기크기를유지한94단위하강은38맵모두빈영역을남긴다. 배경없는33맵과384×512원본BG가있는5맵을분리했고현재BG추가균일배율1.1875도별도로기록했다. 조사Native1/1통과와카메라후보불합격을구분했다. 실제Scene이동/포털/실기기/모든줌검사로보고하지않는다.
