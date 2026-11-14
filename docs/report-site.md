@@ -1,5 +1,15 @@
 # HeavyMach 2 보고 사이트
 
+## 월드·HUD·포털 입력 비교 — 버전294
+
+[비교 결과](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/world-hud.html)를 기존 첫 화면과 HeavyMach2 누적 보고 목록에 연결했다. 조사 커밋은af395f1이다. 두 기기의 설치URL·기존 설치 기록·과거/현재 소스와 CPU38전장82포털×3구성, 대표7포털×9목표×3의189개 이동 조건을 대조했다. HUD 분리·이동 제거를 보류하고 고정 입력 하한과 실제 HUD 영역의 정합을 다음 수정 기준으로 기록했다. 제품 소스·기기 설치본·포털/맵 좌표는 변경하지 않았다. 실기기 직접 플레이나 과거 iPad 실행파일 재실행으로 보고하지 않는다.
+
+사이트 소스 `95dc975c074aa5f344ab8a1cd670e5e7bdeaebb8`, 저장버전 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_7b3cafe3bfc48191ae760bda65a8fb0b`, 배포 `appgdep_6af82b0f829c81918184e3ba6db676cb`의 공식 succeeded를 확인했다. 본인1명·그룹0·외부0 접근을 유지했다.21페이지 본문·최종 수치·기존 첫 화면/고정 목록/복귀 링크와 JavaScript 구문을 로컬에서 확인했다. 새 온라인 브라우저 시각검수는 수행하지 않았다.
+
+첫 프로브에서 열린30거리 경계의 반올림으로 포털1개가 누락됐다. 독립 검토 후 최종합의안쪽값과실제abs<30검사를적용했고, 초기조건에서진입사각형전체가하단75밑인포털을6개로확정했다. 초기5개결과와원본도구소스해시·최종438행결과를함께보존했다. 사용자제보의정확한포털ID·모든조작가능성까지확정한결과는아니다.
+
+로컬 근거는 `.local/evidence/world-hud-comparison-20261114/`의 `verification-final.json`, `summary-final.json`, `rules-and-walk-final.ndjson`, `historical-source-manifest.json`, `reused-REA-HUD-evidence.json`, `site-publication.json`이다. 원본IPA·원시저장·전체디컴파일은게시하지않았다. 이전293 전달archive는이번게시성공뒤제거하며최신전달본과원본·실패·검사근거는유지한다.
+
 ## iPhone 정식빌드 설치 반영 — 버전293
 
 같은 [화면 수정 보고서](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/surface-art.html)에 사용자 후속 지시와 실제 iPhone 설치·실행·저장28,204바이트 동일성을 추가했다. 게임 코드는2f1e5ef이며 설치 기록은ee69ada다. 기존 첫 화면과 누적 목록을 유지했다.
