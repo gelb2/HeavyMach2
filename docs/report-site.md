@@ -1,5 +1,11 @@
 # HeavyMach 2 보고 사이트
 
+## 기본 줌 보고서의 결론 보강 — 버전288, 2026-11-14
+
+사용자가 보고서의 핵심과 결론이 불명확하다고 지적했다. 같은 [기본 줌 보고서](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/camera-baseline.html)의 첫 화면을 결론·원인·고칠 내용·현재 미완료 범위 순서로 고쳤다. 관련 문서 목록은 접고 수치표는 근거로 뒤에 배치했다. 기본 줌 구현 오류와 수정 필요, 게임 배율 수정·새 설치 미완료를 명시했다. 문서 수정 커밋은 `f0cf6eb`이며 게임 코드는 바꾸지 않았다.
+
+사이트 소스는 `93542f069b151ca3b093f3895a408e51712de7cf`, 배포는 `appgdep_6af7e2876cf081918f14829d5504ba29`, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_a41e3aabade88191a173be0c3b52bff7`다. 공식 succeeded와 Safari 온라인의 결론/수정 항목 표시를 확인했다. 기존 본인 비공개 접근을 유지했다.
+
 ## iPhone 기본 줌 조사 — 버전287, 2026-11-14
 
 [기본 줌 과확대 원인·측정·수정 기준](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/camera-baseline.html)을 기존 누적 보고 목록에 추가했다. 공통 코어49표본과 원본 REA10파일을 대조했고, 설치본과 같은 카메라 코드에서 화면 채움 배율과 대기 계수1.6의 곱셈을 확인했다. 기본 배율 수정·새 앱 설치는 하지 않았다. 카메라 초기화 직후 표본과 실제 사용자가 보는 첫 전장 프레임의 시점을 같다고 단정하지 않는다.
