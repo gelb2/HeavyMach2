@@ -1,0 +1,183 @@
+{
+  "product_commit": "2f1e5ef7cd73e08385890ddf4d9f68ed4ec4dce9",
+  "branch": "feat/iphone-universal-20261113",
+  "scope": "iPhone/iPad simulators; no physical-device install; no develop/main merge",
+  "desktop_input": [
+    {
+      "name": "Screenshot PaleMirror 11-14-2026 at 8.35.09 AM.png",
+      "sha256": "180c60d97b81ccfed615b352217e648434b9e72f02e97f720e86523e97672e9b",
+      "bytes": 1769405
+    },
+    {
+      "name": "Screenshot PaleMirror 11-14-2026 at 8.36.47 AM.png",
+      "sha256": "f6602da76a26a02745d2abfa1d74c08f0fd4d131f1f4de00f05608d96d74bb47",
+      "bytes": 4194681
+    },
+    {
+      "name": "Screenshot PaleMirror 11-14-2026 at 8.39.29 AM.png",
+      "sha256": "2febd354390a2eae729a779aabf47b05d3f0b8f7e65395f36f3d77d1f4720bff",
+      "bytes": 4840917
+    }
+  ],
+  "core": {
+    "passed": 77,
+    "total": 77,
+    "log": ".local/evidence/iphone-surface-art-20261114/menu-action-core-final.log"
+  },
+  "packages": {
+    "code_commit": "2f1e5ef7cd73e08385890ddf4d9f68ed4ec4dce9",
+    "simulator_only": true,
+    "records": [
+      {
+        "kind": "source",
+        "bundle_id": "com.gelb2.heavymach2.restored",
+        "sha256": "9ca6f828e39bd0bdc971267d235a8acc2edb608f30b15b2f86272e6faead9aa3",
+        "uuid": "6F220428-5274-339D-9240-D3A91ECF3D74",
+        "matching_dsym": true,
+        "HD_files_verified": 1478,
+        "Phone_menu_files_verified": 52,
+        "validation_symbols": false
+      },
+      {
+        "kind": "validation",
+        "bundle_id": "com.gelb2.heavymach2.validation",
+        "sha256": "4f599c0cea0c65af49bea64fe41b87a08c3a2491e0ad3dac801cebbd1d2fae3b",
+        "uuid": "56E5B970-F5D6-3F03-8C70-558D30508DBE",
+        "matching_dsym": true,
+        "HD_files_verified": 1478,
+        "Phone_menu_files_verified": 52,
+        "validation_symbols": true
+      }
+    ]
+  },
+  "ipad_parity": {
+    "ipad-action-final.ndjson": {
+      "baseline_cases": 120,
+      "current_cases": 126,
+      "differences": [
+        119
+      ],
+      "state_differences": []
+    },
+    "mixed-action-final.ndjson": {
+      "baseline_cases": 92,
+      "current_cases": 98,
+      "differences": [
+        119
+      ],
+      "state_differences": []
+    }
+  },
+  "instruments": [
+    {
+      "kind": "cpu",
+      "manifest": ".local/evidence/iphone-surface-art-20261114/final-native-phone-cpu-pid/manifest.json",
+      "record_exit": 0,
+      "export_exit": 0,
+      "duration_seconds": 30.813985,
+      "pid": 46607,
+      "simulator": "97CA5646-36BB-47A9-919A-D78DD632A439",
+      "binary_sha256": "959658cb6c90b2944fbe453b0e3ee7ec71be2bd614c127062131abf6396f1052",
+      "sample_rows": 27742
+    },
+    {
+      "kind": "memory",
+      "manifest": ".local/evidence/iphone-surface-art-20261114/final-native-phone-memory-pid/manifest.json",
+      "record_exit": 0,
+      "export_exit": 0,
+      "duration_seconds": 30.802996,
+      "pid": 46607,
+      "simulator": "97CA5646-36BB-47A9-919A-D78DD632A439",
+      "binary_sha256": "959658cb6c90b2944fbe453b0e3ee7ec71be2bd614c127062131abf6396f1052",
+      "limitation": "Allocations/Leaks trace saved; no allocation/leak table in CLI TOC. No leak-count or memory-usage conclusion."
+    }
+  ],
+  "review": {
+    "commit": "2f1e5ef",
+    "reviewer": "iphone_apple_audit",
+    "mode": "read-only static independent review",
+    "required_findings": 0,
+    "execution_by_reviewer": false
+  },
+  "remaining": [
+    "Physical iPhone latest changes not installed",
+    "Long real-device heat/FPS not measured",
+    "Existing real-OS hub transition15s failure remains",
+    "Landscape Left and entire campaign not newly certified"
+  ],
+  "native_final": [
+    {
+      "kind": "iphone",
+      "passed": 5,
+      "total": 5,
+      "xcresult": ".local/evidence/iphone-surface-art-20261114/final-native-04/iphone/tests.xcresult",
+      "frames": 2100,
+      "observations": {
+        "frames": 2100,
+        "scenarios": 126,
+        "activeWeaponDefinitions": 110,
+        "activeWeaponKinds": 5,
+        "maxConcurrentWeaponKinds": 5,
+        "steadyReadRequests": 0,
+        "steadyExistsRequests": 0,
+        "imageTextureUploadsAfterPreparation": 368,
+        "inputInterruption": {
+          "beginReachedRealHandler": true,
+          "buttonID": 2100,
+          "capturedBefore": true,
+          "cleanupSentNoAction": true,
+          "creditPreserved": true,
+          "discardedAfter": true,
+          "explicitMenuResumes": 121,
+          "frame": 300,
+          "noExtraTick": true,
+          "noSave": true,
+          "previouslyRunning": 121,
+          "resumeFailures": 0,
+          "screenPreserved": true
+        }
+      }
+    },
+    {
+      "kind": "ipad",
+      "passed": 5,
+      "total": 5,
+      "xcresult": ".local/evidence/iphone-surface-art-20261114/final-native-04/ipad/tests.xcresult",
+      "frames": 1200,
+      "observations": {
+        "frames": 1200,
+        "scenarios": 126,
+        "activeWeaponDefinitions": 110,
+        "activeWeaponKinds": 5,
+        "maxConcurrentWeaponKinds": 5,
+        "steadyReadRequests": 0,
+        "steadyExistsRequests": 0,
+        "imageTextureUploadsAfterPreparation": 361,
+        "inputInterruption": {
+          "beginReachedRealHandler": true,
+          "buttonID": 2100,
+          "capturedBefore": true,
+          "cleanupSentNoAction": true,
+          "creditPreserved": true,
+          "discardedAfter": true,
+          "explicitMenuResumes": 121,
+          "frame": 300,
+          "noExtraTick": true,
+          "noSave": true,
+          "previouslyRunning": 121,
+          "resumeFailures": 0,
+          "screenPreserved": true
+        }
+      }
+    }
+  ],
+  "native_final_scope": "Four GPU/artwork/HUD tests plus actual ConcurrentRuntime full126-scenario test per simulator. Existing lifecycle and360-frame menu tests from final-runtime-03 preserved; not repeated for the phone-only action placement.",
+  "native_observed_overlap_seconds": 269.1689999103546,
+  "failure_history": [
+    "Initial mixed simple terrain quad black GPU output: exact GL cause unconfirmed; replaced compact submission with existing original full Tile2D geometry.",
+    "Duplicate HD panels over baked Phone grid removed after inspecting captures.",
+    "final-runtime-03 phone probe failed to capture offscreen Exit; a826dbf reveals the actual button before input. Corrected full test passed, then final2f1e5ef full test also passed.",
+    "BUY overlapped actual item description in final-visual-03;2f1e5ef moves action beside popup; final-native-04 passed.",
+    "First collision regression failed because Phone1.5 sprite scale was missing from action bounds; corrected to96/48, new BUY+SELL checks passed."
+  ]
+}
