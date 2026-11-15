@@ -23,7 +23,7 @@ struct DisplayTransform {
 };
 enum class DisplayRegion {content,backdrop,title,slot0,slot1,slot2,bottom,top,
     panel,maintenance,list,chooser,shopStock,shopBackdrop,shopInventory,shopFooter,banner,
-    world,surface,baseDescription,artBackdrop,artScene,artContent,phoneMenu,phoneStock,phoneInventory,phoneStockHeader,phoneEquipment};
+    world,surface,baseDescription,artBackdrop,artScene,artContent,phoneMenu,phoneStock,phoneInventory,phoneStockHeader,phoneEquipment,titleBackdrop,artBanner,phoneFooter,phoneHeader,phoneCategoryHeader,phoneInventoryPages,phoneCommandList,phoneCommandInfo,phoneTrade};
 class DisplayLayout {
     DisplayConfiguration configuration_;
 public:
@@ -36,6 +36,7 @@ public:
     [[nodiscard]] Size worldViewportAtScale(float finalScale)const;
     [[nodiscard]] DisplayTransform worldAtScale(float finalScale)const;
     [[nodiscard]] Vec2 baseButtonPosition(unsigned index,unsigned count)const;
+    [[nodiscard]] Vec2 keepControlVisible(DisplayRegion,Vec2,ClipRect relativeBounds)const;
 };
 // Runs after the original node/rounding/atlas assembly. Never mutates textures.
 void transformSprite(Sprite&,const DisplayTransform&,std::optional<ClipRect> = {});

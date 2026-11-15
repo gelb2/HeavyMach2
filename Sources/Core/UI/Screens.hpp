@@ -159,6 +159,8 @@ public:
     void discardInputs();
     void setDisplay(DisplayConfiguration);
     [[nodiscard]] Vec2 buttonScreenPosition(ButtonKey)const;
+    [[nodiscard]] ClipRect buttonScreenBounds(ButtonKey)const;
+    [[nodiscard]] std::array<float,2> menuScrollOffsets()const;
     void setHorizontalPan(float);
     [[nodiscard]] float horizontalPanLimit()const;
     void revealButton(ButtonKey);

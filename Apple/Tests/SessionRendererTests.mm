@@ -3,6 +3,7 @@
 #import <CommonCrypto/CommonDigest.h>
 #include "Core/Presentation/MenuArtwork.hpp"
 #include "Platform/Apple/HM2GameRuntime.hpp"
+#include "Platform/Apple/HM2ConcurrentRuntime.hpp"
 #import "Platform/Apple/HM2Renderer.h"
 #include "Platform/Apple/HM2TextRasterizer.h"
 #include "Platform/Apple/HM2Resources.hpp"
@@ -65,6 +66,51 @@ UIImage* image(NSData* rgba,CGSize size){
 }
 @interface SessionRendererTests:XCTestCase @end
 @implementation SessionRendererTests
+- (void)testPhoneMenuPolicyOnConcurrentClock {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    const CGSize extent=CGSizeMake(912,420);UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,912,420)];surface.contentScaleFactor=1;controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];surface.frame=CGRectMake(0,0,912,420);
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    HM2SessionSurface* combatSurface=[[HM2SessionSurface alloc]initWithFrame:surface.bounds];combatSurface.contentScaleFactor=1;[surface addSubview:combatSurface];CAEAGLLayer* combatLayer=(CAEAGLLayer*)combatSurface.layer;combatLayer.opaque=YES;combatLayer.drawableProperties=layer.drawableProperties;
+    auto display=hm2::DisplayConfiguration::surface({912,420},{68,20,68,0});display.device=hm2::DisplayDevice::phone;
+    HM2Renderer* renderer=[[HM2Renderer alloc]initWithResourceRoot:root];HUDIdentityHost host(renderer);hm2::apple::Files files(root.fileSystemRepresentation);hm2::DarwinWorldRandom random(1);
+    struct Fixture {std::string name;hm2::ui::ScreensState state;hm2::PreparedTiles tiles;hm2::ui::Screens ui;unsigned capture=180;Fixture(std::string n,hm2::ResourceAccess& f,HUDIdentityHost& h):name(n),tiles(n),ui(f,tiles,h){}};
+    std::vector<std::unique_ptr<Fixture>> fixtures;NSMutableArray* rows=[NSMutableArray new];
+    const auto make=[&](std::string name,hm2::ui::ScreenId screen){auto f=std::make_unique<Fixture>(name,files,host);f->state.screen=screen;f->state.locale="kr";f->state.credits=12345;f->ui.setDisplay(display);auto* result=f.get();fixtures.push_back(std::move(f));return result;};
+    for(unsigned base=1;base<=6;++base){auto* f=make("hub-Base00"+std::to_string(base),hm2::ui::ScreenId::base);f->state.baseId="Base00"+std::to_string(base);}
+    for(const auto name:{"shop","shop-detail","shop-last-page","shop-trade"}){auto* f=make(name,hm2::ui::ScreenId::shop);f->state.inventoryVisible=true;f->state.inventoryPages=1;
+        for(unsigned n=0;n<25;++n){hm2::ui::ItemView item;item.dataId="fixture"+std::to_string(n);item.name="장비 "+std::to_string(n);item.description="원본 상품 정보와 구매 버튼을 확인한다.";item.icon="Icon10011.png";item.count=1;item.enabled=true;f->state.inventory.push_back(item);if(n<24)f->state.shopItems.push_back(item);}
+        if(f->name=="shop-detail"){f->state.shopDetailVisible=true;f->state.selectedShop=0;}
+        if(f->name=="shop-trade"){f->state.tradeVisible=true;f->state.buyMode=true;f->state.tradeItemId="fixture0";f->state.tradeCount=1;f->state.tradePrice=100;}
+    }
+    for(const auto name:{"command","command-detail","command-last-page"}){auto* f=make(name,hm2::ui::ScreenId::command);for(unsigned n=0;n<5;++n){hm2::ui::ItemView item;item.dataId="mission"+std::to_string(n);item.name="임무 "+std::to_string(n);item.enabled=true;f->state.availableMissions.push_back(item);item.dataId="accepted"+std::to_string(n);f->state.acceptedMissions.push_back(item);}if(f->name=="command-detail"){f->state.selectedMission=0;f->state.missionTitle="적 탱크 파괴";f->state.missionBody="적 탱크 E-10을 파괴하고 사령부로 복귀하라.";}}
+    make("title",hm2::ui::ScreenId::title)->capture=720;make("logo",hm2::ui::ScreenId::title)->capture=240;auto* stage=make("stage-name",hm2::ui::ScreenId::field);stage->capture=30;stage->state.hasWorkingSlot=true;stage->state.fieldPlaceRevision=1;stage->state.fieldPlaceName="폐허 지역";
+    const auto press=[](Fixture& f,unsigned id){for(auto k:f.ui.buttons())if(k.id==id){const auto p=f.ui.buttonScreenPosition(k);f.ui.input(hm2::PointerPhase::begin,p,50000+id,0);f.ui.input(hm2::PointerPhase::end,p,50000+id,0);return true;}return false;};
+    for(auto& f:fixtures){f->ui.refresh(f->state,0);if(f->name=="shop-last-page"){for(unsigned n=0;n<2;++n){press(*f,2106);press(*f,6091);}}if(f->name=="command-last-page")press(*f,9301);}
+    const auto sha=[](NSData* bytes){unsigned char digest[CC_SHA256_DIGEST_LENGTH];CC_SHA256(bytes.bytes,CC_LONG(bytes.length),digest);NSMutableString* text=[NSMutableString new];for(auto byte:digest)[text appendFormat:@"%02x",byte];return text;};
+    const auto rect=[](hm2::ClipRect r){return @[@(r.x),@(r.y),@(r.width),@(r.height)];};
+    NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];
+    try{hm2::apple::ConcurrentRuntime combat(root,directory);combat.setDisplay(display);
+        for(unsigned tick=1;tick<=720;++tick){@autoreleasepool{combat.tick();combat.draw(combatLayer,{912,420});
+            for(auto& f:fixtures){f->ui.tick(float(tick)/60,random);if(tick!=f->capture)continue;
+                NSMutableDictionary* row=[@{@"case":[NSString stringWithUTF8String:f->name.c_str()],@"canvas":@[@912,@420],@"frame":@(tick),@"capture":[NSString stringWithFormat:@"phone-policy-%s",f->name.c_str()]} mutableCopy];
+                if(f->state.screen!=hm2::ui::ScreenId::title&&f->state.screen!=hm2::ui::ScreenId::field){
+                    const auto offsets=f->ui.menuScrollOffsets();row[@"scrollBefore"]=@[@(offsets[0]),@(offsets[1])];
+                    std::vector<std::pair<hm2::ui::ButtonKey,hm2::Vec2>> originalPoints;for(auto key:f->ui.buttons())originalPoints.push_back({key,f->ui.buttonScreenPosition(key)});
+                    unsigned gesture=1;for(const auto end:{hm2::Vec2{907,210},hm2::Vec2{5,415}}){f->ui.input(hm2::PointerPhase::begin,{5,210},60000+gesture,float(tick)/60);f->ui.input(hm2::PointerPhase::move,end,60000+gesture,float(tick)/60);f->ui.input(hm2::PointerPhase::end,end,60000+gesture,float(tick)/60);const auto after=f->ui.menuScrollOffsets();row[gesture==1?@"scrollAfterHorizontal":@"scrollAfterVertical"]=@[@(after[0]),@(after[1])];++gesture;}
+                    bool unmoved=f->ui.buttons().size()==originalPoints.size();for(const auto& [key,point]:originalPoints){if(!f->ui.button(key)){unmoved=false;continue;}const auto after=f->ui.buttonScreenPosition(key);unmoved&=after.x==point.x&&after.y==point.y;}row[@"controlsUnmovedAfterDrag"]=@(unmoved);
+                    NSMutableArray* buttons=[NSMutableArray new];for(auto key:f->ui.buttons()){auto b=f->ui.button(key);if(!b||!b->visible||!b->active||key.id==0)continue;[buttons addObject:@{@"id":@(key.id),@"bounds":rect(f->ui.buttonScreenBounds(key))}];}row[@"buttons"]=buttons;
+                }
+                hm2::Frame preparation;f->ui.appendPreparation(preparation);[renderer prepareFrame:preparation];hm2::Frame frame;f->ui.append(frame,float(tick)/60);[renderer prepareFrame:frame];[renderer drawFrame:frame layer:layer];[renderer captureNextFrame];[renderer drawFrame:frame layer:layer];XCTAssertEqual(renderer.readRGBA.length,912u*420u*4u);
+                if(f->name=="title")for(const auto& sprite:frame.sprites)if(sprite.image=="Main_BG.png"){float l=1e9,b=1e9,r=-1e9,t=-1e9;for(const auto& v:sprite.strip){l=std::min(l,v.position.x);b=std::min(b,v.position.y);r=std::max(r,v.position.x);t=std::max(t,v.position.y);}row[@"image"]=@"Main_BG.png";row[@"artworkSHA256"]=sha([NSData dataWithContentsOfURL:[root URLByAppendingPathComponent:@"Main_BG.png"]]);row[@"artworkBounds"]=rect({l,b,r-l,t-b});}
+                if(f->name=="logo"||f->name=="stage-name"){const auto region=f->name=="logo"?hm2::DisplayRegion::artBanner:hm2::DisplayRegion::banner;const auto layout=hm2::DisplayLayout(display);row[@"clip"]=rect(*layout.clip(region));const auto transform=layout.ui(region);const auto title=hm2::menu::title(display);const auto start=f->name=="logo"?transform.map({240+title.bigStart,160}):transform.map(hm2::menu::placeNamePosition(display,{-1024,512}));const auto end=f->name=="logo"?transform.map({240+title.bigEnd,160}):transform.map(hm2::menu::placeNamePosition(display,{900,512}));const auto half=f->name=="logo"?512.f:128.f;row[@"entersAtRightEdge"]=@(start.x-half*transform.scale>=912);row[@"exitsAtLeftEdge"]=@(end.x+half*transform.scale<=0);}
+                auto* shot=[XCTAttachment attachmentWithImage:image(renderer.readRGBA,extent)];shot.name=row[@"capture"];shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];[rows addObject:row];
+            }
+        }}
+        NSMutableDictionary* record=[@{@"rows":rows,@"binarySHA256":sha([NSData dataWithContentsOfFile:NSBundle.mainBundle.executablePath]),@"gameSHA256":sha([NSData dataWithContentsOfFile:[NSBundle.mainBundle.executablePath stringByAppendingString:@".debug.dylib"]]),@"concurrentCombat":combat.report(),@"frames":@720,@"fixtures":@(fixtures.size())} mutableCopy];
+        auto* attachment=[XCTAttachment attachmentWithData:[NSJSONSerialization dataWithJSONObject:record options:NSJSONWritingPrettyPrinted error:nil] uniformTypeIdentifier:@"public.json"];attachment.name=@"phone-policy-observations";attachment.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:attachment];XCTAssertEqual(rows.count,16u);combat.setActive(false);
+    }catch(const std::exception& error){XCTFail(@"Phone policy batch failed: %s",error.what());}
+    [window setHidden:YES];[NSFileManager.defaultManager removeItemAtURL:directory error:nil];
+}
 - (void)testMenuBackgroundsForDevice {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     const bool phone=UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPhone;
