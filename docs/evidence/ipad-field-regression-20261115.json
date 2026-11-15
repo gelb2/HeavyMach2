@@ -1,7 +1,7 @@
 {
-  "scope": "actual normal GameRuntime field captures; final concurrent validation still incomplete",
+  "scope": "Actual normal GameRuntime field captures and final concurrent126-state validation; complete-game restoration is a separate scope.",
   "native": {
-    "recorded_utc": "2026-11-15T08:02:18.910168+00:00",
+    "recorded_utc": "2026-11-15T08:20:20.699032+00:00",
     "scope": "selected Apple component tests only; not complete game cheat coverage",
     "shared_build": "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/build/apple/Build/Products/HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
     "selected_tests": [
@@ -14,12 +14,12 @@
         "kind": "iphone",
         "device": "iPhone Air",
         "udid": "97CA5646-36BB-47A9-919A-D78DD632A439",
-        "start_epoch": 1794729723.464454,
-        "end_epoch": 1794729735.358218,
+        "start_epoch": 1794730776.377759,
+        "end_epoch": 1794730817.0876942,
         "returncode": 0,
         "test_interval_epoch": [
-          1794729727.264,
-          1794729735.019
+          1794730808.895,
+          1794730816.751
         ],
         "success": true,
         "metrics": [
@@ -39,7 +39,7 @@
           "-collect-test-diagnostics",
           "never",
           "-resultBundlePath",
-          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/.local/evidence/ipad-menu-fullscreen-20261115/field/hd-native/iphone/tests.xcresult",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/.local/evidence/ipad-menu-fullscreen-20261115/field/commit-native/iphone/tests.xcresult",
           "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testFieldCapturesForDevice",
           "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testMenuBackgroundsForDevice",
           "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testCustomHUDIdentityMatchesDefaultPixelsAtFractionalBoundaries"
@@ -49,12 +49,12 @@
         "kind": "ipad",
         "device": "iPad Air 13-inch (M4)",
         "udid": "256F7A26-0DA2-484C-80B1-8B7243B02B4E",
-        "start_epoch": 1794729723.4644291,
-        "end_epoch": 1794729738.90945,
+        "start_epoch": 1794730776.3777978,
+        "end_epoch": 1794730820.698488,
         "returncode": 0,
         "test_interval_epoch": [
-          1794729727.264,
-          1794729738.607
+          1794730808.895,
+          1794730820.337
         ],
         "success": true,
         "metrics": [
@@ -74,14 +74,14 @@
           "-collect-test-diagnostics",
           "never",
           "-resultBundlePath",
-          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/.local/evidence/ipad-menu-fullscreen-20261115/field/hd-native/ipad/tests.xcresult",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/.local/evidence/ipad-menu-fullscreen-20261115/field/commit-native/ipad/tests.xcresult",
           "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testFieldCapturesForDevice",
           "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testMenuBackgroundsForDevice",
           "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testCustomHUDIdentityMatchesDefaultPixelsAtFractionalBoundaries"
         ]
       }
     ],
-    "observed_test_overlap_seconds": 7.755000114440918,
+    "observed_test_overlap_seconds": 7.855999946594238,
     "success": true
   },
   "observations": {
@@ -323,9 +323,9 @@
     "contexts": 36,
     "failures": [],
     "repeatedFailure": false,
-    "time_ns": 1794730147566672000,
-    "input": ".local/evidence/ipad-menu-fullscreen-20261115/field/hd-asset-input.json",
-    "inputSHA256": "de2ec731e2bad368f217f4713c33938ac392e8678fc82c5fccc6a574e26ac600",
+    "time_ns": 1794731016718242000,
+    "input": ".local/evidence/ipad-menu-fullscreen-20261115/field/commit-asset-input.json",
+    "inputSHA256": "53850098e2bdfa31ec06e07a5c122072d180156709e9dcca665a305d06983af5",
     "hook_event": null,
     "tool_id": null
   },
@@ -334,10 +334,16 @@
     "contexts": 36,
     "failures": [],
     "repeatedFailure": false,
-    "time_ns": 1794730147627599000,
-    "input": ".local/evidence/ipad-menu-fullscreen-20261115/field/hd-screen-input.json",
-    "inputSHA256": "a8d46d1490da8e5ba946d22073523bfc1ce24427336cdbc50cc760eede6ebe9d",
+    "time_ns": 1794731016792334000,
+    "input": ".local/evidence/ipad-menu-fullscreen-20261115/field/commit-screen-input.json",
+    "inputSHA256": "f46c8bf23b2a781278ce04073a7cca335c315c4304a16aa2b89099da52c7a83e",
     "hook_event": null,
     "tool_id": null
+  },
+  "rebuiltCandidate": {
+    "sourceCommit": "da31beb",
+    "binarySHA256": "0104124fd35c25fb17dfa41339c809e3010f8c80c568af60e3035afdec5b3f0f",
+    "gameSHA256": "81bd6a8991682ecc8a74872f886d49bd19ebecbcdc1ab3e9b73829763592cd54",
+    "exactRGBAMatches": 42
   }
 }
