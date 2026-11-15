@@ -1,6 +1,7 @@
 #include "Core/Presentation/DisplayLayout.hpp"
 #include "Core/Presentation/VisualLayer.hpp"
 #include "Core/Presentation/MenuGridLayout.hpp"
+#include "Core/Presentation/MenuArtwork.hpp"
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
@@ -40,8 +41,22 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
     const auto fit=[&](float w,float h){return std::min({nominal,a.width/w,a.height/h});};
     const auto centered=[&](float w,float h){return anchored({384,512},center,fit(w,h));};
     switch(region){
-    case DisplayRegion::phoneMenu:case DisplayRegion::phoneStock:case DisplayRegion::phoneInventory:case DisplayRegion::phoneStockHeader:case DisplayRegion::phoneEquipment:{
-        auto t=ui(DisplayRegion::artScene,pan);t.scale*=2.f/3.f;return t;
+    case DisplayRegion::titleBackdrop:{const auto c=configuration_.canvas;return anchored({384,1024},{c.width*.5f,c.height},std::max(c.width/768,c.height/1024));}
+    case DisplayRegion::artBanner:{const auto c=configuration_.canvas;return anchored({240,160},{c.width*.5f,c.height*.5f},std::min(c.width/480,c.height/320));}
+    case DisplayRegion::phoneFooter:{auto t=ui(DisplayRegion::phoneMenu);t.offset.y=0;return t;}
+    case DisplayRegion::phoneInventoryPages:case DisplayRegion::phoneStockHeader:{auto t=ui(DisplayRegion::phoneMenu);t.offset.y=120-96*t.scale;return t;}
+    case DisplayRegion::phoneCategoryHeader:case DisplayRegion::phoneHeader:{auto t=ui(DisplayRegion::phoneMenu);t.offset.y=configuration_.canvas.height-480*t.scale;return t;}
+    case DisplayRegion::phoneTrade:return anchored({360,240},{configuration_.canvas.width*.5f,configuration_.canvas.height*.5f},std::min(menu::menuScale(configuration_)*2.f/3.f,(configuration_.canvas.height-24)/384));
+    case DisplayRegion::phoneCommandList:case DisplayRegion::phoneCommandInfo:{
+        const auto c=configuration_.canvas;const float header=menu::menuHeader(configuration_),footer=menu::menuFooter(configuration_);const float s=std::min(menu::menuScale(configuration_)*2.f/3.f,std::max(1.f,c.height-header-footer-12)/275.f);
+        if(region==DisplayRegion::phoneCommandList)return anchored({222,342},{c.width*148.f/480,c.height-header-24},s);
+        return anchored({540,240},{c.width*.75f,footer+(c.height-header-footer)*.5f},s);
+    }
+    case DisplayRegion::phoneStock:case DisplayRegion::phoneInventory:case DisplayRegion::phoneEquipment:{
+        auto t=ui(DisplayRegion::phoneMenu);t.offset.y=configuration_.canvas.height-menu::menuHeader(configuration_)-35-330*t.scale;return t;
+    }
+    case DisplayRegion::phoneMenu:{
+        return anchored({360,240},{configuration_.canvas.width*.5f,configuration_.canvas.height*.5f},menu::menuScale(configuration_)*2.f/3.f);
     }
     case DisplayRegion::artBackdrop:case DisplayRegion::artScene:{
         const auto canvas=configuration_.canvas;const float scale=std::max(canvas.width/480,canvas.height/320);
@@ -59,7 +74,7 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
     }
     case DisplayRegion::bottom:return anchored({384,0},{center.x,configuration_.compact?0.f:a.y},configuration_.compact?std::min({.75f,a.width/768,a.height/256}):1.f);
     case DisplayRegion::top:return anchored({384,1024},{center.x,a.y+a.height},ui(DisplayRegion::bottom).scale);
-    case DisplayRegion::banner:return anchored({384,512},center,configuration_.compact?ui(DisplayRegion::bottom).scale:1.f);
+    case DisplayRegion::banner:return anchored({384,512},menu::phone(configuration_)?Vec2{configuration_.canvas.width*.5f,configuration_.canvas.height*.5f}:center,configuration_.compact?ui(DisplayRegion::bottom).scale:1.f);
     case DisplayRegion::panel:return centered(768,560);
     case DisplayRegion::maintenance:return centered(640,440);
     case DisplayRegion::list:{if(!configuration_.compact)return centered(768,1024);const float s=std::min(nominal,a.width/768);return anchored({384,1024},{center.x,a.y+a.height+pan},s);}
@@ -89,11 +104,12 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
 }
 std::optional<ClipRect> DisplayLayout::clip(DisplayRegion region,float pan)const{
     if(!configuration_.enabled)return {};
+    if(region==DisplayRegion::titleBackdrop||region==DisplayRegion::artBanner||(menu::phone(configuration_)&&region==DisplayRegion::banner))return ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};
     if(configuration_.compact&&(region==DisplayRegion::world||region==DisplayRegion::backdrop||region==DisplayRegion::artBackdrop||region==DisplayRegion::artScene))return ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};
     if(configuration_.compact&&menu::menuRegion(region)){
         const auto canvas=ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};
         if(region!=DisplayRegion::phoneStock&&region!=DisplayRegion::phoneInventory)return canvas;
-        const auto source=region==DisplayRegion::phoneStock?menu::stockWindow:menu::inventoryWindow;const auto t=ui(DisplayRegion::phoneMenu,pan);const auto p=t.map({source.x,source.y});return intersection(canvas,{p.x,p.y,source.width*t.scale,source.height*t.scale});
+        const auto source=region==DisplayRegion::phoneStock?menu::stockWindow:menu::inventoryWindow;const auto t=ui(region,pan);const auto p=t.map({source.x,source.y});return intersection(canvas,{p.x,p.y,source.width*t.scale,source.height*t.scale});
     }
     auto result=configuration_.compact&&region==DisplayRegion::bottom?ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height}:configuration_.content();
     if(region==DisplayRegion::bottom){
@@ -127,6 +143,13 @@ DisplayTransform DisplayLayout::worldAtScale(float scale)const{
 Vec2 DisplayLayout::baseButtonPosition(unsigned index,unsigned count)const{
     const auto a=configuration_.content();const float rail=std::min(220.f,a.width*.38f);
     return {a.x+rail*.5f,a.y+a.height*(1.f-(float(index)+.5f)/std::max(1u,count))};
+}
+Vec2 DisplayLayout::keepControlVisible(DisplayRegion region,Vec2 point,ClipRect bounds)const{
+    if(!configuration_.enabled)return point;
+    const auto t=ui(region);const auto p=t.map(point);const auto a=configuration_.content();
+    const float left=a.x-bounds.x*t.scale,right=a.x+a.width-(bounds.x+bounds.width)*t.scale;
+    const float bottom=a.y-bounds.y*t.scale,top=a.y+a.height-(bounds.y+bounds.height)*t.scale;
+    return t.inverse({left<=right?std::clamp(p.x,left,right):p.x,bottom<=top?std::clamp(p.y,bottom,top):p.y});
 }
 void transformSprite(Sprite& sprite,const DisplayTransform& t,std::optional<ClipRect> clip){
     if(!t.identity()){

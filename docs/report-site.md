@@ -1,5 +1,12 @@
 # HeavyMach 2 보고 사이트
 
+## 2026-11-15 후속 — 메뉴 버튼 페이지·상점 원본 일치 TODO
+
+[메뉴 버튼 페이지·실제16캡처](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/phone-menu-pages.html)를 같은 비공개 사이트에 게시했다. 첫 화면과 기존 배경 보고서에서 연결한다. 소스1ecdd54·배포appgdep_6af94dceb67c8191ac5067cebef4e85e는 succeeded이며 본인1명 접근을 유지했다. [게시 근거](evidence/phone-menu-pages-publication-20261115.json)를 따른다.
+
+최종 후보의 원본 배경36조건과 메뉴/타이틀/배너16사례를 수동 하네스로 검사했다. iPad18개 PNG는 기존 기준과 바이트가 같다. 기존 화면 검사 전체는 iPad의 기존 검은 여백18건으로 FAIL이다. 자동 훅 호출은 확인하지 못했다. 상점 아이콘 크기·Div 위치 등을 원본 Phone 포팅판과 모두 동일하게 맞추는 사용자 추가 지시는 별도 미완료 TODO로 표시했다. [변경·검사 범위](phone-menu-pages-20261115.md)를 따른다.
+
+
 ## 2026-11-15 후속 게시 — iPhone Release 설치
 
 [같은 보고서](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/menu-background-checks.html)에 설치·실행과 저장/HUD 설정 보존 결과를 추가했다. 소스 `98e55b933ef35c07066e82203e932a6746ad5a52`, 배포 `appgdep_6af934d5bfe081919434ac466a08996a`는 succeeded다. 기존 비공개 접근을 유지했다. [설치 기록](iphone-menu-background-installation-20261115.md)을 따른다. 자동 훅은 사용자 승인 완료 답변 이후에도 실제 호출이 확인되지 않았으며 CLI 승인 화면 요청은 철회했다.

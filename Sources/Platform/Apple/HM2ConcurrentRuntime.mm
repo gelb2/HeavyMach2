@@ -1,4 +1,5 @@
 #include "Platform/Apple/HM2ConcurrentRuntime.hpp"
+#include "Core/Presentation/MenuArtwork.hpp"
 #include "Platform/Apple/HM2Resources.hpp"
 #include "Platform/Apple/HM2TextRasterizer.h"
 #include "Platform/Apple/HM2HUDStorage.hpp"
@@ -152,6 +153,12 @@ struct ConcurrentRuntime::Impl:validation::ValidationHost {
     void sessionRestarted(unsigned index,GameSession&)override{auto& view=*interfaces.at(index);view.screens.reset();view.revision=0;}
     bool pressButton(unsigned index,unsigned id,int intData)override{
         refresh(index);auto& view=*interfaces.at(index);auto& game=runner->session(index);
+        if(menu::phone(game.display())&&(game.state().screen==ui::ScreenId::shop||game.state().screen==ui::ScreenId::maintenance)){
+            const bool stock=id>=2200&&id<2224,inventory=id>=6000&&id<6025;
+            if(stock||inventory){const auto& state=game.state();const auto& items=stock?state.shopItems:state.inventory;const auto at=std::size_t(std::max(0,stock?state.shopPage:state.inventoryPage))*(stock?24:25)+id-(stock?2200:6000);const auto panel=stock?ui::Panel::root:ui::Panel::inventory;
+                view.screens->revealButton({(ui::Owner(state.screen)<<16)|ui::Owner(panel),id,intData,at<items.size()?items[at].dataId:std::string{}});
+            }
+        }
         for(const auto& key:view.screens->buttons())if(key.id==id&&key.intData==intData){
             view.screens->revealButton(key);auto button=view.screens->button(key);if(!button||!button->visible||!button->active)continue;
             const auto eventKey=std::pair{id,intData};const auto before=view.events[eventKey];
