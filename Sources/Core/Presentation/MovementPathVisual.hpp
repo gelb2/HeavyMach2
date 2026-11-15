@@ -30,7 +30,9 @@ class MovementPathVisual {
     void updateLine(Line&,std::string_view,Vec2,Vec2,float);
     void submitLine(VisualLayer&,std::string_view,const Line&,const MapCamera*)const;
 public:
-    void prepare(ResourceAccess&,PreparedTiles& sharedCache);
+    // refreshWorldObject0x10174 uses World.tileResMgr for all12 marker/line
+    // pairs and TargetPath. These three images are not sharedMgr resources.
+    void prepare(ResourceAccess&,PreparedTiles& worldCache);
     // Called AFTER the actual setMovePath mutation, once per accepted point.
     // reset is the actual branch (!add || oldCount==0), not inferred here.
     void acceptedSetMovePath(const MovementPathState& after,Vec2 player,bool reset);

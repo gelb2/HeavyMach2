@@ -1,0 +1,142 @@
+{
+  "scope": "requirements and visual-review design publication only",
+  "documentsCommit": "1d008e72e56232a2c631568dda20686fdb64606e",
+  "sourceCommit": "acf097a19ace6ef327f6d4b4020c7a60a2764bfb",
+  "projectId": "appgprj_6af8664612288191b813654dfb95323f",
+  "version": 7,
+  "versionId": "appgprj_6af8664612288191b813654dfb95323f~appgver_c343cec28b80819190d59c9a579ff4d0",
+  "deploymentId": "appgdep_6af8e90530b88191a90c74369f272b70",
+  "status": "succeeded",
+  "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/presentation-harness.html",
+  "rulesUrl": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/design-asset-rules.html",
+  "access": {
+    "users": 1,
+    "groups": 0,
+    "external": 0
+  },
+  "visualReviewPlan": {
+    "sameCandidateCheatSimulator": true,
+    "actualImageInspectionRequired": true,
+    "originalRequirementsFrozenBeforeWork": true,
+    "thresholdPercentage": 90,
+    "mandatoryViolationAlwaysFails": true,
+    "phoneMenuLayoutReference": "original Phone",
+    "productImagesAndGameData": "HD"
+  },
+  "harnessImplemented": false,
+  "actualRuntimeHookProbeExecuted": false,
+  "cheatSimulatorExecuted": false,
+  "actualVisualReviewExecuted": false,
+  "gameOrGitHookSourceModified": false,
+  "appBuildOrInstall": false,
+  "developMainMerged": false,
+  "authenticatedHTTPVerification": {
+    "authenticatedHTTP": true,
+    "verifiedFiles": 11,
+    "all3OriginalRejectedPNGsExact": true,
+    "sixBasesAnd36ContextPlanVerified": true,
+    "harnessImplemented": false,
+    "browserVisualCheck": false,
+    "files": [
+      {
+        "site": "hud",
+        "path": "index.html",
+        "status": 200,
+        "bytes": 46840,
+        "sha256": "549439ff3a24708ce9520a175ff615ec225859aad4572bbf9fcc690b7e6b7e7a",
+        "exactLocalMatch": false,
+        "HTMLContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "presentation-harness.html",
+        "status": 200,
+        "bytes": 54272,
+        "sha256": "a34786b64989b0be3ee03e97bdc977833244a6453de8682403a504a8b579fadc",
+        "exactLocalMatch": false,
+        "HTMLContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "design-asset-rules.html",
+        "status": 200,
+        "bytes": 32474,
+        "sha256": "79d206437cbaaecd1d1fc1fd8033ed9d32fa4a70488bbd65a40ad02d18bf4d69",
+        "exactLocalMatch": false,
+        "HTMLContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "report.css",
+        "status": 200,
+        "bytes": 1705,
+        "sha256": "29aa00bbe58be0f36c38a3e18fa9f80af6354e2e0d0d6f8c300e3df48d1ff6ff",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "hud",
+        "path": "harness-plan-evidence.json",
+        "status": 200,
+        "bytes": 4339,
+        "sha256": "49a4a449933478c31f09735841e2681ae07751f17a92443f35f37b24da5a18f3",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "hud",
+        "path": "hub-artwork-census.json",
+        "status": 200,
+        "bytes": 29300,
+        "sha256": "fa0a3f1c64daf4455fd024cd130c6db221298c771cd60dc14fcff62a0b41f17a",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "hud",
+        "path": "harness-plan-assets/rejected-menu-1.png",
+        "status": 200,
+        "bytes": 400451,
+        "sha256": "ec19e2ec4fe925208446bd1efc9d573549a9cdc4c88837faac2eac95de3a7f78",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "hud",
+        "path": "harness-plan-assets/rejected-menu-2.png",
+        "status": 200,
+        "bytes": 328186,
+        "sha256": "8307af83cd43823b10769376755c090e2d7fd1f62bf68b56780030a70f064712",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "hud",
+        "path": "harness-plan-assets/rejected-menu-3.png",
+        "status": 200,
+        "bytes": 2818199,
+        "sha256": "003c849091e87247921bc797a76730ef868c532166bd71619561daf5e4b84730",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "primary",
+        "path": "report-index-content.bin",
+        "status": 200,
+        "bytes": 25830,
+        "sha256": "001e8f5edbdfc6863f000fe897242f7ba5359510e918b140d611ab93ddc6047d",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "primary",
+        "path": "heavymach2-restoration-20261110/report-index-content.bin",
+        "status": 200,
+        "bytes": 6576,
+        "sha256": "7dd8fd612f16d9696617e971e229a440e86673e5f15f81288111b7155bf46212",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      }
+    ]
+  }
+}

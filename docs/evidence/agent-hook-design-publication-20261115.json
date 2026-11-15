@@ -1,0 +1,131 @@
+{
+  "scope": "agent lifecycle hook design and report publication only",
+  "documentsCommit": "d518822837141efb8f5d3bcf87305a79dd90dab4",
+  "projectId": "appgprj_6af8664612288191b813654dfb95323f",
+  "sourceCommit": "e90f218443aaa39d9a383cab1ac7c5e0250eca97",
+  "version": 6,
+  "versionId": "appgprj_6af8664612288191b813654dfb95323f~appgver_402274e8d6508191a15f705843ed5c74",
+  "deploymentId": "appgdep_6af8e6431c448191b09e492f699393ce",
+  "deploymentStatus": "succeeded",
+  "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/presentation-harness.html",
+  "access": {
+    "users": 1,
+    "groups": 0,
+    "external": 0
+  },
+  "agentHooksInstalled": false,
+  "actualRuntimeHookProbeExecuted": false,
+  "gameAndGitHookSourceChanged": false,
+  "appBuildOrInstall": false,
+  "developMainMerged": false,
+  "officialHookReference": "https://learn.chatgpt.com/docs/hooks",
+  "authenticatedHTTPVerification": {
+    "authenticatedHTTP": true,
+    "verifiedFiles": 11,
+    "all3OriginalRejectedPNGsExact": true,
+    "sixBasesAnd36ContextPlanVerified": true,
+    "harnessImplemented": false,
+    "browserVisualCheck": false,
+    "files": [
+      {
+        "site": "hud",
+        "path": "index.html",
+        "status": 200,
+        "bytes": 46840,
+        "sha256": "126f0e4b9f1a3dd567a6d44a7d7f08570a5a830862bcb4f1b48d1b139c361f60",
+        "exactLocalMatch": false,
+        "HTMLContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "presentation-harness.html",
+        "status": 200,
+        "bytes": 48599,
+        "sha256": "ce11cba19fba74309cab5d82e5dd1c7db453bef484be45346eda86412b62e5b1",
+        "exactLocalMatch": false,
+        "HTMLContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "design-asset-rules.html",
+        "status": 200,
+        "bytes": 29027,
+        "sha256": "b5a7ff4a7de37f77e6664bb7e12bdfed1923c2d64714c347957f4bcd45fb5d77",
+        "exactLocalMatch": false,
+        "HTMLContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "report.css",
+        "status": 200,
+        "bytes": 1705,
+        "sha256": "29aa00bbe58be0f36c38a3e18fa9f80af6354e2e0d0d6f8c300e3df48d1ff6ff",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "hud",
+        "path": "harness-plan-evidence.json",
+        "status": 200,
+        "bytes": 3543,
+        "sha256": "f53c4d3f1467a62754e517fcd0039e5e3eabb6a6f9d1e75835e4d190734647b7",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "hud",
+        "path": "hub-artwork-census.json",
+        "status": 200,
+        "bytes": 29300,
+        "sha256": "fa0a3f1c64daf4455fd024cd130c6db221298c771cd60dc14fcff62a0b41f17a",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "hud",
+        "path": "harness-plan-assets/rejected-menu-1.png",
+        "status": 200,
+        "bytes": 400451,
+        "sha256": "ec19e2ec4fe925208446bd1efc9d573549a9cdc4c88837faac2eac95de3a7f78",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "hud",
+        "path": "harness-plan-assets/rejected-menu-2.png",
+        "status": 200,
+        "bytes": 328186,
+        "sha256": "8307af83cd43823b10769376755c090e2d7fd1f62bf68b56780030a70f064712",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "hud",
+        "path": "harness-plan-assets/rejected-menu-3.png",
+        "status": 200,
+        "bytes": 2818199,
+        "sha256": "003c849091e87247921bc797a76730ef868c532166bd71619561daf5e4b84730",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "primary",
+        "path": "report-index-content.bin",
+        "status": 200,
+        "bytes": 25830,
+        "sha256": "001e8f5edbdfc6863f000fe897242f7ba5359510e918b140d611ab93ddc6047d",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "primary",
+        "path": "heavymach2-restoration-20261110/report-index-content.bin",
+        "status": 200,
+        "bytes": 6576,
+        "sha256": "7dd8fd612f16d9696617e971e229a440e86673e5f15f81288111b7155bf46212",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      }
+    ]
+  }
+}

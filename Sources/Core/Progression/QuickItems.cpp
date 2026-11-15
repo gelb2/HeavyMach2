@@ -43,7 +43,7 @@ void QuickItems::repair(const Item& item,const RepairTarget& target,float render
     // GobHvMach.useRepairItem runs before Player/BOT HP writes. A full pool
     // skips this visual only, and therefore skips the pool reset RNG too.
     if(auto* particle=host_.allocateParticle(renderTime)){
-        auto& p=particle->state();p.life=1;p.tile=host_.preparedTile(item.iconImage());p.tileNumber=0;
+        auto& p=particle->state();p.life=1;p.tile=host_.prepareRepairEffect(item.iconImage());p.tileNumber=0;
         p.scale={.5f,.5f};p.scaleVelocity=.01f;p.position=target.position;particle->start(renderTime);
     }
     int amount=integer(item.param1);

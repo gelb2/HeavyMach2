@@ -1,0 +1,889 @@
+{
+  "scope": "asset/table census only; no app execution or visual acceptance",
+  "reader": "existing C++ Core/Data/DataTable.cpp",
+  "baseIds": [
+    "Base001",
+    "Base002",
+    "Base003",
+    "Base004",
+    "Base005",
+    "Base006"
+  ],
+  "baseProfileContexts": 12,
+  "minimumHubCommandShopContexts": 36,
+  "sharedHDBaseButtonIds": 27,
+  "phoneOriginalTableButtonIds": 32,
+  "entries": [
+    {
+      "base": "Base001",
+      "profile": "ipad",
+      "table": "Base001.tble",
+      "tableSHA256": "ab554838a7bc83d785e19864daca3e55585cf87512c40e4b919dd6226c6fc4de",
+      "background": "Base001.png",
+      "selectedArtwork": [
+        {
+          "type": "Image",
+          "id": 12,
+          "image": "Base001_Maintenance.png",
+          "resource": "Base001_Maintenance.png",
+          "exists": true,
+          "sha256": "4f203991f8c2efa2b6da3acca58260d8d3e0f251295a9294aa0f8b9bb5982ab0"
+        },
+        {
+          "type": "Image",
+          "id": 11,
+          "image": "Base001_CmdCenter.png",
+          "resource": "Base001_CmdCenter.png",
+          "exists": true,
+          "sha256": "a223beb34e46772ec5c4b98f0f50479017a658d6987454b02bcb2edf4bf5a71c"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "Button",
+          "id": 2,
+          "image": "Btn_Shop.png",
+          "resource": "Btn_Shop.png",
+          "exists": true,
+          "sha256": "0c8b9161705a354614970d76ca9ec1c5ff252f20b9047c7712fca416b0bf1b91"
+        },
+        {
+          "type": "Button",
+          "id": 1,
+          "image": "Btn_CmdCenter.png",
+          "resource": "Btn_CmdCenter.png",
+          "exists": true,
+          "sha256": "7e24429fdc5a22b98b343df627caf5694ecef359ee9bbbed30c84152a4a2a84a"
+        },
+        {
+          "type": "Button",
+          "id": 5,
+          "image": "Btn_GoRuinField.png",
+          "resource": "Btn_GoRuinField.png",
+          "exists": true,
+          "sha256": "1f65cdd3be56ea6961219d6619b985a9ee0b70984b27e58ee6d456aa34ef78f4"
+        },
+        {
+          "type": "Button",
+          "id": 4,
+          "image": "Common_Btn_EXIT.png",
+          "resource": "Common_Btn_EXIT.png",
+          "exists": true,
+          "sha256": "cdb67332e8778260edc5dc48cfa957fa597d727800370771da73dcfb2813bf88"
+        }
+      ],
+      "allRequiredImageButtonFilesPresent": true
+    },
+    {
+      "base": "Base001",
+      "profile": "iphone",
+      "table": "PhoneMenu/Base001.tble",
+      "tableSHA256": "b26953269dff0c6ed10a6ca58ae87226001818b712f671857193939f595fe176",
+      "background": "PhoneMenu/Base001.jpg",
+      "selectedArtwork": [
+        {
+          "type": "Image",
+          "id": 13,
+          "image": "Base001_Maintenance.png",
+          "resource": "PhoneMenu/Base001_Maintenance.png",
+          "exists": true,
+          "sha256": "35c4a8d9b0510f034d4a087f450dbbb235adc32e5d68a14153ed9f49e3d2967d"
+        },
+        {
+          "type": "Image",
+          "id": 12,
+          "image": "Base001_Shop.png",
+          "resource": "PhoneMenu/Base001_Shop.png",
+          "exists": true,
+          "sha256": "5f3293f3573db252cf38232e1a6e82b4691697ccb3f46efbd88772a84e98409f"
+        },
+        {
+          "type": "Image",
+          "id": 11,
+          "image": "Base001_CmdCenter.png",
+          "resource": "PhoneMenu/Base001_CmdCenter.png",
+          "exists": true,
+          "sha256": "e849949543fe57e8926c4a07bee2d3b79eafeae9e33d4afc6f9d509a3cfbc781"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "Button",
+          "id": 3,
+          "image": "Btn_Maintenance.png",
+          "resource": "PhoneMenu/Btn_Maintenance.png",
+          "exists": true,
+          "sha256": "53680435d2430e96cd92ea63b7d168fdbacd98af48ecabfc54f1f38b88748bb8"
+        },
+        {
+          "type": "Button",
+          "id": 2,
+          "image": "Btn_Shop.png",
+          "resource": "PhoneMenu/Btn_Shop.png",
+          "exists": true,
+          "sha256": "4f401a340c3aa2b7028cb4fed59e4ecaf28e3980e4ba938c6d33457110c1e27b"
+        },
+        {
+          "type": "Button",
+          "id": 1,
+          "image": "Btn_CmdCenter.png",
+          "resource": "PhoneMenu/Btn_CmdCenter.png",
+          "exists": true,
+          "sha256": "47ddc07f448a792e5e2009c42fe6ad8722f029730af65e2bf9a382cf23a618bb"
+        },
+        {
+          "type": "Button",
+          "id": 4,
+          "image": "Btn_ExitBase.png",
+          "resource": "PhoneMenu/Btn_ExitBase.png",
+          "exists": true,
+          "sha256": "417483d916a00abc8d9f05b8362a77144f897b88fa7c81b799e73ef835fd089c"
+        },
+        {
+          "type": "Button",
+          "id": 5,
+          "image": "Btn_GoRuinField.png",
+          "resource": "PhoneMenu/Btn_GoRuinField.png",
+          "exists": true,
+          "sha256": "179dc6e7a2588f61b3f673b1ab345e588608a00b3386b8ea52505158b65c8cd4"
+        }
+      ],
+      "allRequiredImageButtonFilesPresent": true
+    },
+    {
+      "base": "Base002",
+      "profile": "ipad",
+      "table": "Base002.tble",
+      "tableSHA256": "a2a42238c67dffbe1d87dcc960d8992518886f8d6913273a93bfe79cbb238e13",
+      "background": "Base002.png",
+      "selectedArtwork": [
+        {
+          "type": "Image",
+          "id": 12,
+          "image": "Base002_Shop.png",
+          "resource": "Base002_Shop.png",
+          "exists": true,
+          "sha256": "880f05d7e8a1f993d5298c3f9310f76281c4472b60a7e364365818aeec1332c2"
+        },
+        {
+          "type": "Image",
+          "id": 11,
+          "image": "Base002_CmdCenter.png",
+          "resource": "Base002_CmdCenter.png",
+          "exists": true,
+          "sha256": "23921903e1b8cc398ab4d37d2d16d1accdf3497a935ece2246634bc117f76ea1"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "Button",
+          "id": 2,
+          "image": "Btn_Shop.png",
+          "resource": "Btn_Shop.png",
+          "exists": true,
+          "sha256": "0c8b9161705a354614970d76ca9ec1c5ff252f20b9047c7712fca416b0bf1b91"
+        },
+        {
+          "type": "Button",
+          "id": 1,
+          "image": "Btn_CmdCenter.png",
+          "resource": "Btn_CmdCenter.png",
+          "exists": true,
+          "sha256": "7e24429fdc5a22b98b343df627caf5694ecef359ee9bbbed30c84152a4a2a84a"
+        },
+        {
+          "type": "Button",
+          "id": 5,
+          "image": "Btn_GoRuinField.png",
+          "resource": "Btn_GoRuinField.png",
+          "exists": true,
+          "sha256": "1f65cdd3be56ea6961219d6619b985a9ee0b70984b27e58ee6d456aa34ef78f4"
+        },
+        {
+          "type": "Button",
+          "id": 6,
+          "image": "Btn_GoSkyway.png",
+          "resource": "Btn_GoSkyway.png",
+          "exists": true,
+          "sha256": "bde5ace9e1f137f6063bb79170a5684cd910545e5231eb3405d8653fc0dbb101"
+        },
+        {
+          "type": "Button",
+          "id": 4,
+          "image": "Common_Btn_EXIT.png",
+          "resource": "Common_Btn_EXIT.png",
+          "exists": true,
+          "sha256": "cdb67332e8778260edc5dc48cfa957fa597d727800370771da73dcfb2813bf88"
+        }
+      ],
+      "allRequiredImageButtonFilesPresent": true
+    },
+    {
+      "base": "Base002",
+      "profile": "iphone",
+      "table": "PhoneMenu/Base002.tble",
+      "tableSHA256": "bd7533ea89bb3fb529fa35946e5356be77d3889baf97ea6f12541f1ef580d567",
+      "background": "PhoneMenu/Base002.jpg",
+      "selectedArtwork": [
+        {
+          "type": "Image",
+          "id": 13,
+          "image": "Base005_Maintenance.png",
+          "resource": "PhoneMenu/Base005_Maintenance.png",
+          "exists": true,
+          "sha256": "a5595807e1278985491593d9163627595aec4b0217483136a3fa301cca586101"
+        },
+        {
+          "type": "Image",
+          "id": 12,
+          "image": "Base005_Shop.png",
+          "resource": "PhoneMenu/Base005_Shop.png",
+          "exists": true,
+          "sha256": "bb17bdb8571d326e1d176b70583e691a3d4b5eab5ee1960c53a59571085bd63e"
+        },
+        {
+          "type": "Image",
+          "id": 11,
+          "image": "Base005_CmdCenter.png",
+          "resource": "PhoneMenu/Base005_CmdCenter.png",
+          "exists": true,
+          "sha256": "b4bb7897a1075aef837ea75aa1da03b4d2e939312300bb3ecf7b0caf26d33629"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "Button",
+          "id": 3,
+          "image": "Btn_Maintenance.png",
+          "resource": "PhoneMenu/Btn_Maintenance.png",
+          "exists": true,
+          "sha256": "53680435d2430e96cd92ea63b7d168fdbacd98af48ecabfc54f1f38b88748bb8"
+        },
+        {
+          "type": "Button",
+          "id": 2,
+          "image": "Btn_Shop.png",
+          "resource": "PhoneMenu/Btn_Shop.png",
+          "exists": true,
+          "sha256": "4f401a340c3aa2b7028cb4fed59e4ecaf28e3980e4ba938c6d33457110c1e27b"
+        },
+        {
+          "type": "Button",
+          "id": 1,
+          "image": "Btn_CmdCenter.png",
+          "resource": "PhoneMenu/Btn_CmdCenter.png",
+          "exists": true,
+          "sha256": "47ddc07f448a792e5e2009c42fe6ad8722f029730af65e2bf9a382cf23a618bb"
+        },
+        {
+          "type": "Button",
+          "id": 4,
+          "image": "Btn_ExitBase.png",
+          "resource": "PhoneMenu/Btn_ExitBase.png",
+          "exists": true,
+          "sha256": "417483d916a00abc8d9f05b8362a77144f897b88fa7c81b799e73ef835fd089c"
+        },
+        {
+          "type": "Button",
+          "id": 5,
+          "image": "Btn_GoRuinField.png",
+          "resource": "PhoneMenu/Btn_GoRuinField.png",
+          "exists": true,
+          "sha256": "179dc6e7a2588f61b3f673b1ab345e588608a00b3386b8ea52505158b65c8cd4"
+        },
+        {
+          "type": "Button",
+          "id": 6,
+          "image": "Btn_GoSkyway.png",
+          "resource": "PhoneMenu/Btn_GoSkyway.png",
+          "exists": true,
+          "sha256": "b968796df276dda4368897a5c7aeb3c3979e8ce3e0b1fc6674b5150dc5d14d36"
+        }
+      ],
+      "allRequiredImageButtonFilesPresent": true
+    },
+    {
+      "base": "Base003",
+      "profile": "ipad",
+      "table": "Base003.tble",
+      "tableSHA256": "5b3ffb102698ee195e16318692beb7a64b5c2f432b8fb941866cd0703824c449",
+      "background": "Base003.png",
+      "selectedArtwork": [
+        {
+          "type": "Image",
+          "id": 12,
+          "image": "Base003_Shop.png",
+          "resource": "Base003_Shop.png",
+          "exists": true,
+          "sha256": "cdb551b9c6a0efcc208178b11d52db00d583a9faa2143225f16ee820e1fe0d39"
+        },
+        {
+          "type": "Image",
+          "id": 11,
+          "image": "Base003_CmdCenter.png",
+          "resource": "Base003_CmdCenter.png",
+          "exists": true,
+          "sha256": "a054c8f83236801f811e38f659005aafd11a3d8766603715b61240c6d648c0a1"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "Button",
+          "id": 2,
+          "image": "Btn_Shop.png",
+          "resource": "Btn_Shop.png",
+          "exists": true,
+          "sha256": "0c8b9161705a354614970d76ca9ec1c5ff252f20b9047c7712fca416b0bf1b91"
+        },
+        {
+          "type": "Button",
+          "id": 1,
+          "image": "Btn_CmdCenter.png",
+          "resource": "Btn_CmdCenter.png",
+          "exists": true,
+          "sha256": "7e24429fdc5a22b98b343df627caf5694ecef359ee9bbbed30c84152a4a2a84a"
+        },
+        {
+          "type": "Button",
+          "id": 5,
+          "image": "Btn_GoSkyway.png",
+          "resource": "Btn_GoSkyway.png",
+          "exists": true,
+          "sha256": "bde5ace9e1f137f6063bb79170a5684cd910545e5231eb3405d8653fc0dbb101"
+        },
+        {
+          "type": "Button",
+          "id": 6,
+          "image": "Btn_GoWasteland.png",
+          "resource": "Btn_GoWasteland.png",
+          "exists": true,
+          "sha256": "699ff677ea6adbc4dc7dc6585f8cfd0befc795a6c156039fbef1c73ea8c03b55"
+        },
+        {
+          "type": "Button",
+          "id": 4,
+          "image": "Common_Btn_EXIT.png",
+          "resource": "Common_Btn_EXIT.png",
+          "exists": true,
+          "sha256": "cdb67332e8778260edc5dc48cfa957fa597d727800370771da73dcfb2813bf88"
+        }
+      ],
+      "allRequiredImageButtonFilesPresent": true
+    },
+    {
+      "base": "Base003",
+      "profile": "iphone",
+      "table": "PhoneMenu/Base003.tble",
+      "tableSHA256": "ea9e218d5b43693bca10c71e2611ce75d4d8368068ac5947597a6feb3028fba4",
+      "background": "PhoneMenu/Base003.jpg",
+      "selectedArtwork": [
+        {
+          "type": "Image",
+          "id": 13,
+          "image": "Base003_Maintenance.png",
+          "resource": "PhoneMenu/Base003_Maintenance.png",
+          "exists": true,
+          "sha256": "2b2976d2ad73db26edf4a09bcc768ae95f5a67bc1d7a63be9062fb184a3066db"
+        },
+        {
+          "type": "Image",
+          "id": 12,
+          "image": "Base003_Shop.png",
+          "resource": "PhoneMenu/Base003_Shop.png",
+          "exists": true,
+          "sha256": "94ea1e800a42f1e13b8c4be85705e18009d5cfc8783508ae0db3aa636efa0b29"
+        },
+        {
+          "type": "Image",
+          "id": 11,
+          "image": "Base003_CmdCenter.png",
+          "resource": "PhoneMenu/Base003_CmdCenter.png",
+          "exists": true,
+          "sha256": "bf55e26877b964b6f4f2b056df2379932abce4a4dc4af94a8ae624dd353c1344"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "Button",
+          "id": 3,
+          "image": "Btn_Maintenance.png",
+          "resource": "PhoneMenu/Btn_Maintenance.png",
+          "exists": true,
+          "sha256": "53680435d2430e96cd92ea63b7d168fdbacd98af48ecabfc54f1f38b88748bb8"
+        },
+        {
+          "type": "Button",
+          "id": 2,
+          "image": "Btn_Shop.png",
+          "resource": "PhoneMenu/Btn_Shop.png",
+          "exists": true,
+          "sha256": "4f401a340c3aa2b7028cb4fed59e4ecaf28e3980e4ba938c6d33457110c1e27b"
+        },
+        {
+          "type": "Button",
+          "id": 1,
+          "image": "Btn_CmdCenter.png",
+          "resource": "PhoneMenu/Btn_CmdCenter.png",
+          "exists": true,
+          "sha256": "47ddc07f448a792e5e2009c42fe6ad8722f029730af65e2bf9a382cf23a618bb"
+        },
+        {
+          "type": "Button",
+          "id": 4,
+          "image": "Btn_ExitBase.png",
+          "resource": "PhoneMenu/Btn_ExitBase.png",
+          "exists": true,
+          "sha256": "417483d916a00abc8d9f05b8362a77144f897b88fa7c81b799e73ef835fd089c"
+        },
+        {
+          "type": "Button",
+          "id": 5,
+          "image": "Btn_GoSkyway.png",
+          "resource": "PhoneMenu/Btn_GoSkyway.png",
+          "exists": true,
+          "sha256": "b968796df276dda4368897a5c7aeb3c3979e8ce3e0b1fc6674b5150dc5d14d36"
+        },
+        {
+          "type": "Button",
+          "id": 6,
+          "image": "Btn_GoWasteland.png",
+          "resource": "PhoneMenu/Btn_GoWasteland.png",
+          "exists": true,
+          "sha256": "93d9a99ca5d67fd37f0b08e6ae2d894984578cbaf9b1d4788422c633ceeec37c"
+        }
+      ],
+      "allRequiredImageButtonFilesPresent": true
+    },
+    {
+      "base": "Base004",
+      "profile": "ipad",
+      "table": "Base004.tble",
+      "tableSHA256": "0f86dd7013450dcb2160c0a8a34d6e838ee1ab54d3912ff4448cd7baa08e0c9e",
+      "background": "Base004.png",
+      "selectedArtwork": [
+        {
+          "type": "Image",
+          "id": 13,
+          "image": "Base004_Maintenance.png",
+          "resource": "Base004_Maintenance.png",
+          "exists": true,
+          "sha256": "c1cc3b466e69d40d0f08140f7b93af21eecd7b2e75accad72b0cece0ba1f1b04"
+        },
+        {
+          "type": "Image",
+          "id": 12,
+          "image": "Base004_Shop.png",
+          "resource": "Base004_Shop.png",
+          "exists": true,
+          "sha256": "41ac46d34620dc5d5fc39ad02b787fa42ae9417338c15090fa22c647a34ba489"
+        },
+        {
+          "type": "Image",
+          "id": 11,
+          "image": "Base004_CmdCenter.png",
+          "resource": "Base004_CmdCenter.png",
+          "exists": true,
+          "sha256": "5250ee368707ee1875fe487795c4d2a2b9b71e954017708a678dd877adc963f8"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "Button",
+          "id": 3,
+          "image": "Btn_Maintenance.png",
+          "resource": "Btn_Maintenance.png",
+          "exists": true,
+          "sha256": "889e1c0cbfab3d211d95436bf7d6bad5211d018d2cec4df297d3477fc6ff917c"
+        },
+        {
+          "type": "Button",
+          "id": 2,
+          "image": "Btn_Shop.png",
+          "resource": "Btn_Shop.png",
+          "exists": true,
+          "sha256": "0c8b9161705a354614970d76ca9ec1c5ff252f20b9047c7712fca416b0bf1b91"
+        },
+        {
+          "type": "Button",
+          "id": 1,
+          "image": "Btn_CmdCenter.png",
+          "resource": "Btn_CmdCenter.png",
+          "exists": true,
+          "sha256": "7e24429fdc5a22b98b343df627caf5694ecef359ee9bbbed30c84152a4a2a84a"
+        },
+        {
+          "type": "Button",
+          "id": 4,
+          "image": "Common_Btn_EXIT.png",
+          "resource": "Common_Btn_EXIT.png",
+          "exists": true,
+          "sha256": "cdb67332e8778260edc5dc48cfa957fa597d727800370771da73dcfb2813bf88"
+        }
+      ],
+      "allRequiredImageButtonFilesPresent": true
+    },
+    {
+      "base": "Base004",
+      "profile": "iphone",
+      "table": "PhoneMenu/Base004.tble",
+      "tableSHA256": "757f750f69d49ad2db24cc98d26c03be9446432b07050b6ad382d12543afba76",
+      "background": "PhoneMenu/Base004.jpg",
+      "selectedArtwork": [
+        {
+          "type": "Image",
+          "id": 13,
+          "image": "Base004_Maintenance.png",
+          "resource": "PhoneMenu/Base004_Maintenance.png",
+          "exists": true,
+          "sha256": "3edd881c1c4afd8edf34683e4f80fb702c4e595f86415f07f2b212a7e961cdac"
+        },
+        {
+          "type": "Image",
+          "id": 12,
+          "image": "Base004_Shop.png",
+          "resource": "PhoneMenu/Base004_Shop.png",
+          "exists": true,
+          "sha256": "e2e1b2deb4876de8f08f7201d7fc71004186ded220d533c1254dca2c95ae86c5"
+        },
+        {
+          "type": "Image",
+          "id": 11,
+          "image": "Base004_CmdCenter.png",
+          "resource": "PhoneMenu/Base004_CmdCenter.png",
+          "exists": true,
+          "sha256": "7233ea75b0fb2e8c4c820e5c2d555c17fa65e9f19a87739f9bcbbd0cfd1d0164"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "Button",
+          "id": 3,
+          "image": "Btn_Maintenance.png",
+          "resource": "PhoneMenu/Btn_Maintenance.png",
+          "exists": true,
+          "sha256": "53680435d2430e96cd92ea63b7d168fdbacd98af48ecabfc54f1f38b88748bb8"
+        },
+        {
+          "type": "Button",
+          "id": 2,
+          "image": "Btn_Shop.png",
+          "resource": "PhoneMenu/Btn_Shop.png",
+          "exists": true,
+          "sha256": "4f401a340c3aa2b7028cb4fed59e4ecaf28e3980e4ba938c6d33457110c1e27b"
+        },
+        {
+          "type": "Button",
+          "id": 1,
+          "image": "Btn_CmdCenter.png",
+          "resource": "PhoneMenu/Btn_CmdCenter.png",
+          "exists": true,
+          "sha256": "47ddc07f448a792e5e2009c42fe6ad8722f029730af65e2bf9a382cf23a618bb"
+        },
+        {
+          "type": "Button",
+          "id": 4,
+          "image": "Btn_ExitBase.png",
+          "resource": "PhoneMenu/Btn_ExitBase.png",
+          "exists": true,
+          "sha256": "417483d916a00abc8d9f05b8362a77144f897b88fa7c81b799e73ef835fd089c"
+        }
+      ],
+      "allRequiredImageButtonFilesPresent": true
+    },
+    {
+      "base": "Base005",
+      "profile": "ipad",
+      "table": "Base005.tble",
+      "tableSHA256": "83d636b5f44b1ebd880cc47939b6e44f8dc058534bf46441a74e9a4f13a51080",
+      "background": "Base005.png",
+      "selectedArtwork": [
+        {
+          "type": "Image",
+          "id": 12,
+          "image": "Base005_Shop.png",
+          "resource": "Base005_Shop.png",
+          "exists": true,
+          "sha256": "b5eebca9f3b93d1a90aa2b3c81e26439ddb95a327fbf7a876825687089f58ec3"
+        },
+        {
+          "type": "Image",
+          "id": 11,
+          "image": "Base005_CmdCenter.png",
+          "resource": "Base005_CmdCenter.png",
+          "exists": true,
+          "sha256": "a7e47857bd43047e68b62db8f1f35569f0af50615486a143b8ad300bbb7e8139"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "Button",
+          "id": 2,
+          "image": "Btn_Shop.png",
+          "resource": "Btn_Shop.png",
+          "exists": true,
+          "sha256": "0c8b9161705a354614970d76ca9ec1c5ff252f20b9047c7712fca416b0bf1b91"
+        },
+        {
+          "type": "Button",
+          "id": 1,
+          "image": "Btn_CmdCenter.png",
+          "resource": "Btn_CmdCenter.png",
+          "exists": true,
+          "sha256": "7e24429fdc5a22b98b343df627caf5694ecef359ee9bbbed30c84152a4a2a84a"
+        },
+        {
+          "type": "Button",
+          "id": 5,
+          "image": "Btn_GoWasteland.png",
+          "resource": "Btn_GoWasteland.png",
+          "exists": true,
+          "sha256": "699ff677ea6adbc4dc7dc6585f8cfd0befc795a6c156039fbef1c73ea8c03b55"
+        },
+        {
+          "type": "Button",
+          "id": 4,
+          "image": "Common_Btn_EXIT.png",
+          "resource": "Common_Btn_EXIT.png",
+          "exists": true,
+          "sha256": "cdb67332e8778260edc5dc48cfa957fa597d727800370771da73dcfb2813bf88"
+        }
+      ],
+      "allRequiredImageButtonFilesPresent": true
+    },
+    {
+      "base": "Base005",
+      "profile": "iphone",
+      "table": "PhoneMenu/Base005.tble",
+      "tableSHA256": "a8b917f8e48021355dc1e0bcd74a39db9d94f5f61242348cd8ee6db6f7a8fcb9",
+      "background": "PhoneMenu/Base005.jpg",
+      "selectedArtwork": [
+        {
+          "type": "Image",
+          "id": 13,
+          "image": "Base002_Maintenance.png",
+          "resource": "PhoneMenu/Base002_Maintenance.png",
+          "exists": true,
+          "sha256": "676693fd6aea59373ffda606c2ac557f9ec01af9c2307ea27087654307862456"
+        },
+        {
+          "type": "Image",
+          "id": 12,
+          "image": "Base002_Shop.png",
+          "resource": "PhoneMenu/Base002_Shop.png",
+          "exists": true,
+          "sha256": "3c845d8c917d447fb640e02fa9974873254b4cfe788d5c87c6b9e1e10d35ef1d"
+        },
+        {
+          "type": "Image",
+          "id": 11,
+          "image": "Base002_CmdCenter.png",
+          "resource": "PhoneMenu/Base002_CmdCenter.png",
+          "exists": true,
+          "sha256": "3cb65202c6251ab87d5739e82266de56eaa7ebe2bd6651ee28018d8bff37a639"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "Button",
+          "id": 3,
+          "image": "Btn_Maintenance.png",
+          "resource": "PhoneMenu/Btn_Maintenance.png",
+          "exists": true,
+          "sha256": "53680435d2430e96cd92ea63b7d168fdbacd98af48ecabfc54f1f38b88748bb8"
+        },
+        {
+          "type": "Button",
+          "id": 2,
+          "image": "Btn_Shop.png",
+          "resource": "PhoneMenu/Btn_Shop.png",
+          "exists": true,
+          "sha256": "4f401a340c3aa2b7028cb4fed59e4ecaf28e3980e4ba938c6d33457110c1e27b"
+        },
+        {
+          "type": "Button",
+          "id": 1,
+          "image": "Btn_CmdCenter.png",
+          "resource": "PhoneMenu/Btn_CmdCenter.png",
+          "exists": true,
+          "sha256": "47ddc07f448a792e5e2009c42fe6ad8722f029730af65e2bf9a382cf23a618bb"
+        },
+        {
+          "type": "Button",
+          "id": 4,
+          "image": "Btn_ExitBase.png",
+          "resource": "PhoneMenu/Btn_ExitBase.png",
+          "exists": true,
+          "sha256": "417483d916a00abc8d9f05b8362a77144f897b88fa7c81b799e73ef835fd089c"
+        },
+        {
+          "type": "Button",
+          "id": 5,
+          "image": "Btn_GoWasteland.png",
+          "resource": "PhoneMenu/Btn_GoWasteland.png",
+          "exists": true,
+          "sha256": "93d9a99ca5d67fd37f0b08e6ae2d894984578cbaf9b1d4788422c633ceeec37c"
+        }
+      ],
+      "allRequiredImageButtonFilesPresent": true
+    },
+    {
+      "base": "Base006",
+      "profile": "ipad",
+      "table": "Base006.tble",
+      "tableSHA256": "683f29688e3cfd76f6907ff0583f1709f9db034e638e5648de9cb95d27cad575",
+      "background": "Base006.png",
+      "selectedArtwork": [
+        {
+          "type": "Image",
+          "id": 12,
+          "image": "Base006_Shop.png",
+          "resource": "Base006_Shop.png",
+          "exists": true,
+          "sha256": "d0e499d61f32d148312af874ac25886e67a73b43761318d6b5e8d16c167d4e2f"
+        },
+        {
+          "type": "Image",
+          "id": 11,
+          "image": "Base006_CmdCenter.png",
+          "resource": "Base006_CmdCenter.png",
+          "exists": true,
+          "sha256": "be01ba0145e78ace932dfbf5f74550cde9aa33fe62099e332c0413b7942b70d4"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "Button",
+          "id": 2,
+          "image": "Btn_Shop.png",
+          "resource": "Btn_Shop.png",
+          "exists": true,
+          "sha256": "0c8b9161705a354614970d76ca9ec1c5ff252f20b9047c7712fca416b0bf1b91"
+        },
+        {
+          "type": "Button",
+          "id": 1,
+          "image": "Btn_CmdCenter.png",
+          "resource": "Btn_CmdCenter.png",
+          "exists": true,
+          "sha256": "7e24429fdc5a22b98b343df627caf5694ecef359ee9bbbed30c84152a4a2a84a"
+        },
+        {
+          "type": "Button",
+          "id": 5,
+          "image": "Btn_GoSkyway.png",
+          "resource": "Btn_GoSkyway.png",
+          "exists": true,
+          "sha256": "bde5ace9e1f137f6063bb79170a5684cd910545e5231eb3405d8653fc0dbb101"
+        },
+        {
+          "type": "Button",
+          "id": 6,
+          "image": "Btn_GoSeaside.png",
+          "resource": "Btn_GoSeaside.png",
+          "exists": true,
+          "sha256": "7566ed520d5d36d517c0cc451f41d0609156aba9b6872e9b9f4028a876255c83"
+        },
+        {
+          "type": "Button",
+          "id": 4,
+          "image": "Common_Btn_EXIT.png",
+          "resource": "Common_Btn_EXIT.png",
+          "exists": true,
+          "sha256": "cdb67332e8778260edc5dc48cfa957fa597d727800370771da73dcfb2813bf88"
+        }
+      ],
+      "allRequiredImageButtonFilesPresent": true
+    },
+    {
+      "base": "Base006",
+      "profile": "iphone",
+      "table": "PhoneMenu/Base006.tble",
+      "tableSHA256": "d63670ce4d1a5de65476e49e309c83870e877ff866100fd3cb0a6c58dfb2d707",
+      "background": "PhoneMenu/Base006.jpg",
+      "selectedArtwork": [
+        {
+          "type": "Image",
+          "id": 13,
+          "image": "Base006_Maintenance.png",
+          "resource": "PhoneMenu/Base006_Maintenance.png",
+          "exists": true,
+          "sha256": "663853b984f6e1b4766316544262c2e6c60be21171955c2cd4b14ed139092b36"
+        },
+        {
+          "type": "Image",
+          "id": 12,
+          "image": "Base006_Shop.png",
+          "resource": "PhoneMenu/Base006_Shop.png",
+          "exists": true,
+          "sha256": "f80139379c3982660ddaf7f2cff868b62f02a62056154c0878b9cc473864bda2"
+        },
+        {
+          "type": "Image",
+          "id": 11,
+          "image": "Base006_CmdCenter.png",
+          "resource": "PhoneMenu/Base006_CmdCenter.png",
+          "exists": true,
+          "sha256": "9f0c02b74ab111bd84100be0e2b796cc45c29253b71900c707ae4a5488159e56"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "Button",
+          "id": 3,
+          "image": "Btn_Maintenance.png",
+          "resource": "PhoneMenu/Btn_Maintenance.png",
+          "exists": true,
+          "sha256": "53680435d2430e96cd92ea63b7d168fdbacd98af48ecabfc54f1f38b88748bb8"
+        },
+        {
+          "type": "Button",
+          "id": 2,
+          "image": "Btn_Shop.png",
+          "resource": "PhoneMenu/Btn_Shop.png",
+          "exists": true,
+          "sha256": "4f401a340c3aa2b7028cb4fed59e4ecaf28e3980e4ba938c6d33457110c1e27b"
+        },
+        {
+          "type": "Button",
+          "id": 1,
+          "image": "Btn_CmdCenter.png",
+          "resource": "PhoneMenu/Btn_CmdCenter.png",
+          "exists": true,
+          "sha256": "47ddc07f448a792e5e2009c42fe6ad8722f029730af65e2bf9a382cf23a618bb"
+        },
+        {
+          "type": "Button",
+          "id": 4,
+          "image": "Btn_ExitBase.png",
+          "resource": "PhoneMenu/Btn_ExitBase.png",
+          "exists": true,
+          "sha256": "417483d916a00abc8d9f05b8362a77144f897b88fa7c81b799e73ef835fd089c"
+        },
+        {
+          "type": "Button",
+          "id": 5,
+          "image": "Btn_GoSkyway.png",
+          "resource": "PhoneMenu/Btn_GoSkyway.png",
+          "exists": true,
+          "sha256": "b968796df276dda4368897a5c7aeb3c3979e8ce3e0b1fc6674b5150dc5d14d36"
+        },
+        {
+          "type": "Button",
+          "id": 6,
+          "image": "Btn_GoSeaside.png",
+          "resource": "PhoneMenu/Btn_GoSeaside.png",
+          "exists": true,
+          "sha256": "a02b2764217837768d202291a81589477b5ea3ee11c104ef8db0b8aa0dfb6651"
+        }
+      ],
+      "allRequiredImageButtonFilesPresent": true
+    }
+  ],
+  "notes": [
+    "No original data table or resource modified",
+    "Phone Base002 selection art refers to Base005; Phone Base005 refers to Base002. Preserve actual table references.",
+    "Desc BaseTextBG uses the common HD UI path in current source; not a missing Phone illustration",
+    "Ad rows are excluded from image consumption; advertising stays disabled",
+    "HD shared game IDs and original Phone table presence are different contracts"
+  ]
+}

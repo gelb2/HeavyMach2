@@ -47,7 +47,14 @@ std::size_t imageCount(const Frame& frame,std::string_view name){std::size_t tot
 bool near(float a,float b){return std::abs(a-b)<.0001f;}
 void actualSP(Files& files){
     Host host;DarwinWorldRandom rng(7);GameSession game(files,host,rng,fixture());assert(game.selectSlot(0)&&game.enterField("Stage01_01",0));(void)game.state();
-    const auto reads=files.reads,probes=files.probes,saves=host.saves;steps(game,99);auto* scene=game.battle();assert(scene->playerHP()>0&&scene->dashState().special==99&&scene->metrics().playerEmissions==0);
+    // Finish the real introductory overlay before testing live battle resume.
+    for(unsigned i=0;game.help()&&i<6;++i){game.inputOverlay(PointerPhase::begin,{384,512},70+i);game.inputOverlay(PointerPhase::end,{384,512},70+i);}assert(!game.help());
+    const auto saves=host.saves;steps(game,99);auto* scene=game.battle();assert(scene->playerHP()>0&&scene->dashState().special==99&&scene->metrics().playerEmissions==0);
+    // First-spawn parts are prepared at spawn. Original processMove requests
+    // the shared Dash tile only after its first successful particle allocation.
+    const auto reads=files.reads,probes=files.probes;
+    const auto coldDash=game.globalPreparationFrame();assert(std::none_of(coldDash.sprites.begin(),coldDash.sprites.end(),[](const auto& s){return s.image=="Efx_Dash.png";}));
+    const auto resourceEpoch=game.resourceRevision();
     auto target=ground(game);tap(game,target,17);tap(game,target,18);assert(scene->metrics().dashStarts==0&&scene->dashState().special==99);
     (void)step(game);assert(scene->dashState().special==100);target=ground(game);const auto world=originalWorld(scene->camera(),target),player=scene->player().position;
     const float dx=world.x-player.x,dy=world.y-player.y,length=std::sqrt(dx*dx+dy*dy);const Vec2 direction{dx/length,dy/length};
@@ -56,7 +63,11 @@ void actualSP(Files& files){
     assert(dash.velocity.x==direction.x&&dash.velocity.y==direction.y&&rng.calls()==randomCalls&&std::count(host.sounds.begin(),host.sounds.end(),14u)==sfx+1);
     const auto old=scene->player();BipodMotion ordinary(old);const int wall=dash.currentTerrain;ordinary.tick(wall<0?nullptr:&scene->terrain().edges().at(std::size_t(wall)));
     const auto normal=ordinary.state().position;const Vec2 raw{normal.x+direction.x*10,normal.y+direction.y*10};const auto corrected=scene->terrain().resolve(raw,-1);
-    const auto first=step(game);dash=scene->dashState();
+    game.tick();const auto afterTickReads=files.reads,afterTickProbes=files.probes;const auto first=game.drawWorld();dash=scene->dashState();
+    assert(files.reads==afterTickReads&&files.probes==afterTickProbes); // Draw remains a lookup.
+    assert(files.reads==reads+1&&files.probes==probes+1&&game.resourceRevision()>resourceEpoch);
+    const auto* dashTile=scene->preparedTile("Efx_Dash.png");assert(dashTile);
+    const auto preparedDash=game.globalPreparationFrame();assert(std::count_if(preparedDash.sprites.begin(),preparedDash.sprites.end(),[](const auto& s){return s.image=="Efx_Dash.png";})==1);
     assert(near(scene->player().position.x,corrected.position.x)&&near(scene->player().position.y,corrected.position.y));
     assert(dash.currentTerrain==corrected.current&&dash.lastEffectPosition.x==normal.x&&dash.lastEffectPosition.y==normal.y);
     assert(dash.velocity.x==direction.x+(0-direction.x)/8&&dash.velocity.y==direction.y+(0-direction.y)/8);
@@ -67,9 +78,10 @@ void actualSP(Files& files){
     assert(scene->dashState().velocity.x==beforePause.velocity.x&&scene->dashState().velocity.y==beforePause.velocity.y&&scene->dashState().special==beforePause.special+3);
     assert(!game.inputWorld(PointerPhase::begin,target,20));scene->setPaused(false);
     const auto frozen=scene->dashState();const auto inactiveRandom=rng.calls();game.setActive(false);game.tick();assert(scene->dashState().special==frozen.special&&scene->dashState().velocity.x==frozen.velocity.x&&rng.calls()==inactiveRandom);game.setActive(true);
+    assert(game.state().systemVisible&&scene->isPaused());game.action({ui::ScreenId::field,ui::Panel::root,{ui::ButtonEventType::pop,{0,1021,0},1,{}}});assert(!scene->isPaused());
     steps(game,50);assert(scene->dashState().velocity.x==0&&scene->dashState().velocity.y==0&&scene->metrics().dashMoveTicks==36&&scene->metrics().playerEmissions==0);
-    assert(files.reads==reads&&files.probes==probes&&host.saves==saves);
-    std::cout<<"HM2_DASH_SESSION actualSP99reject/100consume callbackSFX14 RNG0; baseMove->Dash10->terrain; effectPool/RNG1 nextFrameGPUQuad; pauseRegen/dashStop inactiveStop/end36 warmIO0 save0 PASS\n";
+    assert(files.reads==reads+1&&files.probes==probes+1&&host.saves==saves&&scene->preparedTile("Efx_Dash.png")==dashTile);
+    std::cout<<"HM2_DASH_SESSION actualSP99reject/100consume callbackSFX14 RNG0; baseMove->Dash10->terrain; effectPool/RNG1 nextFrameGPUQuad; pauseRegen/dashStop inactiveStop/end36 sharedDashFirstRead1/reuseIO0/drawIO0 save0 PASS\n";
 }
 void timing(Files& files,unsigned gap){
     Host host;DarwinWorldRandom rng(7);GameSession game(files,host,rng,fixture());assert(game.selectSlot(0)&&game.enterField("Stage01_01",0));(void)game.state();steps(game,100);auto* scene=game.battle();

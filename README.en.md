@@ -57,6 +57,7 @@ Check the local path and SHA-256 in the [source manifest](docs/source-provenance
 
 ```sh
 python3 tools/prepare_hd_assets.py
+python3 tools/prepare_phone_menu_assets.py
 python3 tools/prepare_app_icons.py
 python3 tools/build_openal.py --sdk iphonesimulator
 xcodegen generate --spec Apple/iOS/project.yml

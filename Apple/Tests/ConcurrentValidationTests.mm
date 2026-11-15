@@ -29,6 +29,11 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
 @implementation HM2ConcurrentTimer
 - (void)frame:(CADisplayLink*)link{if(self.callback)self.callback(link);}
 @end
+@interface HM2ConcurrentController:UIViewController @end
+@implementation HM2ConcurrentController
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations{return UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPad?UIInterfaceOrientationMaskPortrait:UIInterfaceOrientationMaskLandscape;}
+- (BOOL)prefersStatusBarHidden{return YES;}
+@end
 @interface ConcurrentValidationTests:XCTestCase @end
 @implementation ConcurrentValidationTests
 - (void)testAllRestoredScenariosOnOneDisplayClock {
@@ -39,20 +44,73 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
     // shop refusal observation is frame355. Keep its acceptance assertions.
     [self runFrames:360 fullCoverage:NO];
 }
+- (void)testClassicHUDPlanningCaptures {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];
+    UIWindowScene* scene=nil;const auto deadline=[NSDate dateWithTimeIntervalSinceNow:10];
+    do{for(UIScene* candidate in UIApplication.sharedApplication.connectedScenes)if([candidate isKindOfClass:UIWindowScene.class]&&candidate.activationState==UISceneActivationStateForegroundActive){scene=(UIWindowScene*)candidate;break;}if(!scene)[NSRunLoop.mainRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:.01]];}while(!scene&&deadline.timeIntervalSinceNow>0);
+    XCTAssertNotNil(scene);if(!scene)return;
+    UIWindow* window=[[UIWindow alloc]initWithWindowScene:scene];window.frame=scene.coordinateSpace.bounds;
+    HM2ConcurrentController* controller=[HM2ConcurrentController new];HM2ConcurrentSurface* surface=[[HM2ConcurrentSurface alloc]initWithFrame:window.bounds];surface.contentScaleFactor=1;
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];[surface layoutIfNeeded];
+    std::unique_ptr<hm2::apple::ConcurrentRuntime> runtime;
+    try{runtime=std::make_unique<hm2::apple::ConcurrentRuntime>(root,directory);}catch(const std::exception& e){XCTFail(@"HUD capture preparation failed: %s",e.what());window.hidden=YES;return;}
+    const hm2::Size viewport{float(surface.bounds.size.width),float(surface.bounds.size.height)};const auto safe=surface.safeAreaInsets;
+    runtime->setDisplay(hm2::DisplayConfiguration::surface(viewport,{float(safe.left),float(safe.bottom),float(safe.right),float(safe.top)}));
+    NSMutableArray* observations=[NSMutableArray new];XCTestExpectation* complete=[self expectationWithDescription:@"HUD and weapon chooser original GPU captures"];
+    HM2ConcurrentTimer* timer=[HM2ConcurrentTimer new];auto* live=runtime.get();__block unsigned frames=0;__block NSString* failure=nil;
+    timer.callback=^(CADisplayLink* link){@autoreleasepool{try{
+        live->tick();++frames;
+        if(frames==25&&!live->pressScenarioButton(107,1022))throw std::runtime_error("Left original weapon button unavailable");
+        // Original GameSession toggles an open chooser closed on either
+        // weapon button. Close it first, then open the right chooser.
+        if(frames==60){if(!live->pressScenarioButton(107,1022)||live->validation().session(107).state().weaponChoiceType!=0)throw std::runtime_error("Original chooser did not close");}
+        if(frames==61&&!live->pressScenarioButton(107,1023))throw std::runtime_error("Right original weapon button unavailable");
+        live->draw(layer,viewport);
+        if(frames==1||frames==55||frames==90){const unsigned index=107;
+            const auto type=live->validation().session(index).state().weaponChoiceType;
+            if(frames==55&&type!=2)throw std::runtime_error("Left weapon chooser missing");
+            if(frames==90&&type!=3)throw std::runtime_error("Right weapon chooser missing");
+            NSMutableDictionary* observed=[live->captureScenarioUI(index,layer) mutableCopy];observed[@"weaponChoiceType"]=@(type);observed[@"choices"]=@(live->validation().session(index).state().weaponChoices.size());[observations addObject:observed];
+            attachPixels(self,live->pixels(),live->drawableSize(),[NSString stringWithFormat:@"Classic HUD planning frame%u chooser%d %.0fx%.0f",frames,type,viewport.width,viewport.height]);
+        }
+        if(frames>=90){[link invalidate];[complete fulfill];}
+    }catch(const std::exception& e){failure=[NSString stringWithUTF8String:e.what()];[link invalidate];[complete fulfill];}}};
+    CADisplayLink* display=[CADisplayLink displayLinkWithTarget:timer selector:@selector(frame:)];display.preferredFramesPerSecond=60;[display addToRunLoop:NSRunLoop.mainRunLoop forMode:NSRunLoopCommonModes];
+    [self waitForExpectations:@[complete] timeout:180];[display invalidate];timer.callback=nil;XCTAssertNil(failure);XCTAssertEqual(frames,90u);XCTAssertEqual(observations.count,3u);
+    NSDictionary* record=@{@"observations":observations,@"scenarios":@(live->validation().scenarioCount()),@"frames":@(frames),@"experimentalImplemented":@NO,@"actualClassicGPU":@YES};
+    NSData* data=[NSJSONSerialization dataWithJSONObject:record options:NSJSONWritingPrettyPrinted|NSJSONWritingSortedKeys error:nil];XCTAttachment* a=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];a.name=@"Classic HUD planning capture metadata";a.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:a];
+    runtime->setActive(false);runtime.reset();window.hidden=YES;window.rootViewController=nil;NSError* error=nil;XCTAssertTrue([NSFileManager.defaultManager removeItemAtURL:directory error:&error]);
+}
 - (void)runFrames:(unsigned)targetFrames fullCoverage:(BOOL)fullCoverage {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];
-    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];HM2ConcurrentSurface* surface=[[HM2ConcurrentSurface alloc]initWithFrame:window.bounds];surface.contentScaleFactor=UIScreen.mainScreen.scale;
+    UIWindowScene* scene=nil;const auto deadline=[NSDate dateWithTimeIntervalSinceNow:10];
+    do{for(UIScene* candidate in UIApplication.sharedApplication.connectedScenes)if([candidate isKindOfClass:UIWindowScene.class]&&candidate.activationState==UISceneActivationStateForegroundActive){scene=(UIWindowScene*)candidate;break;}if(!scene)[NSRunLoop.mainRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:.01]];}while(!scene&&deadline.timeIntervalSinceNow>0);
+    XCTAssertNotNil(scene);if(!scene)return;
+    UIWindow* window=[[UIWindow alloc]initWithWindowScene:scene];window.frame=scene.coordinateSpace.bounds;HM2ConcurrentController* controller=[HM2ConcurrentController new];HM2ConcurrentSurface* surface=[[HM2ConcurrentSurface alloc]initWithFrame:window.bounds];surface.contentScaleFactor=UIScreen.mainScreen.scale;
     CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];[surface layoutIfNeeded];
     std::unique_ptr<hm2::apple::ConcurrentRuntime> runtime;
     try{runtime=std::make_unique<hm2::apple::ConcurrentRuntime>(root,directory);}catch(const std::exception& e){XCTFail(@"Concurrent preparation failed: %s",e.what());window.hidden=YES;return;}
-    XCTestExpectation* completed=[self expectationWithDescription:@"All live scenarios share1200 display callbacks"];
+    XCTestExpectation* completed=[self expectationWithDescription:@"All live scenarios share the same display callbacks"];
     HM2ConcurrentTimer* timer=[HM2ConcurrentTimer new];__block unsigned frames=0;__block NSString* failure=nil;
     auto* live=runtime.get();
+    NSMutableArray* menuObservations=[NSMutableArray new];
     const hm2::Size viewport{float(surface.bounds.size.width),float(surface.bounds.size.height)};
+    const bool portrait=UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPad;
+    if(portrait?viewport.width>=viewport.height:viewport.width<=viewport.height){XCTFail(@"Test scene orientation differs from current iPhone-landscape / iPad-portrait contract: %.1fx%.1f",viewport.width,viewport.height);window.hidden=YES;return;}
+    const auto safe=surface.safeAreaInsets;runtime->setDisplay(hm2::DisplayConfiguration::surface(viewport,{float(safe.left),float(safe.bottom),float(safe.right),float(safe.top)}));
+    if(fullCoverage)targetFrames=hm2::validation::displayValidationFrames(runtime->validation().session(0).display());
+    NSLog(@"HM2_CONCURRENT_CANVAS width=%.3f height=%.3f safeLeft=%.3f safeBottom=%.3f safeRight=%.3f safeTop=%.3f device=%@",viewport.width,viewport.height,safe.left,safe.bottom,safe.right,safe.top,portrait?@"iPad":@"iPhone");
     timer.callback=^(CADisplayLink* link){@autoreleasepool{
         try{
             live->tick();++frames;if(fullCoverage&&frames==300)(void)live->verifyInactiveInputDiscard();if(frames==targetFrames)live->captureNextFrame();live->draw(layer,viewport);
+            if(!fullCoverage&&(frames==1||frames==180||frames==347||frames==349||frames==350||frames==351||frames==354||frames==355||frames==360)){
+                for(unsigned index:{55u,56u}){
+                    NSDictionary* observation=live->captureScenarioUI(index,layer);[menuObservations addObject:observation];
+                    attachPixels(self,live->pixels(),live->drawableSize(),[NSString stringWithFormat:@"Menu audit scenario%u frame%u full size",index,frames]);
+                }
+            }
             if(frames%300==0){const auto metrics=live->validation().metrics();NSLog(@"HM2_CONCURRENT_PROGRESS frame=%u cases=%lu weaponDefinitions=%lu weaponKinds=%lu menuOverlap=%llu/%llu",frames,(unsigned long)metrics.activeScenarios,(unsigned long)metrics.activeWeaponDefinitions,(unsigned long)metrics.activeWeaponKinds,metrics.menuFramesWithCombatActivity,metrics.menuActionFrames);}
             if(frames>=targetFrames){[link invalidate];[completed fulfill];}
         }catch(const std::exception& e){failure=[NSString stringWithUTF8String:e.what()];[link invalidate];[completed fulfill];}
@@ -65,21 +123,55 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
     attachPixels(self,runtime->pixels(),runtime->drawableSize(),@"Same-frame repeated original GPU");
     XCTAssertEqual([comparison[@"differentRGBPixels"] unsignedIntegerValue],0u);
     XCTAssertEqualObjects(comparison[@"repeatDrawCalls"],comparison[@"firstDrawCalls"]);
-    NSMutableDictionary* report=[runtime->report() mutableCopy];report[@"renderComparison"]=comparison;NSError* error=nil;NSData* data=[NSJSONSerialization dataWithJSONObject:report options:NSJSONWritingPrettyPrinted|NSJSONWritingSortedKeys error:&error];XCTAssertNotNil(data);
+    NSMutableDictionary* report=[runtime->report() mutableCopy];report[@"menuVisualObservations"]=menuObservations;report[@"renderComparison"]=comparison;const auto& actual=runtime->validation().session(0).display();report[@"gameCanvas"]=@{@"width":@(actual.canvas.width),@"height":@(actual.canvas.height),@"safeLeft":@(actual.insets.left),@"safeBottom":@(actual.insets.bottom),@"safeRight":@(actual.insets.right),@"safeTop":@(actual.insets.top)};NSError* error=nil;NSData* data=[NSJSONSerialization dataWithJSONObject:report options:NSJSONWritingPrettyPrinted|NSJSONWritingSortedKeys error:&error];XCTAssertNotNil(data);
     if(data){XCTAttachment* attachment=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];attachment.name=@"HM2 real display-clock concurrent report";attachment.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:attachment];}
-    XCTAssertEqual(frames,targetFrames);XCTAssertEqual([report[@"scenarios"] unsignedIntegerValue],115u);XCTAssertEqual([report[@"combatScenarios"] unsignedIntegerValue],55u);
+    XCTAssertEqual(frames,targetFrames);XCTAssertEqual([report[@"scenarios"] unsignedIntegerValue],hm2::validation::concurrentScenarioCount);XCTAssertEqual([report[@"combatScenarios"] unsignedIntegerValue],55u);
     XCTAssertTrue([report[@"commonFrameInterval"] boolValue]);
     if(fullCoverage){XCTAssertEqual([report[@"activeWeaponDefinitions"] unsignedIntegerValue],110u);XCTAssertEqual([report[@"activeWeaponKinds"] unsignedIntegerValue],5u);XCTAssertGreaterThanOrEqual([report[@"maxConcurrentWeaponKinds"] unsignedIntegerValue],5u);}
     XCTAssertGreaterThanOrEqual([report[@"maxProgressingEffects"] unsignedIntegerValue],2u);
-    XCTAssertEqual([report[@"imageTextureUploadsAfterPreparation"] unsignedIntegerValue],0u);
-    XCTAssertEqual([report[@"warmReadMisses"] unsignedIntegerValue],0u);XCTAssertEqual([report[@"warmExistsMisses"] unsignedIntegerValue],0u);
+    NSDictionary* resources=report[@"resourceLifecycle"];XCTAssertNotNil(resources);
+    for(NSString* key in @[@"steadyDrawImageReads",@"steadyDrawImageDecodes",@"steadyDrawTextureUploads"])XCTAssertEqual([resources[key] unsignedIntegerValue],0u,@"Unexpected resource work during unchanged-owner draw: %@",key);
+    if(fullCoverage){XCTAssertGreaterThan([resources[@"ownerBoundaryEvents"] unsignedIntegerValue],0u);XCTAssertGreaterThan([resources[@"textureDeletes"] unsignedIntegerValue],0u);XCTAssertGreaterThan([resources[@"textureUploadsAfterPreparation"] unsignedIntegerValue],0u);}
+    const auto resourceMetrics=runtime->validation().metrics();
+    XCTAssertEqual(resourceMetrics.steadyReadRequests,0u);XCTAssertEqual(resourceMetrics.steadyExistsRequests,0u);XCTAssertEqual(resourceMetrics.steadyReadMisses,0u);XCTAssertEqual(resourceMetrics.steadyExistsMisses,0u);
+    XCTAssertEqual(resourceMetrics.warmReadMisses,resourceMetrics.preparationReadMisses+resourceMetrics.steadyReadMisses);XCTAssertEqual(resourceMetrics.warmExistsMisses,resourceMetrics.preparationExistsMisses+resourceMetrics.steadyExistsMisses);
+    XCTAssertGreaterThan(resourceMetrics.resourcePreparationOperations,0u);XCTAssertGreaterThan(resourceMetrics.preparationReadRequests,0u);XCTAssertGreaterThan(resourceMetrics.preparationExistsRequests,0u);
     NSDictionary* before=report[@"audioBefore"];NSDictionary* after=report[@"audioAfter"];
     XCTAssertEqual([after[@"contextsCreated"] unsignedIntegerValue],1u);
-    for(NSString* key in @[@"contextsCreated",@"sourcesCreated",@"buffersCreated",@"effectFileReads",@"effectDecodes",@"contextBindCalls",@"contextClearCalls",@"contextBindFailures",@"effectNameConversions"])XCTAssertEqualObjects(before[key],after[key]);
+    for(NSString* key in @[@"contextsCreated",@"sourcesDeleted",@"buffersDeleted",@"contextBindCalls",@"contextClearCalls",@"contextBindFailures",@"effectNameConversions"])XCTAssertEqualObjects(before[key],after[key]);
+    NSDictionary* preparation=report[@"audioPreparation"];XCTAssertNotNil(preparation);NSArray* preparedBefore=preparation[@"before"],*preparedAfter=preparation[@"after"],*firstRequests=preparation[@"newCacheMisses"];
+    XCTAssertGreaterThanOrEqual(preparedAfter.count,preparedBefore.count);if(preparedAfter.count>=preparedBefore.count)XCTAssertEqualObjects([preparedAfter subarrayWithRange:NSMakeRange(0,preparedBefore.count)],preparedBefore);
+    NSMutableSet<NSString*>* seen=[NSMutableSet new];for(NSDictionary* miss in preparedAfter){
+        NSString* name=miss[@"name"];XCTAssertFalse([seen containsObject:name],@"Cached sound was prepared again: %@",name);[seen addObject:name];XCTAssertTrue([miss[@"success"] boolValue],@"First preparation failed: %@",miss);
+        for(NSString* key in @[@"fileReads",@"decodes",@"sourcesCreated",@"buffersCreated"])XCTAssertEqual([miss[key] unsignedIntegerValue],1u,@"First named cache miss must do exactly one %@: %@",key,miss);
+        XCTAssertEqual([miss[@"sourcesDeleted"] unsignedIntegerValue],0u);XCTAssertEqual([miss[@"buffersDeleted"] unsignedIntegerValue],0u);XCTAssertNotEqual([miss[@"sourceIdentity"] unsignedIntegerValue],0u);XCTAssertEqualObjects(miss[@"ownerContext"],after[@"ownerContext"]);
+        XCTAssertEqual([miss[@"loadedAfter"] unsignedIntegerValue],[miss[@"loadedBefore"] unsignedIntegerValue]+1);
+    }
+    // HD GameMain.start0x4f0c explicitly requests these names (CFStrings
+    // 0x5e08c/0x5e09c). Actual startup now prepares them before the first door
+    // transition. A future first request is accepted only with this name proof;
+    // cached repeats must contribute no read/decode/source/buffer allocation.
+    const NSSet* originalDoorRequests=[NSSet setWithArray:@[@"Loading_Open.wav",@"Loading_Close.wav"]];
+    for(NSDictionary* miss in firstRequests){XCTAssertTrue([originalDoorRequests containsObject:miss[@"name"]],@"Unexpected later cold sound: %@",miss);XCTAssertFalse([preparation[@"beforeNames"] containsObject:miss[@"name"]]);}
+    XCTAssertEqual(firstRequests.count,preparedAfter.count-preparedBefore.count);
+    for(NSString* key in @[@"loadedSounds",@"sourcesCreated",@"buffersCreated",@"effectFileReads",@"effectDecodes",@"effectColdNameConversions"]){const auto initial=[before[key] unsignedLongLongValue],final=[after[key] unsignedLongLongValue];XCTAssertGreaterThanOrEqual(final,initial);XCTAssertEqual(final-initial,firstRequests.count,@"Only the evidenced first named requests may allocate/read: %@",key);}
+    XCTAssertEqual([before[@"loadedSounds"] unsignedIntegerValue],preparedBefore.count);XCTAssertEqual([after[@"loadedSounds"] unsignedIntegerValue],seen.count);
     XCTAssertEqualObjects(before[@"currentContext"],before[@"ownerContext"]);XCTAssertEqualObjects(after[@"currentContext"],after[@"ownerContext"]);XCTAssertNotEqual([after[@"currentContext"] unsignedIntegerValue],0u);XCTAssertEqual([after[@"contextBindCalls"] unsignedIntegerValue],1u);XCTAssertEqual([after[@"contextClearCalls"] unsignedIntegerValue],0u);XCTAssertEqual([after[@"contextBindFailures"] unsignedIntegerValue],0u);XCTAssertEqual([after[@"effectNameConversions"] unsignedIntegerValue],0u);XCTAssertGreaterThan([after[@"effectByteNameRequests"] unsignedIntegerValue],0u);
     unsigned failedButtons=0;bool shop=false,mission=false,restarted=false,levelUp=false;
     for(NSDictionary* row in report[@"cases"]){XCTAssertEqual([row[@"ticks"] unsignedIntegerValue],targetFrames);XCTAssertEqual([row[@"firstFrame"] unsignedIntegerValue],1u);XCTAssertEqual([row[@"lastFrame"] unsignedIntegerValue],targetFrames);shop|=[row[@"shopPurchased"] boolValue]&&[row[@"insufficientRejected"] boolValue];mission|=[row[@"missionComplete"] boolValue];restarted|=[row[@"restarted"] boolValue];levelUp|=[row[@"level"] intValue]>[row[@"initialLevel"] intValue];failedButtons+=[row[@"buttonFailures"] unsignedIntegerValue];}
     XCTAssertTrue(shop);if(fullCoverage){XCTAssertTrue(mission);XCTAssertTrue(restarted);XCTAssertTrue(levelUp);
+        const auto& observations=runtime->validation().observations();XCTAssertEqual(observations.size(),hm2::validation::concurrentScenarioCount);
+        for(unsigned index:{115u,116u}){const auto& o=observations[index].recentInput;XCTAssertGreaterThanOrEqual(o.firstPathPoints,3u);XCTAssertGreaterThanOrEqual(o.replacementPathPoints,index==115?1u:3u);XCTAssertEqual(o.dashFrame,150u);XCTAssertEqual(o.dashAfter,o.dashBefore+1);XCTAssertEqual(o.specialAfter,o.specialBefore-100);XCTAssertEqual(o.savesBefore,o.savesAfter);}
+        std::uint64_t synchronizedFrame=0;
+        for(unsigned i=121;i<hm2::validation::concurrentScenarioCount;++i){const auto& o=observations[i].synchronizedWeapon;XCTAssertGreaterThan(o.pausedFrame,0u);XCTAssertGreaterThan(o.resumedFrame,o.pausedFrame);XCTAssertEqual(o.emittedFrame,o.resumedFrame);XCTAssertGreaterThan(o.emissionsAfter,o.emissionsAtResume);XCTAssertEqual(o.emissionsAtPause,o.emissionsAtResume);XCTAssertEqual(o.pausedWorldTime,o.resumedWorldTime);if(synchronizedFrame)XCTAssertEqual(synchronizedFrame,o.resumedFrame);else synchronizedFrame=o.resumedFrame;}
+        const auto& idle=observations[120].recentInput.zoom;XCTAssertGreaterThanOrEqual(idle.size(),6u);for(const auto& sample:idle){XCTAssertEqual(sample.zoom,1.f);XCTAssertEqual(sample.currentZoom,1.f);XCTAssertEqual(sample.targetZoom,1.f);XCTAssertEqual(sample.target,0u);XCTAssertEqual(sample.pathCount,0u);}
+        const auto& lifecycle=observations[118].recentInput;
+        XCTAssertTrue(lifecycle.inactivePaused&&lifecycle.inactiveMenu&&lifecycle.reactivatedPaused&&lifecycle.reactivatedMenu&&lifecycle.manuallyResumed);
+        XCTAssertEqual(lifecycle.worldTimeAtInterrupt,lifecycle.worldTimeAtReactivate);XCTAssertEqual(lifecycle.worldTimeAtReactivate,lifecycle.worldTimeBeforeResume);XCTAssertGreaterThan(lifecycle.worldTimeAfterResume,lifecycle.worldTimeBeforeResume);XCTAssertEqual(lifecycle.savesBefore,lifecycle.savesAfter);
+        const auto& hud=observations[119].hudLayout;XCTAssertTrue(hud.menuOpened&&hud.editorOpened&&hud.dragMoved&&hud.applied&&hud.reloaded&&hud.resumed);XCTAssertGreaterThanOrEqual(hud.inputs,7u);
+        const auto& zoom=observations[117].recentInput.zoom;XCTAssertEqual(zoom.size(),6u);if(zoom.size()==6){XCTAssertGreaterThan(zoom[1].target,0u);XCTAssertGreaterThan(zoom[3].target,0u);float lo=zoom.front().zoom,hi=lo;for(const auto& sample:zoom){lo=std::min(lo,sample.zoom);hi=std::max(hi,sample.zoom);XCTAssertEqual(sample.output.width,actual.canvas.width);XCTAssertEqual(sample.output.height,actual.canvas.height);}if(actual.focusZoom)XCTAssertGreaterThan(hi-lo,.01f);else {XCTAssertEqual(lo,1.f);XCTAssertEqual(hi,1.f);}}
+        const auto recentMetrics=runtime->validation().metrics();XCTAssertGreaterThan(recentMetrics.recentInputFramesWithCombatActivity,0u);XCTAssertGreaterThan(recentMetrics.hudFramesWithCombatActivity,0u);XCTAssertGreaterThan(recentMetrics.lifecycleFramesWithCombatActivity,0u);
+
         unsigned repairs=0;for(NSDictionary* row in report[@"cases"])if([row[@"quickItemCode"] length]){
             ++repairs;XCTAssertEqual([row[@"quickUseFrame"] unsignedIntegerValue],241u);XCTAssertTrue([row[@"quickTapAccepted"] boolValue]);
             XCTAssertGreaterThan([row[@"quickHPAfter"] intValue],[row[@"quickHPBefore"] intValue]);XCTAssertEqualObjects(row[@"quickHPAfter"],row[@"quickSlotHPAfter"]);
@@ -93,9 +185,10 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
         }XCTAssertEqual(strikes,3u);XCTAssertGreaterThan([report[@"airStrikeFramesWithCombatActivity"] unsignedIntegerValue],0u);
         XCTAssertGreaterThan([report[@"messageFonts"] count],0u);for(NSDictionary* font in report[@"messageFonts"]){XCTAssertEqualObjects(font[@"font"],@"TrebuchetMS-Bold");XCTAssertGreaterThan([font[@"inkPixels"] unsignedIntegerValue],20u);XCTAssertEqual([font[@"size"] intValue],16);XCTAssertEqual([font[@"width"] intValue],512);XCTAssertEqual([font[@"height"] intValue],24);XCTAssertFalse([font[@"retina"] boolValue]);}
         XCTAssertEqual([report[@"capturedSourceFrames"] count],15u);for(NSDictionary* capture in report[@"capturedSourceFrames"]){if([capture[@"frame"] intValue]==112)XCTAssertGreaterThan([capture[@"dashQuads"] intValue],0);if([capture[@"frame"] intValue]==240)XCTAssertEqual([capture[@"messageBackgrounds"] intValue],1);if([capture[@"frame"] intValue]==241)XCTAssertEqual([capture[@"messageBackgrounds"] intValue],1);if([capture[@"frame"] intValue]==381){XCTAssertGreaterThan([capture[@"planes"] intValue],0);XCTAssertGreaterThan([capture[@"markers"] intValue],0);}}
-        unsigned baselineMenuFrames=0,baselineMenuOverlap=0;for(NSDictionary* frame in report[@"frameActivity"]){XCTAssertEqual([frame[@"tickedScenarios"] intValue],115);bool baseline=false;for(NSDictionary* b in frame[@"buttons"])if([b[@"scenario"] intValue]<68)baseline=true;
+        unsigned baselineMenuFrames=0,baselineMenuOverlap=0,compactCombatMenuEvents=0;for(NSDictionary* frame in report[@"frameActivity"]){XCTAssertEqual([frame[@"tickedScenarios"] intValue],int(hm2::validation::concurrentScenarioCount));bool baseline=false;for(NSDictionary* b in frame[@"buttons"]){const int scenario=[b[@"scenario"] intValue];if(scenario<55){++compactCombatMenuEvents;XCTAssertTrue(!portrait);const int menuFrame=[frame[@"frame"] intValue];XCTAssertTrue(menuFrame==120||menuFrame==121);XCTAssertEqual([b[@"id"] intValue],menuFrame==120?1021:1030);XCTAssertTrue([b[@"delivered"] boolValue]);}else if(scenario<68)baseline=true;}
             if(baseline){++baselineMenuFrames;if([frame[@"combatActiveProjectiles"] unsignedIntegerValue]||[frame[@"combatEmittingScenarios"] unsignedIntegerValue]||[frame[@"combatDamage"] unsignedIntegerValue])++baselineMenuOverlap;}}
         XCTAssertEqual(baselineMenuFrames,11u);XCTAssertEqual(baselineMenuOverlap,11u);
+        XCTAssertEqual(compactCombatMenuEvents,portrait?0u:2u);
         NSArray* cases=report[@"cases"];NSMutableSet* fields=[NSMutableSet setWithObject:@"Stage01_01"];unsigned long long spawns[3]={0,0,0};
         for(unsigned k=0;k<3;++k)spawns[k]=[cases[0][@"firstSpawns"][k] unsignedLongLongValue];
         for(unsigned i=68;i<105;++i){NSDictionary* row=cases[i];XCTAssertEqual([row[@"role"] intValue],7);XCTAssertFalse([fields containsObject:row[@"map"]]);[fields addObject:row[@"map"]];for(unsigned k=0;k<3;++k)spawns[k]+=[row[@"firstSpawns"][k] unsignedLongLongValue];
@@ -115,7 +208,7 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
             }XCTAssertGreaterThan(incoming,0ull);XCTAssertGreaterThan([row[@"navigationRequests"] intValue],0);XCTAssertGreaterThan([row[@"distanceMoved"] doubleValue],30);XCTAssertGreaterThan([row[@"botThreatEmissions"] unsignedLongLongValue],0ull);if(index==106)XCTAssertEqual([row[@"playerEmissions"] unsignedIntegerValue],0u);
             else {XCTAssertGreaterThan(contacts,0ull);XCTAssertGreaterThan([row[@"pickupEvents"] intValue],0);XCTAssertGreaterThan([row[@"coinPickups"] intValue],0);XCTAssertGreaterThan([row[@"pickupCreditGain"] intValue],0);XCTAssertEqual([row[@"credit"] intValue],[row[@"initialCredit"] intValue]+[row[@"pickupCreditGain"] intValue]);}
         }
-        NSArray* swaps=cases[107][@"weaponSwaps"];XCTAssertEqual(swaps.count,2u);for(unsigned side=0;side<swaps.count;++side){NSDictionary* w=swaps[side];XCTAssertEqual([w[@"inventoryPosition"] unsignedIntegerValue],10u+side);XCTAssertGreaterThan([w[@"chooserFrame"] unsignedIntegerValue],0u);XCTAssertTrue([w[@"chooserShown"] boolValue]);XCTAssertGreaterThanOrEqual([w[@"equipFrame"] unsignedIntegerValue],[w[@"chooserFrame"] unsignedIntegerValue]+31u);XCTAssertTrue([w[@"equipped"] boolValue]);XCTAssertGreaterThanOrEqual([w[@"firstEmissionFrame"] unsignedIntegerValue],[w[@"equipFrame"] unsignedIntegerValue]);for(NSString* k in @[@"ownedBefore",@"ownedAfter",@"equippedAfter"])XCTAssertTrue([w[k] boolValue]);for(NSString* k in @[@"equippedBefore",@"oldEquippedAfter",@"pausedBefore",@"pausedAfter"])XCTAssertFalse([w[k] boolValue]);for(NSString* k in @[@"countBefore",@"countAfter",@"oldCountAfter"])XCTAssertEqual([w[k] intValue],1);XCTAssertEqualObjects(w[@"savesBefore"],w[@"savesAfter"]);if(side)XCTAssertGreaterThan([w[@"chooserFrame"] unsignedIntegerValue],[swaps[0][@"equipFrame"] unsignedIntegerValue]);}
+        NSArray* swaps=cases[107][@"weaponSwaps"];XCTAssertEqual(swaps.count,2u);for(unsigned side=0;side<swaps.count;++side){NSDictionary* w=swaps[side];XCTAssertEqual([w[@"inventoryPosition"] unsignedIntegerValue],10u+side);XCTAssertGreaterThan([w[@"chooserFrame"] unsignedIntegerValue],0u);XCTAssertTrue([w[@"chooserShown"] boolValue]);XCTAssertGreaterThanOrEqual([w[@"equipFrame"] unsignedIntegerValue],[w[@"chooserFrame"] unsignedIntegerValue]+31u);XCTAssertTrue([w[@"equipped"] boolValue]);XCTAssertGreaterThanOrEqual([w[@"firstEmissionFrame"] unsignedIntegerValue],[w[@"equipFrame"] unsignedIntegerValue]);for(NSString* k in @[@"ownedBefore",@"ownedAfter",@"equippedAfter"])XCTAssertTrue([w[k] boolValue]);for(NSString* k in @[@"equippedBefore",@"oldEquippedAfter",@"pausedBefore",@"pausedAfter"])XCTAssertFalse([w[k] boolValue]);for(NSString* k in @[@"countBefore",@"countAfter",@"oldCountAfter"])XCTAssertEqual([w[k] intValue],1);XCTAssertEqualObjects(w[@"savesBefore"],w[@"savesAfter"]);if(portrait?side==1:side==0)XCTAssertGreaterThan([w[@"chooserFrame"] unsignedIntegerValue],[swaps[portrait?0:1][@"equipFrame"] unsignedIntegerValue]);}
         NSDictionary* completedMission=cases[114][@"completedMissions"];
         XCTAssertEqualObjects(completedMission[@"ids"],(@[@"M002010",@"M001010"]));XCTAssertEqualObjects(completedMission[@"credits"],(@[@580,@680]));XCTAssertEqualObjects(completedMission[@"experience"],(@[@200,@400]));XCTAssertEqualObjects(completedMission[@"levels"],(@[@0,@1]));XCTAssertEqualObjects(completedMission[@"rewardCounts"],(@[@2,@3]));
         XCTAssertGreaterThan([completedMission[@"popupFrames"][0] intValue],0);XCTAssertEqual([completedMission[@"popupFrames"][1] intValue],[completedMission[@"okFrames"][0] intValue]);
@@ -148,6 +241,8 @@ void attachPixels(XCTestCase* test,NSData* rgba,CGSize size,NSString* name){
             if(number==231){XCTAssertEqual([capture[@"helpPages"] intValue],0);XCTAssertEqual([capture[@"helpGuides"] intValue],0);}
         }
         NSDictionary* interruption=report[@"inputInterruption"];for(NSString* key in @[@"capturedBefore",@"discardedAfter",@"beginReachedRealHandler",@"cleanupSentNoAction",@"noExtraTick",@"noSave",@"creditPreserved",@"screenPreserved"])XCTAssertTrue([interruption[key] boolValue],@"Interruption %@ failed",key);
+        XCTAssertEqual([interruption[@"resumeFailures"] unsignedIntegerValue],0u);
+        XCTAssertEqualObjects(interruption[@"previouslyRunning"],interruption[@"explicitMenuResumes"]);
         NSDictionary* moving=report[@"cases"][58];XCTAssertEqual([moving[@"dashStarts"] unsignedIntegerValue],0u);XCTAssertGreaterThan([moving[@"distanceMoved"] doubleValue],100.0);
         XCTAssertGreaterThan([moving[@"coinPickups"] unsignedIntegerValue],0u);XCTAssertGreaterThan([moving[@"itemPickups"] unsignedIntegerValue],0u);
         XCTAssertGreaterThan([moving[@"pickupCreditGain"] intValue],0);

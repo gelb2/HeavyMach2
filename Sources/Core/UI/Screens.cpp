@@ -1,5 +1,7 @@
 #include "Core/UI/Screens.hpp"
 #include "Core/Data/DataTable.hpp"
+#include "Core/Presentation/MenuArtwork.hpp"
+#include "Core/Presentation/MenuGridLayout.hpp"
 #include <algorithm>
 #include <bit>
 #include <cmath>
@@ -18,27 +20,40 @@ Vec2 plus(Vec2 a,Vec2 b){return {a.x+b.x,a.y+b.y};}
 Owner owner(ScreenId screen,Panel panel){return (Owner(screen)<<16)|Owner(panel);}
 const ItemView emptyItem;
 const ItemView& itemAt(const std::vector<ItemView>& items,std::size_t index){return index<items.size()?items[index]:emptyItem;}
-struct ImageNode {VisualImage image;unsigned layer=7;std::string tag;std::shared_ptr<Button> parent{};Vec2 local{};};
-struct ButtonNode {std::shared_ptr<Button> button;unsigned layer=7;};
-struct TextNode {std::shared_ptr<Text> text;unsigned layer=7;std::shared_ptr<Button> parent{};Vec2 local{};};
-struct NumberNode {std::shared_ptr<ImageFont> font;TileImage* tile;unsigned layer=7;std::string tag;};
-struct PreviewNode {Frame frame;Vec2 origin;unsigned slot;std::uint64_t revision;unsigned layer=7;};
-struct RadarNode {VisualTile tile;unsigned layer=9;};
+using Region=DisplayRegion;
+std::shared_ptr<const std::array<Sprite,hud::count>> croppedHUDBackground(VisualImage image){
+    // Resolve the original Tile2D non-atlas geometry/UV/blend once when its
+    // owner is built. A moved HUD crops only that existing texture's quad.
+    VisualLayer original(1);original.submitImage(image);const auto resolved=original.drain();
+    if(resolved.nonAtlas.size()!=1||resolved.nonAtlas.front().strip.size()!=4)throw std::logic_error("Original HUD background requires one Tile2D quad");
+    const auto& full=resolved.nonAtlas.front();auto pieces=std::make_shared<std::array<Sprite,hud::count>>();
+    const auto interpolate=[](const StripVertex& a,const StripVertex& b,float t){auto result=a;result.position={std::lerp(a.position.x,b.position.x,t),std::lerp(a.position.y,b.position.y,t)};result.uv={std::lerp(a.uv.x,b.uv.x,t),std::lerp(a.uv.y,b.uv.y,t)};return result;};
+    for(unsigned group=0;group<hud::count;++group){auto& piece=(*pieces)[group];piece=full;const auto slice=hud::backgroundSlices[group];const float left=slice.x/image.tile.content.width,right=(slice.x+slice.width)/image.tile.content.width;
+        piece.strip={interpolate(full.strip[0],full.strip[2],left),interpolate(full.strip[1],full.strip[3],left),interpolate(full.strip[0],full.strip[2],right),interpolate(full.strip[1],full.strip[3],right)};
+    }
+    return pieces;
+}
+struct ImageNode {VisualImage image;unsigned layer=7;std::string tag;std::shared_ptr<Button> parent{};Vec2 local{};Region region=Region::content;int hudGroup=-1;std::shared_ptr<const std::array<Sprite,hud::count>> hudBackgroundParts;std::shared_ptr<const Sprite> menuPanel;};
+struct ButtonNode {std::shared_ptr<Button> button;unsigned layer=7;Region region=Region::content;int hudGroup=-1;float angle=0;};
+struct TextNode {std::shared_ptr<Text> text;unsigned layer=7;std::shared_ptr<Button> parent{};Vec2 local{};Region region=Region::content;int hudGroup=-1;};
+struct NumberNode {std::shared_ptr<ImageFont> font;TileImage* tile;unsigned layer=7;std::string tag;Region region=Region::content;int hudGroup=-1;};
+struct PreviewNode {Frame frame;Vec2 origin;unsigned slot;std::uint64_t revision;unsigned layer=7;Region region=Region::content;int hudGroup=-1;};
+struct RadarNode {VisualTile tile;unsigned layer=9;Region region=Region::content;int hudGroup=-1;};
 struct BaseDescriptionNode {
     VisualImage background;
     std::shared_ptr<Text> text;
     float localX;
     float targetX;
-    unsigned layer=7;
+    unsigned layer=7;Region region=Region::content;int hudGroup=-1;
 };
 enum class DetailKind {shop,inventory,maintenance};
 struct DetailPresentation {
     DetailKind kind=DetailKind::shop;std::uint64_t revision=0;int absolute=-1;
-    ItemView entry;Vec2 origin,descPos;float x=.01f,y=.01f;bool vertical=false,up=false;
+    ItemView entry;Vec2 origin,descPos;float x=.01f,y=.01f;bool vertical=false,up=false,phoneArtwork=false;
     unsigned layer=9;std::shared_ptr<Button> background;
     std::shared_ptr<Text> title,description;std::optional<VisualImage> large;
 };
-struct DetailNode {std::shared_ptr<DetailPresentation> detail;unsigned layer=9;};
+struct DetailNode {std::shared_ptr<DetailPresentation> detail;unsigned layer=9;Region region=Region::content;int hudGroup=-1;};
 struct FieldPresentation {
     std::uint64_t identity=0,enemyRevision=0;bool range[2]={false,false};
     std::shared_ptr<Text> enemyName;
@@ -75,9 +90,116 @@ struct TitlePresentation {
     bool titleSound=false,episodeSound=false,startSound=false;
 };
 }
+struct Screens::HUDState {
+    std::map<std::string,hud::Configuration> saved;
+    std::string profile,error;
+    hud::Configuration draft;
+    bool editing=false,rebuild=false;
+    std::uintptr_t dragPointer=0;unsigned selected=hud::gauges;Vec2 dragStart,dragOrigin;
+    void selectProfile(const DisplayConfiguration& display,ScreensHost& host){
+        const std::string next=display.compact?"compact":"regular";
+        if(next==profile)return;
+        editing=false;dragPointer=0;profile=next;error.clear();
+        if(saved.contains(profile))return;
+        hud::Configuration config;
+        try{if(auto data=host.loadHUDLayout(profile))config=hud::upgrade(hud::decode(*data),DisplayLayout(display));}
+        catch(const std::exception&){error="HUD 설정을 읽지 못했습니다. 기본 배치를 표시합니다.";}
+        saved.emplace(profile,config);
+    }
+    const hud::Configuration& active()const{return editing?draft:saved.at(profile);}
+    void begin(){draft=saved.at(profile);editing=true;dragPointer=0;rebuild=true;}
+    void cancel(){editing=false;dragPointer=0;error.clear();rebuild=true;}
+    void reset(){if(editing){draft={};dragPointer=0;error.clear();rebuild=true;}}
+    bool apply(ScreensHost& host){
+        if(!editing)return false;
+        bool success=false;try{success=host.saveHUDLayout(profile,hud::encode(draft));}catch(const std::exception&){}
+        if(!success){error="HUD 배치를 저장하지 못했습니다. 다시 적용해 주세요.";rebuild=true;return false;}
+        saved[profile]=draft;cancel();return true;
+    }
+};
 struct Screens::Impl {
-    ResourceAccess& resources;PreparedTiles& tiles;ScreensHost& host;ScreensState state;
+    std::shared_ptr<std::uint64_t> resourceGeneration;
+    ResourceAccess& resources;PreparedTiles& tiles;std::shared_ptr<PreparedTiles> tileOwner;ScreensHost& host;ScreensState state;
     std::vector<Node> nodes;
+    DisplayLayout layout;
+    std::shared_ptr<HUDState> hud;int currentHUDGroup=-1;
+    std::map<const Button*,int> buttonHUDGroups;
+    Region region=Region::content;
+    float verticalPan=0,verticalOrigin=0;Vec2 verticalStart;std::uintptr_t verticalPointer=0;bool verticalDragging=false;
+    float shopPan=0,panOrigin=0;Vec2 panStart;std::uintptr_t panPointer=0;
+    bool phoneEquipment=false;float stockScroll=0,inventoryScroll=0;
+    float scenePan=0,scenePanOrigin=0;Vec2 scenePanStart;std::uintptr_t scenePanPointer=0;bool sceneDragging=false;
+    float listTop=1024,listBottom=0;
+    std::map<const Button*,Region> buttonRegions;
+    struct RegionScope {Impl& self;Region before;RegionScope(Impl& p,Region value):self(p),before(p.region){p.region=value;}~RegionScope(){self.region=before;}};
+    template<class T> void pushNode(T node){
+        node.region=region;node.hudGroup=currentHUDGroup;
+        if(phoneMenu()&&menu::menuRegion(region)){
+            if constexpr(std::is_same_v<T,ImageNode>)node.image.scale={node.image.scale.x*1.5f,node.image.scale.y*1.5f};
+            if constexpr(std::is_same_v<T,ButtonNode>){node.button->scale={node.button->scale.x*1.5f,node.button->scale.y*1.5f};}
+            if constexpr(std::is_same_v<T,TextNode>)node.text->scale={node.text->scale.x*1.5f,node.text->scale.y*1.5f};
+            if constexpr(std::is_same_v<T,NumberNode>){node.font->scale={1.5f,1.5f};node.font->tick();}
+        }
+        if constexpr(std::is_same_v<T,ImageNode>){
+            if(node.tag=="hud.background"&&splitHUDBackground())node.hudBackgroundParts=croppedHUDBackground(node.image);
+            if(node.tag=="title.bg")node.region=menu::phone(layout.configuration())?Region::artBackdrop:Region::backdrop;
+            else if(layout.configuration().compact&&(node.tag=="menu.backdrop"||node.image.tile.image=="SelSlot_BG.png"||node.image.tile.image=="CmdCenterBG.png"))node.region=Region::backdrop;
+            else if(node.tag=="title.big")node.region=menu::phone(layout.configuration())?Region::artContent:Region::banner;
+            else if(node.tag.starts_with("hud.enemy"))node.region=Region::top;
+            else if(state.screen==ScreenId::shop&&node.image.tile.image=="ShopBG.png")node.region=Region::shopBackdrop;
+        }
+        if constexpr(std::is_same_v<T,ButtonNode>){
+            const auto id=node.button->key().id;
+            if(state.screen==ScreenId::slots&&id!=1009)node.region=Region::bottom;
+            if(state.screen==ScreenId::shop&&id==2100&&!phoneMenu())node.region=Region::shopFooter;
+            if(state.screen==ScreenId::shop&&id==2103&&!phoneMenu())node.region=Region::shopInventory;
+            if(state.screen==ScreenId::command&&(id==5009||id==2100))node.region=Region::bottom;
+            buttonRegions[node.button.get()]=node.region;buttonHUDGroups[node.button.get()]=node.hudGroup;
+        }
+        if(node.region==Region::top)node.hudGroup=-1;
+        nodes.push_back(std::move(node));
+    }
+    bool phoneMenu()const{return menu::phone(layout.configuration())&&(state.screen==ScreenId::shop||state.screen==ScreenId::maintenance);}
+    float stockScrollLimit()const{const auto begin=std::size_t(std::max(0,state.shopPage))*24;const auto cells=begin<state.shopItems.size()?std::min<std::size_t>(24,state.shopItems.size()-begin):0;return float(std::max(0,int((cells+3)/4)-4))*60;}
+    bool phoneNodeVisible(Region r)const{if(!phoneMenu())return true;if(r==Region::phoneEquipment)return phoneEquipment;if(r==Region::phoneStock||r==Region::phoneStockHeader)return !phoneEquipment;return true;}
+    void setPhoneEquipment(bool value){phoneEquipment=value;for(const auto& [button,r]:buttonRegions)const_cast<Button*>(button)->visible=phoneNodeVisible(r);}
+    Region scrollingRegion()const{return state.weaponChoiceType?Region::chooser:Region::list;}
+    float verticalLimit()const{if(!layout.configuration().enabled)return 0;const auto r=scrollingRegion();if(!layout.configuration().compact&&r==Region::list)return 0;if(r==Region::list&&state.screen!=ScreenId::command&&!state.missionVisible)return 0;const float height=r==Region::chooser?std::max(1024.f,float(state.weaponChoices.size())*36+200):listTop-listBottom+12;return std::max(0.f,height*layout.ui(r).scale-layout.clip(r)->height);}
+    DisplayTransform presentation(Region r)const{auto t=layout.ui(r,r==Region::artScene||menu::menuRegion(r)?scenePan:r==Region::list||r==Region::chooser?verticalPan:shopPan);if(r==Region::phoneStock)t.offset.y+=stockScroll*t.scale;if(r==Region::phoneInventory)t.offset.y+=inventoryScroll*t.scale;if(r==Region::list&&layout.configuration().enabled&&layout.configuration().compact)t.offset.y+=(1024-listTop)*t.scale-8;return t;}
+    DisplayTransform presentation(Region r,int group)const{
+        auto t=presentation(r);if(group<0||!hud)return t;
+        const auto base=layout.ui(Region::bottom),custom=hud::transform(hud->active(),unsigned(group),layout);
+        // A normalized setting roundtrip can introduce subpixel float noise
+        // at its exact original position. Keep identity geometry bit-exact.
+        const auto delta=[](float a,float b){return std::abs(a-b)<.0001f?0.f:a-b;};
+        t.offset.x+=delta(custom.offset.x,base.offset.x);t.offset.y+=delta(custom.offset.y,base.offset.y);return t;
+    }
+    std::optional<ClipRect> clipping(Region r,int group=-1)const{
+        if(group>=0&&hud&&hud->active().customized()){
+            return hud::originalClip(hud->active(),unsigned(group),layout);
+        }
+        return layout.clip(r,r==Region::artScene||menu::menuRegion(r)?scenePan:shopPan);
+    }
+    int buttonHUDGroup(const Button& b)const{const auto i=buttonHUDGroups.find(&b);return i==buttonHUDGroups.end()?-1:i->second;}
+
+    Region buttonRegion(const Button& button)const{const auto found=buttonRegions.find(&button);return found==buttonRegions.end()?Region::content:found->second;}
+    bool applyHUDEdit(){
+        if(!hud->editing)return false;
+        struct Hit {int group;ClipRect rect;};std::vector<Hit> hits;
+        for(const auto& key:keys)if(const auto button=dispatcher.find(key);button&&button->visible){
+            const int group=buttonHUDGroup(*button);if(group<0)continue;
+            const auto t=presentation(buttonRegion(*button),group);const auto b=button->bounds();const auto p=button->screenPosition();
+            const auto low=t.map({p.x+b.left,p.y+b.bottom});hits.push_back({group,{low.x,low.y,(b.right-b.left)*t.scale,(b.top-b.bottom)*t.scale}});
+        }
+        for(std::size_t i=0;i<hits.size();++i)for(std::size_t j=i+1;j<hits.size();++j){
+            const auto& a=hits[i];const auto& b=hits[j];if(a.group==b.group||(!hud->draft.positions[a.group]&&!hud->draft.positions[b.group]))continue;
+            if(std::min(a.rect.x+a.rect.width,b.rect.x+b.rect.width)>std::max(a.rect.x,b.rect.x)&&std::min(a.rect.y+a.rect.height,b.rect.y+b.rect.height)>std::max(a.rect.y,b.rect.y)){
+                hud->error="버튼이 겹칩니다. HUD 조각을 옮겨 주세요.";hud->rebuild=true;return false;
+            }
+        }
+        return hud->apply(host);
+    }
+
     ButtonDispatcher dispatcher;
     std::vector<ButtonKey> keys;
     std::map<Owner,Panel> panels;
@@ -93,10 +215,11 @@ struct Screens::Impl {
     std::vector<CommandNode> commandNodes;
     float commandSelectedRowY=0;
     bool baseNoticeVisible=true;
-    Impl(ResourceAccess& r,PreparedTiles& t,ScreensHost& h,const ScreensState& s,float time,std::shared_ptr<Impl> old)
-        :resources(r),tiles(t),host(h),state(s),previous(std::move(old)),now(time){
-        if(previous&&previous->state.screen==s.screen){title=previous->title;message=previous->message;layers=previous->layers;}
-        else{title.start=time;layers=std::make_shared<std::array<VisualLayer,14>>();}
+    Impl(ResourceAccess& r,PreparedTiles& t,ScreensHost& h,const ScreensState& s,float time,std::shared_ptr<Impl> old,DisplayConfiguration display,std::shared_ptr<HUDState> hudState,std::shared_ptr<PreparedTiles> ownerTiles,std::shared_ptr<std::uint64_t> generation)
+        :resourceGeneration(std::move(generation)),resources(r),tiles(t),tileOwner(std::move(ownerTiles)),host(h),state(s),layout(display),hud(std::move(hudState)),previous(std::move(old)),now(time){
+        ++*resourceGeneration;
+        if(previous&&previous->state.screen==s.screen){if(menu::phone(previous->layout.configuration())==menu::phone(display))title=previous->title;else{const auto art=menu::title(display);title.bigX=art.bigStart;title.bgPosition=art.bgStart;title.start=time;}phoneEquipment=previous->phoneEquipment;stockScroll=previous->stockScroll;inventoryScroll=previous->inventoryScroll;scenePan=previous->state.baseId==s.baseId?previous->scenePan:0;message=previous->message;layers=previous->layers;shopPan=std::min(previous->shopPan,layout.shopPanLimit());if(previous->state.weaponChoiceType==s.weaponChoiceType&&previous->state.missionVisible==s.missionVisible)verticalPan=std::min(previous->verticalPan,verticalLimit());}
+        else{const auto art=menu::title(display);title.bigX=art.bigStart;title.bgPosition=art.bgStart;title.start=time;layers=std::make_shared<std::array<VisualLayer,14>>();}
         if(previous){fieldPresentation=previous->fieldPresentation;placeName=previous->placeName;}
         // accept5004 only invalidates Command.curState. Keep its existing rows
         // until the following Command tick actually refreshes the list.
@@ -108,7 +231,8 @@ struct Screens::Impl {
         }
         if(fieldPresentation.identity!=s.fieldUIRevision){fieldPresentation={};fieldPresentation.identity=s.fieldUIRevision;}
     }
-    void hideMessage(){message.hiding=true;message.text.reset();}
+    ~Impl(){++*resourceGeneration;}
+    void hideMessage(){message.hiding=true;if(message.text){message.text.reset();++*resourceGeneration;}}
     void syncMessage(){
         if(state.screen!=ScreenId::field)return;
         auto& m=message;
@@ -119,7 +243,7 @@ struct Screens::Impl {
         if(m.revision==state.messageRevision)return;m.revision=state.messageRevision;
         if(!state.messageVisible){hideMessage();return;}
         m.background.tileNo=unsigned(state.messageBackground);m.background.scale={1,1};m.background.show=true;m.hiding=false;m.autoHide=state.messageAutoHide;
-        m.text.reset();TextRasterRequest request{"GuiGame.message",state.message,"TrebuchetMS-Bold",{512,24},16,TextAlign::center,false,0};
+        m.text.reset();++*resourceGeneration;TextRasterRequest request{"GuiGame.message",state.message,"TrebuchetMS-Bold",{512,24},16,TextAlign::center,false,0};
         auto prepared=host.prepareText(request);if(!prepared.bitmap||!(prepared.bitmap->request==request))throw std::runtime_error("Message text preparation changed the original request");
         m.text=std::make_shared<Text>(std::move(prepared.image),std::move(prepared.bitmap));m.text->setColor(255,255,255);m.text->position=m.background.screenPosition;
         m.start=float(state.messageWorldTime);host.sfx(10);
@@ -136,14 +260,14 @@ struct Screens::Impl {
         if(m.text)m.text->position=m.background.screenPosition;
     }
     TileImage* tile(std::string_view name,unsigned columns=1,unsigned rows=1){
-        auto* t=tiles.prepare(resources,name);if(t){t->columns=columns;t->rows=rows;}return t;
+        auto* t=tiles.prepare(resources,name);if(t){t->columns=columns;t->rows=rows;if(name.starts_with("PhoneMenu/"))t->forRetina=menu::retina(name);}return t;
     }
     void image(std::string_view name,Vec2 position,unsigned columns=1,unsigned rows=1,unsigned index=0,
                Vec2 scale={1,1},bool atlas=false,unsigned blend=0,float alpha=1,unsigned layer=7,std::string tag={}){
         auto* t=tile(name,columns,rows);if(!t)return;
         VisualImage visual;visual.tile=tiles.visual(*t);visual.tileNo=index;visual.screenPosition=position;visual.scale=scale;
         visual.useAtlas=atlas;visual.blendType=blend;visual.alpha=alpha;
-        nodes.push_back(ImageNode{std::move(visual),layer,std::move(tag)});
+        pushNode(ImageNode{std::move(visual),layer,std::move(tag)});
     }
     std::shared_ptr<Button> addButton(Panel panel,unsigned id,std::string_view name,Vec2 position,
         unsigned columns=1,unsigned rows=2,unsigned normal=0,unsigned pressed=1,std::optional<Size> bounds={},
@@ -155,20 +279,20 @@ struct Screens::Impl {
         if(reuse&&previous)button=previous->dispatcher.find(key);
         if(!button)button=std::make_shared<Button>(key,buttonTile,normal);
         else{button->setDefaultTile(0);button->setTile(buttonTile);}
-        button->setDefaultTile(normal);button->setReleaseTile(pressed);button->setDeactiveTile(normal);
+        button->setDefaultTile(normal);button->setReleaseTile(pressed);button->setDeactiveTile(normal);button->positionSnap=PositionSnap::none;
         button->position=position;button->scale=scaleBeforeBounds?scale:Vec2{1,1};button->visible=true;button->active=enabled;
         if(bounds)button->setBoundWidthHeight(bounds->width,bounds->height);
         button->scale=scale;dispatcher.add(button);keys.push_back(key);panels[key.owner]=panel;
-        nodes.push_back(ButtonNode{button,layer});return button;
+        pushNode(ButtonNode{button,layer});return button;
     }
     std::shared_ptr<Text> prepareText(const TextRasterRequest& request){
         auto prepared=host.prepareText(request);
         if(!prepared.bitmap||!(prepared.bitmap->request==request))throw std::runtime_error("UI text preparation changed the original request");
-        return std::make_shared<Text>(std::move(prepared.image),std::move(prepared.bitmap));
+        auto result=std::make_shared<Text>(std::move(prepared.image),std::move(prepared.bitmap));++*resourceGeneration;return result;
     }
     void syncPlaceName(){
         if(state.screen!=ScreenId::field||placeName.revision==state.fieldPlaceRevision)return;
-        placeName={};
+        placeName={};++*resourceGeneration;
         placeName.revision=state.fieldPlaceRevision;
         if(!placeName.revision)return;
         if(auto* background=tile("PlaceNameBG.png")){
@@ -192,6 +316,7 @@ struct Screens::Impl {
         x=distance>.1f?x+distance/12.f:destination;
         if(x>=900.f){
             background.show=false;
+            if(placeName.shadow||placeName.label)++*resourceGeneration;
             placeName.shadow.reset();
             placeName.label.reset();
         }
@@ -202,20 +327,20 @@ struct Screens::Impl {
         auto label=prepareText({std::move(id),std::move(value),font,size,fontSize,align,false,0});
         label->position=position;label->scale=scale;
         label->setColor(std::uint8_t(color.r*255),std::uint8_t(color.g*255),std::uint8_t(color.b*255));label->alpha=color.a;
-        nodes.push_back(TextNode{std::move(label),layer});
+        pushNode(TextNode{std::move(label),layer});
     }
     void number(std::string_view name,int value,Vec2 position,float pitch,float align,unsigned layer=9,bool star=false,std::string tag={},unsigned columns=16){
         auto* t=tile(name,columns,1);if(!t)return;
         NumericAtlas a{t->name,t->pixels,t->columns,t->rows,t->forRetina,originalAtlasBlend(0,t->pixelFormat)};
         auto font=std::make_shared<ImageFont>(std::move(a));font->position=position;if(pitch!=0)font->setPitch(pitch);font->setAlignRate(align);
         if(star)font->setText("*");else font->setNumber(value);font->tick();
-        nodes.push_back(NumberNode{std::move(font),t,layer,std::move(tag)});
+        pushNode(NumberNode{std::move(font),t,layer,std::move(tag)});
     }
     void numericText(std::string_view name,std::string value,Vec2 at,float pitch,float align){
         auto* t=tile(name,16,1);if(!t)return;
         auto font=std::make_shared<ImageFont>(NumericAtlas{t->name,t->pixels,t->columns,t->rows,t->forRetina,originalAtlasBlend(0,t->pixelFormat)});
         font->position=at;font->setPitch(pitch);font->setAlignRate(align);font->setText(value);font->tick();
-        nodes.push_back(NumberNode{std::move(font),t,9,{}});
+        pushNode(NumberNode{std::move(font),t,9,{}});
     }
     static Frame translatedPreview(const Frame& frame,Vec2 origin){
         // QobBase child world position is local+parent. Translate once for
@@ -237,12 +362,14 @@ struct Screens::Impl {
         if(!item.icon.empty())image(item.icon,position,item.iconColumns,item.iconRows,item.iconTile,{1,1},false,0,1,layer);
     }
     void slots(){
+    RegionScope scope(*this,Region::content);
         const auto firstNode=nodes.size();
-        image("SelSlot_BG.png",{384,512});
+        if(menu::phone(layout.configuration())){RegionScope backdrop(*this,Region::artBackdrop);image(menu::background(layout.configuration(),"SelSlot_BG.png"),{240,160});}else image("SelSlot_BG.png",{384,512});
         addButton(Panel::root,1010,"Common_Btn_DEL.png",{224,80},1,2,0,1,Size{80,40});
         addButton(Panel::root,1004,"Common_Btn_BACK.png",{384,80},1,2,0,1,Size{80,40});
         addButton(Panel::root,1001,"Common_Btn_OK.png",{544,80},1,2,0,1,Size{80,40});
         for(unsigned i=0;i<3;++i){
+RegionScope card(*this,Region(unsigned(Region::slot0)+i));
             const auto& slot=state.slots[i];const Vec2 origin{384,760-float(i)*240};
             addButton(Panel::root,1009,slot.used?"SelSlot_Sel.png":"SelSlot_Empty.png",origin,1,2,
                 state.selectedSlot==int(i)?0:1,0,{},int(i));
@@ -260,7 +387,7 @@ struct Screens::Impl {
             text(source+".saved",slot.location,plus(origin,{142,-40}),{256,16},"Trebuchet-BoldItalic",14,TextAlign::center,{100.f/255,220.f/255,240.f/255,1});
             number("NumSet_Cr.png",slot.credits,plus(origin,{180,-69}),11,1);
             const Vec2 machOrigin=plus(origin,{-170,34});
-            nodes.push_back(PreviewNode{translatedPreview(slot.machPreview,machOrigin),machOrigin,i,slot.machPreviewRevision});
+            pushNode(PreviewNode{translatedPreview(slot.machPreview,machOrigin),machOrigin,i,slot.machPreviewRevision});
         }
         // GameMain layer3 is inherited through GuiSelectSlot/slotBase.
         // Explicit part child layers (notably shadow0) remain on each Sprite.
@@ -269,29 +396,38 @@ struct Screens::Impl {
     void base(){
         const auto name=state.baseId+".tble";
         const auto table=DataTable::parse(resources.read(name));const Vec2 root{384,512};
+        const bool compact=menu::phone(layout.configuration());
+        const auto artwork=compact?std::optional<DataTable>(DataTable::parse(resources.read(menu::phoneAsset(name)))):std::nullopt;
+        const auto visualRow=[&](std::string_view type,int id){if(!artwork)throw std::logic_error("Phone artwork profile absent");for(std::size_t row=0;row<artwork->rowCount();++row)if(artwork->value(row,"Type")==type&&artwork->integer(row,"ID")==id)return row;throw std::runtime_error("Original phone base has no matching visual ID");};
         std::optional<Vec2> commandPosition,descriptionPosition;
         for(std::size_t i=0;i<table.rowCount();++i){
-            const auto kind=table.value(i,"Type").value_or("");const auto asset=table.value(i,"ImageFile").value_or("");
-            const Vec2 local{table.real(i,"X"),table.real(i,"Y")};
-            const Vec2 at=plus(root,local);const float scale=table.real(i,"Scale");const int id=table.integer(i,"ID");
-            if(kind=="Image")image(asset,at,1,1,0,{scale,scale},false,id>10?2:0,id>10?0.f:1.f,7,id>10?"baseSelect"+std::to_string(id-10):"");
+            const auto kind=table.value(i,"Type").value_or("");const int id=table.integer(i,"ID");
+            const auto row=compact&&(kind=="Image"||kind=="Button")?visualRow(kind,id):i;
+            const auto& source=compact&&(kind=="Image"||kind=="Button")?*artwork:table;
+            const auto originalAsset=source.value(row,"ImageFile").value_or("");
+            const auto asset=compact?menu::phoneAsset(originalAsset):std::string(originalAsset);
+            const Vec2 local{source.real(row,"X"),source.real(row,"Y")};
+            const Vec2 at=plus(compact?Vec2{240,160}:root,local);const float scale=source.real(row,"Scale");
+            if(kind=="Image"){RegionScope background(*this,compact?Region::artScene:Region::content);image(asset,at,1,1,0,{scale,scale},false,id>10?2:0,id>10?0.f:1.f,7,id>10?"baseSelect"+std::to_string(id-10):"");}
             else if(kind=="Button"){
-                std::optional<Size> bounds;if(id<4)bounds=Size{160,100};else if(id!=4)bounds=Size{160,60};
+                std::optional<Size> bounds;if(id<4)bounds=Size{160,100};else if(!compact&&id!=4)bounds=Size{160,60};
+                RegionScope control(*this,compact?Region::artScene:Region::content);
                 addButton(Panel::root,unsigned(2000+id),asset,at,1,2,state.selectedBaseButton==id?1:0,1,bounds,0,{}, {scale,scale},true,7);
                 if(id==1)commandPosition=at;
-            }else if(kind=="Desc")descriptionPosition=local;
+            }else if(kind=="Desc")descriptionPosition=Vec2{table.real(i,"X"),table.real(i,"Y")};
         }
         const bool sameBase=previous&&previous->state.screen==ScreenId::base&&previous->state.baseId==state.baseId;
         if(sameBase)baseNoticeVisible=previous->baseNoticeVisible;
         // GuiBase.init0x246d4 adds these markers after the table's controls.
-        if(auto* notice=tile("MissionNotice.png",1,2);notice&&commandPosition){
+        if(auto* notice=tile(compact?menu::phoneAsset("MissionNotice.png"):"MissionNotice.png",1,2);notice&&commandPosition){
+            RegionScope noticeRegion(*this,compact?Region::artScene:Region::content);
             auto addNotice=[&](unsigned index,float offset){
                 VisualImage mark;
                 mark.tile=tiles.visual(*notice);
                 mark.tileNo=index;
                 mark.screenPosition=plus(*commandPosition,{0,offset});
                 mark.show=baseNoticeVisible;
-                nodes.push_back(ImageNode{std::move(mark),7,"baseMissionNotice"});
+                pushNode(ImageNode{std::move(mark),7,"baseMissionNotice"});
             };
             if(state.baseHasCompletedMission)addNotice(0,28);
             if(!state.availableMissions.empty())addNotice(1,-28);
@@ -299,7 +435,7 @@ struct Screens::Impl {
         if(!descriptionPosition||state.selectedBaseButton<1||state.selectedBaseButton>7)return;
         if(sameBase&&previous->state.selectedBaseButton==state.selectedBaseButton&&previous->state.baseDescription==state.baseDescription){
             for(const auto& node:previous->nodes)if(const auto* description=std::get_if<BaseDescriptionNode>(&node)){
-                nodes.push_back(*description);
+                RegionScope readable(*this,Region::baseDescription);pushNode(*description);
                 return;
             }
         }
@@ -319,7 +455,7 @@ struct Screens::Impl {
                 label->scale.y=image.scale.y;
                 label->visible=false;
             }
-            nodes.push_back(BaseDescriptionNode{std::move(image),std::move(label),localX,descriptionPosition->x});
+            {RegionScope readable(*this,Region::baseDescription);pushNode(BaseDescriptionNode{std::move(image),std::move(label),localX,descriptionPosition->x});}
         }
     }
     void tickBaseDescription(BaseDescriptionNode& description){
@@ -354,24 +490,32 @@ struct Screens::Impl {
         }
     }
     void titleScreen(){
-        const Vec2 root{384,512};
-        image("Main_BG.png",plus(root,title.bgPosition),1,1,0,{title.bgScale,title.bgScale},false,0,1,7,"title.bg");
-        image("Main_Copyright.png",plus(root,{0,-500}));
-        image("Main_TitleBig.png",plus(root,{title.bigX,0}),1,1,0,{1,1},false,0,1,7,"title.big");
-        image("Main_Title.png",plus(root,{0,-380}),1,1,0,{title.titleScale,title.titleScale},false,0,1,7,"title.main");
-        image("Main_Episode.png",plus(root,{114,-310}),1,1,0,{title.episodeScale,title.episodeScale},false,0,1,7,"title.episode");
-        image("Main_TapToStart.png",plus(root,{0,-230}),1,1,0,{1,1},false,0,1,7,"title.start");
+        const bool phone=menu::phone(layout.configuration());const auto spec=menu::title(layout.configuration());
+        RegionScope scope(*this,phone?Region::artContent:Region::title);const auto root=spec.root;
+        const auto asset=[&](std::string_view name){return phone?menu::phoneAsset(name):std::string(name);};
+        image(asset("Main_BG.png"),plus(root,title.bgPosition),1,1,0,{title.bgScale,title.bgScale},false,0,1,7,"title.bg");
+        if(!phone)image("Main_Copyright.png",plus(root,spec.copyright));
+        image(asset("Main_TitleBig.png"),plus(root,{title.bigX,0}),1,1,0,{1,1},false,0,1,7,"title.big");
+        image(asset("Main_Title.png"),plus(root,spec.main),1,1,0,{title.titleScale,title.titleScale},false,0,1,7,"title.main");
+        image(asset("Main_Episode.png"),plus(root,spec.episode),1,1,0,{title.episodeScale,title.episodeScale},false,0,1,7,"title.episode");
+        image(asset("Main_TapToStart.png"),plus(root,spec.tap),1,1,0,{1,1},false,0,1,7,"title.start");
         updateTitleImages();
     }
     void updateTitleImages(){
+        const auto spec=menu::title(layout.configuration());
         for(auto& node:nodes)if(auto* n=std::get_if<ImageNode>(&node)){
             auto& v=n->image;
-            if(n->tag=="title.bg"){v.screenPosition=plus({384,512},title.bgPosition);v.scale={title.bgScale,title.bgScale};v.angle=title.bgRotate;}
-            else if(n->tag=="title.big"){v.screenPosition.x=384+title.bigX;v.show=title.bigVisible;}
+            if(n->tag=="title.bg"){v.screenPosition=plus(spec.root,title.bgPosition);float scale=title.bgScale;if(menu::phone(layout.configuration())){const auto canvas=layout.configuration().canvas;const float cover=layout.ui(Region::artBackdrop).scale,c=std::abs(std::cos(title.bgRotate)),s=std::abs(std::sin(title.bgRotate));const float required=std::max((canvas.width*c+canvas.height*s)/(480*cover),(canvas.width*s+canvas.height*c)/(320*cover));scale=std::max(scale,required);}v.scale={scale,scale};v.angle=title.bgRotate;}
+            else if(n->tag=="title.big"){v.screenPosition.x=spec.root.x+title.bigX;v.show=title.bigVisible;}
             else if(n->tag=="title.main"){v.scale={title.titleScale,title.titleScale};v.show=title.titleVisible;}
             else if(n->tag=="title.episode"){v.scale={title.episodeScale,title.episodeScale};v.show=title.episodeVisible;}
             else if(n->tag=="title.start")v.show=title.startVisible;
         }
+    }
+    void cropMenuPanel(ClipRect clip){
+        auto& node=std::get<ImageNode>(nodes.back());VisualLayer source(1);source.submitImage(node.image);auto frame=source.drain();
+        if(frame.nonAtlas.size()!=1)throw std::logic_error("Menu panel requires one original image");
+        auto panel=std::make_shared<Sprite>(std::move(frame.nonAtlas.front()));panel->clip=clip;node.menuPanel=std::move(panel);
     }
     void quickSlots(Vec2 origin){
         for(unsigned i=0;i<5;++i)if(!state.quick[i].dataId.empty()){
@@ -385,6 +529,8 @@ struct Screens::Impl {
         }
     }
     void field(){
+    RegionScope scope(*this,Region::bottom);
+        const auto previousGroup=currentHUDGroup;currentHUDGroup=hud::combat;
         image("WpnBtnBG.png",{405,90},1,1,0,{1,1},false,0,1,9);
         auto left=addButton(Panel::root,1022,state.selectedWeaponLeft,{334,90},1,1,0,0,Size{64,64},0,{}, {.7f,.7f},true,9,false);
         auto right=addButton(Panel::root,1023,state.selectedWeaponRight,{480,90},1,1,0,0,Size{64,64},0,{}, {.7f,.7f},true,9,false);
@@ -396,7 +542,7 @@ struct Screens::Impl {
         weaponTile(left,state.selectedWeaponLeft);weaponTile(right,state.selectedWeaponRight);
         image("OutofRange.png",{334,90},1,1,0,{1,1},false,0,1,9,"hud.rangeLeft");
         image("OutofRange.png",{480,90},1,1,0,{1,1},false,0,1,9,"hud.rangeRight");
-        const Vec2 hud{384,128};image("GameUI_BG.png",hud,1,1,0,{1,1},false,0,1,9);
+        const Vec2 hud{384,128};currentHUDGroup=-1;image("GameUI_BG.png",hud,1,1,0,{1,1},false,0,1,9,"hud.background");currentHUDGroup=hm2::hud::gauges;
         image("GameUI_GaugeBack.png",plus(hud,{float(state.hpBarWidth)-398,-80}),1,4,0,{1,1},true,0,1,9,"hud.hpBack");
         image("GameUI_GaugeBack.png",plus(hud,{float(state.hpBarFilled)-398,-80}),1,4,1,{1,1},true,0,1,9,"hud.hp");
         image("GameUI_GaugeBack.png",plus(hud,{float(state.spBarWidth)-398,-54}),1,4,0,{1,1},true,0,1,9,"hud.spBack");
@@ -406,19 +552,23 @@ struct Screens::Impl {
         image("EnemyGauge.png",{384-128*(1-state.enemyHpRate),957},1,2,0,{state.enemyHpRate,1},false,0,1,9,"hud.enemy");
         number("NumTile05.png",std::bit_cast<std::int32_t>(std::uint32_t(state.level)+1),plus(hud,{-364,-106}),9,.5f,9,false,"hud.level");
         number("NumSet01b.png",fieldPresentation.displayedCredits,plus(hud,{-122,-37}),6,1,9,false,"hud.displayedCredits");
+        currentHUDGroup=hm2::hud::controls;
         addButton(Panel::root,1021,"QuickBtn.png",plus(hud,{237,-36}),2,4,4,5,Size{60,60});
         addButton(Panel::root,1026,"QuickBtn.png",plus(hud,{296,-36}),2,4,0,1,Size{60,60});
         addButton(Panel::root,1025,"QuickBtn.png",plus(hud,{355,-36}),2,4,2,3,Size{60,60});
-        if(auto* mark=tile("RaderMark.png",8,1))nodes.push_back(RadarNode{tiles.visual(*mark)});
-        quickSlots({511,29});
+        currentHUDGroup=hm2::hud::combat;
+        if(auto* mark=tile("RaderMark.png",8,1))pushNode(RadarNode{tiles.visual(*mark)});
+        currentHUDGroup=hm2::hud::controls;quickSlots({511,29});
         updateHUD(state);
-        if(state.weaponChoiceType!=0)weaponChoices();
+        currentHUDGroup=hm2::hud::combat;if(state.weaponChoiceType!=0)weaponChoices();
+        currentHUDGroup=previousGroup;
     }
     void updateHUD(const ScreensState&);
     void build();
     void buildDetail(DetailKind,const ItemView&,Vec2,int=-1);
     void layoutDetail();
     void tickDetail();
+    void placePhoneTradeAction();
     void syncEnemyName();
     void tickRange(WorldRandom&);
     void tickFieldCredits(){
@@ -432,10 +582,12 @@ struct Screens::Impl {
         const auto magnitude=remaining<0?std::bit_cast<std::int32_t>(0u-std::uint32_t(remaining)):remaining;
         if(magnitude<5)displayed=target;
     }
-    void inventory(Vec2,bool=false);
-    void equip(Vec2,unsigned=9);
-    void bots(Vec2);
+    void inventory(Vec2,bool=false,bool=false);
+    void equip(Vec2,unsigned=9,bool=false);
+    void bots(Vec2,bool=false);
     void inventoryDialog(Vec2,bool=false);
+    void phoneShop(bool);
+    Vec2 phoneDropPoint(Vec2)const;
     void maintenance();
     void shop();
     void missionList(bool);
@@ -443,28 +595,45 @@ struct Screens::Impl {
     void tickCommandList();
     void completedMission();
     void system();
+    void hudEditor();
     void airlift();
     void trade();
     void weaponChoices();
     void tick(float time,WorldRandom& random);
     void append(Frame& out,float time);
+    bool splitHUDBackground()const{
+        if(hud->editing)return true;
+        const auto base=presentation(Region::bottom);
+        for(unsigned group=0;group<hud::count;++group){const auto t=presentation(Region::bottom,int(group));if(t.scale!=base.scale||t.offset.x!=base.offset.x||t.offset.y!=base.offset.y)return true;}
+        return false;
+    }
 };
 
 void Screens::Impl::buildDetail(DetailKind kind,const ItemView& entry,Vec2 origin,int absolute){
-    const bool reuse=previous&&previous->detail&&previous->detail->kind==kind&&previous->detail->revision==state.detailRevision&&previous->detail->absolute==absolute&&previous->detail->entry.dataId==entry.dataId;
+    const bool phone=phoneMenu();RegionScope scope(*this,phone?Region::phoneMenu:kind==DetailKind::shop?Region::shopStock:kind==DetailKind::maintenance?Region::maintenance:state.screen==ScreenId::shop?Region::shopInventory:Region::panel);
+    const bool reuse=previous&&previous->detail&&previous->detail->phoneArtwork==phone&&previous->detail->kind==kind&&previous->detail->revision==state.detailRevision&&previous->detail->absolute==absolute&&previous->detail->entry.dataId==entry.dataId;
     detail=reuse?std::make_shared<DetailPresentation>(*previous->detail):std::make_shared<DetailPresentation>();
-    auto& d=*detail;d.kind=kind;d.revision=state.detailRevision;d.absolute=absolute;d.origin=origin;
+    auto& d=*detail;d.phoneArtwork=phone;d.kind=kind;d.revision=state.detailRevision;d.absolute=absolute;d.origin=origin;
     if(!reuse){d.entry=entry;
         if(kind==DetailKind::shop)d.descPos={184,340};
         else if(kind==DetailKind::inventory){const int cell=absolute%25;d.descPos={float((cell%5)*60),float(96-(cell/5)*60)};}
         else{const int cell=absolute%25;d.up=cell>9;d.descPos={108,float(61-(cell/5)*40+(d.up?20:-21))};}
     }
-    d.layer=kind==DetailKind::inventory?13u:kind==DetailKind::shop?3u:9u;
-    if(kind!=DetailKind::shop){
-        d.background=addButton(kind==DetailKind::maintenance?Panel::root:Panel::inventory,2112,"ItemDesc.png",plus(origin,d.descPos),1,1,0,0,Size{206,128},0,{}, {d.x,d.y},true,d.layer,false,reuse);
+    if(phone){
+        const float row=kind==DetailKind::shop?float(std::max(0,state.selectedShop)/4)-stockScroll/60:float(std::max(0,absolute)%25/5)-inventoryScroll/60;
+        d.up=row>=2;d.descPos={(kind==DetailKind::shop?-136.f:106.f)*1.5f,(60-40*row+(d.up?20.f:-21.f))*1.5f};
+        // Preserve the original popup geometry. Place the complete animated
+        // panel inside the current content area before it opens.
+        const auto t=presentation(Region::phoneMenu);const auto area=layout.configuration().content();const auto center=t.map(plus(d.origin,{d.descPos.x,d.descPos.y+(d.up?93.f:-93.f)}));const float hx=192*t.scale,hy=96*t.scale;
+        if(area.width>=hx*2)d.origin.x+=(std::clamp(center.x,area.x+hx,area.x+area.width-hx)-center.x)/t.scale;
+        if(area.height>=hy*2){const float delta=std::clamp(center.y,area.y+hy,area.y+area.height-hy)-center.y;const float cover=layout.ui(Region::artScene).scale,travel=std::max(0.f,320*cover-layout.configuration().canvas.height)*.5f;scenePan=std::clamp(scenePan+delta,-travel,travel);}
+    }
+    d.layer=phone?13u:kind==DetailKind::inventory?13u:kind==DetailKind::shop?3u:9u;
+    if(phone||kind!=DetailKind::shop){
+        d.background=addButton(kind==DetailKind::maintenance?Panel::root:Panel::inventory,2112,phone?menu::phoneAsset("ItemDesc.png"):"ItemDesc.png",plus(origin,d.descPos),1,1,0,0,phone?Size{309,192}:Size{206,128},0,{}, {d.x,d.y},true,d.layer,false,reuse);
     }
     if(!reuse){
-        const bool maintenance=kind==DetailKind::maintenance;
+        const bool maintenance=phone||kind==DetailKind::maintenance;
         const char* font=maintenance?"Arial":"TrebuchetMS-Bold";
         const std::string source=kind==DetailKind::shop?"GuiShop.item":maintenance?"GuiMaintenance.item":"DlgInven.item";
         auto label=[&](std::string id,const std::string& value,Size size,float fontSize,TextAlign align,Color color){
@@ -477,10 +646,11 @@ void Screens::Impl::buildDetail(DetailKind kind,const ItemView& entry,Vec2 origi
             VisualImage image;image.tile=tiles.visual(*t);image.tileNo=0;image.useAtlas=false;d.large=std::move(image);
         }
     }
-    nodes.push_back(DetailNode{detail,d.layer});layoutDetail();
+    pushNode(DetailNode{detail,d.layer});layoutDetail();
 }
 void Screens::Impl::layoutDetail(){
     if(!detail)return;auto& d=*detail;const bool shop=d.kind==DetailKind::shop,maintenance=d.kind==DetailKind::maintenance;
+    if(d.phoneArtwork){const float parentY=d.descPos.y+(d.vertical?(d.up?93.f:-93.f)*d.y:0);const auto parent=plus(d.origin,{d.descPos.x,parentY});if(d.background){d.background->position=parent;d.background->scale={d.x*1.5f,d.y*1.5f};}if(d.title){d.title->position=plus(parent,{0,d.vertical?70.5f*d.y:0});d.title->scale={d.x*1.5f,d.y*1.5f};d.title->visible=d.vertical;}if(d.description){d.description->position=plus(parent,{d.large?(d.entry.originalType==10?48.f:114.f):0,d.vertical?-18.f*d.y:0});d.description->scale={d.x*1.5f,d.y*1.5f};d.description->visible=d.vertical;}if(d.large){d.large->screenPosition=plus(parent,{d.entry.originalType==10?-114.f:-78.f,d.vertical?-15.f*d.y:0});d.large->scale={1.5f,d.vertical?1.5f*d.y:1.5f};d.large->show=d.vertical;}return;}
     float parentY=d.descPos.y;if(d.vertical)parentY+=(shop?-62.f:maintenance?(d.up?62.f:-62.f):-96.f)*d.y;
     const Vec2 parent=plus(d.origin,{d.descPos.x,parentY});
     if(d.background){d.background->position=parent;d.background->scale={d.x,d.y};}
@@ -489,6 +659,28 @@ void Screens::Impl::layoutDetail(){
     if(d.description){d.description->position=plus(parent,{hasLarge?(weapon?32.f:76.f):0,d.vertical?(shop?-36.f:-12.f)*d.y:0});d.description->scale={d.x,d.y};d.description->visible=d.vertical;}
     if(d.large){d.large->screenPosition=plus(parent,{weapon?-76.f:-52.f,d.vertical?(shop?-36.f:-10.f)*d.y:0});d.large->scale={1,d.vertical?d.y:1};d.large->show=d.vertical;}
 }
+void Screens::Impl::placePhoneTradeAction(){
+    if(!detail||!detail->phoneArtwork)return;
+    const auto& d=*detail;const auto t=presentation(Region::phoneMenu);
+    const auto area=layout.configuration().content();const auto low=t.inverse({area.x,area.y}),high=t.inverse({area.x+area.width,area.y+area.height});
+    // The original fixed BUY/SELL position can overlap a popup after the
+    // complete popup has been fitted into a wide phone viewport. Move only
+    // the action, using the same transform for its sprite and input receiver.
+    const Vec2 center=plus(d.origin,{d.descPos.x,d.descPos.y+(d.up?93.f:-93.f)});
+    for(const auto& key:keys)if(key.id==2102||key.id==2103)if(auto b=dispatcher.find(key)){
+        const float left=center.x-192,right=center.x+192,bottom=center.y-96,top=center.y+96;
+        Vec2 at{333,237};
+        if(at.x+96>left&&at.x-96<right&&at.y+48>bottom&&at.y-48<top){
+            const float preferred=d.kind==DetailKind::shop?right+102:left-102;
+            const float other=d.kind==DetailKind::shop?left-102:right+102;
+            if(preferred>=low.x+96&&preferred<=high.x-96)at.x=preferred;
+            else if(other>=low.x+96&&other<=high.x-96)at.x=other;
+            else if(bottom-54>=low.y+48)at.y=bottom-54;
+            else if(top+54<=high.y-48)at.y=top+54;
+        }
+        at.x=std::clamp(at.x,low.x+96,high.x-96);at.y=std::clamp(at.y,low.y+48,high.y-48);b->position=at;
+    }
+}
 void Screens::Impl::tickDetail(){
     if(!detail)return;auto& d=*detail;
     if(d.x<1){d.x+=(1-d.x)*.5f;if(d.x>.99f)d.x=1;}
@@ -496,12 +688,14 @@ void Screens::Impl::tickDetail(){
     layoutDetail();
 }
 void Screens::Impl::syncEnemyName(){
+    RegionScope scope(*this,Region::top);
     if(state.screen!=ScreenId::field)return;
     if(fieldPresentation.enemyRevision!=state.enemyNameRevision||(!fieldPresentation.enemyName&&!state.enemyName.empty())){
+        ++*resourceGeneration;
         const auto old=fieldPresentation.enemyName;std::erase_if(nodes,[&](const Node& node){const auto* n=std::get_if<TextNode>(&node);return n&&n->text==old;});
         fieldPresentation.enemyName.reset();fieldPresentation.enemyRevision=state.enemyNameRevision;
         if(!state.enemyName.empty()){const auto count=nodes.size();text("GuiGame.enemyName",state.enemyName,{384,956},{256,18},"Arial-BoldMT",12,TextAlign::center,{},9);if(nodes.size()!=count)fieldPresentation.enemyName=std::get<TextNode>(nodes.back()).text;}
-    }else if(fieldPresentation.enemyName&&std::none_of(nodes.begin(),nodes.end(),[&](const Node& node){const auto* n=std::get_if<TextNode>(&node);return n&&n->text==fieldPresentation.enemyName;}))nodes.push_back(TextNode{fieldPresentation.enemyName,9});
+    }else if(fieldPresentation.enemyName&&std::none_of(nodes.begin(),nodes.end(),[&](const Node& node){const auto* n=std::get_if<TextNode>(&node);return n&&n->text==fieldPresentation.enemyName;}))pushNode(TextNode{fieldPresentation.enemyName,9});
     if(fieldPresentation.enemyName)fieldPresentation.enemyName->visible=state.enemyHpRate!=0;
 }
 void Screens::Impl::tickRange(WorldRandom& random){
@@ -514,7 +708,8 @@ void Screens::Impl::tickRange(WorldRandom& random){
     for(auto& node:nodes)if(auto* n=std::get_if<ImageNode>(&node)){if(n->tag=="hud.rangeLeft")n->image.show=fieldPresentation.range[0];else if(n->tag=="hud.rangeRight")n->image.show=fieldPresentation.range[1];}
 }
 
-void Screens::Impl::inventory(Vec2 origin,bool shopMode){
+void Screens::Impl::inventory(Vec2 origin,bool shopMode,bool phone){
+    if(!phone){
     (void)shopMode;
     for(unsigned i=0;i<25;++i){const auto& entry=itemAt(state.inventory,std::size_t(std::max(0,state.inventoryPage))*25+i);
         if(!entry.dataId.empty()&&entry.count>0){const auto at=plus(origin,{60.f*float(i%5),-60.f*float(i/5)});
@@ -537,33 +732,53 @@ void Screens::Impl::inventory(Vec2 origin,bool shopMode){
     }
     addButton(Panel::inventory,6090,"Btn_InvenPage.png",plus(origin,{-2,-290}),2,1,0,0,Size{80,40});
     addButton(Panel::inventory,6091,"Btn_InvenPage.png",plus(origin,{161,-290}),2,1,1,1,Size{80,40});
+
+    return;}
+    (void)shopMode;
+    {
+    RegionScope cells(*this,phone?Region::phoneInventory:region);
+    for(unsigned i=0;i<25;++i){const auto& entry=itemAt(state.inventory,std::size_t(std::max(0,state.inventoryPage))*25+i);const auto at=plus(origin,{60.f*float(i%5),-60.f*float(i/5)});
+        if(!entry.dataId.empty()&&entry.count>0){if(!phone)image("ItemBox.png",at,1,1,0,{1,1},false,0,1,9);icon(entry,at);}
+    }
+    for(unsigned i=0;i<25;++i){const auto& entry=itemAt(state.inventory,std::size_t(std::max(0,state.inventoryPage))*25+i);const auto at=plus(origin,{60.f*float(i%5),-60.f*float(i/5)});
+        addButton(Panel::inventory,6000+i,"Inven_BtnItem.png",at,1,1,0,0,Size{60,60},0,entry.dataId);
+        if(!entry.dataId.empty()&&(entry.countable||entry.equipped))number("NumSet01b.png",entry.count,plus(at,{11,-11}),6,1,9,entry.equipped);
+        if(state.selectedInventory==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.8f,9);
+        if(state.extInventory==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.5f,9);
+    }}
+    RegionScope pages(*this,phone?Region::phoneMenu:region);tile("InvenPage.png",2,1);
+    for(int page=0;page<state.inventoryPages;++page){float x=(float(page)-float(state.inventoryPages)*.5f)*(phone?18.f:12.f)+origin.x+(phone?120.f:86.f);image("InvenPage.png",{x,origin.y-(phone?234.f:290.f)},2,1,page==state.inventoryPage?1u:0u,Vec2{1,1},false,0,1,9);}
+    addButton(Panel::inventory,6090,"Btn_InvenPage.png",plus(origin,{phone?-3.f:-2.f,phone?-234.f:-290.f}),2,1,0,0,phone?Size{120,69}:Size{80,40},0,{},Vec2{1,1},true,9,!phone);
+    addButton(Panel::inventory,6091,"Btn_InvenPage.png",plus(origin,{phone?243.f:161.f,phone?-234.f:-290.f}),2,1,1,1,phone?Size{120,69}:Size{80,40},0,{},Vec2{1,1},true,9,!phone);
 }
-void Screens::Impl::equip(Vec2 origin,unsigned inheritedLayer){
-    constexpr Vec2 positions[]={{0,0},{0,-74},{-56,-9},{56,-9},{56,-74},{-56,-74}};
+void Screens::Impl::equip(Vec2 origin,unsigned inheritedLayer,bool phone){
+    constexpr Vec2 hdPositions[]={{0,0},{0,-74},{-56,-9},{56,-9},{56,-74},{-56,-74}};
+    const auto positions=phone?std::span<const Vec2>(menu::equipmentOffsets):std::span<const Vec2>(hdPositions);
     constexpr const char* icons[]={"EquipBtn_Body.png","EquipBtn_Btm.png","EquipBtn_Wpn.png","EquipBtn_Wpn.png","EquipBtn_Armor.png","EquipBtn_Sp.png"};
     for(unsigned i=0;i<6;++i)if(!state.equipment[i].dataId.empty()&&state.equipment[i].count>0){
-        const auto at=plus(origin,positions[i]);image("ItemBox.png",at,1,1,0,{1,1},false,0,1,inheritedLayer);icon(state.equipment[i],at,inheritedLayer);}
+        const auto at=plus(origin,positions[i]);if(!phone)image("ItemBox.png",at,1,1,0,{1,1},false,0,1,inheritedLayer);icon(state.equipment[i],at,inheritedLayer);}
     for(unsigned i=0;i<6;++i){const auto& entry=state.equipment[i];const auto at=plus(origin,positions[i]);
-        addButton(Panel::equipment,6100+i,icons[i],at,1,1,0,0,Size{36,36},0,entry.dataId,{1,1},true,inheritedLayer);
+        addButton(Panel::equipment,6100+i,icons[i],at,1,1,0,0,phone?Size{54,54}:Size{36,36},0,entry.dataId,{1,1},true,inheritedLayer);
         if(state.selectedEquipment==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.8f,9);
         if(state.extEquipment==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.5f,9);
     }
     const auto& stats=state.equipmentStats;
-    numericText("NumSet01b.png",std::to_string(stats.attackLeft)+"-"+std::to_string(stats.attackRight),plus(origin,{-20,-126}),6,0);
+    numericText("NumSet01b.png",std::to_string(stats.attackLeft)+"-"+std::to_string(stats.attackRight),plus(origin,{phone?-30.f:-20.f,phone?-157.5f:-126.f}),6,0);
     const auto defense=std::bit_cast<std::int32_t>(std::uint32_t(stats.bodyDefense)+std::uint32_t(stats.armorDefense));
-    numericText("NumSet01b.png",std::to_string(stats.baseHP)+"-"+std::to_string(stats.bonusHP)+"-"+std::to_string(defense),plus(origin,{-20,-146}),6,0);
-    numericText("NumSet01b.png",std::to_string(stats.stepSize)+"-"+std::to_string(int(stats.boosterMaximum))+"-"+std::to_string(int(stats.boosterRegen*10.f)),plus(origin,{-20,-166}),6,0);
+    numericText("NumSet01b.png",std::to_string(stats.baseHP)+"-"+std::to_string(stats.bonusHP)+"-"+std::to_string(defense),plus(origin,{phone?-30.f:-20.f,phone?-180.f:-146.f}),6,0);
+    numericText("NumSet01b.png",std::to_string(stats.stepSize)+"-"+std::to_string(int(stats.boosterMaximum))+"-"+std::to_string(int(stats.boosterRegen*10.f)),plus(origin,{phone?-30.f:-20.f,phone?-202.5f:-166.f}),6,0);
 }
-void Screens::Impl::bots(Vec2 origin){
+void Screens::Impl::bots(Vec2 origin,bool phone){
     for(unsigned i=0;i<3;++i)if(!state.bots[i].dataId.empty()){
-        const auto at=plus(origin,{0,-60.f*float(i)});image("ItemBox.png",at,1,1,0,{1,1},false,0,1,9);icon(state.bots[i],at);}
-    for(unsigned i=0;i<3;++i){const auto& entry=state.bots[i];const auto at=plus(origin,{0,-60.f*float(i)});
-        addButton(Panel::bot,6300+i,"Inven_BtnItem.png",at,1,1,0,0,Size{60,60},0,entry.dataId);
+        const auto at=plus(origin,{0,-(phone?57.f:60.f)*float(i)});if(!phone)image("ItemBox.png",at,1,1,0,{1,1},false,0,1,9);icon(state.bots[i],at);}
+    for(unsigned i=0;i<3;++i){const auto& entry=state.bots[i];const auto at=plus(origin,{0,-(phone?57.f:60.f)*float(i)});
+        addButton(Panel::bot,6300+i,"Inven_BtnItem.png",at,1,1,0,0,phone?Size{57,57}:Size{60,60},0,entry.dataId);
         if(state.selectedBot==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.8f,9);
         if(state.extBot==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.5f,9);
     }
 }
 void Screens::Impl::inventoryDialog(Vec2 origin,bool shopMode){
+    RegionScope scope(*this,shopMode?Region::shopInventory:Region::panel);
     image("InvenBG.png",origin,1,1,0,{1,1},false,0,1,9);
     inventory(plus(origin,{24,120}),shopMode);equip(plus(origin,{-196,76}));bots(plus(origin,{-58,78}));
     if(shopMode){
@@ -578,8 +793,54 @@ void Screens::Impl::inventoryDialog(Vec2 origin,bool shopMode){
     number("NumSet_Cr.png",state.credits,plus(origin,{-76,-151}),12,1,9,false,"hud.credits");
     if(!shopMode&&state.detailInventory>=0&&!state.detailItem.dataId.empty())buildDetail(DetailKind::inventory,state.detailItem,origin,state.detailInventory);
 }
+void Screens::Impl::phoneShop(bool maintenance){
+    if(maintenance)phoneEquipment=true;
+    if(previous){if(previous->state.shopPage!=state.shopPage||previous->state.shopCategory!=state.shopCategory)stockScroll=0;if(previous->state.inventoryPage!=state.inventoryPage)inventoryScroll=0;}
+    {RegionScope art(*this,Region::artScene);image(menu::background(layout.configuration(),"ShopBG.png"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.stock.bg");image(menu::phoneAsset("MaintenanceBG.jpg"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.equip.bg");}
+    stockScroll=std::min(stockScroll,stockScrollLimit());
+    inventory(menu::inventoryGrid,!maintenance,true);
+    {RegionScope equipment(*this,Region::phoneEquipment);equip(menu::equipmentRoot,9,true);bots(menu::botRoot,true);
+        if(state.selectedBot>=0)addButton(Panel::root,6310,"Btn_Disarm.png",{288,124.5f},2,1,0,1,{},0,{}, {1,1});
+        if(!maintenance)addButton(Panel::root,9205,"",{97.5f,34.5f},1,1,0,0,Size{150,60});}
+    if(!maintenance){
+        {RegionScope header(*this,Region::phoneStockHeader);image(menu::phoneAsset("ShopCategory.png"),{172.5f,402},1,8,unsigned(std::clamp(state.shopCategory,0,4)));
+            addButton(Panel::root,2104,"Btn_InvenPage.png",{75,402},2,1,0,0,Size{90,60},(state.shopCategory+4)%5,{}, {1,1},true,9,false);
+            addButton(Panel::root,2104,"Btn_InvenPage.png",{270,402},2,1,1,1,Size{90,60},(state.shopCategory+1)%5,{}, {1,1},true,9,false);
+            addButton(Panel::root,9204,"",{250.5f,34.5f},1,1,0,0,Size{150,60});
+            const auto pages=state.shopItems.size()/24+1;for(std::size_t page=0;page<pages;++page){const float x=(float(page)-float(pages)*.5f)*18+99;image("InvenPage.png",plus(menu::stockGrid,{x,-231}),2,1,page==std::size_t(state.shopPage)?1u:0u,{1,1});}
+            addButton(Panel::root,2105,"Btn_InvenPage.png",plus(menu::stockGrid,{-7.5f,-231}),2,1,0,0,Size{120,60},0,{}, {1,1},true,9,false);
+            addButton(Panel::root,2106,"Btn_InvenPage.png",plus(menu::stockGrid,{186,-231}),2,1,1,1,Size{120,60},0,{}, {1,1},true,9,false);
+        }
+        {RegionScope stock(*this,Region::phoneStock);for(unsigned i=0;i<24;++i){const auto index=std::size_t(std::max(0,state.shopPage))*24+i;if(index>=state.shopItems.size())break;const auto& entry=state.shopItems[index];const auto at=plus(menu::stockGrid,{60.f*float(i%4),-60.f*float(i/4)});addButton(Panel::root,2200+i,entry.icon,at,entry.iconColumns,entry.iconRows,entry.iconTile,entry.iconTile,Size{60,60},0,entry.dataId,{1,1},entry.enabled);if(state.selectedShop==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.8f);}}
+    }
+    {RegionScope controls(*this,Region::phoneMenu);
+        number("NumTile04.png",state.credits,{486,48},0,0);
+        addButton(Panel::root,6093,"Btn_ArrangeItem.png",{615,405},1,1,0,0,Size{90,42},0,{}, {1,1},true,9,false);
+        addButton(Panel::root,2100,"Common_Btn_EXIT.png",{630,34.5f},1,2,0,1,Size{120,48},0,{}, {1,1},true,9,false);
+    }
+    const auto scroll=[&](unsigned id,Vec2 at,bool enabled,Region r){RegionScope controls(*this,r);addButton(Panel::root,id,"Btn_InvenPage.png",at,2,1,id%2, id%2,Size{48,48},0,{}, {1,1},enabled,9,false);std::get<ButtonNode>(nodes.back()).angle=-std::numbers::pi_v<float>*.5f;};
+    if(!maintenance){scroll(9200,{322.5f,330},stockScroll>0,Region::phoneStockHeader);scroll(9201,{322.5f,150},stockScroll<stockScrollLimit(),Region::phoneStockHeader);}
+    scroll(9202,{405,375},inventoryScroll>0,Region::phoneMenu);scroll(9203,{645,375},inventoryScroll<menu::inventoryOverflow,Region::phoneMenu);
+    if(state.shopDetailVisible&&state.selectedShop>=0&&!maintenance){const auto index=std::size_t(std::max(0,state.shopPage))*24+std::size_t(state.selectedShop);if(index<state.shopItems.size())buildDetail(DetailKind::shop,state.shopItems[index],{360,240},state.selectedShop);}
+    if(state.detailInventory>=0&&!state.detailItem.dataId.empty())buildDetail(maintenance?DetailKind::maintenance:DetailKind::inventory,state.detailItem,{360,240},state.detailInventory);
+    if(!maintenance&&((state.shopDetailVisible&&state.selectedShop>=0)||(state.detailInventory>=0&&state.selectedInventory>=0))){RegionScope action(*this,Region::phoneMenu);if(state.selectedShop>=0)addButton(Panel::root,2102,"Common_Btn_BUY.png",{333,237},1,2,0,1,Size{120,48},0,{}, {1,1},true,13,false);else if(itemAt(state.inventory,std::size_t(std::max(0,state.inventoryPage))*25+std::size_t(state.selectedInventory)).enabled)addButton(Panel::root,2103,"Common_Btn_SELL.png",{333,237},1,2,0,1,Size{120,48},0,{}, {1,1},true,13,false);}
+    placePhoneTradeAction();
+    if(state.tradeVisible)trade();setPhoneEquipment(phoneEquipment);
+}
+Vec2 Screens::Impl::phoneDropPoint(Vec2 canvas)const{
+    const auto in=[](Vec2 p,ClipRect b){return p.x>=b.x&&p.x<b.x+b.width&&p.y>=b.y&&p.y<b.y+b.height;};
+    if(const auto clip=clipping(Region::phoneInventory);clip&&in(canvas,*clip))return menu::originalHDInventory(presentation(Region::phoneInventory).inverse(canvas),state.screen==ScreenId::maintenance);
+    if(phoneEquipment){const auto p=presentation(Region::phoneEquipment).inverse(canvas);const Vec2 root{384,state.screen==ScreenId::maintenance?512.f:312.f};const Vec2 oldEquip{root.x+(state.screen==ScreenId::maintenance?-148.f:-196.f),root.y+(state.screen==ScreenId::maintenance?52.f:76.f)};constexpr Vec2 oldOffsets[]={{0,0},{0,-74},{-56,-9},{56,-9},{56,-74},{-56,-74}};
+        for(unsigned i=0;i<6;++i){const auto center=plus(menu::equipmentRoot,menu::equipmentOffsets[i]);if(std::abs(p.x-center.x)<30&&std::abs(p.y-center.y)<30)return plus(plus(oldEquip,oldOffsets[i]),{(p.x-center.x)/1.5f,(p.y-center.y)/1.5f});}
+        const float x=p.x-menu::botRoot.x,y=(menu::botRoot.y+28.5f-p.y)/57.f;if(x>=-28.5f&&x<=28.5f&&y>=0&&y<3){const Vec2 oldBot{root.x+(state.screen==ScreenId::maintenance?-47.f:-58.f),root.y+(state.screen==ScreenId::maintenance?52.f:78.f)};return {oldBot.x+x/1.5f,oldBot.y+30-y*60};}}
+    return {-10000,-10000};
+}
 void Screens::Impl::maintenance(){
+    if(phoneMenu()){phoneShop(true);return;}
+    if(menu::phone(layout.configuration())){RegionScope backdrop(*this,Region::artBackdrop);image(menu::phoneAsset("MaintenanceBG.jpg"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.menu.backdrop");}
+    RegionScope scope(*this,Region::maintenance);
     const Vec2 root{384,512};image("MaintenanceBG.png",root,1,1,0,{1,1},false,0,1,3);
+    if(menu::phone(layout.configuration()))cropMenuPanel({160,400,448,226});
     inventory(plus(root,{27,63}));equip(plus(root,{-148,52}),3);bots(plus(root,{-47,52}));
     number("NumTile04.png",state.credits,plus(root,{38,-126}),0,0,3);
     addButton(Panel::root,6093,"Btn_ArrangeItem.png",plus(root,{170,94}),1,1,0,0,{},0,{}, {1,1},true,3);
@@ -588,7 +849,11 @@ void Screens::Impl::maintenance(){
     if(state.detailInventory>=0&&!state.detailItem.dataId.empty())buildDetail(DetailKind::maintenance,state.detailItem,root,state.detailInventory);
 }
 void Screens::Impl::shop(){
+    if(phoneMenu()){phoneShop(false);return;}
+    if(menu::phone(layout.configuration())){RegionScope backdrop(*this,Region::artBackdrop);image(menu::phoneAsset("ShopBG.jpg"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.menu.backdrop");}
+    RegionScope scope(*this,Region::shopStock);
     const Vec2 root{384,512};image("ShopBG.png",root,1,1,0,{1,1},false,0,1,3);
+    if(menu::phone(layout.configuration()))cropMenuPanel({64,584,640,360});
     if(state.inventoryVisible)inventoryDialog(plus(root,{0,-200}),true);
     addButton(Panel::root,2100,"Common_Btn_EXIT.png",plus(root,{256,-460}),1,2,0,1,{},0,{}, {1,1},true,3);
     if(state.selectedShop>=0)addButton(Panel::root,2102,"Common_Btn_BUY.png",plus(root,{182,120}),1,2,0,1,{},0,{}, {1,1},true,3);
@@ -625,6 +890,7 @@ void Screens::Impl::shop(){
     if(state.tradeVisible)trade();
 }
 void Screens::Impl::system(){
+    RegionScope scope(*this,Region::panel);
     const Vec2 root{384,512};image("MissionList_Mid.png",root,1,1,0,{1,3.375f},false,0,1,10);
     image("MissionList_Btm.png",plus(root,{0,-140}),1,1,0,{1,1},false,0,1,10);
     image("SysMenuBG.png",plus(root,{0,140}),1,1,0,{1,1},false,0,1,10);
@@ -634,8 +900,24 @@ void Screens::Impl::system(){
         text("DlgSystemMenu."+std::to_string(ids[i]),labels[i],at,{360,24},"TrebuchetMS-Bold",20,TextAlign::center,{140.f/255,240.f/255,1,1},10);
     }
     addButton(Panel::system,1030,"Common_Btn_CLOSE.png",plus(root,{136,-124}),1,2,0,1,{},0,{}, {1,1},true,10);
+    // Restoration feature. Keep its identity separate from original menu IDs.
+    const Vec2 edit{384,316};
+    addButton(Panel::system,9100,"Btn_Mission.png",edit,1,2,0,1,{},0,{}, {1,1},true,10);
+    text("HUDLayout.entry","HUD 배치",edit,{360,24},"TrebuchetMS-Bold",20,TextAlign::center,{140.f/255,240.f/255,1,1},10);
+}
+void Screens::Impl::hudEditor(){
+    RegionScope scope(*this,Region::panel);
+    text("HUDLayout.title","HUD 조각을 화면에서 끌어 배치하세요.",{384,720},{640,32},"TrebuchetMS-Bold",20,TextAlign::center,{},13);
+    constexpr unsigned ids[]={9101,9102,9103};
+    constexpr const char* labels[]={"기본 배치","취소","적용"};
+    for(unsigned i=0;i<3;++i){const Vec2 p{160+224.f*float(i),654};
+        addButton(Panel::system,ids[i],"Btn_Mission.png",p,1,2,0,1,Size{190,42},0,{}, {.4f,1},true,13,false);
+        text("HUDLayout.tool."+std::to_string(i),labels[i],p,{192,24},"TrebuchetMS-Bold",18,TextAlign::center,{140.f/255,240.f/255,1,1},13);
+    }
+    if(!hud->error.empty())text("HUDLayout.error",hud->error,{384,598},{640,52},"TrebuchetMS-Bold",16,TextAlign::center,{1,.5f,.4f,1},13);
 }
 void Screens::Impl::trade(){
+    RegionScope scope(*this,Region::panel);
     const Vec2 root{384,512};
     addButton(Panel::trade,0,"TradeItemBG.png",root,1,1,0,0,Size{768,1024},0,state.tradeItemId,{1,1},true,13);
     const auto found=std::find_if(state.shopItems.begin(),state.shopItems.end(),[&](const auto& i){return i.dataId==state.tradeItemId;});
@@ -650,13 +932,16 @@ void Screens::Impl::trade(){
     addButton(Panel::trade,state.buyMode?2108:2109,state.buyMode?"Common_Btn_BUY.png":"Common_Btn_SELL.png",plus(root,{63,-62}),1,2,0,1,Size{100,40},0,state.tradeItemId,{1,1},true,13);
 }
 void Screens::Impl::missionList(bool command){
+    RegionScope scope(*this,Region::list);
     const Vec2 root{384,512};
     const auto available=command?std::min<std::size_t>(5,state.availableMissions.size()):0;
     const auto accepted=std::min<std::size_t>(5,state.acceptedMissions.size());
+    const auto displayAvailable=available+(command&&available==0&&layout.configuration().enabled&&layout.configuration().compact?1u:0u);
     const float header=command&&accepted?64.f:0.f;
     const float detail=!command&&state.selectedMission>=0?256.f:0.f;
-    const float length=float(available+accepted)*44+header+(command?0.f:40.f);
+    const float length=float(displayAvailable+accepted)*44+header+(command?0.f:40.f);
     const float half=(length+detail)*.5f;
+    listTop=root.y+half+64;listBottom=root.y-half-64;
     int detailSelection=state.selectedMission;
     if(command){
         const bool sameList=previous&&previous->state.screen==state.screen
@@ -708,9 +993,9 @@ void Screens::Impl::missionList(bool command){
         text("Command.noNewMission","There is not a new mission.",list,{384,24},"Copperplate-Bold",20,TextAlign::center,{140.f/255,240.f/255,1,1},10);
         remember(first,CommandPart::row,list.y);
     }
-    const float acceptedY=-float(available)*44-header;
+    const float acceptedY=-float(displayAvailable)*44-header;
     if(command&&accepted){
-        const auto at=plus(list,{0,-float(available)*44-10});
+        const auto at=plus(list,{0,-float(displayAvailable)*44-10});
         first=nodes.size();
         image("MyMissions.png",at,1,1,0,{1,1},false,0,1,10);
         remember(first,CommandPart::row,at.y,int(available));
@@ -743,8 +1028,8 @@ void Screens::Impl::positionCommandList(){
             case CommandPart::middle:
                 std::get<ImageNode>(node).image.scale.y=(entry.baseY+command.displayedSize)/32;
                 continue;
-            case CommandPart::top: y+=command.displayedSize;break;
-            case CommandPart::bottom: y-=command.displayedSize;break;
+            case CommandPart::top: y+=command.displayedSize;listTop=y+32;break;
+            case CommandPart::bottom: y-=command.displayedSize;listBottom=y-32;break;
             case CommandPart::row:
                 y+=command.displayedSize;
                 if(entry.row>command.displayedSelection)y-=2*command.displayedSize;
@@ -762,6 +1047,7 @@ void Screens::Impl::positionCommandList(){
             button->button->position.y=y;
         }
     }
+    verticalPan=std::min(verticalPan,verticalLimit());
 }
 void Screens::Impl::tickCommandList(){
     constexpr float destination=128;
@@ -776,6 +1062,7 @@ void Screens::Impl::tickCommandList(){
     positionCommandList();
 }
 void Screens::Impl::completedMission(){
+    RegionScope scope(*this,Region::panel);
     const Vec2 root{384,512};const auto& mission=state.completedMission;
     if(mission.dataId.empty())return;
     image("MissionCompletedBG.png",root,1,1,0,{1,1},false,0,1,9);
@@ -790,6 +1077,7 @@ void Screens::Impl::completedMission(){
     }
 }
 void Screens::Impl::airlift(){
+    RegionScope scope(*this,Region::panel);
     const Vec2 root{384,512};unsigned count=0;for(const auto& base:state.airlifts)if(!base.dataId.empty())++count;
     const float half=float(count)*22+20;image("MissionList_Mid.png",root,1,1,0,{1,half/32},false,0,1,10);
     image("MissionList_Btm.png",plus(root,{0,-half-32}),1,1,0,{1,1},false,0,1,10);
@@ -805,6 +1093,7 @@ void Screens::Impl::airlift(){
     }
 }
 void Screens::Impl::weaponChoices(){
+    RegionScope scope(*this,Region::chooser);
     if(state.weaponChoiceType!=2&&state.weaponChoiceType!=3)throw std::runtime_error("Original weapon chooser type must be2 or3");
     for(unsigned i=0;i<state.weaponChoices.size();++i){const auto& entry=state.weaponChoices[i];
         if(entry.position<0||entry.dataId.empty())throw std::runtime_error("Weapon chooser requires actual inventory position and ItemCode");
@@ -834,7 +1123,7 @@ void Screens::Impl::build(){
         case ScreenId::maintenance:maintenance();break;
         case ScreenId::shop:shop();break;
         case ScreenId::command:
-            image("CmdCenterBG.png",{384,512});
+            if(menu::phone(layout.configuration())){RegionScope backdrop(*this,Region::artBackdrop);image(menu::background(layout.configuration(),"CmdCenterBG.png"),{240,160});}else image("CmdCenterBG.png",{384,512});
             // GuiCommandCenter creates these tiles before populating its rows.
             // The completion popup is painted over the collapsed background.
             if(!state.commandListVisible){
@@ -853,11 +1142,12 @@ void Screens::Impl::build(){
             if(state.inventoryVisible)inventoryDialog({384,512});
             if(state.missionVisible)missionList(false);
             if(state.airliftVisible)airlift();
-            if(state.systemVisible)system();
+            if(hud->editing)hudEditor();else if(state.systemVisible)system();
             break;
         }
         default:throw std::runtime_error("Unknown original screen ID");
     }
+    verticalPan=std::min(verticalPan,verticalLimit());
     syncMessage();
     syncPlaceName();
     dispatcher.subscribe({},[this](const ButtonEvent& event){
@@ -865,7 +1155,34 @@ void Screens::Impl::build(){
         // Side effects are requested at their original handler event boundary.
         // GameSession applies the real state transition and may refresh Screens
         // synchronously; this old Impl remains alive through the input call.
-        host.action({screen,panel,event});
+        if(phoneMenu()&&id>=9200&&id<=9205){
+            if(event.type!=ButtonEventType::pop||state.tradeVisible)return;
+            dispatcher.discardAll();
+            const bool switchPane=id==9204||id==9205;
+            if(switchPane){setPhoneEquipment(id==9204);scenePan=0;}
+            else{
+                auto& offset=id<9202?stockScroll:inventoryScroll;const float limit=id<9202?stockScrollLimit():menu::inventoryOverflow;
+                offset=std::clamp(offset+(id%2?60.f:-60.f),0.f,limit);
+                for(const auto& key:keys)if(key.id>=9200&&key.id<=9203)if(auto button=dispatcher.find(key)){const float value=key.id<9202?stockScroll:inventoryScroll,max=key.id<9202?stockScrollLimit():menu::inventoryOverflow;button->active=key.id%2?value<max:value>0;}
+            }
+            if(switchPane||state.shopDetailVisible||state.detailInventory>=0){
+                auto clear=event;clear.type=ButtonEventType::push;clear.key={owner(state.screen,state.screen==ScreenId::maintenance?Panel::root:Panel::inventory),2112,0,{}};
+                host.action({state.screen,state.screen==ScreenId::maintenance?Panel::root:Panel::inventory,clear});
+            }else host.sfx(0);
+            return;
+        }
+        if(id>=9100&&id<=9103){
+            if(event.type==ButtonEventType::pop){
+                if(id==9100){dispatcher.discardAll();hud->begin();}else if(id==9101)hud->reset();else if(id==9102)hud->cancel();else applyHUDEdit();
+                host.sfx(0);
+            }return;
+        }
+        ScreenAction action{screen,panel,event};
+        if(event.canvasPosition){
+            const auto inventoryRegion=screen==ScreenId::shop?Region::shopInventory:screen==ScreenId::maintenance?Region::maintenance:Region::panel;
+            action.dropCoordinates=DropCoordinates{phoneMenu()?phoneDropPoint(*event.canvasPosition):layout.ui(inventoryRegion,shopPan).inverse(*event.canvasPosition),presentation(Region::bottom,hm2::hud::controls).inverse(*event.canvasPosition)};
+        }
+        host.action(action);
         if(screen==ScreenId::slots){
             if(event.type==ButtonEventType::push&&id==1009)host.sfx(0);
             else if(event.type==ButtonEventType::pop&&(id==1001||id==1004||id==1010))host.sfx(1);
@@ -886,25 +1203,26 @@ void Screens::Impl::tick(float time,WorldRandom& random){
     if(state.screen==ScreenId::base)tickBase(time);
     tickRange(random);tickFieldCredits();tickDetail();
     if(state.screen==ScreenId::title){
-        auto& t=title;
+        auto& t=title;const auto spec=menu::title(layout.configuration());const bool phone=menu::phone(layout.configuration());
         t.bgRotate=t.bgRotate<0?t.bgRotate+(.01f-t.bgRotate)/60.f:0;
         t.bgScale=t.bgScale>1?t.bgScale+(.99f-t.bgScale)/100.f:1;
+        if(phone&&t.bgRotate<0&&std::abs(.01f-t.bgRotate)<=.01f)t.bgRotate=.01f;
         auto approach=[](float p){return p!=0&&std::abs(p)>.1f?p+(0-p)/50.f:0.f;};
-        t.bgPosition={approach(t.bgPosition.x),approach(t.bgPosition.y)};
-        if(!t.titleSound&&t.start+6.2f<time){host.sound("Title_TitleIn.wav");t.titleSound=true;}
-        if(!t.episodeSound&&t.start+7.7f<time){host.sound("Title_TitleIn.wav");t.episodeSound=true;}
-        if(t.bigX>-1024)t.bigX-=6;
-        if(t.titleScale!=1&&t.start+6.2f+.3f<time){
+        if(!phone)t.bgPosition={approach(t.bgPosition.x),approach(t.bgPosition.y)};
+        if(!t.titleSound&&t.start+spec.titleIn<time){host.sound("Title_TitleIn.wav");t.titleSound=true;}
+        if(!t.episodeSound&&t.start+spec.episodeIn<time){host.sound("Title_TitleIn.wav");t.episodeSound=true;}
+        if(t.bigX>spec.bigEnd)t.bigX-=spec.bigStep;
+        if(t.titleScale!=1&&t.start+spec.titleIn+.3f<time){
             if(t.titleScale<=1){host.sound("Title_Bang.wav");host.quake(10,4,.3f);t.titleScale=1;}
             else t.titleScale-=5;
             t.titleVisible=true;
         }
-        if(t.episodeScale!=1&&t.start+7.7f+.3f<time){
+        if(t.episodeScale!=1&&t.start+spec.episodeIn+.3f<time){
             if(t.episodeScale<=1){host.sound("Title_Bang.wav");host.quake(6,4,.3f);t.episodeScale=1;}
             else t.episodeScale-=5;
             t.episodeVisible=true;
         }
-        if(t.start+10<time){const float phase=float(std::fmod(double(time-(t.start+10)),2.));
+        if(t.start+spec.prompt<time){const float phase=float(std::fmod(double(time-(t.start+spec.prompt)),2.));
             if(phase<.2f){if(!t.startSound){host.sound("Title_TapToStart.wav");t.startSound=true;}
                 if(random.random()%10<=5)t.startVisible=((random.random()^1)&1)!=0;
             }else if(phase<1.2f)t.startVisible=true;
@@ -926,13 +1244,22 @@ void Screens::Impl::tick(float time,WorldRandom& random){
 }
 void Screens::Impl::append(Frame& frame,float time){
     for(const auto& node:nodes)std::visit([&](const auto& n){
-        using T=std::decay_t<decltype(n)>;auto& layer=layers->at(n.layer);
-        if constexpr(std::is_same_v<T,ImageNode>){auto image=n.image;if(n.parent)image.screenPosition=plus(n.parent->screenPosition(),n.local);layer.submitImage(image);}
-        else if constexpr(std::is_same_v<T,ButtonNode>){Frame f;n.button->append(f,time);for(auto& s:f.sprites)layer.submitNonAtlas(std::move(s));}
+        using T=std::decay_t<decltype(n)>;if(!phoneNodeVisible(n.region))return;if constexpr(std::is_same_v<T,ImageNode>){if(n.tag=="phone.stock.bg"&&phoneEquipment)return;if(n.tag=="phone.equip.bg"&&!phoneEquipment)return;}
+        auto& layer=layers->at(n.layer);layer.setPresentation(presentation(n.region,n.hudGroup),clipping(n.region,n.hudGroup));
+        if constexpr(std::is_same_v<T,ImageNode>){auto image=n.image;if(n.parent)image.screenPosition=plus(n.parent->screenPosition(),n.local);
+            if(n.tag=="hud.background"&&splitHUDBackground()){
+                if(!n.hudBackgroundParts)throw std::logic_error("HUD source slices were not prepared");
+                // Geometry/UV share exact source edges. Scissor retains only
+                // the outer original/safe boundary, never partitions adjacent
+                // full-size quads with floor/ceil-rounded internal scissors.
+                for(unsigned group=0;group<hud::count;++group){layer.setPresentation(presentation(n.region,int(group)),clipping(n.region,int(group)));layer.submitNonAtlas(n.hudBackgroundParts->at(group));}
+            }else if(n.menuPanel)layer.submitNonAtlas(*n.menuPanel);
+            else layer.submitImage(image);}
+        else if constexpr(std::is_same_v<T,ButtonNode>){Frame f;n.button->append(f,time);for(auto& s:f.sprites){s.angle+=n.angle;layer.submitNonAtlas(std::move(s));}}
         else if constexpr(std::is_same_v<T,TextNode>){Frame f;if(n.parent)n.text->position=plus(n.parent->screenPosition(),n.local);n.text->append(f);for(auto& s:f.sprites)layer.submitNonAtlas(std::move(s));}
         else if constexpr(std::is_same_v<T,NumberNode>)n.font->append(layer,tiles.visual(*n.tile));
         else if constexpr(std::is_same_v<T,PreviewNode>)for(const auto& sprite:n.frame.sprites)
-            layers->at(sprite.visualLayer.value_or(n.layer)).submitNonAtlas(sprite);
+            {auto& target=layers->at(sprite.visualLayer.value_or(n.layer));target.setPresentation(presentation(n.region),clipping(n.region));target.submitNonAtlas(sprite);}
         else if constexpr(std::is_same_v<T,DetailNode>){const auto& d=*n.detail;
             for(const auto& label:{d.title,d.description})if(label){Frame textFrame;label->append(textFrame);for(auto& sprite:textFrame.sprites)layer.submitNonAtlas(std::move(sprite));}
             if(d.large){auto image=*d.large;layer.submitImage(image);}
@@ -954,9 +1281,9 @@ void Screens::Impl::append(Frame& frame,float time){
             }
         }
     },node);
-    if(state.screen==ScreenId::field&&message.initialized){auto& layer=layers->at(9);layer.submitImage(message.background);if(message.text){Frame textFrame;message.text->append(textFrame);for(auto& s:textFrame.sprites)layer.submitNonAtlas(std::move(s));}}
+    if(state.screen==ScreenId::field&&message.initialized){auto& layer=layers->at(9);layer.setPresentation(layout.ui(Region::bottom),layout.clip(Region::bottom));layer.submitImage(message.background);if(message.text){Frame textFrame;message.text->append(textFrame);for(auto& s:textFrame.sprites)layer.submitNonAtlas(std::move(s));}}
     if(state.screen==ScreenId::field&&!placeName.background.tile.image.empty()&&placeName.background.show){
-        auto& layer=layers->at(9);
+        auto& layer=layers->at(9);layer.setPresentation(layout.ui(Region::banner),layout.clip(Region::banner));
         layer.submitImage(placeName.background);
         if(placeName.label){
             Frame textFrame;
@@ -967,7 +1294,11 @@ void Screens::Impl::append(Frame& frame,float time){
             for(auto& sprite:textFrame.sprites)layer.submitNonAtlas(std::move(sprite));
         }
     }
-    for(auto& layer:*layers)layer.drain().appendBatches(frame);
+    for(auto& layer:*layers){layer.setPresentation();layer.drain().appendBatches(frame);}
+    // Each node owns its clip. A final safe-area intersection would cut the
+    // full-screen backdrops back into black side bars after assembly.
+    if(layout.configuration().enabled){frame.width=layout.configuration().canvas.width;frame.height=layout.configuration().canvas.height;}
+
 }
 
 void Screens::Impl::updateHUD(const ScreensState& next){
@@ -980,7 +1311,7 @@ void Screens::Impl::updateHUD(const ScreensState& next){
     state.fieldWorldTime=next.fieldWorldTime;state.fieldUIRevision=next.fieldUIRevision;state.hasWorkingSlot=next.hasWorkingSlot;
     state.outOfRangeTimeLeft=next.outOfRangeTimeLeft;state.outOfRangeTimeRight=next.outOfRangeTimeRight;
     state.enemyName=next.enemyName;state.enemyNameRevision=next.enemyNameRevision;
-    if(fieldPresentation.identity!=next.fieldUIRevision){const auto oldName=fieldPresentation.enemyName;std::erase_if(nodes,[&](const Node& node){const auto* n=std::get_if<TextNode>(&node);return n&&n->text==oldName;});fieldPresentation={};fieldPresentation.identity=next.fieldUIRevision;}
+    if(fieldPresentation.identity!=next.fieldUIRevision){++*resourceGeneration;const auto oldName=fieldPresentation.enemyName;std::erase_if(nodes,[&](const Node& node){const auto* n=std::get_if<TextNode>(&node);return n&&n->text==oldName;});fieldPresentation={};fieldPresentation.identity=next.fieldUIRevision;}
     syncEnemyName();
     for(auto& node:nodes){
         if(auto* n=std::get_if<ImageNode>(&node)){auto& v=n->image;
@@ -1007,33 +1338,116 @@ void Screens::Impl::updateHUD(const ScreensState& next){
         }
     }
 }
-Screens::Screens(ResourceAccess& r,PreparedTiles& t,ScreensHost& h):resources_(r),tiles_(t),host_(h){}
+Screens::Screens(ResourceAccess& r,PreparedTiles& t,ScreensHost& h):hud_(std::make_shared<HUDState>()),resources_(r),tiles_(t),host_(h){}
 bool Screens::updateHUD(const ScreensState& state){
     if(!impl_||impl_->state.screen!=state.screen)return false;
     impl_->updateHUD(state);return true;
 }
 void Screens::refresh(const ScreensState& state,float time){
-    auto next=std::make_shared<Impl>(resources_,tiles_,host_,state,time,impl_);next->build();
+    const auto priorOwnerRevision=tileOwnerRevision_;
+    hud_->selectProfile(display_,host_);
+    if(hud_->editing&&(state.screen!=ScreenId::field||!state.systemVisible)){hud_->cancel();hud_->rebuild=false;}
+    if(fieldTiles_&&fieldTileRevision_!=state.fieldUIRevision)fieldTiles_.reset();
+    if(state.screen==ScreenId::field){
+        if(!fieldTiles_){fieldTiles_=std::make_shared<PreparedTiles>("screens.field."+std::to_string(++tileOwnerRevision_));fieldTileRevision_=state.fieldUIRevision;}
+        activeTiles_=fieldTiles_;
+    }else if(!activeTiles_||tileScreen_!=state.screen||(impl_&&impl_->state.baseId!=state.baseId)){activeTiles_=std::make_shared<PreparedTiles>("screens.owner."+std::to_string(++tileOwnerRevision_));}
+    tileScreen_=state.screen;
+    auto next=std::make_shared<Impl>(resources_,*activeTiles_,host_,state,time,impl_,display_,hud_,activeTiles_,resourceGeneration_);next->build();
     const bool changed=!impl_||impl_->state.screen!=state.screen;
     next->previous.reset();impl_=std::move(next);
     if(changed){if(state.screen==ScreenId::title)host_.bgm("STAGE1.wav");else if(state.screen==ScreenId::slots)host_.bgm("STAGE2.wav");else if(state.screen==ScreenId::base)host_.bgm("Title.wav");else if(state.screen==ScreenId::field)host_.bgm("STAGE3.mp3");}
+    if(state.screen==ScreenId::title&&tileOwnerRevision_!=priorOwnerRevision){
+        // GuiTitle.init0x32340: after BGM, request these three cached sounds
+        // in the original order. Do not play them or repeat on scalar refresh.
+        for(const auto* name:{"Title_TitleIn.wav","Title_Bang.wav","Title_TapToStart.wav"})host_.prepareSound(name);
+    }
 }
 void Screens::tick(float time,WorldRandom& random){if(auto keep=impl_)keep->tick(time,random);}
 bool Screens::input(PointerPhase phase,Vec2 point,std::uintptr_t pointer,float time){
     const auto keep=impl_;if(!keep)return false;
+    if(hud_->editing){
+        const auto rebuild=[&]{if(hud_->rebuild){hud_->rebuild=false;refresh(keep->state,time);}};
+        const auto toolMap=[keep](const Button& button,Vec2 canvas){return button.key().id>=9101&&button.key().id<=9103?keep->presentation(keep->buttonRegion(button)).inverse(canvas):Vec2{1.e9f,1.e9f};};
+        bool toolCaptured=false;for(const auto& key:keep->keys)if(key.id>=9101&&key.id<=9103)if(auto b=keep->dispatcher.find(key);b&&b->capturedPointer()==pointer)toolCaptured=true;
+        if(hud_->dragPointer==pointer&&pointer){
+            if(phase==PointerPhase::move){const Vec2 origin{hud_->dragOrigin.x+point.x-hud_->dragStart.x,hud_->dragOrigin.y+point.y-hud_->dragStart.y};hud_->draft.positions[hud_->selected]=hud::draggedOrigin(hud_->selected,keep->layout,origin);}
+            if(phase==PointerPhase::end||phase==PointerPhase::cancel)hud_->dragPointer=0;
+            return true;
+        }
+        const bool tool=keep->dispatcher.input(phase,point,pointer,time,toolMap);
+        if(tool||toolCaptured){rebuild();return true;}
+        if(phase==PointerPhase::begin&&pointer){
+            for(unsigned i=hud::count;i>0;--i){const auto b=hud::visualBounds(hud_->draft,i-1,keep->layout);if(point.x>=b.x&&point.x<=b.x+b.width&&point.y>=b.y&&point.y<=b.y+b.height){hud_->selected=i-1;hud_->dragPointer=pointer;hud_->dragStart=point;hud_->dragOrigin={b.x,b.y};break;}}
+        }
+        rebuild();return true;
+    }
     if(keep->state.screen==ScreenId::title){
         if(phase==PointerPhase::end){
-            const bool ready=keep->title.start+10<=time;
-            if(!ready){keep->title.start=time-10;keep->title.bigVisible=false;keep->updateTitleImages();}
+            const bool ready=keep->title.start+menu::title(keep->layout.configuration()).prompt<=time;
+            if(!ready){keep->title.start=time-menu::title(keep->layout.configuration()).prompt;keep->title.bigVisible=false;keep->updateTitleImages();}
             host_.action({ScreenId::title,Panel::root,{ButtonEventType::pop,{owner(ScreenId::title,Panel::root),0,0},pointer,point},true,ready});
         }
         return true;
     }
+    const bool artScene=menu::phone(keep->layout.configuration())&&(keep->state.screen==ScreenId::base||keep->phoneMenu());
+    const auto sceneTravel=[&]{const auto& c=keep->layout.configuration();const auto scale=keep->layout.ui(Region::artScene).scale;return std::max(0.f,320*scale-c.canvas.height)*.5f;};
+    if(phase==PointerPhase::begin&&keep->layout.configuration().enabled){const auto& c=keep->layout.configuration();const bool fullSurface=artScene||(c.compact&&keep->state.screen==ScreenId::field);const auto a=fullSurface?ClipRect{0,0,c.canvas.width,c.canvas.height}:c.content();if(point.x<a.x||point.x>a.x+a.width||point.y<a.y||point.y>a.y+a.height)return false;}
+    const bool sceneOwned=keep->scenePanPointer==pointer&&pointer;
+    if(sceneOwned){
+        if(phase==PointerPhase::move){const float delta=point.y-keep->scenePanStart.y;if(std::abs(delta)>8)keep->sceneDragging=true;if(keep->sceneDragging){keep->dispatcher.discardAll();keep->scenePan=std::clamp(keep->scenePanOrigin+delta,-sceneTravel(),sceneTravel());return true;}}
+        if(phase==PointerPhase::end||phase==PointerPhase::cancel){keep->scenePanPointer=0;if(keep->sceneDragging){keep->sceneDragging=false;return true;}}
+    }
+    const auto inGrid=[&](Region r){const auto clip=keep->clipping(r);return clip&&point.x>=clip->x&&point.x<=clip->x+clip->width&&point.y>=clip->y&&point.y<=clip->y+clip->height;};
+    if(artScene&&phase==PointerPhase::begin&&pointer&&sceneTravel()>0&&!keep->state.tradeVisible&&(!keep->phoneMenu()||(!inGrid(Region::phoneInventory)&&!inGrid(Region::phoneStock)))){keep->scenePanPointer=pointer;keep->scenePanStart=point;keep->scenePanOrigin=keep->scenePan;keep->sceneDragging=false;}
+    const bool verticalOwned=keep->verticalPointer==pointer&&pointer;
+    if(verticalOwned){
+        if(phase==PointerPhase::move){const float delta=point.y-keep->verticalStart.y;if(std::abs(delta)>8)keep->verticalDragging=true;if(keep->verticalDragging){keep->dispatcher.discardAll();const float direction=keep->scrollingRegion()==Region::chooser?-1.f:1.f;keep->verticalPan=std::clamp(keep->verticalOrigin+delta*direction,0.f,keep->verticalLimit());return true;}}
+        if(phase==PointerPhase::end||phase==PointerPhase::cancel){keep->verticalPointer=0;if(keep->verticalDragging){keep->verticalDragging=false;return true;}}
+    }
+    if(phase==PointerPhase::begin&&pointer&&keep->verticalLimit()>0){keep->verticalPointer=pointer;keep->verticalStart=point;keep->verticalOrigin=keep->verticalPan;keep->verticalDragging=false;}
     bool captured=false;for(const auto& key:keep->keys)if(const auto b=keep->dispatcher.find(key);b&&b->capturedPointer()==pointer&&pointer)captured=true;
-    return keep->dispatcher.input(phase,point,pointer,time)||captured;
+    if(keep->panPointer==pointer&&pointer){
+        if(phase==PointerPhase::move)keep->shopPan=std::clamp(keep->panOrigin-(point.x-keep->panStart.x),0.f,keep->layout.shopPanLimit());
+        if(phase==PointerPhase::end||phase==PointerPhase::cancel)keep->panPointer=0;
+        return true;
+    }
+    const auto mapper=[keep](const Button& button,Vec2 canvas){const auto region=keep->buttonRegion(button);const auto group=keep->buttonHUDGroup(button);if(const auto clip=keep->clipping(region,group);clip&&(canvas.x<clip->x||canvas.x>clip->x+clip->width||canvas.y<clip->y||canvas.y>clip->y+clip->height))return Vec2{1.e9f,1.e9f};return keep->presentation(region,group).inverse(canvas);};
+    const bool handled=(keep->layout.configuration().enabled||hud_->active().customized())?keep->dispatcher.input(phase,point,pointer,time,mapper):keep->dispatcher.input(phase,point,pointer,time);
+    if(hud_->rebuild){hud_->rebuild=false;refresh(keep->state,time);return true;}
+    if(handled||captured||sceneOwned||(keep->scenePanPointer==pointer&&pointer)||verticalOwned||(keep->verticalPointer==pointer&&pointer))return true;
+    if(phase==PointerPhase::begin&&pointer&&keep->state.screen==ScreenId::shop&&keep->layout.shopPanLimit()>0&&!keep->state.tradeVisible){keep->panPointer=pointer;keep->panStart=point;keep->panOrigin=keep->shopPan;return true;}
+    return keep->state.tradeVisible||keep->state.systemVisible||keep->state.missionVisible||keep->state.airliftVisible;
 }
 void Screens::append(Frame& out,float time)const{if(auto keep=impl_)keep->append(out,time);}
-void Screens::discardInputs(){if(impl_)impl_->dispatcher.discardAll();}
+void Screens::appendPreparation(Frame& out)const{
+    if(activeTiles_)activeTiles_->appendPreparation(out);
+    if(fieldTiles_&&fieldTiles_!=activeTiles_)fieldTiles_->appendPreparation(out);
+    const auto keep=impl_;if(!keep)return;
+    const auto text=[&](const std::shared_ptr<Text>& label){if(label){auto copy=*label;copy.visible=true;copy.append(out);}};
+    for(const auto& node:keep->nodes)std::visit([&](const auto& n){using T=std::decay_t<decltype(n)>;
+        if constexpr(std::is_same_v<T,TextNode>)text(n.text);
+        else if constexpr(std::is_same_v<T,PreviewNode>)out.sprites.insert(out.sprites.end(),n.frame.sprites.begin(),n.frame.sprites.end());
+        else if constexpr(std::is_same_v<T,BaseDescriptionNode>)text(n.text);
+        else if constexpr(std::is_same_v<T,DetailNode>){text(n.detail->title);text(n.detail->description);}
+    },node);
+    text(keep->fieldPresentation.enemyName);text(keep->message.text);text(keep->placeName.label);text(keep->placeName.shadow);
+    if(!keep->placeName.background.tile.image.empty()){Sprite resource;resource.image=keep->placeName.background.tile.image;resource.textureSource=keep->placeName.background.tile.textureSource;out.sprites.push_back(std::move(resource));}
+}
+const TileImage* Screens::preparedTile(std::string_view name)const{return activeTiles_?activeTiles_->lookup(name):nullptr;}
+void Screens::discardInputs(){if(impl_){impl_->dispatcher.discardAll();impl_->panPointer=0;impl_->scenePanPointer=0;impl_->sceneDragging=false;impl_->verticalPointer=0;impl_->verticalDragging=false;hud_->dragPointer=0;}}
+void Screens::setDisplay(DisplayConfiguration display){DisplayLayout check(display);discardInputs();display_=display;if(impl_){const auto state=impl_->state;const auto now=impl_->now;refresh(state,now);}}
+Vec2 Screens::buttonScreenPosition(ButtonKey key)const{const auto button=this->button(key);if(!button)throw std::out_of_range("Unknown screen button");return impl_->presentation(impl_->buttonRegion(*button),impl_->buttonHUDGroup(*button)).map(button->screenPosition());}
+bool Screens::hudEditing()const{return hud_->editing;}
+const hud::Configuration& Screens::hudConfiguration()const{return hud_->active();}
+std::string Screens::hudEditorError()const{return hud_->error;}
+bool Screens::beginHUDEdit(){if(!impl_||impl_->state.screen!=ScreenId::field||!impl_->state.systemVisible)return false;hud_->begin();hud_->rebuild=false;const auto state=impl_->state;const auto now=impl_->now;discardInputs();refresh(state,now);return true;}
+bool Screens::applyHUDEdit(){if(!impl_||!hud_->editing)return false;const bool ok=impl_->applyHUDEdit();hud_->rebuild=false;const auto state=impl_->state;const auto now=impl_->now;refresh(state,now);return ok;}
+void Screens::cancelHUDEdit(){if(!impl_||!hud_->editing)return;hud_->cancel();hud_->rebuild=false;const auto state=impl_->state;const auto now=impl_->now;refresh(state,now);}
+void Screens::resetHUDEdit(){if(!impl_||!hud_->editing)return;hud_->reset();hud_->rebuild=false;const auto state=impl_->state;const auto now=impl_->now;refresh(state,now);}
+void Screens::setHorizontalPan(float value){if(!impl_||!std::isfinite(value))throw std::invalid_argument("Invalid presentation pan");impl_->shopPan=std::clamp(value,0.f,impl_->layout.shopPanLimit());}
+float Screens::horizontalPanLimit()const{return impl_&&!impl_->phoneMenu()?impl_->layout.shopPanLimit():0;}
+
 std::vector<ButtonKey> Screens::buttons()const{return impl_?impl_->keys:std::vector<ButtonKey>{};}
 std::shared_ptr<Button> Screens::button(ButtonKey key)const{return impl_?impl_->dispatcher.find(key):nullptr;}
 std::optional<std::string> Screens::itemDescription(const ItemDescriptionValues& v,int mode){
@@ -1134,5 +1548,19 @@ std::vector<ScreenCoverage> Screens::coverage(){
         {ScreenId::field,Panel::root,"Stage-entry place-name banner","GuiGame0x2a820/0x29508, GobWorld0x13778",true},
         {ScreenId::field,Panel::root,"Enemy names,message lifetime,help pages/game-over native alerts","GuiGame/GuiHelp/GameMain",true}
     };
+}
+}
+
+namespace hm2::ui {
+void Screens::revealButton(ButtonKey key){
+    if(!impl_||!display_.enabled||impl_->state.tradeVisible)return;auto b=button(key);if(!b)return;auto region=impl_->buttonRegion(*b);
+    if(impl_->phoneMenu()&&impl_->state.screen==ScreenId::shop){const bool equipment=region==Region::phoneEquipment,stock=region==Region::phoneStock||region==Region::phoneStockHeader;
+        if((equipment&&!impl_->phoneEquipment)||(stock&&impl_->phoneEquipment)){const unsigned toggle=equipment?9204:9205;for(auto target:buttons())if(target.id==toggle){revealButton(target);const auto p=buttonScreenPosition(target);const auto time=impl_->now;input(PointerPhase::begin,p,0x50484d44,time);input(PointerPhase::end,p,0x50484d44,time);break;}b=button(key);if(!b)return;region=impl_->buttonRegion(*b);}
+    }
+    if(region==Region::phoneStock||region==Region::phoneInventory){const auto clip=impl_->clipping(region);if(clip){const auto p=buttonScreenPosition(key);const auto scale=impl_->presentation(region).scale;auto& offset=region==Region::phoneStock?impl_->stockScroll:impl_->inventoryScroll;const float half=30*scale;offset=std::clamp(offset+(std::clamp(p.y,clip->y+half,clip->y+clip->height-half)-p.y)/scale,0.f,region==Region::phoneStock?impl_->stockScrollLimit():menu::inventoryOverflow);}}
+    const auto a=display_.content();auto p=buttonScreenPosition(key);
+    if(region==Region::artScene||menu::menuRegion(region)){const auto canvas=display_.canvas;const float scale=impl_->layout.ui(Region::artScene).scale,travel=std::max(0.f,320*scale-canvas.height)*.5f;const auto bounds=b->bounds();const float skinScale=impl_->presentation(region).scale;const float bottom=std::max(24.f,-bounds.bottom*skinScale),top=std::min(canvas.height-24,canvas.height-bounds.top*skinScale);if(bottom<=top)impl_->scenePan=std::clamp(impl_->scenePan+std::clamp(p.y,bottom,top)-p.y,-travel,travel);}
+    if(region==Region::shopStock||region==Region::shopInventory)impl_->shopPan=std::clamp(impl_->shopPan+p.x-std::clamp(p.x,a.x+16,a.x+a.width-16),0.f,impl_->layout.shopPanLimit());
+    if(region==Region::list||region==Region::chooser){const auto clip=impl_->clipping(region).value_or(a);const float delta=std::clamp(p.y,clip.y+24,clip.y+clip.height-24)-p.y;impl_->verticalPan=std::clamp(impl_->verticalPan+(region==Region::chooser?-delta:delta),0.f,impl_->verticalLimit());}
 }
 }

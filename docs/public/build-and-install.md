@@ -38,6 +38,7 @@ git config core.hooksPath .githooks
 
 ```sh
 python3 tools/prepare_hd_assets.py
+python3 tools/prepare_phone_menu_assets.py
 python3 tools/prepare_app_icons.py
 ```
 

@@ -10,6 +10,7 @@
 #include <iostream>
 #include <limits>
 #include <numbers>
+#include <set>
 using namespace hm2;
 namespace {
 struct Files:ResourceAccess {
@@ -155,7 +156,8 @@ void actualAircraftEnemy(Files& files){
     std::sort(images.begin(),images.end());images.erase(std::unique(images.begin(),images.end()),images.end());
     std::erase_if(images,[&](const auto& image){return std::find(otherImages.begin(),otherImages.end(),image)!=otherImages.end();});assert(!images.empty());
     Hooks host;CombatSetup setup;setup.map=selected->name;setup.gate=gate;CombatScene scene(files,host,setup);
-    const auto reads=files.reads,probes=files.probes;scene.tick();scene.tick();const auto frame=scene.drawFrame();
+    const auto firstUseReads=files.reads;scene.tick();assert(files.reads>firstUseReads);
+    const auto reads=files.reads,probes=files.probes;scene.tick();const auto frame=scene.drawFrame();
     const auto enemies=scene.enemies();assert(std::any_of(enemies.begin(),enemies.end(),[](const auto& e){return e.kind==MachineKind::aircraft;}));
     const auto matched=aircraftOffsets(frame,images);assert(matched>0&&files.reads==reads&&files.probes==probes);
     std::cout<<"actualEnemyAircraft map="<<selected->name<<" bodyShadowPairs="<<matched<<" offset10,-10 warmIO0\n";
@@ -165,11 +167,23 @@ void actualScene(Files& files){
     const auto models=Models::parse(Chunk::parse(files.read("PartsInfo.mcb")),Chunk::parse(files.read("MachInfo.mcb")));std::vector<std::string> botImages;
     for(const auto& bot:setup.botSlots)for(const auto& mount:models.modelMounts(bot.machine))botImages.push_back(mount.part+".png");
     std::sort(botImages.begin(),botImages.end());botImages.erase(std::unique(botImages.begin(),botImages.end()),botImages.end());
-    CombatScene scene(files,host,setup);Frame preparation;preparation=scene.preparationFrame();unsigned prepared=0;for(const auto& s:preparation.sprites)prepared+=s.textureSource.variant==TextureVariant::originalHalfAlpha;assert(prepared==337);
-    const auto reads=files.reads,probes=files.probes;assert(scene.bots().size()==3);std::size_t maxShadows=0;bool playerDirect=false,botAtlas=false,enemyAtlas=false;
+    const auto equipment=PlayerEquipment::parse(DataTable::parse(files.read("ItemInfo.tble")));
+    std::set<std::string> expectedShadows;
+    const auto expectParts=[&](std::span<const PartMount> mounts){for(const auto& mount:mounts){const auto& part=models.part(mount.part);if(part.tileCount&&files.exists(part.name+".png"))expectedShadows.insert(part.name+".png~shd");}};
+    const auto initialPlayer=equipment.mounts(models,setup.equipment);expectParts(initialPlayer);
+    for(const auto& bot:setup.botSlots){const auto mounts=models.modelMounts(bot.machine);expectParts(mounts);}
+    const auto preparedShadows=[](const Frame& frame){std::set<std::string> names;for(const auto& s:frame.sprites)if(s.textureSource.variant==TextureVariant::originalHalfAlpha)names.insert(s.image);return names;};
+    CombatScene scene(files,host,setup);const auto preparation=scene.preparationFrame();
+    assert(preparedShadows(preparation)==expectedShadows&&expectedShadows.size()<337);
+    assert(std::none_of(preparation.sprites.begin(),preparation.sprites.end(),[](const auto& s){return s.image=="P_Wpn_Gun_201.png";}));
+    unsigned reads=0,probes=0;assert(scene.bots().size()==3);std::size_t maxShadows=0;bool playerDirect=false,botAtlas=false,enemyAtlas=false;
     std::size_t botOffsetPairs=0;
-    for(unsigned tick=0;tick<180;++tick){scene.tick();const auto frame=scene.drawFrame();unsigned shadows=0;bool bodyStarted=false;
-        if(tick==0){botOffsetPairs=aircraftOffsets(frame,botImages);assert(botOffsetPairs>0);}
+    for(unsigned tick=0;tick<180;++tick){scene.tick();const auto beforeDrawReads=files.reads,beforeDrawProbes=files.probes;const auto frame=scene.drawFrame();assert(files.reads==beforeDrawReads&&files.probes==beforeDrawProbes);unsigned shadows=0;bool bodyStarted=false;
+        if(tick==0){botOffsetPairs=aircraftOffsets(frame,botImages);assert(botOffsetPairs>0);
+            for(const auto& enemy:scene.enemies()){const auto mounts=models.modelMounts(enemy.name);expectParts(mounts);}
+            assert(preparedShadows(scene.preparationFrame())==expectedShadows);
+            reads=files.reads;probes=files.probes;
+        }
         for(const auto& sprite:frame.sprites){
             if(sprite.textureSource.variant==TextureVariant::originalHalfAlpha){assert(!bodyStarted);assert(sprite.atlasBatch&&sprite.atlasBatch->pixelFormat==3);shadows+=sprite.atlasBatch->quads.size();}
             else if(sprite.atlasBatch&&sprite.image!="HPGauge.png")bodyStarted=true;

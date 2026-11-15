@@ -70,6 +70,20 @@ int main(){
     assert(moved.sprites[4].atlasBatch->indices.size()==6);
     assert(layer.drain().atlases.empty());
     assert(retained->quads.size()==1); // Frame payload survives layer reuse.
+    // One original tile can occur in several UI clips in the same frame.
+    // Preserve A/B/A submission order through all collectors, then reuse its
+    // one persistent group when a later window has a different clip.
+    VisualLayer clipped;auto clippedImage=image("clipped");const ClipRect ca{10,20,30,40},cb{50,60,70,80};
+    for(unsigned i=0;i<4;++i){clipped.setPresentation({},i==2?cb:ca);clippedImage.screenPosition.x=100+float(i);clipped.submitImage(clippedImage);}
+    auto clips=clipped.drain();assert(clipped.atlasCount()==1&&clips.atlases.size()==3);
+    assert(clips.atlases[0].quads.size()==2&&clips.atlases[1].quads.size()==1&&clips.atlases[2].quads.size()==1);
+    assert(clips.atlases[0].clip==ca&&clips.atlases[1].clip==cb&&clips.atlases[2].clip==ca);
+    assert(clips.atlases[0].quads[1].vertices[0].position.x==86&&clips.atlases[1].quads[0].vertices[0].position.x==87&&clips.atlases[2].quads[0].vertices[0].position.x==88);
+    assert(clips.atlases[0].indices.back()==5&&clips.atlases[1].indices.back()==1);
+    Frame clippedFlat,clippedNative,clippedMoved;clips.append(clippedFlat);clips.appendBatches(clippedNative);std::move(clips).appendBatches(clippedMoved);
+    assert(clippedFlat.sprites.size()==4&&clippedFlat.sprites[0].clip==ca&&clippedFlat.sprites[2].clip==cb&&clippedFlat.sprites[3].clip==ca);
+    for(auto* f:{&clippedNative,&clippedMoved})assert(f->sprites.size()==3&&f->sprites[0].clip==ca&&f->sprites[1].clip==cb&&f->sprites[2].clip==ca);
+    clipped.setPresentation({},ClipRect{1,2,3,4});clipped.submitImage(clippedImage);auto reused=clipped.drain();assert(clipped.atlasCount()==1&&reused.atlases.size()==1&&reused.atlases[0].quads.size()==1&&reused.atlases[0].clip==ClipRect({1,2,3,4}));
     // Group order persists when next-frame insertion order changes.
     layer.submitImage(b);layer.submitImage(a);auto next=layer.drain();
     assert(next.atlases[0].tileIdentity=="tile-A"&&next.atlases[1].tileIdentity=="tile-B");

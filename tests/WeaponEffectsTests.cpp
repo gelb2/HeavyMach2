@@ -1,5 +1,6 @@
 #include "Core/Simulation/WeaponEffects.hpp"
 #include "Core/Simulation/ProjectileVisual.hpp"
+#include "Core/Presentation/PreparedTiles.hpp"
 #include <cassert>
 #include <cmath>
 #include <map>
@@ -15,6 +16,7 @@ struct Host:WeaponHost,WeaponEffectsHost {
     WeaponEffects* effects=nullptr;WeaponEffectInput input;
     unsigned reads=0;std::vector<std::uint32_t> values;
     std::vector<std::string> events;std::vector<int> damages;std::vector<Vec2> soundPositions;
+    std::vector<std::string> originalTileRequests;
     std::vector<WeaponProjectile> projectiles;
     Host(){
         for(const auto* name:{"Efx_Fire.png","Efx_Damage.png","BulletShell.png","Efx_Trail04.png","Efx_Trail02.png","Efx_Trail01.png","Blt_Missile01.png",
@@ -36,12 +38,13 @@ struct Host:WeaponHost,WeaponEffectsHost {
     TileImage* preparedTile(std::string_view name)override{
         if(nilImages)return nullptr;const auto it=images.find(name);return it==images.end()?nullptr:&it->second;
     }
+    TileImage* prepareOriginalTile(std::string_view name,TileImage* supplied)override{originalTileRequests.emplace_back(name);return supplied;}
     void attachProjectile(WeaponProjectile p)override{events.push_back("projectile");projectiles.push_back(std::move(p));if(projectileRandom)(void)random();}
     void particleStarted(WeaponParticleRole role,const Particle&)override{
         events.push_back(role==WeaponParticleRole::flash?"flash":role==WeaponParticleRole::hitEffect?"hit":"shell");
     }
     void trailAttached(const Trail&)override{events.push_back("trail");}
-    void clear(){reads=0;events.clear();damages.clear();soundPositions.clear();}
+    void clear(){reads=0;events.clear();damages.clear();soundPositions.clear();originalTileRequests.clear();}
 };
 struct Fixture {
     Host host;ParticlePool pool;WeaponEffects effects;
@@ -62,6 +65,7 @@ int main(){
     WeaponEmission shot{{38,24.5f},{163,24.5f},0};const auto w=gun();
     Fixture full;full.freeSlots(3);full.effects.emit(w,shot,full.host.input,full.host,full.host);
     assert((full.host.events==std::vector<std::string>{"R1","R2","R3","flash","R4","hit","trail","R5","R6","R7","R8","shell","damage"}));
+    assert((full.host.originalTileRequests==std::vector<std::string>{"Efx_Trail04.png","BulletShell.png"}));
     assert(full.host.damages==std::vector<int>{7}&&full.host.soundPositions.empty()&&full.host.projectiles.empty());
     const auto& flash=full.pool.particles()[61].state();const auto& hit=full.pool.particles()[62].state();const auto& shell=full.pool.particles()[63].state();
     near(flash.life,.1f);near(flash.angle,std::numbers::pi_v<float>);assert(flash.tileNumber==4&&flash.tile->columns==4&&flash.tile->rows==4);
@@ -84,6 +88,7 @@ int main(){
         assert(f.host.reads==expected[free]&&f.host.damages==std::vector<int>{7}&&f.host.events.back()=="audio");
         near(f.host.soundPositions[0].x,0);assert(f.host.projectiles.empty());
         assert(f.effects.trails().size()==(free>=2?1:0));
+        assert(f.host.originalTileRequests.size()==(free<2?0u:free==2?1u:2u));
     }
     // Damage callbacks can consume the same world stream before common audio.
     Fixture callback;callback.freeSlots(0);callback.host.damageRandom=true;
@@ -102,6 +107,27 @@ int main(){
     const auto& casing=sniper.pool.particles()[63].state();near(casing.scale.x,.7f);near(casing.life,.5f*.7f+.7f);near(casing.velocity.y,-2.5f);
     near(sniper.effects.trails()[0]->config().width,4);near(sniper.effects.trails()[0]->config().fadeTime,1);near(sniper.effects.trails()[0]->state().diffuse,.02f);
     assert(sniper.effects.trails()[0]->state().tile->name=="Efx_Trail02.png");
+    assert((sniper.host.originalTileRequests==std::vector<std::string>{"Efx_Trail02.png","BulletShell.png"}));
+    // Live shared-manager behavior: the first actual Gun VFX prepares these
+    // two resources; later emissions reuse the same objects with no new IO.
+    struct Files:ResourceAccess {
+        std::vector<std::string> reads;
+        bool exists(std::string_view)const override{return true;}
+        Bytes read(std::string_view name)override{reads.emplace_back(name);return {137,80,78,71,13,10,26,10,0,0,0,13,'I','H','D','R',0,0,0,30,0,0,0,17,8,6,0,0,0,0,0,0,0};}
+    } files;
+    struct SharedHost:Host {
+        Files& files;PreparedTiles shared{"live-shared"};
+        explicit SharedHost(Files& f):files(f){}
+        TileImage* prepareOriginalTile(std::string_view name,TileImage*)override{originalTileRequests.emplace_back(name);return shared.prepare(files,name);}
+    } shared(files);
+    ParticlePool sharedPool(0,shared);WeaponEffects sharedEffects(sharedPool,{shared.preparedTile("Efx_Fire.png"),shared.preparedTile("Efx_Damage.png"),nullptr,nullptr,nullptr});shared.clear();
+    const auto beforeShared=shared.shared.revision();sharedEffects.emit(w,shot,shared.input,shared,shared);
+    assert((files.reads==std::vector<std::string>{"Efx_Trail04.png","BulletShell.png"}));
+    const auto sharedRevision=shared.shared.revision();assert(sharedRevision>beforeShared);
+    const auto* shellOwner=shared.shared.lookup("BulletShell.png");const auto* trailOwner=shared.shared.lookup("Efx_Trail04.png");
+    sharedEffects.emit(w,shot,shared.input,shared,shared);
+    assert(files.reads.size()==2&&shared.shared.revision()==sharedRevision);
+    assert(sharedEffects.trails().back()->state().tile==trailOwner&&sharedPool.particles()[5].state().tile==shellOwner);
     // ML creates real motion/trail; its setFire sound precedes world attachment,
     // then the controller requests its separate common sound.
     const auto ml=missile();

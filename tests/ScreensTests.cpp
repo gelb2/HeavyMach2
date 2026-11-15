@@ -1,9 +1,11 @@
 #include "Core/UI/Screens.hpp"
 #include "Core/Presentation/VisualLayer.hpp"
+#include "Assets/Image.hpp"
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <limits>
+#include <map>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -22,6 +24,10 @@ struct Host:ScreensHost {
     unsigned preparations=0;std::vector<ScreenAction> actions;std::vector<std::string> songs,sounds;
     std::vector<TextRasterRequest> requests;
     std::vector<unsigned> ids;std::function<void(const ScreenAction&)> callback;
+    std::map<std::string,Bytes> hudSettings;unsigned hudReads=0,hudWrites=0;bool hudWriteSucceeds=true;
+    std::optional<Bytes> loadHUDLayout(std::string_view profile)override{++hudReads;const auto i=hudSettings.find(std::string(profile));return i==hudSettings.end()?std::nullopt:std::optional<Bytes>(i->second);}
+    bool saveHUDLayout(std::string_view profile,std::span<const std::uint8_t> bytes)override{++hudWrites;if(!hudWriteSucceeds)return false;hudSettings[std::string(profile)]={bytes.begin(),bytes.end()};return true;}
+
     void action(const ScreenAction& e)override{actions.push_back(e);if(callback)callback(e);}
     PreparedScreenText prepareText(const TextRasterRequest& r)override{
         ++preparations;requests.push_back(r);auto b=std::make_shared<TextBitmap>();b->request=r;b->layout=textRasterLayout(r);
@@ -55,7 +61,7 @@ void shopDetails(const char* root){
     const auto count=host.preparations,reads=files.reads,probes=files.probes;
     for(unsigned i=0;i<7;++i){ui.tick(float(i),random);assert(!sprite(draw(ui),"prepared:GuiShop.item.title"));}
     ui.tick(8,random);f=draw(ui);const auto* t=sprite(f,"prepared:GuiShop.item.title");const auto* d=sprite(f,"prepared:GuiShop.item.description");const auto* large=sprite(f,"IconB10011.png");assert(t&&d&&large);
-    assert(t->size.width==160&&near(t->size.height,24*.505f)&&near(geometryWidth(large),tiles.lookup("IconB10011.png")->pixels.width)&&large->angle==0);
+    assert(t->size.width==160&&near(t->size.height,24*.505f)&&near(geometryWidth(large),ui.preparedTile("IconB10011.png")->pixels.width)&&large->angle==0);
     assert(d->color.r==120.f/255&&d->color.g==240.f/255&&d->color.b==240.f/255);
     ui.refresh(state);assert(near(sprite(draw(ui),"prepared:GuiShop.item.title")->size.height,24*.505f)&&host.preparations==count);
     for(unsigned i=0;i<6;++i)ui.tick(10+float(i),random);f=draw(ui);t=sprite(f,"prepared:GuiShop.item.title");d=sprite(f,"prepared:GuiShop.item.description");large=sprite(f,"IconB10011.png");
@@ -260,12 +266,21 @@ void slotPreviewTranslation(const char* root){
     };
     for(unsigned refresh=0;refresh<3;++refresh){state.selectedSlot=int(refresh);ui.refresh(state);std::vector<const AtlasBatch*> stable;
         const auto reads=files.reads,probes=files.probes,preparations=host.preparations;
+        Frame prepared;ui.appendPreparation(prepared);unsigned preparedBodies=0,preparedStrips=0,preparedShadows=0;
+        for(const auto& image:prepared.sprites){
+            if(image.image==body.image)++preparedBodies;
+            if(image.image==strip.image){++preparedStrips;assert(image.strip.size()==3);}
+            if(image.image==shadow.image){++preparedShadows;assert(image.textureSource==shadow.textureSource&&image.atlasBatch&&image.atlasBatch->textureSource==batch->textureSource&&image.atlasBatch->image==batch->image);}
+        }
+        assert(preparedBodies==3&&preparedStrips==3&&preparedShadows==3);
+        const auto actual=draw(ui);for(const auto& image:actual.sprites)assert(std::any_of(prepared.sprites.begin(),prepared.sprites.end(),[&](const auto& resource){return resource.image==image.image&&resource.textureSource==image.textureSource;}));
         for(unsigned drawIndex=0;drawIndex<120;++drawIndex)compare(draw(ui),&stable);
         assert(files.reads==reads&&files.probes==probes&&host.preparations==preparations);
         assert(local.sprites[2].atlasBatch.get()==batch.get());for(unsigned i=0;i<4;++i){const auto& v=batch->quads[0].vertices[i];assert(v.position.x==points[i].x&&v.position.y==points[i].y);}
         assert(local.sprites[0].center.x==body.center.x&&local.sprites[1].strip[0].position.x==strip.strip[0].position.x);
     }
-    std::cout<<"SLOT_PREVIEW translation3/sharedSourceImmutable/rotatedGeometry/UVcolorIndicesClip/refresh3/append120StableAtlasPayload/warmIO0 PASS\n";
+    state.screen=ScreenId::base;ui.refresh(state);Frame departed;ui.appendPreparation(departed);assert(!sprite(departed,body.image)&&!sprite(departed,strip.image)&&!sprite(departed,shadow.image));
+    std::cout<<"SLOT_PREVIEW translation3/sharedSourceImmutable/rotatedGeometry/UVcolorIndicesClip/refresh3/preparationCarriesAllBodyStripShadowTextures/leaveSlotsRelease/append120StableAtlasPayload/warmIO0 PASS\n";
 }
 void checkPageSprite(const Sprite& dot,float x,float y,bool current){
     assert(!dot.atlasBatch&&dot.strip.size()==4&&dot.center.x==x&&dot.center.y==y);
@@ -337,6 +352,121 @@ void fieldMessage(const char* root){
     std::cout<<"FIELD_MESSAGE original512x64/512x24/font/SFX10/floatDoubleClock/bounce/hide/pause/refresh/sentinel PASS\n";
 }
 }
+namespace {
+void hudMeasuredGeometry(const char* root){
+    Files files(root);const auto bg=decodeImage(files.read("GameUI_BG.png"));assert(bg.width==768&&bg.height==256);
+    const std::array<unsigned,hud::count> heights{124,138,133};
+    for(unsigned group=0;group<hud::count;++group){const auto source=hud::backgroundSlices[group];unsigned highest=0;bool found=false;
+        for(unsigned y=0;y<bg.height;++y)for(unsigned x=unsigned(source.x);x<unsigned(source.x+source.width);++x)if(bg.rgba[((bg.height-1-y)*bg.width+x)*4+3]){highest=std::max(highest,y);found=true;}
+        assert(found&&highest+1==heights[group]&&hud::bounds[group].height==heights[group]);
+    }
+    // Compare actual decoded source pixels, not just three emitted rectangles.
+    // Identity custom placement must partition every visible background sample
+    // once and retain the original texture's source mapping. Include fractional
+    // output boundaries: full-size sprites under rounded scissors overblend.
+    for(const auto display:std::array<DisplayConfiguration,5>{DisplayConfiguration{},DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({857,393},{59,17,60,0}),DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({1024,1366},{0,25,0,0})}){
+        const DisplayLayout layout(display);const auto base=layout.ui(DisplayRegion::bottom);hud::Configuration identity;
+        for(unsigned group=0;group<hud::count;++group){const auto b=hud::bounds[group];identity.positions[group]=hud::draggedOrigin(group,layout,base.map({b.x,b.y}));const auto t=hud::transform(identity,group,layout);assert(near(t.scale,base.scale)&&near(t.offset.x,base.offset.x)&&near(t.offset.y,base.offset.y));}
+        const auto content=display.enabled?display.content():ClipRect{0,0,768,1024};
+        for(unsigned y=0;y<bg.height;++y)for(unsigned x=0;x<bg.width;++x){const auto p=base.map({float(x)+.5f,float(y)+.5f});if(p.x<content.x||p.x>=content.x+content.width||p.y<content.y||p.y>=content.y+content.height)continue;
+            unsigned coverage=0;for(unsigned group=0;group<hud::count;++group){const auto c=hud::backgroundClip(identity,group,layout);coverage+=p.x>=c.x&&p.x<c.x+c.width&&p.y>=c.y&&p.y<c.y+c.height;}assert(coverage==1);
+        }
+        Host defaultHost,customHost;PreparedTiles defaultTiles("HUD-original"),customTiles("HUD-cropped");Screens original(files,defaultTiles,defaultHost),custom(files,customTiles,customHost);
+        customHost.hudSettings[display.compact?"compact":"regular"]=hud::encode(identity);original.setDisplay(display);custom.setDisplay(display);
+        ScreensState state;state.screen=ScreenId::field;state.fieldUIRevision=1;state.hasWorkingSlot=true;original.refresh(state);custom.refresh(state);
+        const auto originalFrame=draw(original),identityFrame=draw(custom);const auto* identitySprite=sprite(identityFrame,"GameUI_BG.png");
+        assert(identitySprite&&std::count_if(identityFrame.sprites.begin(),identityFrame.sprites.end(),[](const auto& s){return s.image=="GameUI_BG.png";})==1);
+        const auto& full=*sprite(originalFrame,"GameUI_BG.png");assert(full.strip.size()==4&&identitySprite->strip.size()==4);
+        for(unsigned i=0;i<4;++i){assert(identitySprite->strip[i].position.x==full.strip[i].position.x&&identitySprite->strip[i].position.y==full.strip[i].position.y&&identitySprite->strip[i].uv.x==full.strip[i].uv.x&&identitySprite->strip[i].uv.y==full.strip[i].uv.y);}
+        // Editing still uses the movable exact-UV pieces. A saved unchanged
+        // placement uses the original single primitive, avoiding the distinct
+        // linear-filter rounding produced by unnecessary subdivisions.
+        state.systemVisible=true;custom.refresh(state);assert(custom.beginHUDEdit());const auto customFrame=draw(custom);std::vector<const Sprite*> pieces;
+        for(const auto& s:customFrame.sprites)if(s.image=="GameUI_BG.png")pieces.push_back(&s);
+        assert(pieces.size()==hud::count);
+        for(unsigned group=0;group<hud::count;++group){const auto& piece=*pieces[group];const auto slice=hud::backgroundSlices[group];assert(piece.strip.size()==4&&!piece.atlasBatch&&piece.textureSource==full.textureSource&&piece.image==full.image);
+            const auto left=base.map({slice.x,0}),right=base.map({slice.x+slice.width,256});
+            assert(piece.strip[0].position.x==left.x&&piece.strip[1].position.x==left.x&&piece.strip[2].position.x==right.x&&piece.strip[3].position.x==right.x);
+            assert(piece.strip[0].position.y==right.y&&piece.strip[1].position.y==left.y);
+            assert(piece.strip[0].uv.x==slice.x/768&&piece.strip[2].uv.x==(slice.x+slice.width)/768&&piece.strip[0].uv.y==full.strip[0].uv.y&&piece.strip[1].uv.y==full.strip[1].uv.y);
+            if(group){assert(pieces[group-1]->strip[2].position.x==piece.strip[0].position.x&&pieces[group-1]->strip[2].uv.x==piece.strip[0].uv.x);}
+            if(display.enabled){assert(piece.clip&&full.clip);const auto shared=hud::intersect(*piece.clip,*full.clip);assert(near(shared.x,full.clip->x)&&near(shared.y,full.clip->y)&&near(shared.width,full.clip->width)&&near(shared.height,full.clip->height));} // Expanded canvas clip retains the original visible pixels.
+        }
+    }
+    const DisplayLayout phone(DisplayConfiguration::surface({912,420},{68,20,68,0}));hud::Configuration low,high;low.positions[hud::controls]=hud::Placement{.5f,0};high.positions[hud::controls]=hud::Placement{.5f,1};
+    const auto a=hud::visualBounds(low,hud::controls,phone),b=hud::visualBounds(high,hud::controls,phone);assert(b.y-a.y>100); // Previously transparent padding allowed only8px.
+    const auto t=hud::transform(high,hud::controls,phone);const auto c=hud::originalClip(high,hud::controls,phone);assert(c.x>=t.map({0,0}).x); // Hidden sliding gauge pixels stay clipped.
+    std::cout<<"HUD_GEOMETRY decodedAlpha124_138_133/widgetsAndHits/sourcePartitionIdentityPixels/phoneVerticalTravel100 PASS\n";
+}
+void screenResourceOwners(const char* root){
+    Files files(root);Host host;PreparedTiles legacy("external-compat-only");Screens ui(files,legacy,host);ScreensState state;
+    ui.refresh(state);Frame prepared;ui.appendPreparation(prepared);assert(sprite(prepared,"Main_BG.png"));
+    const auto titleReads=files.reads,titleSongs=unsigned(host.songs.size());ui.refresh(state);assert(files.reads==titleReads&&host.songs.size()==titleSongs); // Same original owner reuses its tiles.
+    state.screen=ScreenId::base;ui.refresh(state);prepared={};ui.appendPreparation(prepared);assert(!sprite(prepared,"Main_BG.png"));
+    state.screen=ScreenId::field;state.fieldUIRevision=1;state.hasWorkingSlot=true;state.enemyName="E_Tank_01";state.enemyNameRevision=1;ui.refresh(state);
+    const auto* fieldTile=ui.preparedTile("GameUI_BG.png");assert(fieldTile);const auto fieldReads=files.reads;ui.refresh(state);assert(ui.preparedTile("GameUI_BG.png")==fieldTile&&files.reads==fieldReads);
+    state.screen=ScreenId::base;ui.refresh(state);prepared={};ui.appendPreparation(prepared);assert(sprite(prepared,"GameUI_BG.png")&&sprite(prepared,"prepared:GuiGame.enemyName"));
+    state.screen=ScreenId::field;ui.refresh(state);assert(ui.preparedTile("GameUI_BG.png")==fieldTile); // Hidden GuiGame retains its original owner.
+    state.screen=ScreenId::title;ui.refresh(state);prepared={};ui.appendPreparation(prepared);assert(sprite(prepared,"Main_BG.png")&&sprite(prepared,"GameUI_BG.png"));
+    state.fieldUIRevision=2;ui.refresh(state);prepared={};ui.appendPreparation(prepared);assert(!sprite(prepared,"GameUI_BG.png"));
+    assert(legacy.all().empty()); // Former shared map no longer retains departed Title/Base resources.
+    std::cout<<"SCREEN_RESOURCE_OWNERS sameScreenReuse/titleBaseRelease/hiddenGuiGameRetained/revisionRelease/preparedTextReachability PASS\n";
+}
+void phoneHUDBottomInput(const char* root){
+    Files files(root);Host host;PreparedTiles tiles("phone-bottom-input");Screens ui(files,tiles,host);
+    const auto config=DisplayConfiguration::surface({912,420},{68,20,68,0});const DisplayLayout layout(config);ui.setDisplay(config);
+    ScreensState state;state.screen=ScreenId::field;state.fieldUIRevision=1;state.hasWorkingSlot=true;ui.refresh(state);
+    const auto frame=draw(ui);const auto* background=sprite(frame,"GameUI_BG.png");assert(background&&background->strip.size()==4);
+    float bottom=1.e9f;for(const auto& v:background->strip)bottom=std::min(bottom,v.position.y);assert(bottom==0);
+    const auto key=ids(ui,6200).front();auto point=ui.buttonScreenPosition(key);point.y-=10;
+    assert(point.y>0&&point.y<config.insets.bottom);
+    assert(ui.input(PointerPhase::begin,point,9120,1));assert(ui.button(key)->capturedPointer()==9120);
+    assert(ui.input(PointerPhase::end,point,9120,1.1f));assert(!ui.button(key)->capturedPointer());
+    assert(!host.actions.empty()&&host.actions.back().button.key.id==6200);
+    // A world drag crossing this button must not press it without a begin.
+    const auto actions=host.actions.size();assert(!ui.input(PointerPhase::move,point,9121,2));assert(!ui.input(PointerPhase::end,point,9121,2.1f));assert(host.actions.size()==actions);
+    // Full-canvas input is specific to compact fields, not every menu.
+    state.screen=ScreenId::base;ui.refresh(state);assert(!ui.input(PointerPhase::begin,{-1,10},9122,3));
+    hud::Configuration legacy;legacy.legacySafeArea=true;legacy.positions[hud::controls]=hud::Placement{.5f,0};
+    const auto upgraded=hud::upgrade(legacy,layout);assert(hud::visualBounds(upgraded,hud::controls,layout).y==0);
+    const DisplayLayout ipad(DisplayConfiguration::surface({1024,1366},{0,20,0,24}));
+    const auto oldPad=hud::visualBounds(legacy,hud::controls,ipad),newPad=hud::visualBounds(hud::upgrade(legacy,ipad),hud::controls,ipad);assert(near(oldPad.x,newPad.x)&&near(oldPad.y,newPad.y));
+    std::cout<<"PHONE_HUD_BOTTOM originalQuadY0/safeAreaButtonCapture/noDragButtonLeak/v1BottomEdge/ipadPreserved PASS\n";
+}
+void movableHUD(const char* root){
+    Files files(root);Host host;PreparedTiles tiles("hud-layout-test");Screens ui(files,tiles,host);
+    const auto display=DisplayConfiguration::surface({912,420},{68,20,68,0});ui.setDisplay(display);
+    ScreensState state;state.screen=ScreenId::field;state.systemVisible=true;state.fieldUIRevision=1;state.hasWorkingSlot=true;
+    ui.refresh(state);const auto menu=ids(ui,1021).front();const auto original=ui.buttonScreenPosition(menu);const auto defaultFrame=draw(ui);
+    assert(host.hudReads==1&&host.hudWrites==0&&ids(ui,9100).size()==1);
+    const auto entry=ui.buttonScreenPosition(ids(ui,9100).front());ui.input(PointerPhase::begin,entry,179,.5f);ui.input(PointerPhase::end,entry,179,.6f);assert(ui.hudEditing());const auto controls=hud::visualBounds(ui.hudConfiguration(),hud::controls,DisplayLayout(display));
+    const Vec2 start{controls.x+controls.width*.5f,controls.y+controls.height*.5f};
+    const auto actions=host.actions.size();const auto reads=files.reads,probes=files.probes,preparations=host.preparations;
+    assert(ui.input(PointerPhase::begin,start,180,1));assert(ui.input(PointerPhase::move,{start.x+45,start.y+25},180,1.1f));assert(ui.input(PointerPhase::end,{start.x+45,start.y+25},180,1.2f));
+    const auto moved=ui.buttonScreenPosition(menu);assert(moved.x!=original.x&&moved.y!=original.y&&host.hudWrites==0&&host.actions.size()==actions);
+    const auto movedFrame=draw(ui);bool aligned=false;unsigned backgroundPieces=0;for(const auto& image:movedFrame.sprites){if(image.image=="QuickBtn.png"&&image.tile==4)aligned=near(image.center.x,moved.x)&&near(image.center.y,moved.y);if(image.image=="GameUI_BG.png"){++backgroundPieces;assert(image.clip&&image.textureSource.image.empty());}}assert(aligned&&backgroundPieces==hud::count);
+    for(unsigned i=0;i<60;++i){auto f=draw(ui);assert(!f.sprites.empty());}assert(files.reads==reads&&files.probes==probes&&host.preparations==preparations);
+    ui.cancelHUDEdit();assert(!ui.hudEditing()&&ui.buttonScreenPosition(menu).x==original.x&&host.hudWrites==0);
+    assert(ui.beginHUDEdit());assert(ui.input(PointerPhase::begin,start,181,2));ui.input(PointerPhase::move,{start.x+45,start.y+25},181,2.1f);ui.input(PointerPhase::end,{start.x+45,start.y+25},181,2.2f);
+    host.hudWriteSucceeds=false;assert(!ui.applyHUDEdit()&&ui.hudEditing()&&!ui.hudEditorError().empty()&&host.hudWrites==1);
+    host.hudWriteSucceeds=true;assert(ui.applyHUDEdit()&&!ui.hudEditing()&&host.hudWrites==2);const auto saved=ui.hudConfiguration();
+    assert(hud::decode(host.hudSettings.at("compact"))==saved&&saved.positions[hud::controls]);
+    PreparedTiles restoredTiles("hud-restored");Screens restored(files,restoredTiles,host);restored.setDisplay(display);restored.refresh(state);
+    assert(restored.hudConfiguration()==saved&&restored.buttonScreenPosition(ids(restored,1021).front()).x==moved.x);
+    state.systemVisible=false;restored.refresh(state);const auto beforeActions=host.actions.size();const auto point=restored.buttonScreenPosition(ids(restored,1021).front());
+    restored.input(PointerPhase::begin,point,182,3);restored.input(PointerPhase::end,point,182,3.1f);assert(host.actions.size()>beforeActions&&host.actions.back().button.key.id==1021);
+    assert(!restored.beginHUDEdit());state.systemVisible=true;restored.refresh(state);assert(restored.beginHUDEdit());restored.resetHUDEdit();assert(!restored.hudConfiguration().customized());restored.cancelHUDEdit();assert(restored.hudConfiguration()==saved);
+    const auto writes=host.hudWrites;restored.setDisplay(DisplayConfiguration::surface({1024,1366},{0,25,0,0}));assert(!restored.hudConfiguration().customized()&&host.hudWrites==writes);
+    restored.setDisplay(display);assert(restored.hudConfiguration()==saved);
+    hud::Configuration invalid;invalid.positions[0]=hud::Placement{std::numeric_limits<float>::quiet_NaN(),0};bool rejected=false;try{(void)hud::encode(invalid);}catch(const std::invalid_argument&){rejected=true;}assert(rejected);
+    for(std::string bad:{"{\"version\":3,\"positions\":[null,null,null]}","{\"version\":1,\"positions\":[[2,0],null,null]}","{\"version\":1,\"positions\":[null,null,null]}extra"}){rejected=false;try{(void)hud::decode(Bytes(bad.begin(),bad.end()));}catch(const std::invalid_argument&){rejected=true;}assert(rejected);}
+    // Existing v1 sidecars keep their actual visual origin after migration.
+    hud::Configuration old;old.legacySafeArea=true;old.positions[hud::controls]=hud::Placement{.7f,.8f};const DisplayLayout layout(display);
+    const auto legacy=hud::visualBounds(old,hud::controls,layout);const auto upgraded=hud::upgrade(hud::decode(hud::encode(old)),layout);const auto migrated=hud::visualBounds(upgraded,hud::controls,layout);assert(!upgraded.legacySafeArea&&near(legacy.x,migrated.x)&&near(legacy.y,migrated.y));
+    for(const Vec2 edge:{Vec2{0,0},Vec2{1,0},Vec2{0,1},Vec2{1,1}}){hud::Configuration corner;corner.positions[hud::controls]=hud::Placement{edge.x,edge.y};Host edgeHost;edgeHost.hudSettings["compact"]=hud::encode(corner);PreparedTiles edgeTiles("edge");Screens edgeUI(files,edgeTiles,edgeHost);edgeUI.setDisplay(display);edgeUI.refresh(state);const auto b=hud::visualBounds(edgeUI.hudConfiguration(),hud::controls,layout);assert(near(b.x,edge.x*(display.canvas.width-b.width))&&near(b.y,edge.y*(display.canvas.height-b.height)));const auto clip=hud::originalClip(corner,hud::controls,layout);assert(b.x>=clip.x-.01f&&b.y>=clip.y-.01f&&b.x+b.width<=clip.x+clip.width+.01f&&b.y+b.height<=clip.y+clip.height+.01f);}
+    std::cout<<"HUD_LAYOUT originalGPUgroups/drawHitTransform/dragNoWrites/applyFailureRetry/cancel/default/profile/restart/warm60 PASS\n";
+}
+}
 int main(int argc,char** argv){
     ItemDescriptionValues desc;desc.type=1;desc.param1=30;desc.price=100;
     assert(Screens::itemDescription(desc,1)=="Repair Kit\n\n30 point Repair.\n\nPrice : 100cr");
@@ -352,6 +482,7 @@ int main(int argc,char** argv){
     assert(Screens::missionDescription("Original comment",{{2,"E_Tank_01",3,5}},true)=="Original comment\n\nMission Objects\n  - destroy E_Tank_01 (3/5)\n");
     assert(!Screens::missionDescription("Original",{{1,"unresolved",0,1}},false));
     if(argc<2)return 77;
+    phoneHUDBottomInput(argv[1]);hudMeasuredGeometry(argv[1]);screenResourceOwners(argv[1]);movableHUD(argv[1]);
     slotPreviewTranslation(argv[1]);
     fieldMessage(argv[1]);
     shopDetails(argv[1]);inventoryMaintenanceDetails(argv[1]);fieldNameRange(argv[1]);fieldCredits(argv[1]);radarMarks(argv[1]);fieldPlaceName(argv[1]);pageIndicators(argv[1]);

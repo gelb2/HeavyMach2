@@ -1,5 +1,249 @@
 # HeavyMach 2 보고 사이트
 
+## 2026-11-15 후속 게시 — iPhone Release 설치
+
+[같은 보고서](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/menu-background-checks.html)에 설치·실행과 저장/HUD 설정 보존 결과를 추가했다. 소스 `98e55b933ef35c07066e82203e932a6746ad5a52`, 배포 `appgdep_6af934d5bfe081919434ac466a08996a`는 succeeded다. 기존 비공개 접근을 유지했다. [설치 기록](iphone-menu-background-installation-20261115.md)을 따른다. 자동 훅은 사용자 승인 완료 답변 이후에도 실제 호출이 확인되지 않았으며 CLI 승인 화면 요청은 철회했다.
+
+## 2026-11-15 최신 게시 — 독립 배경 검사와 Phone 원본 선택
+
+[실제 결과·캡처16장](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/menu-background-checks.html)을 기존 비공개 사이트에 게시했다. 첫 화면과 기존 `presentation-harness.html`에서 연결한다. 기존 HeavyMach2 누적 목록의 같은 하네스 링크를 유지한다. 아래 전역 차단/커밋 gate 계획은 폐기된 당시 기록이며 새 두 검사는 파일·도구를 차단하지 않는다.
+
+소스 `e2f9be4362146f4c55074854017169fe95f3b2d3`, 배포 `appgdep_6af931efaab081919e01c0db9949e330`는 succeeded다. 본인1명·그룹0·외부0 접근을 확인하고 유지했다. 원본 IPA는 전송하지 않았다. 로컬 HTML의 PNG16개 연결을 검사했다. 이번 게시본의 브라우저 시각 검수는 하지 않았다.
+
+원본 배경36건 PASS, iPad 검은 여백18건으로 화면 FAIL, 기기별 GPU 검사는 통과했지만 실제 겹침0초로 병렬 실행기 전체 FAIL이다. 새 네이티브 훅 신뢰 승인과 자동 발동 확인은 미완료다. iPhone 메뉴 잘림·버튼 배치·구매 가능 여부도 미완료다. 전체 메뉴 개선이나 전체 동시 치트 검증 완료로 보고하지 않는다.
+
+
+## 2026-11-15 최신 보강 — 실물·원문 대조와 Phone 배치/HD 상품
+
+[하네스 계획](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/presentation-harness.html)과 [정본](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/design-asset-rules.html)에 커밋 검사 전 치트빌드 시뮬레이터 실물/요구 원문 대조를 추가했다. 90% 미만은 탈락하고 에셋 선택/소비부터 코드 누락까지 조사한다. 90% 이상도 필수 위반을 면제하지 않는다. iPhone 허브·사령부·상점 버튼 배치는 Phone 원본을 참고하고 상품 그림/게임 데이터는 HD를 쓴다.
+
+문서1d008e7, Site 소스acf097a, HUD 버전7·배포appgdep_6af8e90530b88191a90c74369f272b70의 succeeded를 확인했다. 기존 누적 Site304의 같은 링크를 유지했다. 게임/검사/훅 소스 변경과 치트빌드 실행·실물 대조는 하지 않았다. 이번 완료 범위는 정본/계획 보강과 게시다.
+
+인증 HTTP 11파일에서 두 보강 본문·근거 JSON·원본 실패 PNG·누적 연결을 확인했다. 본인1명·그룹0·외부0 접근을 유지한다. 온라인 브라우저 시각 검수는 하지 않았다. [게시 근거](evidence/visual-review-plan-publication-20261115.json)를 따른다.
+
+## 2026-11-15 최신 보강 — 에이전트 작업 전 훅·커밋 전 검사
+
+[같은 하네스 계획](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/presentation-harness.html)에 에이전트 작업 전 훅과 커밋 전 검사 설계를 추가했다. 요청 수신·첫 수정 전·수정 후 기록을 규칙/파일/실제 검사/stage 트리로 연결하고, 기록 누락과 오래된 결과를 거부하는 계획이다. 훅 설치와 실제 발동 시험은 아직 하지 않았다.
+
+HUD Site 버전6·소스e90f218·배포appgdep_6af8e6431c448191b09e492f699393ce는 succeeded다. 기존 누적 Site304의 같은 링크로 접근한다. 본인1명·그룹0·외부0 접근을 유지하고 인증 HTTP 11파일에서 새 본문·전수 기지·원본 실패 이미지와 누적 연결을 확인했다. 온라인 브라우저 시각 검사와 에이전트 훅 실제 발동 검사는 미실행이다. 문서 커밋d518822와 [게시 근거](evidence/agent-hook-design-publication-20261115.json)를 따른다. 게임/검사/Git 훅 소스와 롤백 상태는 유지한다.
+
+## 2026-11-15 최신 게시 — 디자인·에셋 정본과 로컬 하네스 계획
+
+[디자인·에셋 정본](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/design-asset-rules.html) 50개 규칙과 [로컬 하네스·자동 훅 계획](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/presentation-harness.html)을 게시했다. Base001~006의 원본 테이블 12개를 공통 reader로 읽고 실제 배경·시설 참조를 기록했다. 검사 계획은 6개 기지×두 기기×허브/사령부/상점의 최소 36개 조건이며 상세·거래·임무 등 상태별 검사를 추가한다. 실패 예시 3장은 전수 검사 범위를 뜻하지 않는다. 전수 화면 검사와 하네스/훅 구현은 아직 하지 않았다.
+
+HUD Site 버전5·소스55b0bae·배포appgdep_6af8e2c8e5bc8191811a326d5a0b8eed와 누적 Site 버전304·소스8c9bc66·배포appgdep_6af8e0983ec08191a2e5abdf49f8bf88의 succeeded를 확인했다. 기존 첫 화면과 HeavyMach2 고정 누적 목록에서 새 문서로 연결한다. 두 Site 모두 본인1명·그룹0·외부0 접근을 유지한다. 인증 HTTP로 문서·출처 JSON·원본 실패 PNG·두 누적 목록 등 11개 파일을 확인했다. 온라인 브라우저 시각 검수나 게임 전수 검사 완료로 보고하지 않는다.
+
+제품 롤백 d7d201c는 유지한다. 이후 변경은 문서·출처 조사·보고뿐이며 게임/검사/훅 소스 변경, 앱 빌드/설치, develop/main 병합은 없다. [게시 근거](evidence/presentation-harness-publication-20261115.json)를 따른다. 아래 버전2/302 복구는 당시 완료한 롤백 기록이다.
+
+## 2026-11-15 게시 롤백
+
+ExperimentalUI 이후 구현과 보고를 사용자 지시로 철회했다. HUD Site는 기존 저장 버전 2, 누적 Site는 기존 저장 버전 302로 재배포했으며 두 배포는 succeeded다. 새 구현 보고와 완료 연결은 현재 게시본에 없다. 이전 저장 버전 3/303과 실패 자료는 이력에 보존했다.
+
+HUD Site 소스 복구 커밋은 `06bab75209139392d31d892fb4d1441daf536cbc`, 누적 Site 소스 복구 커밋은 `e319ba605607ce9ccc26f9327d307c5bb647e177`이다. 각각 이전 소스 6c84f87/19c1735와 파일 내용이 같다. 최신 저장 버전 번호는 과거 저장 이력 때문에 여전히 3/303일 수 있다. 실제 배포한 버전 ID와 현재 본문을 기준으로 확인한다. 두 기존 비공개 Site와 현재 checkout 위치를 유지한다.
+
+[롤백 근거](evidence/experimental-ui-rollback-20261115.json)와 [경위](experimental-ui-rollback-20261115.md)를 따른다. 아래 구현 계획·게시 기록은 당시 이력이다.
+
+
+## 수치별 분리·에셋 미리보기 게시 — HUD 버전2 / 누적 Site 버전302
+
+[수정한 HUD 보고](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/)에 독립11조각과 좌우 패널2개, 에셋의 결합/분리 표, 클래식 캡처8장과 원본 크기의 디코딩 미리보기9장을 게시했다. 게임 코드·원본 에셋·설치본은 변경하지 않았다. HP/SP 숫자 추가 표시와 현재 소비하지 않는 GaugeHP/Booster 파일을 기존 기능으로 보고하지 않는다.
+
+HUD 소스6c84f87e23626cb885b48da038061800a79e8ace / 배포appgdep_6af86a73907881918cdc46ec70e7a8b3, 기존 누적 Site 소스19c17356f959bde310faf012711b186f0106f855 / 배포appgdep_6af86adfd300819194f1d3c249e905fc의 succeeded를 확인했다. HUD의 HTML·CSS·PNG17개 총19파일을 인증 HTTP200으로 확인했다. PNG17개와 CSS는 로컬 해시가 같다. HTML은 서비스 삽입 코드 때문에 파일 해시 동일 대신 본문과 figure17개를 확인했다. 기존 첫화면·고정 목록·이전 HUD 경로·월드HUD 페이지의 새 보고 연결도 인증 HTTP로 확인했다. 기존 미디어는 이전299와 같다. 이번 온라인 브라우저 시각 검수는 하지 않았다.
+
+## HUD 보고 게시 완료·수치별 분리 계획
+
+[ExperimentalHUD 보고](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/)는 본인만 접근하는 비공개 Site다. 최초 버전1/소스7133d5a1a59c7e8b3256958cd36adbd2066632ce, 배포appgdep_6af8674615408191b823dbb07bf7e55b의 succeeded를 확인했다. 원본 클래식 캡처8개와 CSS를 인증 HTTP로 읽어 로컬 해시와 대조했고 HTML 본문/8개 figure도 확인했다. 온라인 브라우저 시각 검수는 하지 않았다. 과거300 게시 실패/승인대기는 아래 이력으로 보존한다.
+
+기존 Site는 버전301/소스2dc3588c444b9b8c0c3c15aaef5b8d78f77e249c, 배포appgdep_6af86831b810819193edc992d0a6501f가 succeeded다. 기존 첫화면과 HeavyMach2 고정 목록은 위 보고로 연결하고 예전 experimental-hud.html 경로도 링크/자동이동을 제공한다. 기존 미디어는299와 동일하게 보존했다. tar member268,426,752바이트로256MiB 한도 안이다.
+
+보고 전용 Site ID는 `appgprj_6af8664612288191b813654dfb95323f`, 소스는 `.local/evidence/experimental-hud-plan-20261114/standalone-site`다. 기존 주 보고 Site와 모두 본인1명·그룹0·외부0 접근을 유지한다. 게임 구현·iPhone 설치·develop/main 병합은 이번 문서 작업에 포함하지 않았다.
+
+최신 계획은 상태 전체를 묶는7조각에서 HP·BOOSTER/SP·EXP·레벨·보유금을 각각 나누는11조각+좌우 패널2개로 수정했다. BG에 합쳐진 표식과 별도 게이지/숫자를 구분하고 원본9개의 같은 크기 디코딩 미리보기를 추가한다. 원본 파일을 수정하거나 게임 코드에 분석용 ImageIO/CoreGraphics를 추가하지 않았다.
+
+최신 빌드 정리:281항목/1,970,885,331바이트 삭제, 유지 실행파일9개·원본IPA6개 해시 확인. 저장·로그·캡처·xcresult·Instruments 기록은 보존했다. [정리 근거](evidence/latest-build-cleanup-20261114.json).
+
+## 과거 기록: ExperimentalHUD 계획·원본 캡처8장 — 버전300 게시 실패
+
+계획·TODO·실제 클래식 캡처 근거는 작업 브랜치ec2e236에 커밋·푸시했다. [원고](experimental-hud-plan-20261114.md)는 기능 UI/정보 유지·장식 제거, 7조각·좌우 무기 선택 패널2개의 이동/저장, 레이더 상시 표시·새 숨김 기능 금지를 포함한다. 기존3조각이나 Experimental 구현 완료로 혼동하지 않는다. 새6장과 이전포털2장의 원본 PNG를 바꾸지 않고 보고서에 넣었다. Safari 로컬 미리보기에서 본문·원본 이미지·분석 번호 표시를 확인했다. 원본8파일 해시 일치와23페이지·누적 목록 링크를 검사했다.
+
+기존Site 소스11ad1660d7110907684403b292b80a701e14af33와 저장버전appgprj_6addbf55aea081918d3d182d7e496e88~appgver_61c8e72edf508191afaeae2088325832, 배포appgdep_6af8601b201081918836426bab1447ac는 **failed**다. 원본 PNG를 포함한 tar member281,426,944바이트가256MiB한도를 넘는다. 지원되는 원격 소스 빌드도 같은 한도로 실패했다. 기존이미지와문서의참조를검색했으며 임의로 삭제하지 않았다. Site는 이전299 게시본을 유지한다. 현재보고서가사이트에게시됐다고보고하지않는다.
+
+원본캡처·실패/성공검사·로컬독립HTML은 `.local/evidence/experimental-hud-plan-20261114/`에 있다. 독립보고묶음은10파일13,015,417바이트다. 사용자에게 본인만 접근하는 별도 비공개Site에 보고서를 게시하고 기존누적목록에 연결하는 방법의 승인을 요청했다. 현행AGENTS14의기존Site사용지시를바꾸는일이므로 답변 전 새Site를 생성하거나공개범위를넓히지않는다. 원본IPA·원시저장·호환실행앱은포함하지않는다.
+
+## 허브·상점·사령부 실행 대조 — 버전299
+
+[같은 누적 보고서](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/world-hud.html#비전투-화면-실행-대조--2026-11-14)에 원본Phone 포팅판의 허브·상점 구매/임무 수락과 공통 동시 치트126조건360프레임의 메뉴18장 결과를 추가했다. **현재 메뉴 배치는 불합격이다.** 허브2버튼·상점7버튼 중심의 화면 밖 배치와 상점 하단 잘림, 사령부의HD공통배치 잔류를 기록했다. Native1/1은 캡처·기존 동작 검사이며 시각 합격이 아니다. 기존revealButton 구매 성공으로 사용자 구매 불가를 해결했다고 판정하지 않았다. 사용자 추가ExperimentalHUD·세로 스크롤 금지·가로 배너 잘림·HD 타이틀/로딩 최상단 정렬 요구도 기록했다. 제품 메뉴 구현·실기기 설치·develop/main 병합은 하지 않았다.
+
+QA커밋6d78a21, 사이트 소스fa0f854a499cd5eda0b81611df6b11f9aca80e52, 배포appgdep_6af852adc2108191a041d13f8bbad8bf, 저장버전appgprj_6addbf55aea081918d3d182d7e496e88~appgver_db61c58bf8788191a17214abaefd85a1의 succeeded와 버전299를 확인했다. 본인1명·그룹0·외부0 접근을 유지했다. 로컬22페이지·압축본문·첫/고정 누적 목록·앵커·JS구문을 확인했다. 새 온라인 브라우저 시각검수는 하지 않았다. 원본Phone은 같은IPA를 기존11/10호환실행기로 재패키징해 상세의숫자서식오류를벗어났고, 저장26,344바이트는 검사 전 해시로 정확히 복구했다. 원본IPA·호환앱·원시저장은 게시하지 않았다.
+
+전달tar member는268,424,704바이트다. 게시성공뒤이전298전달압축본257,212,492바이트와 이번 검사가 끝난 Xcode중간캐시66,970,394바이트를 제거했다. 최신전달본·제품·원본·저장백업·실패/성공 로그와 화면은 유지했다. 로컬 근거는 `.local/evidence/iphone-menu-visual-qa-20261114/`의 `site-publication.json`, `site-archive.json`, `cleanup.json`, `save-preservation.json`이다.
+
+## 하단 HUD·포털 수정 정식판 아이폰 설치 — 버전298
+
+[같은 수정 보고서](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/world-hud.html#하단-hud와-포털-입력-수정--2026-11-14)에 사용자 후속 설치 요청과 실제 iPhone 설치·실행을 추가했다. 제품3666fc7·설치기록99f98ce다. 데이터8파일을 먼저 백업했고 설치 직후 진행 저장28,204바이트 완전 일치를 확인했다. 서명·dSYM UUID·원본준비자원1,532파일·치트심벌 제외와 실제PID9901 재확인을 기록했다. CLI서명실패는XcodeRelease서명으로해결했고pbx/스킴설정은원래바이트로복원했다. 이 설치를 전 캠페인 플레이·발열 검증이나 develop/main 병합으로 확대하지 않는다.
+
+사이트 소스 `e034def16d2ca761afc53cdb5ab2265d7784b23a`, 배포 `appgdep_6af84ac5f03481919a2695aa4c615fa5`, 저장버전 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_b333ca5ca7f481918008d9203cdf8cb2`의 공식 succeeded와 버전298을 확인했다. 본인1명·그룹0·외부0 접근을 유지했다. 로컬22페이지·gzip·첫/누적 목록·앵커·JS 구문을 확인했고 새 온라인 브라우저 시각검수는 하지 않았다. 원본IPA·원시저장·서명 비밀은 게시하지 않았다.
+
+서버 전달 tar member는268,420,096바이트로한도이내다. 게시성공뒤이전297전달압축본만제거하고최신298전달본을남겼다. 설치/실행을확인한뒤해당Xcode전용중간캐시37,748,741바이트도제거했고서명된Release앱·dSYM·원본·저장백업·실패/성공근거는유지했다. 로컬 근거는 `.local/evidence/iphone-release-hud-portal-20261114/`의 `result.json`, `signed-release-verification.json`, `save-preservation.json`, `site-publication.json`, `build-cleanup.json`이다.
+
+
+## 하단 HUD·포털 입력 수정 — 버전297
+
+[수정 결과](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/world-hud.html#하단-hud와-포털-입력-수정--2026-11-14)를 기존 첫 화면과 HeavyMach2 고정 누적 목록에 연결했다. 제품3666fc7의 compact 하단 입력·HUD v1 배치 수정, CPU82포털(81개 직접 표본+1개 원래 경로), C++78/78, iPad126/혼합98조건 각1,200프레임 전후 차이0과 정식/치트 Release 자원1,532파일 일치를 기록했다. Native 첫 묶음은 양쪽6/7이며 검사에서 켜 놓은 Repair모드를 정상 버튼 조작으로 해제한 후, 목적지 도착·실제 저장까지 보강한 새 포털 검사만 양쪽1/1 재통과했다. 앞선6개 성공 재사용과 동시 치트126조건/iPhone2,100·iPad1,200프레임을 구분했다. 물리 기기 업데이트·develop/main 병합은 하지 않았다.
+
+사이트 소스 `c1a11fc0a19e80f2aed6d37842a59a8a31fd9f6f`, 배포 `appgdep_6af8461d31008191b84aeb1a1f5d7d35`, 저장버전 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_dd5c6c052ca481919044f41daed30b9c`의 공식 succeeded와 버전297을 확인했다. 기존 본인1명·그룹0·외부0 접근을 유지했다. 로컬22페이지·gzip본문·앵커·첫/누적 목록·JS 구문을 검사했고 새 온라인 브라우저 시각검수는 하지 않았다. 원본IPA·원시저장·전체디컴파일은게시하지않았다.
+
+전달 archive의 tar member 크기는268,419,072바이트다. 게시 성공 뒤 이전296 전달 압축본을 제거하고 이번 전달본을 남겼다. 완료한 비교용 baseline source/build17,452,179바이트와 Xcode 중간 캐시148,516,422바이트도 정리했다. 최신 정식·치트/검사 제품·dSYM·사용자 저장·원본·실패/성공 로그·비교 지문·GPU 캡처는 보존했다. 로컬 근거는 `.local/evidence/phone-hud-portal-fix-20261114/`의 `site-publication.json`, `site-archive.json`, `baseline-cleanup.json`, `build-cleanup.json`이다.
+
+
+## 원본 HD·iPhone 월드·HUD 확인 — 버전296
+
+[월드·HUD 보고서의 원본 비교](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/world-hud.html#원본-hd와-원본-iphone-확인)를 기존 첫 화면과 HeavyMach2 누적 목록에 연결했다. HD1.0.3·Phone2.0.1 원본 실행파일·REA export·어셈블리·PNG를 대조했다. 두 원본 모두 전체 화면 월드 위에 하단 전체폭 HUD를 겹친다. 별도 HUD 제외 viewport를 사용하지 않는다는 근거, HD 입력100/하단여유94와 Phone 입력46/하단여유40, HUD 원본 픽셀·논리 크기·알파의 차이를 기록했다. 조사 원고는c7ef38a다. 게임 코드·원본실행·새 앱 설치·develop/main 병합을 수행하지 않았다.
+
+사이트 소스 `c11b99dc8c812a8e465772a1663893d557099e49`, 배포 `appgdep_6af8394ced0c8191910ce29e22e1e152`, 저장버전 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_3072881cb9d08191873aed4648b3a97c`의 공식 succeeded와 버전296을 확인했다. 기존 본인1명·그룹0·외부0 접근을 유지했다. 로컬22개 HTML/gzip본문·기존 첫 화면/누적 목록/복귀 링크·새 원본 절 앵커·JS 구문을 확인했고 새 온라인 브라우저 시각검수는 하지 않았다. 버전 조회 첫 호출의project_id 누락은 정정해 같은 저장버전을 조회했다.
+
+원본IPA·전체디컴파일·원시저장은게시하지않았다. 전달 archive는268,417,536바이트의tar member 범위로256MiB한도이내다. Site296 성공후이전295전달압축본만제거했고최신전달본·원본·실패·조사증거는보존했다. 로컬 근거는 `.local/evidence/original-world-hud-20261114/`의 `hd-findings.json`, `phone-findings.json`, `site-publication.json`, `site-archive.json`이다.
+
+
+## 하단 카메라의 원본 자원 GPU 검사 — 버전295
+
+[시뮬레이터 검사 결과](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/lower-camera.html)를 첫 화면과 고정 누적 목록에 추가했다. 커밋7c4e404다. iPhone Air 시뮬레이터에서38맵172조건을 실제GLES로측정했다. 원작그리기크기를유지한94단위하강은38맵모두빈영역을남긴다. 배경없는33맵과384×512원본BG가있는5맵을분리했고현재BG추가균일배율1.1875도별도로기록했다. 조사Native1/1통과와카메라후보불합격을구분했다. 실제Scene이동/포털/실기기/모든줌검사로보고하지않는다.
+
+사이트 소스 `ebcc9cf5d70fd795b3bfc95dd7fd9b268b19c254`, 저장버전 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_79882ab388e08191896dd780fdc1d649`, 배포 `appgdep_6af83476aa8881919a7e5ad0a22d4f34`의 공식 succeeded를 확인했다. 본인1명·그룹0 접근을 유지했다.22개문서·최종수치·첫화면/누적목록/복귀링크·JavaScript구문을로컬검사했다. 새온라인브라우저시각검수는하지않았다. 정상GPU캡처6장·원본·실패/최종xcresult는로컬에보존하며게임자원이나IPA를사이트에추가하지않았다.
+
+로컬 근거: `.local/evidence/lower-camera-simulator-20261114/`의 `coverage-report-final.json`, `test-summary-03.json`, `captures-03/manifest.json`, `site-publication.json`. 초기컴파일실패와0개검사제외,2차바탕누출발견실패를보존했다. 후보합격기준인누출0/추가확대없음은완화하지않았다. 완료된중간빌드캐시70,915,720바이트와이전294전달archive는정리하고최신빌드/심볼·이번전달본·증거는보존했다.
+
+## 월드·HUD·포털 입력 비교 — 버전294
+
+[비교 결과](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/world-hud.html)를 기존 첫 화면과 HeavyMach2 누적 보고 목록에 연결했다. 조사 커밋은af395f1이다. 두 기기의 설치URL·기존 설치 기록·과거/현재 소스와 CPU38전장82포털×3구성, 대표7포털×9목표×3의189개 이동 조건을 대조했다. HUD 분리·이동 제거를 보류하고 고정 입력 하한과 실제 HUD 영역의 정합을 다음 수정 기준으로 기록했다. 제품 소스·기기 설치본·포털/맵 좌표는 변경하지 않았다. 실기기 직접 플레이나 과거 iPad 실행파일 재실행으로 보고하지 않는다.
+
+사이트 소스 `95dc975c074aa5f344ab8a1cd670e5e7bdeaebb8`, 저장버전 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_7b3cafe3bfc48191ae760bda65a8fb0b`, 배포 `appgdep_6af82b0f829c81918184e3ba6db676cb`의 공식 succeeded를 확인했다. 본인1명·그룹0·외부0 접근을 유지했다.21페이지 본문·최종 수치·기존 첫 화면/고정 목록/복귀 링크와 JavaScript 구문을 로컬에서 확인했다. 새 온라인 브라우저 시각검수는 수행하지 않았다.
+
+첫 프로브에서 열린30거리 경계의 반올림으로 포털1개가 누락됐다. 독립 검토 후 최종합의안쪽값과실제abs<30검사를적용했고, 초기조건에서진입사각형전체가하단75밑인포털을6개로확정했다. 초기5개결과와원본도구소스해시·최종438행결과를함께보존했다. 사용자제보의정확한포털ID·모든조작가능성까지확정한결과는아니다.
+
+로컬 근거는 `.local/evidence/world-hud-comparison-20261114/`의 `verification-final.json`, `summary-final.json`, `rules-and-walk-final.ndjson`, `historical-source-manifest.json`, `reused-REA-HUD-evidence.json`, `site-publication.json`이다. 원본IPA·원시저장·전체디컴파일은게시하지않았다. 이전293 전달archive는이번게시성공뒤제거하며최신전달본과원본·실패·검사근거는유지한다.
+
+## iPhone 정식빌드 설치 반영 — 버전293
+
+같은 [화면 수정 보고서](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/surface-art.html)에 사용자 후속 지시와 실제 iPhone 설치·실행·저장28,204바이트 동일성을 추가했다. 게임 코드는2f1e5ef이며 설치 기록은ee69ada다. 기존 첫 화면과 누적 목록을 유지했다.
+
+사이트 소스 `b173be5346ff8343733b09ab9456b3f89b0cde96`, 저장버전 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_7548985d6c2c8191add4544d52fdd886`, 배포 `appgdep_6af82036a74c81918e2cd96fc66dc382`의 공식 succeeded를 확인했다. 기존 본인 비공개 접근을 유지했다. 로컬 HTML/gzip본문·고정 목록의 설치 상태를 확인했고 새 온라인 브라우저 시각검수는 하지 않았다. 이번 설치를 전체 실기기 캠페인·발열 검사로 확대하지 않는다.
+
+로컬 근거: `.local/evidence/iphone-release-surface-20261114/`의 `result.json`, `signed-release-verification.json`, `backup-manifest.json`, `save-preservation.json`, `site-publication.json`. 저장과 이전 실패는 보존했고 설치 뒤 사용 완료한 기기 빌드 중간 캐시39,584,827바이트를 제거했다.
+
+## 화면 늘림·Phone 배경·HUD 끝단 수정 — 버전292
+
+[화면 수정 결과](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/surface-art.html)를 기존 첫 화면과 [HeavyMach2 누적 목록](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)에 연결했다. 게임 구현2f1e5ef와 결과 원고0fed66e를 기준으로20개 연결 문서를 갱신했다. C++77/77·양 시뮬레이터 최종5/5·126조건 동시 실행·원본 자원52파일·정식/치트 Release 패키지 결과와 미확인을 기록했다.
+
+사이트 소스는 `dca1202d76e23038d44c56a12db0711616f4ded4`, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_02839c7a8ae481919ed6998a99392c36`, 배포는 `appgdep_6af81e359ab48191bd2d343d104e1a8b`다. 공식 succeeded와 현재 버전292를 확인했다. 본인1명·그룹0·외부0 접근을 유지했다. HTML·gzip 본문·페이지20개·첫 화면/누적 목록/복귀 링크·JavaScript 구문을 로컬에서 확인했다. 새 온라인 브라우저 시각 검수는 수행하지 않았다. 이번 수정본의 실기기 설치와 develop/main 병합도 하지 않았다.
+
+서버 archive는1,389파일·268,339,200바이트다. 기존 JSON을 의미 변경 없이 compact 저장해 공간을 확보했고 사이트 경로·과거 보고/이미지를 보존했다. 최신 게시 성공 후 이전291 archive257,196,998바이트와 사용 완료한 Xcode 중간 캐시/중복 분석 실행파일246,759,950바이트를 정리했다. 최신 앱·dSYM·원본·사용자 저장·실패 로그·GPU 캡처·trace는 보존했다. 토큰은 기록하지 않았다.
+
+로컬 근거: `.local/evidence/iphone-surface-art-20261114/`의 `site-publication-final.json`, `site-archive-final.json`, `report-render-final.json`, `site-json-compaction.json`, `build-cleanup-final.json`. 세 항목의 코드/실행 근거는 [구조화 결과](evidence/iphone-surface-art-20261114.json)에 있다.
+
+## 공통 카메라 구현·아이폰 설치 결과 — 버전291, 2026-11-14
+
+[공통 카메라 결과](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/camera-plan.html)와 기존 누적 보고 목록을 갱신했다. 정식14e9ddb의 설치/실행·저장28,204바이트 보존, 공통77/77·수정 Native양쪽8/8·iPad전후 지문 대조, 실제 Instruments 측정 범위와 남은 실패를 구분했다. 설치 후 사용자 추가3항목(늘림 금지·원본 iPhone 비전투 배경·HUD 화면 끝 배치)은 미반영으로 명시했다.
+
+보고 커밋0769b77, 사이트 소스dabefe57364f1e91c6d0bd7b002f231ffd72cc58, 배포appgdep_6af7fb00c80c8191b824a3d62c5ebd39, 저장버전appgprj_6addbf55aea081918d3d182d7e496e88~appgver_382b9fe73fc08191a6e5c5ea1e76c3f7의 공식 succeeded를 확인했다. 기존 본인 비공개 접근을 유지했다. 첫 전달은 macOS 확장 속성의 PAX 헤더 때문에256MiB 한도를 넘었다. 같은 정적 파일을 ustar로 포장해 metadata만 제외한268,425,728바이트의 archive로 게시했다. 원본 IPA·사용자 저장·trace는 포함하지 않았다. 로컬 근거는 camera-implementation-20261114/site-publication.json이다.
+
+## iPad 보존·SOLID 경계 보강 — 버전290, 2026-11-14
+
+같은 [공통 줌 계획](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/camera-plan.html)에 regular 고정/compact 거리 정책, Scene별 상태 격리, SOLID 책임 경계와 iPad 전후 대조 기준을 추가했다. 배율1뿐 아니라 표시·입력·전투/진행·저장/시간/RNG·동시 세션·화면 재구성을 보존 조건으로 명시했다. 새 iPad 회귀는 완료·병합·설치 전 해결한다. 기준 소스는 `bfde129`, 계획 커밋은 `a31473f`다. 게임 코드와 새 검사 결과를 추가한 작업은 아니다.
+
+사이트 소스는 `9b73740b2adb51408f3734397c41469d670c817f`, 배포는 `appgdep_6af7eaf5c0d88191bb2e28827cd363d7`, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_51ed9fd419f0819180fdcac67d7483b0`이며 공식 succeeded를 확인했다. 기존 본인 비공개 접근을 유지했고 Safari 온라인에서 정책 격리·SOLID·실패 처리 본문을 확인했다. 최초 게시 호출의 결과 보관 오류 뒤 Site289가 최신이고 신규 저장버전이 없음을 조회했으며, 다시 게시해 이번 버전을 확인했다. Site289의 이전 전달 압축본은 게시 성공 후 제거해 최신1개만 남겼다.
+
+## 공통 줌 수정 계획과 빌드 정리 — 버전289, 2026-11-14
+
+[공통 C++ 줌 수정 계획](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/camera-plan.html)을 고정 보고 목록과 기존 원인 조사 보고서에 연결했다. 새 `CameraPresentation`의 책임, 기존 Scene/Session/Layout의 수정 위치, iPad 배율1 보존·휴대폰 대기1.0 후보, 앱별 줌 분기 금지와 동시 검사 기준을 기록했다. 게임 구현·새 앱 설치는 하지 않았다.
+
+계획 전에 오래된 빌드/캐시/전달 압축본 약3.30GB를 정리했다. 게시 성공 뒤 이전 Site288 전달 압축본도 삭제해 이전 생성물 삭제 합계는3,552,915,809바이트다. 전달 압축본은 이번 최신1개만 남겼다. 원본·사용자 저장·실패 검사 증거와 최신 앱/심볼은 보존했다. [정리 요약](evidence/build-cleanup-summary-20261114.json).
+
+계획 커밋은 `21b8359`, 문면 보완은 `ab2b700`, 사이트 소스는 `fb77277af7fefdf475944ec88f028e213e7775c3`다. 배포 `appgdep_6af7e65f3c448191a63385946d0d0a2d`, 저장버전 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_cdee92b03a1c819182e488467207f65a`의 공식 succeeded를 확인했다. 기존 본인 비공개 접근을 유지했고 Safari 온라인에서 결정·담당 파일 표·배율 후보·정리 결과를 확인했다. 로컬 기록은 `common-plan-package-verification.json`, `common-plan-publication.json`과 `build-cleanup-20261114/post-publication-archive-cleanup.json`이다.
+
+## 기본 줌 보고서의 결론 보강 — 버전288, 2026-11-14
+
+사용자가 보고서의 핵심과 결론이 불명확하다고 지적했다. 같은 [기본 줌 보고서](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/camera-baseline.html)의 첫 화면을 결론·원인·고칠 내용·현재 미완료 범위 순서로 고쳤다. 관련 문서 목록은 접고 수치표는 근거로 뒤에 배치했다. 기본 줌 구현 오류와 수정 필요, 게임 배율 수정·새 설치 미완료를 명시했다. 문서 수정 커밋은 `f0cf6eb`이며 게임 코드는 바꾸지 않았다.
+
+사이트 소스는 `93542f069b151ca3b093f3895a408e51712de7cf`, 배포는 `appgdep_6af7e2876cf081918f14829d5504ba29`, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_a41e3aabade88191a173be0c3b52bff7`다. 공식 succeeded와 Safari 온라인의 결론/수정 항목 표시를 확인했다. 기존 본인 비공개 접근을 유지했다.
+
+## iPhone 기본 줌 조사 — 버전287, 2026-11-14
+
+[기본 줌 과확대 원인·측정·수정 기준](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/camera-baseline.html)을 기존 누적 보고 목록에 추가했다. 공통 코어49표본과 원본 REA10파일을 대조했고, 설치본과 같은 카메라 코드에서 화면 채움 배율과 대기 계수1.6의 곱셈을 확인했다. 기본 배율 수정·새 앱 설치는 하지 않았다. 카메라 초기화 직후 표본과 실제 사용자가 보는 첫 전장 프레임의 시점을 같다고 단정하지 않는다.
+
+근거 커밋은 `f3ecb3c`, 사이트 소스는 `a8f3d05c795226adbafd959be79305c0eb1acc32`, 버전287이다. 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_cf481ea93be88191a9786fb2c6fd6499`, 배포는 `appgdep_6af7e11831a08191b3a023bde234cc6f`이며 공식 succeeded를 확인했다. 기존 본인1명·그룹0·외부0 접근 범위를 유지했다. Safari에서 온라인 본문·수치표·원본 분석과 수정 기준을 확인했다.
+
+새 페이지를 포함한18페이지와 목록을 연결했다. 기존 보고/이미지는 보존했다. 배포 한도를 맞추기 위해 기존 HM2 조사 JSON5파일의 공백만 줄였고 파싱한 값의 동일성과 전후 해시를 기록했다. 최종 tar 확장 크기는268,413,440바이트다. 로컬 근거는 `.local/evidence/camera-baseline-20261114/`의 `report-local-verification.json`, `archive-verification.json`, `site-publication.json`이다.
+
+## iPhone 정식판 설치·직접 검사 — 버전286, 2026-11-14
+
+[기존 구현 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/implementation.html#2026-11-14-iphone-정식판-설치와-직접-검사)와 [누적 보고 목록](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)을 갱신했다. 게임 소스64ebe70과 동일한 Release를 다시 빌드·서명·설치·실행했고 저장28,204바이트 보존을 확인했다. 실제 기지 설명/EXIT 분리·사령부 첫3행·이동/BOT 추종·E_Tank_06 공격 피해·파괴 후 기지 복귀를 관측했다. 관측 중 출력 영역/HUD 크기는 유지됐고 검은 레터박스나 크래시는 없었다. 맵 가장자리 외형·가로 왼쪽·원작 표시 비례·전 캠페인은 남는다. 기록 커밋은1a07444다.
+
+사이트 소스는 `51fa8e3fab60d5015f44aa13b83791697fbec843`, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_078384afeaa481919c2a41db6d8f3e27`, 배포는 `appgdep_6af7a1594b5481919f50cc94c695985b`다. 공식 succeeded와 본인1명·그룹0·외부0의 비공개 접근을 확인했다. 이번 새 문단의 브라우저 시각 검수는 수행하지 않았다. 기존 보고·그림·주소를 유지했고 원본 IPA·사용자 저장·기기 식별자는 게시하지 않았다.
+
+공식 workflow archive는 확장268,434,432바이트로256MiB 이하이며 콘텐츠1,378개가 현재 소스와 바이트 단위로 일치했다. 생성 hosting manifest는 별도로 구분했다. 게시 후24경로의 HTTP200·HTML 본문/링크 일치·payload/JSON/CSS/JS 바이트 일치를 확인했다. 근거는 `.local/evidence/iphone-release-check-20261114/`다. 실제 iPad·다른 두 게임·develop/main은 변경하지 않았다.
+
+## iPhone 전체 화면·HUD 후속 — 버전285, 2026-11-13
+
+[전체 화면·HUD 수정과 검사](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/implementation.html)를 갱신했다. 기존 고정 보고 목록 첫 절에도 연결했다. 계획12bfcdd·구현64ebe70·검사/설치 기록bd5dfae를 구분한다. C++73개, 양쪽 Native115조건과 실제 Source 터치/게임오버 복귀를 통과했다. iPhone 정식 Release 업데이트와 저장28,204바이트 보존을 확인했다. 수정본 실기기 화면 재검사는 잠금 해제 대기이며 맵 끝 픽셀 연장 외형은 TODO로 남겼다. develop/main 병합은 하지 않았다.
+
+사이트 소스는 `b47c67d17f3fcb38258aa5faddb3e188dab23627`, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_abfba75b4c988191af1ac33e832d63e2`, 배포는 `appgdep_6af70bac91b88191b07e56722c5d31e7`다. 공식 succeeded와 본인1명·그룹0·외부0 접근을 확인했다. Safari에서 로컬 보고 본문·링크·배치를 확인했다. 게시 후 브라우저 전환은 `cgWindowNotFound`로 실패했으므로 게시본 브라우저 검수 완료로 쓰지 않는다.
+
+처음 묶음은 macOS 확장 메타데이터 때문에269,972,992바이트로 한도를 넘었다. 공식 workflow에 로컬 tar 형식/메타데이터 설정을 적용한 최종 스트림은268,431,872바이트다. 콘텐츠1,378개와 생성 hosting manifest1개를 대조했고 모든 콘텐츠 바이트 일치를 확인했다. 기존 이미지·본문·링크를 삭제하거나 축소하지 않았다. 원본 IPA·개인 저장·서명 비밀은 포함하지 않았다.
+
+근거는 `.local/evidence/iphone-fullscreen-fix-20261113/`에 보존했다. 이전 사용하지 않는 Release 출력2개271,201,685바이트도 lsof 미사용 확인 후 정리했다. 현재 서명 Release·Source/Validation 검사 제품·소스·사용자 백업·실패 로그/캡처는 유지했다.
+
+## HeavyMach2 고정 진입점
+
+[HeavyMach2 누적 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)를 계속 사용한다. 새 조사·계획·구현·검사 보고는 이 목록에 추가하고, 모든 새 보고서에서 같은 목록으로 돌아갈 수 있게 한다. 전체 사이트 첫 화면에서도 이 주소를 연결한다. 기존 보고서 주소와 과거 근거는 보존한다.
+
+
+## iPhone 카메라·HUD 수정과 재검증 — 버전284, 2026-11-13
+
+[HeavyMach2 누적 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)와 [구현·재검증 기록](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/implementation.html)에 최신 결과를 반영했다. 실제 Player 화면 이탈과 중앙 HUD 밖 게이지 노출을 수정했다. 카메라 수정 뒤 Native 전체는 iPhone/iPad각20/20, 이후 HUD/atlas clip 수정 뒤 관련 Native는 각각4/4이며 전체C++73개도 통과했다. 원작 전체·전캠페인 동등성이나 모든 방향의 Native 검증 완료는 아니다. 실기기 설치·develop/main 병합은 하지 않았다.
+
+구현 커밋은 `57b5158f1e9ed581aef87f88957625303d679e62`, 사이트 소스는 `ba2f35989ecd7e52a16011deea67a64ae7f1ab54`다. 버전284의 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_e52dfc37d3488191a78f9f946a0a5dab`, 배포는 `appgdep_6af6eb4012ac81919e6b5c6e8c65803f`이며 succeeded다. 본인1명·그룹0·외부0을 유지했고 실제24경로 HTTP200·HTML본문/링크·payload/CSS/JS/JSON 일치를 확인했다. 로컬 Chrome에서 공통 메뉴·수정 본문·하단 문구를 확인했다. 온라인 Chrome은 로그인 화면까지 열었으므로 로그인 후 시각 검수 완료로 보고하지 않는다.
+
+기존 보고/그림/링크를 보존했다. 반복된 메뉴·하단 문구를 공통JS로 모으고 메타 JSON만 압축 형식으로 써서 archive 확장 크기268,426,240바이트를 유지했다.1,379개 파일을 소스와 대조했다. 원본 IPA·ARM·사용자 저장·분석 원문은 새로 넣지 않았다. 재생성 가능한 이전283 전달용 archive는 lsof 미사용과 소스/저장버전 보존을 확인하고 정리했다.
+
+로컬 근거는 `.local/evidence/iphone-implementation-20261113/revalidation-01/`, `revalidation-02/`, `revalidation-03/`다. 실패한 Native/CLI/카메라/HUD 증거를 유지했다. 최종 `test-counts.json`, `gameplay-comparison.json`, `site-archive-check.json`, `site-published-http.json`, `generated-cache-cleanup.json`과 양쪽 실제 전장 캡처를 보존했다. 토큰은 저장하지 않았다.
+
+
+## iPhone 공통 구현·검사와 누적 목록 — 버전283, 2026-11-13
+
+[HeavyMach2 누적 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)에 기존 보고·측정·일반판/HD 조사·추가 조사·계획·이번 구현을 연결했다. [이번 구현과 기기별 최종 검사](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/implementation.html)와 근거 JSON도 같은 목록으로 돌아간다. 사이트 전체 첫 화면에도 고정 진입점을 추가했다. 기존 본문·그림·주소를 보존했고 초기 개발 상태는 당시 기록으로 표시했다.
+
+구현은 `7622bd1c2ac4476700553867f5b7f581de2749c9`로 작업 브랜치에 커밋·푸시했다. HD 자원 한 벌·같은 공통 게임 코어의 iPhone 창/HUD/입력과115조건 치트 표시를 연결했다. C++73개와 Apple 컴파일을 통과했다. 마지막 Native 한 묶음은 iPhone16/20·iPad18/20으로 실패 상태이며, 검사 준비·좌표·창 구성 수정 후 Native 재실행은 하지 않았다. 실기기 설치·develop/main 병합도 하지 않았다.
+
+사이트 소스는 `e9d5880dcb9bf542bcd34513f2f95bada325a261`, 버전283, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_5c2144c22d608191a1b0bda2e96f020d`, 배포는 `appgdep_6af6d442e5fc8191ab74c11177d2d4ee`다. 공식 succeeded와 본인1명·그룹0·외부0을 확인했다. 실제24경로 HTTP200, HTML 표시 본문·링크 일치와 payload·CSS·JS·JSON의 소스 바이트 일치를 확인했다. 누적 목록과 구현 본문의 레이아웃·이동 링크는 로컬 Chrome에서 확인했다. 결과 표 추가 후 온라인 시각 검사는 수행하지 않았으며, 게시 본문은 인증 HTTP로 검증했다.
+
+공식 archive의 확장 크기는268,429,824바이트이며1,379개 파일을 소스와 대조했다. 후속 보고 추가 전256MiB 제한을 다시 확인해야 한다. 원본 IPA·ARM·사용자 저장·전체 분석 출력은 포함하지 않았다. 성공한 이전282의 전달용 tar257,125,363바이트는 lsof 미사용과 재생성 가능한 사이트 소스·저장버전 보존을 확인하고 정리했다. 현재283 archive·실패 xcresult/첨부·사용자 저장·원본은 보존했다.
+
+로컬 근거는 `.local/evidence/iphone-implementation-20261113/`의 `final-simulator-batch/summary.json`, 기기별 `*-results-summary.json`, `core-final-tests.log`, `apple-final-harness-build.log`, `site-local-check.json`, `site-archive-check.json`, `site-published-http.json`, `generated-cache-cleanup.json`이다. 토큰은 저장하지 않았다.
+
+
+## iPhone 추가 조사·개발 계획·금지사항 — 버전282, 2026-11-13
+
+[추가 조사](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/followup.html), [개발 계획·금지사항](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/development.html), [인계](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/handover.html), 카메라·전투/UI/시간·저장·음향의 분야별 후속을 기존 네 페이지와 연결해 총10페이지로 게시했다. 근거 커밋은 iPhone 작업 브랜치의 `94985910f97ad7ce8ab1d135473e366c9ac66635`다. 추가 정적 조사·계획·금지사항 보존이며 게임 구현·새 앱 실행·실기기 설치·develop/main 릴리스는 하지 않았다. 실제 표시 크기·가독성·오디오 중단/복귀와 남은 간접 분기는 미확정 또는 다음 실행 조건으로 남겼다.
+
+사이트 소스는 `c8da8badc69dfc7275076c25d9c552d390f6868d`, 버전282, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_d6f0a81459748191b7d2dbfee5bf844c`, 배포는 `appgdep_6af6c2916df88191bd8813a1d9dd2250`이다. 공식 succeeded와 본인1명·그룹0·외부0을 확인했다. 실제18경로 HTTP200, HTML 표시 문구·링크 일치와 본문 payload·스크립트·CSS·명세 JSON 바이트 일치를 확인했다. 로컬 Chrome에서 새 여섯 페이지의 본문·표와 목록을 확인했다. 온라인 Chrome에서는 로그인 화면까지 확인했으므로 로그인 후의 시각 검수 완료로 보고하지 않는다.
+
+256MiB 한도를 지키기 위해 목록 `index.html`의 기존 본문을 `report-index-content.bin`에 gzip으로 보존하고 기존 head/style과 새 loader로 표시한다. 본문은 새 보고 링크 하나를 제외하면 이전 소스와 같다. `report-index-source.json`에 이전/현재 본문·압축 결과 해시를 구분했다. 이후 목록을 고칠 때는 압축 payload를 풀어 기존 본문을 보존한 채 링크를 수정하고 해시를 갱신한다. 최초 변환은 `tools/compact_report_index.py`로 재현할 수 있으며 재압축을 이유로 기존 보고서·이미지를 지우지 않는다.
+
+기존 파일 중1,357개는 바이트가 같고 변경은 목록과 기존 조사 폴더 안7개 파일에 한정됐다. 원본 이미지·게임 자원은 바꾸지 않았다. 최종 tar 확장 크기는268,413,440바이트이며 콘텐츠1,373개와 생성 hosting manifest1개의 바이트 일치를 확인했다. 원본 IPA·실행파일·전체 함수 본문·전체 CFString·사용자 저장은 새 사이트 소스에 넣지 않았다.
+
+로컬 근거: `.local/evidence/iphone-universal-integration-20261113/`의 `evidence-verification.json`, `document-validation.json`, `site-local-check.json`, `site-archive-check.json`, `site-deployment.json`, `site-published-http.json`. 토큰은 파일에 저장하지 않았다.
+
+## 일반판·HD판 차이 조사 — 버전281, 2026-11-13
+
+[조사 결과와 유니버설 설계 보강](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-universal-audit-20261113/)에 결과·조사 기준·패키지 전수 비교·네이티브 로직 비교 네 페이지를 게시했다. 감사 브랜치의 근거 커밋은 `75d0bfa5ef58d4d90385fd249669538e48cce561`이다. 여섯 IPA의 파일9,123개와 이미지7,740항목을 조사했다. 함수 본문 보존과 주요 경로의 정적 비교를 전체 함수 의미 동등성·실행 검증 완료로 표현하지 않는다. 유니버설 설계에 영향을 주는 미확정과 다음 확인을 본문·TODO에 남겼다. 게임 코드·자원·앱 빌드·설치는 변경하지 않았다.
+
+사이트 소스는 `c1de2a6f56b32cec7da0d44c1c90c9dc70354845`, 버전281, 저장버전은 `appgprj_6addbf55aea081918d3d182d7e496e88~appgver_b2bd32a7ca5c819186283ba8cbd23c57`, 배포는 `appgdep_6af6b3b2ec748191aee4a59b0462e410`이다. 공식 상태 succeeded와 본인1명·그룹0·외부0 접근을 확인했다. 실제9경로의 HTTP200을 확인했다. HTML은 호스팅 서비스가 주입한 스크립트를 구분해 표시 문구·자원 링크를 대조했고, 본문 payload·CSS·JS·명세 JSON은 소스와 바이트가 같았다. 기존 콘텐츠1,355파일은 바이트가 같고 첫 화면에는 새 보고 링크만 추가했다. 로컬 Safari에서 네 페이지의 본문·표를 확인했다. 게시 후 Safari에서는 사용자가 다른 탭을 조작하고 있어 온라인 시각 검수 완료로 보고하지 않는다.
+
+이전 사이트가256MiB 한도에 근접해 새 보고서 본문만 gzip JSON으로 묶고 공통 표시 스크립트에서 해제한다. HTML 본문 전체와 원고 해시를 대조했으며 기존 이미지·파일·URL을 지우거나 바꾸지 않았다. 최종 tar 확장 크기는268,413,440바이트로 제한268,435,456바이트 이하이며 콘텐츠1,364개와 생성 hosting manifest1개의 바이트 일치를 확인했다. 원본 IPA·ARM 실행파일·전체 디컴파일·전체 복호 테이블·저장은 포함하지 않았다.
+
+로컬 근거는 `.local/evidence/universal-report-20261113/`의 `site-local-check.json`, `site-archive-check.json`, `site-published-http.json`이다. 인증 토큰은 파일에 저장하지 않는다.
+
 ## 사령부 보상창 배경과 완료 표시 — 2026-11-11
 
 [사령부 보상창 배경과 완료 표시](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/command-panel.html)를 기존 본인 전용 비공개 사이트에 게시했다. 구현과 검사 기록은 `f20a8b8`이다. iPad 시뮬레이터의 복원판 GPU 캡처384×512를 연결했다. 원본 포팅판 캡처와 영상·저장은 로컬에 보존한다.

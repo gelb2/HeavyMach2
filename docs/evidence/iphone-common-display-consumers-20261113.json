@@ -1,0 +1,122 @@
+{
+  "source_commit": "7247972c70888b3bcdd729ba30d685513b61dea3",
+  "kind": "current-source inspection; no game edits or runtime observation",
+  "sources": [
+    {
+      "path": "Sources/Core/Presentation/MapPreview.hpp",
+      "sha256": "d450eefca79a9ee93d722ce287e07ce89b296d47a304c728127eda15c72408ab"
+    },
+    {
+      "path": "Sources/Core/Presentation/MapPreview.cpp",
+      "sha256": "f460c489859c95d3a9d60c582458d5b2ab93fe22bf7e12d94688d91beabfa797"
+    },
+    {
+      "path": "Sources/Core/Presentation/Visibility.hpp",
+      "sha256": "acb437eba1b58f761ba840edf517f7333bc74e5025dcc483dcf8f076f3449e6a"
+    },
+    {
+      "path": "Sources/Core/Session/GameSession.hpp",
+      "sha256": "84fe8fe815c06ac8b4ec663679f3561bff92904a4922a2d1587998902c41f5a0"
+    },
+    {
+      "path": "Sources/Core/Session/GameSession.cpp",
+      "sha256": "7da597758ae9d17128de8e447ee69d7bde4d2c3035fe5486be963607e342ecf0"
+    },
+    {
+      "path": "Sources/Core/UI/Screens.hpp",
+      "sha256": "26aaf635d2d845d9758225fe7414c3c6c49c388d2fe608740c6bf78be5500853"
+    },
+    {
+      "path": "Sources/Core/UI/Screens.cpp",
+      "sha256": "a12133f98d1e58c2990b89f4d6cb028836787550501f322154eba9ed1f7ce926"
+    },
+    {
+      "path": "Sources/Core/UI/Help.cpp",
+      "sha256": "ffd01ef5a6895a7a7b6254fca75daf5d18a6a624d6454fec9f4ca70630ad677f"
+    },
+    {
+      "path": "Sources/Core/Progression/QuickItems.cpp",
+      "sha256": "2ad7f3ee04554a8edd831266941bdd86fcb0bfd55f6ab5ee37ca737e256086c4"
+    },
+    {
+      "path": "Sources/Core/Presentation/ScreenTransition.cpp",
+      "sha256": "c9d46a938c1e45d5053b130f423dc79076d281dbea859324708ad46de7bd8f52"
+    },
+    {
+      "path": "Sources/Core/Presentation/MapLoading.cpp",
+      "sha256": "214e96e6d21bd338cb81569f5aee314daf531e703f7cb43492ed1da3430b002c"
+    },
+    {
+      "path": "Sources/Core/Validation/ConcurrentValidation.hpp",
+      "sha256": "5adf31c38999e4fe800e916abf1250a187255986004c6eabefc9e4414e98ed51"
+    },
+    {
+      "path": "Sources/Core/Validation/ConcurrentValidation.cpp",
+      "sha256": "c0117c2c8622025464bd38958a1adcd89b89e5f4440ed852fac05e3fa5260f1f"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2SourceView.mm",
+      "sha256": "cdea6d2e60675bdadb287f8e6e24d547d8ffc8acc431b4239c7a4d022183aebf"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2GameRuntime.mm",
+      "sha256": "db8a6a4b4c826e44989b1882e1b9de88e3ce6aae6461012ad7b68a4ce8498efe"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2ConcurrentRuntime.mm",
+      "sha256": "19e6f22ff55d8c4f0e9e762ebc3ea9f2ac68de2ad07df81e1e1bbde8f25d02cd"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2Renderer.mm",
+      "sha256": "7a22bd809661d1455786e5d69882eb98a30540327168b6969547f47041318bcf"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2Audio.mm",
+      "sha256": "2db3e64725c6d2d10f45981c31e8dbb3269783488f14b441418197e007369761"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2AudioQueueMusic.hpp",
+      "sha256": "9942f4a247e75500bde11baa4a1f3d2ad75ce3897af312e9cfdbf144e3e19636"
+    },
+    {
+      "path": "Apple/iOS/project.yml",
+      "sha256": "c26cdf5f40549c950d1be9b8eba71be9d59887d8b50ba465bd636d283ce22b91"
+    }
+  ],
+  "original_hd_cfstring_index": {
+    "binary_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+    "local_path": ".local/evidence/iphone-universal-integration-20261113/hd-cfstrings.json",
+    "constants": 364,
+    "original_strings_exported_to_repository": false
+  },
+  "facts": [
+    {
+      "id": "camera-no-display-scale",
+      "source": "Sources/Core/Presentation/MapPreview.cpp",
+      "fact": "toScreen/toWorld use translation and viewport centre; no separate display scale member exists."
+    },
+    {
+      "id": "visibility-timing",
+      "source": "Sources/Core/Presentation/Visibility.hpp",
+      "fact": "Cached inScreen updates only for show&&visual&&!removed; margin60 and logical viewport are distinct from OS safe area."
+    },
+    {
+      "id": "host-output-fit",
+      "source": "Sources/Platform/Apple/HM2Renderer.mm",
+      "fact": "drawFrame aspect-fits logical frame to drawable; logicalPoint inverts viewport and physical-point conversion."
+    },
+    {
+      "id": "quick-input-consumer",
+      "source": "Sources/Core/Session/GameSession.cpp",
+      "fact": "inputWorld passes input to QuickItems before CombatScene. Both need the same future display configuration."
+    },
+    {
+      "id": "validation-mosaic",
+      "source": "Sources/Core/Validation/ConcurrentValidation.cpp",
+      "fact": "compose(viewport) tiles already-produced sourceFrames; changing the aggregate size does not configure each Session."
+    }
+  ],
+  "runtime_executed": false,
+  "builds_created": false,
+  "game_source_modified": false
+}

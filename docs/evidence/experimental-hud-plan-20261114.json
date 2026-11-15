@@ -1,0 +1,296 @@
+{
+  "date": "2026-11-14",
+  "game_behavior_commit": "3666fc7",
+  "scope": "HUD plan; actual classic HUD captures, not Experimental implementation",
+  "experimentalImplemented": false,
+  "currentClassicGroups": [
+    "gauges",
+    "combat",
+    "controls"
+  ],
+  "proposedGroups": [
+    "hp",
+    "boosterSP",
+    "experience",
+    "level",
+    "credits",
+    "leftWeapon",
+    "rightWeapon",
+    "quickFive",
+    "menuThree",
+    "radar",
+    "targetInfo"
+  ],
+  "weaponPanels": [
+    "left-relative-to-left-button",
+    "right-relative-to-right-button"
+  ],
+  "noNewHideCollapseRadarToggle": true,
+  "keepFunctionalUIAndNumbers": true,
+  "initial_capture_test": [
+    {
+      "profile": "phone",
+      "exit": 65,
+      "passed": 0,
+      "failed": 1
+    },
+    {
+      "profile": "ipad",
+      "exit": 65,
+      "passed": 0,
+      "failed": 1
+    }
+  ],
+  "initial_failure": "QA pressed right weapon while left chooser was open. Original GameSession push toggles any existing chooser closed. QA sequence now closes first, then presses right; product code unchanged.",
+  "final_capture_test": [
+    {
+      "profile": "phone-final",
+      "exit": 0,
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "profile": "ipad-final",
+      "exit": 0,
+      "passed": 1,
+      "failed": 0
+    }
+  ],
+  "native_capture_scope": "Both profiles90 common frames,126 live sessions; state assertions for chooser0/2/3 and actual cached GPU captures. No complete gameplay/visual correctness claim.",
+  "captures": [
+    {
+      "file": "phone-classic-right-weapons.png",
+      "profile": "phone",
+      "frame": 90,
+      "weaponChoiceType": 3,
+      "width": 912,
+      "height": 420,
+      "bytes": 507807,
+      "sha256": "d6a5f26d1ab7607e3adf9ba4cb235b49a66a25003d60776b3ac149df2c089f34",
+      "local_source": ".local/evidence/experimental-hud-plan-20261114/phone-final-captures/491835EB-1247-4A56-A7A6-D1521D13172D.png",
+      "kind": "actualClassicConcurrentGPU",
+      "experimentalImplemented": false,
+      "report_local_copy": ".local/evidence/experimental-hud-plan-20261114/captures/phone-classic-right-weapons.png"
+    },
+    {
+      "file": "phone-classic-left-weapons.png",
+      "profile": "phone",
+      "frame": 55,
+      "weaponChoiceType": 2,
+      "width": 912,
+      "height": 420,
+      "bytes": 968644,
+      "sha256": "b6e857c4bae52617c786add84289b300b87c972d402de5d25d2dfc00ccb464a3",
+      "local_source": ".local/evidence/experimental-hud-plan-20261114/phone-final-captures/158901CB-AC77-492F-B6F0-75667047B39C.png",
+      "kind": "actualClassicConcurrentGPU",
+      "experimentalImplemented": false,
+      "report_local_copy": ".local/evidence/experimental-hud-plan-20261114/captures/phone-classic-left-weapons.png"
+    },
+    {
+      "file": "phone-classic-default.png",
+      "profile": "phone",
+      "frame": 1,
+      "weaponChoiceType": 0,
+      "width": 912,
+      "height": 420,
+      "bytes": 943770,
+      "sha256": "e41c7d687759f9d1a7b94e99c9636048e5ac00f8983d1cbedbac8b0fae1e7b66",
+      "local_source": ".local/evidence/experimental-hud-plan-20261114/phone-final-captures/D52CFF9C-1964-4072-A0F4-A3B8D54FEC75.png",
+      "kind": "actualClassicConcurrentGPU",
+      "experimentalImplemented": false,
+      "report_local_copy": ".local/evidence/experimental-hud-plan-20261114/captures/phone-classic-default.png"
+    },
+    {
+      "file": "ipad-classic-right-weapons.png",
+      "profile": "ipad",
+      "frame": 90,
+      "weaponChoiceType": 3,
+      "width": 1024,
+      "height": 1366,
+      "bytes": 2938633,
+      "sha256": "88655cfbf8abf6d2a03f449080b7f117acf1cf0b1d8119bd6148f43c166770fb",
+      "local_source": ".local/evidence/experimental-hud-plan-20261114/ipad-final-captures/4342679A-D6AC-4468-8701-BDBBC32B2DFE.png",
+      "kind": "actualClassicConcurrentGPU",
+      "experimentalImplemented": false,
+      "report_local_copy": ".local/evidence/experimental-hud-plan-20261114/captures/ipad-classic-right-weapons.png"
+    },
+    {
+      "file": "ipad-classic-left-weapons.png",
+      "profile": "ipad",
+      "frame": 55,
+      "weaponChoiceType": 2,
+      "width": 1024,
+      "height": 1366,
+      "bytes": 2939259,
+      "sha256": "0200b0ffb84cb8a2f11fe2845dfac352bc705bbe04827132e43a112d00cfc612",
+      "local_source": ".local/evidence/experimental-hud-plan-20261114/ipad-final-captures/4E01697D-D273-4CD5-8A85-9EC3F30FEE7B.png",
+      "kind": "actualClassicConcurrentGPU",
+      "experimentalImplemented": false,
+      "report_local_copy": ".local/evidence/experimental-hud-plan-20261114/captures/ipad-classic-left-weapons.png"
+    },
+    {
+      "file": "ipad-classic-default.png",
+      "profile": "ipad",
+      "frame": 1,
+      "weaponChoiceType": 0,
+      "width": 1024,
+      "height": 1366,
+      "bytes": 2896678,
+      "sha256": "45d28a458813caaf0cf1a546f95746cbbf7230a15990da67f1ec2f7522c06c07",
+      "local_source": ".local/evidence/experimental-hud-plan-20261114/ipad-final-captures/371F512F-8F2E-4650-8895-2ABFFF747EFE.png",
+      "kind": "actualClassicConcurrentGPU",
+      "experimentalImplemented": false,
+      "report_local_copy": ".local/evidence/experimental-hud-plan-20261114/captures/ipad-classic-default.png"
+    },
+    {
+      "file": "phone-portal-classic-1.png",
+      "profile": "phone",
+      "width": 912,
+      "height": 420,
+      "bytes": 873539,
+      "sha256": "e3ffd039ae30cc3d4c8a33195e6c7e12859618a49c16bb4eca91d0092bbe4d81",
+      "local_source": ".local/evidence/phone-hud-portal-fix-20261114/phone-arrival-captures/0DAE2DCA-A533-4620-9C34-19A3B658F846.png",
+      "kind": "prior3666fc7PortalRuntimeGPU",
+      "experimentalImplemented": false,
+      "report_local_copy": ".local/evidence/experimental-hud-plan-20261114/captures/phone-portal-classic-1.png"
+    },
+    {
+      "file": "phone-portal-classic-2.png",
+      "profile": "phone",
+      "width": 912,
+      "height": 420,
+      "bytes": 916814,
+      "sha256": "8bfbb33ef58bb1ce5247c8d3586a3d0b28a6ecf34d86a91efe66da204756ad3e",
+      "local_source": ".local/evidence/phone-hud-portal-fix-20261114/phone-arrival-captures/0C4AC4DD-DCE4-4C9A-BF4B-AD484E94A4EC.png",
+      "kind": "prior3666fc7PortalRuntimeGPU",
+      "experimentalImplemented": false,
+      "report_local_copy": ".local/evidence/experimental-hud-plan-20261114/captures/phone-portal-classic-2.png"
+    }
+  ],
+  "image_findings": [
+    "Classic background includes functional gauge labels and radar grid; removing the whole file would remove useful UI.",
+    "Phone frame55 shows left chooser and frame90 shows right chooser; each includes owned weapon image/name/attack/difference.",
+    "Phone frame90 has a diagonal black world region; actual capture retained. Cause not established; this is not accepted full-screen output.",
+    "iPad frames retain the current regular viewport and HUD; they are not a new iPad design.",
+    "Empty quick slots are functional item-registration locations and remain in the plan."
+  ],
+  "source_hashes": [
+    {
+      "path": "Sources/Core/UI/Screens.cpp",
+      "sha256": "f0deb5cccd498a55ab7844b9c335c3f673e53e7cef06cf99a07e1c1a0846693f"
+    },
+    {
+      "path": "Sources/Core/Presentation/HUDLayout.hpp",
+      "sha256": "5c8af4bbe669962f55492c25e5b619d396012a9521105d89f240a5a53d4474de"
+    },
+    {
+      "path": "Sources/Core/Session/GameSession.cpp",
+      "sha256": "2e7900ec608ebb2c920ec91586242ce80fd3a6801ac763aed608b56993745fae"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2ConcurrentRuntime.hpp",
+      "sha256": "43538146a3c05cb3aff7bc626ccc5e9e5bbcd05daf4dcaf518cea2667a4ffc1d"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2ConcurrentRuntime.mm",
+      "sha256": "5dad45e1e03a746ed4f87cda7262aa80236a267707252817b0e39d427db0ae5d"
+    },
+    {
+      "path": "Apple/Tests/ConcurrentValidationTests.mm",
+      "sha256": "c87837324dffeb70deb2dca8918cf12758c0aa1b96baea3b79ca0314a8cc0715"
+    }
+  ],
+  "assetAnalysis": [
+    {
+      "width": 768,
+      "height": 256,
+      "sourceChannels": 4,
+      "noCropNoResize": true,
+      "name": "GameUI_BG.png",
+      "source_sha256": "e4b23422c10f28b95d2adbfc631e576a23ff4ca19c4ce94d3488876d48a3d9a6",
+      "preview_sha256": "f889c33a13949153498b0eec35c125ff46f7cb0df4a481ed1417da19cd906d04",
+      "decoder": "hm2::decodeImage shared CgBI reader; offline ImageIO standard PNG export; no crop/resize"
+    },
+    {
+      "width": 512,
+      "height": 64,
+      "sourceChannels": 4,
+      "noCropNoResize": true,
+      "name": "GameUI_GaugeBack.png",
+      "source_sha256": "721dbfaa881bba1bc7e039ad624a3298fb6e1faaa3f44ae05d1adc5d981aef72",
+      "preview_sha256": "30599aed475fab1551d922ac0ccba0d078e9973f6dd1895ddc2cce35d33c7e7d",
+      "decoder": "hm2::decodeImage shared CgBI reader; offline ImageIO standard PNG export; no crop/resize"
+    },
+    {
+      "width": 256,
+      "height": 16,
+      "sourceChannels": 4,
+      "noCropNoResize": true,
+      "name": "GameUI_GaugeEXP.png",
+      "source_sha256": "1010f2f13953bb73dfb85fe3d11f17f34d7df9c33ccee20ae0cd07e119636207",
+      "preview_sha256": "c0f1ad8ca877dcc0a4f3f5be7e810c1319e4ee2ec85f57925881cb5b6c06dc98",
+      "decoder": "hm2::decodeImage shared CgBI reader; offline ImageIO standard PNG export; no crop/resize"
+    },
+    {
+      "width": 512,
+      "height": 16,
+      "sourceChannels": 4,
+      "noCropNoResize": true,
+      "name": "GameUI_GaugeHP.png",
+      "source_sha256": "a0e4142dc3988b0a10791b0d990b2693cd8d663506a132c44303779c750d1ce1",
+      "preview_sha256": "9a311433bfd80dcab11cb292e768af8c9008e41129e21f96570b00927a887bcb",
+      "decoder": "hm2::decodeImage shared CgBI reader; offline ImageIO standard PNG export; no crop/resize"
+    },
+    {
+      "width": 512,
+      "height": 32,
+      "sourceChannels": 4,
+      "noCropNoResize": true,
+      "name": "GameUI_GaugeBooster.png",
+      "source_sha256": "e38c6d1220093189b94aefc7f51754299e276a221a05094a6c211ea3258f4f02",
+      "preview_sha256": "708e50150635839b97dc39f8b370737551821fe7b00d43e9611677161594f6f3",
+      "decoder": "hm2::decodeImage shared CgBI reader; offline ImageIO standard PNG export; no crop/resize"
+    },
+    {
+      "width": 256,
+      "height": 16,
+      "sourceChannels": 4,
+      "noCropNoResize": true,
+      "name": "NumTile05.png",
+      "source_sha256": "8f24ef1aeda25f766475064ac0d7511df2446aa8c7755478f7f5fc3b21ea1627",
+      "preview_sha256": "2e9918eef0f96ecc1968de295340347581eb198d10e95afe43bcdec1416960cb",
+      "decoder": "hm2::decodeImage shared CgBI reader; offline ImageIO standard PNG export; no crop/resize"
+    },
+    {
+      "width": 128,
+      "height": 8,
+      "sourceChannels": 4,
+      "noCropNoResize": true,
+      "name": "NumSet01b.png",
+      "source_sha256": "1c883f63503ae5e38c809b23d29e5b1f8b8d3692bb2e5609d99db5a70db17e85",
+      "preview_sha256": "78140c0e92982096fca83e18a8490264a0c744fb7578f4c0953a04ea0624bc27",
+      "decoder": "hm2::decodeImage shared CgBI reader; offline ImageIO standard PNG export; no crop/resize"
+    },
+    {
+      "width": 64,
+      "height": 8,
+      "sourceChannels": 4,
+      "noCropNoResize": true,
+      "name": "RaderMark.png",
+      "source_sha256": "f177d54c48c7f0056063c8630390d61befd3f6531051aea5838cf26f426dd17f",
+      "preview_sha256": "c8fa7aeba107df45292a035f4a8873031d72d8db39593d886f94609d15aa4798",
+      "decoder": "hm2::decodeImage shared CgBI reader; offline ImageIO standard PNG export; no crop/resize"
+    },
+    {
+      "width": 256,
+      "height": 64,
+      "sourceChannels": 4,
+      "noCropNoResize": true,
+      "name": "WpnBtnBG.png",
+      "source_sha256": "829eb34b2af7b8ff3bcc9bab1b7178339a1fd446472c750b4df33495deda04f5",
+      "preview_sha256": "6e1c5e0531f5b91a23c4a4cc7dd970547420f2a1a515964b8d37b8d408dd37a5",
+      "decoder": "hm2::decodeImage shared CgBI reader; offline ImageIO standard PNG export; no crop/resize"
+    }
+  ],
+  "assetAnalysisScope": "original HD images decoded locally with shared hm2::decodeImage; same dimensions; no crop/resize; GameUI_GaugeHP/Booster exist but not consumed by current Screens::field"
+}

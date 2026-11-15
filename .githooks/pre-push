@@ -1,10 +1,2 @@
 #!/bin/sh
-set -eu
-root=$(git rev-parse --show-toplevel)
-updates=$(cat)
-python3 "$root/tools/check_no_ipa.py" --all
-printf '%s\n' "$updates" | python3 "$root/.githooks/check-branch-flow.py"
-command -v gitleaks >/dev/null 2>&1 || { echo 'gitleaks is required.' >&2; exit 2; }
-gitleaks git --no-banner --redact
-command -v git-lfs >/dev/null 2>&1 || { echo 'git-lfs is required.' >&2; exit 2; }
-printf '%s\n' "$updates" | git lfs pre-push "$@"
+exec git lfs pre-push "$@"

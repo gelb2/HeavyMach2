@@ -21,6 +21,28 @@ NSData* shortWave(){
 }
 @interface AudioTests:XCTestCase @end
 @implementation AudioTests
+- (void)testOriginalLazyNameCacheAndWarmReuse{
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    HM2Audio* audio=[[HM2Audio alloc]initWithResourceRoot:root];XCTAssertNil(audio.lastError);
+    const auto owner=audio.ownerContextIdentity;XCTAssertNotEqual(owner,0u);XCTAssertEqual(audio.loadedSounds,0u);
+    XCTAssertEqual([audio.metrics[@"effectFileReads"] unsignedIntegerValue],0u);
+    XCTAssertTrue([audio playEffect:std::string_view("Wpn_Gun01.wav") x:0 y:0]);
+    XCTAssertEqual(audio.loadedSounds,1u);XCTAssertEqual([audio.metrics[@"effectFileReads"] unsignedIntegerValue],1u);
+    XCTAssertEqual([audio.metrics[@"effectColdNameConversions"] unsignedIntegerValue],1u);
+    NSArray* first=audio.preparationSnapshot;XCTAssertEqual(first.count,1u);XCTAssertEqualObjects(first[0][@"name"],@"Wpn_Gun01.wav");XCTAssertTrue([first[0][@"success"] boolValue]);
+    NSDictionary* warm=audio.metrics;
+    for(unsigned i=0;i<100;++i)XCTAssertTrue([audio playEffect:std::string_view("Wpn_Gun01.wav") x:0 y:0]);
+    for(NSString* key in @[@"contextsCreated",@"sourcesCreated",@"buffersCreated",@"effectFileReads",@"effectDecodes",@"effectColdNameConversions"])
+        XCTAssertEqualObjects(warm[key],audio.metrics[key],@"Warm lazy cache changed: %@",key);
+    XCTAssertEqualObjects(first,audio.preparationSnapshot); // Reading/hits never create preparation events.
+    [audio setActive:NO];XCTAssertFalse([audio playEffect:std::string_view("SFX_Dash.wav") x:0 y:0]);XCTAssertEqual(audio.loadedSounds,1u);
+    [audio setActive:YES];XCTAssertTrue([audio playEffect:std::string_view("SFX_Dash.wav") x:0 y:0]);
+    XCTAssertEqual(audio.loadedSounds,2u);XCTAssertEqual(audio.ownerContextIdentity,owner);
+    XCTAssertEqual([audio.metrics[@"contextsCreated"] unsignedIntegerValue],1u);
+    XCTAssertEqual([audio.metrics[@"effectFileReads"] unsignedIntegerValue],2u);
+    const auto prepared=audio.preparationSnapshot;XCTAssertEqual(prepared.count,2u);XCTAssertEqualObjects(prepared[1][@"name"],@"SFX_Dash.wav");
+    for(NSDictionary* event in prepared){for(NSString* key in @[@"fileReads",@"decodes",@"sourcesCreated",@"buffersCreated"])XCTAssertEqual([event[key] unsignedIntegerValue],1u);XCTAssertEqualObjects(event[@"ownerContext"],@(owner));XCTAssertNotEqual([event[@"sourceIdentity"] unsignedIntegerValue],0u);}
+}
 - (void)testOriginalAudioFilesAndWarmEffectResources{
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     HM2Audio* audio=[[HM2Audio alloc]initWithResourceRoot:root];XCTAssertTrue([audio prepareSounds],@"%@",audio.lastError);
@@ -46,6 +68,23 @@ NSData* shortWave(){
         const auto held=first.metrics;XCTAssertTrue([first playEffect:std::string_view("Wpn_Gun01.wav") x:0 y:0]);(void)[first effectSampleOffset:@"Wpn_Gun01.wav"];(void)first.playbackSnapshot;XCTAssertEqualObjects(held[@"contextBindCalls"],first.metrics[@"contextBindCalls"]);XCTAssertEqualObjects(held[@"contextClearCalls"],first.metrics[@"contextClearCalls"]);
     }
     XCTAssertEqual(first.currentContextIdentity,firstOwner);
+}
+- (void)testRepeatedInactiveCallbacksRetainAudioOwners{
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    HM2Audio* audio=[[HM2Audio alloc]initWithResourceRoot:root];XCTAssertTrue([audio prepareSounds]);XCTAssertTrue([audio playMusic:@"STAGE3.mp3"]);
+    const auto owner=audio.ownerContextIdentity;NSDictionary* before=audio.metrics;
+    for(unsigned i=0;i<20;++i){
+        [audio setActive:NO];[audio setActive:NO];XCTAssertFalse(audio.musicPlaying);
+        XCTAssertFalse([audio playEffect:std::string_view("Wpn_Gun01.wav") x:0 y:0]);
+        [audio setActive:YES];[audio setActive:YES];
+        XCTAssertTrue([audio playEffect:std::string_view("Wpn_Gun01.wav") x:0 y:0]);
+        XCTAssertEqual(audio.ownerContextIdentity,owner);XCTAssertEqual(audio.currentContextIdentity,owner);
+    }
+    NSDictionary* after=audio.metrics;
+    for(NSString* key in @[@"contextsCreated",@"devicesOpened",@"sourcesCreated",@"buffersCreated",@"effectFileReads",@"effectDecodes",@"musicQueuesCreated",@"musicBuffersAllocated"])
+        XCTAssertEqualObjects(before[key],after[key],@"Lifecycle recreated audio owner/resource: %@",key);
+    XCTAssertEqual([after[@"contextsCreated"] unsignedIntegerValue],1u);
+    [audio stopMusic];
 }
 - (void)testOriginalMusicRestartsAndWholeFileLoop{
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;

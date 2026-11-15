@@ -5,5 +5,6 @@
 @interface HM2SourceView:UIView
 @property(nonatomic,weak) UIViewController* controller;
 - (void)setActive:(BOOL)active;
+- (void)setAudioActive:(BOOL)active;
 - (void)presentPendingRequests;
 @end

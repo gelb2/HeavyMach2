@@ -9,7 +9,12 @@ namespace hm2 {
 struct MapCamera {
     Vec2 center,offset;
     Size viewport{768,1024};
+    float inputMinimumY=100;
     Vec2 backgroundWorld;
+    // Configured surfaces adapt camera framing, never world geometry/radii.
+    bool fitWorld=false,keepFocusVisible=false,fillSurface=false;
+    float lowerOverscan=94,focusMinimumY=100,focusRadius=25;
+    float focusLeft=0,focusRight=0;
     [[nodiscard]] Vec2 toScreen(Vec2 world)const;
     [[nodiscard]] Vec2 toWorld(Vec2 screen)const;
 };

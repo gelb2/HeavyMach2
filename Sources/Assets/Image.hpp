@@ -4,6 +4,8 @@
 #include <vector>
 
 namespace hm2 {
+struct EncodedImageInfo {unsigned width=0,height=0,sourceChannels=0;};
+EncodedImageInfo imageInfo(std::span<const std::uint8_t> encoded);
 struct DecodedImage {
     unsigned width=0,height=0,sourceChannels=0;
     // Top row first, premultiplied RGBA. Same stb decode/options as HM1/MD.

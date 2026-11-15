@@ -1,0 +1,254 @@
+{
+  "schema": "hm2-phone-hud-portal-fix-20261114",
+  "date": "2026-11-14",
+  "baseline_commit": "628ac97",
+  "branch": "feat/iphone-universal-20261113",
+  "changes": [
+    "Compact world movement uses the actual UI dispatcher instead of a fixed75px bottom strip.",
+    "Compact field HUD buttons accept full-canvas touches, including below the safe-area inset.",
+    "Legacy v1 compact HUD bottom-aligned placements migrate to physicalY0; interior placements and regular iPad remain unchanged."
+  ],
+  "baseline_default_hud_draw_y": 0,
+  "baseline_default_hud_was_already_bottom_aligned": true,
+  "before": {
+    "gates": 82,
+    "direct_success_gates": 70,
+    "normal_navigation_success_gates": 70,
+    "direct_samples": 738,
+    "successful_direct_samples": 460,
+    "path_samples": 0,
+    "successful_path_samples": 0,
+    "path_UI_leaks": 0
+  },
+  "after": {
+    "gates": 82,
+    "direct_success_gates": 81,
+    "normal_navigation_success_gates": 82,
+    "direct_samples": 738,
+    "successful_direct_samples": 535,
+    "path_samples": 9,
+    "successful_path_samples": 7,
+    "path_UI_leaks": 0
+  },
+  "core_tests": {
+    "passed": 78,
+    "failed": 0
+  },
+  "ipad_parity": [
+    {
+      "scope": "ipad",
+      "baseline_commit": "628ac974fbe58b1ef1fb8931d5d48f1b3f5856d2",
+      "cases": 126,
+      "frames_each": 1200,
+      "differences": [],
+      "extra": []
+    },
+    {
+      "scope": "mixed",
+      "baseline_commit": "628ac974fbe58b1ef1fb8931d5d48f1b3f5856d2",
+      "cases": 98,
+      "frames_each": 1200,
+      "differences": [],
+      "extra": []
+    }
+  ],
+  "native": {
+    "initial": [
+      {
+        "profile": "phone",
+        "exit": 65,
+        "passed": 6,
+        "failed": 1,
+        "result": "Failed"
+      },
+      {
+        "profile": "ipad",
+        "exit": 65,
+        "passed": 6,
+        "failed": 1,
+        "result": "Failed"
+      }
+    ],
+    "initial_failure": "The new combined test armed the original Repair quick-item before ground input; QuickItems consumed the next begin, leaving navigation pointer/path0. Production code unchanged. Same original quick-item toggled off, selectedQuick-1 asserted; navigation/trigger criteria retained and arrival/disk-save assertions added.",
+    "corrected_portal": [
+      {
+        "profile": "phone-arrival",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "result": "Passed"
+      },
+      {
+        "profile": "ipad-arrival",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "result": "Passed"
+      }
+    ],
+    "effective_coverage_per_profile": "6 unchanged tests passed in initial batch + corrected1 portal test passed in final rerun; not a fresh single7/7 run.",
+    "concurrent_frames": {
+      "phone": 2100,
+      "ipad": 1200
+    },
+    "concurrent_cases": 126,
+    "original_weapons": 110,
+    "same_frame_weapon_kinds": 5,
+    "menu_overlap_frames": 360,
+    "representative_real_runtime_routes": [
+      "Stage01_01/0 to Base001; original direct ground input",
+      "Stage01_03/1 to Stage01_02; original path gesture"
+    ],
+    "arrival_assertions": [
+      "World path pointer/count and no HUD consumption",
+      "WorldGate trigger/transition request",
+      "Destination screen, door phase8, mapLoading removed",
+      "Destination field unpaused, playerHP>0",
+      "Actual atomic saveURL decoded; destination map and gate checked"
+    ]
+  },
+  "release_packages": [
+    {
+      "scheme": "HeavyMach2Source",
+      "configuration": "Release",
+      "platform": "iphonesimulator",
+      "bundle_identifier": "com.gelb2.heavymach2.restored",
+      "executable_sha256": "2827327e8c86bce85ae86be041b416badb3aafc77315e246a3ba970ef15ed4d3",
+      "app_path": "build/apple/Build/Products/Release-iphonesimulator/HeavyMach2Source.app",
+      "resources_unchanged": "No resource/source-asset edits; Xcode uses existing prepared HD+approved PhoneMenu resource pipeline"
+    },
+    {
+      "scheme": "HeavyMach2Validation",
+      "configuration": "Release",
+      "platform": "iphonesimulator",
+      "bundle_identifier": "com.gelb2.heavymach2.validation",
+      "executable_sha256": "f64de35d77c1dc2bb90d16ba960a87f1ca9778381d9e6d257531e7921a7f5fd2",
+      "app_path": "build/apple/Build/Products/Release-iphonesimulator/HeavyMach2Validation.app",
+      "resources_unchanged": "No resource/source-asset edits; Xcode uses existing prepared HD+approved PhoneMenu resource pipeline"
+    }
+  ],
+  "release_resources": [
+    {
+      "product": "HeavyMach2Source",
+      "matched_files": 1532,
+      "missing": [],
+      "changed": [],
+      "extra": []
+    },
+    {
+      "product": "HeavyMach2Validation",
+      "matched_files": 1532,
+      "missing": [],
+      "changed": [],
+      "extra": []
+    }
+  ],
+  "review": {
+    "reviewer": "iphone_apple_audit",
+    "scope": "Production3files and regression tests; read-only",
+    "additional_required_product_defects": 0,
+    "test_gap_fixed": "Transition-start-only assertion extended through loading/doors and actual disk save decode."
+  },
+  "unchanged": [
+    "Camera bounds/zoom/viewport",
+    "Portal coordinates/map data",
+    "Asset bytes/aspect/reader/assembly/cache",
+    "Audio pipeline and save rules",
+    "Physical-device installations",
+    "develop/main branches"
+  ],
+  "limitations": [
+    "HUD artwork may still overlap a portal. One sampled gate is reached by the original world path gesture; this is not a claim that all visual occlusion disappeared.",
+    "CPU82-gate checks use actual navigation/collision/gate callbacks with QA host/text and damage suppression; event gates open. They do not validate all campaign unlock states.",
+    "Native checks cover two representative actual GameRuntime routes, not82 separate OS-driven campaign transitions.",
+    "No new physical iPhone/iPad installation or device thermal/Instruments measurement."
+  ],
+  "source_hashes": [
+    {
+      "path": "Sources/Core/Simulation/CombatScene.cpp",
+      "sha256": "86b0a189066cc0c92918f04133547272ee7bec31cf43bc50cf58f10f57fbf8d7"
+    },
+    {
+      "path": "Sources/Core/UI/Screens.cpp",
+      "sha256": "f0deb5cccd498a55ab7844b9c335c3f673e53e7cef06cf99a07e1c1a0846693f"
+    },
+    {
+      "path": "Sources/Core/Presentation/HUDLayout.hpp",
+      "sha256": "5c8af4bbe669962f55492c25e5b619d396012a9521105d89f240a5a53d4474de"
+    },
+    {
+      "path": "Apple/Tests/SessionRendererTests.mm",
+      "sha256": "f5dc0dfc46d51034c0f64876d06ee8a4962a96066ccbe14d3cff2a68017931c9"
+    },
+    {
+      "path": "tests/ScreensTests.cpp",
+      "sha256": "943a2c6643177c043b89e782279bc00d0ce5598b3d64064f6faf26d66e18056d"
+    },
+    {
+      "path": "tools/probe_world_hud_rules.cpp",
+      "sha256": "410cbd5d520523a53802018ed3dd86584674de64ad3fa58f576a4d4e2557c6e6"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "sha256": "6110cdb507921ac62c62baec3ebb2b37c96380a25601d649e6154925a8609af7"
+    }
+  ],
+  "local_evidence": [
+    {
+      "file": "all-before.ndjson",
+      "sha256": "897e32d75b4b108db8730d69349f5446440bb27e8bf0812ff8f82440987e0fe1"
+    },
+    {
+      "file": "routes-final.ndjson",
+      "sha256": "e0447bb9a9ecea9dfa45a976d089116cfd39d4052ff289cd0866bf70b32b83c6"
+    },
+    {
+      "file": "routes-final.log",
+      "sha256": "3a25d9be4bfc81c4b0b7fc9dfc43ad2b67c251837c9cf4ba160b12488ffd74e0"
+    },
+    {
+      "file": "ctest.log",
+      "sha256": "063a85d9f77885319eaed7489279b1e9b8dc1a53914cb17a278f4922b0dec3ad"
+    },
+    {
+      "file": "ipad-parity.json",
+      "sha256": "1b3f9f268b340cc2ce716a952435625f48174b3634509ebd6362b9e7d3eb3dcc"
+    },
+    {
+      "file": "native-results.json",
+      "sha256": "304b4139197ecefeab3b5cc3d72b2fef13f627f3fb0e831af826fac2df62091c"
+    },
+    {
+      "file": "arrival-results.json",
+      "sha256": "f6fe8f1c24985b4964078a1b420dce7edc17063ff15475901c8006a5110ece5d"
+    },
+    {
+      "file": "release-packages.json",
+      "sha256": "1f02f1eaa01b5a145e8ff2795a7020200a213b31b24c2ea6669c66b6ac55fa07"
+    },
+    {
+      "file": "release-resource-parity.json",
+      "sha256": "fd54619f30c592fe5eea769f23137828bb49aafe83dda9924658fbfec947abe2"
+    },
+    {
+      "file": "SessionRenderer-initial.mm",
+      "sha256": "1056d215136630ba68a77bbc24461a00d0608de901044db7ff2372b763e4fcd6"
+    },
+    {
+      "file": "phone-summary.json",
+      "sha256": "2dc3821d582a655436a9507a6f3543d45d2660a65bb2823c2af2ea85298bdc87"
+    },
+    {
+      "file": "ipad-summary.json",
+      "sha256": "dfe3e97afe0404247dbdcbc951902d08b36c04dc18dd07f20e509b62b062abbd"
+    },
+    {
+      "file": "phone-arrival-summary.json",
+      "sha256": "363e067a9b5115f788175e64f1df6d29164ac0766274790b79e2e746ea11fd3f"
+    },
+    {
+      "file": "ipad-arrival-summary.json",
+      "sha256": "caed85d6abb59ef85c30744b8532a5b5d701f2e937dc884486484ba48f80b20b"
+    }
+  ]
+}

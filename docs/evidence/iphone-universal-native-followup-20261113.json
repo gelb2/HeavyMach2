@@ -1,0 +1,3453 @@
+{
+  "schema": 1,
+  "date": "2026-11-13",
+  "scope": "일반201/HD103 카메라·충돌·화면캐시·생성/수명·누락vtable 후속정적조사",
+  "verification": {
+    "schema": 1,
+    "date": "2026-11-13",
+    "originals": {
+      "phone": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+      "hd": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090"
+    },
+    "cached_functions_reverified": {
+      "phone": 43,
+      "hd": 38,
+      "file_references": 162
+    },
+    "ghidra_body_inventory": {
+      "phone": 1077,
+      "hd": 1300
+    },
+    "supplemental_vtable_entries": 30,
+    "entry_status_counts": {
+      "decoded": 28,
+      "undecodable": 2
+    },
+    "exact_instruction_records_in_final_bundle": 459,
+    "final_bundle_records_including_reused": 2624,
+    "final_bundle_sha256": "b5e067a159f2dd150a6c489f5c692a725dc854adabe25a89e23b897ab1c6ab4a",
+    "llvm_bounded_spans": [
+      {
+        "start": "0xb318",
+        "exclusive_end": "0xb988",
+        "scope": "bounded address span, not certified CFG body",
+        "command": [
+          "xcrun",
+          "llvm-objdump",
+          "-d",
+          "--triple=thumbv7-apple-ios",
+          "--start-address=0xb318",
+          "--stop-address=0xb988",
+          "/Users/sokol/Documents/Codex/HeavyMach2/ReferenceBuilds/inspection/phone/armv7"
+        ],
+        "sha256": "fbcbdfc86539372acedde5ad0d1b70a5a7f90f4dacb477198e17610c80953a3b",
+        "bytes": 32605,
+        "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a"
+      },
+      {
+        "start": "0xb988",
+        "exclusive_end": "0xbbfc",
+        "scope": "bounded address span, not certified CFG body",
+        "command": [
+          "xcrun",
+          "llvm-objdump",
+          "-d",
+          "--triple=thumbv7-apple-ios",
+          "--start-address=0xb988",
+          "--stop-address=0xbbfc",
+          "/Users/sokol/Documents/Codex/HeavyMach2/ReferenceBuilds/inspection/phone/armv7"
+        ],
+        "sha256": "e42fc68da05e0cb79763d30a2cead4ddd85d274eae41bad69eb7f4607c773fa7",
+        "bytes": 10047,
+        "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a"
+      }
+    ],
+    "undecodable_entry_read_bytes": [
+      {
+        "address": "0xb988",
+        "evidence_id": "ev_3106a7ece4b7fd724467f744b1d407cc320f7086658ec9269d21933812424cf3",
+        "length": 48,
+        "bytes_sha256": "0c423c064f763f82b1a2108a43c0c55c48bd4602cc3864ba84856b2d08f126da",
+        "matches_original": true
+      },
+      {
+        "address": "0xb318",
+        "evidence_id": "ev_6f3e2c636daf8a36ca3bd87cd3cb1c97565c6f6aaf207423c6be1865fb16bf4d",
+        "length": 48,
+        "bytes_sha256": "18d0b4356d4a495739414279560f5c868895c8e4eb956d49afaf29c1bda4d265",
+        "matches_original": true
+      }
+    ],
+    "hd_complete_cached_body_text_queries": {
+      "isInScreen": [
+        {
+          "address": "0xd6d8",
+          "owner": "GobHvMach",
+          "selector": "processMove"
+        },
+        {
+          "address": "0x71d0",
+          "owner": "GobBullet",
+          "selector": "setCollide:"
+        },
+        {
+          "address": "0x10ddc",
+          "owner": "GobWorld",
+          "selector": "checkBulletCollideX:Y:"
+        },
+        {
+          "address": "0x3689c",
+          "owner": "QobBase",
+          "selector": "isInScreen"
+        },
+        {
+          "address": "0x36d98",
+          "owner": "QobBase",
+          "selector": "tick"
+        },
+        {
+          "address": "0x36f04",
+          "owner": "QobBase",
+          "selector": "init"
+        },
+        {
+          "address": "0x38e50",
+          "owner": "QobImage",
+          "selector": "tick"
+        }
+      ],
+      "_glScalef": [],
+      "setCollideCheck": [
+        {
+          "address": "0x5f94",
+          "owner": "GobBullet",
+          "selector": "setCollideCheck:"
+        }
+      ]
+    },
+    "runtime_or_app_execution": false,
+    "source_or_original_mutation": false,
+    "limits": [
+      "Code/text query and file verification are not all-body semantic equivalence.",
+      "LLVM spans do not certify complete CFG/type recovery.",
+      "Exact entry verification does not resolve all indirect/alias effects."
+    ],
+    "instruction_walk_index_sha256": "95cb2e8f9e51d3ee0f625ad32c4a98e305427d401c1f2254fe40a669ff756b38"
+  },
+  "facts": [
+    {
+      "id": "projection-world-hud-separation",
+      "status": "confirmed-selected-static-path",
+      "phone": [
+        "0x4ef90",
+        "0x4bebc",
+        "0x4e07c",
+        "0x5a418",
+        "0x57124",
+        "0x5af50",
+        "0x5a1dc",
+        "0x4e0e4",
+        "0x64e8",
+        "0x7004"
+      ],
+      "hd": [
+        "0x11cac",
+        "0x37870",
+        "0x37958",
+        "0x3a39c",
+        "0x2730",
+        "0x12698"
+      ],
+      "observed": "일반판 draw는 GL translate→scale을 layer0..8에 적용하고 boundary9에서 복구한다. world 표시의 연속좌표 수학 요약 screen=h+s*(p-c-o)와 입력 역변환이 대응한다. HD 기본 screenPos/input/draw 경로는 별도로 연결했다.",
+      "inference": "HUD를 같은 world zoom으로 확대할 수 없다. 표시·고정UI·입력 변환을 분리해야 한다.",
+      "limits": [
+        "fixedPos 반올림·FP 연산순서를 수학 요약으로 재배치하지 않는다.",
+        "HD 전체 glScalef 문자열0건은 모든 간접 변환의 부재 증명이 아니다.",
+        "판본차이인지 기기차이인지 원인은 미확정."
+      ],
+      "references": [
+        {
+          "domain": "phone",
+          "address": "0x4ef90",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4ef90.pseudo.c",
+              "sha256": "d9f27acf21d087dce5edfba985b6225a212260b56030ea15259d51f9bc676bd1",
+              "bytes": 1224,
+              "evidence_id": "ev_c4a03b3ba97cc333017096e9db7b1856306f39bfe1eac6c7c58bda399022fcec"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4ef90.asm",
+              "sha256": "c65142711f348084ea5b296d5da09a765e9d47b12a11ba67113a6e0be51b782e",
+              "bytes": 1565,
+              "evidence_id": "ev_3db8c5a78447f6925976df12a7c606d5a88f7a9d7608f694c47406393f5f8bab"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x4bebc",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4bebc.pseudo.c",
+              "sha256": "7f7aa414576c45707752a866e8ada0821a153e4f318b1d9055d23b30ed8045c9",
+              "bytes": 5383,
+              "evidence_id": "ev_f777f9b4f975b32a3bc70bd0615c0be32123a1e40accd42f9aeaa7bbcd5d25ed"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4bebc.asm",
+              "sha256": "ce7377c87e3b7620c431a444735e268712b4ea31c6b4b914f42d4f6ae40b1e82",
+              "bytes": 5837,
+              "evidence_id": "ev_13c1b31093d1ffd8f69dacce242946e84b7df9bf37c77f1531ec7d639c325213"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x4e07c",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4e07c.pseudo.c",
+              "sha256": "cea1c993f39a10b07f32eab08d7cb118f6b17d39fb1c9ef848a03a76e463f801",
+              "bytes": 769,
+              "evidence_id": "ev_cf7f2a64bb29f1aafbb4a305df22eb488dc881dfa801139de0f99b810a93baaf"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4e07c.asm",
+              "sha256": "41014a1e5fb84ad2cad0117f73a7129f129a2384943545b5b8ec37d2ef71778d",
+              "bytes": 327,
+              "evidence_id": "ev_93f4201c928b73fb7d763b0e89e535ad9f42266a54a1cb5bbe39d370858ba18f"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x5a418",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x5a418.pseudo.c",
+              "sha256": "8b297476d4a406bd867c3f70567f2865b496dd921d1a90e17e2f2eb56700ee65",
+              "bytes": 3065,
+              "evidence_id": "ev_dfc85368bd6eda174f07d8d29819097764b9775b576a373ba2c4af1ba2b2c2cd"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x5a418.asm",
+              "sha256": "ed99fea71154fa9bab03f5f85c3f9c7d74d50883ad64e570546c2690cbf1c144",
+              "bytes": 3490,
+              "evidence_id": "ev_ce18bffc71901c6e020e65f32193e68c9b716164edd42d069b9eeb30466b96bf"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x57124",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x57124.pseudo.c",
+              "sha256": "6d9879bd65c14765d5f5ccb786307f1f31ab2168f2120dca1566c6a40ef792d7",
+              "bytes": 7128,
+              "evidence_id": "ev_de69a9511bd0c20479af3205645dd7c5ba85092909952f63484b1c8f3b0a08d9"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x57124.asm",
+              "sha256": "efaa835b9e0ed03b37a2c5bfbe437cb04b4151342b78177e2f7ac87bc0b1976b",
+              "bytes": 6512,
+              "evidence_id": "ev_bfda4188571e334d14e9301ca27e5fdfdd7fa096053555275bc8bef3fb75d0fc"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x5af50",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x5af50.pseudo.c",
+              "sha256": "90ecb5541c40ddfe2f36daef527611d9aad2712277df0ab2feff64fa2f37b22e",
+              "bytes": 2797,
+              "evidence_id": "ev_225fb361cabb6d7e4594ae46893d9bb4fd7edc75bb672bc04afc780ea32415c5"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x5af50.asm",
+              "sha256": "052bcc28bc4f1b80e8da9b6f7be92cf10f39b9d3b9d14fe78ae16aa2c0bf6a5a",
+              "bytes": 3184,
+              "evidence_id": "ev_29013ac5658d823960365e52fa524ed93270bc2ac49cc14848078f2381ed92c1"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x5a1dc",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x5a1dc.pseudo.c",
+              "sha256": "1f768c19204ff4002c822f1702c41eee0c72022c21828a0d845e9215623ebd26",
+              "bytes": 4987,
+              "evidence_id": "ev_b9eb547d882bc5e2ac585334f3fc13cf94d800155033961a8f857feda9981050"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x5a1dc.asm",
+              "sha256": "e9760dd0f1337d7eb5f532155333c9f79d9478618bc2a61fcb5cb15aaa3dd39b",
+              "bytes": 5489,
+              "evidence_id": "ev_6618c7067e77c8dc4ae65c5cd9011a59a3040f56342a1ff82fe9b468b9b53bb6"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x4e0e4",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4e0e4.pseudo.c",
+              "sha256": "298639d307a74d748bbea6ad4aac9044b478201a998206b0e169e9d447e3ce91",
+              "bytes": 2658,
+              "evidence_id": "ev_cfee2913cb7a31c9402643955721adc16040707a28758b9566614cd61b9c1ded"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4e0e4.asm",
+              "sha256": "e1b134526f1c4397ffbc66a153a53c614ba3b88b868fd09fa2c709fbbfd7f99e",
+              "bytes": 3364,
+              "evidence_id": "ev_5090e569461ca36e25689ba2064d6d8e88c0ff8b9f65f055b1315999f7d6551d"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x64e8",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x64e8.pseudo.c",
+              "sha256": "651c8af4fb77354c3583e1fd411c0bc79a3fd15769c3ef878d16cd19fa86e39c",
+              "bytes": 4285,
+              "evidence_id": "ev_9d3eabd385e2966fbf3992a9eabe4c338cbed028811bda21e3d3ffa02a975f20"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x64e8.asm",
+              "sha256": "edf5e8304e1cc523a156266cacec12dee7e6f8d44f3781252c4e3035ecb12dbe",
+              "bytes": 7810,
+              "evidence_id": "ev_b9c50198b2eedd42b00ddf253efe140b382045d3d5e43c41841eaabd17348842"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x7004",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x7004.pseudo.c",
+              "sha256": "a1da4bc6227fa0f211ecb7eb6f93942a39cac1ea04ef1da217900a1ea4149439",
+              "bytes": 3755,
+              "evidence_id": "ev_68c731c950df6d5cf0308ceecb713f4d2bad4b53acabdb345ce1c50d15ef8f81"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x7004.asm",
+              "sha256": "3ae62b262d62d70b107a46b69c0bf6557304340e455547c6025a48b2757501ec",
+              "bytes": 6584,
+              "evidence_id": "ev_2ce24db9204842ae4d6dca4db26484a43c6284153f09c1aabfd7ea854efab907"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x11cac",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x11cac.pseudo.c",
+              "sha256": "c34479e2f2c993be101bc2d29f544252326081cb9a6703ab8c38018594b2e10c",
+              "bytes": 4933,
+              "evidence_id": "ev_492bd6752cb56b039e6b20cfd06b5e3ff57aef3ea5b1cc521ab1dad788ae58a9"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x11cac.asm",
+              "sha256": "11463c13b3b05727d5cb10e1e9358b3b506b81aa5f2fc0688b174e426eac6e36",
+              "bytes": 7073,
+              "evidence_id": "ev_05b1b102c8298c7b05efbcd67fdfd56a4f8075303dd1ed09e851f494f727b3bb"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x37870",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x37870.pseudo.c",
+              "sha256": "cef217a286ceef6b5f9e55a95f53ca795235709fc2e052c4532084f94cb1d056",
+              "bytes": 1782,
+              "evidence_id": "ev_d2dd96f4cc3033da5465cfb1b5494d290c9563c092c12d2612d7eddfb9ef1965"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x37870.asm",
+              "sha256": "6fb2b20bece85b02904ba1da92287b26c64c68b574c4b0cf87c20c1e09b89d8f",
+              "bytes": 1789,
+              "evidence_id": "ev_ffc3c958875fc3f77e8a702c1763fc5e89c1f8f6f3c0090298e35eda48f55568"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x37958",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x37958.pseudo.c",
+              "sha256": "545c906bd3034cc9bfcf1496b7291c5eda078b6b059a731257b9ba5fa59b9a0b",
+              "bytes": 1785,
+              "evidence_id": "ev_64910f667153c74a2d88b1a47d6efa59aca72f00d4f85a763b838b75e4865b6a"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x37958.asm",
+              "sha256": "129fdb783423fd0e2578944026634ee08fd3a970bf51370563a84c5c519e42ee",
+              "bytes": 1784,
+              "evidence_id": "ev_198c430c2288a4a7bb491bb48f18bc1b4c56e53dbe2c12d4905d9eaa2e535b60"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x3a39c",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x3a39c.pseudo.c",
+              "sha256": "51a0b4bc97b231d2f0374422cd1e30251223aa310c9c37df6c099cd87c9e387a",
+              "bytes": 489,
+              "evidence_id": "ev_03aaac0d34ce0bbf56b3c37213845b9eadfd1c543524cc953a0f2bb49e206cca"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x3a39c.asm",
+              "sha256": "38ac793ae73e01aca9c9fd7d7dbcf8e2be5076cc266d6b4b7897600581729b03",
+              "bytes": 1006,
+              "evidence_id": "ev_23f248dfcc718558bd495f2eb07d3db88bcb7931d649be37017f404c9416c5e9"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x2730",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x2730.pseudo.c",
+              "sha256": "f0ccb3ef50796f04b0b71b16eb9234ce434ef2edb9e17196d1d86cff77ce8c4b",
+              "bytes": 1354,
+              "evidence_id": "ev_fae1ab58f80ff09887756747e399a20db8787811a4643be810a6626c322a169e"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x2730.asm",
+              "sha256": "c3255717ed1ec35a593eccbd2be5157f1ef44fe232c8301929f40d1fa2fc8fda",
+              "bytes": 2240,
+              "evidence_id": "ev_daa298720ccdec63edf10f0618c3e746979e5c0c9cbc7c7dc16691a28ff1c028"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x12698",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x12698.pseudo.c",
+              "sha256": "c9afddea5fc10dbe33113ad681c2fdf2de0d0161a829d56a6531d178c24c5970",
+              "bytes": 15284,
+              "evidence_id": "ev_ba2234ac416af75fc2d49f657ba67ab1bd879886874042853889d53bdb893bf1"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x12698.asm",
+              "sha256": "7910bfc4c6dcf0f1484ef6d1637ab434c64ce382af8c4dcb42fb1dd61cde498f",
+              "bytes": 22282,
+              "evidence_id": "ev_32cca0faf8527980c381dd9af1c58789fb2b779bbdb7d098aca73007dd40507f"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hd-screen-cache-order",
+      "status": "confirmed-selected-read-write-order",
+      "phone": [
+        "0x4bcfc",
+        "0x4c5e4",
+        "0x10f08",
+        "0x10230"
+      ],
+      "hd": [
+        "0x36f04",
+        "0x36d98",
+        "0x3689c",
+        "0x38e50",
+        "0xcfa4",
+        "0xd6d8",
+        "0x37750",
+        "0x110d8",
+        "0x7e20"
+      ],
+      "observed": "HD 화면캐시는 초기1이고, 기체의 processMove 및 이미지의 atlas 읽기 후 각 base tick에서 갱신되는 경로가 있다. pause 중에도 world camera/base tick은 호출된다. spawner는 별도pause검사 없이 worldtime/카메라조건을 쓴다.",
+      "inference": "프레임시작 전체화면캐시 선계산·pause 전체트리 early-return은 원본순서를 바꿀 수 있다.",
+      "limits": [
+        "모든 raw alias·숨은 field writer·전체트리 순서 동등성을 증명한 것은 아니다.",
+        "일반판 show+5 자기/부모flag와 HD isInScreen을 동일시하지 않는다."
+      ],
+      "references": [
+        {
+          "domain": "phone",
+          "address": "0x4bcfc",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4bcfc.pseudo.c",
+              "sha256": "88a9c75a5eba36cdef6ae43c2a9409ed774e13f834b35a12fb4e0100f0cf81f1",
+              "bytes": 243,
+              "evidence_id": "ev_77c84633e43c11f5af225cb2182d20a39540a2d48bad5194c164c1d1a6023aef"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4bcfc.asm",
+              "sha256": "8946e2a1c66a784fd606c71b5e37a87806eac7d0989e2c0b4f0643c8d90690ba",
+              "bytes": 294,
+              "evidence_id": "ev_fc383e3ce70b9c3eccd80303c24ff15c8cb42d662d1886530a445d54a61df263"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x4c5e4",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4c5e4.pseudo.c",
+              "sha256": "d067696206bc9ee0b50fbff6cbaf3f1273b341177f78f419fa5ee3f0afda0b8a",
+              "bytes": 678,
+              "evidence_id": "ev_3140fbc41f2d79e15504d850af18b6982b6c3438c9154882b20d7da65f281ba8"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4c5e4.asm",
+              "sha256": "7c6cdef2ac4adc1836905d375ed6e3b6927d6f75c74f97e36b5161f743baafdb",
+              "bytes": 821,
+              "evidence_id": "ev_40083210ae8f2bd87c72ab0d4639cd0e6debc0d5100b84da41bf28ce59e65802"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x10f08",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x10f08.pseudo.c",
+              "sha256": "466d66da401d8fa697bd0aba4761fae5b5254c663bd554f217f58d2dfd4d617a",
+              "bytes": 3776,
+              "evidence_id": "ev_a72e8c6200951c4748455674614178f7e9ff8eebeb928d937151424f35e4223a"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x10f08.asm",
+              "sha256": "27370e4137858c6cb2458ae2ac0bc68f5aea18810680d96040279a377a87f799",
+              "bytes": 4986,
+              "evidence_id": "ev_700ae50ceeca6c2dba6c8201d93f489c9a7eb4045e454086a15825df544faa7a"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x10230",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x10230.pseudo.c",
+              "sha256": "8d39a5638579c59fbe7fb2f00cf6f40f0ce29370810e2b65110bc9650fc4dab4",
+              "bytes": 10594,
+              "evidence_id": "ev_86775ab4b56c3f9bd22b4decbf3015f82bda53fb384cba161d389ba135e807bc"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x10230.asm",
+              "sha256": "a07b10eec772ccbbbf2848cee43bb8b07315e2ce9e7a8d131944e4602bfbba15",
+              "bytes": 10467,
+              "evidence_id": "ev_2d6a1d4db7b142dce81ba1571f80cd012b87ffd0b7edfd8d3ba8336573a16ad9"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x36f04",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x36f04.pseudo.c",
+              "sha256": "84ad8324d65d8bc999fdb0f0bc81b5e9f4aa0ab27e44989e9bb50e7f890abe18",
+              "bytes": 1372,
+              "evidence_id": "ev_ef8a36ea6a17019ed25a4904fdab546f5e4e9e78b0526c6592334668f332725b"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x36f04.asm",
+              "sha256": "3d4e436c24672e6c59afea6253350417e2196ba56d51c742422fea26bed967cf",
+              "bytes": 3081,
+              "evidence_id": "ev_dd4301e72275a3c9e7e7e8b5a6944ec567242467203f7976ac27a9eaec33025f"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x36d98",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x36d98.pseudo.c",
+              "sha256": "c54f5dc35547f903c93958a4b3567b0e47c2b6b3637d2a86012d215516bceafc",
+              "bytes": 1167,
+              "evidence_id": "ev_57735b0e89383dc254f9a01ff4dd6ed4520d2d0379f5465e3f24a905f5ad1b01"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x36d98.asm",
+              "sha256": "e9d5fdd21fdb140ecc3c9a407411e8decc571f4a77754a905f1450859e8b2dee",
+              "bytes": 2522,
+              "evidence_id": "ev_d288beca3345275636fd7b8e1993758166da633d5d4e3415d504dacbb88c488a"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x3689c",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x3689c.pseudo.c",
+              "sha256": "3ca2e5be8c47e5936c07eed2f139f8fe05e221d8ac6f5f3c66aa19170d71fde8",
+              "bytes": 137,
+              "evidence_id": "ev_132f4e5f3f8ceebcc47db284d896c147cc855aecf4407bb0e8afc097fa661f77"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x3689c.asm",
+              "sha256": "9e7ffe1e103b5886f4761af7477d53419b2f471ff0ff2da4ff04db1345956420",
+              "bytes": 118,
+              "evidence_id": "ev_09378d07efe159190cd23eb2112a03d129af1621efea4abd98c0826d33dffbcc"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x38e50",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x38e50.pseudo.c",
+              "sha256": "abe159e829ac41ee9e50819cf06b07e806e7fbad0cfbd157125c0dff09938ae1",
+              "bytes": 11442,
+              "evidence_id": "ev_b87ddd0a385c2f6f020054ea06b6f8df5bdc820f6415a5459bde3325b8887bcd"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x38e50.asm",
+              "sha256": "5fb49c4a9cc709877a45cd8e1f88a0fdd625d7c0084fbe3f95089ea4633fe3bb",
+              "bytes": 10292,
+              "evidence_id": "ev_b41db1e3ae2f6017dc22a164fdd44c5d98bcd43effd6b94f400597f3e58a7ffc"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0xcfa4",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0xcfa4.pseudo.c",
+              "sha256": "921f53d40d87e0823fcf47ccd7f68e292e79b07ded89b68a3414714cac0d266f",
+              "bytes": 3520,
+              "evidence_id": "ev_85f0a6e939e36a8ef03c78ec2115f4a54ac254bbf6a5f01ed7695673aee72d5a"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0xcfa4.asm",
+              "sha256": "675962f0cfe3a217ba9334162ed904035fbcb9435390aab50493067e2ba86d97",
+              "bytes": 5232,
+              "evidence_id": "ev_fc8fa28451968026ea5956fc9689e17503b32abe81d48b39e6192193d6e80554"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0xd6d8",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0xd6d8.pseudo.c",
+              "sha256": "ca3c2d750e9e6208b698ab2a33470d5e7467ccee2420ee2b86902c4eb60cc094",
+              "bytes": 6542,
+              "evidence_id": "ev_d39744fd2572672704bcc2c77eb195e9f45cef8fca0f666e95f09c9c85707d18"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0xd6d8.asm",
+              "sha256": "2da11bb6d76658bbef7f87c4a2dfe78cff33c05e7acfaf190f5062ac1cb842aa",
+              "bytes": 8100,
+              "evidence_id": "ev_9d2ac4069486f2551d2d17960b21653ce6065e77175ec6662714d960dc72ce30"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x37750",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x37750.pseudo.c",
+              "sha256": "0782958ce08fbf404376c21e360bd483f7153385a7b266d63dcde6e8e9d398e6",
+              "bytes": 2339,
+              "evidence_id": "ev_2f4e8d9a3f91bd5693028a316b87da8d51dbf7a27ad37c197ec18bfa2851b765"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x37750.asm",
+              "sha256": "ba827e5e77cc7f272399d23087799736ff932410c0adada0058050173d6bbccd",
+              "bytes": 2253,
+              "evidence_id": "ev_5fc65dfd25136ea328a867cc95ec50a4d7de1454704e9165cc7155603c4a036d"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x110d8",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x110d8.pseudo.c",
+              "sha256": "6485c5b38f3e153b7b24a8a3d0624dda6edb34dfd645636507f10e1fa939e156",
+              "bytes": 607,
+              "evidence_id": "ev_7032f66dcf004179c8c148703c2122c34a63fe2ba9008e01e08fec8ab94aa7fa"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x110d8.asm",
+              "sha256": "969773aeda3b764874149ec6623b0c1570e26c031135c90460c5df1c19932691",
+              "bytes": 1269,
+              "evidence_id": "ev_e16b7484fee56ec895d3fe260c3c5bfa8abe55ac605aec63f60be2510854cc1c"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x7e20",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x7e20.pseudo.c",
+              "sha256": "d7b15439c8578ea17d61d452eebb4a3662e2424babc4ca8208c27485c845cda8",
+              "bytes": 3457,
+              "evidence_id": "ev_045892b070d0d1c022ce7d979d86dd7c17c925d037054d04837bb898a78edc18"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x7e20.asm",
+              "sha256": "63d3c67acf8201b5a2d2dcd33df6ec6e91305c29444224350e1e36eb594a2be7",
+              "bytes": 4839,
+              "evidence_id": "ev_792bd568d17340be647bd6846608c0890993e9dfa14983fd75be20507ab11f78"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "point-hit-impact-exceptions",
+      "status": "confirmed-call-order-reachability-partial",
+      "phone": [
+        "0x23d70",
+        "0x8c64",
+        "0x8584",
+        "0x8910",
+        "0x550d0",
+        "0x5504c"
+      ],
+      "hd": [
+        "0x6464",
+        "0x71d0",
+        "0x10ddc",
+        "0x10dac",
+        "0x5fd0",
+        "0x5f94",
+        "0x5f84"
+      ],
+      "observed": "HD point검사는 collideCheck/toPlayer로 helper를 고른다. 적 대상은 HP·screen·point, 주인공 대상은 point만 확인한다. hit뒤 setCollide(1)→onDamage(dmg), 거리종료는 setCollide(0). impact는 Range0과범위피해를 분리한다.",
+      "inference": "point·impact·0range·area·toPlayer를 하나의gate나피해경로로합치면원본조건을잃는다.",
+      "limits": [
+        "초기collideCheck=0. setter 직접호출의활성출처는찾지못했다.",
+        "실제중복피해나특정무기에서point분기도달은실행전단정하지않는다."
+      ],
+      "references": [
+        {
+          "domain": "phone",
+          "address": "0x23d70",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x23d70.pseudo.c",
+              "sha256": "394911bd4c55bd4939f43c44592fab67f0b17bf776da362a49cf039c4d0d5bbc",
+              "bytes": 24565,
+              "evidence_id": "ev_f4d9dd81afab2a421828760639a29b7cd05f573c313484a76b9f0ccc370e66c0"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x23d70.asm",
+              "sha256": "f5ed84c7a7b4ac6908872c42642efd67088b80ed2a9c877a4af3b4e0e5182075",
+              "bytes": 21560,
+              "evidence_id": "ev_88f029bb7ef5c6f0fc366e818dedacab29500cc1e61be9dd6957183727461e98"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x8c64",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x8c64.pseudo.c",
+              "sha256": "b69a91daf3d3204a5f51f1cac22a3506af1e0605c8cd2b6b72dce4b0f95faa0f",
+              "bytes": 9074,
+              "evidence_id": "ev_e5e1250161652246c753ab1959bbef2b7039759f2810189d23e4c5155bdc67cb"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x8c64.asm",
+              "sha256": "de2752c9a1b88b5d6807bbc494e62e8b19b3e13cab9d036e90da392a8ba5143b",
+              "bytes": 10705,
+              "evidence_id": "ev_9b8680173d47a27b5aa35588516ee2072e6a32970bb3a059406121331f328cc0"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x8584",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x8584.pseudo.c",
+              "sha256": "c1d8809fa18bf6b6516cea0e29f92b4e20da9674bf209fe115c7abadb5c69af4",
+              "bytes": 7952,
+              "evidence_id": "ev_dddba3d65b68c67becd806c372b805acef2f27751e5cf45a01988a92b07af21b"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x8584.asm",
+              "sha256": "5d32339f5f27371bdc1d077912266b2ae15d9efc5f285f8ad3220af5c281f21b",
+              "bytes": 7791,
+              "evidence_id": "ev_b80f5977a97fbb3d057d057fb446c9e4e0b3b25f40dfeb5cfcb4f2e442da8291"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x8910",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x8910.pseudo.c",
+              "sha256": "3d5a67af352dca538461521bf24ce62c58a8d8b40b95b55d08494235b38618e3",
+              "bytes": 5429,
+              "evidence_id": "ev_b0c042e12f26c30e2dbcd98247995e78b9ec8836c4fc081a8a5e6da69d662f48"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x8910.asm",
+              "sha256": "87a6ff140b3ad4116b4a8f6576f9723676cc5413c0549eef5261c20f138161dd",
+              "bytes": 7687,
+              "evidence_id": "ev_446e669e9401b1fba9bbbad2fc667ffd65b3c16021259324089eee173f5d3f30"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x550d0",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x550d0.pseudo.c",
+              "sha256": "7962075a5605e04917b8aab3a69c0c97adc8855388b134c1c72ce6f083836c96",
+              "bytes": 2231,
+              "evidence_id": "ev_a30ec6f49431726f3dd6b09ae753cbacf75d4ae21fa025ae343c394916856690"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x550d0.asm",
+              "sha256": "1c187df4f1f33468b0f52e1585c843b530c13072bfa65d414f5f9c09c19d4dfc",
+              "bytes": 2756,
+              "evidence_id": "ev_470a77ad07ff2db58454e03fb97c6d83b4f4397a812559ea1c4b3bf0540cb486"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x5504c",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x5504c.pseudo.c",
+              "sha256": "3c965566603b368bc76a6655c003c95abc06d59c6144142678c7d7e2b9a82328",
+              "bytes": 1706,
+              "evidence_id": "ev_3102c49ee7027c0c039038a280cc9591d91a1f6f21f1ec4c540009fab0527722"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x5504c.asm",
+              "sha256": "5357a46e2e9544d1a83de36bb46eef55eeb76509944e5f0600a33a0588ff3c0a",
+              "bytes": 992,
+              "evidence_id": "ev_5dfe491508f2a645898fbe14671b8a30f142f7d21b9ad6be514769fd8e879488"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x6464",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x6464.pseudo.c",
+              "sha256": "8f037ce3627ce72fb031fbb3d3ff411010420588db5c4f7bad31916fbcb208ca",
+              "bytes": 7120,
+              "evidence_id": "ev_b85a5b8339c5b246cd0ff2b43273d89d3cca54472f972cdc7b26e2a92e67fbce"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x6464.asm",
+              "sha256": "216f61f3f8aa13e48c5b94128667c3c439d195de22a46a8b73bd7545966e393c",
+              "bytes": 10708,
+              "evidence_id": "ev_8772c561e94c7b94271c8316e8aced18d234a1243b41e448262d5258a22a95b4"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x71d0",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x71d0.pseudo.c",
+              "sha256": "304e165441b02235dc84947b1ef875dc0385095410f341851ec90430eae0443e",
+              "bytes": 16788,
+              "evidence_id": "ev_9123385b182fe46f159cb1ab42d0ed01807dbe43f062a11a27e79dcf55aa85c0"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x71d0.asm",
+              "sha256": "494bb1d1c899b8e680038bca45c8f23793fc171942fa8dda9007f6bd7d468bbf",
+              "bytes": 21847,
+              "evidence_id": "ev_d29155eb87cbb413290934a87c3be2c1eee4b8c38fe95403e7d6a0868d24518d"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x10ddc",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x10ddc.pseudo.c",
+              "sha256": "d6c6150230128d505e3fb25b7c11efda10bbb04cb4c5c7dcbd467911c0208492",
+              "bytes": 734,
+              "evidence_id": "ev_ffd3257e44dee980d5d1cf57a67280a039401d7e70bcecdfc9fc90184f6f6a1d"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x10ddc.asm",
+              "sha256": "28fd444bb2b4694d0796f2db15b42d53e0558c10083951bb4bd80f65a612175a",
+              "bytes": 1619,
+              "evidence_id": "ev_42836c5d2a187e6ac8ef150d4e9c34e4886a2a4b1a9809e8a1fab27eea7dfce6"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x10dac",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x10dac.pseudo.c",
+              "sha256": "b857a72aa49a5261a2650d05fd0cef1d396e866435424bc338125a64f4006148",
+              "bytes": 325,
+              "evidence_id": "ev_32310c26d95708b4885a453d819d20079cde571b48adb331acdf0ae37e92ffac"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x10dac.asm",
+              "sha256": "693788f5d73d3b90e872248f63ce1082f5e8659d0eb10581047d5197beb67f47",
+              "bytes": 426,
+              "evidence_id": "ev_25e5fa6cdd282347462cc5e26c554a68bc21311ef3ce19444051e9d3b6b7048a"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x5fd0",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x5fd0.pseudo.c",
+              "sha256": "e80a35089470df8487f6a11305b9a00ea29424633753e91532cebfc193626b05",
+              "bytes": 591,
+              "evidence_id": "ev_99fac9c9fa734ce9f244234bd58c83cc6442d0dd7580c0a7d9f9b0ed32177965"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x5fd0.asm",
+              "sha256": "e15dca694fe98d7cd289ffdf3ff5e6fd1a80f7af7bf778335a6469bba13744a4",
+              "bytes": 1271,
+              "evidence_id": "ev_9bd6f75bf4018c465317ebcb1ba9e6742b59dc6adab458c201ccdb689d8e8e44"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x5f94",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x5f94.pseudo.c",
+              "sha256": "54ba23340eb57e12494dd67010e7dbf25e410e17c17514a394f88c9f0bc0bb22",
+              "bytes": 179,
+              "evidence_id": "ev_c0f0a4e5fa6675e3158a0fcc9a6c47a997791a3131f87f9e2e1ee9adb775bdbf"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x5f94.asm",
+              "sha256": "ed2865d16fa514188401fa6470335e0e34ca19e3cebff6b237383ffb1055b850",
+              "bytes": 112,
+              "evidence_id": "ev_cd0a15faba50457bc0507bcc598eb5a8d3d131f7dcca2bcfd29fe3522f29c708"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x5f84",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x5f84.pseudo.c",
+              "sha256": "22cc3d12e2a270b4c7716289ab8a158430b19a650cac222bf3f25c0520656e25",
+              "bytes": 149,
+              "evidence_id": "ev_a91a7eb68ff09ac40e3b46703cdbc8af9772a3dbe7e6f50f86766c42053acfae"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x5f84.asm",
+              "sha256": "3eb80a14231df2613c0b3fed6dec07602bf160f92a06869216b6ed457f3e6d94",
+              "bytes": 112,
+              "evidence_id": "ev_23993ec6b2fbf6cee4548d89f63974dc9289f77b4f72796b587d24709947065a"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "radius-coordinate-reader",
+      "status": "confirmed-reader-consumer-binding",
+      "phone": [
+        "0x168a8",
+        "0x13d28",
+        "0xefe8",
+        "0x54fb4",
+        "0x58038"
+      ],
+      "hd": [
+        "0x1689c",
+        "0x19d28",
+        "0x12698"
+      ],
+      "observed": "일반판 Rad→float32×0.5→int32→info+20→instance+3c→선택×1.5를연결했다. HD는Rad그대로저장·제곱비교. 일반판맵좌표도×0.5다.",
+      "inference": "기체선택반경의물리화면비율을수식1.5만으로결정할수없다.",
+      "limits": [
+        "배율·투영·반올림상태를같이측정해야물리픽셀경계를확정할수있다."
+      ],
+      "references": [
+        {
+          "domain": "phone",
+          "address": "0x168a8",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x168a8.pseudo.c",
+              "sha256": "e339556965df11c477edc7db596c66e05e16a717092791f73eceddb462330647",
+              "bytes": 11941,
+              "evidence_id": "ev_db1041afa791c4bd3df543d327eb4823a9bb3b2f50f21a78b13f03cb975049fa"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x168a8.asm",
+              "sha256": "ca78cc43b6da97b368456df6f6de7d3f3098a2a270a8c5f665c395f5af459142",
+              "bytes": 18909,
+              "evidence_id": "ev_f40f061c1ad4c304da54b185508bf83ae237a790d63efdfa74965b775cfa5bb7"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x13d28",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x13d28.pseudo.c",
+              "sha256": "0585b1a49e0299b16df2ca911b0518d64eea10858a9eb75ab131a13aa7f69571",
+              "bytes": 275,
+              "evidence_id": "ev_baeff0e775ec7a54f9ecea09b09a01138c4b014507d2ebb3743385cbbee2527a"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x13d28.asm",
+              "sha256": "8aee09e2bd98ac976dde7c3f210b375ae39d0d0f7797baf95a1f92cb6534b740",
+              "bytes": 390,
+              "evidence_id": "ev_c9309398cf4b0cee51a2861929ac778cc49a62a6419c00f65b6f96561476263a"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0xefe8",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xefe8.pseudo.c",
+              "sha256": "2ff6bc362d81ae9e7387377cc48c394ac43c5d1b82f8e3d0baffcc9862d78651",
+              "bytes": 2929,
+              "evidence_id": "ev_9fe4fb5741b518856c5218b1dd42e24f11f2e42ff44df81d996267c1b22119ea"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xefe8.asm",
+              "sha256": "ac26dbbc50a2c63d047720889809c9cae369219c0265eada52ff312d7bbc3719",
+              "bytes": 4011,
+              "evidence_id": "ev_a276b0f3428018fe922a05f0100c45133fa063154e576c0196d6b01100d7cddb"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x54fb4",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x54fb4.pseudo.c",
+              "sha256": "ccc0185eea7bcd6ff7a2681b445efa3514757cea9613d2e294a574e401c6c9bc",
+              "bytes": 1752,
+              "evidence_id": "ev_cd5626a71912732b263b07950699a6d3aba0b44e78e60df6dbf22b896f16ba0c"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x54fb4.asm",
+              "sha256": "6cb5190348a26e81404488a1077ab7a971040831da8ff45a56646c9bb018b15b",
+              "bytes": 1062,
+              "evidence_id": "ev_32f6ebbceead597b83c3c9d60de861f05a8a5a768161282c7f7b47db040df295"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x58038",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x58038.pseudo.c",
+              "sha256": "afcfa94589b6b73a438225045ad70df7dc9971d122085053471fbfeb1dad6836",
+              "bytes": 8465,
+              "evidence_id": "ev_bc1098a4b73f9f46383295757dfff35429d93296bf18c6a22b1741322395ce1c"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x58038.asm",
+              "sha256": "7c922e8cf8b71b118e21432f313de5696963819866af14f7b5bfbd8e3f821928",
+              "bytes": 14091,
+              "evidence_id": "ev_38175985ce172d7912c142b56f651b473f3ac72e0430188e13200ecbdc557ce5"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x1689c",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x1689c.pseudo.c",
+              "sha256": "bf81fd50b2c34607d7124e1f282cf2a5fbf3865b8713d0a0ce3752253b9bf93c",
+              "bytes": 3900,
+              "evidence_id": "ev_a71a759b8e0caaf70b774f100387f0cca1de8366269b3a7a2ea1f1a83b504c88"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x1689c.asm",
+              "sha256": "65a0c3b047b122ed1b6fc625baee356d80facdc7df484f4af7b734c63c3587e9",
+              "bytes": 8905,
+              "evidence_id": "ev_93214793d87f60789b8c832888cbc7ce29b19f9912494e5952875837d65bb389"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x19d28",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x19d28.pseudo.c",
+              "sha256": "50634be4ce94acbae08c3429f6dede7a8c30db3eaac02a3f3d3357e26baf580b",
+              "bytes": 158,
+              "evidence_id": "ev_18608e5ff753a4da1ffe98b76ea78c31d6483e1b8fd12e63d5211b4ac7c685b1"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x19d28.asm",
+              "sha256": "d50f5fb1deef52adeb96b0c2cf0a2d42c036fca287db065a5d1ed84aef49b31f",
+              "bytes": 116,
+              "evidence_id": "ev_cee70861802bae2e204bd2d7ae8e3000a1bf31c9019dec68a384069ad1f396c9"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x12698",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x12698.pseudo.c",
+              "sha256": "c9afddea5fc10dbe33113ad681c2fdf2de0d0161a829d56a6531d178c24c5970",
+              "bytes": 15284,
+              "evidence_id": "ev_ba2234ac416af75fc2d49f657ba67ab1bd879886874042853889d53bdb893bf1"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x12698.asm",
+              "sha256": "7910bfc4c6dcf0f1484ef6d1637ab434c64ce382af8c4dcb42fb1dd61cde498f",
+              "bytes": 22282,
+              "evidence_id": "ev_32cca0faf8527980c381dd9af1c58789fb2b779bbdb7d098aca73007dd40507f"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "initial-and-regen-spawn",
+      "status": "confirmed-selected-distinct-paths",
+      "phone": [
+        "0x58038",
+        "0x57ac8",
+        "0x57bb8"
+      ],
+      "hd": [
+        "0xff18",
+        "0x10a00",
+        "0x7e20",
+        "0x80ac"
+      ],
+      "observed": "일반판맵kind4는좌표half후즉시적생성,퀘스트추가적은별도caller다.HDspawner는시간·개수·축별거리1024미만·regen시카메라밖조건이다.",
+      "inference": "공통복원은HD생성규칙을쓰며phone기기별spawn규칙을분리하지않는다.",
+      "limits": [
+        "일반판에다른간접regen경로가전혀없다는전역부재증명은아니다."
+      ],
+      "references": [
+        {
+          "domain": "phone",
+          "address": "0x58038",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x58038.pseudo.c",
+              "sha256": "afcfa94589b6b73a438225045ad70df7dc9971d122085053471fbfeb1dad6836",
+              "bytes": 8465,
+              "evidence_id": "ev_bc1098a4b73f9f46383295757dfff35429d93296bf18c6a22b1741322395ce1c"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x58038.asm",
+              "sha256": "7c922e8cf8b71b118e21432f313de5696963819866af14f7b5bfbd8e3f821928",
+              "bytes": 14091,
+              "evidence_id": "ev_38175985ce172d7912c142b56f651b473f3ac72e0430188e13200ecbdc557ce5"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x57ac8",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x57ac8.pseudo.c",
+              "sha256": "55de5ff9a2cfc426c49571175320e97cefeccd66c8f1c1ef3e92e39f3f2ab1e3",
+              "bytes": 1474,
+              "evidence_id": "ev_628e1e2414c0536d0ec6f785257114754f48236f8ec5a416d7f906e9839ce702"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x57ac8.asm",
+              "sha256": "e81ff277ab13175f13022d607018d98c169eaf31bfe56ba741659ff7dd78fd61",
+              "bytes": 2276,
+              "evidence_id": "ev_8782ae603aa0dc6a856765540f696d9927b259f5bcd6f62bb3bcdc1d87a00cb7"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x57bb8",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x57bb8.pseudo.c",
+              "sha256": "e8f1ec68f504a6fdb9075df32e6855538c6f3449e513e7dcf42224d1d9aa56b5",
+              "bytes": 7104,
+              "evidence_id": "ev_604f1edf49c5db30baf57dd926c0ec010a33bb5fa6f2c69d70f90b6a557ef2f2"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x57bb8.asm",
+              "sha256": "473b95df9fe0ddb7e65b83bce29f030b98137f88f30a68c21741615806e56adb",
+              "bytes": 8867,
+              "evidence_id": "ev_89e2a678e290c5cca4233815b60a79916428e2d327b2ded3a4edc8cb755ca967"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0xff18",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0xff18.pseudo.c",
+              "sha256": "dbf9cb3dc0645d0f4be4f09bba51bf19579b72b5562415f70c2263405cc88b31",
+              "bytes": 499,
+              "evidence_id": "ev_a01d25441f9bd412d0b22f22c74cec377c3c94f1ff6da88cbba4f1bfa62e31dc"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0xff18.asm",
+              "sha256": "9760b9ca9a36f68a616586c0db73ba327b196f80fb9e9fcf3c18428b8a1221d1",
+              "bytes": 606,
+              "evidence_id": "ev_a635b5837df1f90eab6424d3ecb5df8f019d2230f1f21ab9317ea2547be0e3f0"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x10a00",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x10a00.pseudo.c",
+              "sha256": "ee9537d96e0a184e396b58a197a4e8d0ae39679f0222c84d02ccd71aef4c37c2",
+              "bytes": 553,
+              "evidence_id": "ev_3ae55fc33551366f00eb238ce636702e5e1f10ded0aba3b3f5d60f0fa5aa4f66"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x10a00.asm",
+              "sha256": "d92ead9cbe301ed8b3e1b1bb382694c4f373b2e200ca7b05bf07bf53d9332a0f",
+              "bytes": 832,
+              "evidence_id": "ev_812a9993cb43e2c106346385305d1aa34a6f6dbb74738e5a995104d88fd66ce5"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x7e20",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x7e20.pseudo.c",
+              "sha256": "d7b15439c8578ea17d61d452eebb4a3662e2424babc4ca8208c27485c845cda8",
+              "bytes": 3457,
+              "evidence_id": "ev_045892b070d0d1c022ce7d979d86dd7c17c925d037054d04837bb898a78edc18"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x7e20.asm",
+              "sha256": "63d3c67acf8201b5a2d2dcd33df6ec6e91305c29444224350e1e36eb594a2be7",
+              "bytes": 4839,
+              "evidence_id": "ev_792bd568d17340be647bd6846608c0890993e9dfa14983fd75be20507ab11f78"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x80ac",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x80ac.pseudo.c",
+              "sha256": "54fd0208fd83fe7f5696e48d465fd6e2a17ad71051572fc8f187fb09441a4f81",
+              "bytes": 1203,
+              "evidence_id": "ev_3099eeb464a640bae1c7e292ac5772e381a928f5d23f13af2dfa659b5f200ffe"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x80ac.asm",
+              "sha256": "48b351aa304071227c40f1a5cb01f09a8c0b63804fb36ef5265f3a3ef4660d99",
+              "bytes": 1205,
+              "evidence_id": "ev_c43e63197a8d382325d562afa614d893ee93cedb8f207d7be95376361d3d34da"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enemy-wreck-deadline-removal",
+      "status": "new-missing-entry-asm-and-existing-consumer-connected",
+      "phone": [
+        "0x10ce4",
+        "0xbd7c",
+        "0xe4f8",
+        "0x4c2cc",
+        "0x4c5e4"
+      ],
+      "hd": [
+        "0x982c",
+        "0xa998",
+        "0xc7d0",
+        "0x37218"
+      ],
+      "extra_entries": [
+        "0xb318"
+      ],
+      "observed": "추가Thumb ASM b318이basecrash후worldtime+3+난수항×2를float32deadline+104에저장한다. bd7c는deadline후vtable+34→remove흐름을호출한다.HD도crashdeadline→onDestroy→remove로간다.",
+      "inference": "지상이동screen gate를잔해제거에같이적용하지않는다.",
+      "limits": [
+        "LLVM boundedspan의전체예외CFG/수치동등성은완료되지않았다.",
+        "HDworldtime은float64,deadline은float32;phoneworldtime은float32다."
+      ],
+      "references": [
+        {
+          "domain": "phone",
+          "address": "0x10ce4",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x10ce4.pseudo.c",
+              "sha256": "5d5242715434642469fe880c160aa99dc333bcfa3aa56fcf8822feb2fac16d38",
+              "bytes": 2942,
+              "evidence_id": "ev_7714470ec1f2552fd87410f6eb20f5bd7b5d6b6b937f000ebe9b971f82b05af6"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x10ce4.asm",
+              "sha256": "cb253ed2ca8e2671050632957e716a664cfed8ba8659ea6d1ee4ff724cb536ee",
+              "bytes": 5151,
+              "evidence_id": "ev_b94292fb8fc960e04ad3be17329685ca07dcb9b85cbf59eefab237e24781452f"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0xbd7c",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xbd7c.pseudo.c",
+              "sha256": "cd9dd8e83dd0a251e2be6f99d6703f43f389514a4110043e7db109566c337978",
+              "bytes": 3834,
+              "evidence_id": "ev_b207a18b819ddd05795433f1f5f130731de5a183848a500c0bb2a0809c2dac62"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xbd7c.asm",
+              "sha256": "92895b983d253c79f081212eaf7ec563db9fb3692d5c8498e6f7503edfe6d4c1",
+              "bytes": 4562,
+              "evidence_id": "ev_451bfbb8cd5fe3f2fab708707319eba990ad6391f22dfd12581cda9b3709b63e"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0xe4f8",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xe4f8.pseudo.c",
+              "sha256": "93670cd7429ac3a8d0f286b174437907afd0430c6e464436757785b53a5bbe4f",
+              "bytes": 59,
+              "evidence_id": "ev_405bd001988107c8c7ad854dacb1268a34f1addde43778c95fee480ac0f46cba"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xe4f8.asm",
+              "sha256": "571bb4cce84c61bbf55cd5f2945ee26453ff1b576a43f3432b382a60b86aeecd",
+              "bytes": 81,
+              "evidence_id": "ev_d414b8c4c0025e7beb155b17b0f9e29c9614f1bd7b1f5d1857ccfb67bb11709c"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x4c2cc",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4c2cc.pseudo.c",
+              "sha256": "f24d690c6c8d6a35853bb1f480a1f87abf79ffcdf26ca2da8193a750da7eb3a6",
+              "bytes": 1998,
+              "evidence_id": "ev_fc0435ea3480c22e671514bd4519e728ce94bb119121bd975896c1ececa307b2"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4c2cc.asm",
+              "sha256": "b5b5c2f051dec6adab07dd12bd96293135d40c6e1b6134a38ddd9fbae74bd61d",
+              "bytes": 3371,
+              "evidence_id": "ev_258278f7b7b0217d94d8f1b3efb1950c3d8288f9bfa2a3bcf1fcbf104af0cd8e"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x4c5e4",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4c5e4.pseudo.c",
+              "sha256": "d067696206bc9ee0b50fbff6cbaf3f1273b341177f78f419fa5ee3f0afda0b8a",
+              "bytes": 678,
+              "evidence_id": "ev_3140fbc41f2d79e15504d850af18b6982b6c3438c9154882b20d7da65f281ba8"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4c5e4.asm",
+              "sha256": "7c6cdef2ac4adc1836905d375ed6e3b6927d6f75c74f97e36b5161f743baafdb",
+              "bytes": 821,
+              "evidence_id": "ev_40083210ae8f2bd87c72ab0d4639cd0e6debc0d5100b84da41bf28ce59e65802"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x982c",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x982c.pseudo.c",
+              "sha256": "e88feea93a2d6c5c7229fac442d5837d73d82805d9b2b4b29775644b33a15a33",
+              "bytes": 6760,
+              "evidence_id": "ev_3863ea0731e92b9cfec9150a6acb6070ce3a954a1c1c966dc832adb7bb31671c"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x982c.asm",
+              "sha256": "1519ffa6bd42ed01fdd1d2892984f41ce647a829e61722922ad8f0ee25df1d7b",
+              "bytes": 12540,
+              "evidence_id": "ev_fc80d31537a5953f7b878c771b6b33a9011db15ff86fa491b3e9c1a4d4fd7f5c"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0xa998",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0xa998.pseudo.c",
+              "sha256": "955cff4e06c99510c881f8d1fab608f824677f296f663722d43c1ace2aed4748",
+              "bytes": 8242,
+              "evidence_id": "ev_977a799c9d6c2ef38236bc53488411cd67c467e3d44bd757667c63490588cf92"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0xa998.asm",
+              "sha256": "b69dfaa6abff5c80cf7a0f0985feafa9b2274abd058c0aacac1db485744b1db6",
+              "bytes": 10160,
+              "evidence_id": "ev_6f1a7b8de7cb45ed9108edecc470853545ae1a4d3649623e3bb596260f493840"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0xc7d0",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0xc7d0.pseudo.c",
+              "sha256": "344e4aa9ead64becd9b35a9133f0d198d42f82f348c39ef3c5b6f6fb750104ca",
+              "bytes": 141,
+              "evidence_id": "ev_a519f678aaaf77793c5e6df39006e3199bac2ad60d16caced02494376cb7a25a"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0xc7d0.asm",
+              "sha256": "c15c30161535b341b23dfb2b67f038cb1ecb186eb9d756485bdae13874f8e818",
+              "bytes": 161,
+              "evidence_id": "ev_f69603f844ffd1a5915f2242e10eeabf8ac97baedc86f09944637c169a90c383"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x37218",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x37218.pseudo.c",
+              "sha256": "2b636c16cbc5e7a8cf71285f2bc5c76a88aacbc1b97148174d65c6569f50a9e3",
+              "bytes": 1318,
+              "evidence_id": "ev_d78c5a40b5d599faba3cab792837e4a42685cb2feaa4afffa5ca35a891f31e97"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x37218.asm",
+              "sha256": "a4a4232cdedf007881d989b3567e0f479cb80fe1d1bc5583a1538e25d848de1d",
+              "bytes": 2165,
+              "evidence_id": "ev_a432ebce3389dfb33e67a948161c8cedf4ced39a438a33388dabb4887980a268"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bot-death-removal",
+      "status": "confirmed-selected-death-chain",
+      "phone": [
+        "0x58738",
+        "0xa240",
+        "0xaab8",
+        "0xa6ec",
+        "0xa9ac",
+        "0xad54",
+        "0xa3f0",
+        "0xe4f8",
+        "0x4c2cc"
+      ],
+      "hd": [
+        "0x94f8",
+        "0xc7d0",
+        "0x37218",
+        "0x8f04",
+        "0x8e28"
+      ],
+      "observed": "BOT의basecrash→저장slot활성/HP정리→destroy→remove역할을양쪽에서연결했다.회복은게임시간5조건이다.선택한사망·비행·회복본문에카메라밖BOT소멸분기는없다.",
+      "inference": "화면밖이면BOT을삭제하거나수명을기기별로추가하지않는다.",
+      "limits": [
+        "맵전환·저장재개·모든간접flag쓰기까지의전체수명동등성은미확정."
+      ],
+      "references": [
+        {
+          "domain": "phone",
+          "address": "0x58738",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x58738.pseudo.c",
+              "sha256": "89c6addd1c38fff70db2639897b69abe72f8bc86b7c9092b2ff427730c0aef30",
+              "bytes": 1340,
+              "evidence_id": "ev_837ab5548f3b33b78288b3c1155b1922caabbce68083a7ffa6dfdb0c01bec376"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x58738.asm",
+              "sha256": "cec07162f5c03f14031f46c00a04580c8348e24fcf112e54bda0070d33d0705f",
+              "bytes": 2169,
+              "evidence_id": "ev_2b625e9f6d4b5f0c25e520aeabd7ba647909b5ed078ad7f829494100f7382dbd"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0xa240",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xa240.pseudo.c",
+              "sha256": "124ff98dd560334bdcfd30cea33871d546749d40bab3b31cdaf28d284a1a33ad",
+              "bytes": 1472,
+              "evidence_id": "ev_da2a25a105280e93ecbbc74ce7438fcb0b720509425b32961c01b275af0d9e8b"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xa240.asm",
+              "sha256": "10442391ddba5de220929e4a3136ae98dc704eac0fafc0e35e591c9dbcbf4eb6",
+              "bytes": 2568,
+              "evidence_id": "ev_3fe00f3e857eab055d5836d9fd3d869f592c6d6f944717be6ea0c5533b93443a"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0xaab8",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xaab8.pseudo.c",
+              "sha256": "3809a9e5ba3d7788900d54384bde680906aa4125cf5f2dcd2c6d432ddb51929e",
+              "bytes": 5167,
+              "evidence_id": "ev_676af6fe708834f936e65a9837012b17b2c66325a76cfd62e0abd447b35b9760"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xaab8.asm",
+              "sha256": "2d7e59aa89f6c4b72df4e95374b81650330f1567e8c0da3b7c994caeb33f14f3",
+              "bytes": 5518,
+              "evidence_id": "ev_525a9467f01be054ae15e71d7b52161cb5306ce256b7a6e9aa986b297b6fbc44"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0xa6ec",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xa6ec.pseudo.c",
+              "sha256": "933fdef12162209de66da657bf1fa78b9fe3f1c28ed82c4da6a5722d4cd14f5e",
+              "bytes": 5971,
+              "evidence_id": "ev_e93d21200bea8d64ed14349e3a1fde2a65267fec84b9df91e954b2303c55e6c5"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xa6ec.asm",
+              "sha256": "7ac8011e261436e1a04b82bd315e1232b811270d3e8bc86d8ade5b5b1e6a6216",
+              "bytes": 5948,
+              "evidence_id": "ev_aa01118e46f2d6478d4b26c463260cf8738e9884947ceaab6464bd959c1424f2"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0xa9ac",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xa9ac.pseudo.c",
+              "sha256": "f42ea644d461c18b06176bedd6080e58920a69ea5fee5296bd993609d9c5d3c3",
+              "bytes": 1289,
+              "evidence_id": "ev_b84dcb7fb349050e37df2e881d4a872a0dafac5e8aaaf16bbb4502e5e8d8f639"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xa9ac.asm",
+              "sha256": "1c54c5045857ad8919a99234476c0f84d528b1897f98dcb179e56275cff23820",
+              "bytes": 2151,
+              "evidence_id": "ev_997a7dce4cb9f372e89c791d9f8b9a1eafc071ec8fbc2c2f638d409f6ad27167"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0xad54",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xad54.pseudo.c",
+              "sha256": "cbd3d228fa1c017ef8c52ed348a1bfa433443bb719260b2a6493069d314df174",
+              "bytes": 2309,
+              "evidence_id": "ev_2790812fcb0bce677b2917a159df5e6a2aa896eaaa02bdac3fac34fd375622c2"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xad54.asm",
+              "sha256": "4e95da711ac2ab4739147f63649aa4726aad28dc562bfb25d3c57eb0b0e3c5c1",
+              "bytes": 3192,
+              "evidence_id": "ev_b125e4d0e35c946c256f7955bd4bd0b0914b62313171113aee144a22fd55d13a"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0xa3f0",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xa3f0.pseudo.c",
+              "sha256": "21c0e0aacceef31930959efd52be2fc006de0342572ee2934706f83d872cf02e",
+              "bytes": 1640,
+              "evidence_id": "ev_aed19561b3f6deacdfe622c719244145ceefb37939f27eb53c0cc728f07ef0b3"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xa3f0.asm",
+              "sha256": "798133d699f396513c4f60c515957393bd5646a85acc72159030fd28eb3099d3",
+              "bytes": 3104,
+              "evidence_id": "ev_b41796a9c90726cb05adcf641d395207b3a74790cd73df61ed693aaf6bbf64d0"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0xe4f8",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xe4f8.pseudo.c",
+              "sha256": "93670cd7429ac3a8d0f286b174437907afd0430c6e464436757785b53a5bbe4f",
+              "bytes": 59,
+              "evidence_id": "ev_405bd001988107c8c7ad854dacb1268a34f1addde43778c95fee480ac0f46cba"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0xe4f8.asm",
+              "sha256": "571bb4cce84c61bbf55cd5f2945ee26453ff1b576a43f3432b382a60b86aeecd",
+              "bytes": 81,
+              "evidence_id": "ev_d414b8c4c0025e7beb155b17b0f9e29c9614f1bd7b1f5d1857ccfb67bb11709c"
+            }
+          ]
+        },
+        {
+          "domain": "phone",
+          "address": "0x4c2cc",
+          "source_sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4c2cc.pseudo.c",
+              "sha256": "f24d690c6c8d6a35853bb1f480a1f87abf79ffcdf26ca2da8193a750da7eb3a6",
+              "bytes": 1998,
+              "evidence_id": "ev_fc0435ea3480c22e671514bd4519e728ce94bb119121bd975896c1ececa307b2"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/universal-audit-20261113/full-export/functions/0x4c2cc.asm",
+              "sha256": "b5b5c2f051dec6adab07dd12bd96293135d40c6e1b6134a38ddd9fbae74bd61d",
+              "bytes": 3371,
+              "evidence_id": "ev_258278f7b7b0217d94d8f1b3efb1950c3d8288f9bfa2a3bcf1fcbf104af0cd8e"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x94f8",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x94f8.pseudo.c",
+              "sha256": "6ec4b0dcc5b56e2b961b7617abb5bd88e87c8957c6d5356d1d890aeb486457de",
+              "bytes": 819,
+              "evidence_id": "ev_03ef4585d2f01655f1f080c8668d6a51444dffb623c9194455fc11350628b2f1"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x94f8.asm",
+              "sha256": "fd688d66fbfbf804872e902af906d59e9c26253a6512e7080637da3e236689e0",
+              "bytes": 1495,
+              "evidence_id": "ev_cda9cf6b01c6bf3030724919ea8c6646752aef446e7a303e52e4f92cca76fab0"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0xc7d0",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0xc7d0.pseudo.c",
+              "sha256": "344e4aa9ead64becd9b35a9133f0d198d42f82f348c39ef3c5b6f6fb750104ca",
+              "bytes": 141,
+              "evidence_id": "ev_a519f678aaaf77793c5e6df39006e3199bac2ad60d16caced02494376cb7a25a"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0xc7d0.asm",
+              "sha256": "c15c30161535b341b23dfb2b67f038cb1ecb186eb9d756485bdae13874f8e818",
+              "bytes": 161,
+              "evidence_id": "ev_f69603f844ffd1a5915f2242e10eeabf8ac97baedc86f09944637c169a90c383"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x37218",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x37218.pseudo.c",
+              "sha256": "2b636c16cbc5e7a8cf71285f2bc5c76a88aacbc1b97148174d65c6569f50a9e3",
+              "bytes": 1318,
+              "evidence_id": "ev_d78c5a40b5d599faba3cab792837e4a42685cb2feaa4afffa5ca35a891f31e97"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x37218.asm",
+              "sha256": "a4a4232cdedf007881d989b3567e0f479cb80fe1d1bc5583a1538e25d848de1d",
+              "bytes": 2165,
+              "evidence_id": "ev_a432ebce3389dfb33e67a948161c8cedf4ced39a438a33388dabb4887980a268"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x8f04",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x8f04.pseudo.c",
+              "sha256": "8c82a04830244a9f5ff874a372925861b885b1fdeda35a5c1fe017033b21dcac",
+              "bytes": 1029,
+              "evidence_id": "ev_e97054f5ed7780c98845e9f99d94d31575563a0862b85f1a6d096cd25c108815"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x8f04.asm",
+              "sha256": "da9976ee05faf9f38452d16c8f7710d3e70f7faf3cf9dbd6ffe5648b13d85e5a",
+              "bytes": 1557,
+              "evidence_id": "ev_832e46f12d97f2a454cb6f6bcc96732bf7046280b9755a29d05a5f20338343ea"
+            }
+          ]
+        },
+        {
+          "domain": "hd",
+          "address": "0x8e28",
+          "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+          "exports": [
+            {
+              "kind": "pseudo",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x8e28.pseudo.c",
+              "sha256": "ed517b8f2c3d6d6288fe5b8dba03061272c7414f3940db5e93f74f77d8f85611",
+              "bytes": 1188,
+              "evidence_id": "ev_35c848ba12e9e9ae9e3ca1b984e67cb3136bb538a575196b2f658065959e18d1"
+            },
+            {
+              "kind": "assembly",
+              "path": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/HD103/method-evidence/functions/0x8e28.asm",
+              "sha256": "b0cc4a914504bf9b5469a8fb2b158956eb41c69278f5a268d414a380dc277443",
+              "bytes": 1650,
+              "evidence_id": "ev_9988e7f9c64c141366b28af462b2399a4682e7c5a2f9959e63f234421db8ad81"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vtable30-entry-supplement",
+      "status": "entry-evidence-obtained-semantics-partial",
+      "phone": [],
+      "hd": [],
+      "observed": "30진입중28은REAexactinstruction,2Enemy진입b318/b988은Ghidraundecodable뒤LLVMThumb로보완했다.b988은baseDamage106e4→target10a58/HUD갱신,b318은baseCrash/보상·드롭호출을가진실제함수다.39e14는UI상태전환tick이다.",
+      "inference": "Ghidra본체1077분모가모든실제진입을대표하지않는다.누락진입을모두stub으로취급할수없다.",
+      "limits": [
+        "명령walk459관측은완전한함수CFG·고수준타입·전체의미동등판정이아니다.",
+        "원본byte수정·Ghidra새함수정의는하지않았다."
+      ],
+      "references": []
+    }
+  ],
+  "supplemental_vtable_entries": [
+    {
+      "address": "0x7924",
+      "status": "decoded",
+      "entry_evidence_id": "ev_40992b20d5b099ce0eb77f216c526066b92a25557aeab61a6565e6b780823356",
+      "entry_flow": "return",
+      "length": 2,
+      "owners": [
+        {
+          "class": "GameMain",
+          "slot": 4,
+          "vtable": "0x66fa8",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "GobHvM_Bot",
+          "slot": 4,
+          "vtable": "0x670a8",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "GobHvM_Enemy",
+          "slot": 4,
+          "vtable": "0x67108",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "GobHvM_Player",
+          "slot": 4,
+          "vtable": "0x67168",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "GobHvMach",
+          "slot": 4,
+          "vtable": "0x671c8",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "PartsController_Weapon",
+          "slot": 4,
+          "vtable": "0x672f8",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "DlgAirlift",
+          "slot": 4,
+          "vtable": "0x67338",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "GuiGame",
+          "slot": 4,
+          "vtable": "0x67438",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "WndQuickSlot",
+          "slot": 4,
+          "vtable": "0x67478",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "GuiBase",
+          "slot": 4,
+          "vtable": "0x674d8",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "GuiCommandCenter",
+          "slot": 4,
+          "vtable": "0x67518",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "GuiHelp",
+          "slot": 4,
+          "vtable": "0x67558",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "GuiMapLoading",
+          "slot": 4,
+          "vtable": "0x67598",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "GuiSelectSlot",
+          "slot": 4,
+          "vtable": "0x675d8",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "GuiTitle",
+          "slot": 4,
+          "vtable": "0x67658",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "QobAffecter",
+          "slot": 4,
+          "vtable": "0x676a8",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "QobBase",
+          "slot": 4,
+          "vtable": "0x676e8",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "QobImageText",
+          "slot": 4,
+          "vtable": "0x677a8",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "QobVisual",
+          "slot": 4,
+          "vtable": "0x678e8",
+          "raw_pointer": "0x7925"
+        },
+        {
+          "class": "GobWorld",
+          "slot": 4,
+          "vtable": "0x67a18",
+          "raw_pointer": "0x7925"
+        }
+      ]
+    },
+    {
+      "address": "0x7928",
+      "status": "decoded",
+      "entry_evidence_id": "ev_8f3e9be40e5baf3ea90c63d9e5f2f79cdf34de95de300465bbc5c77e228012e9",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "GameMain",
+          "slot": 5,
+          "vtable": "0x66fa8",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "GobAirStrike",
+          "slot": 5,
+          "vtable": "0x66fe8",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "GobBullet",
+          "slot": 5,
+          "vtable": "0x67028",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "GobFieldItem",
+          "slot": 5,
+          "vtable": "0x67068",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "GobHvM_Bot",
+          "slot": 5,
+          "vtable": "0x670a8",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "GobHvM_Enemy",
+          "slot": 5,
+          "vtable": "0x67108",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "GobHvM_Player",
+          "slot": 5,
+          "vtable": "0x67168",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "GobHvMach",
+          "slot": 5,
+          "vtable": "0x671c8",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "GobLinkGate",
+          "slot": 5,
+          "vtable": "0x67228",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "GobMachParts",
+          "slot": 5,
+          "vtable": "0x67268",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "GobTrailEffect",
+          "slot": 5,
+          "vtable": "0x672a8",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "PartsController_Weapon",
+          "slot": 5,
+          "vtable": "0x672f8",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "DlgAirlift",
+          "slot": 5,
+          "vtable": "0x67338",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "DlgInven",
+          "slot": 5,
+          "vtable": "0x67378",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "DlgMission",
+          "slot": 5,
+          "vtable": "0x673b8",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "DlgRadar",
+          "slot": 5,
+          "vtable": "0x673f8",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "GuiGame",
+          "slot": 5,
+          "vtable": "0x67438",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "WndQuickSlot",
+          "slot": 5,
+          "vtable": "0x67478",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "GuiBase",
+          "slot": 5,
+          "vtable": "0x674d8",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "GuiCommandCenter",
+          "slot": 5,
+          "vtable": "0x67518",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "GuiMapLoading",
+          "slot": 5,
+          "vtable": "0x67598",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "GuiSelectSlot",
+          "slot": 5,
+          "vtable": "0x675d8",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "GuiShop",
+          "slot": 5,
+          "vtable": "0x67618",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "QobAffecter",
+          "slot": 5,
+          "vtable": "0x676a8",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "QobBase",
+          "slot": 5,
+          "vtable": "0x676e8",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "QobImage",
+          "slot": 5,
+          "vtable": "0x67768",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "QobImageText",
+          "slot": 5,
+          "vtable": "0x677a8",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "QobLine",
+          "slot": 5,
+          "vtable": "0x677e8",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "QobParticle",
+          "slot": 5,
+          "vtable": "0x67868",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "QobText",
+          "slot": 5,
+          "vtable": "0x678a8",
+          "raw_pointer": "0x7929"
+        },
+        {
+          "class": "QobVisual",
+          "slot": 5,
+          "vtable": "0x678e8",
+          "raw_pointer": "0x7929"
+        }
+      ]
+    },
+    {
+      "address": "0x792c",
+      "status": "decoded",
+      "entry_evidence_id": "ev_aec49e566cc3330cf99a96b62974a3bb3aa0b686b5b6f3acf525a9c09a75e9c4",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "GameMain",
+          "slot": 6,
+          "vtable": "0x66fa8",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "GobAirStrike",
+          "slot": 6,
+          "vtable": "0x66fe8",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "GobBullet",
+          "slot": 6,
+          "vtable": "0x67028",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "GobFieldItem",
+          "slot": 6,
+          "vtable": "0x67068",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "GobHvM_Bot",
+          "slot": 6,
+          "vtable": "0x670a8",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "GobHvM_Enemy",
+          "slot": 6,
+          "vtable": "0x67108",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "GobHvM_Player",
+          "slot": 6,
+          "vtable": "0x67168",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "GobHvMach",
+          "slot": 6,
+          "vtable": "0x671c8",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "GobLinkGate",
+          "slot": 6,
+          "vtable": "0x67228",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "GobMachParts",
+          "slot": 6,
+          "vtable": "0x67268",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "GobTrailEffect",
+          "slot": 6,
+          "vtable": "0x672a8",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "PartsController_Weapon",
+          "slot": 6,
+          "vtable": "0x672f8",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "DlgRadar",
+          "slot": 6,
+          "vtable": "0x673f8",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "GuiHelp",
+          "slot": 6,
+          "vtable": "0x67558",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "GuiMapLoading",
+          "slot": 6,
+          "vtable": "0x67598",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "GuiTitle",
+          "slot": 6,
+          "vtable": "0x67658",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "QobAffecter",
+          "slot": 6,
+          "vtable": "0x676a8",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "QobBase",
+          "slot": 6,
+          "vtable": "0x676e8",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "QobButton",
+          "slot": 6,
+          "vtable": "0x67728",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "QobImage",
+          "slot": 6,
+          "vtable": "0x67768",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "QobImageText",
+          "slot": 6,
+          "vtable": "0x677a8",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "QobLine",
+          "slot": 6,
+          "vtable": "0x677e8",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "QobParticle",
+          "slot": 6,
+          "vtable": "0x67868",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "QobText",
+          "slot": 6,
+          "vtable": "0x678a8",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "QobVisual",
+          "slot": 6,
+          "vtable": "0x678e8",
+          "raw_pointer": "0x792d"
+        },
+        {
+          "class": "GobWorld",
+          "slot": 6,
+          "vtable": "0x67a18",
+          "raw_pointer": "0x792d"
+        }
+      ]
+    },
+    {
+      "address": "0x7930",
+      "status": "decoded",
+      "entry_evidence_id": "ev_be4ad1b72533fb0b93be987e3ed21de359ce90c577edbeb6268c614814a44a0b",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "GameMain",
+          "slot": 8,
+          "vtable": "0x66fa8",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GobAirStrike",
+          "slot": 8,
+          "vtable": "0x66fe8",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GobBullet",
+          "slot": 8,
+          "vtable": "0x67028",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GobFieldItem",
+          "slot": 8,
+          "vtable": "0x67068",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GobHvM_Bot",
+          "slot": 8,
+          "vtable": "0x670a8",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GobHvM_Enemy",
+          "slot": 8,
+          "vtable": "0x67108",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GobHvM_Player",
+          "slot": 8,
+          "vtable": "0x67168",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GobHvMach",
+          "slot": 8,
+          "vtable": "0x671c8",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GobLinkGate",
+          "slot": 8,
+          "vtable": "0x67228",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GobMachParts",
+          "slot": 8,
+          "vtable": "0x67268",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GobTrailEffect",
+          "slot": 8,
+          "vtable": "0x672a8",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "PartsController_Weapon",
+          "slot": 8,
+          "vtable": "0x672f8",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "DlgAirlift",
+          "slot": 8,
+          "vtable": "0x67338",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "DlgInven",
+          "slot": 8,
+          "vtable": "0x67378",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "DlgMission",
+          "slot": 8,
+          "vtable": "0x673b8",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "DlgRadar",
+          "slot": 8,
+          "vtable": "0x673f8",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GuiGame",
+          "slot": 8,
+          "vtable": "0x67438",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "WndQuickSlot",
+          "slot": 8,
+          "vtable": "0x67478",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GuiBase",
+          "slot": 8,
+          "vtable": "0x674d8",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GuiCommandCenter",
+          "slot": 8,
+          "vtable": "0x67518",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GuiHelp",
+          "slot": 8,
+          "vtable": "0x67558",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GuiMapLoading",
+          "slot": 8,
+          "vtable": "0x67598",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GuiSelectSlot",
+          "slot": 8,
+          "vtable": "0x675d8",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GuiShop",
+          "slot": 8,
+          "vtable": "0x67618",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GuiTitle",
+          "slot": 8,
+          "vtable": "0x67658",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "QobAffecter",
+          "slot": 8,
+          "vtable": "0x676a8",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "QobBase",
+          "slot": 8,
+          "vtable": "0x676e8",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "QobImage",
+          "slot": 8,
+          "vtable": "0x67768",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "QobImageText",
+          "slot": 8,
+          "vtable": "0x677a8",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "QobLine",
+          "slot": 8,
+          "vtable": "0x677e8",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "QobParticle",
+          "slot": 8,
+          "vtable": "0x67868",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "QobText",
+          "slot": 8,
+          "vtable": "0x678a8",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "QobVisual",
+          "slot": 8,
+          "vtable": "0x678e8",
+          "raw_pointer": "0x7931"
+        },
+        {
+          "class": "GobWorld",
+          "slot": 8,
+          "vtable": "0x67a18",
+          "raw_pointer": "0x7931"
+        }
+      ]
+    },
+    {
+      "address": "0x84bc",
+      "status": "decoded",
+      "entry_evidence_id": "ev_be68727271233593a6565a7391cbb7a9f7d232661fe9a9a6d3ac8799e86734db",
+      "entry_flow": "return",
+      "length": 2,
+      "owners": [
+        {
+          "class": "GobAirStrike",
+          "slot": 2,
+          "vtable": "0x66fe8",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "GobBullet",
+          "slot": 2,
+          "vtable": "0x67028",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "GobFieldItem",
+          "slot": 2,
+          "vtable": "0x67068",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "GobHvM_Bot",
+          "slot": 2,
+          "vtable": "0x670a8",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "GobHvM_Enemy",
+          "slot": 2,
+          "vtable": "0x67108",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "GobHvM_Player",
+          "slot": 2,
+          "vtable": "0x67168",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "GobHvMach",
+          "slot": 2,
+          "vtable": "0x671c8",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "GobLinkGate",
+          "slot": 2,
+          "vtable": "0x67228",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "GobMachParts",
+          "slot": 2,
+          "vtable": "0x67268",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "GobTrailEffect",
+          "slot": 2,
+          "vtable": "0x672a8",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "PartsController_Weapon",
+          "slot": 2,
+          "vtable": "0x672f8",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "DlgAirlift",
+          "slot": 2,
+          "vtable": "0x67338",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "DlgInven",
+          "slot": 2,
+          "vtable": "0x67378",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "DlgMission",
+          "slot": 2,
+          "vtable": "0x673b8",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "DlgRadar",
+          "slot": 2,
+          "vtable": "0x673f8",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "GuiCommandCenter",
+          "slot": 2,
+          "vtable": "0x67518",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "GuiHelp",
+          "slot": 2,
+          "vtable": "0x67558",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "GuiSelectSlot",
+          "slot": 2,
+          "vtable": "0x675d8",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "GuiTitle",
+          "slot": 2,
+          "vtable": "0x67658",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "QobAffecter",
+          "slot": 2,
+          "vtable": "0x676a8",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "QobBase",
+          "slot": 2,
+          "vtable": "0x676e8",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "QobImage",
+          "slot": 2,
+          "vtable": "0x67768",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "QobLine",
+          "slot": 2,
+          "vtable": "0x677e8",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "QobText",
+          "slot": 2,
+          "vtable": "0x678a8",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "QobVisual",
+          "slot": 2,
+          "vtable": "0x678e8",
+          "raw_pointer": "0x84bd"
+        },
+        {
+          "class": "GobWorld",
+          "slot": 2,
+          "vtable": "0x67a18",
+          "raw_pointer": "0x84bd"
+        }
+      ]
+    },
+    {
+      "address": "0x84c0",
+      "status": "decoded",
+      "entry_evidence_id": "ev_524aaace5e5bb233b574d90b4e17efeca4a8f6b55a5b79981b9e4dab92293373",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "GobAirStrike",
+          "slot": 1,
+          "vtable": "0x66fe8",
+          "raw_pointer": "0x84c1"
+        }
+      ]
+    },
+    {
+      "address": "0x9144",
+      "status": "decoded",
+      "entry_evidence_id": "ev_4789d7b506232a4dbce44efc1638ac51248838cbe409cb6a5013c55a58ebe3bc",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "GobBullet",
+          "slot": 1,
+          "vtable": "0x67028",
+          "raw_pointer": "0x9145"
+        }
+      ]
+    },
+    {
+      "address": "0x9cac",
+      "status": "decoded",
+      "entry_evidence_id": "ev_37c328ddaab757b849b43abc0731a44e00b53428a8a7f015f0e72278bf3001f9",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "GobFieldItem",
+          "slot": 1,
+          "vtable": "0x67068",
+          "raw_pointer": "0x9cad"
+        }
+      ]
+    },
+    {
+      "address": "0xaeec",
+      "status": "decoded",
+      "entry_evidence_id": "ev_adad7db1fe18184293a4ee2a7b3e6101788a36c3d1b8929e807227dc32e91aed",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "GobHvM_Bot",
+          "slot": 1,
+          "vtable": "0x670a8",
+          "raw_pointer": "0xaeed"
+        }
+      ]
+    },
+    {
+      "address": "0xb318",
+      "status": "undecodable",
+      "entry_evidence_id": "ev_8d44fc5bd048830958ec108da6a8c57e583fe89b302349792204565f8c5faed0",
+      "entry_flow": "unavailable",
+      "length": null,
+      "owners": [
+        {
+          "class": "GobHvM_Enemy",
+          "slot": 12,
+          "vtable": "0x67108",
+          "raw_pointer": "0xb319"
+        }
+      ]
+    },
+    {
+      "address": "0xb988",
+      "status": "undecodable",
+      "entry_evidence_id": "ev_576a892186b542db68357be9e51d15bc34355c33f9e3f1c7bfff4ca52e9c0985",
+      "entry_flow": "unavailable",
+      "length": null,
+      "owners": [
+        {
+          "class": "GobHvM_Enemy",
+          "slot": 11,
+          "vtable": "0x67108",
+          "raw_pointer": "0xb989"
+        }
+      ]
+    },
+    {
+      "address": "0xe0a4",
+      "status": "decoded",
+      "entry_evidence_id": "ev_ce16a84f6cb4cc7b710ec4db46d0bc38db39874a54004a6d0c5bac8ec214aae7",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "GobHvM_Player",
+          "slot": 1,
+          "vtable": "0x67168",
+          "raw_pointer": "0xe0a5"
+        }
+      ]
+    },
+    {
+      "address": "0x11ea0",
+      "status": "decoded",
+      "entry_evidence_id": "ev_ac44c2b994dbe8e4f52f1dbc09f7427d9fc708d3e0d7641e8b280291ecb41e58",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "GobLinkGate",
+          "slot": 1,
+          "vtable": "0x67228",
+          "raw_pointer": "0x11ea1"
+        }
+      ]
+    },
+    {
+      "address": "0x23ba4",
+      "status": "decoded",
+      "entry_evidence_id": "ev_88604c2dacfc1d233343df4afce27f8b1c0b575a2a8251c44ff8f1a33a117ef0",
+      "entry_flow": "return",
+      "length": 2,
+      "owners": [
+        {
+          "class": "DlgAirlift",
+          "slot": 3,
+          "vtable": "0x67338",
+          "raw_pointer": "0x23ba5"
+        },
+        {
+          "class": "DlgMission",
+          "slot": 3,
+          "vtable": "0x673b8",
+          "raw_pointer": "0x23ba5"
+        },
+        {
+          "class": "DlgRadar",
+          "slot": 3,
+          "vtable": "0x673f8",
+          "raw_pointer": "0x23ba5"
+        },
+        {
+          "class": "WndQuickSlot",
+          "slot": 3,
+          "vtable": "0x67478",
+          "raw_pointer": "0x23ba5"
+        },
+        {
+          "class": "GuiHelp",
+          "slot": 3,
+          "vtable": "0x67558",
+          "raw_pointer": "0x23ba5"
+        },
+        {
+          "class": "QobBase",
+          "slot": 3,
+          "vtable": "0x676e8",
+          "raw_pointer": "0x23ba5"
+        },
+        {
+          "class": "QobButton",
+          "slot": 3,
+          "vtable": "0x67728",
+          "raw_pointer": "0x23ba5"
+        },
+        {
+          "class": "QobImage",
+          "slot": 3,
+          "vtable": "0x67768",
+          "raw_pointer": "0x23ba5"
+        },
+        {
+          "class": "QobLine",
+          "slot": 3,
+          "vtable": "0x677e8",
+          "raw_pointer": "0x23ba5"
+        },
+        {
+          "class": "QobText",
+          "slot": 3,
+          "vtable": "0x678a8",
+          "raw_pointer": "0x23ba5"
+        },
+        {
+          "class": "QobVisual",
+          "slot": 3,
+          "vtable": "0x678e8",
+          "raw_pointer": "0x23ba5"
+        }
+      ]
+    },
+    {
+      "address": "0x24c54",
+      "status": "decoded",
+      "entry_evidence_id": "ev_d1f9288a06db2e26cad858e507673622224cca5fe0001254b69bc65afa5903c0",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "PartsController_Weapon",
+          "slot": 1,
+          "vtable": "0x672f8",
+          "raw_pointer": "0x24c55"
+        }
+      ]
+    },
+    {
+      "address": "0x261dc",
+      "status": "decoded",
+      "entry_evidence_id": "ev_cc994c529bebbc8164a876f6d4b96f7f45f9e896123aeee0ca5bf7b5ee7b8254",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "DlgAirlift",
+          "slot": 1,
+          "vtable": "0x67338",
+          "raw_pointer": "0x261dd"
+        }
+      ]
+    },
+    {
+      "address": "0x27f90",
+      "status": "decoded",
+      "entry_evidence_id": "ev_4ba1a67c9be0d629eb04969a3453a0515cb15791b4ae20dff120f96da64d0646",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "DlgInven",
+          "slot": 1,
+          "vtable": "0x67378",
+          "raw_pointer": "0x27f91"
+        }
+      ]
+    },
+    {
+      "address": "0x29d5c",
+      "status": "decoded",
+      "entry_evidence_id": "ev_bb71c481d3cbc441d7943104a665744da1ccf0ae0a3db184b1e880051d137cba",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "DlgMission",
+          "slot": 1,
+          "vtable": "0x673b8",
+          "raw_pointer": "0x29d5d"
+        }
+      ]
+    },
+    {
+      "address": "0x2a2fc",
+      "status": "decoded",
+      "entry_evidence_id": "ev_cd2e00e1c565a688d27760f4470242ca1d71cce7181431b818465a4cdb94e504",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "DlgRadar",
+          "slot": 1,
+          "vtable": "0x673f8",
+          "raw_pointer": "0x2a2fd"
+        }
+      ]
+    },
+    {
+      "address": "0x2f990",
+      "status": "decoded",
+      "entry_evidence_id": "ev_5308feb5a54abb553cec7814eb4f46591d8446cfbc81820b6a9fa83643b29c75",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "GuiGame",
+          "slot": 1,
+          "vtable": "0x67438",
+          "raw_pointer": "0x2f991"
+        }
+      ]
+    },
+    {
+      "address": "0x34278",
+      "status": "decoded",
+      "entry_evidence_id": "ev_fbaaf4ec5c6587a34a70dbcf1c3fd90f3b844978763651c83307ec15bfd8ca05",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "WndQuickSlot",
+          "slot": 1,
+          "vtable": "0x67478",
+          "raw_pointer": "0x34279"
+        }
+      ]
+    },
+    {
+      "address": "0x39e14",
+      "status": "decoded",
+      "entry_evidence_id": "ev_9eb148fd63bbac09090ee6e386172bf2441398c798d072c89b4eb7a4d3134028",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "GuiCommandCenter",
+          "slot": 3,
+          "vtable": "0x67518",
+          "raw_pointer": "0x39e15"
+        }
+      ]
+    },
+    {
+      "address": "0x3bb0c",
+      "status": "decoded",
+      "entry_evidence_id": "ev_edb809dbfc2540c45e24ade982966eca62b1f5f9b17b90e9918dc01504b253ee",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "GuiMapLoading",
+          "slot": 1,
+          "vtable": "0x67598",
+          "raw_pointer": "0x3bb0d"
+        }
+      ]
+    },
+    {
+      "address": "0x46f3c",
+      "status": "decoded",
+      "entry_evidence_id": "ev_25cfbc4057c7d991cd4ec53383d3811e2403232a86d5b44b098154010ac52b91",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "QTile",
+          "slot": 0,
+          "vtable": "0x67690",
+          "raw_pointer": "0x46f3d"
+        }
+      ]
+    },
+    {
+      "address": "0x4cab0",
+      "status": "decoded",
+      "entry_evidence_id": "ev_f1fce552f256644e6f0795865932e7a8e118d6df1a92ce5c9d178ab1873a0ccf",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "QobButton",
+          "slot": 8,
+          "vtable": "0x67728",
+          "raw_pointer": "0x4cab1"
+        },
+        {
+          "class": "QobMessageBox",
+          "slot": 8,
+          "vtable": "0x67828",
+          "raw_pointer": "0x4cab1"
+        }
+      ]
+    },
+    {
+      "address": "0x4d2a8",
+      "status": "decoded",
+      "entry_evidence_id": "ev_701d4a94491d9183fe9a2b2a7d60092bf7e9808a0236505aff198b1ac1133c19",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "QobButton",
+          "slot": 1,
+          "vtable": "0x67728",
+          "raw_pointer": "0x4d2a9"
+        }
+      ]
+    },
+    {
+      "address": "0x4d524",
+      "status": "decoded",
+      "entry_evidence_id": "ev_78c5b036055fd34f8b6bf5cd714cf450e04326e381ff1b75915acd0209a756a0",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "QobImage",
+          "slot": 1,
+          "vtable": "0x67768",
+          "raw_pointer": "0x4d525"
+        }
+      ]
+    },
+    {
+      "address": "0x4d598",
+      "status": "decoded",
+      "entry_evidence_id": "ev_88045c6eb19342d5e3466809c286ce633d0539bbed0d002fd774391aeb3a4c15",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "QobImageText",
+          "slot": 2,
+          "vtable": "0x677a8",
+          "raw_pointer": "0x4d599"
+        }
+      ]
+    },
+    {
+      "address": "0x4dccc",
+      "status": "decoded",
+      "entry_evidence_id": "ev_ecd69aeaf74aacb122d24c386b08355487cd2c40409602a6a04f600b637f4783",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "QobImageText",
+          "slot": 1,
+          "vtable": "0x677a8",
+          "raw_pointer": "0x4dccd"
+        }
+      ]
+    },
+    {
+      "address": "0x51048",
+      "status": "decoded",
+      "entry_evidence_id": "ev_f84b23b09acd0b86b7f7562fd97f7b1adeb7d98c13d73bce305e3e4b998ba4fd",
+      "entry_flow": "fallthrough",
+      "length": 2,
+      "owners": [
+        {
+          "class": "QobParticle",
+          "slot": 2,
+          "vtable": "0x67868",
+          "raw_pointer": "0x51049"
+        }
+      ]
+    }
+  ],
+  "collidecheck_static_selector_index": {
+    "source_sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+    "names": [
+      {
+        "name": "setCollideCheck:",
+        "address": "0x46e9c",
+        "section": "__cstring",
+        "pointer_occurrences": [
+          {
+            "file_offset": 333028,
+            "address": "0x524e4",
+            "section": "__objc_const",
+            "method_implementation_raw": "0x5f95",
+            "method_implementation_thumb_masked": "0x5f94",
+            "matches_known_setter": true
+          }
+        ]
+      },
+      {
+        "name": "collideCheck",
+        "address": "0x46ef6",
+        "section": "__cstring",
+        "pointer_occurrences": [
+          {
+            "file_offset": 84900,
+            "address": "0x15ba4",
+            "section": "__text"
+          },
+          {
+            "file_offset": 333040,
+            "address": "0x524f0",
+            "section": "__objc_const"
+          },
+          {
+            "file_offset": 333188,
+            "address": "0x52584",
+            "section": "__objc_const"
+          }
+        ]
+      },
+      {
+        "name": "_collideCheck",
+        "address": "0x46e6a",
+        "section": "__cstring",
+        "pointer_occurrences": [
+          {
+            "file_offset": 332964,
+            "address": "0x524a4",
+            "section": "__objc_const"
+          }
+        ]
+      }
+    ],
+    "limits": [
+      "Raw32 pointer occurrence search is not a complete dynamic/alias graph."
+    ]
+  },
+  "adoption_conditions": [
+    "모든 플랫폼에서 HD 게임 규칙·에셋 reader·파츠 조립·저장·음향 경로를 공통으로 쓴다. 일반판 관측은 화면·입력 설계의 비교 근거로 쓴다.",
+    "월드 표시와 HUD를 같은 배율로 늘리지 않는다. 표시 viewport·카메라·고정 UI 좌표·hit 영역을 연결하고 역변환을 같은 데이터에서 만든다. 실제 파일 픽셀 크기와 논리 크기를 구분한다.",
+    "HD `_isInScreen` 초기값·갱신 시점·소비자 예외를 유지한다. 화면 비율을 바꿀 때 이동·피해·생성 조건도 달라지는지 별도 증거로 확인한다. 표시 범위 변경만으로 활성 범위의 동등성까지 확인됐다고 간주하지 않는다.",
+    "point hit·Range 0·범위피해·적 탄환·항공 이동의 예외를 그대로 분리한다. 원본에서 활성 출처를 못 찾은 flag는 정식 기능으로 임의 노출하지 않는다.",
+    "시간·난수·피해의 자료형과 연산 순서, deadline 저장 형식, 원본 update 순서를 보존한다. 원본에 보이는 순서를 편의상 재정렬하지 않는다."
+  ],
+  "remaining_tasks": [
+    "일반판 show setter 150회/65함수의 대상이 적/BOT 자신·부모·파츠·UI 중 무엇인지 연결한다. register-offset·넓은 store·간접 쓰기와 제외 블록을 함께 확인한다. 현재 인덱스만으로 전역 부재를 주장하지 않는다.",
+    "두 Enemy ASM의 예외 분기·modifier·드롭·보상 소비를 호출자/데이터와 연결한다. 추적한 base crash/damage 역할을 함수 전체 동등성으로 바꾸지 않는다.",
+    "HD `_collideCheck`를 실제로 켜는 도달 경로가 있는지 확인한다. 필요하면 마지막 검증 단계의 내부 계측에서 flag writer·weapon ID·호출 지점을 함께 기록한다. 정식 UI를 새로 만들지 않는다.",
+    "기존 일반판 측정의 카메라 현재/목표 배율·표적·경로 상태를 보강한다. 지금은 별도 원본 실행을 하지 않았다.",
+    "iPad HD 포팅판 기준에서 화면 안/밖 경계, 항공/지상, pause/비pause, point flag 0/1, Range 0/양수, 플레이어/적/BOT 피격, initial/regen/보스 생성, 적 잔해 deadline·BOT 사망을 동시에 구성한다. 한 world-step 추적에 순서·자료형·상태 변화·난수 소비·사운드 이벤트를 함께 기록한다.",
+    "공통 정식판·치트판의 구현을 마친 뒤 포팅판·정식판·치트판을 마지막에 일괄 대조한다. 이후 iPhone·iPad는 같은 공통 코드에서 각 viewport의 표시·입력 회귀를 확인한다. 구현 중 기능 하나마다 포팅판/기기를 오가는 절차로 되돌리지 않는다."
+  ],
+  "prohibited_changes": [
+    "iPhone 전용 게임 로직·별도 원본 에셋 계열을 추가하거나 일반판 규칙과 HD 규칙을 기기마다 나누는 것.",
+    "화면 전체 확대, HUD까지 월드 줌 적용, draw와 다른 hit 변환, retina 계수 중복 적용.",
+    "`isInScreen`을 전 프레임 공통 선행 계산으로 옮기거나 모든 이동·피해·생성에 같은 gate를 붙이는 것.",
+    "원본 helper의 조건을 이름만 보고 합치거나, 못 찾은 setter·버튼·활성 조건을 임의로 만드는 것.",
+    "crash deadline·world time·RNG·FP 연산 순서를 편의상 바꾸는 것.",
+    "사격별 DB/파일 쓰기, 사격마다 음향 context 생성·해제, 원본 효과음/BGM 절차를 대체하는 것.",
+    "함수명·ABI·byte 차이·캐시 파일 개수를 의미 동등성 검사나 실제 플레이 검사라고 보고하는 것.",
+    "원본 IPA·실행 파일·전체 pseudo/ASM을 저장소나 외부 보고 사이트에 올리는 것."
+  ],
+  "local_metadata_artifacts": [
+    {
+      "path": ".local/evidence/iphone-universal-native-followup-20261113/cached-function-reference-index.json",
+      "sha256": "5a6647bccb42b56f29ea94c05b1635e8b9b429eb01c9ed321a0667c3bad03f1c",
+      "bytes": 73925
+    },
+    {
+      "path": ".local/evidence/iphone-universal-native-followup-20261113/hd-collidecheck-selector-static-index.json",
+      "sha256": "01dbe9743a15b1179585f09fb5568ae0765895ba11c910cc87893de306c44bb1",
+      "bytes": 1375
+    },
+    {
+      "path": ".local/evidence/iphone-universal-native-followup-20261113/verification.json",
+      "sha256": "e9277fadba69f0ec3a99fcaaa1489da97e708a1a92ec5bb4ce95cd270a1da1c7",
+      "bytes": 3938
+    },
+    {
+      "path": ".local/evidence/iphone-universal-native-followup-20261113/vtable-entry-verification.json",
+      "sha256": "54c5471531050e9eddd75da6ac6bef210f5e97f838353cb2ce861941697e108e",
+      "bytes": 29048
+    },
+    {
+      "path": ".local/evidence/iphone-universal-native-followup-20261113/vtable-entry-walk-index.json",
+      "sha256": "95cb2e8f9e51d3ee0f625ad32c4a98e305427d401c1f2254fe40a669ff756b38",
+      "bytes": 266079
+    }
+  ],
+  "raw_external_directory": "/Users/sokol/Documents/Codex/HeavyMach2/Analysis/Phone201/iphone-universal-followup-20261113",
+  "rea_session_closed": true,
+  "app_simulator_device_execution": false,
+  "builds": false,
+  "game_source_changes": false,
+  "source_and_raw_exports_uploaded": false,
+  "full_semantic_equivalence_complete": false,
+  "cause_device_vs_release": "미확정",
+  "reproduce_command": "python3 tools/audit_iphone_native_followup.py"
+}

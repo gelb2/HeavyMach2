@@ -1,0 +1,22 @@
+{
+  "project_id": "appgprj_6af8664612288191b813654dfb95323f",
+  "commit_sha": "e2f9be4362146f4c55074854017169fe95f3b2d3",
+  "deployment_id": "appgdep_6af931efaab081919e01c0db9949e330",
+  "status": "succeeded",
+  "report_url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/menu-background-checks.html",
+  "browser_review": false,
+  "asset_contexts": 36,
+  "asset_status": "PASS",
+  "screen_status": "FAIL",
+  "ipad_black_margin_failures": 18,
+  "native_auto_hook_verified": false,
+  "source_app_simulator_build": true,
+  "validation_app_simulator_build": true,
+  "followup_installation_publication": {
+    "commit_sha": "98e55b933ef35c07066e82203e932a6746ad5a52",
+    "deployment_id": "appgdep_6af934d5bfe081919434ac466a08996a",
+    "status": "succeeded",
+    "iphoneReleaseInstalled": true,
+    "saveAndHUDPreserved": true
+  }
+}

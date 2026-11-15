@@ -1,10 +1,12 @@
 #include "Platform/Apple/HM2ConcurrentRuntime.hpp"
 #include "Platform/Apple/HM2Resources.hpp"
 #include "Platform/Apple/HM2TextRasterizer.h"
+#include "Platform/Apple/HM2HUDStorage.hpp"
 #import "Platform/Apple/HM2Audio.h"
 #import "Platform/Apple/HM2Renderer.h"
 #include "Core/Audio/SoundIDs.hpp"
 #include "Core/Validation/SessionFixtures.hpp"
+#include "Core/Validation/HUDLayoutExercise.hpp"
 #include <algorithm>
 #include <chrono>
 #include <ctime>
@@ -29,12 +31,17 @@ struct ConcurrentRuntime::Impl:validation::ValidationHost {
         UIHost(Impl& value,unsigned i):owner(value),index(i){}
         void action(const ui::ScreenAction& action)override{if(owner.preparing)return;++owner.interfaces.at(index)->events[{action.button.key.id,action.button.key.intData}];owner.runner->session(index).action(action);owner.refresh(index);}
         ui::PreparedScreenText prepareText(const ui::TextRasterRequest& request)override{return owner.text(request);}
+        NSURL* hudDirectory()const{return [owner.directory URLByAppendingPathComponent:[NSString stringWithFormat:@"scenario-%u",index] isDirectory:YES];}
+        std::optional<Bytes> loadHUDLayout(std::string_view profile)override{return readHUDLayout(hudDirectory(),profile);}
+        bool saveHUDLayout(std::string_view profile,std::span<const std::uint8_t> bytes)override{return writeHUDLayout(hudDirectory(),profile,bytes);}
         void bgm(std::string_view file)override{if(!owner.preparing&&![owner.audio playMusic:native(file)])throw std::runtime_error(owner.audio.lastError.UTF8String);}
         void sound(std::string_view file)override{if(!owner.preparing)owner.sound(index,file,{});}
         void sfx(unsigned id)override{if(!owner.preparing)owner.soundID(index,id,{});}
+        void prepareSound(std::string_view name)override{owner.prepareSound(name);}
     };
     struct UI {
-        UIHost host;PreparedTiles tiles;std::unique_ptr<ui::Screens> screens;std::uint64_t revision=0;
+        UIHost host;PreparedTiles tiles;std::unique_ptr<ui::Screens> screens;std::uint64_t revision=0,resourceRevision=0,uiResourceGeneration=0;CombatScene* preparedWorld=nullptr;
+        std::uint64_t ownerEpoch=0,resourceEpoch=0,observedOwnerEpoch=0,observedGeneration=0,observedPreparedRevision=0;
         std::map<std::pair<unsigned,int>,std::uint64_t> events;
         std::unique_ptr<ui::Text> caption;
         UI(Impl& owner,unsigned index):host(owner,index),tiles("validationUI"+std::to_string(index)){}
@@ -44,16 +51,19 @@ struct ConcurrentRuntime::Impl:validation::ValidationHost {
     std::vector<std::unique_ptr<UI>> interfaces;
     std::unique_ptr<ui::TextRasterizer> rasterizer=makeTextRasterizer();ui::TextPreparationCache textCache;
     std::map<const ui::TextBitmap*,std::string> textNames;
-    bool preparing=true,active=true;std::uint64_t presented=0,saveWrites=0;
-    NSUInteger warmUploads=0,warmImageUploads=0;NSDictionary* warmAudio;NSData* legacyComparison;NSDictionary* interruption;
+    bool preparing=true,active=true,audioActive=true,resourcesDirty=true;std::uint64_t presented=0,saveWrites=0,nextTextIdentity=0,ownerBoundaryEvents=0;
+    std::uint64_t steadyDrawImageReads=0,steadyDrawImageDecodes=0,steadyDrawTextureUploads=0;
+    NSUInteger warmUploads=0,warmImageUploads=0,warmImageReads=0,warmImageDecodes=0;NSDictionary* warmAudio;NSArray<NSDictionary*>* warmAudioPreparations;NSData* legacyComparison;NSDictionary* interruption;
     unsigned maxPlaying=0,maxProgressing=0;NSArray<NSString*>* progressingNames=@[];
     std::set<std::string> everProgressing;std::array<std::uint64_t,22> soundIDRequests{};
     std::vector<double> costs;double tickCost=0;std::map<unsigned,Frame> sampledFrames;
+    std::map<const ui::TextBitmap*,std::shared_ptr<const ui::TextBitmap>> sampledTextOwners;
     std::chrono::steady_clock::time_point started=std::chrono::steady_clock::now();
     Impl(NSURL* root,NSURL* saveDirectory):files(root.fileSystemRepresentation),directory(saveDirectory){
         NSError* error=nil;if(!root.isFileURL||!directory.isFileURL||![NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:&error])throw std::runtime_error("Cannot prepare isolated concurrent-validation storage");
-        renderer=[[HM2Renderer alloc]initWithResourceRoot:root];audio=[[HM2Audio alloc]initWithResourceRoot:root];if(![audio prepareSounds])throw std::runtime_error(audio.lastError.UTF8String);
+        renderer=[[HM2Renderer alloc]initWithResourceRoot:root];audio=[[HM2Audio alloc]initWithResourceRoot:root];if(audio.lastError.length)throw std::runtime_error(audio.lastError.UTF8String);
         runner=std::make_unique<validation::ConcurrentValidation>(files,*this);interfaces.reserve(runner->scenarioCount());
+        for(unsigned i=0;i<runner->scenarioCount();++i)for(const auto& name:runner->session(i).orderedStartupSounds())prepareSound(name);
         for(unsigned i=0;i<runner->scenarioCount();++i)interfaces.push_back(std::make_unique<UI>(*this,i));
         for(unsigned i=0;i<runner->scenarioCount();++i){refresh(i);
             const auto prepared=text({"validation.case."+std::to_string(i),std::to_string(i)+" | "+runner->scenarios()[i].label,"Arial-BoldMT",{740,24},16,ui::TextAlign::left});
@@ -62,23 +72,42 @@ struct ConcurrentRuntime::Impl:validation::ValidationHost {
         prewarmMenus();
         {MapLoading loading(runner->cachedResources());const auto frame=loading.preparationFrame();[renderer prepareFrame:frame];}
         {ui::Help help(runner->cachedResources(),"kr",-1);const auto frame=help.preparationFrame();[renderer prepareFrame:frame];}
-        preparing=false;warmUploads=renderer.textureUploads;warmImageUploads=renderer.imageTextureUploads;warmAudio=audio.metrics;costs.reserve(3600);
+        releaseExpiredOwners();preparing=false;warmUploads=renderer.textureUploads;warmImageUploads=renderer.imageTextureUploads;warmImageReads=renderer.imageResourceReads;warmImageDecodes=renderer.imageDecodeCalls;warmAudio=audio.metrics;warmAudioPreparations=audio.preparationSnapshot;costs.reserve(3600);
         if(![audio playMusic:@"STAGE3.mp3"])throw std::runtime_error(audio.lastError.UTF8String);
         started=std::chrono::steady_clock::now();
     }
     ui::PreparedScreenText prepareWorldText(unsigned,const ui::TextRasterRequest& request)override{return text(request);}
+    void prepareSound(std::string_view name){if(![audio prepareEffect:name])throw std::runtime_error(audio.lastError.UTF8String?:"Cannot prepare original sound reference");}
     ui::PreparedScreenText text(const ui::TextRasterRequest& request){
         auto bitmap=textCache.prepare(*rasterizer,request);auto found=textNames.find(bitmap.get());
-        if(found==textNames.end()){const auto name="@text/concurrent/"+std::to_string(textNames.size());[renderer prepareText:*bitmap identifier:name];found=textNames.emplace(bitmap.get(),name).first;}
+        if(found==textNames.end()){const auto name="@text/concurrent/"+std::to_string(nextTextIdentity++);[renderer prepareText:*bitmap identifier:name];found=textNames.emplace(bitmap.get(),name).first;}
         return {found->second,bitmap};
     }
-    void prepare(ui::Screens& screens,PreparedTiles& tiles,float time){Frame frame;screens.append(frame,time);tiles.appendPreparation(frame);[renderer prepareFrame:frame];}
+    void prepare(ui::Screens& screens,PreparedTiles&,float){Frame frame;screens.appendPreparation(frame);[renderer prepareFrame:frame];}
     void refresh(unsigned index){
         auto& view=*interfaces.at(index);auto& game=runner->session(index);const auto& state=game.state();
-        if(!view.screens)view.screens=std::make_unique<ui::Screens>(runner->cachedResources(),view.tiles,view.host);
-        if(view.revision!=game.presentationRevision()){
-            view.screens->refresh(state,game.renderTime());view.revision=game.presentationRevision();prepare(*view.screens,view.tiles,game.renderTime());const auto prepared=game.preparationFrame();[renderer prepareFrame:prepared];
+        if(!view.screens){view.screens=std::make_unique<ui::Screens>(runner->scenarioResources(index),view.tiles,view.host);++view.ownerEpoch;view.screens->setDisplay(game.display());}
+        const bool rebuilt=view.revision!=game.presentationRevision();
+        if(rebuilt){
+            view.screens->refresh(state,game.renderTime());view.revision=game.presentationRevision();prepare(*view.screens,view.tiles,game.renderTime());resourcesDirty=true;
         }else view.screens->updateHUD(state);
+        if(rebuilt||view.preparedWorld!=game.battle()||view.resourceRevision!=game.resourceRevision()||view.uiResourceGeneration!=view.screens->resourceGeneration()){
+            view.preparedWorld=game.battle();view.resourceRevision=game.resourceRevision();view.uiResourceGeneration=view.screens->resourceGeneration();const auto prepared=game.preparationFrame();[renderer prepareFrame:prepared];resourcesDirty=true;
+        }
+    }
+    void releaseExpiredOwners(){
+        if(!resourcesDirty)return;
+        for(const auto* discarded:textCache.discardUnused())textNames.erase(discarded);
+        Frame owners;for(unsigned i=0;i<interfaces.size();++i){auto& view=*interfaces[i];if(view.screens)view.screens->appendPreparation(owners);if(view.caption)view.caption->append(owners);const auto world=runner->session(i).preparationFrame();owners.sprites.insert(owners.sprites.end(),world.sprites.begin(),world.sprites.end());}
+        // Recorded source-frame snapshots are explicit live observation owners;
+        // expired temporary prewarm screens are deliberately not retained.
+        for(const auto& [number,frame]:sampledFrames){(void)number;owners.sprites.insert(owners.sprites.end(),frame.sprites.begin(),frame.sprites.end());}
+        for(const auto& [bitmap,name]:textNames){(void)bitmap;Sprite sprite;sprite.image=name;owners.sprites.push_back(std::move(sprite));}
+        [renderer retainPreparedTextures:owners];resourcesDirty=false;++ownerBoundaryEvents;
+    }
+    void retainSnapshot(unsigned frame,Frame snapshot){
+        for(const auto& sprite:snapshot.sprites)if(sprite.image.starts_with("@text/"))for(const auto& [bitmap,name]:textNames)if(name==sprite.image){if(auto retained=textCache.retain(bitmap))sampledTextOwners.emplace(bitmap,std::move(retained));break;}
+        sampledFrames[frame]=std::move(snapshot);
     }
     void prewarmMenus(){
         // Preparation consumes the real screen builders and original assets.
@@ -105,19 +134,33 @@ struct ConcurrentRuntime::Impl:validation::ValidationHost {
     void appendScenarioUI(unsigned index,GameSession& game,Frame& frame)override{
         refresh(index);auto& view=*interfaces.at(index);view.screens->append(frame,game.renderTime());if(view.caption)view.caption->append(frame);
     }
+    void exerciseHUDLayout(unsigned index,GameSession& game,validation::HUDLayoutObservation& observed,std::uint64_t frame)override{
+        auto& view=*interfaces.at(index);if(frame==340){view.screens.reset();view.revision=0;}
+        refresh(index);validation::exerciseHUDLayoutFrame(*view.screens,game,observed,frame);
+        if(frame==310||frame==330||frame==340){prepare(*view.screens,view.tiles,game.renderTime());resourcesDirty=true;}
+    }
+    std::uint64_t scenarioUIResourceRevision(unsigned index)override{
+        if(index>=interfaces.size())return 0;auto& view=*interfaces[index];
+        if(!view.screens)return view.resourceEpoch;
+        const auto generation=view.screens->resourceGeneration(),prepared=view.screens->preparedResourceRevision();
+        if(view.observedOwnerEpoch!=view.ownerEpoch||view.observedGeneration!=generation||view.observedPreparedRevision!=prepared){
+            view.observedOwnerEpoch=view.ownerEpoch;view.observedGeneration=generation;view.observedPreparedRevision=prepared;++view.resourceEpoch;
+        }
+        return view.resourceEpoch;
+    }
     void tickScenarioUI(unsigned index,GameSession& game,WorldRandom& random)override{refresh(index);interfaces.at(index)->screens->tick(game.renderTime(),random);}
     void sessionRestarted(unsigned index,GameSession&)override{auto& view=*interfaces.at(index);view.screens.reset();view.revision=0;}
     bool pressButton(unsigned index,unsigned id,int intData)override{
         refresh(index);auto& view=*interfaces.at(index);auto& game=runner->session(index);
         for(const auto& key:view.screens->buttons())if(key.id==id&&key.intData==intData){
-            auto button=view.screens->button(key);if(!button||!button->visible||!button->active)continue;
+            view.screens->revealButton(key);auto button=view.screens->button(key);if(!button||!button->visible||!button->active)continue;
             const auto eventKey=std::pair{id,intData};const auto before=view.events[eventKey];
-            const auto point=button->screenPosition();const std::uintptr_t pointer=10000+index;
+            view.screens->revealButton(key);const auto point=view.screens->buttonScreenPosition(key);const std::uintptr_t pointer=10000+index;
             if(!game.inputOverlay(PointerPhase::begin,point,pointer))view.screens->input(PointerPhase::begin,point,pointer,game.renderTime());if(!game.inputOverlay(PointerPhase::end,point,pointer))view.screens->input(PointerPhase::end,point,pointer,game.renderTime());return view.events[eventKey]>before;
         }
         return false;
     }
-    void sound(unsigned,std::string_view name,Vec2 p)override{if(!name.empty()&&![audio playEffect:name x:p.x y:p.y])throw std::runtime_error(audio.lastError.UTF8String);}
+    void sound(unsigned,std::string_view name,Vec2 p)override{if(!active||!audioActive)return;if(!name.empty()&&![audio playEffect:name x:p.x y:p.y])throw std::runtime_error(audio.lastError.UTF8String);}
     void soundID(unsigned index,unsigned id,Vec2 p)override{if(id<22){++soundIDRequests[id];sound(index,audio::soundFilename(id),p);}}
     bool writeSave(unsigned index,std::span<const std::uint8_t> bytes,SaveReason)override{
         NSURL* path=[directory URLByAppendingPathComponent:[NSString stringWithFormat:@"scenario-%03u.sav",index]];NSError* error=nil;
@@ -133,9 +176,14 @@ struct ConcurrentRuntime::Impl:validation::ValidationHost {
 };
 ConcurrentRuntime::ConcurrentRuntime(NSURL* root,NSURL* directory):impl_(std::make_unique<Impl>(root,directory)){}
 ConcurrentRuntime::~ConcurrentRuntime(){[impl_->audio setActive:NO];}
-void ConcurrentRuntime::tick(){auto& p=*impl_;if(!p.active)return;const auto begin=std::chrono::steady_clock::now();p.sampleAudio();p.runner->tick();p.tickCost=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-begin).count();}
-void ConcurrentRuntime::draw(CAEAGLLayer* layer,Size viewport){auto& p=*impl_;const auto begin=std::chrono::steady_clock::now();const auto frame=p.runner->drawFrame(viewport);[p.renderer drawFrame:frame layer:layer];++p.presented;const auto& activity=p.runner->frameActivity();const auto frameNumber=activity.empty()?0:activity.back().frame;if(const auto scenario=capturedScenario(unsigned(frameNumber)))p.sampledFrames[unsigned(frameNumber)]=p.runner->scenarioFrame(*scenario);p.costs.push_back(p.tickCost+std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-begin).count());}
-void ConcurrentRuntime::setActive(bool active){auto& p=*impl_;if(!active)for(auto& view:p.interfaces)if(view->screens)view->screens->discardInputs();p.active=active;p.runner->setActive(active);[p.audio setActive:active];}
+void ConcurrentRuntime::tick(){auto& p=*impl_;if(!p.active)return;const auto begin=std::chrono::steady_clock::now();p.sampleAudio();p.runner->tick();p.releaseExpiredOwners();p.tickCost=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-begin).count();}
+void ConcurrentRuntime::draw(CAEAGLLayer* layer,Size viewport){auto& p=*impl_;const auto begin=std::chrono::steady_clock::now();const auto frame=p.runner->drawFrame(viewport);p.releaseExpiredOwners();const auto reads=p.renderer.imageResourceReads,decodes=p.renderer.imageDecodeCalls,uploads=p.renderer.textureUploads;[p.renderer drawFrame:frame layer:layer];p.steadyDrawImageReads+=p.renderer.imageResourceReads-reads;p.steadyDrawImageDecodes+=p.renderer.imageDecodeCalls-decodes;p.steadyDrawTextureUploads+=p.renderer.textureUploads-uploads;++p.presented;const auto& activity=p.runner->frameActivity();const auto frameNumber=activity.empty()?0:activity.back().frame;if(const auto scenario=capturedScenario(unsigned(frameNumber)))p.retainSnapshot(unsigned(frameNumber),p.runner->scenarioFrame(*scenario));p.costs.push_back(p.tickCost+std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-begin).count());}
+void ConcurrentRuntime::setActive(bool active){auto& p=*impl_;if(!active)for(auto& view:p.interfaces)if(view->screens)view->screens->discardInputs();p.active=active;p.runner->setActive(active);[p.audio setActive:active&&p.audioActive];}
+void ConcurrentRuntime::setAudioActive(bool active){
+    auto& p=*impl_;if(p.audioActive==active)return;p.audioActive=active;
+    if(!active){for(auto& view:p.interfaces)if(view->screens)view->screens->discardInputs();p.runner->setActive(false);p.runner->setActive(p.active);}
+    [p.audio setActive:p.active&&active];
+}
 NSDictionary* ConcurrentRuntime::verifyInactiveInputDiscard(){
     auto& p=*impl_;unsigned index=0;for(;index<p.runner->scenarioCount();++index)if(p.runner->scenarios()[index].role==validation::ScenarioRole::shop)break;
     if(index==p.runner->scenarioCount())throw std::runtime_error("Missing real shop interruption case");
@@ -143,11 +191,19 @@ NSDictionary* ConcurrentRuntime::verifyInactiveInputDiscard(){
     std::shared_ptr<ui::Button> held;for(const auto& key:view.screens->buttons())if(key.id==2100){auto button=view.screens->button(key);if(button&&button->visible&&button->active){held=button;break;}}
     if(!held)throw std::runtime_error("Missing real shop close button for interruption");
     const auto beforeFrames=p.runner->metrics().frames,beforeWrites=p.saveWrites;const int credit=game.state().credits;const auto screen=game.state().screen;
-    const auto point=held->screenPosition();const auto beforeEvents=view.events[std::pair{2100u,0}];
+    view.screens->revealButton(held->key());
+    const auto point=view.screens->buttonScreenPosition(held->key());const auto beforeEvents=view.events[std::pair{2100u,0}];
     view.screens->input(PointerPhase::begin,point,900000,game.renderTime());const bool captured=held->capturedPointer()==900000&&held->pressed();
+    std::vector<unsigned> running;for(unsigned i=0;i<p.runner->scenarioCount();++i)if(const auto* scene=p.runner->session(i).battle();scene&&scene->playerHP()>0&&!scene->isPaused())running.push_back(i);
     const auto afterBeginEvents=view.events[std::pair{2100u,0}];setActive(false);const bool discarded=held->capturedPointer()==0&&!held->pressed();setActive(true);
+    // The application correctly stays paused after reactivation. This explicit
+    // validation probe resumes only cases that were previously running, using
+    // their actual system-menu button rather than undoing the runtime policy.
+    unsigned resumed=0,resumeFailures=0;for(const auto i:running){
+        if(p.pressButton(i,1030,0)&&p.runner->session(i).battle()&&!p.runner->session(i).battle()->isPaused())++resumed;else ++resumeFailures;
+    }
     const bool noCleanupAction=view.events[std::pair{2100u,0}]==afterBeginEvents;
-    p.interruption=@{@"frame":@(beforeFrames),@"buttonID":@2100,@"capturedBefore":@(captured),@"discardedAfter":@(discarded),@"beginReachedRealHandler":@(afterBeginEvents>beforeEvents),@"cleanupSentNoAction":@(noCleanupAction),@"noExtraTick":@(p.runner->metrics().frames==beforeFrames),@"noSave":@(p.saveWrites==beforeWrites),@"creditPreserved":@(game.state().credits==credit),@"screenPreserved":@(game.state().screen==screen)};
+    p.interruption=@{@"frame":@(beforeFrames),@"buttonID":@2100,@"capturedBefore":@(captured),@"discardedAfter":@(discarded),@"beginReachedRealHandler":@(afterBeginEvents>beforeEvents),@"cleanupSentNoAction":@(noCleanupAction),@"noExtraTick":@(p.runner->metrics().frames==beforeFrames),@"noSave":@(p.saveWrites==beforeWrites),@"creditPreserved":@(game.state().credits==credit),@"screenPreserved":@(game.state().screen==screen),@"previouslyRunning":@(running.size()),@"explicitMenuResumes":@(resumed),@"resumeFailures":@(resumeFailures)};
     return p.interruption;
 }
 validation::ConcurrentValidation& ConcurrentRuntime::validation(){return *impl_->runner;}
@@ -167,10 +223,24 @@ NSDictionary* ConcurrentRuntime::report()const{
         const auto pair=[](const auto& v)->NSArray*{return @[@(v[0]),@(v[1])];};
         NSDictionary* completed=@{@"popupFrames":pair(c.popupFrames),@"okFrames":pair(c.okFrames),@"popupSaves":pair(c.popupSaves),@"ids":@[native(c.ids[0]),native(c.ids[1])],@"credits":pair(c.credits),@"experience":pair(c.experience),@"levels":pair(c.levels),@"rewardCounts":pair(c.rewardCounts),@"sounds":completedSounds,@"savesBefore":@(c.savesBefore),@"doorReadyFrame":@(c.doorReadyFrame),@"listFrame":@(c.listFrame),@"exitFrame":@(c.exitFrame),@"baseFrame":@(c.baseFrame),@"savesAfter":@(c.savesAfter),@"finalCredit":@(c.finalCredit),@"initialRepairItems":@(c.initialRepairItems),@"repairItems":@(c.repairItems),@"remainingAccepted":@(c.remainingAccepted),@"secondOKAccepted":@(c.secondOKAccepted),@"finalOKAccepted":@(c.finalOKAccepted),@"listImmediatelyAfterFinalOK":@(c.listImmediatelyAfterFinalOK),@"savedPayloadValid":@(c.savedPayloadValid)};
         const auto counts=[](const std::array<std::uint64_t,3>& values)->NSArray*{return @[@(values[0]),@(values[1]),@(values[2])];};
-        [rows addObject:@{@"id":@(i),@"label":native(descriptions[i].label),@"ticks":@(o.ticks),@"firstFrame":@(o.firstFrame),@"lastFrame":@(o.lastFrame),@"draws":@(o.draws),@"sounds":@(o.sounds),@"saves":@(o.saves),@"buttonRequests":@(o.buttonRequests),@"buttonFailures":@(o.buttonFailures),@"playerEmissions":@(o.playerEmissions),@"damage":@(o.damage),@"kills":@(o.kills),@"initialLevel":@(o.initialLevel),@"level":@(o.level),@"experience":@(o.experience),@"credit":@(o.credit),@"playerHP":@(o.playerHP),@"aliveTicks":@(o.aliveTicks),@"emittedWeaponParts":weapons,@"weaponEmissions":emissions,@"missionAccepted":@(o.missionAccepted),@"missionComplete":@(o.missionComplete),@"missionRequirementSatisfied":@(o.missionComplete),@"shopPurchased":@(o.shopPurchased),@"insufficientRejected":@(o.insufficientRejected),@"restarted":@(o.restarted),@"distanceMoved":@(o.distanceMoved),@"maxDisplacement":@(o.maxDisplacement),@"navigationRequests":@(o.navigationRequests),@"navigationRejected":@(o.navigationRejected),@"movementFrames":@(o.movementFrames),@"maxObservedDrops":@(o.maxObservedDrops),@"pickupEvents":@(o.pickupEvents),@"coinPickups":@(o.coinPickups),@"itemPickups":@(o.itemPickups),@"pickupCreditGain":@(o.pickupCreditGain),@"inventoryGain":@(o.inventoryGain),@"injuryFrames":@(o.injuryFrames),@"injuryPoints":@(o.injuryPoints),@"initialCredit":@(o.initialCredit),@"initialExperience":@(o.initialExperience),@"initialHP":@(o.initialHP),@"navigation":navigation,@"pickups":pickups,@"quickItemCode":native(o.quickItemCode),@"quickUseFrame":@(o.quickUseFrame),@"quickCountBefore":@(o.quickCountBefore),@"quickCountAfter":@(o.quickCountAfter),@"quickHPBefore":@(o.quickHPBefore),@"quickHPAfter":@(o.quickHPAfter),@"quickMaximumHP":@(o.quickMaximumHP),@"quickSlotHPBefore":@(o.quickSlotHPBefore),@"quickSlotHPAfter":@(o.quickSlotHPAfter),@"quickSelectionAfter":@(o.quickSelectionAfter),@"quickRepairSounds":@(o.quickRepairSounds),@"quickParticleAllocations":@(o.quickParticleAllocations),@"quickTapAccepted":@(o.quickTapAccepted),@"strikeItemCode":native(o.strikeItemCode),@"strikeUseFrame":@(o.strikeUseFrame),@"strikeCountBefore":@(o.strikeCountBefore),@"strikeCountAfter":@(o.strikeCountAfter),@"strikeTapAccepted":@(o.strikeTapAccepted),@"strikeTargetVisibleEnemy":@(o.strikeTargetVisibleEnemy),@"strikeRequests":@(o.strikeRequests),@"strikeProjectiles":@(o.strikeProjectiles),@"strikeDamageCalls":@(o.strikeDamageCalls),@"strikeEnemyHPRemoved":@(o.strikeEnemyHPRemoved),@"strikeTicks":@(o.strikeTicks),@"activeStrikes":@(o.activeStrikes),@"role":@(int(descriptions[i].role)),@"map":native(descriptions[i].map),@"firstSpawns":counts(o.firstSpawns),@"enemySpawns":counts(o.enemySpawns),@"enemyEmissions":counts(o.enemyEmissions),@"enemyDamage":counts(o.enemyDamage),@"enemyKills":counts(o.enemyKills),@"enemyRemovals":counts(o.enemyRemovals),@"bossSpawns":@(o.bossSpawns),@"worldQuickUses":@(o.worldQuickUses),@"dashStarts":@(o.dashStarts),@"dashMoveTicks":@(o.dashMoveTicks),@"dashParticles":@(o.dashParticles),@"dashRandomCalls":@(o.dashRandomCalls),@"dashSounds":@(o.dashSounds),@"dashInputFrame":@(o.dashInputFrame),@"dashSPBefore":@(o.dashSPBefore),@"dashSPAfter":@(o.dashSPAfter),@"dashMaxDisplacement":@(o.dashMaxDisplacement),@"dashInputAccepted":@(o.dashInputAccepted),@"bots":bots,@"weaponSwaps":swaps,@"botThreatName":native(o.botThreatName),@"botThreatEmissions":@(o.botThreatEmissions),@"help":help,@"gameOver":gameOver,@"ranking":ranking,@"completedMissions":completed}];}
+        [rows addObject:@{@"id":@(i),@"label":native(descriptions[i].label),@"ticks":@(o.ticks),@"firstFrame":@(o.firstFrame),@"lastFrame":@(o.lastFrame),@"draws":@(o.draws),@"sounds":@(o.sounds),@"saves":@(o.saves),@"buttonRequests":@(o.buttonRequests),@"buttonFailures":@(o.buttonFailures),@"playerEmissions":@(o.playerEmissions),@"damage":@(o.damage),@"kills":@(o.kills),@"initialLevel":@(o.initialLevel),@"level":@(o.level),@"experience":@(o.experience),@"credit":@(o.credit),@"playerHP":@(o.playerHP),@"aliveTicks":@(o.aliveTicks),@"emittedWeaponParts":weapons,@"weaponEmissions":emissions,@"missionAccepted":@(o.missionAccepted),@"missionComplete":@(o.missionComplete),@"missionRequirementSatisfied":@(o.missionComplete),@"shopPurchased":@(o.shopPurchased),@"insufficientRejected":@(o.insufficientRejected),@"restarted":@(o.restarted),@"distanceMoved":@(o.distanceMoved),@"maxDisplacement":@(o.maxDisplacement),@"navigationRequests":@(o.navigationRequests),@"navigationRejected":@(o.navigationRejected),@"movementFrames":@(o.movementFrames),@"maxObservedDrops":@(o.maxObservedDrops),@"pickupEvents":@(o.pickupEvents),@"coinPickups":@(o.coinPickups),@"itemPickups":@(o.itemPickups),@"pickupCreditGain":@(o.pickupCreditGain),@"inventoryGain":@(o.inventoryGain),@"injuryFrames":@(o.injuryFrames),@"injuryPoints":@(o.injuryPoints),@"initialCredit":@(o.initialCredit),@"initialExperience":@(o.initialExperience),@"initialHP":@(o.initialHP),@"navigation":navigation,@"pickups":pickups,@"quickItemCode":native(o.quickItemCode),@"quickUseFrame":@(o.quickUseFrame),@"quickCountBefore":@(o.quickCountBefore),@"quickCountAfter":@(o.quickCountAfter),@"quickHPBefore":@(o.quickHPBefore),@"quickHPAfter":@(o.quickHPAfter),@"quickMaximumHP":@(o.quickMaximumHP),@"quickSlotHPBefore":@(o.quickSlotHPBefore),@"quickSlotHPAfter":@(o.quickSlotHPAfter),@"quickSelectionAfter":@(o.quickSelectionAfter),@"quickRepairSounds":@(o.quickRepairSounds),@"quickParticleAllocations":@(o.quickParticleAllocations),@"quickTapAccepted":@(o.quickTapAccepted),@"strikeItemCode":native(o.strikeItemCode),@"strikeUseFrame":@(o.strikeUseFrame),@"strikeCountBefore":@(o.strikeCountBefore),@"strikeCountAfter":@(o.strikeCountAfter),@"strikeTapAccepted":@(o.strikeTapAccepted),@"strikeTargetVisibleEnemy":@(o.strikeTargetVisibleEnemy),@"strikeRequests":@(o.strikeRequests),@"strikeProjectiles":@(o.strikeProjectiles),@"strikeDamageCalls":@(o.strikeDamageCalls),@"strikeEnemyHPRemoved":@(o.strikeEnemyHPRemoved),@"strikeTicks":@(o.strikeTicks),@"activeStrikes":@(o.activeStrikes),@"role":@(int(descriptions[i].role)),@"map":native(descriptions[i].map),@"firstSpawns":counts(o.firstSpawns),@"firstKillFrames":counts(o.firstKillFrames),@"firstRemovalFrames":counts(o.firstRemovalFrames),@"enemySpawns":counts(o.enemySpawns),@"enemyEmissions":counts(o.enemyEmissions),@"enemyDamage":counts(o.enemyDamage),@"enemyKills":counts(o.enemyKills),@"enemyRemovals":counts(o.enemyRemovals),@"bossSpawns":@(o.bossSpawns),@"worldQuickUses":@(o.worldQuickUses),@"dashStarts":@(o.dashStarts),@"dashMoveTicks":@(o.dashMoveTicks),@"dashParticles":@(o.dashParticles),@"dashRandomCalls":@(o.dashRandomCalls),@"dashSounds":@(o.dashSounds),@"dashInputFrame":@(o.dashInputFrame),@"dashSPBefore":@(o.dashSPBefore),@"dashSPAfter":@(o.dashSPAfter),@"dashMaxDisplacement":@(o.dashMaxDisplacement),@"dashInputAccepted":@(o.dashInputAccepted),@"bots":bots,@"weaponSwaps":swaps,@"botThreatName":native(o.botThreatName),@"botThreatEmissions":@(o.botThreatEmissions),@"help":help,@"gameOver":gameOver,@"ranking":ranking,@"completedMissions":completed}];}
+    for(NSUInteger i=0;i<rows.count;++i){const auto& o=observed[i];const auto& input=o.recentInput;const auto& hud=o.hudLayout;
+        NSMutableArray* inputs=[NSMutableArray array];for(const auto& n:input.inputs)[inputs addObject:@{@"frame":@(n.frame),@"playerX":@(n.player.x),@"playerY":@(n.player.y),@"worldX":@(n.world.x),@"worldY":@(n.world.y),@"screenX":@(n.screen.x),@"screenY":@(n.screen.y),@"accepted":@(n.accepted),@"blocked":@(n.blocked)}];
+        NSMutableArray* zoom=[NSMutableArray array];for(const auto& z:input.zoom)[zoom addObject:@{@"frame":@(z.frame),@"target":@(z.target),@"zoom":@(z.zoom),@"viewportWidth":@(z.viewport.width),@"viewportHeight":@(z.viewport.height),@"outputWidth":@(z.output.width),@"outputHeight":@(z.output.height),@"playerX":@(z.player.x),@"playerY":@(z.player.y),@"currentZoom":@(z.currentZoom),@"targetZoom":@(z.targetZoom),@"minimumScale":@(z.minimumScale),@"policy":@(z.policy),@"pathCount":@(z.pathCount)}];
+        NSMutableDictionary* row=[rows[i] mutableCopy];
+        const auto& sync=o.synchronizedWeapon;row[@"synchronizedWeapon"]=@{@"pausedFrame":@(sync.pausedFrame),@"resumedFrame":@(sync.resumedFrame),@"emittedFrame":@(sync.emittedFrame),@"emissionsAtPause":@(sync.emissionsAtPause),@"emissionsAtResume":@(sync.emissionsAtResume),@"emissionsAfter":@(sync.emissionsAfter),@"pausedWorldTime":@(sync.pausedWorldTime),@"resumedWorldTime":@(sync.resumedWorldTime)};
+        row[@"firstKillWorldTimes"]=@[@(o.firstKillWorldTimes[0]),@(o.firstKillWorldTimes[1]),@(o.firstKillWorldTimes[2])];
+        row[@"firstCrashDeadlines"]=@[@(o.firstCrashDeadlines[0]),@(o.firstCrashDeadlines[1]),@(o.firstCrashDeadlines[2])];
+        row[@"firstRemovalWorldTimes"]=@[@(o.firstRemovalWorldTimes[0]),@(o.firstRemovalWorldTimes[1]),@(o.firstRemovalWorldTimes[2])];
+        row[@"recentInput"]=@{@"firstPathPoints":@(input.firstPathPoints),@"replacementPathPoints":@(input.replacementPathPoints),@"dashBefore":@(input.dashBefore),@"dashAfter":@(input.dashAfter),@"dashFrame":@(input.dashFrame),@"specialBefore":@(input.specialBefore),@"specialAfter":@(input.specialAfter),@"interruptedFrame":@(input.interruptedFrame),@"reactivatedFrame":@(input.reactivatedFrame),@"resumedFrame":@(input.resumedFrame),@"worldTimeAtInterrupt":@(input.worldTimeAtInterrupt),@"worldTimeAtReactivate":@(input.worldTimeAtReactivate),@"worldTimeBeforeResume":@(input.worldTimeBeforeResume),@"worldTimeAfterResume":@(input.worldTimeAfterResume),@"inactivePaused":@(input.inactivePaused),@"inactiveMenu":@(input.inactiveMenu),@"reactivatedPaused":@(input.reactivatedPaused),@"reactivatedMenu":@(input.reactivatedMenu),@"manuallyResumed":@(input.manuallyResumed),@"savesBefore":@(input.savesBefore),@"savesAfter":@(input.savesAfter),@"zoom":zoom};
+        row[@"hudLayout"]=@{@"menuOpened":@(hud.menuOpened),@"editorOpened":@(hud.editorOpened),@"dragMoved":@(hud.dragMoved),@"applied":@(hud.applied),@"reloaded":@(hud.reloaded),@"resumed":@(hud.resumed),@"inputs":@(hud.inputs),@"settingsBytes":@(hud.appliedSettings.size()),@"menuBeforeX":@(hud.menuBefore.x),@"menuBeforeY":@(hud.menuBefore.y),@"menuAfterX":@(hud.menuAfter.x),@"menuAfterY":@(hud.menuAfter.y)};
+        NSMutableDictionary* recent=[row[@"recentInput"] mutableCopy];recent[@"inputs"]=inputs;row[@"recentInput"]=recent;
+        NSMutableDictionary* layout=[row[@"hudLayout"] mutableCopy];layout[@"dragDeltaX"]=@(hud.dragDelta.x);layout[@"dragDeltaY"]=@(hud.dragDelta.y);row[@"hudLayout"]=layout;
+        rows[i]=row;
+    }
     NSMutableArray* activity=[NSMutableArray array];for(const auto& frame:p.runner->frameActivity()){
         NSMutableArray* buttons=[NSMutableArray array];for(const auto& button:frame.buttons)[buttons addObject:@{@"scenario":@(button.scenario),@"id":@(button.id),@"intData":@(button.intData),@"delivered":@(button.delivered)}];
-        [activity addObject:@{@"frame":@(frame.frame),@"tickedScenarios":@(frame.tickedScenarios),@"emittingScenarios":@(frame.emittingScenarios),@"weaponDefinitions":@(frame.emittedWeaponParts.size()),@"weaponKinds":@(frame.emittedWeaponKinds.size()),@"activeProjectiles":@(frame.activeProjectiles),@"combatActiveProjectiles":@(frame.combatActiveProjectiles),@"combatEmittingScenarios":@(frame.combatEmittingScenarios),@"combatDamage":@(frame.combatDamage),@"buttons":buttons,@"saveRestart":@(frame.saveRestart),@"movementLootMoving":@(frame.movementLootMoving),@"movementLootEmissions":@(frame.movementLootEmissions),@"movementLootPickups":@(frame.movementLootPickups),@"movementLootInjury":@(frame.movementLootInjury),@"movementLootCreditGain":@(frame.movementLootCreditGain),@"aidKitUses":@(frame.aidKitUses),@"airStrikeUses":@(frame.airStrikeUses),@"botEmissions":@(frame.botEmissions),@"botItemContacts":@(frame.botItemContacts),@"botRewardArrivals":@(frame.botRewardArrivals),@"botHPRemoved":@(frame.botHPRemoved),@"botRepairs":@(frame.botRepairs),@"helpInputRequests":@(frame.helpInputRequests),@"gameOverEvents":@(frame.gameOverEvents),@"rankingNotices":@(frame.rankingNotices),@"completedMissionEvents":@(frame.completedMissionEvents)}];
+        [activity addObject:@{@"frame":@(frame.frame),@"tickedScenarios":@(frame.tickedScenarios),@"recentInputEvents":@(frame.recentInputEvents),@"hudInputEvents":@(frame.hudInputEvents),@"lifecycleEvents":@(frame.lifecycleEvents),@"emittingScenarios":@(frame.emittingScenarios),@"weaponDefinitions":@(frame.emittedWeaponParts.size()),@"weaponKinds":@(frame.emittedWeaponKinds.size()),@"activeProjectiles":@(frame.activeProjectiles),@"combatActiveProjectiles":@(frame.combatActiveProjectiles),@"combatEmittingScenarios":@(frame.combatEmittingScenarios),@"combatDamage":@(frame.combatDamage),@"buttons":buttons,@"saveRestart":@(frame.saveRestart),@"movementLootMoving":@(frame.movementLootMoving),@"movementLootEmissions":@(frame.movementLootEmissions),@"movementLootPickups":@(frame.movementLootPickups),@"movementLootInjury":@(frame.movementLootInjury),@"movementLootCreditGain":@(frame.movementLootCreditGain),@"aidKitUses":@(frame.aidKitUses),@"airStrikeUses":@(frame.airStrikeUses),@"botEmissions":@(frame.botEmissions),@"botItemContacts":@(frame.botItemContacts),@"botRewardArrivals":@(frame.botRewardArrivals),@"botHPRemoved":@(frame.botHPRemoved),@"botRepairs":@(frame.botRepairs),@"helpInputRequests":@(frame.helpInputRequests),@"gameOverEvents":@(frame.gameOverEvents),@"rankingNotices":@(frame.rankingNotices),@"completedMissionEvents":@(frame.completedMissionEvents)}];
     }
     NSMutableArray* readNames=[NSMutableArray array];for(const auto& name:core.warmReadNames)[readNames addObject:native(name)];NSMutableArray* existsNames=[NSMutableArray array];for(const auto& name:core.warmExistsNames)[existsNames addObject:native(name)];
     NSMutableArray* captures=[NSMutableArray array];for(const auto& [number,frame]:p.sampledFrames){unsigned messages=0,planes=0,markers=0,gauges=0,dash=0,botBodies=0,botRotors=0,helpPages=0,helpGuides=0,completedBackgrounds=0,loadingPictures=0;NSString* helpImage=@"";
@@ -182,7 +252,24 @@ NSDictionary* ConcurrentRuntime::report()const{
     NSMutableDictionary* soundIDs=[NSMutableDictionary dictionary];for(unsigned id=0;id<p.soundIDRequests.size();++id)soundIDs[[NSString stringWithFormat:@"%u",id]]=@(p.soundIDRequests[id]);
     NSMutableArray* missing=[NSMutableArray array];for(const auto& item:p.runner->missingFeatures())[missing addObject:native(item)];
     auto costs=p.costs;std::sort(costs.begin(),costs.end());const double p95=costs.empty()?0:costs[std::min(costs.size()-1,std::size_t(double(costs.size())*.95))];
-    return @{@"capturedSourceFrames":captures,@"messageFonts":messageFonts,@"inputInterruption":p.interruption?:@{},@"frames":@(core.frames),@"presented":@(p.presented),@"scenarios":@(core.activeScenarios),@"combatScenarios":@(core.combatScenarios),@"activeWeaponDefinitions":@(core.activeWeaponDefinitions),@"activeWeaponKinds":@(core.activeWeaponKinds),@"maxConcurrentWeaponDefinitions":@(core.maxConcurrentWeaponDefinitions),@"maxConcurrentWeaponKinds":@(core.maxConcurrentWeaponKinds),@"menuActionFrames":@(core.menuActionFrames),@"menuFramesWithCombatActivity":@(core.menuFramesWithCombatActivity),@"commonFrameInterval":@(core.commonFrameInterval),@"movementFramesWithCombatActivity":@(core.movementFramesWithCombatActivity),@"movementEmissionFramesWithCombatActivity":@(core.movementEmissionFramesWithCombatActivity),@"aidKitFramesWithCombatActivity":@(core.aidKitFramesWithCombatActivity),@"airStrikeFramesWithCombatActivity":@(core.airStrikeFramesWithCombatActivity),@"botFramesWithCombatActivity":@(core.botFramesWithCombatActivity),@"helpFramesWithCombatActivity":@(core.helpFramesWithCombatActivity),@"gameOverFramesWithCombatActivity":@(core.gameOverFramesWithCombatActivity),@"rankingFramesWithCombatActivity":@(core.rankingFramesWithCombatActivity),@"completedMissionFramesWithCombatActivity":@(core.completedMissionFramesWithCombatActivity),@"pickupFramesWithCombatActivity":@(core.pickupFramesWithCombatActivity),@"injuryFramesWithCombatActivity":@(core.injuryFramesWithCombatActivity),@"warmReadNames":readNames,@"warmExistsNames":existsNames,@"warmReadMisses":@(core.warmReadMisses),@"warmExistsMisses":@(core.warmExistsMisses),@"textureUploadsAfterPreparation":@(p.renderer.textureUploads-p.warmUploads),@"imageTextureUploadsAfterPreparation":@(p.renderer.imageTextureUploads-p.warmImageUploads),@"audioBefore":p.warmAudio,@"audioAfter":p.audio.metrics,@"maxPlayingEffects":@(p.maxPlaying),@"maxProgressingEffects":@(p.maxProgressing),@"progressingEffectNames":p.progressingNames,@"everProgressingEffectNames":ever,@"soundIDRequests":soundIDs,@"atomicWrites":@(p.saveWrites),@"elapsedSeconds":@(std::chrono::duration<double>(std::chrono::steady_clock::now()-p.started).count()),@"cpuAndSubmissionP95ms":@(p95),@"cases":rows,@"frameActivity":activity,@"missingFeatures":missing,@"completeGameCoverage":@NO};
+    NSMutableArray* resourceActivity=[NSMutableArray array];const auto names=[](const std::vector<std::string>& values)->NSArray*{NSMutableArray* result=[NSMutableArray array];for(const auto& value:values)[result addObject:native(value)];return result;};
+    for(const auto& event:p.runner->resourceActivity())[resourceActivity addObject:@{@"frame":@(event.frame),@"scenario":@(event.scenario),@"stage":native(event.stage),@"gameRevisionBefore":@(event.gameRevisionBefore),@"gameRevisionAfter":@(event.gameRevisionAfter),@"uiRevisionBefore":@(event.uiRevisionBefore),@"uiRevisionAfter":@(event.uiRevisionAfter),@"gameOwnerChanged":@(event.gameOwnerChanged),@"preparation":@(event.preparation),@"reads":names(event.reads),@"exists":names(event.exists),@"sourceReadMisses":names(event.sourceReadMisses),@"sourceExistsMisses":names(event.sourceExistsMisses)}];
+    NSMutableDictionary* result=[@{@"capturedSourceFrames":captures,@"messageFonts":messageFonts,@"inputInterruption":p.interruption?:@{},@"frames":@(core.frames),@"presented":@(p.presented),@"scenarios":@(core.activeScenarios),@"combatScenarios":@(core.combatScenarios),@"activeWeaponDefinitions":@(core.activeWeaponDefinitions),@"activeWeaponKinds":@(core.activeWeaponKinds),@"maxConcurrentWeaponDefinitions":@(core.maxConcurrentWeaponDefinitions),@"maxConcurrentWeaponKinds":@(core.maxConcurrentWeaponKinds),@"menuActionFrames":@(core.menuActionFrames),@"menuFramesWithCombatActivity":@(core.menuFramesWithCombatActivity),@"commonFrameInterval":@(core.commonFrameInterval),@"movementFramesWithCombatActivity":@(core.movementFramesWithCombatActivity),@"movementEmissionFramesWithCombatActivity":@(core.movementEmissionFramesWithCombatActivity),@"aidKitFramesWithCombatActivity":@(core.aidKitFramesWithCombatActivity),@"airStrikeFramesWithCombatActivity":@(core.airStrikeFramesWithCombatActivity),@"botFramesWithCombatActivity":@(core.botFramesWithCombatActivity),@"helpFramesWithCombatActivity":@(core.helpFramesWithCombatActivity),@"gameOverFramesWithCombatActivity":@(core.gameOverFramesWithCombatActivity),@"rankingFramesWithCombatActivity":@(core.rankingFramesWithCombatActivity),@"completedMissionFramesWithCombatActivity":@(core.completedMissionFramesWithCombatActivity),@"pickupFramesWithCombatActivity":@(core.pickupFramesWithCombatActivity),@"injuryFramesWithCombatActivity":@(core.injuryFramesWithCombatActivity),@"warmReadNames":readNames,@"warmExistsNames":existsNames,@"warmReadMisses":@(core.warmReadMisses),@"warmExistsMisses":@(core.warmExistsMisses),@"textureUploadsAfterPreparation":@(p.renderer.textureUploads-p.warmUploads),@"imageTextureUploadsAfterPreparation":@(p.renderer.imageTextureUploads-p.warmImageUploads),@"audioBefore":p.warmAudio,@"audioAfter":p.audio.metrics,@"maxPlayingEffects":@(p.maxPlaying),@"maxProgressingEffects":@(p.maxProgressing),@"progressingEffectNames":p.progressingNames,@"everProgressingEffectNames":ever,@"soundIDRequests":soundIDs,@"atomicWrites":@(p.saveWrites),@"elapsedSeconds":@(std::chrono::duration<double>(std::chrono::steady_clock::now()-p.started).count()),@"cpuAndSubmissionP95ms":@(p95),@"cases":rows,@"frameActivity":activity,@"missingFeatures":missing,@"completeGameCoverage":@NO} mutableCopy];
+    result[@"resourceLifecycle"]=@{@"ownerBoundaryEvents":@(p.ownerBoundaryEvents),@"imageReadsAfterPreparation":@(p.renderer.imageResourceReads-p.warmImageReads),@"imageDecodesAfterPreparation":@(p.renderer.imageDecodeCalls-p.warmImageDecodes),@"textureUploadsAfterPreparation":@(p.renderer.textureUploads-p.warmUploads),@"textureDeletes":@(p.renderer.textureDeletes),@"residentTextures":@(p.renderer.residentTextures),@"residentTextureBytes":@(p.renderer.residentTextureBytes),@"steadyDrawImageReads":@(p.steadyDrawImageReads),@"steadyDrawImageDecodes":@(p.steadyDrawImageDecodes),@"steadyDrawTextureUploads":@(p.steadyDrawTextureUploads)};
+    const auto preparations=p.audio.preparationSnapshot;NSMutableArray* initialNames=[NSMutableArray new],*finalNames=[NSMutableArray new];
+    for(NSDictionary* row in p.warmAudioPreparations)[initialNames addObject:row[@"name"]];for(NSDictionary* row in preparations)[finalNames addObject:row[@"name"]];
+    const auto boundary=std::min(p.warmAudioPreparations.count,preparations.count);
+    result[@"audioPreparation"]=@{@"before":p.warmAudioPreparations,@"after":preparations,@"beforeNames":initialNames,@"afterNames":finalNames,@"newCacheMisses":[preparations subarrayWithRange:NSMakeRange(boundary,preparations.count-boundary)]};
+    result[@"recentInputFramesWithCombatActivity"]=@(core.recentInputFramesWithCombatActivity);
+    result[@"hudFramesWithCombatActivity"]=@(core.hudFramesWithCombatActivity);
+    result[@"lifecycleFramesWithCombatActivity"]=@(core.lifecycleFramesWithCombatActivity);
+    result[@"resourceActivity"]=resourceActivity;
+    result[@"resourcePreparationOperations"]=@(core.resourcePreparationOperations);
+    result[@"preparationReadRequests"]=@(core.preparationReadRequests);result[@"preparationExistsRequests"]=@(core.preparationExistsRequests);
+    result[@"steadyReadRequests"]=@(core.steadyReadRequests);result[@"steadyExistsRequests"]=@(core.steadyExistsRequests);
+    result[@"preparationReadMisses"]=@(core.preparationReadMisses);result[@"preparationExistsMisses"]=@(core.preparationExistsMisses);
+    result[@"steadyReadMisses"]=@(core.steadyReadMisses);result[@"steadyExistsMisses"]=@(core.steadyExistsMisses);
+    return result;
 }
 NSDictionary* ConcurrentRuntime::verifyRepeatedRendering(CAEAGLLayer* layer,Size viewport){
     auto& p=*impl_;const auto frame=p.runner->drawFrame(viewport);const auto before=p.renderer.drawCalls;
@@ -194,8 +281,23 @@ NSDictionary* ConcurrentRuntime::verifyRepeatedRendering(CAEAGLLayer* layer,Size
     return @{@"renderPath":@"originalOrderedScissor",@"experimentalBatchingAdopted":@NO,@"sameCachedFrame":@YES,@"sourceSprites":@(frame.sprites.size()),@"firstDrawCalls":@(middle-before),@"repeatDrawCalls":@(p.renderer.drawCalls-middle),@"comparedPixels":@(repeated.length/4),@"differentRGBPixels":@(different),@"maxRGBDifference":@(maximum)};
 }
 bool ConcurrentRuntime::captureStoredFrame(unsigned number,CAEAGLLayer* layer){auto& p=*impl_;const auto found=p.sampledFrames.find(number);if(found==p.sampledFrames.end())return false;[p.renderer captureNextFrame];[p.renderer drawFrame:found->second layer:layer];return true;}
+bool ConcurrentRuntime::pressScenarioButton(unsigned index,unsigned id,int data){return impl_->pressButton(index,id,data);}
+NSDictionary* ConcurrentRuntime::captureScenarioUI(unsigned index,CAEAGLLayer* layer){
+    auto& p=*impl_;auto& game=p.runner->session(index);auto& view=*p.interfaces.at(index);
+    const auto frame=p.runner->scenarioFrame(index);
+    [p.renderer captureNextFrame];[p.renderer drawFrame:frame layer:layer];
+    NSMutableArray* buttons=[NSMutableArray new];const auto& display=game.display();
+    for(const auto& key:view.screens->buttons()){
+        const auto button=view.screens->button(key);if(!button)continue;
+        const auto point=view.screens->buttonScreenPosition(key);
+        [buttons addObject:@{@"id":@(key.id),@"data":@(key.intData),@"dataId":native(key.dataId),@"visible":@(button->visible),@"active":@(button->active),@"x":@(point.x),@"y":@(point.y),@"centerInsideCanvas":@(point.x>=0&&point.y>=0&&point.x<display.canvas.width&&point.y<display.canvas.height)}];
+    }
+    return @{@"scenario":@(index),@"frame":@(p.runner->metrics().frames),@"screen":@(int(game.state().screen)),@"credits":@(game.state().credits),@"width":@(display.canvas.width),@"height":@(display.canvas.height),@"buttons":buttons,@"extraSimulationTick":@NO,@"revealButtonDuringCapture":@NO,@"visualPassAsserted":@NO};
+}
 void ConcurrentRuntime::captureNextFrame(){[impl_->renderer captureNextFrame];}
 NSData* ConcurrentRuntime::pixels()const{return impl_->renderer.readRGBA;}
 NSData* ConcurrentRuntime::legacyComparisonPixels()const{return impl_->legacyComparison;}
 CGSize ConcurrentRuntime::drawableSize()const{return impl_->renderer.drawableSize;}
 }
+
+namespace hm2::apple {void ConcurrentRuntime::setDisplay(DisplayConfiguration display){auto& p=*impl_;p.runner->setDisplay(display);for(auto& view:p.interfaces)if(view->screens){view->screens->setDisplay(display);p.prepare(*view->screens,view->tiles,0);}p.resourcesDirty=true;p.releaseExpiredOwners();}}

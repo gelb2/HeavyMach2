@@ -5,8 +5,10 @@
 #include "Core/Simulation/DarwinWorldRandom.hpp"
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 #include <limits>
 #include <map>
+#include <queue>
 #include <set>
 #include <stdexcept>
 
@@ -78,6 +80,19 @@ ClipRect intersect(ClipRect a,ClipRect b){
 }
 struct ConcurrentValidation::Impl {
     struct Case;
+    struct ResourceSnapshot {const GameSession* game=nullptr;std::uint64_t gameRevision=0,uiRevision=0;};
+    struct CaseResources final:ResourceAccess {
+        struct Request {std::string name;bool exists=false,sourceMiss=false;};
+        Impl& owner;unsigned index;mutable std::optional<ResourceSnapshot> before;mutable std::string stage;mutable std::vector<Request> requests;
+        CaseResources(Impl& o,unsigned i):owner(o),index(i){}
+        void note(std::string_view name,bool exists,bool miss)const{
+            if(!owner.resources.warm)return;
+            if(!before){before=owner.resourceSnapshot(index);stage=owner.resourceStage;}
+            requests.push_back({std::string(name),exists,miss});
+        }
+        Bytes read(std::string_view name)override{note(name,false,!owner.resources.bytes.contains(name));return owner.resources.read(name);}
+        bool exists(std::string_view name)const override{note(name,true,!owner.resources.present.contains(name));return owner.resources.exists(name);}
+    };
     struct Adapter final:SessionHost {
         Impl& owner;unsigned index;Bytes saved;std::vector<std::string> alerts;
         Adapter(Impl& o,unsigned i):owner(o),index(i){}
@@ -103,27 +118,51 @@ struct ConcurrentValidation::Impl {
         std::uint32_t unixTime()override{return owner.host.unixTime();}
     };
     struct Case {
-        Adapter adapter;DarwinWorldRandom random;std::unique_ptr<GameSession> game;
+        Adapter adapter;CaseResources resources;DarwinWorldRandom random;std::unique_ptr<GameSession> game;
         std::uint64_t priorEmissions=0,priorPlayerEmissions=0,priorDamage=0,priorKills=0;
         int initialLevel=0;std::set<std::string> emitted;
-        std::uint64_t worldTarget=0;bool worldEnemyFired=false;
+        std::uint64_t worldTarget=0,lastWorldStrike=0;bool worldEnemyFired=false,worldStrikeUsed=false;
+        std::uint64_t gameOverInitialTarget=0;bool gameOverRetargeted=false;
         std::map<std::string,std::uint64_t,std::less<>> lastWeaponCounts;
-        Case(Impl& owner,unsigned index):adapter(owner,index),random(index+1){}
+        std::array<Vec2,3> regressionPath{};Vec2 regressionTap;
+        Case(Impl& owner,unsigned index):adapter(owner,index),resources(owner,index),random(index+1){}
     };
     CachedResources resources;ValidationHost& host;Weapons catalog;
+    std::string resourceStage="external";std::vector<ResourceActivity> resourceActivity;
+    ResourceSnapshot resourceSnapshot(unsigned index){const auto& c=*cases.at(index);return {c.game.get(),c.game?c.game->resourceRevision():0,host.scenarioUIResourceRevision(index)};}
+    void beginResourceOperation(unsigned index,std::string_view stage){
+        auto& trace=cases.at(index)->resources;if(trace.before)finishResourceOperation(index);
+        trace.before=resourceSnapshot(index);trace.stage=stage;
+    }
+    void finishResourceOperation(unsigned index){
+        auto& trace=cases.at(index)->resources;if(!trace.before)return;
+        const auto before=*trace.before,after=resourceSnapshot(index);const bool changed=before.game!=after.game||before.gameRevision!=after.gameRevision||before.uiRevision!=after.uiRevision;
+        if(!trace.requests.empty()||changed){
+            ResourceActivity row;row.frame=counters.frames;row.scenario=index;row.stage=trace.stage;row.gameRevisionBefore=before.gameRevision;row.gameRevisionAfter=after.gameRevision;row.uiRevisionBefore=before.uiRevision;row.uiRevisionAfter=after.uiRevision;row.gameOwnerChanged=before.game!=after.game;row.preparation=changed;
+            for(const auto& request:trace.requests){auto& names=request.exists?row.exists:row.reads;names.push_back(request.name);if(request.sourceMiss)(request.exists?row.sourceExistsMisses:row.sourceReadMisses).push_back(request.name);}
+            if(changed){++counters.resourcePreparationOperations;counters.preparationReadRequests+=row.reads.size();counters.preparationExistsRequests+=row.exists.size();counters.preparationReadMisses+=row.sourceReadMisses.size();counters.preparationExistsMisses+=row.sourceExistsMisses.size();}
+            else{counters.steadyReadRequests+=row.reads.size();counters.steadyExistsRequests+=row.exists.size();counters.steadyReadMisses+=row.sourceReadMisses.size();counters.steadyExistsMisses+=row.sourceExistsMisses.size();}
+            resourceActivity.push_back(std::move(row));
+        }
+        trace.before.reset();trace.requests.clear();trace.stage.clear();
+    }
     std::map<std::string,int,std::less<>> botRadii;std::map<std::string,std::vector<std::string>,std::less<>> botThreats;
     std::vector<ScenarioDescription> descriptions;std::vector<ScenarioObservation> observations;
     std::vector<std::unique_ptr<Case>> cases;ConcurrentMetrics counters;
     bool active=true;std::uint64_t sourceFrameNumber=std::numeric_limits<std::uint64_t>::max();
+    DisplayConfiguration display;
     std::vector<Frame> sourceFrames;std::vector<FrameActivity> activity;std::vector<ButtonActivity> pendingButtons;std::size_t shopIndex=0,missionIndex=0,restartIndex=0,movementIndex=0;
     std::vector<std::size_t> aidKitIndices,airStrikeIndices,worldIndices,botIndices,helpIndices;std::size_t dashIndex=0,gameOverIndex=112,rankingIndex=113,completedMissionIndex=114;std::uint64_t pendingAidKitUses=0,pendingAirStrikeUses=0,pendingBotRepairs=0,pendingHelpInputs=0;
+    std::optional<double> compactPausedWorldTime;
+    std::vector<std::size_t> synchronizedIndices;std::set<std::size_t> synchronizedReady;bool synchronizedReleased=false;
+    std::uint64_t pendingRecentInputEvents=0,pendingHUDInputEvents=0,pendingLifecycleEvents=0;
     int shopCreditBefore=0,shopItemsBefore=0,shopCreditAfter=0,shopItemsAfter=0;unsigned repairButton=0;
     static int repairCount(GameSession& game){int count=0;for(const auto& item:game.state().inventory)if(item.dataId=="01001")count+=item.count;return count;}
     explicit Impl(ResourceAccess& source,ValidationHost& sink):resources(source),host(sink),catalog(Weapons::parse(DataTable::parse(resources.read("WeaponInfo.tble")))){
         const auto items=DataTable::parse(resources.read("ItemInfo.tble"));std::vector<WeaponStart> weapons;
         for(std::size_t row=0;row<items.rowCount();++row)if(items.value(row,"Type")=="PtWpn")weapons.push_back({std::string(items.value(row,"Code").value_or("")),std::string(items.value(row,"strParam").value_or("")),items.integer(row,"Lv")});
         if(weapons.size()!=110)throw std::runtime_error("Expected original HD110 player-weapon items; no enemy weapons may be substituted");
-        descriptions.reserve(115);observations.resize(115);cases.reserve(115);
+        descriptions.reserve(concurrentScenarioCount);observations.resize(concurrentScenarioCount);cases.reserve(concurrentScenarioCount);
         for(std::size_t i=0;i<weapons.size();i+=2){const std::span pair(weapons.data()+i,std::size_t(2));
             add({"combat "+pair[0].code+" + "+pair[1].code,ScenarioRole::combat,{pair[0].code,pair[1].code}},startSave(pair,host.unixTime()),true);
         }
@@ -164,7 +203,7 @@ struct ConcurrentValidation::Impl {
         // normal initializeSlot's Picker or automatic gameplay rewards.
         const auto machines=Machines::parse(DataTable::parse(resources.read("MachList.tble")));
         const auto models=Models::parse(Chunk::parse(resources.read("PartsInfo.mcb")),Chunk::parse(resources.read("MachInfo.mcb")));
-        botRadii.emplace("Player",machines.machine("Player").radius);
+        for(const auto& [name,machine]:machines.all())botRadii.emplace(name,machine.radius);
         for(const auto& spawner:maps.map("Stage01_01").spawners){botRadii.insert_or_assign(spawner.model,machines.machine(spawner.model).radius);
             if(botThreats.contains(spawner.model))continue;
             for(const auto& part:models.modelMounts(spawner.model)){const auto weapon=catalog.all().find(part.part);if(weapon!=catalog.all().end()&&int(weapon->second.kind)>=0&&int(weapon->second.kind)<=8&&weapon->second.kind!=WeaponKind::gun&&weapon->second.kind!=WeaponKind::sniper&&weapon->second.damage>0&&weapon->second.damageRange>0)botThreats[spawner.model].push_back(part.part);}
@@ -214,6 +253,25 @@ struct ConcurrentValidation::Impl {
         add({"Command ordered completion / rewards / 5007 / saved payload restore",ScenarioRole::completedMissions,{}},completedMissionFixture(resources,host.unixTime()),false);
         observations[completedMissionIndex].completedMissions.savesBefore=observations[completedMissionIndex].saves;
         observations[completedMissionIndex].completedMissions.initialRepairItems=repairCount(*cases[completedMissionIndex]->game);
+        // Append-only regression sessions; all original115 IDs/fixtures remain.
+        for(const auto role:{ScenarioRole::pathReplacementSingle,ScenarioRole::pathReplacementMany,ScenarioRole::focusZoom,ScenarioRole::lifecycle,ScenarioRole::hudLayout,ScenarioRole::cameraIdle}){
+            auto recent=recentInputFixture(host.unixTime());
+            // No weapon registration in these input-only fixtures; no target
+            // is killed before the lock-on/camera observation can complete.
+            const char* label=role==ScenarioRole::pathReplacementSingle?"path replace single / actual doubletap":role==ScenarioRole::pathReplacementMany?"path replace many / actual doubletap":role==ScenarioRole::focusZoom?"real target / variable camera / fixed output":role==ScenarioRole::lifecycle?"inactive / menu / explicit resume / no save":role==ScenarioRole::hudLayout?"HUD GPU edit / Apply / stored profile reload":"idle camera / no target / fixed baseline";
+            const auto index=cases.size();add({label,role,{},"Stage01_01"},std::move(recent),true,false);
+            observations[index].recentInput.savesBefore=observations[index].saves;
+        }
+        // Extra independent worlds coordinate genuine ready-to-fire states
+        // through the real menu. Original110-weapon coverage stays untouched.
+        for(const auto kind:{WeaponKind::gun,WeaponKind::shotgun,WeaponKind::railgun,WeaponKind::missile,WeaponKind::sniper}){
+            const WeaponStart* selected=nullptr;
+            for(const auto& w:weapons)if(catalog.weapon(w.part).kind==kind&&(!selected||catalog.weapon(w.part).shotRange>catalog.weapon(selected->part).shotRange))selected=&w;
+            if(!selected)throw std::logic_error("Missing original synchronized weapon kind");
+            auto saved=startSave(std::span(selected,1),host.unixTime());progression::SlotView(saved.slot(0)).u32(0x604+3*4,std::uint32_t(-1));
+            synchronizedIndices.push_back(cases.size());
+            add({"synchronized original ready / menu pause / resume "+selected->part,ScenarioRole::synchronizedWeapons,{selected->code},"Stage01_01"},std::move(saved),true,false);
+        }
         // Pre-read the actual future Base002 consumer using an independent
         // preparation session. Its state, RNG, writes and HP never enter cases.
         struct PreparationHost final:SessionHost {
@@ -235,7 +293,7 @@ struct ConcurrentValidation::Impl {
     }
     void add(ScenarioDescription description,SaveData save,bool field,bool visitBase=true,std::string_view map="Stage01_01",int gate=0){
         const auto index=unsigned(cases.size());descriptions.push_back(std::move(description));
-        auto value=std::make_unique<Case>(*this,index);value->game=std::make_unique<GameSession>(resources,value->adapter,value->random,std::move(save));
+        auto value=std::make_unique<Case>(*this,index);value->game=std::make_unique<GameSession>(value->resources,value->adapter,value->random,std::move(save));
         if(!value->game->selectSlot(0))throw std::runtime_error("Validation selectSlot save failed");if(visitBase)value->game->enterBase();
         value->initialLevel=value->game->state().level;observations[index].initialLevel=value->initialLevel;
         if(field){observations[index].missionAccepted=value->game->acceptMission("M001010");if(!value->game->enterField(map,gate))throw std::runtime_error("Validation original field unavailable");if(descriptions.back().map.empty())descriptions.back().map=map;}
@@ -250,49 +308,197 @@ struct ConcurrentValidation::Impl {
         // are observations of actual world state, never actor-position writes.
         const auto loot=game.fieldItems();const Vec2 player=scene->player().position;const FieldItemSnapshot* nearest=nullptr;float best=std::numeric_limits<float>::max();
         for(const auto& item:loot)if(!item.removed){const float dx=item.position.x-player.x,dy=item.position.y-player.y,d=dx*dx+dy*dy;if(d<best){best=d;nearest=&item;}}
+        if(game.display().enabled&&game.display().compact&&observed.coinPickups&&!observed.itemPickups){
+            // Once a genuine coin contact is covered, approach a genuine
+            // inventory drop. Nearest-coin taps can oscillate at a wall.
+            best=std::numeric_limits<float>::max();
+            for(const auto& item:loot)if(!item.removed&&item.type!=0){const float d=std::hypot(item.position.x-player.x,item.position.y-player.y);if(d<best){best=d;nearest=&item;}}
+        }
         //31 ticks are .5146s. Keep this walking/pickup condition outside the
         // restored <.5s Dash gesture; the independent Dash case tests that path.
         if((counters.frames-1)%31!=0)return;
         // Walk into the field while firing before the first genuine kill/drop.
         const Vec2 destination=nearest?nearest->position:Vec2{observed.startPosition.x,observed.startPosition.y+100};
         if(!nearest&&counters.frames>60)return;
+        if(nearest&&game.display().enabled&&game.display().compact){approachTarget(movementIndex,destination);return;}
         const Vec2 projected=scene->camera().toScreen(destination);
-        const Vec2 screen{std::clamp(projected.x,16.f,scene->camera().viewport.width-16),std::clamp(projected.y,120.f,scene->camera().viewport.height-16)};
+        const Vec2 screen{std::clamp(projected.x,16.f,scene->camera().viewport.width-16),std::clamp(projected.y,fieldFloor(scene->camera()),scene->camera().viewport.height-16)};
         const Vec2 requested=scene->camera().toWorld(screen);constexpr std::uintptr_t pointer=0x4c4f4f54;
-        const bool begin=game.inputWorld(PointerPhase::begin,screen,pointer);game.inputWorld(PointerPhase::end,screen,pointer);
+        const bool begin=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(screen),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(screen),pointer);
         ++observed.navigationRequests;if(!begin)++observed.navigationRejected;
         observed.navigation.push_back({counters.frames,player,requested,screen,nearest?nearest->code:"",begin,scene->player().blocked});
     }
     bool press(std::size_t index,unsigned id,int data=0){++observations[index].buttonRequests;const bool delivered=host.pressButton(unsigned(index),id,data);if(!delivered)++observations[index].buttonFailures;pendingButtons.push_back({unsigned(index),id,data,delivered});return delivered;}
-    void worldQuick(std::size_t index,unsigned slot,Vec2 target){
+    bool worldQuick(std::size_t index,unsigned slot,Vec2 target){
         auto& game=*cases[index]->game;press(index,6200+slot);const auto screen=game.battle()->camera().toScreen(target);
-        constexpr std::uintptr_t pointer=0x574f524c;if(game.inputWorld(PointerPhase::begin,screen,pointer))++observations[index].worldQuickUses;
-        game.inputWorld(PointerPhase::end,screen,pointer);
+        constexpr std::uintptr_t pointer=0x574f524c;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(screen),pointer);if(accepted)++observations[index].worldQuickUses;
+        game.inputWorld(PointerPhase::end,game.worldCanvasPoint(screen),pointer);return accepted;
+    }
+    static float fieldFloor(const MapCamera& camera){return camera.fillSurface?camera.inputMinimumY+20:camera.fitWorld?camera.focusMinimumY+20:120.f;}
+    bool approachTarget(std::size_t index,Vec2 target){
+        auto& game=*cases[index]->game;auto* scene=game.battle();const auto& camera=scene->camera();const auto projected=camera.toScreen(target);
+        const float bottom=fieldFloor(camera),top=camera.viewport.height-16;
+        if(bottom>=top)return false;
+        const Vec2 desired{std::clamp(projected.x,16.f,camera.viewport.width-16),std::clamp(projected.y,bottom,top)};
+        const auto enemies=scene->enemies();const auto player=scene->player().position;
+        const auto clearSegment=[&](Vec2 a,Vec2 b){if(!camera.fillSurface)return true;const float dx=b.x-a.x,dy=b.y-a.y;const unsigned steps=std::max(1u,unsigned(std::ceil(std::hypot(dx,dy)/8)));for(unsigned n=1;n<=steps;++n){const float t=float(n)/steps;const Vec2 p{a.x+dx*t,a.y+dy*t};const auto hit=scene->terrain().resolve(p);if(std::abs(hit.position.x-p.x)>.1f||std::abs(hit.position.y-p.y)>.1f)return false;for(const auto& enemy:enemies)if(enemy.hp>0&&!enemy.corpse&&enemy.kind!=MachineKind::aircraft){const float r=float(botRadii.at(enemy.name)+botRadii.at("Player"))+4;const float before=(a.x-enemy.position.x)*(a.x-enemy.position.x)+(a.y-enemy.position.y)*(a.y-enemy.position.y),after=(p.x-enemy.position.x)*(p.x-enemy.position.x)+(p.y-enemy.position.y)*(p.y-enemy.position.y);if(after<r*r&&(before>=r*r||after<before-.1f))return false;}}return true;};
+        const auto navigate=[&](Vec2 ground){const auto screen=camera.toScreen(ground);constexpr std::uintptr_t pointer=0x41505052;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(screen),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(screen),pointer);auto& o=observations[index];++o.navigationRequests;if(!accepted)++o.navigationRejected;o.navigation.push_back({counters.frames,player,ground,screen,"approach-visible-field-target",accepted,scene->player().blocked});return accepted;};
+        for(const Vec2 delta:{Vec2{0,0},Vec2{60,0},Vec2{-60,0},Vec2{0,-60},Vec2{120,-60},Vec2{-120,-60}}){
+            const Vec2 screen{std::clamp(desired.x+delta.x,16.f,camera.viewport.width-16),std::clamp(desired.y+delta.y,bottom,top)};const auto ground=camera.toWorld(screen);const float dx=ground.x-player.x,dy=ground.y-player.y;if(dx*dx+dy*dy<900)continue;
+            const auto contact=scene->terrain().resolve(ground);if(std::abs(contact.position.x-ground.x)>.1f||std::abs(contact.position.y-ground.y)>.1f)continue;
+            bool clear=true;for(const auto& enemy:enemies)if(enemy.hp>0&&!enemy.corpse){const float x=enemy.position.x-ground.x,y=enemy.position.y-ground.y,r=float(botRadii.at(enemy.name))+1;if(x*x+y*y<r*r)clear=false;}if(!clear)continue;
+            if(clearSegment(player,ground))return navigate(ground);
+        }
+        if(!game.display().enabled||!game.display().compact)return false;
+        // Validation input planning only. A short landscape view cannot tap a
+        // distant aircraft through the coastline: route ordinary ground taps
+        // around the real original polygons. No actor/HP/target outcome writes.
+        constexpr int side=31,count=side*side;const auto point=[](int i){return Vec2{-480.f+32*(i%side),-480.f+32*(i/side)};};
+        std::array<bool,count> open{};int start=-1,goal=-1;float startDistance=std::numeric_limits<float>::max(),goalDistance=startDistance;
+        for(int i=0;i<count;++i){const auto p=point(i);const auto hit=scene->terrain().resolve(p);if(std::abs(p.x-hit.position.x)>.1f||std::abs(p.y-hit.position.y)>.1f)continue;bool occupied=false;for(const auto& enemy:enemies)if(enemy.hp>0&&!enemy.corpse&&enemy.kind!=MachineKind::aircraft&&std::hypot(p.x-enemy.position.x,p.y-enemy.position.y)<botRadii.at(enemy.name)+botRadii.at("Player")+4)occupied=true;if(occupied)continue;open[i]=true;const float a=std::hypot(p.x-player.x,p.y-player.y),b=std::hypot(p.x-target.x,p.y-target.y);if(a<startDistance&&clearSegment(player,p)){start=i;startDistance=a;}if(b<goalDistance){goal=i;goalDistance=b;}}
+        if(start<0||goal<0)return false;
+        std::array<float,count> cost;cost.fill(std::numeric_limits<float>::max());std::array<int,count> parent;parent.fill(-1);cost[start]=0;
+        using Route=std::pair<float,int>;std::priority_queue<Route,std::vector<Route>,std::greater<Route>> queue;queue.push({0,start});
+        while(!queue.empty()){const int at=queue.top().second;queue.pop();if(at==goal)break;for(int dy=-1;dy<=1;++dy)for(int dx=-1;dx<=1;++dx){if(!dx&&!dy)continue;const int x=at%side+dx,y=at/side+dy,next=y*side+x;if(x<0||x>=side||y<0||y>=side||!open[next]||!clearSegment(point(at),point(next)))continue;const float distance=cost[at]+std::hypot(float(dx),float(dy));if(distance>=cost[next])continue;cost[next]=distance;parent[next]=at;const auto p=point(next),g=point(goal);queue.push({distance+std::hypot(p.x-g.x,p.y-g.y)/32,next});}}
+        if(goal!=start&&parent[goal]<0){
+            // Aircraft may hover over an enclosed/sea polygon. Walk to the
+            // closest reachable ground, rather than choosing an unreachable
+            // grid cell merely because it lies directly under the aircraft.
+            goal=start;float nearest=std::numeric_limits<float>::max();
+            for(int i=0;i<count;++i)if(std::isfinite(cost[i])&&cost[i]<std::numeric_limits<float>::max()){const auto p=point(i);const float d=std::hypot(p.x-target.x,p.y-target.y);if(d<nearest){nearest=d;goal=i;}}
+        }
+        std::vector<int> path;for(int at=goal;at>=0;at=parent[at]){path.push_back(at);if(at==start)break;}std::reverse(path.begin(),path.end());std::optional<Vec2> nextPoint;
+        for(int at:path){const auto p=point(at);const auto screen=camera.toScreen(p);if(screen.x<16||screen.x>camera.viewport.width-16||screen.y<bottom||screen.y>top||!clearSegment(player,p))continue;if(std::hypot(p.x-player.x,p.y-player.y)>=32)nextPoint=p;}
+        return nextPoint?navigate(*nextPoint):false;
+    }
+    static bool compactWeaponGuideCase(std::size_t index){return index==30||index==35||index==38||index==50;}
+    void guideCompactWeapon(std::size_t index){
+        if((counters.frames-1)%31)return;
+        auto& game=*cases[index]->game;auto* scene=game.battle();if(!scene||scene->isPaused()||scene->playerHP()<1)return;
+        const WeaponInfo* pending=nullptr;for(const auto& weapon:scene->playerWeapons())if(!scene->metrics().playerWeaponEmissions.at(weapon.part)){
+            const auto& info=catalog.weapon(weapon.part);if(!pending||info.kind==WeaponKind::missile)pending=&info;
+        }
+        if(!pending)return;
+        CombatGuideSample sample;sample.frame=counters.frames;sample.player=scene->player().position;sample.pendingPart=pending->part;sample.pendingRange=pending->shotRange;sample.viewport={scene->camera().viewport.width,scene->camera().viewport.height};
+        const bool queueSelection=index==35||index==38;
+        if(queueSelection&&scene->metrics().playerEmissions==0){
+            float naturalReload=0;for(const auto& weapon:scene->playerWeapons())naturalReload=std::max(naturalReload,catalog.weapon(weapon.part).reloadDelay);
+            if(scene->clock().worldTime()<double(naturalReload)){sample.action="wait-original-initial-reload";observations[index].combatGuide.push_back(std::move(sample));return;}
+        }
+        std::optional<CombatEnemySnapshot> far,nearest;float farDistance=-1,nearDistance=std::numeric_limits<float>::max();
+        std::vector<CombatEnemySnapshot> visible;
+        for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){
+            ++sample.living;const float distance=std::hypot(enemy.position.x-sample.player.x,enemy.position.y-sample.player.y);
+            const auto point=scene->camera().toScreen(enemy.position);
+            // At the finite bottom edge a nearer enemy may be behind HUD.
+            // Approach an enemy above the input floor, bringing more of the
+            // field into view through ordinary movement instead of overscan.
+            if(point.y>=fieldFloor(scene->camera())&&distance<nearDistance){nearest=enemy;nearDistance=distance;}
+            if(point.x<16||point.x>scene->camera().viewport.width-16||point.y<fieldFloor(scene->camera())||point.y>scene->camera().viewport.height-16)continue;
+            ++sample.visible;if(distance<float(pending->shotRange)){visible.push_back(enemy);if(distance>farDistance){far=enemy;farDistance=distance;}}
+        }
+        if(far){
+            sample.target=far->id;sample.targetPosition=far->position;sample.distance=farDistance;
+            if(queueSelection&&visible.size()>1){
+                // The original drag queue advances after the fast gun kills
+                // its first target. The later missile controller can then
+                // see the next live target in that same ordinary Player tick.
+                // Do not remove equipment or manufacture a firing target.
+                sample.action="drag-visible-enemy-queue";constexpr std::uintptr_t pointer=0x57454150;auto point=game.worldCanvasPoint(scene->camera().toScreen(far->position));sample.accepted=game.inputWorld(PointerPhase::begin,point,pointer);sample.queuedTargets.push_back(far->id);
+                for(const auto& enemy:visible)if(enemy.id!=far->id){point=game.worldCanvasPoint(scene->camera().toScreen(enemy.position));game.inputWorld(PointerPhase::move,point,pointer);sample.queuedTargets.push_back(enemy.id);}
+                game.inputWorld(PointerPhase::end,point,pointer);
+            }else if(scene->selectedEnemy()!=far->id){sample.action="single-visible-enemy-tap";const auto point=game.worldCanvasPoint(scene->camera().toScreen(far->position));constexpr std::uintptr_t pointer=0x57454150;sample.accepted=game.inputWorld(PointerPhase::begin,point,pointer);game.inputWorld(PointerPhase::end,point,pointer);}
+            else sample.action="keep-selected-target";
+        }else if(nearest){sample.target=nearest->id;sample.targetPosition=nearest->position;sample.distance=nearDistance;sample.action="ground-approach-unseen-target";sample.accepted=approachTarget(index,nearest->position);}
+        else sample.action="no-living-target";
+        sample.selectedAfter=scene->selectedEnemy();observations[index].combatGuide.push_back(std::move(sample));
     }
     void guideWorld(std::size_t index){
         auto& c=*cases[index];auto& game=*c.game;auto* scene=game.battle();if(!scene||scene->playerHP()<1)return;
         if(game.state().hpRate<.65f)worldQuick(index,0,scene->player().position);
         const auto& map=descriptions[index].map;const bool aircraft=map=="Stage02_07"||map=="Stage03_04",turret=map=="Stage01_02";
         if(!aircraft&&!turret)return;const auto kind=aircraft?MachineKind::aircraft:MachineKind::turret;
+        if(game.display().enabled&&(scene->camera().viewport.width<768||scene->camera().viewport.height<1024)){
+            const auto enemies=scene->enemies();if(!c.worldTarget&&counters.frames>=2)for(const auto& e:enemies)if(e.kind==kind&&e.hp>0&&!e.corpse){c.worldTarget=e.id;break;}
+            const auto found=std::find_if(enemies.begin(),enemies.end(),[&](const auto& e){return e.id==c.worldTarget&&e.hp>0&&!e.corpse;});if(found==enemies.end())return;
+            const auto point=scene->camera().toScreen(found->position);const bool visible=point.x>=16&&point.x<=scene->camera().viewport.width-16&&point.y>=fieldFloor(scene->camera())&&point.y<=scene->camera().viewport.height-16;
+            if(scene->metrics().enemyEmissionsByKind.at(kind)>0)c.worldEnemyFired=true;
+            if(aircraft&&(!c.worldStrikeUsed||(scene->camera().fillSurface&&c.worldEnemyFired&&counters.frames>=c.lastWorldStrike+180))){
+                const Vec2 aim{std::clamp(point.x,16.f,scene->camera().viewport.width-16),std::clamp(point.y,scene->camera().inputMinimumY+1,scene->camera().viewport.height-16)};
+                // Use another owned original02007 through actual QuickItems,
+                // aimed at visible ground near the observed aircraft. Normal
+                // missile travel/splash decides whether it hits; no HP writes.
+                if(std::hypot(aim.x-point.x,aim.y-point.y)<=64&&worldQuick(index,1,scene->camera().toWorld(aim))){c.worldStrikeUsed=true;c.lastWorldStrike=counters.frames;}
+            }
+            if(c.worldEnemyFired&&visible&&scene->selectedEnemy()!=c.worldTarget){scene->selectEnemy(c.worldTarget);scene->selectEnemy(c.worldTarget);}
+            if((!visible||!c.worldEnemyFired)&&(counters.frames-2)%31==0)approachTarget(index,{found->position.x+(turret?65.f:0.f),found->position.y});
+            return;
+        }
         if(counters.frames==2){
             for(const auto& e:scene->enemies())if(e.kind==kind&&e.hp>0){c.worldTarget=e.id;
                 if(aircraft)worldQuick(index,1,e.position);
                 else {const auto p=scene->camera().toScreen({e.position.x+65,e.position.y});const Vec2 point{std::clamp(p.x,16.f,752.f),std::clamp(p.y,120.f,1008.f)};
-                    constexpr std::uintptr_t pointer=0x54555252;game.inputWorld(PointerPhase::begin,point,pointer);game.inputWorld(PointerPhase::end,point,pointer);}break;}
+                    constexpr std::uintptr_t pointer=0x54555252;game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(point),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(point),pointer);}break;}
         }
         if(!c.worldEnemyFired&&scene->metrics().enemyEmissionsByKind.at(kind)>0){c.worldEnemyFired=true;scene->selectEnemy(c.worldTarget);scene->selectEnemy(c.worldTarget);}
+    }
+    Vec2 regressionGround(GameSession& game,std::optional<Vec2> away={}){
+        auto& scene=*game.battle();const auto& camera=scene.camera();
+        for(float y=fieldFloor(camera)+24;y<camera.viewport.height-16;y+=40)for(float x=24;x<camera.viewport.width-16;x+=40){
+            const Vec2 world=camera.toWorld({x,y});const auto player=scene.player().position;const float dx=world.x-player.x,dy=world.y-player.y;if(dx*dx+dy*dy<14400)continue;
+            if(away){const float ax=world.x-away->x,ay=world.y-away->y;if(ax*ax+ay*ay<8100)continue;}
+            bool clear=true;for(const auto& e:scene.enemies())if(e.hp>0&&!e.corpse){const float ex=world.x-e.position.x,ey=world.y-e.position.y;if(ex*ex+ey*ey<3600)clear=false;}
+            if(clear)return world;
+        }
+        throw std::runtime_error("Input regression has no visible clear ground");
+    }
+    bool regressionInput(unsigned index,PointerPhase phase,Vec2 world){
+        auto& game=*cases[index]->game;const auto screen=game.worldCanvasPoint(game.battle()->camera().toScreen(world));const bool accepted=game.inputWorld(phase,screen,0x52454752+index);
+        observations[index].recentInput.inputs.push_back({counters.frames,game.battle()->player().position,world,screen,"",accepted,false});return accepted;
+    }
+    void guideRecent(){
+        for(unsigned index=115;index<cases.size();++index){auto& c=*cases[index];auto& game=*c.game;auto* scene=game.battle();if(!scene)continue;auto& o=observations[index].recentInput;const auto role=descriptions[index].role;const auto beforeInputs=o.inputs.size();const auto beforeHUD=observations[index].hudLayout.inputs;const auto captureCamera=[&]{const auto& v=scene->cameraPresentation();o.zoom.push_back({counters.frames,scene->selectedEnemy(),v.worldScale,scene->camera().viewport,game.display().canvas,scene->player().position,v.currentZoom,v.targetZoom,v.minimumScale,unsigned(v.policy),scene->dashState().pathCount});};
+            if(role==ScenarioRole::pathReplacementSingle||role==ScenarioRole::pathReplacementMany){
+                if(counters.frames==80||counters.frames==100){
+                    c.regressionPath[0]=regressionGround(game);c.regressionPath[1]=regressionGround(game,c.regressionPath[0]);c.regressionPath[2]=c.regressionPath[0];
+                    regressionInput(index,PointerPhase::begin,c.regressionPath[0]);
+                    if(counters.frames==100&&role==ScenarioRole::pathReplacementSingle){regressionInput(index,PointerPhase::end,c.regressionPath[0]);o.replacementPathPoints=scene->dashState().pathCount;}
+                }
+                if(counters.frames==81||counters.frames==82||(role==ScenarioRole::pathReplacementMany&&(counters.frames==101||counters.frames==102)))regressionInput(index,PointerPhase::move,c.regressionPath[counters.frames%20]);
+                if(counters.frames==83||(role==ScenarioRole::pathReplacementMany&&counters.frames==103)){regressionInput(index,PointerPhase::end,c.regressionPath[2]);if(counters.frames==83)o.firstPathPoints=scene->dashState().pathCount;else o.replacementPathPoints=scene->dashState().pathCount;}
+                if(counters.frames==140){c.regressionTap=regressionGround(game);regressionInput(index,PointerPhase::begin,c.regressionTap);regressionInput(index,PointerPhase::end,c.regressionTap);}
+                if(counters.frames==150){o.dashBefore=scene->metrics().dashStarts;o.specialBefore=scene->dashState().special;regressionInput(index,PointerPhase::begin,c.regressionTap);regressionInput(index,PointerPhase::end,c.regressionTap);o.dashAfter=scene->metrics().dashStarts;o.specialAfter=scene->dashState().special;o.dashFrame=counters.frames;}
+            }else if(role==ScenarioRole::focusZoom){
+                if(counters.frames==100||counters.frames==250){const auto player=scene->player().position;float best=counters.frames==100?std::numeric_limits<float>::max():-1;std::optional<Vec2> chosen;
+                    for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto screen=scene->camera().toScreen(enemy.position);if(screen.x<16||screen.x>scene->camera().viewport.width-16||screen.y<fieldFloor(scene->camera())||screen.y>scene->camera().viewport.height-16)continue;const float dx=enemy.position.x-player.x,dy=enemy.position.y-player.y,d=dx*dx+dy*dy;if(d<1600)continue;if(counters.frames==100?d<best:d>best){best=d;chosen=enemy.position;}}
+                    if(chosen){regressionInput(index,PointerPhase::begin,*chosen);regressionInput(index,PointerPhase::end,*chosen);}
+                }
+                if(counters.frames==99||counters.frames==100||counters.frames==249||counters.frames==250||counters.frames==400||counters.frames==500)captureCamera();
+            }else if(role==ScenarioRole::cameraIdle){
+                if(counters.frames==1||counters.frames==60||counters.frames==120||counters.frames==300||counters.frames==600||counters.frames==1200||counters.frames==2100)captureCamera();
+            }else if(role==ScenarioRole::lifecycle){
+                if(counters.frames==400){o.interruptedFrame=counters.frames;o.worldTimeAtInterrupt=scene->clock().worldTime();game.setActive(false);o.inactivePaused=scene->isPaused();o.inactiveMenu=game.state().systemVisible;}
+                if(counters.frames==450){o.reactivatedFrame=counters.frames;o.worldTimeAtReactivate=scene->clock().worldTime();game.setActive(true);o.reactivatedPaused=scene->isPaused();o.reactivatedMenu=game.state().systemVisible;}
+                if(counters.frames==470){o.worldTimeBeforeResume=scene->clock().worldTime();press(index,1021);o.manuallyResumed=!scene->isPaused()&&!game.state().systemVisible;o.resumedFrame=counters.frames;}
+                if(counters.frames==480)o.worldTimeAfterResume=scene->clock().worldTime();
+            }else if(role==ScenarioRole::hudLayout)host.exerciseHUDLayout(index,game,observations[index].hudLayout,counters.frames);
+            pendingRecentInputEvents+=o.inputs.size()-beforeInputs;pendingHUDInputEvents+=observations[index].hudLayout.inputs-beforeHUD;
+            if(o.interruptedFrame==counters.frames||o.reactivatedFrame==counters.frames||o.resumedFrame==counters.frames)++pendingLifecycleEvents;
+            o.savesAfter=observations[index].saves;
+        }
     }
     void guideDash(){
         if(counters.frames!=100&&counters.frames!=110)return;auto& game=*cases[dashIndex]->game;auto* scene=game.battle();
         if(!scene||scene->playerHP()<1)throw std::runtime_error("Live original Dash start condition lost");
         constexpr Vec2 offsets[]={{100,0},{100,60},{-100,0},{0,100},{60,100},{-80,80}};Vec2 target;bool found=false;
         for(const auto d:offsets){const auto p=scene->player().position;const Vec2 world{p.x+d.x,p.y+d.y};const auto screen=scene->camera().toScreen(world);
-            if(screen.x<16||screen.x>752||screen.y<120||screen.y>1008)continue;bool clear=true;
+            if(screen.x<16||screen.x>scene->camera().viewport.width-16||screen.y<fieldFloor(scene->camera())||screen.y>scene->camera().viewport.height-16)continue;bool clear=true;
             for(const auto& e:scene->enemies())if(e.hp>0){const float dx=e.position.x-world.x,dy=e.position.y-world.y;if(dx*dx+dy*dy<10000)clear=false;}
             if(clear){target=screen;found=true;break;}}
+        if(!found&&game.display().enabled){for(int y=-4;y<=4&&!found;++y)for(int x=-4;x<=4&&!found;++x){if(!x&&!y)continue;const auto player=scene->player().position;const Vec2 world{player.x+float(x)*50,player.y+float(y)*50};const auto screen=scene->camera().toScreen(world);if(screen.x<16||screen.x>scene->camera().viewport.width-16||screen.y<scene->camera().inputMinimumY+20||screen.y>scene->camera().viewport.height-16)continue;bool clear=true;for(const auto& e:scene->enemies())if(e.hp>0){const float dx=e.position.x-world.x,dy=e.position.y-world.y;if(dx*dx+dy*dy<10000)clear=false;}if(clear){target=screen;found=true;}}}
         if(!found)throw std::runtime_error("Original Dash ground destination unavailable");auto& o=observations[dashIndex];
         if(counters.frames==110){o.dashSPBefore=scene->dashState().special;o.dashStartPosition=scene->player().position;}
-        constexpr std::uintptr_t pointer=0x44415348;const bool accepted=game.inputWorld(PointerPhase::begin,target,pointer);game.inputWorld(PointerPhase::end,target,pointer);
+        constexpr std::uintptr_t pointer=0x44415348;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(target),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(target),pointer);
         if(counters.frames==110){o.dashSPAfter=scene->dashState().special;o.dashInputAccepted=accepted;o.dashInputFrame=counters.frames;}
     }
     void guideBots(){
@@ -306,9 +512,10 @@ struct ConcurrentValidation::Impl {
                 // target/fire/HP state is injected by validation. After the
                 // counterattack, retap the nearest visible enemy rather than
                 // waiting on a farther table-order enemy outside gun range.
-                float closest=std::numeric_limits<float>::max();Vec2 chosen{};std::uint64_t target=0;const auto player=scene->player().position;
-                for(const auto& e:scene->enemies())if(e.hp>0&&!e.corpse&&botThreats.contains(e.name)){const auto screen=scene->camera().toScreen(e.position);if(screen.x<16||screen.x>scene->camera().viewport.width-16||screen.y<120||screen.y>scene->camera().viewport.height-16)continue;const float dx=e.position.x-player.x,dy=e.position.y-player.y,d=dx*dx+dy*dy;if(d<closest){closest=d;chosen=screen;target=e.id;}}
-                if(target&&target!=scene->selectedEnemy()){constexpr std::uintptr_t pointer=0x424f5454;const bool accepted=game.inputWorld(PointerPhase::begin,chosen,pointer);game.inputWorld(PointerPhase::end,chosen,pointer);if(accepted&&scene->selectedEnemy()==target)cases[index]->worldTarget=target;}
+                const WeaponSwapObservation* pending=nullptr;if(scene->camera().fillSurface&&positiveIncoming)for(const auto& swap:observations[index].botWeaponSwaps)if(swap.equipFrame&&!swap.firstEmissionFrame)pending=&swap;
+                float closest=pending?-1:std::numeric_limits<float>::max();Vec2 chosen{};std::uint64_t target=0;const auto player=scene->player().position;
+                for(const auto& e:scene->enemies())if(e.hp>0&&!e.corpse&&(pending||botThreats.contains(e.name))){const auto screen=scene->camera().toScreen(e.position);if(screen.x<16||screen.x>scene->camera().viewport.width-16||screen.y<fieldFloor(scene->camera())||screen.y>scene->camera().viewport.height-16)continue;const float dx=e.position.x-player.x,dy=e.position.y-player.y,d=dx*dx+dy*dy;if(pending){const float range=catalog.weapon(pending->part).shotRange;if(d>range*range)continue;}if(pending?d>closest:d<closest){closest=d;chosen=screen;target=e.id;}}
+                if(target&&target!=scene->selectedEnemy()){constexpr std::uintptr_t pointer=0x424f5454;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(chosen),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(chosen),pointer);if(accepted&&scene->selectedEnemy()==target)cases[index]->worldTarget=target;}
             }
             if(!positiveIncoming&&counters.frames>120&&(counters.frames-1)%31==0){
                 // Guns directly target Player; positive BOT HP damage needs an
@@ -318,17 +525,17 @@ struct ConcurrentValidation::Impl {
                 // weapon/radius data, not an invented damaging actor.
                 const auto enemies=scene->enemies();const Vec2 player=scene->player().position;float best=std::numeric_limits<float>::max();Vec2 chosen{};std::string threat;std::uint64_t chosenEnemy=0;
                 const auto tracked=cases[index]->worldTarget;
-                const bool tracking=std::any_of(enemies.begin(),enemies.end(),[&](const auto& e){if(e.id!=tracked||e.hp<1||e.corpse)return false;const auto p=scene->camera().toScreen(e.position);return p.x>=32&&p.x<=scene->camera().viewport.width-32&&p.y>=120&&p.y<=scene->camera().viewport.height-32;});
+                const bool tracking=std::any_of(enemies.begin(),enemies.end(),[&](const auto& e){if(e.id!=tracked||e.hp<1||e.corpse)return false;const auto p=scene->camera().toScreen(e.position);return p.x>=32&&p.x<=scene->camera().viewport.width-32&&p.y>=fieldFloor(scene->camera())&&p.y<=scene->camera().viewport.height-32;});
                 for(const auto& e:enemies)if(e.hp>0&&!e.corpse&&botThreats.contains(e.name)){
                     // Approach a threat actually inside the play area. A
                     // clamped offscreen destination can chase a retreating
                     // Tank along the HUD edge without ever entering battle.
                     const auto threatScreen=scene->camera().toScreen(e.position);
-                    if(threatScreen.x<32||threatScreen.x>scene->camera().viewport.width-32||threatScreen.y<120||threatScreen.y>scene->camera().viewport.height-32||(tracking&&e.id!=tracked))continue;
+                    if(threatScreen.x<32||threatScreen.x>scene->camera().viewport.width-32||threatScreen.y<fieldFloor(scene->camera())||threatScreen.y>scene->camera().viewport.height-32||(tracking&&e.id!=tracked))continue;
                     const float standOff=float(botRadii.at(e.name)+botRadii.at("Player"))+12.f;
                     for(const Vec2 direction:{Vec2{1,0},Vec2{-1,0},Vec2{0,1},Vec2{0,-1}}){
                         const auto desired=scene->camera().toScreen({e.position.x+direction.x*standOff,e.position.y+direction.y*standOff});
-                        if(desired.x<16||desired.x>scene->camera().viewport.width-16||desired.y<120||desired.y>scene->camera().viewport.height-16)continue;
+                        if(desired.x<16||desired.x>scene->camera().viewport.width-16||desired.y<fieldFloor(scene->camera())||desired.y>scene->camera().viewport.height-16)continue;
                         const Vec2 screen=desired;
                         const Vec2 ground=scene->camera().toWorld(screen);const float dx=ground.x-player.x,dy=ground.y-player.y;if(dx*dx+dy*dy<900)continue;
                         bool clear=true;for(const auto& other:enemies)if(other.hp>0&&!other.corpse){const float x=ground.x-other.position.x,y=ground.y-other.position.y,r=float(botRadii.at(other.name))+1;if(x*x+y*y<r*r)clear=false;}
@@ -337,7 +544,7 @@ struct ConcurrentValidation::Impl {
                         if(score<best){best=score;chosen=screen;threat=e.name;chosenEnemy=e.id;}
                     }
                 }
-                if(!threat.empty()){cases[index]->worldTarget=chosenEnemy;constexpr std::uintptr_t id=0x424f544e;const bool accepted=game.inputWorld(PointerPhase::begin,chosen,id);game.inputWorld(PointerPhase::end,chosen,id);auto& o=observations[index];++o.navigationRequests;if(!accepted)++o.navigationRejected;o.botThreatName=threat;o.navigation.push_back({counters.frames,player,scene->camera().toWorld(chosen),chosen,threat+"#"+std::to_string(chosenEnemy),accepted,scene->player().blocked});}
+                if(!threat.empty()){cases[index]->worldTarget=chosenEnemy;constexpr std::uintptr_t id=0x424f544e;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(chosen),id);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(chosen),id);auto& o=observations[index];++o.navigationRequests;if(!accepted)++o.navigationRejected;o.botThreatName=threat;o.navigation.push_back({counters.frames,player,scene->camera().toWorld(chosen),chosen,threat+"#"+std::to_string(chosenEnemy),accepted,scene->player().blocked});}
             }
             if(descriptions[index].role==ScenarioRole::botPicker&&positiveIncoming&&!cases[index]->worldEnemyFired&&(observations[index].navigation.empty()||counters.frames-observations[index].navigation.back().frame>=31)){
                 // After provoking a real counterattack, walk back into the
@@ -345,15 +552,20 @@ struct ConcurrentValidation::Impl {
                 // A31-frame gap avoids the original .5s double-tap dash.
                 // Picker AI and actual drops decide who captures each item.
                 for(const Vec2 ground:{Vec2{0,0},Vec2{-80,0},Vec2{80,0},Vec2{0,80},Vec2{0,-80}}){
-                    const auto screen=scene->camera().toScreen(ground);if(screen.x<16||screen.x>scene->camera().viewport.width-16||screen.y<120||screen.y>scene->camera().viewport.height-16)continue;
+                    const auto screen=scene->camera().toScreen(ground);if(screen.x<16||screen.x>scene->camera().viewport.width-16||screen.y<fieldFloor(scene->camera())||screen.y>scene->camera().viewport.height-16)continue;
                     const auto contact=scene->terrain().resolve(ground);if(std::abs(contact.position.x-ground.x)>.1f||std::abs(contact.position.y-ground.y)>.1f)continue;
                     bool clear=true;for(const auto& e:scene->enemies())if(e.hp>0&&!e.corpse){const float dx=e.position.x-ground.x,dy=e.position.y-ground.y,r=float(botRadii.at(e.name))+8;if(dx*dx+dy*dy<r*r)clear=false;}if(!clear)continue;
-                    const auto player=scene->player().position;constexpr std::uintptr_t pointer=0x424f5443;const bool accepted=game.inputWorld(PointerPhase::begin,screen,pointer);game.inputWorld(PointerPhase::end,screen,pointer);auto& o=observations[index];++o.navigationRequests;if(!accepted)++o.navigationRejected;o.navigation.push_back({counters.frames,player,ground,screen,"field-centre-after-real-counterattack",accepted,scene->player().blocked});if(accepted)cases[index]->worldEnemyFired=true;break;
+                    const auto player=scene->player().position;constexpr std::uintptr_t pointer=0x424f5443;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(screen),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(screen),pointer);auto& o=observations[index];++o.navigationRequests;if(!accepted)++o.navigationRejected;o.navigation.push_back({counters.frames,player,ground,screen,"field-centre-after-real-counterattack",accepted,scene->player().blocked});if(accepted)cases[index]->worldEnemyFired=true;break;
                 }
+                if(game.display().enabled&&!cases[index]->worldEnemyFired)approachTarget(index,{0,0});
             }
             if(descriptions[index].role==ScenarioRole::botPicker&&positiveIncoming){
-                for(unsigned side=0;side<2;++side){auto& swap=observations[index].botWeaponSwaps[side];if(swap.equipFrame)continue;
-                    if(side&&!observations[index].botWeaponSwaps[0].equipFrame)break;
+                for(unsigned order=0;order<2;++order){const unsigned side=scene->camera().fillSurface?1-order:order;auto& swap=observations[index].botWeaponSwaps[side];if(swap.equipFrame)continue;
+                    // In the compact view, exercise the new missile before
+                    // equipping the one-shot gun which would kill its target
+                    // first. Wait for a real emission, never inject one.
+                    if(scene->camera().fillSurface){if(side==0&&!observations[index].botWeaponSwaps[1].firstEmissionFrame)break;}
+                    else if(side&&!observations[index].botWeaponSwaps[0].equipFrame)break;
                     const auto& state=game.state();
                     if(!swap.chooserFrame){swap.pausedBefore=scene->isPaused();swap.savesBefore=observations[index].saves;for(const auto& item:state.inventory)if(item.position==int(swap.inventoryPosition)){swap.ownedBefore=item.dataId==swap.code;swap.countBefore=item.count;swap.equippedBefore=item.equipped;}
                         press(index,1022+side);swap.chooserFrame=counters.frames;swap.chooserShown=game.state().weaponChoiceType==int(2+side);break;}
@@ -362,17 +574,30 @@ struct ConcurrentValidation::Impl {
                     for(const auto& item:after.inventory){if(item.position==int(swap.inventoryPosition)){swap.ownedAfter=item.dataId==swap.code;swap.countAfter=item.count;swap.equippedAfter=item.equipped;}if(item.position==int(2+side)){swap.oldCountAfter=item.count;swap.oldEquippedAfter=item.equipped;}}
                     break;
                 }
+                // A compact view changes which real enemies are active and
+                // where they drop loot. After both real weapon swaps fire,
+                // walk near remaining drops so the original wandering trio
+                // can reach them. Keep Player outside its30-unit pickup box;
+                // do not move BOTs or assign captures to a particular slot.
+                const auto& observation=observations[index];
+                const bool missingCapture=std::any_of(observation.bots.begin(),observation.bots.end(),[](const auto& b){return b.itemCaptures==0;});
+                const bool swapsFired=std::all_of(observation.botWeaponSwaps.begin(),observation.botWeaponSwaps.end(),[](const auto& swap){return swap.firstEmissionFrame>0;});
+                if(game.display().enabled&&missingCapture&&swapsFired&&(observation.navigation.empty()||counters.frames-observation.navigation.back().frame>=120)){
+                    const auto player=scene->player().position;float nearest=std::numeric_limits<float>::max();Vec2 destination{};
+                    for(const auto& drop:game.fieldItems())if(!drop.removed){const float dx=drop.position.x-player.x,dy=drop.position.y-player.y,d=dx*dx+dy*dy;if(d>14400&&d<nearest){nearest=d;const float distance=std::sqrt(d);destination={drop.position.x-dx*100/distance,drop.position.y-dy*100/distance};}}
+                    if(nearest<std::numeric_limits<float>::max())approachTarget(index,destination);
+                }
             }
             // Each original BOT receives an actual quick repair only when it
             // is separated from Player/other BOTs, so priority cannot silently
             // repair a different actor. Wait for real wander; never teleport.
             if(counters.frames<180)continue;
             const auto bots=scene->bots();for(const auto& bot:bots){auto& observed=observations[index].bots.at(bot.slot);if(observed.repairFrame||bot.removed||bot.hp<=0||bot.hp>=bot.maximumHP)continue;
-                const auto point=scene->camera().toScreen(bot.position);if(point.x<16||point.x>752||point.y<120||point.y>1008)continue;
+                const auto point=scene->camera().toScreen(bot.position);if(point.x<16||point.x>scene->camera().viewport.width-16||point.y<fieldFloor(scene->camera())||point.y>scene->camera().viewport.height-16)continue;
                 const auto apart=[](Vec2 a,Vec2 b){const float dx=a.x-b.x,dy=a.y-b.y;return dx*dx+dy*dy>=36*36;};
                 bool clear=apart(bot.position,scene->player().position);for(const auto& other:bots)if(other.id!=bot.id&&!apart(bot.position,other.position))clear=false;if(!clear)continue;
                 observed.repairBefore=bot.hp;observed.repairCountBefore=game.state().quick[0].count;const auto particles=scene->metrics().particleAllocations;const auto sounds=observations[index].repairSounds;press(index,6200);
-                constexpr std::uintptr_t pointer=0x424f5452;observed.repairAccepted=game.inputWorld(PointerPhase::begin,point,pointer);game.inputWorld(PointerPhase::end,point,pointer);
+                constexpr std::uintptr_t pointer=0x424f5452;observed.repairAccepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(point),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(point),pointer);
                 for(const auto& after:scene->bots())if(after.id==bot.id)observed.repairAfter=after.hp;observed.repairCountAfter=game.state().quick[0].count;observed.repairParticles=scene->metrics().particleAllocations-particles;observed.repairSounds=observations[index].repairSounds-sounds;
                 if(observed.repairAccepted&&observed.repairAfter>observed.repairBefore&&observed.repairCountAfter==observed.repairCountBefore-1){observed.repairFrame=counters.frames;++pendingBotRepairs;}
                 break;
@@ -382,7 +607,7 @@ struct ConcurrentValidation::Impl {
     void helpEnd(std::size_t index,float x){
         auto& game=*cases[index]->game;HelpInputObservation event;event.frame=counters.frames;event.x=x;
         const auto* before=game.help();if(before){event.beforePage=before->state().page;event.beforeGuide=before->state().guidanceVisible;}
-        ++pendingHelpInputs;event.accepted=game.inputOverlay(PointerPhase::end,{x,512},0x48454c50);
+        ++pendingHelpInputs;const auto d=game.display();const auto a=d.content();const Vec2 helpPoint=d.enabled?Vec2{a.x+a.width*x/768,a.y+a.height*.5f}:Vec2{x,512};event.accepted=game.inputOverlay(PointerPhase::end,helpPoint,0x48454c50);
         const auto* after=game.help();if(after){event.afterPage=after->state().page;event.afterGuide=after->state().guidanceVisible;}
         event.closed=before&&!after;event.paused=game.battle()->isPaused();observations[index].help.inputs.push_back(event);
         if(event.closed){observations[index].help.closedFrame=counters.frames;observations[index].help.timeAtClose=game.battle()->clock().worldTime();}
@@ -404,11 +629,21 @@ struct ConcurrentValidation::Impl {
             o.locationAtConfirm=progression::SlotView(std::span(const_cast<std::uint8_t*>(game.workingSlot().data()),game.workingSlot().size())).string(0x2d,16);
             o.savesAfterConfirm=observations[gameOverIndex].saves;o.duplicateRejected=!game.confirmGameOver(o.token);return;
         }
-        auto* scene=game.battle();if(!scene||scene->playerHP()<1||o.targetInputAccepted)return;
+        auto* scene=game.battle();if(!scene||scene->playerHP()<1)return;
+        auto& fixture=*cases[gameOverIndex];
+        if(o.targetInputAccepted){
+            if(!display.compact||fixture.gameOverRetargeted||scene->metrics().playerEmissions==0)return;
+            // Provoke another original enemy while the first can retaliate,
+            // as the actual Source UI GameOver test does. Do not set HP/death.
+            for(const auto& enemy:scene->enemies())if(enemy.id!=fixture.gameOverInitialTarget&&enemy.hp>0&&!enemy.corpse){const auto point=scene->camera().toScreen(enemy.position);if(point.x<=16||point.x>=scene->camera().viewport.width-16||point.y<=fieldFloor(scene->camera())||point.y>=scene->camera().viewport.height-16)continue;
+                constexpr std::uintptr_t pointer=0x474f5632;game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(point),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(point),pointer);
+                if(scene->selectedEnemy()==enemy.id){fixture.gameOverRetargeted=true;break;}
+            }return;
+        }
         for(const auto& enemy:scene->enemies()){
-            const auto point=scene->camera().toScreen(enemy.position);if(enemy.hp<1||enemy.corpse||point.x<=0||point.x>=768||point.y<=100||point.y>=1024)continue;
-            constexpr std::uintptr_t pointer=0x474f5645;const bool accepted=game.inputWorld(PointerPhase::begin,point,pointer);game.inputWorld(PointerPhase::end,point,pointer);
-            o.targetInputAccepted=accepted&&scene->selectedEnemy()==enemy.id;if(o.targetInputAccepted)break;
+            const auto point=scene->camera().toScreen(enemy.position);if(enemy.hp<1||enemy.corpse||point.x<=0||point.x>=scene->camera().viewport.width||point.y<=scene->camera().inputMinimumY||point.y>=scene->camera().viewport.height)continue;
+            constexpr std::uintptr_t pointer=0x474f5645;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(point),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(point),pointer);
+            o.targetInputAccepted=accepted&&scene->selectedEnemy()==enemy.id;if(o.targetInputAccepted){fixture.gameOverInitialTarget=enemy.id;break;}
         }
     }
     void guideRanking(){
@@ -427,8 +662,48 @@ struct ConcurrentValidation::Impl {
         else if(o.popupFrames[1]&&!o.okFrames[1]&&counters.frames>=o.popupFrames[1]+8){o.okFrames[1]=counters.frames;o.finalOKAccepted=press(completedMissionIndex,5007);o.listImmediatelyAfterFinalOK=game.state().commandListVisible;}
         else if(o.listFrame&&!o.exitFrame&&counters.frames>=o.listFrame+8){o.exitFrame=counters.frames;press(completedMissionIndex,2100);}
     }
+    void guideSynchronizedWeapons(){
+        if(synchronizedReleased)return;
+        if(synchronizedReady.size()==synchronizedIndices.size()){
+            for(auto i:synchronizedIndices){
+                auto* scene=cases[i]->game->battle();auto& o=observations[i].synchronizedWeapon;
+                o.resumedFrame=counters.frames;o.resumedWorldTime=scene->clock().worldTime();o.emissionsAtResume=scene->metrics().playerEmissions;
+                if(!press(i,1030)||scene->isPaused())throw std::logic_error("Synchronized menu resume failed");
+            }
+            synchronizedReleased=true;return;
+        }
+        for(auto i:synchronizedIndices){
+            if(synchronizedReady.contains(i))continue;
+            auto& game=*cases[i]->game;auto* scene=game.battle();if(!scene||scene->playerHP()<1)continue;
+            const auto weapons=scene->playerWeapons();if(weapons.size()!=1)throw std::logic_error("Synchronized fixture must equip one original weapon");
+            const auto& weapon=weapons.front();const auto& info=catalog.weapon(weapon.part);const auto enemies=scene->enemies();
+            const auto target=std::find_if(enemies.begin(),enemies.end(),[&](const auto& e){return e.id==scene->selectedEnemy()&&e.hp>0&&!e.corpse;});
+            const auto player=scene->player().position;
+            if(target!=enemies.end()&&std::hypot(target->position.x-player.x,target->position.y-player.y)<float(info.shotRange)&&scene->player().weaponReady){
+                const float elapsed=float(scene->clock().worldTime()+double(GameClock::increment)-double(weapon.fireTime));
+                if((weapon.fireLeft>0||elapsed>=info.reloadDelay)&&elapsed>=info.shotDelay){
+                    if(!press(i,1021)||!scene->isPaused())throw std::logic_error("Synchronized menu pause failed");
+                    auto& o=observations[i].synchronizedWeapon;o.pausedFrame=counters.frames;o.pausedWorldTime=scene->clock().worldTime();o.emissionsAtPause=scene->metrics().playerEmissions;
+                    synchronizedReady.insert(i);continue;
+                }
+            }
+            if(target==enemies.end()&&(counters.frames-1)%31==0){
+                const CombatEnemySnapshot *nearest=nullptr,*visible=nullptr;float distance=std::numeric_limits<float>::max(),visibleDistance=distance;
+                for(const auto& enemy:enemies)if(enemy.hp>0&&!enemy.corpse){const float d=std::hypot(enemy.position.x-player.x,enemy.position.y-player.y);if(d<distance){distance=d;nearest=&enemy;}const auto screen=scene->camera().toScreen(enemy.position);if(screen.x>=16&&screen.x<=scene->camera().viewport.width-16&&screen.y>=fieldFloor(scene->camera())&&screen.y<=scene->camera().viewport.height-16&&d<visibleDistance){visible=&enemy;visibleDistance=d;}}
+                if(visible){const auto point=game.worldCanvasPoint(scene->camera().toScreen(visible->position));constexpr std::uintptr_t pointer=0x53594e43;game.inputWorld(PointerPhase::begin,point,pointer);game.inputWorld(PointerPhase::end,point,pointer);}else if(nearest)approachTarget(i,nearest->position);
+            }
+        }
+    }
     void schedule(){
+        guideRecent();guideSynchronizedWeapons();
         for(const auto index:worldIndices)guideWorld(index);guideDash();guideBots();guideHelp();guideGameOver();guideRanking();guideCompletedMissions();
+        // In the compact batch, pause/resume one real railgun battle through
+        // the enlarged HUD while all other sessions keep advancing. This
+        // also exercises overlapping firing after a menu interruption.
+        if(display.enabled&&display.compact&&(counters.frames==120||counters.frames==121))for(unsigned i=0;i<counters.combatScenarios;++i){auto* battle=cases[i]->game->battle();const auto mounts=battle->playerWeapons();if(std::any_of(mounts.begin(),mounts.end(),[](const auto& w){return w.part=="P_Wpn_Rlg_101";})){
+            if(counters.frames==120){compactPausedWorldTime=battle->clock().worldTime();if(!press(i,1021)||!battle->isPaused())throw std::logic_error("Compact HUD did not pause the real battle");}
+            else {if(!compactPausedWorldTime||battle->clock().worldTime()!=*compactPausedWorldTime)throw std::logic_error("Compact HUD pause advanced world time");if(!press(i,1030)||battle->isPaused())throw std::logic_error("Compact HUD did not resume the real battle");}
+            break;}}
         auto& shop=*cases[shopIndex]->game;const auto menuFrame=counters.frames>180?counters.frames-180:0;
         // The second Base tap requests original doors. Run all other worlds
         // while these real menu sessions close, replace at phase4, and reopen.
@@ -457,7 +732,7 @@ struct ConcurrentValidation::Impl {
             o.quickCountBefore=count();o.quickHPBefore=scene->playerHP();o.quickSlotHPBefore=int(raw32(game.workingSlot(),0x7c));o.quickMaximumHP=int(raw32(game.workingSlot(),0x80));
             const auto particles=scene->metrics().particleAllocations;const auto sounds=o.repairSounds;
             const auto screen=scene->camera().toScreen(scene->player().position);constexpr std::uintptr_t pointer=0x4149444b;
-            o.quickTapAccepted=game.inputWorld(PointerPhase::begin,screen,pointer);game.inputWorld(PointerPhase::end,screen,pointer);
+            o.quickTapAccepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(screen),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(screen),pointer);
             o.quickHPAfter=scene->playerHP();o.quickSlotHPAfter=int(raw32(game.workingSlot(),0x7c));o.quickCountAfter=count();o.quickSelectionAfter=game.state().selectedQuick;
             o.quickRepairSounds=o.repairSounds-sounds;o.quickParticleAllocations=scene->metrics().particleAllocations-particles;o.quickUseFrame=counters.frames;
             if(o.quickCountAfter==o.quickCountBefore-1&&o.quickHPAfter>o.quickHPBefore)++pendingAidKitUses;
@@ -467,9 +742,18 @@ struct ConcurrentValidation::Impl {
             auto& game=*cases[index]->game;auto& o=observations[index];auto* scene=game.battle();
             const auto count=[&](){int result=0;for(const auto& item:game.state().inventory)if(item.dataId==o.strikeItemCode)result+=item.count;return result;};
             o.strikeCountBefore=count();Vec2 target{scene->player().position.x+100,scene->player().position.y+100};float best=std::numeric_limits<float>::max();
-            for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=scene->camera().toScreen(enemy.position);if(point.x<32||point.x>736||point.y<180||point.y>980)continue;const float dx=enemy.position.x-scene->player().position.x,dy=enemy.position.y-scene->player().position.y,d=dx*dx+dy*dy;if(d<best){best=d;target=enemy.position;o.strikeTargetVisibleEnemy=true;}}
+            const auto& camera=scene->camera();const float bottom=fieldFloor(camera),top=camera.viewport.height-16;
+            // fieldFloor already clears the actual original HUD/input edge.
+            // The former extra60/44 world-unit padding discarded visible
+            // enemies after compact focus zoom, then bombed an empty fallback.
+            for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=camera.toScreen(enemy.position);
+                const bool visible=point.x>=32&&point.x<=camera.viewport.width-32&&point.y>=bottom&&point.y<=top;
+                const bool priorMargin=point.x>=32&&point.x<=camera.viewport.width-32&&point.y>=bottom+60&&point.y<=camera.viewport.height-44;
+                std::printf("AIRSTRIKE_CANDIDATE case=%zu frame=%llu item=%s enemy=%llu name=%s hp=%d world=%.9g:%.9g screen=%.9g:%.9g viewport=%.9g:%.9g inputMinimumY=%.9g fieldFloor=%.9g visible=%d formerExtraMargin=%d\n",index,static_cast<unsigned long long>(counters.frames),o.strikeItemCode.c_str(),static_cast<unsigned long long>(enemy.id),enemy.name.c_str(),enemy.hp,enemy.position.x,enemy.position.y,point.x,point.y,camera.viewport.width,camera.viewport.height,camera.inputMinimumY,bottom,int(visible),int(priorMargin));
+                if(!visible)continue;const float dx=enemy.position.x-scene->player().position.x,dy=enemy.position.y-scene->player().position.y,d=dx*dx+dy*dy;if(d<best){best=d;target=enemy.position;o.strikeTargetVisibleEnemy=true;}}
             o.strikeTarget=target;const auto screen=scene->camera().toScreen(target);constexpr std::uintptr_t pointer=0x41495253;
-            o.strikeTapAccepted=game.inputWorld(PointerPhase::begin,screen,pointer);game.inputWorld(PointerPhase::end,screen,pointer);o.strikeCountAfter=count();o.strikeUseFrame=counters.frames;
+            o.strikeTapAccepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(screen),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(screen),pointer);o.strikeCountAfter=count();o.strikeUseFrame=counters.frames;
+            std::printf("AIRSTRIKE_TAP case=%zu frame=%llu item=%s target=%.9g:%.9g screen=%.9g:%.9g selectedVisible=%d accepted=%d count=%d:%d\n",index,static_cast<unsigned long long>(counters.frames),o.strikeItemCode.c_str(),target.x,target.y,screen.x,screen.y,int(o.strikeTargetVisibleEnemy),int(o.strikeTapAccepted),o.strikeCountBefore,o.strikeCountAfter);std::fflush(stdout);
             if(o.strikeTapAccepted&&o.strikeCountAfter==o.strikeCountBefore-1)++pendingAirStrikeUses;
         }
         if(counters.frames==600)restart();
@@ -503,7 +787,7 @@ struct ConcurrentValidation::Impl {
             }
         }
         if(const auto* battle=game.battle()){observed.playerHP=battle->playerHP();if(observed.playerHP>0)++observed.aliveTicks;const auto& m=battle->metrics();observed.emissions=value.priorEmissions+m.emissions;observed.playerEmissions=value.priorPlayerEmissions+m.playerEmissions;observed.damage=value.priorDamage+m.damageCalls;observed.kills=value.priorKills+m.kills;observed.strikeRequests=m.airStrikeRequests;observed.strikeProjectiles=m.airStrikeProjectiles;observed.strikeDamageCalls=m.airStrikeDamageCalls;observed.strikeEnemyHPRemoved=m.airStrikeEnemyHPRemoved;observed.strikeTicks=m.airStrikeTicks;observed.activeStrikes=battle->activeAirStrikes();
-            unsigned k=0;for(const auto kind:{MachineKind::vehicle,MachineKind::turret,MachineKind::aircraft}){observed.enemySpawns[k]=m.enemySpawnsByKind.at(kind);observed.enemyEmissions[k]=m.enemyEmissionsByKind.at(kind);observed.enemyDamage[k]=m.enemyDamageCallsByKind.at(kind);observed.enemyKills[k]=m.enemyKillsByKind.at(kind);observed.enemyRemovals[k]=m.enemyRemovalsByKind.at(kind);++k;}
+            unsigned k=0;for(const auto kind:{MachineKind::vehicle,MachineKind::turret,MachineKind::aircraft}){observed.enemySpawns[k]=m.enemySpawnsByKind.at(kind);observed.enemyEmissions[k]=m.enemyEmissionsByKind.at(kind);observed.enemyDamage[k]=m.enemyDamageCallsByKind.at(kind);observed.enemyKills[k]=m.enemyKillsByKind.at(kind);observed.enemyRemovals[k]=m.enemyRemovalsByKind.at(kind);if(observed.enemyKills[k]&&!observed.firstKillFrames[k]){observed.firstKillFrames[k]=counters.frames;observed.firstKillWorldTimes[k]=battle->clock().worldTime();for(const auto& corpse:battle->enemies())if(corpse.kind==kind&&corpse.corpse){observed.firstCrashDeadlines[k]=corpse.crashTime;break;}}if(observed.enemyRemovals[k]&&!observed.firstRemovalFrames[k]){observed.firstRemovalFrames[k]=counters.frames;observed.firstRemovalWorldTimes[k]=battle->clock().worldTime();}++k;}
             if(counters.frames==1){observed.firstSpawns=observed.enemySpawns;for(const auto& enemy:battle->enemies())if(enemy.boss)++observed.bossSpawns;}
             observed.dashStarts=m.dashStarts;observed.dashMoveTicks=m.dashMoveTicks;observed.dashParticles=m.dashParticleAllocations;observed.dashRandomCalls=m.dashRandomCalls;
             if(descriptions[i].role==ScenarioRole::dash&&observed.dashInputFrame){const auto p=battle->player().position;const float dx=p.x-observed.dashStartPosition.x,dy=p.y-observed.dashStartPosition.y;observed.dashMaxDisplacement=std::max(observed.dashMaxDisplacement,std::sqrt(dx*dx+dy*dy));}
@@ -520,7 +804,7 @@ struct ConcurrentValidation::Impl {
         auto restored=SaveData::decode(value.adapter.saved,value.random,false);
         const bool equal=std::equal(originalSlot.begin(),originalSlot.end(),restored.slot(0).begin());
         if(const auto* scene=game.battle()){const auto& m=scene->metrics();value.priorEmissions+=m.emissions;value.priorPlayerEmissions+=m.playerEmissions;value.priorDamage+=m.damageCalls;value.priorKills+=m.kills;}
-        value.game=std::make_unique<GameSession>(resources,value.adapter,value.random,std::move(restored));
+        value.game=std::make_unique<GameSession>(value.resources,value.adapter,value.random,std::move(restored));value.game->setDisplay(display);
         const bool selected=value.game->selectSlot(0);value.game->enterBase();const bool field=value.game->enterField("Stage01_01",0);
         observations[restartIndex].restarted=equal&&selected&&field;
         value.lastWeaponCounts=value.game->battle()->metrics().playerWeaponEmissions;
@@ -528,8 +812,8 @@ struct ConcurrentValidation::Impl {
     }
     Frame compose(Size viewport){
         if(!std::isfinite(viewport.width)||!std::isfinite(viewport.height)||viewport.width<=0||viewport.height<=0)throw std::invalid_argument("Invalid concurrent viewport");
-        if(sourceFrameNumber!=counters.frames){for(std::size_t i=0;i<cases.size();++i){sourceFrames[i]=cases[i]->game->drawWorld();host.appendScenarioUI(unsigned(i),*cases[i]->game,sourceFrames[i]);cases[i]->game->appendOverlays(sourceFrames[i]);if(descriptions[i].role==ScenarioRole::help){for(const auto& image:sourceFrames[i].sprites){if(image.image.starts_with("HelpScr")){++observations[i].help.drawFrames;observations[i].help.lastImage=image.image;}if(image.image=="HelpHelp.png")++observations[i].help.guideDrawFrames;}}++observations[i].draws;}
-            sourceFrameNumber=counters.frames;++counters.drawFrames;}
+        if(sourceFrameNumber!=counters.frames){resourceStage="draw";for(std::size_t i=0;i<cases.size();++i){beginResourceOperation(unsigned(i),"draw");sourceFrames[i]=cases[i]->game->drawWorld();host.appendScenarioUI(unsigned(i),*cases[i]->game,sourceFrames[i]);cases[i]->game->appendOverlays(sourceFrames[i]);if(descriptions[i].role==ScenarioRole::help){for(const auto& image:sourceFrames[i].sprites){if(image.image.starts_with("HelpScr")){++observations[i].help.drawFrames;observations[i].help.lastImage=image.image;}if(image.image=="HelpHelp.png")++observations[i].help.guideDrawFrames;}}++observations[i].draws;finishResourceOperation(unsigned(i));}
+            resourceStage="external";sourceFrameNumber=counters.frames;++counters.drawFrames;}
         Frame out;out.width=viewport.width;out.height=viewport.height;
         const unsigned columns=unsigned(std::ceil(std::sqrt(float(cases.size())*viewport.width/viewport.height*(1024.f/768.f))));
         const unsigned rows=unsigned((cases.size()+columns-1)/columns);const float paneWidth=viewport.width/float(columns),paneHeight=viewport.height/float(rows);
@@ -547,29 +831,34 @@ struct ConcurrentValidation::Impl {
 };
 ConcurrentValidation::ConcurrentValidation(ResourceAccess& r,ValidationHost& h):impl_(std::make_unique<Impl>(r,h)){}
 ConcurrentValidation::~ConcurrentValidation()=default;
-void ConcurrentValidation::tick(){auto& p=*impl_;if(!p.active)return;p.resources.warm=true;++p.counters.frames;p.schedule();
-    FrameActivity activity;activity.frame=p.counters.frames;activity.buttons=std::move(p.pendingButtons);p.pendingButtons.clear();activity.saveRestart=p.counters.frames==600&&p.observations[p.restartIndex].restarted;activity.aidKitUses=p.pendingAidKitUses;p.pendingAidKitUses=0;activity.airStrikeUses=p.pendingAirStrikeUses;p.pendingAirStrikeUses=0;activity.botRepairs=p.pendingBotRepairs;p.pendingBotRepairs=0;activity.helpInputRequests=p.pendingHelpInputs;p.pendingHelpInputs=0;std::set<std::string> frameWeapons;
-    for(std::size_t i=0;i<p.cases.size();++i){auto& c=*p.cases[i];auto& observed=p.observations[i];
-        if(i==38)if(auto* scene=c.game->battle()){
+void ConcurrentValidation::tick(){auto& p=*impl_;if(!p.active)return;p.resources.warm=true;++p.counters.frames;p.resourceStage="schedule";for(unsigned i=0;i<p.cases.size();++i)p.beginResourceOperation(i,"schedule");p.schedule();for(unsigned i=0;i<p.cases.size();++i)p.finishResourceOperation(i);p.resourceStage="tick";
+    FrameActivity activity;activity.frame=p.counters.frames;activity.recentInputEvents=p.pendingRecentInputEvents;activity.hudInputEvents=p.pendingHUDInputEvents;activity.lifecycleEvents=p.pendingLifecycleEvents;p.pendingRecentInputEvents=p.pendingHUDInputEvents=p.pendingLifecycleEvents=0;activity.buttons=std::move(p.pendingButtons);p.pendingButtons.clear();activity.saveRestart=p.counters.frames==600&&p.observations[p.restartIndex].restarted;activity.aidKitUses=p.pendingAidKitUses;p.pendingAidKitUses=0;activity.airStrikeUses=p.pendingAirStrikeUses;p.pendingAirStrikeUses=0;activity.botRepairs=p.pendingBotRepairs;p.pendingBotRepairs=0;activity.helpInputRequests=p.pendingHelpInputs;p.pendingHelpInputs=0;std::set<std::string> frameWeapons;
+    for(std::size_t i=0;i<p.cases.size();++i){p.beginResourceOperation(unsigned(i),"tick");auto& c=*p.cases[i];auto& observed=p.observations[i];
+        if(p.display.enabled&&p.display.compact&&Impl::compactWeaponGuideCase(i))p.guideCompactWeapon(i);
+        if(p.display.enabled&&p.descriptions[i].role==ScenarioRole::combat&&i!=38&&!(p.display.compact&&Impl::compactWeaponGuideCase(i))&&(p.counters.frames-1)%31==0)if(auto* scene=c.game->battle()){
+            bool fired=false,missing=false;for(const auto& w:scene->playerWeapons()){const bool emitted=scene->metrics().playerWeaponEmissions.at(w.part)>0;fired|=emitted;missing|=!emitted;}
+            if(fired&&missing){float closest=std::numeric_limits<float>::max();std::uint64_t target=0;const auto player=scene->player().position;for(const auto& e:scene->enemies())if(e.hp>0&&!e.corpse){const auto point=scene->camera().toScreen(e.position);if(point.x<16||point.x>scene->camera().viewport.width-16||point.y<Impl::fieldFloor(scene->camera())||point.y>scene->camera().viewport.height-16)continue;const float dx=e.position.x-player.x,dy=e.position.y-player.y,d=dx*dx+dy*dy;if(d<closest){closest=d;target=e.id;}}if(target){scene->selectEnemy(target);scene->selectEnemy(target);}}
+        }
+        if(i==38&&!(p.display.enabled&&p.display.compact))if(auto* scene=c.game->battle()){
             // Real target selection gives each side a firing opportunity:
             // farther visible Tank while Missile309 has never emitted, then
             // nearest visible Tank while Gun106 has never emitted. Neither
             // weapon's controller/reload/HP is changed.
             const bool missileFired=scene->metrics().playerWeaponEmissions.at("P_Wpn_Msl_309")>0;
             const bool gunFired=scene->metrics().playerWeaponEmissions.at("P_Wpn_Gun_106")>0;
-            if(!scene->selectedEnemy()||(missileFired&&!gunFired)){
+            if(!scene->selectedEnemy()||(missileFired&&!gunFired)||(p.display.enabled&&!missileFired)){
                 float score=missileFired?std::numeric_limits<float>::max():-1;std::uint64_t target=0;const auto player=scene->player().position;
-                for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=scene->camera().toScreen(enemy.position);if(point.x<0||point.x>scene->camera().viewport.width||point.y<100||point.y>scene->camera().viewport.height)continue;const float dx=enemy.position.x-player.x,dy=enemy.position.y-player.y,d=dx*dx+dy*dy;if(missileFired?d<score:d>score){score=d;target=enemy.id;}}
+                for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=scene->camera().toScreen(enemy.position);if(point.x<0||point.x>scene->camera().viewport.width||point.y<100||point.y>scene->camera().viewport.height)continue;const float dx=enemy.position.x-player.x,dy=enemy.position.y-player.y,d=dx*dx+dy*dy;if(p.display.enabled&&d>(missileFired?600.f*600.f:740.f*740.f))continue;if(missileFired?d<score:d>score){score=d;target=enemy.id;}}
                 if(target&&target!=scene->selectedEnemy())scene->selectEnemy(target);
             }
         }
-        if(auto* scene=c.game->battle()){const auto& d=p.descriptions[i];const bool representative=d.role==ScenarioRole::worldAudit&&(d.map=="Stage01_02"||d.map=="Stage02_07"||d.map=="Stage03_04");if(d.role!=ScenarioRole::airStrike&&d.role!=ScenarioRole::dash&&d.role!=ScenarioRole::gameOver&&!representative&&!scene->selectedEnemy())for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=scene->camera().toScreen(enemy.position);if(point.x<0||point.x>scene->camera().viewport.width||point.y<100||point.y>scene->camera().viewport.height)continue;const bool botRole=d.role==ScenarioRole::botAttack||d.role==ScenarioRole::botPicker;const bool incoming=std::any_of(observed.bots.begin(),observed.bots.end(),[](const auto& b){return b.hpRemoved>0;});if(botRole&&!incoming&&p.botThreats.contains(enemy.name))continue;scene->selectEnemy(enemy.id);break;}}
+        if(auto* scene=c.game->battle()){const auto& d=p.descriptions[i];const bool representative=d.role==ScenarioRole::worldAudit&&(d.map=="Stage01_02"||d.map=="Stage02_07"||d.map=="Stage03_04");if(!(p.display.enabled&&p.display.compact&&Impl::compactWeaponGuideCase(i))&&int(d.role)<int(ScenarioRole::pathReplacementSingle)&&d.role!=ScenarioRole::airStrike&&d.role!=ScenarioRole::dash&&d.role!=ScenarioRole::gameOver&&!representative&&!scene->selectedEnemy())for(const auto& enemy:scene->enemies())if(enemy.hp>0&&!enemy.corpse){const auto point=scene->camera().toScreen(enemy.position);if(point.x<0||point.x>scene->camera().viewport.width||point.y<100||point.y>scene->camera().viewport.height)continue;const bool botRole=d.role==ScenarioRole::botAttack||d.role==ScenarioRole::botPicker;const bool incoming=std::any_of(observed.bots.begin(),observed.bots.end(),[](const auto& b){return b.hpRemoved>0;});if(botRole&&!incoming&&p.botThreats.contains(enemy.name))continue;scene->selectEnemy(enemy.id);break;}}
         const bool movement=i==p.movementIndex;const bool botCase=p.descriptions[i].role==ScenarioRole::botAttack||p.descriptions[i].role==ScenarioRole::botPicker;const auto beforeBots=observed.bots;
         if(movement)p.guideMovement();
         const auto beforeEmissions=observed.playerEmissions,beforeDamage=observed.damage,beforeKills=observed.kills;
         const Vec2 beforePosition=(movement||botCase)?c.game->battle()->player().position:Vec2{};
         const int beforeHP=movement?c.game->battle()->playerHP():0,beforeCredit=(movement||botCase)?c.game->state().credits:0,beforeInventory=(movement||botCase)?p.inventoryCount(*c.game):0;
-        c.game->tick([&p,&c,i]{p.host.tickScenarioUI(unsigned(i),*c.game,c.random);});if(observed.ticks==0)observed.firstFrame=p.counters.frames;observed.lastFrame=p.counters.frames;++observed.ticks;++activity.tickedScenarios;p.observe(i);
+        c.game->tick([&p,&c,i]{p.host.tickScenarioUI(unsigned(i),*c.game,c.random);});if(observed.ticks==0)observed.firstFrame=p.counters.frames;observed.lastFrame=p.counters.frames;++observed.ticks;++activity.tickedScenarios;p.observe(i);p.finishResourceOperation(unsigned(i));
         if(p.descriptions[i].role==ScenarioRole::gameOver){const auto& o=observed.gameOver;activity.gameOverEvents+=(o.deathFrame==p.counters.frames)+(o.requestFrame==p.counters.frames)+(o.confirmFrame==p.counters.frames)+(o.baseFrame==p.counters.frames);}
         if(p.descriptions[i].role==ScenarioRole::rankingUnavailable&&observed.ranking.frame==p.counters.frames)activity.rankingNotices=observed.ranking.notices;
         if(p.descriptions[i].role==ScenarioRole::completedMissions){const auto& o=observed.completedMissions;activity.completedMissionEvents+=(o.popupFrames[0]==p.counters.frames)+(o.popupFrames[1]==p.counters.frames)+(o.okFrames[1]==p.counters.frames)+(o.baseFrame==p.counters.frames);}
@@ -594,13 +883,15 @@ void ConcurrentValidation::tick(){auto& p=*impl_;if(!p.active)return;p.resources
             const auto drops=c.game->fieldItems();for(const auto& item:drops)if(item.removed){++observed.pickupEvents;++activity.botRewardArrivals;if(item.type==0){++observed.coinPickups;observed.pickupCreditGain+=item.value;}else ++observed.itemPickups;observed.pickups.push_back({p.counters.frames,item.code,item.type,item.value,item.pickupPlayer,item.position,observed.credit-beforeCredit});}
             observed.inventoryGain+=std::max(0,p.inventoryCount(*c.game)-beforeInventory);
         }
+        if(p.descriptions[i].role==ScenarioRole::synchronizedWeapons){auto& o=observed.synchronizedWeapon;if(o.resumedFrame&&!o.emittedFrame&&observed.playerEmissions>o.emissionsAtResume){o.emittedFrame=p.counters.frames;o.emissionsAfter=observed.playerEmissions;}}
         if(observed.playerEmissions>beforeEmissions){++activity.emittingScenarios;if(i<p.counters.combatScenarios)++activity.combatEmittingScenarios;activity.emissions+=observed.playerEmissions-beforeEmissions;if(!observed.firstEmissionFrame)observed.firstEmissionFrame=p.counters.frames;observed.lastEmissionFrame=p.counters.frames;}
         activity.damage+=observed.damage-beforeDamage;activity.kills+=observed.kills-beforeKills;if(i<p.counters.combatScenarios)activity.combatDamage+=observed.damage-beforeDamage;
         if(const auto* scene=c.game->battle()){activity.activeProjectiles+=scene->activeProjectiles();if(i<p.counters.combatScenarios)activity.combatActiveProjectiles+=scene->activeProjectiles();}
         if(const auto* scene=c.game->battle())for(const auto& [part,count]:scene->metrics().playerWeaponEmissions){auto [old,inserted]=c.lastWeaponCounts.try_emplace(part,0);(void)inserted;const auto previousCount=old->second;if(count>previousCount){frameWeapons.insert(part);observed.weaponEmissions[part]+=count-previousCount;}old->second=count;}
     }
+    p.resourceStage="external";
     const bool otherCombat=activity.combatEmittingScenarios||activity.combatActiveProjectiles||activity.combatDamage;
-    if(otherCombat){if(activity.completedMissionEvents)++p.counters.completedMissionFramesWithCombatActivity;if(activity.gameOverEvents)++p.counters.gameOverFramesWithCombatActivity;if(activity.rankingNotices)++p.counters.rankingFramesWithCombatActivity;if(activity.botEmissions||activity.botItemContacts||activity.botRewardArrivals||activity.botHPRemoved||activity.botRepairs)++p.counters.botFramesWithCombatActivity;if(activity.helpInputRequests||std::any_of(activity.buttons.begin(),activity.buttons.end(),[&p](const auto& b){return p.descriptions.at(b.scenario).role==ScenarioRole::help;}))++p.counters.helpFramesWithCombatActivity;if(activity.airStrikeUses)++p.counters.airStrikeFramesWithCombatActivity;if(activity.aidKitUses)++p.counters.aidKitFramesWithCombatActivity;if(activity.movementLootMoving)++p.counters.movementFramesWithCombatActivity;if(activity.movementLootPickups)++p.counters.pickupFramesWithCombatActivity;if(activity.movementLootInjury)++p.counters.injuryFramesWithCombatActivity;if(activity.movementLootMoving&&activity.movementLootEmissions)++p.counters.movementEmissionFramesWithCombatActivity;}
+    if(otherCombat){if(activity.recentInputEvents)++p.counters.recentInputFramesWithCombatActivity;if(activity.hudInputEvents)++p.counters.hudFramesWithCombatActivity;if(activity.lifecycleEvents)++p.counters.lifecycleFramesWithCombatActivity;if(activity.completedMissionEvents)++p.counters.completedMissionFramesWithCombatActivity;if(activity.gameOverEvents)++p.counters.gameOverFramesWithCombatActivity;if(activity.rankingNotices)++p.counters.rankingFramesWithCombatActivity;if(activity.botEmissions||activity.botItemContacts||activity.botRewardArrivals||activity.botHPRemoved||activity.botRepairs)++p.counters.botFramesWithCombatActivity;if(activity.helpInputRequests||std::any_of(activity.buttons.begin(),activity.buttons.end(),[&p](const auto& b){return p.descriptions.at(b.scenario).role==ScenarioRole::help;}))++p.counters.helpFramesWithCombatActivity;if(activity.airStrikeUses)++p.counters.airStrikeFramesWithCombatActivity;if(activity.aidKitUses)++p.counters.aidKitFramesWithCombatActivity;if(activity.movementLootMoving)++p.counters.movementFramesWithCombatActivity;if(activity.movementLootPickups)++p.counters.pickupFramesWithCombatActivity;if(activity.movementLootInjury)++p.counters.injuryFramesWithCombatActivity;if(activity.movementLootMoving&&activity.movementLootEmissions)++p.counters.movementEmissionFramesWithCombatActivity;}
     if(!activity.buttons.empty()){++p.counters.menuActionFrames;if(activity.combatEmittingScenarios||activity.combatActiveProjectiles||activity.combatDamage)++p.counters.menuFramesWithCombatActivity;}
     std::set<WeaponKind> kinds;for(const auto& part:frameWeapons)kinds.insert(p.catalog.weapon(part).kind);activity.emittedWeaponKinds.assign(kinds.begin(),kinds.end());
     activity.emittedWeaponParts.assign(frameWeapons.begin(),frameWeapons.end());p.counters.maxConcurrentEmittingScenarios=std::max(p.counters.maxConcurrentEmittingScenarios,activity.emittingScenarios);p.counters.maxConcurrentWeaponDefinitions=std::max(p.counters.maxConcurrentWeaponDefinitions,std::uint64_t(frameWeapons.size()));p.counters.maxConcurrentWeaponKinds=std::max(p.counters.maxConcurrentWeaponKinds,std::uint64_t(kinds.size()));if(frameWeapons.size()>=5)++p.counters.framesWithFiveWeaponDefinitions;if(kinds.size()>=5)++p.counters.framesWithFiveWeaponKinds;p.activity.push_back(std::move(activity));
@@ -610,12 +901,16 @@ Frame ConcurrentValidation::drawFrame(Size viewport){return impl_->compose(viewp
 Frame ConcurrentValidation::scenarioFrame(unsigned i)const{if(impl_->sourceFrameNumber!=impl_->counters.frames)throw std::logic_error("Capture a scenario only after its common frame draw");return impl_->sourceFrames.at(i);}
 GameSession& ConcurrentValidation::session(unsigned i){return *impl_->cases.at(i)->game;}
 ResourceAccess& ConcurrentValidation::cachedResources(){return impl_->resources;}
+ResourceAccess& ConcurrentValidation::scenarioResources(unsigned index){return impl_->cases.at(index)->resources;}
+const std::vector<ResourceActivity>& ConcurrentValidation::resourceActivity()const{return impl_->resourceActivity;}
 std::size_t ConcurrentValidation::scenarioCount()const{return impl_->cases.size();}
 const std::vector<ScenarioDescription>& ConcurrentValidation::scenarios()const{return impl_->descriptions;}
 const std::vector<ScenarioObservation>& ConcurrentValidation::observations()const{return impl_->observations;}
 const std::vector<FrameActivity>& ConcurrentValidation::frameActivity()const{return impl_->activity;}
 ConcurrentMetrics ConcurrentValidation::metrics()const{const auto& p=*impl_;auto result=p.counters;result.activeScenarios=p.active?p.cases.size():0;result.underlyingReads=p.resources.reads;result.underlyingExists=p.resources.probes;result.warmReadMisses=p.resources.readMisses;result.warmExistsMisses=p.resources.probeMisses;result.warmReadNames=p.resources.warmReadNames;result.warmExistsNames=p.resources.warmExistsNames;
     std::set<std::string> activeWeapons;std::uint64_t first=0,last=std::numeric_limits<std::uint64_t>::max();for(std::size_t i=0;i<p.observations.size();++i){const auto& o=p.observations[i];first=std::max(first,o.firstFrame);last=std::min(last,o.lastFrame);for(const auto& part:o.emittedWeaponParts)activeWeapons.insert(part);}result.commonFrameInterval=first>0&&first<=last;result.activeWeaponDefinitions=activeWeapons.size();std::set<WeaponKind> kinds;for(const auto& part:activeWeapons)kinds.insert(p.catalog.weapon(part).kind);result.activeWeaponKinds=kinds.size();return result;}
-std::vector<std::string> ConcurrentValidation::supported()const{return {"110 original PtWpn items /55 independently saved real battles","same-frame session ticks and shared sprite-frame compositor","original target / weapon / damage / death / mission / EXP consumers","scheduled real shop purchase and insufficient-credit refusal","original save encode/decode and restart without condition reinjection","one source-frame consumption per tick, including viewport recomposition","real ground-pointer movement and actual enemy-drop pickup on the same frame clock","six original AidKit consumers and three real AirStrike/bullet consumers","38 original field entries and common vehicle / turret / aircraft consumers","original ground double tap / SP / dash movement / shared particle consumer","six original BOT registrations / real attack and pickup / damage and repair observations","four original KR Help conditions / actual menu and overlay-end input / pause and resume","real enemy damage / GameOver token / original doors / Base002 save","Command5009 / localized ranking unavailable notice / no save"};}
+std::vector<std::string> ConcurrentValidation::supported()const{return {"110 original PtWpn items /55 independently saved real battles","same-frame session ticks and shared sprite-frame compositor","original target / weapon / damage / death / mission / EXP consumers","scheduled real shop purchase and insufficient-credit refusal","original save encode/decode and restart without condition reinjection","one source-frame consumption per tick, including viewport recomposition","real ground-pointer movement and actual enemy-drop pickup on the same frame clock","six original AidKit consumers and three real AirStrike/bullet consumers","38 original field entries and common vehicle / turret / aircraft consumers","original ground double tap / SP / dash movement / shared particle consumer","six original BOT registrations / real attack and pickup / damage and repair observations","four original KR Help conditions / actual menu and overlay-end input / pause and resume","real enemy damage / GameOver token / original doors / Base002 save","Command5009 / localized ranking unavailable notice / no save","actual path replacement variants and doubletap / camera focus / inactive manual resume / GPU HUD Apply and stored profile reload"};}
 std::vector<std::string> ConcurrentValidation::missingFeatures()const{return {"all23 Player bottom equipment movement checks","all BOT combat outcomes and death after owner removal attribution","all mission types and all60 mission completion","all stages and final campaign completion","original port-app visual/input/audio equivalence","OS interruption / audio-route transition"};}
 }
+
+namespace hm2::validation {void ConcurrentValidation::setDisplay(DisplayConfiguration display){impl_->display=display;for(auto& value:impl_->cases)value->game->setDisplay(display);impl_->sourceFrameNumber=~std::uint64_t(0);}}

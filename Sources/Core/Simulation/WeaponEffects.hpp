@@ -37,9 +37,13 @@ struct WeaponEffectsHost {
     virtual ~WeaponEffectsHost()=default;
     virtual const WeaponTarget* target()const=0;
     virtual void damage(const WeaponInfo&,std::uint64_t target,int amount)=0;
-    // A prepared cache lookup, never file IO or texture upload during emit().
+    // WeaponInfo-owned bullet/effect images were prepared globally at startup.
     // nullptr preserves the original nil tile behavior, including RNG/TTL.
     virtual TileImage* preparedTile(std::string_view)=0;
+    // Hardcoded Gun/Sniper trail/shell requests occur at their original VFX
+    // creation sites. A live host uses the shared filename cache (first miss
+    // only); a fixture may preserve its supplied resources, including nil.
+    virtual TileImage* prepareOriginalTile(std::string_view,TileImage* suppliedPrepared){return suppliedPrepared;}
     virtual void fireSound(const WeaponInfo&,Vec2 relativePosition)=0;
     // Transfers the actual initialized motion and shared trail to the world.
     // The world owns subsequent movement, setCollide damage/removal and draw.

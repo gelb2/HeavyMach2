@@ -22,7 +22,7 @@ void WorldNavigation::clearPath(){
 }
 bool WorldNavigation::input(PointerPhase phase,Vec2 screen,std::uintptr_t id,const MapCamera& camera,BipodMotion& actor){
     if(phase==PointerPhase::cancel)return inputWorld(phase,{},id,actor);
-    if(!id||!std::isfinite(screen.x)||!std::isfinite(screen.y)||screen.y<100)return false;
+    if(!id||!std::isfinite(screen.x)||!std::isfinite(screen.y)||screen.y<camera.inputMinimumY)return false;
     return inputWorld(phase,camera.toWorld(screen),id,actor);
 }
 bool WorldNavigation::inputWorld(PointerPhase phase,Vec2 world,std::uintptr_t id,BipodMotion& actor){
@@ -55,8 +55,40 @@ void processCamera(MapCamera& camera,Vec2 player,const WorldNavigation& navigati
     Vec2 wanted=player;
     if(target){wanted.x+=(target->x-player.x)*.5f;wanted.y+=(target->y-player.y)*.5f;}
     else if(navigation.count()){const auto p=navigation.point(navigation.count()-1);wanted.x+=(p.x-player.x)*.5f;wanted.y+=(p.y-player.y)*.5f;}
-    camera.center.x=std::clamp(ease(camera.center.x,wanted.x),-128.f,128.f);
-    camera.center.y=std::clamp(ease(camera.center.y,wanted.y),-94.f,0.f);
+    camera.center={ease(camera.center.x,wanted.x),ease(camera.center.y,wanted.y)};
+    constrainCamera(camera,player);
+}
+void constrainCamera(MapCamera& camera,Vec2 player){
+    Vec2 minimum{-128,-94},maximum{128,0};
+    if(camera.fitWorld){
+        // HD0x11cac uses these constants for768x1024. Phone0x5a418
+        // derives bounds from world half-size / half-screen / current zoom.
+        minimum={-512+camera.viewport.width*.5f,-512+camera.viewport.height*.5f-camera.lowerOverscan};
+        maximum={512-camera.viewport.width*.5f,512-camera.viewport.height*.5f};
+        if(minimum.x>maximum.x)minimum.x=maximum.x=(minimum.x+maximum.x)*.5f;
+        if(minimum.y>maximum.y)minimum.y=maximum.y=(minimum.y+maximum.y)*.5f;
+        if(camera.fillSurface){minimum.x+=1-camera.offset.x;maximum.x-=1+camera.offset.x;minimum.y+=1-camera.offset.y;maximum.y-=1+camera.offset.y;
+            // Overscan is possible for an unusually wide/short compact window.
+            // Keep clamp intervals valid after the edge-rounding reservation.
+            if(minimum.x>maximum.x)minimum.x=maximum.x=(minimum.x+maximum.x)*.5f;
+            if(minimum.y>maximum.y)minimum.y=maximum.y=(minimum.y+maximum.y)*.5f;}
+    }
+    camera.center={std::clamp(camera.center.x,minimum.x,maximum.x),std::clamp(camera.center.y,minimum.y,maximum.y)};
+    if(camera.keepFocusVisible){
+        // Shared small-window policy after ease, including camera offset.
+        // Reference HD framing does not enable this additional protection.
+        const Vec2 low{player.x-camera.viewport.width*.5f-camera.offset.x+camera.focusRadius+camera.focusRight,
+                       player.y-camera.viewport.height*.5f-camera.offset.y+camera.focusRadius};
+        const Vec2 high{player.x+camera.viewport.width*.5f-camera.offset.x-camera.focusRadius-camera.focusLeft,
+                        player.y+camera.viewport.height*.5f-camera.offset.y-camera.focusMinimumY-camera.focusRadius};
+        const float lx=std::max(minimum.x,low.x),hx=std::min(maximum.x,high.x);
+        const float ly=std::max(minimum.y,low.y),hy=std::min(maximum.y,high.y);
+        if(lx<=hx)camera.center.x=std::clamp(camera.center.x,lx,hx);
+        else if(camera.fillSurface&&low.x<=high.x)camera.center.x=std::clamp(std::clamp(camera.center.x,low.x,high.x),minimum.x,maximum.x);
+        if(ly<=hy)camera.center.y=std::clamp(camera.center.y,ly,hy);
+        else if(camera.fillSurface&&low.y<=high.y)camera.center.y=std::clamp(std::clamp(camera.center.y,low.y,high.y),minimum.y,maximum.y);
+
+    }
     camera.backgroundWorld={(camera.center.x+camera.offset.x)*.94f,(camera.center.y+camera.offset.y)*.94f};
 }
 }

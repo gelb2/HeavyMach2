@@ -32,7 +32,7 @@ bool DashMotion::tick(float renderTime,const DashTick& tick,DashMotionHost& host
     if(800.f<x*x+y*y){
         lastEffectPosition_=before; // Write happens even when the pool is full.
         if(auto* particle=host.allocateParticle(renderTime)){
-            auto* tile=host.preparedTile("Efx_Dash.png");if(tile){tile->columns=1;tile->rows=1;}
+            auto* tile=host.prepareOriginalTile("Efx_Dash.png");if(tile){tile->columns=1;tile->rows=1;}
             auto& p=particle->state();p.life=.2f;p.tile=tile;p.tileNumber=0;p.blendType=2;
             p.angle=float(std::atan2(double(delta.y),double(delta.x)));p.scale={.5f,.5f};p.scaleVelocity=.05f;
             p.position=before;particle->start(renderTime);

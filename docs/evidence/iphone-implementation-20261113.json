@@ -1,0 +1,638 @@
+{
+  "branch": "feat/iphone-universal-20261113",
+  "single_simulator_batch": false,
+  "simulator_reruns_after_harness_correction": 2,
+  "physical_device_operations": 0,
+  "core_tests_before_native": 73,
+  "native_before_harness_corrections": {
+    "iphone": {
+      "total": 20,
+      "passed": 16,
+      "failed": 4,
+      "failures": [
+        "ConcurrentValidationTests/testAllRestoredScenariosOnOneDisplayClock",
+        "SessionRendererTests/testOriginalShopItemDetailsAndSellPosition",
+        "WorldInputTests/testCompletedMissionWindowsAndSavedRewards",
+        "WorldInputTests/testRealTouchMovesPlayerOnOriginalTerrain"
+      ],
+      "concurrent": {
+        "frames": 1200,
+        "scenarios": 115,
+        "combatScenarios": 55,
+        "activeWeaponDefinitions": 110,
+        "activeWeaponKinds": 5,
+        "commonFrameInterval": true,
+        "warmReadMisses": 0,
+        "warmExistsMisses": 0,
+        "imageTextureUploadsAfterPreparation": 0,
+        "maxProgressingEffects": 23
+      },
+      "render_comparison": {
+        "comparedPixels": 3447360,
+        "differentRGBPixels": 0,
+        "experimentalBatchingAdopted": false,
+        "firstDrawCalls": 7813,
+        "maxRGBDifference": 0,
+        "renderPath": "originalOrderedScissor",
+        "repeatDrawCalls": 7813,
+        "sameCachedFrame": true,
+        "sourceSprites": 7813
+      },
+      "case_button_failures": 0,
+      "representative_fields": [
+        {
+          "map": "Stage01_02",
+          "enemyEmissions": [
+            0,
+            6,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            1,
+            0
+          ],
+          "enemyKills": [
+            0,
+            1,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "map": "Stage02_07",
+          "enemyEmissions": [
+            0,
+            0,
+            16
+          ],
+          "enemyDamage": [
+            0,
+            0,
+            6
+          ],
+          "enemyKills": [
+            0,
+            0,
+            1
+          ],
+          "enemyRemovals": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "map": "Stage03_04",
+          "enemyEmissions": [
+            0,
+            0,
+            240
+          ],
+          "enemyDamage": [
+            0,
+            0,
+            1
+          ],
+          "enemyKills": [
+            0,
+            0,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    "ipad": {
+      "total": 20,
+      "passed": 18,
+      "failed": 2,
+      "failures": [
+        "SessionRendererTests/testOriginalShopItemDetailsAndSellPosition",
+        "WorldInputTests/testCompletedMissionWindowsAndSavedRewards"
+      ],
+      "concurrent": {
+        "frames": 1200,
+        "scenarios": 115,
+        "combatScenarios": 55,
+        "activeWeaponDefinitions": 110,
+        "activeWeaponKinds": 5,
+        "commonFrameInterval": true,
+        "warmReadMisses": 0,
+        "warmExistsMisses": 0,
+        "imageTextureUploadsAfterPreparation": 0,
+        "maxProgressingEffects": 23
+      },
+      "render_comparison": {
+        "comparedPixels": 5595136,
+        "differentRGBPixels": 0,
+        "experimentalBatchingAdopted": false,
+        "firstDrawCalls": 8062,
+        "maxRGBDifference": 0,
+        "renderPath": "originalOrderedScissor",
+        "repeatDrawCalls": 8062,
+        "sameCachedFrame": true,
+        "sourceSprites": 8062
+      },
+      "case_button_failures": 0,
+      "representative_fields": [
+        {
+          "map": "Stage01_02",
+          "enemyEmissions": [
+            0,
+            7,
+            0
+          ],
+          "enemyDamage": [
+            0,
+            1,
+            0
+          ],
+          "enemyKills": [
+            0,
+            1,
+            0
+          ],
+          "enemyRemovals": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "map": "Stage02_07",
+          "enemyEmissions": [
+            0,
+            0,
+            16
+          ],
+          "enemyDamage": [
+            0,
+            0,
+            6
+          ],
+          "enemyKills": [
+            0,
+            0,
+            1
+          ],
+          "enemyRemovals": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "map": "Stage03_04",
+          "enemyEmissions": [
+            0,
+            0,
+            16
+          ],
+          "enemyDamage": [
+            0,
+            0,
+            3
+          ],
+          "enemyKills": [
+            0,
+            0,
+            1
+          ],
+          "enemyRemovals": [
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  "source_iphone_actual_canvas": [
+    912,
+    420
+  ],
+  "old_native_unit_canvas": [
+    420,
+    912
+  ],
+  "portrait_diagnostic": "CPU420x912 with original HD game code reproduced Stage03_04 emission240/damage1/kill0/remove0; landscape912x420 with/without safe area passed strict field outcomes.",
+  "post_native_corrections": "test-window scene/orientation, first Help dismissal, display-vs-HD input/delta coordinates, real mission scroll; compile and CPU verification only",
+  "complete_game_or_original_equivalence": false,
+  "post_correction_checks": {
+    "core_passed": 73,
+    "core_failed": 0,
+    "landscape_air_cpu_safe_area_passed": true,
+    "landscape_air_cpu_full_area_passed": true,
+    "source_test_build_succeeded": true,
+    "validation_app_build_succeeded": true,
+    "native_rerun": false
+  },
+  "revalidation_01": {
+    "iphone": {
+      "result": "Failed",
+      "totalTestCount": 20,
+      "passedTests": 17,
+      "failedTests": 3,
+      "skippedTests": 0,
+      "failures": [
+        "ConcurrentValidationTests/testAllRestoredScenariosOnOneDisplayClock",
+        "SessionRendererTests/testOriginalShopItemDetailsAndSellPosition",
+        "WorldInputTests/testRealTouchMovesPlayerOnOriginalTerrain"
+      ]
+    },
+    "ipad": {
+      "result": "Failed",
+      "totalTestCount": 20,
+      "passedTests": 19,
+      "failedTests": 1,
+      "skippedTests": 0,
+      "failures": [
+        "SessionRendererTests/testOriginalShopItemDetailsAndSellPosition"
+      ]
+    }
+  },
+  "camera_product_fix": {
+    "problem": "Fixed HD center bounds on a compact landscape window let the real Player leave the screen or sit below HUD. Previous test-coordinate-only explanation was incomplete.",
+    "source_log_player_screen_y": [
+      -5.839052,
+      14.555725
+    ],
+    "cpu_red_player_y": 60.046,
+    "cpu_red_required_y": 89,
+    "after_fix_player_visibility_frames": 240,
+    "original_hd_center_bitwise_regression": true,
+    "policy": "Configured viewport-derived world bounds; compact view constrains Player above HUD after original ease; no world radius/physics/RNG changes"
+  },
+  "strict_display_cpu_after_camera_fix": {
+    "frames": 1200,
+    "scenarios": 115,
+    "configurations": [
+      {
+        "canvas": [
+          852,
+          393
+        ],
+        "safe": [
+          59,
+          21,
+          59,
+          0
+        ]
+      },
+      {
+        "canvas": [
+          912,
+          420
+        ],
+        "safe": [
+          68,
+          20,
+          68,
+          0
+        ]
+      },
+      {
+        "canvas": [
+          1024,
+          1366
+        ],
+        "safe": [
+          0,
+          20,
+          0,
+          24
+        ]
+      }
+    ],
+    "passed": true,
+    "core_passed": 73,
+    "all_3_attackers_emit_and_damage": true,
+    "all_3_pickers_capture": true,
+    "selection_limit": "Some representative and weapon-pair targets use common selectEnemy directly; not all target selection is pointer input."
+  },
+  "revalidation_02": {
+    "status": "passed",
+    "path": ".local/evidence/iphone-implementation-20261113/revalidation-02/native",
+    "automatic_retries": false,
+    "counts": {
+      "iphone": {
+        "result": "Passed",
+        "totalTestCount": 20,
+        "passedTests": 20,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "failures": []
+      },
+      "ipad": {
+        "result": "Passed",
+        "totalTestCount": 20,
+        "passedTests": 20,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "failures": []
+      }
+    },
+    "scope": "Complete20 per simulator before the later visual HUD/atlas clipping correction",
+    "iphone": {
+      "canvas": {
+        "height": 420,
+        "safeBottom": 20,
+        "safeLeft": 68,
+        "safeRight": 68,
+        "safeTop": 0,
+        "width": 912
+      },
+      "frames": 1200,
+      "scenarios": 115,
+      "weapons": 110,
+      "picker_contacts": [
+        4,
+        2,
+        3
+      ],
+      "attacker_emissions": [
+        19,
+        21,
+        21
+      ],
+      "attacker_enemy_hp_removed": [
+        152,
+        336,
+        504
+      ],
+      "warm_read_misses": 0,
+      "warm_exists_misses": 0,
+      "image_uploads_after_preparation": 0,
+      "same_frame_rgb_differences": 0
+    },
+    "ipad": {
+      "canvas": {
+        "height": 1366,
+        "safeBottom": 25,
+        "safeLeft": 0,
+        "safeRight": 0,
+        "safeTop": 0,
+        "width": 1024
+      },
+      "frames": 1200,
+      "scenarios": 115,
+      "weapons": 110,
+      "picker_contacts": [
+        3,
+        3,
+        2
+      ],
+      "attacker_emissions": [
+        20,
+        25,
+        21
+      ],
+      "attacker_enemy_hp_removed": [
+        160,
+        392,
+        472
+      ],
+      "warm_read_misses": 0,
+      "warm_exists_misses": 0,
+      "image_uploads_after_preparation": 0,
+      "same_frame_rgb_differences": 0
+    }
+  },
+  "hud_visual_followup": {
+    "status": "passed",
+    "discovered_after_full20": true,
+    "problem": "Centered HUD exposed parts of sliding HP/booster atlas gauge tiles previously outside the reference viewport. VisualLayer also discarded presentationClip on atlas submission.",
+    "cpu_red": {
+      "clip_left": 0,
+      "hud_left": 141.5
+    },
+    "fix": "Translated reference768-wide HUD clip; carry per-quad clips through ordered contiguous atlas runs to Sprite.clip and GPU scissor. Preserve tile+blend groups, quad order, original atlas path and16-bit indices.",
+    "game_stats_changed": false,
+    "independent_static_review_p1_p2_remaining": 0,
+    "core_passed": 73,
+    "source_test_build_succeeded": true,
+    "validation_app_build_succeeded": true,
+    "native_counts": {
+      "iphone": {
+        "result": "Passed",
+        "totalTestCount": 4,
+        "passedTests": 4,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "failures": []
+      },
+      "ipad": {
+        "result": "Passed",
+        "totalTestCount": 4,
+        "passedTests": 4,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "failures": []
+      }
+    },
+    "comparison": {
+      "iphone": {
+        "cases": 115,
+        "compared_fields": [
+          "playerEmissions",
+          "enemyEmissions",
+          "enemyDamage",
+          "enemyKills",
+          "enemyRemovals",
+          "kills",
+          "coinPickups",
+          "itemPickups",
+          "pickupCreditGain",
+          "distanceMoved",
+          "bots",
+          "botWeaponSwaps"
+        ],
+        "gameplay_differences": [],
+        "gameCanvas": {
+          "height": 420,
+          "safeBottom": 20,
+          "safeLeft": 68,
+          "safeRight": 68,
+          "safeTop": 0,
+          "width": 912
+        },
+        "warmReadMisses": 0,
+        "warmExistsMisses": 0,
+        "imageTextureUploadsAfterPreparation": 0,
+        "differentRGBPixels": 0
+      },
+      "ipad": {
+        "cases": 115,
+        "compared_fields": [
+          "playerEmissions",
+          "enemyEmissions",
+          "enemyDamage",
+          "enemyKills",
+          "enemyRemovals",
+          "kills",
+          "coinPickups",
+          "itemPickups",
+          "pickupCreditGain",
+          "distanceMoved",
+          "bots",
+          "botWeaponSwaps"
+        ],
+        "gameplay_differences": [],
+        "gameCanvas": {
+          "height": 1366,
+          "safeBottom": 25,
+          "safeLeft": 0,
+          "safeRight": 0,
+          "safeTop": 0,
+          "width": 1024
+        },
+        "warmReadMisses": 0,
+        "warmExistsMisses": 0,
+        "imageTextureUploadsAfterPreparation": 0,
+        "differentRGBPixels": 0
+      }
+    },
+    "manual_native_field_captures": {
+      "iphone": "gauge confined inside centered HUD",
+      "ipad": "gauge confined inside centered HUD"
+    }
+  },
+  "latest_native_scope": "Full20/20 each after camera fix; following HUD/atlas clip correction selected4/4 each including115 concurrent1200-frame GPU, original indexed atlas, A8 shadow and actual Source UI/save/restart. Not a full20 rerun after the last rendering correction.",
+  "remaining_native_display_scope": [
+    "Opposite iPhone landscape orientation and asymmetric safe areas",
+    "Original display-size and full-campaign equivalence"
+  ],
+  "fullscreen_followup": {
+    "source_commit": "64ebe7041e3b6df2dcd7bc767a9384f60c95fe7c",
+    "core_tests": {
+      "passed": 73,
+      "failed": 0
+    },
+    "native": {
+      "iphone": {
+        "canvas": {
+          "height": 420,
+          "safeBottom": 20,
+          "safeLeft": 68,
+          "safeRight": 68,
+          "safeTop": 0,
+          "width": 912
+        },
+        "frames": 1800,
+        "scenarios": 115,
+        "weapon_definitions": 110,
+        "weapon_kinds": 5,
+        "same_frame_weapon_kinds": 5,
+        "button_failures": 0,
+        "warm_reads": 0,
+        "warm_exists": 0,
+        "repeated_frame_rgb_difference": 0,
+        "gameover_base_frame": 714
+      },
+      "ipad": {
+        "canvas": {
+          "height": 1366,
+          "safeBottom": 25,
+          "safeLeft": 0,
+          "safeRight": 0,
+          "safeTop": 0,
+          "width": 1024
+        },
+        "frames": 1200,
+        "scenarios": 115,
+        "weapon_definitions": 110,
+        "weapon_kinds": 5,
+        "same_frame_weapon_kinds": 5,
+        "button_failures": 0,
+        "warm_reads": 0,
+        "warm_exists": 0,
+        "repeated_frame_rgb_difference": 0,
+        "gameover_base_frame": 555
+      }
+    },
+    "gpu_edges": {
+      "fixture": [
+        912,
+        420
+      ],
+      "screens": 5,
+      "passed_on": [
+        "iphone_simulator",
+        "ipad_simulator"
+      ],
+      "all_four_edges_filled": true
+    },
+    "source_ui": {
+      "iphone": [
+        "movement",
+        "battle",
+        "menu_pause",
+        "mission_rewards",
+        "save_restart",
+        "gameover_return"
+      ],
+      "ipad": [
+        "movement",
+        "battle",
+        "menu_pause",
+        "mission_rewards",
+        "save_restart",
+        "gameover_return"
+      ],
+      "retargeting_policy": "up to3 live-coordinate taps in same battle; exact final requested ID required"
+    },
+    "physical_release": {
+      "installed": true,
+      "save_preservation_verified": true,
+      "screen_verification": "2026-11-14 actual device base/command/movement/attack/gameover/menu checked; see physical_recheck_20261114"
+    },
+    "remaining": [
+      "landscape_left Native",
+      "map-edge stretched-pixel appearance",
+      "original phone display proportions",
+      "full campaign equivalence"
+    ],
+    "all_prior_failures_preserved": true,
+    "develop_main_merged": false
+  },
+  "physical_recheck_20261114": {
+    "source": "64ebe70",
+    "configuration": "Release",
+    "built": true,
+    "installed": true,
+    "save_preserved": true,
+    "save_bytes": 28204,
+    "launched": true,
+    "observed": [
+      "title full screen",
+      "saved slot level21 loaded",
+      "Skyway Base full screen",
+      "command description fully visible and separate from EXIT",
+      "Command initial list shows all3 accepted missions",
+      "Skyway field entered with larger HUD",
+      "actual hostile fire destroyed Player; Korean GameOver alert shown",
+      "GameOver OK returned to Skyway Base",
+      "Ruin Field ground tap displayed movement marker; Player walked to target and BOTs followed",
+      "enemy E_Tank_06 selected; name/HP and actual projectiles/impact/damage observed",
+      "world output rectangle and HUD size stayed fixed during observed movement/attack; no black letterbox seen",
+      "system menu opened; app left paused"
+    ],
+    "scope": "actual iPhone; not full campaign coverage",
+    "observed_crash": false,
+    "remaining": [
+      "map edge pixel stretching",
+      "native LandscapeLeft",
+      "original phone proportions",
+      "full campaign and all UI coverage"
+    ]
+  }
+}

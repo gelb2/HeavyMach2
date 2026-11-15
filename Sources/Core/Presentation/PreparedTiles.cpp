@@ -1,5 +1,8 @@
 #include "Core/Presentation/PreparedTiles.hpp"
+#include "Assets/Image.hpp"
 #include "Core/Presentation/AssemblyPreview.hpp"
+#include <algorithm>
+#include "Core/Data/ResourceName.hpp"
 #include <stdexcept>
 #include <utility>
 namespace hm2 {
@@ -10,7 +13,7 @@ TileImage* PreparedTiles::prepareShadow(ResourceAccess& resources,std::string_vi
     const auto* original=prepare(resources,name);std::optional<TileImage> shadow;
     if(original){shadow=*original;shadow->name=key;shadow->pixelFormat=3;
         shadow->textureSource={std::string(name),TextureVariant::originalHalfAlpha};shadow->color={0,0,0,1};shadow->origin={};shadow->forRetina=false;}
-    const auto it=tiles_.emplace(key,std::move(shadow)).first;
+    const auto it=tiles_.emplace(key,std::move(shadow)).first;++revision_;
     return it->second?&*it->second:nullptr;
 }
 const TileImage* PreparedTiles::lookupShadow(std::string_view name)const{
@@ -19,12 +22,12 @@ const TileImage* PreparedTiles::lookupShadow(std::string_view name)const{
 }
 TileImage* PreparedTiles::prepare(ResourceAccess& resources,std::string_view name){
     if(name.empty())return nullptr;
-    if(name.find('/')!=name.npos||name.find('\\')!=name.npos)throw std::runtime_error("Invalid original texture resource name");
+    if(!validResourceName(name))throw std::runtime_error("Invalid original texture resource name");
     auto it=tiles_.find(name);
     if(it==tiles_.end()){
         std::optional<TileImage> prepared;
-        if(resources.exists(name)){TileImage image;image.name=name;image.pixels=AssemblyPreview::pngSize(resources.read(name));prepared=std::move(image);}
-        it=tiles_.emplace(std::string(name),std::move(prepared)).first;
+        if(resources.exists(name)){TileImage image;image.name=name;const auto bytes=resources.read(name);constexpr std::uint8_t png[]={137,80,78,71,13,10,26,10};if(bytes.size()>=8&&std::equal(std::begin(png),std::end(png),bytes.begin()))image.pixels=AssemblyPreview::pngSize(bytes);else{const auto info=imageInfo(bytes);image.pixels={float(info.width),float(info.height)};}prepared=std::move(image);}
+        it=tiles_.emplace(std::string(name),std::move(prepared)).first;++revision_;
     }
     return it->second?&*it->second:nullptr;
 }
@@ -33,7 +36,10 @@ TileImage* PreparedTiles::lookup(std::string_view name){
 }
 const TileImage* PreparedTiles::lookup(std::string_view name)const{
     if(name.empty())return nullptr;
-    const auto it=tiles_.find(name);if(it==tiles_.end())throw std::runtime_error("Texture was not prepared: "+std::string(name));
+    const auto it=tiles_.find(name);if(it==tiles_.end()){
+        if(fallback_)return fallback_->lookup(name);
+        throw std::runtime_error("Texture was not prepared: "+std::string(name));
+    }
     return it->second?&*it->second:nullptr;
 }
 VisualTile PreparedTiles::visual(const TileImage& image)const{

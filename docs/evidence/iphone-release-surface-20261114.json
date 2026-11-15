@@ -1,0 +1,29 @@
+{
+  "product_commit": "2f1e5ef",
+  "physical_device": "iPhone Air PaleMirror",
+  "installed": true,
+  "launched": true,
+  "process_confirmed": true,
+  "pid": 9479,
+  "save": {
+    "bytes": 28204,
+    "sha256": "c494c02cd4dcd1476424ac7aafdefd78fec01d5b3729b456847307ac3b583ba5",
+    "identical": true
+  },
+  "verification": {
+    "product_commit": "2f1e5ef",
+    "configuration": "Release",
+    "bundle_identifier": "com.gelb2.heavymach2.restored",
+    "binary_sha256": "fc689c1d6100f93b3099b363156c20ff1a018e05d5cc3c6a18d29c420418e7bd",
+    "binary_uuid": "562DE2D2-99EF-3E1F-B93A-7CB53690F2CE",
+    "dsym_uuid": "562DE2D2-99EF-3E1F-B93A-7CB53690F2CE",
+    "matching_uuids": true,
+    "normal_source_no_concurrent_validation_symbols": true,
+    "HD_files_verified": 1478,
+    "Phone_menu_files_verified": 52,
+    "codesign_verified": true,
+    "project_signing_changes_restored": true,
+    "GUI_build_succeeded_observed": "2026-11-14 17:43 8.9s"
+  },
+  "scope": "Update installation and process launch checked. No new full physical-device campaign or thermal certification."
+}
