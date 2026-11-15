@@ -15,8 +15,12 @@ void same(const CameraPresentationState& a,const CameraPresentationState& b){
 void regularIsolation(){
     for(const auto config:{DisplayConfiguration{},DisplayConfiguration::surface({768,1024}),DisplayConfiguration::surface({1024,1366},{0,20,0,24}),DisplayConfiguration::surface({1366,1024},{24,20,0,24})}){
         CameraPresentation tablet,phone;tablet.configure(config);phone.configure(DisplayConfiguration::surface({912,420},{68,20,68,0}));const auto baseline=tablet.snapshot();
-        assert(baseline.worldScale==1&&baseline.currentZoom==1);
-        const auto area=config.content();assert(baseline.viewport.width==area.width&&baseline.viewport.height==area.height);
+        const float referenceScale=config.enabled?std::max(config.canvas.width/768.f,config.canvas.height/1024.f):1.f;
+        assert(near(baseline.worldScale,referenceScale)&&baseline.currentZoom==1);
+        const bool hd=std::round(config.canvas.width/referenceScale)==768&&std::round(config.canvas.height/referenceScale)==1024;
+        assert(near(baseline.viewport.width,hd?768.f:config.canvas.width/referenceScale)&&near(baseline.viewport.height,hd?1024.f:config.canvas.height/referenceScale));
+        if(hd){assert(baseline.policy==CameraPolicy::legacyHD);assert(near(baseline.worldToCanvas.offset.x,(config.canvas.width-768*referenceScale)*.5f)&&near(baseline.worldToCanvas.offset.y,(config.canvas.height-1024*referenceScale)*.5f));}
+        else assert(baseline.worldToCanvas.offset.x==0&&baseline.worldToCanvas.offset.y==0);
         for(unsigned i=0;i<1200;++i){phone.advance({{0,0},i%2?std::optional<Vec2>{{720,320}}:std::nullopt,{}});tablet.advance({{0,0},Vec2{720,320},Vec2{-720,-320}});same(tablet.snapshot(),baseline);}
         tablet.configure(DisplayConfiguration::surface({912,420}));for(unsigned i=0;i<300;++i)tablet.advance({{},Vec2{720,0},{}});tablet.configure(config);same(tablet.snapshot(),baseline);
     }

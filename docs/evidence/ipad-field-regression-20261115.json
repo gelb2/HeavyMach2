@@ -1,0 +1,343 @@
+{
+  "scope": "actual normal GameRuntime field captures; final concurrent validation still incomplete",
+  "native": {
+    "recorded_utc": "2026-11-15T08:02:18.910168+00:00",
+    "scope": "selected Apple component tests only; not complete game cheat coverage",
+    "shared_build": "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/build/apple/Build/Products/HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
+    "selected_tests": [
+      "HeavyMach2AppleTests/SessionRendererTests/testFieldCapturesForDevice",
+      "HeavyMach2AppleTests/SessionRendererTests/testMenuBackgroundsForDevice",
+      "HeavyMach2AppleTests/SessionRendererTests/testCustomHUDIdentityMatchesDefaultPixelsAtFractionalBoundaries"
+    ],
+    "runs": [
+      {
+        "kind": "iphone",
+        "device": "iPhone Air",
+        "udid": "97CA5646-36BB-47A9-919A-D78DD632A439",
+        "start_epoch": 1794729723.464454,
+        "end_epoch": 1794729735.358218,
+        "returncode": 0,
+        "test_interval_epoch": [
+          1794729727.264,
+          1794729735.019
+        ],
+        "success": true,
+        "metrics": [
+          "HM2_HUD_IDENTITY_PIXELS canvas=912x420 drawable={912, 420} scale=1.000 defaultSprites=30 customSprites=30 repeatByteDifferences=0 rgbDifferentPixels=0 alphaDifferentPixels=0 maxDelta=0",
+          "HM2_HUD_IDENTITY_PIXELS canvas=857x393 drawable={857, 393} scale=1.000 defaultSprites=30 customSprites=31 repeatByteDifferences=0 rgbDifferentPixels=0 alphaDifferentPixels=0 maxDelta=0",
+          "HM2_HUD_IDENTITY_PIXELS canvas=667x375 drawable={1000, 562} scale=1.500 defaultSprites=30 customSprites=30 repeatByteDifferences=0 rgbDifferentPixels=0 alphaDifferentPixels=0 maxDelta=0"
+        ],
+        "command": [
+          "xcodebuild",
+          "test-without-building",
+          "-xctestrun",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/build/apple/Build/Products/HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
+          "-destination",
+          "platform=iOS Simulator,id=97CA5646-36BB-47A9-919A-D78DD632A439",
+          "-parallel-testing-enabled",
+          "NO",
+          "-collect-test-diagnostics",
+          "never",
+          "-resultBundlePath",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/.local/evidence/ipad-menu-fullscreen-20261115/field/hd-native/iphone/tests.xcresult",
+          "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testFieldCapturesForDevice",
+          "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testMenuBackgroundsForDevice",
+          "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testCustomHUDIdentityMatchesDefaultPixelsAtFractionalBoundaries"
+        ]
+      },
+      {
+        "kind": "ipad",
+        "device": "iPad Air 13-inch (M4)",
+        "udid": "256F7A26-0DA2-484C-80B1-8B7243B02B4E",
+        "start_epoch": 1794729723.4644291,
+        "end_epoch": 1794729738.90945,
+        "returncode": 0,
+        "test_interval_epoch": [
+          1794729727.264,
+          1794729738.607
+        ],
+        "success": true,
+        "metrics": [
+          "HM2_HUD_IDENTITY_PIXELS canvas=912x420 drawable={912, 420} scale=1.000 defaultSprites=30 customSprites=30 repeatByteDifferences=0 rgbDifferentPixels=0 alphaDifferentPixels=0 maxDelta=0",
+          "HM2_HUD_IDENTITY_PIXELS canvas=857x393 drawable={857, 393} scale=1.000 defaultSprites=30 customSprites=31 repeatByteDifferences=0 rgbDifferentPixels=0 alphaDifferentPixels=0 maxDelta=0",
+          "HM2_HUD_IDENTITY_PIXELS canvas=667x375 drawable={1000, 562} scale=1.500 defaultSprites=30 customSprites=30 repeatByteDifferences=0 rgbDifferentPixels=0 alphaDifferentPixels=0 maxDelta=0"
+        ],
+        "command": [
+          "xcodebuild",
+          "test-without-building",
+          "-xctestrun",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/build/apple/Build/Products/HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
+          "-destination",
+          "platform=iOS Simulator,id=256F7A26-0DA2-484C-80B1-8B7243B02B4E",
+          "-parallel-testing-enabled",
+          "NO",
+          "-collect-test-diagnostics",
+          "never",
+          "-resultBundlePath",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/.local/evidence/ipad-menu-fullscreen-20261115/field/hd-native/ipad/tests.xcresult",
+          "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testFieldCapturesForDevice",
+          "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testMenuBackgroundsForDevice",
+          "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testCustomHUDIdentityMatchesDefaultPixelsAtFractionalBoundaries"
+        ]
+      }
+    ],
+    "observed_test_overlap_seconds": 7.755000114440918,
+    "success": true
+  },
+  "observations": {
+    "iphone": {
+      "device": "iphone",
+      "observations": [
+        {
+          "canvas": [
+            912,
+            420
+          ],
+          "phase": "idle",
+          "worldOffset": [
+            0,
+            0
+          ],
+          "position": [
+            -275,
+            -412
+          ],
+          "target": 0,
+          "enemyShots": 0,
+          "damage": 0,
+          "shots": 0,
+          "viewport": [
+            912,
+            420
+          ],
+          "scale": 1
+        },
+        {
+          "canvas": [
+            912,
+            420
+          ],
+          "phase": "move",
+          "worldOffset": [
+            0,
+            0
+          ],
+          "position": [
+            -249.79324340820312,
+            -386.7932434082031
+          ],
+          "target": 0,
+          "enemyShots": 0,
+          "damage": 0,
+          "shots": 0,
+          "viewport": [
+            912,
+            420
+          ],
+          "scale": 1
+        },
+        {
+          "canvas": [
+            912,
+            420
+          ],
+          "phase": "lock-on-combat",
+          "worldOffset": [
+            0,
+            0
+          ],
+          "position": [
+            -189.85008239746094,
+            -389.9295349121094
+          ],
+          "target": 11,
+          "enemyShots": 0,
+          "damage": 3,
+          "shots": 4,
+          "viewport": [
+            974.431884765625,
+            448.75152587890625
+          ],
+          "scale": 0.9359299540519714
+        }
+      ]
+    },
+    "ipad": {
+      "device": "ipad",
+      "observations": [
+        {
+          "canvas": [
+            1024,
+            1366
+          ],
+          "phase": "idle",
+          "worldOffset": [
+            -0.25,
+            0
+          ],
+          "position": [
+            -275,
+            -412
+          ],
+          "target": 0,
+          "enemyShots": 0,
+          "damage": 0,
+          "shots": 0,
+          "viewport": [
+            768,
+            1024
+          ],
+          "scale": 1.333984375
+        },
+        {
+          "canvas": [
+            1024,
+            1366
+          ],
+          "phase": "move",
+          "worldOffset": [
+            -0.25,
+            0
+          ],
+          "position": [
+            -249.79324340820312,
+            -386.7932434082031
+          ],
+          "target": 0,
+          "enemyShots": 0,
+          "damage": 0,
+          "shots": 0,
+          "viewport": [
+            768,
+            1024
+          ],
+          "scale": 1.333984375
+        },
+        {
+          "canvas": [
+            1024,
+            1366
+          ],
+          "phase": "lock-on-combat",
+          "worldOffset": [
+            -0.25,
+            0
+          ],
+          "position": [
+            -189.85008239746094,
+            -389.9295349121094
+          ],
+          "target": 3,
+          "enemyShots": 0,
+          "damage": 3,
+          "shots": 4,
+          "viewport": [
+            768,
+            1024
+          ],
+          "scale": 1.333984375
+        }
+      ]
+    }
+  },
+  "captures": [
+    {
+      "file": "field-iphone-lock-on-combat.png",
+      "sha256": "67be32ffd56f4c8d565f065bf9803bce1e9827d8094594f4c429ec30bc4e3c70"
+    },
+    {
+      "file": "field-ipad-lock-on-combat.png",
+      "sha256": "9c2fff47a0bcaa17a3bc60c66a505b9251fda3dce7760bbe95a6d8c81b0e53e3"
+    },
+    {
+      "file": "field-iphone-idle.png",
+      "sha256": "cc621b7d968db95e49703c71f03c71a7cbfccf3481ba7b17d33f5be2e22a7bf2"
+    },
+    {
+      "file": "field-iphone-move.png",
+      "sha256": "365b689c435c9bb74f2cefb11458635384dedb58e749bf2be672aca03d168f49"
+    },
+    {
+      "file": "field-ipad-move.png",
+      "sha256": "3c4ccac645dbabd1c3557fea2d4241f1542b7fb4d1132272a8825de6f4a62454"
+    },
+    {
+      "file": "field-ipad-idle.png",
+      "sha256": "947977bb7f0383355b26702fb221d592bd831d49e958b4e51e125522ca6d24f2"
+    }
+  ],
+  "originalFieldFailure": "captures/field-ipad-idle.png: scale1,viewport1024x1322,offset0x20,large black space",
+  "knownFailures": [
+    "Preserved intermediate BOT attack, Stage03_04 approach and obsolete worldScale1 assertions. Final rerun passes after validation-navigation/expectation corrections; gameplay requirements unchanged."
+  ],
+  "wholeGameValidationComplete": false,
+  "physicalDeviceInstalled": false,
+  "nativeHookAutomaticDispatchVerified": false,
+  "concurrentCPU": {
+    "status": "PASS",
+    "devices": [
+      "iPhone Air912x420",
+      "iPad1024x1366"
+    ],
+    "scenariosPerDevice": 126,
+    "framesPerDevice": 2100,
+    "buttonFailures": 0,
+    "checks": [
+      "original turret/aircraft emissions damage death removal",
+      "all3attack BOT emissions/enemy damage",
+      "all3picker BOT real pickups",
+      "actual repairs and weapon swaps",
+      "game over / return / save",
+      "path replacement / double tap",
+      "lifecycle pause / explicit resume",
+      "movable HUD apply/reload",
+      "idle camera / per-instance isolation",
+      "resource ownership / no steady reads or writes"
+    ]
+  },
+  "sourceSHA256": {
+    "Sources/Core/Presentation/CameraPresentation.cpp": "0a4d1d59021eb43a56e54255c6247982897ee1b751a645d34b458404f26c5b8c",
+    "Sources/Core/Presentation/DisplayLayout.cpp": "31319cac06002ab37e386f0cd03e48ec942bc7513485e80bf2eb4eecd0dd8de3",
+    "Sources/Core/Simulation/CombatScene.cpp": "c828388b67e989be694dea88a9f34eb52c78ced9b2bba5dd0b24a634d6f24f41",
+    "Sources/Core/UI/Screens.cpp": "13b75e8a1577babb0b140bd151f3b762a623f867dbaa7921f6aab6270bf240e1",
+    "Sources/Core/Validation/ConcurrentValidation.cpp": "7d3258e8a38b0f9af73ba5cff9e2b2bffe14ebdf7e753c7f014c1d573f4796c5",
+    "Sources/Core/Validation/ConcurrentValidation.hpp": "02619da908514f72cd0366a799d34afc39e796cffbafa60911278cd779e96e96",
+    "Apple/Tests/SessionRendererTests.mm": "76b909d62f301f226e2b4cd8d3c9c8f15544b0eec8eef30f260ba9bbde3596d2",
+    "tests/CameraPresentationTests.cpp": "697166a21f66d393f21d6595fab162e1fa10b1e5aa5a2f7a8e5c522d82506339",
+    "tests/DisplayLayoutTests.cpp": "24c20cbddf27d1d7337efd06d1f948429d8b6a97696bb32e35e836375fd34397",
+    "tests/ConcurrentValidationTests.cpp": "d0a5a18dfdcc8e253871ad32ece85c321b999c3d24b414338fe257e6fc4ea92d"
+  },
+  "originalHDParity": {
+    "frames": 180,
+    "cameraViewport": [
+      768,
+      1024
+    ],
+    "inputFloor": 100,
+    "lowerOverscan": 94,
+    "samePlayerEnemyDamageAndCamera": true,
+    "displaySaveWrites": 0
+  },
+  "assetHarness": {
+    "status": "PASS",
+    "contexts": 36,
+    "failures": [],
+    "repeatedFailure": false,
+    "time_ns": 1794730147566672000,
+    "input": ".local/evidence/ipad-menu-fullscreen-20261115/field/hd-asset-input.json",
+    "inputSHA256": "de2ec731e2bad368f217f4713c33938ac392e8678fc82c5fccc6a574e26ac600",
+    "hook_event": null,
+    "tool_id": null
+  },
+  "screenHarness": {
+    "status": "PASS",
+    "contexts": 36,
+    "failures": [],
+    "repeatedFailure": false,
+    "time_ns": 1794730147627599000,
+    "input": ".local/evidence/ipad-menu-fullscreen-20261115/field/hd-screen-input.json",
+    "inputSHA256": "a8d46d1490da8e5ba946d22073523bfc1ce24427336cdbc50cc760eede6ebe9d",
+    "hook_event": null,
+    "tool_id": null
+  }
+}

@@ -22,7 +22,7 @@ void CameraPresentation::configure(DisplayConfiguration display){
     if(!display.enabled)return;
     state_.policy=display.compact&&display.focusZoom?CameraPolicy::compactFocus:CameraPolicy::fixedSurface;
     state_.fillSurface=display.compact;
-    state_.idleScale=idleScale;
+    state_.idleScale=display.compact?idleScale:std::max(display.canvas.width/768.f,display.canvas.height/1024.f);
     if(display.compact){
         const float cover=std::max(display.canvas.width,display.canvas.height)/finiteMapSpan;
         // Every visible point remains inside the original finite map. Even
@@ -34,12 +34,20 @@ void CameraPresentation::configure(DisplayConfiguration display){
 }
 void CameraPresentation::project(){
     if(!display_.enabled)return;
-    // Regular surfaces never enter the compact controller. Retain the same
-    // scale1/division/offset operations as the pre-change iPad path.
-    state_.worldScale=state_.policy==CameraPolicy::compactFocus?state_.idleScale*distance_.current:1.f;
+    // The pre-iPhone HD app rendered a 768x1024 logical canvas fitted by the
+    // renderer. Restore that uniform projection; physical points are not HD
+    // world units. Keep the separate Phone focus controller unchanged.
+    state_.worldScale=state_.policy==CameraPolicy::compactFocus?state_.idleScale*distance_.current:state_.idleScale;
     const DisplayLayout layout(display_);
-    state_.worldToCanvas=layout.worldAtScale(state_.worldScale);
-    state_.viewport=layout.worldViewportAtScale(state_.worldScale);
+    state_.worldToCanvas=display_.compact?layout.worldAtScale(state_.worldScale):DisplayTransform{state_.worldScale,{0,0}};
+    state_.viewport=display_.compact?layout.worldViewportAtScale(state_.worldScale):Size{display_.canvas.width/state_.worldScale,display_.canvas.height/state_.worldScale};
+    // The 13-inch surface differs from the source 3:4 canvas by less than
+    // one source pixel. Keep the original HD camera/visibility arithmetic;
+    // subpixel output clipping must not select a different gameplay policy.
+    if(!display_.compact&&std::round(state_.viewport.width)==768&&std::round(state_.viewport.height)==1024){
+        state_.policy=CameraPolicy::legacyHD;state_.viewport={768,1024};
+        state_.worldToCanvas.offset={(display_.canvas.width-768*state_.worldScale)*.5f,(display_.canvas.height-1024*state_.worldScale)*.5f};
+    }
 }
 void CameraPresentation::advance(CameraFocus focus){
     if(state_.policy!=CameraPolicy::compactFocus)return;

@@ -1332,9 +1332,9 @@ void Screens::Impl::append(Frame& frame,float time){
             }
         }
     },node);
-    if(state.screen==ScreenId::field&&message.initialized){auto& layer=layers->at(9);layer.setPresentation(layout.ui(Region::bottom),layout.clip(Region::bottom));layer.submitImage(message.background);if(message.text){Frame textFrame;message.text->append(textFrame);for(auto& s:textFrame.sprites)layer.submitNonAtlas(std::move(s));}}
+    if(state.screen==ScreenId::field&&message.initialized){auto& layer=layers->at(9);layer.setPresentation(presentation(Region::bottom),clipping(Region::bottom));layer.submitImage(message.background);if(message.text){Frame textFrame;message.text->append(textFrame);for(auto& s:textFrame.sprites)layer.submitNonAtlas(std::move(s));}}
     if(state.screen==ScreenId::field&&!placeName.background.tile.image.empty()&&placeName.background.show){
-        auto& layer=layers->at(9);layer.setPresentation(layout.ui(Region::banner),layout.clip(Region::banner));
+        auto& layer=layers->at(9);layer.setPresentation(presentation(Region::banner),clipping(Region::banner));
         auto background=placeName.background;background.screenPosition=menu::placeNamePosition(layout.configuration(),background.screenPosition);
         layer.submitImage(background);
         if(placeName.label){

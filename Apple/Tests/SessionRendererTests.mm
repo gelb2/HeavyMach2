@@ -573,6 +573,29 @@ UIImage* image(NSData* rgba,CGSize size){
     }catch(const std::exception& e){XCTFail(@"Phone full-screen failed: %s",e.what());}
     window.hidden=YES;window.rootViewController=nil;XCTAssertTrue([NSFileManager.defaultManager removeItemAtURL:directory error:&error]);
 }
+- (void)testFieldCapturesForDevice {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    const bool phone=UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPhone;const CGSize extent=phone?CGSizeMake(912,420):CGSizeMake(1024,1366);
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,extent.width,extent.height)];surface.contentScaleFactor=1;controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];surface.frame=CGRectMake(0,0,extent.width,extent.height);
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];[NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:nil];
+    try{
+        hm2::apple::GameRuntime runtime(root,[directory URLByAppendingPathComponent:@"HeavyMach2.sav"],{},[]{return 1u;});auto display=hm2::DisplayConfiguration::surface({float(extent.width),float(extent.height)},phone?hm2::DisplayInsets{68,20,68,0}:hm2::DisplayInsets{0,20,0,24});display.device=phone?hm2::DisplayDevice::phone:hm2::DisplayDevice::tablet;runtime.setDisplay(display);
+        XCTAssertTrue(runtime.session().createSlot(0,"FIELD","kr"));XCTAssertTrue(runtime.session().enterField("Stage01_01",0));runtime.synchronize();
+        if(runtime.session().help()){const hm2::Vec2 p{float(extent.width)*.5f,float(extent.height)*.5f};runtime.input(hm2::PointerPhase::begin,p,9900);runtime.input(hm2::PointerPhase::end,p,9900);}
+        NSMutableArray* observations=[NSMutableArray new];
+        const auto capture=[&](NSString* phase,unsigned ticks){for(unsigned i=0;i<ticks;++i){runtime.tick();runtime.draw(layer);}runtime.captureNextFrame();runtime.draw(layer);const auto pixels=runtime.pixels();XCTAssertEqual(pixels.length,std::size_t(extent.width*extent.height)*4);
+            if(pixels.length==std::size_t(extent.width*extent.height)*4){const auto* bytes=static_cast<const unsigned char*>(pixels.bytes);unsigned colored=0;for(unsigned x=0;x<unsigned(extent.width);++x){const auto at=(std::size_t(unsigned(extent.height)-1)*unsigned(extent.width)+x)*4;colored+=bytes[at]+bytes[at+1]+bytes[at+2]>8;}XCTAssertGreaterThan(colored,unsigned(extent.width)*3/4,@"Field top border must contain original terrain, not black filler");}
+            auto* shot=[XCTAttachment attachmentWithImage:image(pixels,extent)];shot.name=[NSString stringWithFormat:@"field-%@-%@",phone?@"iphone":@"ipad",phase];shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];const auto* battle=runtime.session().battle();XCTAssertTrue(battle!=nullptr);if(!battle)return;
+            const auto& c=battle->cameraPresentation();const auto& m=battle->metrics();[observations addObject:@{@"phase":phase,@"canvas":@[@(extent.width),@(extent.height)],@"scale":@(c.worldScale),@"viewport":@[@(c.viewport.width),@(c.viewport.height)],@"worldOffset":@[@(c.worldToCanvas.offset.x),@(c.worldToCanvas.offset.y)],@"position":@[@(battle->player().position.x),@(battle->player().position.y)],@"target":@(battle->selectedEnemy()),@"shots":@(m.playerEmissions),@"enemyShots":@(m.enemyEmissions),@"damage":@(m.damageCalls)}];};
+        capture(@"idle",30);auto* battle=runtime.session().battle();if(battle){const auto player=battle->player().position;const auto point=runtime.session().worldCanvasPoint(battle->camera().toScreen({player.x+90,player.y+90}));runtime.input(hm2::PointerPhase::begin,point,9901);runtime.input(hm2::PointerPhase::end,point,9901);capture(@"move",45);
+            float best=1e30f;hm2::Vec2 target;bool found=false;for(const auto& e:battle->enemies())if(e.hp>0&&!e.corpse){const auto p=runtime.session().worldCanvasPoint(battle->camera().toScreen(e.position));const auto dx=e.position.x-battle->player().position.x,dy=e.position.y-battle->player().position.y,d=dx*dx+dy*dy;if(p.x>20&&p.x<extent.width-20&&p.y>(phone?150:260)&&p.y<extent.height-20&&d<best){found=true;best=d;target=p;}}
+            XCTAssertTrue(found);if(found){runtime.input(hm2::PointerPhase::begin,target,9902);runtime.input(hm2::PointerPhase::end,target,9902);XCTAssertNotEqual(battle->selectedEnemy(),0u);capture(@"lock-on-combat",90);}
+        }
+        NSData* data=[NSJSONSerialization dataWithJSONObject:@{@"device":phone?@"iphone":@"ipad",@"observations":observations} options:NSJSONWritingPrettyPrinted error:nil];auto* record=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];record.name=phone?@"field-observations-iphone":@"field-observations-ipad";record.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:record];
+    }catch(const std::exception& e){XCTFail(@"Field capture failed: %s",e.what());}
+    [window setHidden:YES];[NSFileManager.defaultManager removeItemAtURL:directory error:nil];
+}
 - (void)testOriginalNameLengthCountryAndNoFallback {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];NSError* error=nil;
