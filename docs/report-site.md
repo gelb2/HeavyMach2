@@ -2,7 +2,9 @@
 
 ## 2026-11-15 후속 — 메뉴 버튼 페이지·상점 원본 일치 TODO
 
-[메뉴 버튼 페이지·실제16캡처](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/phone-menu-pages.html)를 같은 비공개 사이트에 게시했다. 첫 화면과 기존 배경 보고서에서 연결한다. 소스1ecdd54·배포appgdep_6af94dceb67c8191ac5067cebef4e85e는 succeeded이며 본인1명 접근을 유지했다. [게시 근거](evidence/phone-menu-pages-publication-20261115.json)를 따른다.
+최신 보강 소스df3b9dc·배포appgdep_6af9525e682c8191ba23023ddd9f63fb도 succeeded다. 최신 치트 앱126상태·2,100프레임·버튼 실패0,24상품 경계 수정, 최종 업데이트 중 유효 진행 변화/백업 비교를 같은 페이지에 반영했다.
+
+[메뉴 버튼 페이지·실제16캡처](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/phone-menu-pages.html)를 같은 비공개 사이트에 게시했다. 첫 화면과 기존 배경 보고서에서 연결한다. 초기 소스1ecdd54·배포appgdep_6af94dceb67c8191ac5067cebef4e85e는 succeeded이며 본인1명 접근을 유지했다. [게시 근거](evidence/phone-menu-pages-publication-20261115.json)를 따른다.
 
 최종 후보의 원본 배경36조건과 메뉴/타이틀/배너16사례를 수동 하네스로 검사했다. iPad18개 PNG는 기존 기준과 바이트가 같다. 기존 화면 검사 전체는 iPad의 기존 검은 여백18건으로 FAIL이다. 자동 훅 호출은 확인하지 못했다. 상점 아이콘 크기·Div 위치 등을 원본 Phone 포팅판과 모두 동일하게 맞추는 사용자 추가 지시는 별도 미완료 TODO로 표시했다. [변경·검사 범위](phone-menu-pages-20261115.md)를 따른다.
 
