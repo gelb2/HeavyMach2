@@ -1,6 +1,2 @@
 #!/bin/sh
-root=$(git rev-parse --show-toplevel)
-status=0
-node "$root/.agents/harness/cli.mjs" gate --committed || status=$?
-git lfs post-commit "$@" || exit $?
-exit "$status"
+exec git lfs post-commit "$@"

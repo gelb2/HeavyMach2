@@ -796,7 +796,7 @@ void Screens::Impl::inventoryDialog(Vec2 origin,bool shopMode){
 void Screens::Impl::phoneShop(bool maintenance){
     if(maintenance)phoneEquipment=true;
     if(previous){if(previous->state.shopPage!=state.shopPage||previous->state.shopCategory!=state.shopCategory)stockScroll=0;if(previous->state.inventoryPage!=state.inventoryPage)inventoryScroll=0;}
-    {RegionScope art(*this,Region::artScene);image(menu::phoneAsset("ShopBG.jpg"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.stock.bg");image(menu::phoneAsset("MaintenanceBG.jpg"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.equip.bg");}
+    {RegionScope art(*this,Region::artScene);image(menu::background(layout.configuration(),"ShopBG.png"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.stock.bg");image(menu::phoneAsset("MaintenanceBG.jpg"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.equip.bg");}
     stockScroll=std::min(stockScroll,stockScrollLimit());
     inventory(menu::inventoryGrid,!maintenance,true);
     {RegionScope equipment(*this,Region::phoneEquipment);equip(menu::equipmentRoot,9,true);bots(menu::botRoot,true);

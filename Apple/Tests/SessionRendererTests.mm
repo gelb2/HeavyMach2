@@ -1,5 +1,7 @@
 #import <XCTest/XCTest.h>
 #import <UIKit/UIKit.h>
+#import <CommonCrypto/CommonDigest.h>
+#include "Core/Presentation/MenuArtwork.hpp"
 #include "Platform/Apple/HM2GameRuntime.hpp"
 #import "Platform/Apple/HM2Renderer.h"
 #include "Platform/Apple/HM2TextRasterizer.h"
@@ -63,6 +65,42 @@ UIImage* image(NSData* rgba,CGSize size){
 }
 @interface SessionRendererTests:XCTestCase @end
 @implementation SessionRendererTests
+- (void)testMenuBackgroundsForDevice {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    const bool phone=UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPhone;
+    const CGSize extent=phone?CGSizeMake(912,420):CGSizeMake(1024,1366);
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];
+    HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,extent.width,extent.height)];surface.contentScaleFactor=1;
+    controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];surface.frame=CGRectMake(0,0,extent.width,extent.height);
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    auto display=hm2::DisplayConfiguration::surface({float(extent.width),float(extent.height)});display.device=phone?hm2::DisplayDevice::phone:hm2::DisplayDevice::tablet;
+    auto narrow=hm2::DisplayConfiguration::surface({420,600});narrow.device=hm2::DisplayDevice::tablet;
+    XCTAssertEqual(hm2::menu::background(narrow,"ShopBG.png"),std::string("ShopBG.png"));
+    narrow.device=hm2::DisplayDevice::phone;XCTAssertEqual(hm2::menu::background(narrow,"ShopBG.png"),std::string("PhoneMenu/ShopBG.jpg"));
+    HM2Renderer* renderer=[[HM2Renderer alloc]initWithResourceRoot:root];HUDIdentityHost host(renderer);hm2::apple::Files files(root.fileSystemRepresentation);
+    hm2::PreparedTiles tiles("menu-background-check");hm2::ui::Screens ui(files,tiles,host);ui.setDisplay(display);hm2::DarwinWorldRandom random(1);
+    NSMutableArray* rows=[NSMutableArray new];
+    const auto sha=[](NSData* data){unsigned char hash[CC_SHA256_DIGEST_LENGTH];CC_SHA256(data.bytes,CC_LONG(data.length),hash);NSMutableString* text=[NSMutableString new];for(auto b:hash)[text appendFormat:@"%02x",b];return text;};
+    NSString* binary=sha([NSData dataWithContentsOfFile:NSBundle.mainBundle.executablePath]);
+    NSString* game=sha([NSData dataWithContentsOfFile:[NSBundle.mainBundle.executablePath stringByAppendingString:@".debug.dylib"]]);
+    for(unsigned base=1;base<=6;++base)for(auto screen:{hm2::ui::ScreenId::base,hm2::ui::ScreenId::shop,hm2::ui::ScreenId::command}){@autoreleasepool{
+        hm2::ui::ScreensState state;state.screen=screen;state.baseId="Base00"+std::to_string(base);state.locale="kr";state.credits=12345;
+        if(screen==hm2::ui::ScreenId::shop){state.inventoryVisible=true;for(unsigned n=0;n<25;++n){hm2::ui::ItemView item;item.dataId="fixture"+std::to_string(n);item.icon="Icon10011.png";item.count=1;state.inventory.push_back(item);if(n<24)state.shopItems.push_back(item);}}
+        ui.refresh(state,0);for(unsigned tick=0;tick<180;++tick)ui.tick(float(tick)/60,random);hm2::Frame frame;ui.append(frame,3);
+        hm2::Frame preparation;ui.appendPreparation(preparation);[renderer prepareFrame:preparation];[renderer prepareFrame:frame];[renderer drawFrame:frame layer:layer];[renderer captureNextFrame];[renderer drawFrame:frame layer:layer];
+        XCTAssertEqual(renderer.readRGBA.length,std::size_t(extent.width*extent.height)*4);if(renderer.readRGBA.length!=std::size_t(extent.width*extent.height)*4)continue;
+        NSString* name=[NSString stringWithFormat:@"menu-%@-Base00%u-%s",phone?@"iphone":@"ipad",base,screen==hm2::ui::ScreenId::base?"hub":screen==hm2::ui::ScreenId::shop?"shop":"command"];
+        auto* shot=[XCTAttachment attachmentWithImage:image(renderer.readRGBA,extent)];shot.name=name;shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];
+        NSMutableArray* backgrounds=[NSMutableArray new];
+        for(const auto& sprite:frame.sprites){const auto& path=sprite.image;if(path.find("Base00")==std::string::npos&&path.find("ShopBG.")==std::string::npos&&path.find("CmdCenterBG.")==std::string::npos)continue;
+            NSString* relative=[NSString stringWithUTF8String:path.c_str()];NSData* bytes=[NSData dataWithContentsOfURL:[root URLByAppendingPathComponent:relative]];XCTAssertNotNil(bytes);
+            [backgrounds addObject:@{@"image":relative,@"sha256":sha(bytes)}];}
+        [rows addObject:@{@"device":phone?@"iphone":@"ipad",@"base":[NSString stringWithUTF8String:state.baseId.c_str()],@"screen":screen==hm2::ui::ScreenId::base?@"hub":screen==hm2::ui::ScreenId::shop?@"shop":@"command",@"capture":name,@"backgrounds":backgrounds}];
+    }}
+    XCTAssertEqual(rows.count,18u);NSData* data=[NSJSONSerialization dataWithJSONObject:@{@"binarySHA256":binary,@"rows":rows} options:NSJSONWritingPrettyPrinted error:nil];
+    NSMutableDictionary* observed=[[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil] mutableCopy];observed[@"gameSHA256"]=game;data=[NSJSONSerialization dataWithJSONObject:observed options:NSJSONWritingPrettyPrinted error:nil];
+    auto* record=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];record.name=phone?@"menu-assets-iphone":@"menu-assets-ipad";record.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:record];[window setHidden:YES];
+}
 - (void)testPhoneBottomHUDAndOriginalPortalRoutes {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];

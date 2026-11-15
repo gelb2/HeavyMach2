@@ -6,10 +6,12 @@ namespace hm2 {
 // Presentation only: original HD world units, saved indices and clocks never
 // change with these values. Insets and canvas use positive-Y-up logical points.
 struct DisplayInsets {float left=0,bottom=0,right=0,top=0;};
+enum class DisplayDevice {automatic,phone,tablet};
 struct DisplayConfiguration {
     Size canvas{768,1024};
     DisplayInsets insets;
     bool enabled=false,compact=false,focusZoom=false;
+    DisplayDevice device=DisplayDevice::automatic;
     static DisplayConfiguration surface(Size,DisplayInsets={});
     [[nodiscard]] ClipRect content()const;
 };

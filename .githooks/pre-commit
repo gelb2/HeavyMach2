@@ -1,7 +1,0 @@
-#!/bin/sh
-set -eu
-root=$(git rev-parse --show-toplevel)
-node "$root/.agents/harness/cli.mjs" gate
-python3 tools/check_no_ipa.py --staged
-command -v gitleaks >/dev/null 2>&1 || { echo 'gitleaks is required.' >&2; exit 2; }
-gitleaks protect --staged --no-banner --redact

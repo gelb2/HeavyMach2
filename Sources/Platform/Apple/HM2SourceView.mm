@@ -108,8 +108,9 @@
     if(!_runtime||self.bounds.size.width<=0||self.bounds.size.height<=0)return;
     const auto a=self.safeAreaInsets;const auto size=self.bounds.size;
     auto next=hm2::DisplayConfiguration::surface({float(size.width),float(size.height)},{float(a.left),float(a.bottom),float(a.right),float(a.top)});
+    next.device=self.traitCollection.userInterfaceIdiom==UIUserInterfaceIdiomPad?hm2::DisplayDevice::tablet:hm2::DisplayDevice::phone;
     const auto& old=_runtime->session().display();
-    if(old.enabled&&old.canvas.width==next.canvas.width&&old.canvas.height==next.canvas.height&&old.insets.left==next.insets.left&&old.insets.right==next.insets.right&&old.insets.top==next.insets.top&&old.insets.bottom==next.insets.bottom)return;
+    if(old.enabled&&old.device==next.device&&old.canvas.width==next.canvas.width&&old.canvas.height==next.canvas.height&&old.insets.left==next.insets.left&&old.insets.right==next.insets.right&&old.insets.top==next.insets.top&&old.insets.bottom==next.insets.bottom)return;
     try{_runtime->setDisplay(next);}catch(const std::exception& e){[self failRuntime:[NSString stringWithUTF8String:e.what()]];}
 }
 - (void)enqueueRequest:(const hm2::apple::NativeRequest&)request{_requests.push_back(request);}

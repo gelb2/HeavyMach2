@@ -1,5 +1,18 @@
 # HeavyMach 2 보고 사이트
 
+## 2026-11-15 후속 게시 — iPhone Release 설치
+
+[같은 보고서](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/menu-background-checks.html)에 설치·실행과 저장/HUD 설정 보존 결과를 추가했다. 소스 `98e55b933ef35c07066e82203e932a6746ad5a52`, 배포 `appgdep_6af934d5bfe081919434ac466a08996a`는 succeeded다. 기존 비공개 접근을 유지했다. [설치 기록](iphone-menu-background-installation-20261115.md)을 따른다. 자동 훅은 사용자 승인 완료 답변 이후에도 실제 호출이 확인되지 않았으며 CLI 승인 화면 요청은 철회했다.
+
+## 2026-11-15 최신 게시 — 독립 배경 검사와 Phone 원본 선택
+
+[실제 결과·캡처16장](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/menu-background-checks.html)을 기존 비공개 사이트에 게시했다. 첫 화면과 기존 `presentation-harness.html`에서 연결한다. 기존 HeavyMach2 누적 목록의 같은 하네스 링크를 유지한다. 아래 전역 차단/커밋 gate 계획은 폐기된 당시 기록이며 새 두 검사는 파일·도구를 차단하지 않는다.
+
+소스 `e2f9be4362146f4c55074854017169fe95f3b2d3`, 배포 `appgdep_6af931efaab081919e01c0db9949e330`는 succeeded다. 본인1명·그룹0·외부0 접근을 확인하고 유지했다. 원본 IPA는 전송하지 않았다. 로컬 HTML의 PNG16개 연결을 검사했다. 이번 게시본의 브라우저 시각 검수는 하지 않았다.
+
+원본 배경36건 PASS, iPad 검은 여백18건으로 화면 FAIL, 기기별 GPU 검사는 통과했지만 실제 겹침0초로 병렬 실행기 전체 FAIL이다. 새 네이티브 훅 신뢰 승인과 자동 발동 확인은 미완료다. iPhone 메뉴 잘림·버튼 배치·구매 가능 여부도 미완료다. 전체 메뉴 개선이나 전체 동시 치트 검증 완료로 보고하지 않는다.
+
+
 ## 2026-11-15 최신 보강 — 실물·원문 대조와 Phone 배치/HD 상품
 
 [하네스 계획](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/presentation-harness.html)과 [정본](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/design-asset-rules.html)에 커밋 검사 전 치트빌드 시뮬레이터 실물/요구 원문 대조를 추가했다. 90% 미만은 탈락하고 에셋 선택/소비부터 코드 누락까지 조사한다. 90% 이상도 필수 위반을 면제하지 않는다. iPhone 허브·사령부·상점 버튼 배치는 Phone 원본을 참고하고 상품 그림/게임 데이터는 HD를 쓴다.
