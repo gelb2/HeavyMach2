@@ -2,6 +2,7 @@
 set -eu
 root=$(git rev-parse --show-toplevel)
 updates=$(cat)
+printf '%s\n' "$updates" | node "$root/.agents/harness/cli.mjs" gate --push
 python3 "$root/tools/check_no_ipa.py" --all
 printf '%s\n' "$updates" | python3 "$root/.githooks/check-branch-flow.py"
 command -v gitleaks >/dev/null 2>&1 || { echo 'gitleaks is required.' >&2; exit 2; }
