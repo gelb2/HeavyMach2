@@ -41,6 +41,10 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
     const auto fit=[&](float w,float h){return std::min({nominal,a.width/w,a.height/h});};
     const auto centered=[&](float w,float h){return anchored({384,512},center,fit(w,h));};
     switch(region){
+    // One HD menu projection for artwork, controls, text and inverse input.
+    // Do not apply this scale to the world or HUD: larger tablets retain the
+    // existing world extent and independently positioned game controls.
+    case DisplayRegion::tabletMenu:{const auto c=configuration_.canvas;return anchored({384,512},{c.width*.5f,c.height*.5f},std::max(c.width/768,c.height/1024));}
     case DisplayRegion::titleBackdrop:{const auto c=configuration_.canvas;return anchored({384,1024},{c.width*.5f,c.height},std::max(c.width/768,c.height/1024));}
     case DisplayRegion::artBanner:{const auto c=configuration_.canvas;return anchored({240,160},{c.width*.5f,c.height*.5f},std::min(c.width/480,c.height/320));}
     case DisplayRegion::phoneFooter:{auto t=ui(DisplayRegion::phoneMenu);t.offset.y=0;return t;}
@@ -104,7 +108,7 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
 }
 std::optional<ClipRect> DisplayLayout::clip(DisplayRegion region,float pan)const{
     if(!configuration_.enabled)return {};
-    if(region==DisplayRegion::titleBackdrop||region==DisplayRegion::artBanner||(menu::phone(configuration_)&&region==DisplayRegion::banner))return ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};
+    if(region==DisplayRegion::tabletMenu||region==DisplayRegion::titleBackdrop||region==DisplayRegion::artBanner||(menu::phone(configuration_)&&region==DisplayRegion::banner))return ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};
     if(configuration_.compact&&(region==DisplayRegion::world||region==DisplayRegion::backdrop||region==DisplayRegion::artBackdrop||region==DisplayRegion::artScene))return ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};
     if(configuration_.compact&&menu::menuRegion(region)){
         const auto canvas=ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};

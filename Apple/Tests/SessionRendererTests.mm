@@ -134,6 +134,15 @@ UIImage* image(NSData* rgba,CGSize size){
         if(screen==hm2::ui::ScreenId::shop){state.inventoryVisible=true;for(unsigned n=0;n<25;++n){hm2::ui::ItemView item;item.dataId="fixture"+std::to_string(n);item.icon="Icon10011.png";item.count=1;state.inventory.push_back(item);if(n<24)state.shopItems.push_back(item);}}
         ui.refresh(state,0);for(unsigned tick=0;tick<180;++tick)ui.tick(float(tick)/60,random);hm2::Frame frame;ui.append(frame,3);
         hm2::Frame preparation;ui.appendPreparation(preparation);[renderer prepareFrame:preparation];[renderer prepareFrame:frame];[renderer drawFrame:frame layer:layer];[renderer captureNextFrame];[renderer drawFrame:frame layer:layer];
+        // A screenshot alone is not a passing check: reject the old central
+        // 768x1024 canvas before retaining the actual GPU evidence below.
+        if(!phone){const auto expected=screen==hm2::ui::ScreenId::base?state.baseId+".png":screen==hm2::ui::ScreenId::shop?std::string("ShopBG.png"):std::string("CmdCenterBG.png");bool found=false;
+            for(const auto& sprite:frame.sprites)if(sprite.image==expected){found=true;XCTAssertEqual(sprite.strip.size(),4u);if(sprite.strip.size()!=4)continue;
+                float l=INFINITY,r=-INFINITY,b=INFINITY,t=-INFINITY;for(const auto& v:sprite.strip){l=std::min(l,v.position.x);r=std::max(r,v.position.x);b=std::min(b,v.position.y);t=std::max(t,v.position.y);}
+                XCTAssertLessThanOrEqual(l,.01f);XCTAssertLessThanOrEqual(b,.01f);XCTAssertGreaterThanOrEqual(r,float(extent.width)-.01f);XCTAssertGreaterThanOrEqual(t,float(extent.height)-.01f);
+                XCTAssertEqualWithAccuracy((r-l)/(t-b),.75f,.0001f);XCTAssertTrue(sprite.clip.has_value());if(sprite.clip){XCTAssertEqualWithAccuracy(sprite.clip->x,0,.01f);XCTAssertEqualWithAccuracy(sprite.clip->y,0,.01f);XCTAssertEqualWithAccuracy(sprite.clip->width,extent.width,.01f);XCTAssertEqualWithAccuracy(sprite.clip->height,extent.height,.01f);}
+            }XCTAssertTrue(found);
+        }
         XCTAssertEqual(renderer.readRGBA.length,std::size_t(extent.width*extent.height)*4);if(renderer.readRGBA.length!=std::size_t(extent.width*extent.height)*4)continue;
         NSString* name=[NSString stringWithFormat:@"menu-%@-Base00%u-%s",phone?@"iphone":@"ipad",base,screen==hm2::ui::ScreenId::base?"hub":screen==hm2::ui::ScreenId::shop?"shop":"command"];
         auto* shot=[XCTAttachment attachmentWithImage:image(renderer.readRGBA,extent)];shot.name=name;shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];

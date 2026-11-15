@@ -1,3 +1,7 @@
+## 2026-11-15 최신 — iPad 메뉴 배율 회귀 수정
+
+[이전 FAIL·수정 후 실제 캡처](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/ipad-menu-fix.html)를 기존 비공개 사이트 첫 화면·이전 Phone 메뉴/배경/하네스 문서에서 연결했다. 원인7622bd1, 공통 메뉴 변환과 입력/drop 수정, 공통2검사와 최종 배경/화면 하네스 각각36/36 PASS를 기록했다. 최종 짧은 Native 검사의 시간 중첩0 집계 FAIL과 이전18화면 FAIL도 보존했다. Site 소스90dc65d1d5d7884039c52221bbc0dc5d63c45d9a·배포appgdep_6af95f4fe40881918e796e5e16be59c0는 succeeded다. 본인1명·그룹0·외부0 접근을 유지했다. 아직 실제 기기 정식 설치와 네이티브 훅 자동 발동 완료는 아니다. [구현·검사](ipad-menu-regression-20261115.md)를 따른다.
+
 # HeavyMach 2 보고 사이트
 
 ## 2026-11-15 후속 — 메뉴 버튼 페이지·상점 원본 일치 TODO

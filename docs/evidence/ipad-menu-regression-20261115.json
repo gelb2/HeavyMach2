@@ -1,0 +1,705 @@
+{
+  "sourceBase": "90881c08f83869c24019e39e417101e9db8f6b70",
+  "branch": "fix/ipad-menu-fullscreen-20261115",
+  "firstRegressionCommit": "7622bd1c2ac4476700553867f5b7f581de2749c9",
+  "previousIPadRuntimeSource": "4980818",
+  "previousIPadIconRelease": "74825d2",
+  "red": "TABLET_MENU_LETTERBOX Base001.png bounds=128,169,768,1024 canvas=1024,1366",
+  "coreTestsPassed": 2,
+  "tabletCPUContexts": 54,
+  "assetHarness": {
+    "status": "PASS",
+    "contexts": 36,
+    "failures": [],
+    "repeatedFailure": false,
+    "time_ns": 1794727432436677000,
+    "input": ".local/evidence/ipad-menu-fullscreen-20261115/asset-input.json",
+    "inputSHA256": "0b35ec1b50804c9fae00f03fa94febf2a6b7dec66d1148689513a6c2b3bd8234",
+    "hook_event": null,
+    "tool_id": null
+  },
+  "screenHarness": {
+    "status": "PASS",
+    "contexts": 36,
+    "failures": [],
+    "repeatedFailure": false,
+    "time_ns": 1794727432513578000,
+    "input": ".local/evidence/ipad-menu-fullscreen-20261115/screen-input.json",
+    "inputSHA256": "c246a978a9c12ec14e7de8d5d2afcf4414a2c9cea89a7ee31ab50c1ea98405f0",
+    "hook_event": null,
+    "tool_id": null
+  },
+  "preDropNative": {
+    "recorded_utc": "2026-11-15T07:20:11.028398+00:00",
+    "scope": "selected Apple component tests only; not complete game cheat coverage",
+    "shared_build": "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/build/apple/Build/Products/HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
+    "selected_tests": [
+      "HeavyMach2AppleTests/SessionRendererTests/testMenuBackgroundsForDevice",
+      "HeavyMach2AppleTests/SessionRendererTests/testPhoneMenuPolicyOnConcurrentClock",
+      "HeavyMach2AppleTests/SessionRendererTests/testGPUMenuBattleAndAtomicSaveRestart",
+      "HeavyMach2AppleTests/SessionRendererTests/testFiniteTerrainQuadMatchesExplicitUVs"
+    ],
+    "runs": [
+      {
+        "kind": "iphone",
+        "device": "iPhone Air",
+        "udid": "97CA5646-36BB-47A9-919A-D78DD632A439",
+        "start_epoch": 1794726979.7542012,
+        "end_epoch": 1794727131.895092,
+        "returncode": 0,
+        "test_interval_epoch": [
+          1794726983.673,
+          1794727131.339
+        ],
+        "success": true,
+        "metrics": [
+          "HM2_TERRAIN_RASTER sample=0 scale=0.892368019 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=1 scale=0.895839989 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=2 scale=0.899312019 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=3 scale=0.902783990 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=4 scale=0.906256020 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=5 scale=0.909727991 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=6 scale=0.913200021 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=7 scale=0.916671991 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=8 scale=0.920144022 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=9 scale=0.923615992 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=10 scale=0.927088022 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=11 scale=0.930559993 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=12 scale=0.934032023 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=13 scale=0.937503994 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=14 scale=0.940976024 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=15 scale=0.944447994 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=16 scale=0.947920024 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=17 scale=0.951391995 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=18 scale=0.954864025 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=19 scale=0.958335996 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=20 scale=0.961808026 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=21 scale=0.965279996 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=22 scale=0.968752027 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=23 scale=0.972223997 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=24 scale=0.975696027 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=25 scale=0.979167998 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=26 scale=0.982640028 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=27 scale=0.986111999 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=28 scale=0.989583969 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=29 scale=0.993055999 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=30 scale=0.996528029 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=31 scale=1.000000000 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=32 scale=0.935929954 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_EQUIVALENCE samples=33 simple-vs-explicit-UV",
+          "HM2_BATTLE_RESOURCE_BOUNDARIES ticks=180 unchangedOwners=178 changedOwners=2 firstOwnedImageReads=1 repeatedReads=0 drawPreparation=0",
+          "HM2_SESSION_GPU titleSlotsBaseField=1 warmResourceReads=0 warmTextureUploads=0 warmAudioAllocations=0 atomicSaveRestart=1 corruptPreserved=1 quickIconPixels=867 quickIconDifferences=0 coloredPixels=1190329 device=iPhone"
+        ],
+        "command": [
+          "xcodebuild",
+          "test-without-building",
+          "-xctestrun",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/build/apple/Build/Products/HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
+          "-destination",
+          "platform=iOS Simulator,id=97CA5646-36BB-47A9-919A-D78DD632A439",
+          "-parallel-testing-enabled",
+          "NO",
+          "-collect-test-diagnostics",
+          "never",
+          "-resultBundlePath",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/.local/evidence/ipad-menu-fullscreen-20261115/native/iphone/tests.xcresult",
+          "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testMenuBackgroundsForDevice",
+          "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testPhoneMenuPolicyOnConcurrentClock",
+          "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testGPUMenuBattleAndAtomicSaveRestart",
+          "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testFiniteTerrainQuadMatchesExplicitUVs"
+        ]
+      },
+      {
+        "kind": "ipad",
+        "device": "iPad Air 13-inch (M4)",
+        "udid": "256F7A26-0DA2-484C-80B1-8B7243B02B4E",
+        "start_epoch": 1794726979.754242,
+        "end_epoch": 1794727211.026774,
+        "returncode": 0,
+        "test_interval_epoch": [
+          1794726996.493,
+          1794727207.565
+        ],
+        "success": true,
+        "metrics": [
+          "HM2_TERRAIN_RASTER sample=0 scale=0.892368019 differentBytes=46 maxChannelDelta=1",
+          "HM2_TERRAIN_RASTER sample=1 scale=0.895839989 differentBytes=22 maxChannelDelta=1",
+          "HM2_TERRAIN_RASTER sample=2 scale=0.899312019 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=3 scale=0.902783990 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=4 scale=0.906256020 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=5 scale=0.909727991 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=6 scale=0.913200021 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=7 scale=0.916671991 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=8 scale=0.920144022 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=9 scale=0.923615992 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=10 scale=0.927088022 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=11 scale=0.930559993 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=12 scale=0.934032023 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=13 scale=0.937503994 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=14 scale=0.940976024 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=15 scale=0.944447994 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=16 scale=0.947920024 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=17 scale=0.951391995 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=18 scale=0.954864025 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=19 scale=0.958335996 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=20 scale=0.961808026 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=21 scale=0.965279996 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=22 scale=0.968752027 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=23 scale=0.972223997 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=24 scale=0.975696027 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=25 scale=0.979167998 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=26 scale=0.982640028 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=27 scale=0.986111999 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=28 scale=0.989583969 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=29 scale=0.993055999 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=30 scale=0.996528029 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=31 scale=1.000000000 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_RASTER sample=32 scale=0.935929954 differentBytes=0 maxChannelDelta=0",
+          "HM2_TERRAIN_EQUIVALENCE samples=33 simple-vs-explicit-UV",
+          "HM2_BATTLE_RESOURCE_BOUNDARIES ticks=180 unchangedOwners=178 changedOwners=2 firstOwnedImageReads=1 repeatedReads=0 drawPreparation=0",
+          "HM2_SESSION_GPU titleSlotsBaseField=1 warmResourceReads=0 warmTextureUploads=0 warmAudioAllocations=0 atomicSaveRestart=1 corruptPreserved=1 quickIconPixels=867 quickIconDifferences=0 coloredPixels=5591827 device=iPad"
+        ],
+        "command": [
+          "xcodebuild",
+          "test-without-building",
+          "-xctestrun",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/build/apple/Build/Products/HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
+          "-destination",
+          "platform=iOS Simulator,id=256F7A26-0DA2-484C-80B1-8B7243B02B4E",
+          "-parallel-testing-enabled",
+          "NO",
+          "-collect-test-diagnostics",
+          "never",
+          "-resultBundlePath",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/.local/evidence/ipad-menu-fullscreen-20261115/native/ipad/tests.xcresult",
+          "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testMenuBackgroundsForDevice",
+          "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testPhoneMenuPolicyOnConcurrentClock",
+          "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testGPUMenuBattleAndAtomicSaveRestart",
+          "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testFiniteTerrainQuadMatchesExplicitUVs"
+        ]
+      }
+    ],
+    "observed_test_overlap_seconds": 134.84599995613098,
+    "success": true
+  },
+  "finalNative": {
+    "recorded_utc": "2026-11-15T07:21:23.460576+00:00",
+    "scope": "selected Apple component tests only; not complete game cheat coverage",
+    "shared_build": "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/build/apple/Build/Products/HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
+    "selected_tests": [
+      "HeavyMach2AppleTests/SessionRendererTests/testMenuBackgroundsForDevice"
+    ],
+    "runs": [
+      {
+        "kind": "iphone",
+        "device": "iPhone Air",
+        "udid": "97CA5646-36BB-47A9-919A-D78DD632A439",
+        "start_epoch": 1794727258.4744918,
+        "end_epoch": 1794727263.943417,
+        "returncode": 0,
+        "test_interval_epoch": [
+          1794727261.958,
+          1794727263.618
+        ],
+        "success": true,
+        "metrics": [],
+        "command": [
+          "xcodebuild",
+          "test-without-building",
+          "-xctestrun",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/build/apple/Build/Products/HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
+          "-destination",
+          "platform=iOS Simulator,id=97CA5646-36BB-47A9-919A-D78DD632A439",
+          "-parallel-testing-enabled",
+          "NO",
+          "-collect-test-diagnostics",
+          "never",
+          "-resultBundlePath",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/.local/evidence/ipad-menu-fullscreen-20261115/final-native/iphone/tests.xcresult",
+          "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testMenuBackgroundsForDevice"
+        ]
+      },
+      {
+        "kind": "ipad",
+        "device": "iPad Air 13-inch (M4)",
+        "udid": "256F7A26-0DA2-484C-80B1-8B7243B02B4E",
+        "start_epoch": 1794727258.474559,
+        "end_epoch": 1794727283.460087,
+        "returncode": 0,
+        "test_interval_epoch": [
+          1794727276.634,
+          1794727280.047
+        ],
+        "success": true,
+        "metrics": [],
+        "command": [
+          "xcodebuild",
+          "test-without-building",
+          "-xctestrun",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/build/apple/Build/Products/HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
+          "-destination",
+          "platform=iOS Simulator,id=256F7A26-0DA2-484C-80B1-8B7243B02B4E",
+          "-parallel-testing-enabled",
+          "NO",
+          "-collect-test-diagnostics",
+          "never",
+          "-resultBundlePath",
+          "/Users/sokol/Git/ProjectGameDev-Hub/HeavyMach2/.local/evidence/ipad-menu-fullscreen-20261115/final-native/ipad/tests.xcresult",
+          "-only-testing:HeavyMach2AppleTests/SessionRendererTests/testMenuBackgroundsForDevice"
+        ]
+      }
+    ],
+    "observed_test_overlap_seconds": 0.0,
+    "success": false
+  },
+  "pixelComparisons": [
+    {
+      "image": "menu-ipad-Base002-command.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 1024,
+      "height": 1366
+    },
+    {
+      "image": "menu-ipad-Base005-shop.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 1024,
+      "height": 1366
+    },
+    {
+      "image": "menu-ipad-Base004-shop.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 1024,
+      "height": 1366
+    },
+    {
+      "image": "menu-iphone-Base002-hub.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base002-hub.png",
+      "against": "phoneBaseline",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base003-command.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base003-command.png",
+      "against": "phoneBaseline",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-ipad-Base004-hub.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 1024,
+      "height": 1366
+    },
+    {
+      "image": "menu-iphone-Base003-hub.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base003-hub.png",
+      "against": "phoneBaseline",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-ipad-Base005-hub.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 1024,
+      "height": 1366
+    },
+    {
+      "image": "menu-iphone-Base006-command.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base006-command.png",
+      "against": "phoneBaseline",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base004-shop.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base004-shop.png",
+      "against": "phoneBaseline",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base005-shop.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base005-shop.png",
+      "against": "phoneBaseline",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-ipad-Base004-command.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 1024,
+      "height": 1366
+    },
+    {
+      "image": "menu-iphone-Base001-hub.png",
+      "against": "reviewed",
+      "changedBytes": 95,
+      "maxDelta": 1,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base001-hub.png",
+      "against": "phoneBaseline",
+      "changedBytes": 6,
+      "maxDelta": 1,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base003-shop.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base003-shop.png",
+      "against": "phoneBaseline",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base002-shop.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base002-shop.png",
+      "against": "phoneBaseline",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base005-command.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base005-command.png",
+      "against": "phoneBaseline",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-ipad-Base002-shop.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 1024,
+      "height": 1366
+    },
+    {
+      "image": "menu-ipad-Base003-shop.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 1024,
+      "height": 1366
+    },
+    {
+      "image": "menu-ipad-Base001-command.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 1024,
+      "height": 1366
+    },
+    {
+      "image": "menu-ipad-Base006-hub.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 1024,
+      "height": 1366
+    },
+    {
+      "image": "menu-iphone-Base006-shop.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base006-shop.png",
+      "against": "phoneBaseline",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-ipad-Base003-hub.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 1024,
+      "height": 1366
+    },
+    {
+      "image": "menu-ipad-Base006-command.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 1024,
+      "height": 1366
+    },
+    {
+      "image": "menu-iphone-Base005-hub.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base005-hub.png",
+      "against": "phoneBaseline",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base002-command.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base002-command.png",
+      "against": "phoneBaseline",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-ipad-Base003-command.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 1024,
+      "height": 1366
+    },
+    {
+      "image": "menu-ipad-Base002-hub.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 1024,
+      "height": 1366
+    },
+    {
+      "image": "menu-ipad-Base006-shop.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 1024,
+      "height": 1366
+    },
+    {
+      "image": "menu-iphone-Base004-hub.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base004-hub.png",
+      "against": "phoneBaseline",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-ipad-Base001-shop.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 1024,
+      "height": 1366
+    },
+    {
+      "image": "menu-iphone-Base001-command.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base001-command.png",
+      "against": "phoneBaseline",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base006-hub.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base006-hub.png",
+      "against": "phoneBaseline",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base001-shop.png",
+      "against": "reviewed",
+      "changedBytes": 3,
+      "maxDelta": 1,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base001-shop.png",
+      "against": "phoneBaseline",
+      "changedBytes": 75,
+      "maxDelta": 1,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-ipad-Base001-hub.png",
+      "against": "reviewed",
+      "changedBytes": 4,
+      "maxDelta": 1,
+      "width": 1024,
+      "height": 1366
+    },
+    {
+      "image": "menu-iphone-Base004-command.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-iphone-Base004-command.png",
+      "against": "phoneBaseline",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 912,
+      "height": 420
+    },
+    {
+      "image": "menu-ipad-Base005-command.png",
+      "against": "reviewed",
+      "changedBytes": 0,
+      "maxDelta": 0,
+      "width": 1024,
+      "height": 1366
+    }
+  ],
+  "sourceSHA256": {
+    "Sources/Core/Presentation/DisplayLayout.cpp": "64f1d51e3f9c0ac67823b7299c5664733b136b7743743a6563e668b0418a18a4",
+    "Sources/Core/Presentation/DisplayLayout.hpp": "71be13fe05fb50251d03891e00519ef58375a86b0b68fc1e35f0979c21ef5e39",
+    "Sources/Core/UI/Screens.cpp": "f62f5e2cd41e533239c6d4ceb0b939ec3d3ba09829d4061fad10592d6cf6dc24",
+    "Apple/Tests/SessionRendererTests.mm": "5afef4d76c5cf8f2240c04bfd79af6ccd97cec40a5995a5015520dd2d8a23bfb",
+    "tests/DisplayLayoutTests.cpp": "bca6af7118593d9c6a78f3557210d96ea7747f7cbb5d16fcc2f7c660817bfd59"
+  },
+  "wholeGameRestorationComplete": false,
+  "nativeHookAutomaticDispatchVerified": false,
+  "physicalDeviceInstalled": false,
+  "notes": [
+    "Final native individual tests passed on each device. Parallel runner overlap0 gives its aggregate false; retained without changing timing criteria.",
+    "Pre-drop parallel8 selected native tests passed; overlap134.846sec. Followup drop mapping changed only tablet menus; final core tests and native36background captures rebuilt/reran.",
+    "Decoded pixels all unchanged except max1/255 GPU rounding on three named captures; changed captures re-opened and directly reviewed. PNG file hash differences were not accepted as visual equality.",
+    "Original IPA, user saves, previous failed captures and stash preserved."
+  ]
+}

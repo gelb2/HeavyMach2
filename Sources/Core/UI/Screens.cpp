@@ -169,7 +169,8 @@ struct Screens::Impl {
     void setPhoneEquipment(bool value){phoneEquipment=value;for(const auto& [button,r]:buttonRegions)const_cast<Button*>(button)->visible=phoneNodeVisible(r);}
     Region scrollingRegion()const{return state.weaponChoiceType?Region::chooser:Region::list;}
     float verticalLimit()const{if(menu::phone(layout.configuration())&&(state.screen==ScreenId::base||state.screen==ScreenId::shop||state.screen==ScreenId::maintenance||state.screen==ScreenId::command))return 0;if(!layout.configuration().enabled)return 0;const auto r=scrollingRegion();if(!layout.configuration().compact&&r==Region::list)return 0;if(r==Region::list&&state.screen!=ScreenId::command&&!state.missionVisible)return 0;const float height=r==Region::chooser?std::max(1024.f,float(state.weaponChoices.size())*36+200):listTop-listBottom+12;return std::max(0.f,height*layout.ui(r).scale-layout.clip(r)->height);}
-    DisplayTransform presentation(Region r)const{auto t=layout.ui(r,r==Region::artScene||menu::menuRegion(r)?0.f:r==Region::list||r==Region::chooser?verticalPan:shopPan);if(r==Region::list&&layout.configuration().enabled&&layout.configuration().compact)t.offset.y+=(1024-listTop)*t.scale-8;return t;}
+    bool tabletMenu()const{return layout.configuration().enabled&&!menu::phone(layout.configuration())&&(state.screen==ScreenId::base||state.screen==ScreenId::shop||state.screen==ScreenId::command);}
+    DisplayTransform presentation(Region r)const{if(tabletMenu())return layout.ui(Region::tabletMenu);auto t=layout.ui(r,r==Region::artScene||menu::menuRegion(r)?0.f:r==Region::list||r==Region::chooser?verticalPan:shopPan);if(r==Region::list&&layout.configuration().enabled&&layout.configuration().compact)t.offset.y+=(1024-listTop)*t.scale-8;return t;}
     DisplayTransform presentation(Region r,int group)const{
         auto t=presentation(r);if(group<0||!hud)return t;
         const auto base=layout.ui(Region::bottom),custom=hud::transform(hud->active(),unsigned(group),layout);
@@ -179,6 +180,7 @@ struct Screens::Impl {
         t.offset.x+=delta(custom.offset.x,base.offset.x);t.offset.y+=delta(custom.offset.y,base.offset.y);return t;
     }
     std::optional<ClipRect> clipping(Region r,int group=-1)const{
+        if(tabletMenu())return layout.clip(Region::tabletMenu);
         if(group>=0&&hud&&hud->active().customized()){
             return hud::originalClip(hud->active(),unsigned(group),layout);
         }
@@ -1226,7 +1228,7 @@ void Screens::Impl::build(){
         ScreenAction action{screen,panel,event};
         if(event.canvasPosition){
             const auto inventoryRegion=screen==ScreenId::shop?Region::shopInventory:screen==ScreenId::maintenance?Region::maintenance:Region::panel;
-            action.dropCoordinates=DropCoordinates{phoneMenu()?phoneDropPoint(*event.canvasPosition):layout.ui(inventoryRegion,shopPan).inverse(*event.canvasPosition),presentation(Region::bottom,hm2::hud::controls).inverse(*event.canvasPosition)};
+            action.dropCoordinates=DropCoordinates{phoneMenu()?phoneDropPoint(*event.canvasPosition):presentation(inventoryRegion).inverse(*event.canvasPosition),presentation(Region::bottom,hm2::hud::controls).inverse(*event.canvasPosition)};
         }
         host.action(action);
         if(screen==ScreenId::slots){
