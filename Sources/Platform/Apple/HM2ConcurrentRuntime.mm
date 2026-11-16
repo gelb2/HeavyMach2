@@ -90,9 +90,12 @@ struct ConcurrentRuntime::Impl:validation::ValidationHost {
         if(!view.screens){view.screens=std::make_unique<ui::Screens>(runner->scenarioResources(index),view.tiles,view.host);++view.ownerEpoch;view.screens->setDisplay(game.display());}
         const bool rebuilt=view.revision!=game.presentationRevision();
         if(rebuilt){
-            view.screens->refresh(state,game.renderTime());view.revision=game.presentationRevision();prepare(*view.screens,view.tiles,game.renderTime());resourcesDirty=true;
+            view.screens->refresh(state,game.renderTime());view.revision=game.presentationRevision();resourcesDirty=true;
         }else view.screens->updateHUD(state);
         if(rebuilt||view.preparedWorld!=game.battle()||view.resourceRevision!=game.resourceRevision()||view.uiResourceGeneration!=view.screens->resourceGeneration()){
+            // Internal Phone pages can change UI ownership independently of
+            // the session revision, just as in the normal GameRuntime.
+            prepare(*view.screens,view.tiles,game.renderTime());
             view.preparedWorld=game.battle();view.resourceRevision=game.resourceRevision();view.uiResourceGeneration=view.screens->resourceGeneration();const auto prepared=game.preparationFrame();[renderer prepareFrame:prepared];resourcesDirty=true;
         }
     }

@@ -77,10 +77,13 @@ struct GameRuntime::Impl:SessionHost,ui::ScreensHost {
         const auto& state=game->state();
         const bool rebuilt=revision!=game->presentationRevision();
         if(rebuilt){
-            ui->refresh(state,game->renderTime());revision=game->presentationRevision();Frame prepared;ui->appendPreparation(prepared);[renderer prepareFrame:prepared];
+            ui->refresh(state,game->renderTime());revision=game->presentationRevision();
         }else ui->updateHUD(state);
         const bool resourcesChanged=rebuilt||game->battle()!=preparedWorld||resourceRevision!=game->resourceRevision()||uiResourceGeneration!=ui->resourceGeneration();
         if(resourcesChanged){
+            // Phone subpages rebuild Screens without a GameSession action.
+            // Prepare their first-use icons before drawing or retaining them.
+            Frame screenResources;ui->appendPreparation(screenResources);[renderer prepareFrame:screenResources];
             preparedWorld=game->battle();resourceRevision=game->resourceRevision();uiResourceGeneration=ui->resourceGeneration();
             const auto prepared=game->preparationFrame();[renderer prepareFrame:prepared];
             // New nodes are built and old nodes released before reclaiming the

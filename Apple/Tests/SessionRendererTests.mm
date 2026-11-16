@@ -66,6 +66,46 @@ UIImage* image(NSData* rgba,CGSize size){
 }
 @interface SessionRendererTests:XCTestCase @end
 @implementation SessionRendererTests
+- (void)testColdShopPagePreparesFirstUseIconsThroughGameRuntime {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    for(bool phone:{true,false}){
+        const hm2::Size canvas=phone?hm2::Size{912,420}:hm2::Size{1032,1376};
+        NSURL* directory=[NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:NSUUID.UUID.UUIDString] isDirectory:YES];
+        XCTAssertTrue([NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:nil]);
+        UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];
+        HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,canvas.width,canvas.height)];surface.contentScaleFactor=1;
+        CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+        controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];surface.frame=CGRectMake(0,0,canvas.width,canvas.height);[surface layoutIfNeeded];
+        try{
+            hm2::SaveData fixture;fixture.initializeSlot(0,"SHOP","kr",1794268800);hm2::progression::SlotView slot(fixture.slot(0));slot.level(5);slot.u32(0x1b5c,5);
+            hm2::DarwinWorldRandom random(1);const auto bytes=fixture.encode(random,1);const auto save=[directory URLByAppendingPathComponent:@"HeavyMach2.sav"];
+            XCTAssertTrue([[NSData dataWithBytes:bytes.data() length:bytes.size()] writeToURL:save atomically:YES]);
+            hm2::apple::GameRuntime runtime(root,save,{});auto display=hm2::DisplayConfiguration::surface(canvas);display.device=phone?hm2::DisplayDevice::phone:hm2::DisplayDevice::tablet;runtime.setDisplay(display);
+            XCTAssertTrue(runtime.session().selectSlot(0));runtime.session().enterBase();runtime.synchronize();
+            const auto press=[&](unsigned id){for(const auto key:runtime.screens().buttons())if(key.id==id){const auto p=runtime.screens().buttonScreenPosition(key);runtime.input(hm2::PointerPhase::begin,p,991);runtime.input(hm2::PointerPhase::end,p,991);settle(runtime,layer);return true;}return false;};
+            XCTAssertTrue(press(2002));XCTAssertTrue(press(2002));XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::shop);
+            const auto& stock=runtime.session().state().shopItems;XCTAssertEqual(stock.size(),9u);if(stock.size()!=9)throw std::runtime_error("Original level5 shop catalog changed");XCTAssertEqual(stock[8].icon,std::string("Icon10113.png"));
+            hm2::Frame initial;runtime.screens().appendPreparation(initial);const auto owns=[](const hm2::Frame& frame){return std::any_of(frame.sprites.begin(),frame.sprites.end(),[](const auto& s){return s.image=="Icon10113.png";});};
+            XCTAssertEqual(owns(initial),!phone);runtime.draw(layer);
+            const auto revision=runtime.session().presentationRevision(),generation=runtime.screens().resourceGeneration();const auto uploads=[runtime.resourceMetrics()[@"imageTextureUploads"] unsignedIntegerValue];
+            if(phone){
+                // No revealButton, renderer preparation, catalog injection or
+                // direct Screens refresh: only the product input/sync/draw path.
+                XCTAssertTrue(press(2106));XCTAssertEqual(runtime.session().presentationRevision(),revision);XCTAssertGreaterThan(runtime.screens().resourceGeneration(),generation);
+                hm2::Frame visible;runtime.screens().append(visible,runtime.session().renderTime());XCTAssertTrue(owns(visible));runtime.draw(layer);
+                XCTAssertEqual([runtime.resourceMetrics()[@"imageTextureUploads"] unsignedIntegerValue],uploads+1);
+                for(unsigned repeat=0;repeat<3;++repeat){XCTAssertTrue(press(2105));XCTAssertTrue(press(2106));runtime.draw(layer);}
+                XCTAssertEqual([runtime.resourceMetrics()[@"imageTextureUploads"] unsignedIntegerValue],uploads+1);
+            }
+            const auto warmReads=runtime.resourceReads();const auto warmUploads=runtime.textureUploads();const auto writes=runtime.session().metrics().saveRequests;
+            for(unsigned n=0;n<120;++n){runtime.tick();runtime.draw(layer);}
+            XCTAssertEqual(runtime.resourceReads(),warmReads);XCTAssertEqual(runtime.textureUploads(),warmUploads);XCTAssertEqual(runtime.session().metrics().saveRequests,writes);
+            runtime.captureNextFrame();runtime.draw(layer);XCTAssertNotNil(runtime.pixels());XCTAttachment* shot=[XCTAttachment attachmentWithImage:image(runtime.pixels(),runtime.drawableSize())];shot.name=phone?@"cold-phone-shop-Icon10113":@"cold-tablet-shop-Icon10113";shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];
+            NSLog(@"HM2_COLD_SHOP %@ catalog=9 firstUseIcon=Icon10113.png internalPage=%d repeatPagePairs=%u warmFrames=120 warmIO0Upload0=1",phone?@"phone":@"tablet",phone,phone?3u:0u);
+        }catch(const std::exception& e){XCTFail(@"Cold shop product resource boundary (%@): %s",phone?@"phone":@"tablet",e.what());}
+        window.hidden=YES;window.rootViewController=nil;
+    }
+}
 - (void)testPhoneMenuPolicyOnConcurrentClock {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     const CGSize extent=CGSizeMake(912,420);UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,912,420)];surface.contentScaleFactor=1;controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];surface.frame=CGRectMake(0,0,912,420);
