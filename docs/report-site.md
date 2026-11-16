@@ -1,3 +1,9 @@
+# 2026-11-16 iPhone 코드·에셋 심층진단 게시
+
+[상세 진단 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html)를 기존 비공개 사이트에 게시하고 HeavyMach2 고정 누적 목록에서 연결했다. 소스d42f016, 배포appgdep_6afa64333a208191bad038da306b3b1c succeeded. [게시 명세](evidence/iphone-code-asset-diagnosis-publication-20261116.json). 본인1명 접근을 유지했다. 브라우저 시각검수는 하지 않았다.
+
+상점 페이지 준비 누락의 CPU재현·로딩/시간 계약불일치·검사공백/구조위험과 미검증을 구분한다. 코드142파일 목록·자원1548개 해시대조·공통78/78은 실제GPU/실기기 전수검사 완료가 아니다. 게임소스·기기·저장은 변경하지 않았다. 용량제한 실패후 macOS부가메타데이터를 제외하고 기존 plan.html·docs/todo.html의 원문/주소를 유지한 gzip표시로 패키징했다. 압축해제 원문 바이트일치, 최종tar268424192바이트를 확인했다. 기존미디어는 삭제하지 않았다. 상세원문은 [저장소 보고](iphone-code-asset-diagnosis-20261116.md)다.
+
 ## 2026-11-15 최신 — iPad 메뉴 배율 회귀 수정
 
 [이전 FAIL·수정 후 실제 캡처](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/ipad-menu-fix.html)를 기존 비공개 사이트 첫 화면·이전 Phone 메뉴/배경/하네스 문서에서 연결했다. 원인7622bd1, 공통 메뉴 변환과 입력/drop 수정, 공통2검사와 최종 배경/화면 하네스 각각36/36 PASS를 기록했다. 최종 짧은 Native 검사의 시간 중첩0 집계 FAIL과 이전18화면 FAIL도 보존했다. Site 소스90dc65d1d5d7884039c52221bbc0dc5d63c45d9a·배포appgdep_6af95f4fe40881918e796e5e16be59c0는 succeeded다. 본인1명·그룹0·외부0 접근을 유지했다. 아직 실제 기기 정식 설치와 네이티브 훅 자동 발동 완료는 아니다. [구현·검사](ipad-menu-regression-20261115.md)를 따른다.

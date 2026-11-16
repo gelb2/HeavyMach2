@@ -1,0 +1,105 @@
+{
+  "HEAD": "57f078a583af70d18eaffc90a56e1b7fc11230af",
+  "sourceFiles": 142,
+  "changedSources": 61,
+  "profileBranchOccurrences": 140,
+  "forbiddenCandidates": [
+    {
+      "file": "Sources/Platform/Apple/HM2TextRasterizer.h",
+      "line": 7,
+      "code": "// resource uploader; this adapter creates no UIView/UILabel/UIButton."
+    }
+  ],
+  "preparedAssetEntries": 1548,
+  "sourceMismatches": [],
+  "bundleMismatches": [],
+  "date": "2026-11-16",
+  "scope": "Static source inventory, prepared asset and Release bundle hashes, portable C++ diagnostics; no fresh Apple GPU or physical gameplay run",
+  "coreTests": {
+    "passed": 78,
+    "failed": 0,
+    "seconds": 278.92
+  },
+  "diagnostics": {
+    "pageTransition": [
+      "PHONE uiGeneration=1->3 hostActions=0 missing=Icon10113.png,",
+      "TABLET uiGeneration=1->1 hostActions=0 missing="
+    ],
+    "policiesAndCoordinates": [
+      "PHONE stageLoading=PhoneMenu/StageClearBG.png reference=480x320 titlePrompt=11",
+      "TABLET stageLoading=StageClearBG.png reference=768x1024 titlePrompt=10",
+      "TERRAIN camera=0 terrain=456 smoothMarker=456 delta=0",
+      "TERRAIN camera=0.1 terrain=456 smoothMarker=455.9 delta=0.100006",
+      "TERRAIN camera=0.2 terrain=456 smoothMarker=455.8 delta=0.200012",
+      "TERRAIN camera=0.3 terrain=456 smoothMarker=455.7 delta=0.299988",
+      "TERRAIN camera=0.4 terrain=456 smoothMarker=455.6 delta=0.399994",
+      "TERRAIN camera=0.5 terrain=456 smoothMarker=455.5 delta=0.5",
+      "TERRAIN camera=0.6 terrain=455 smoothMarker=455.4 delta=-0.399994",
+      "TERRAIN camera=0.7 terrain=455 smoothMarker=455.3 delta=-0.299988",
+      "TERRAIN camera=0.8 terrain=455 smoothMarker=455.2 delta=-0.200012",
+      "TERRAIN camera=0.9 terrain=455 smoothMarker=455.1 delta=-0.100006",
+      "TERRAIN camera=1 terrain=455 smoothMarker=455 delta=0",
+      "MISSING_RESOURCE returnsNull=1"
+    ]
+  },
+  "findings": [
+    {
+      "id": "A1",
+      "severity": "P1",
+      "result": "CPU-reproduced missing GPU preparation after internal Phone shop page",
+      "files": [
+        "Sources/Core/UI/Screens.cpp:1204",
+        "Sources/Platform/Apple/HM2GameRuntime.mm:78"
+      ],
+      "commits": [
+        "9144809",
+        "ca424ab"
+      ]
+    },
+    {
+      "id": "A2",
+      "severity": "P1",
+      "result": "Duplicated runtime preparation and GPU tests directly preparing textures mask product lifecycle gaps"
+    },
+    {
+      "id": "A3",
+      "severity": "P1",
+      "result": "Phone loading selects Phone art and center cover despite latest HD/top-alignment contract",
+      "commit": "b63f588"
+    },
+    {
+      "id": "A4",
+      "severity": "P2",
+      "result": "Phone title prompt 11s vs HD 10s conflicts with time-preservation contract"
+    },
+    {
+      "id": "A5",
+      "severity": "unconfirmed cause",
+      "result": "Terrain rounding produces relative coordinate step; physical Skyway layer identification remains"
+    },
+    {
+      "id": "A6",
+      "severity": "P2 latent",
+      "result": "Missing mandatory art is silently omitted; no manifest file missing in this audit"
+    }
+  ],
+  "sourceCodeModified": false,
+  "devicesAccessed": false,
+  "gameCommitsCreated": false,
+  "merged": false,
+  "hookState": {
+    "observedInvoked": true,
+    "assetAndScreen": "ERROR: Captured executable is stale",
+    "phonePolicy": "ERROR: Stale candidate sources"
+  },
+  "rawEvidence": {
+    "fetch.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "page-probe.cpp": "99a1df68f151810c4db7cb1a7abfec5d663c560bc5bddb9d7e62c9d497b8282b",
+    "page-probe.log": "cb1c457ce3f9bcf636c266e7499bd1617b14c07b445deb0159322402d4b6665b",
+    "policy-probe.log": "f7c7c218c1eabb8c876be0da2a78e2509b5f4f80c604a553b836373f7f837fcf",
+    "inventory.json": "b0d30bed39d60d6da87338395d8c55223db0e029aa90d48f007d161bcae7a4ca",
+    "ctest.log": "e053aea3399cf0ed9ea072caf8cc4b41f8174de1aee7c5d2434f7dbfe4dcf9fa",
+    "policy-probe.cpp": "2dbb948530476d9f6481df8b58ae19960ee546ef21c94a7dcb600828b56225fe",
+    "build.log": "93a70b3536ed59eeacbaa00f0d500b8a6499ebd33e0a0c6a5c5ed79218e2f138"
+  }
+}
