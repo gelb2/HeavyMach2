@@ -1,3 +1,7 @@
+## 2026-11-16 현행 분석 브랜치
+
+상점수정1420cc1을 기준으로 `audit/iphone-original-logic-20261116`을 만들었다. [원본 아이폰판 분석 시작 기록](docs/iphone-original-logic-audit-20261116.md)을 읽는다. REA로 일반판2.0.1 IPA·원본실행파일/armv7의 입력동일성을 확인하고, 카메라·월드갱신·입력3함수 dossier/선택명령을 재대조했다. 기존1077본문 목록과 미대조 상태를 함께 기록했다. 전체 의미대조·점프원인/수정은 미완료다. 원본/전체디컴파일은 외부 로컬 공간에만 보존하고 REA세션을 닫았다. [상점 수정 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-fix-20261116) 게시succeeded. 실기기앱/저장은 변경하지 않았다.
+
 ## 2026-11-16 상점 GPU 오류 수정·분석 순서
 
 [상점 수정과 검사](docs/shop-texture-fix-20261116.md)를 읽는다. 실제레벨5 상점상품Icon10113.png의 Phone페이지 첫 사용 GPU오류를 재현하고 정식/치트의 자원변경 경계를 수정했다. iPhone Native4/4·iPad Native3/3을 통과했다. 실기기앱/저장은 변경하지 않았고 정식Release설치는 남았다. 사용자 지시에 따라 이 수정·검증·커밋 후 수정본에서 별도브랜치를 만들어 원본아이폰IPA와 포팅판을 REA로 전수분석한다. 카메라배율·점프/부스터·path와 전체로직을 포함하고 일반판/HD판 차이와 복원결함을 구분한다. 아래 미수정/CPU재현만의 기록은 당시 상태다.

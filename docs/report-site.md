@@ -1,3 +1,7 @@
+## 2026-11-16 상점 GPU 오류 수정 게시
+
+[상점 수정·검사](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-fix-20261116)를 기존 보고서와 고정 누적 목록에 추가했다. 수정1420cc1, iPhone Native4/4·iPad Native3/3. Site소스c7084e1, 배포appgdep_6afa6f44499481919f06154b55146bac succeeded. [게시 근거](evidence/shop-texture-fix-publication-20261116.json). 본인만 접근하는 설정과 기존미디어를 유지했다. 새브라우저 시각검수·실기기설치는 하지 않았다.
+
 # 2026-11-16 iPhone 코드·에셋 심층진단 게시
 
 [상세 진단 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html)를 기존 비공개 사이트에 게시하고 HeavyMach2 고정 누적 목록에서 연결했다. 소스d42f016, 배포appgdep_6afa64333a208191bad038da306b3b1c succeeded. [게시 명세](evidence/iphone-code-asset-diagnosis-publication-20261116.json). 본인1명 접근을 유지했다. 브라우저 시각검수는 하지 않았다.
