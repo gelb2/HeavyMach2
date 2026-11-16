@@ -1,3 +1,5 @@
+2026-11-16 후속: 두 실제 기기의 정식 Release 업데이트·저장 보존·기본 시작을 확인했다. [설치 기록](dual-release-installation-20261116.md). 아래 미설치 문장은11월15일 검사 당시 상태이며, 이번 설치를 전체 실기기 플레이 검사로 확대하지 않는다.
+
 현재 인게임 결과와 사진은 [같은 비공개 보고서](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/ipad-menu-fix.html#in-game)에 게시했다. Safari에서 실제 전후 사진이 표시되는 것을 확인했다. 현재 수정본의 실기기 정식 설치는 하지 않았다.
 
 ## 인게임 후속 수정 — 메뉴 PASS와 구분
