@@ -52,6 +52,55 @@ iPad는 같은 시작·입력·장비·seed에서 카메라 배율·중심·시�
 
 창 재구성의 Native 검사에서는 가로·세로 size class, 기기 분류, bounds, 인셋, `setDisplay` 호출을 따로 기록한다. 같은 bounds·인셋에서 trait만 바꾼 표본과 trait를 유지한 채 bounds를 바꾼 표본을 비교한다. 카메라 초기화·입력 정리가 어떤 변경에서 일어나는지 구분한다.
 
+## 수정 후 검증과 전환 기준
+
+수정 전 제품 소스 `3140e0e`와 수정 후보를 같은 맵·장비·시작 저장·seed·입력 순서에서 비교한다. 기존 [실패 로그와 측정값](evidence/iphone-module-audit-20261118.json)을 보존한다. 추가 회귀 검사에서 각 실패를 재현할 때는 기준 소스를 별도 작업 트리에서 실행한다. iPad 비교는 iPad의 수정 전후 조건끼리 한다. 실행마다 커밋·앱 대상·시뮬레이터와 OS·실제 캔버스/인셋·입력·저장 및 자원 해시·로그를 기록한다. Source 시험 저장과 치트 저장은 실행 UUID로 격리한다.
+
+### 1. 공통 코드와 Apple 회귀 검사
+
+| 항목 | 같은 입력과 합격 기준 |
+| --- | --- |
+| 점프 | 실패 로그의 raw 좌표 쌍으로 같은 캔버스의 `move`를 재현한다. 같은 좌표의 move는 UI에 전달될 수 있고, UI가 소비하지 않으면 월드 탭 기록을 지우지 않아야 한다. 한 점·여러 점 교체 뒤 각 더블탭에서 점프 1회·SP 100 소비·포인터 해제를 확인한다. 실제 캔버스 이동은 기존 경로점·탭 처리와 일치해야 한다. SP 부족·시간 경계·화면 밖 종료/취소·두 포인터·HUD 드래그·아이템 드롭도 검사한다. |
+| 카메라 | `Stage02_04` 포털 0의 기존 경로와 포털 78곳의 각 480틱을 같은 조건으로 돌린다. 고정된 창의 이동 구간에서 기존 검사 기준인 한 틱 배율 차이 `>0.01`인 급변은 0회여야 한다. 맵 밖 노출·HUD 가림 없이 시야가 표적·경로에 따라 움직여야 한다. 기본·편집 HUD에서 포털에 실제로 진입하고, 표시 위치·역입력·표적 판정이 일치해야 한다. 창 변경으로 초기화되는 프레임은 이동 구간과 따로 판정한다. |
+| 메뉴와 자원 | 상품 24개·인벤토리 25칸의 끝 내부 페이지에서 912×420↔912×550을 왕복한다. 2행에서 3행으로 바뀔 때 보이던 상품과 인벤토리 첫 칸이 새 페이지에 포함되고, 상세·선택·드롭이 같은 항목을 가리켜야 한다. 부분 페이지와 빈 목록도 확인한다. 실제 레벨 5 상점의 `Icon10113.png`는 콜드 캐시의 첫 표시에서 GPU 오류가 없어야 한다. 같은 페이지의 재방문과 예열 후 120프레임 동안 추가 읽기·업로드·저장 요청은 0이다. |
+| iPad 보존 | 1024×1366, 좁은 tablet 599/600pt, 일반→소형→일반 전환을 비교한다. 같은 창에서 카메라 중심·시야·정점·클립과 유효 입력, HD 메뉴와 HUD, 표적·피해·시간·RNG·저장 결과가 기준과 같아야 한다. 같은 캔버스 위치에서 추가로 걸러진 월드 move는 별도 기록한다. |
+| Skyway | 같은 이동을 배경·지형·오브젝트의 정점과 연속 GPU 캡처로 비교한다. 레이어별 원인이 재현된 범위에서 수정 전후 차이를 판정한다. 카메라 급변만 사라졌다는 결과로 레이어 떨림을 통과 처리하지 않는다. |
+
+공통 검사는 `build/core`에서 원본 준비 자원을 `HM2_HD_RESOURCES`로 지정해 빌드한다. `ctest --test-dir build/core --output-on-failure`로 검사한다. 구현 중에는 `OriginalDashSession`, `SharedCameraPolicyAndIsolation`, `PhonePortalRoutesAndHUDInput`, `UniversalDisplayAndInput`, `OriginalScreensAndHUD` 등 변경 경로를 우선 돌린다. 통합 후보는 전체 호스트 검사를 한 번 실행한다. 원시 UIKit 좌표와 월드 전달 분기는 공통 코어만으로 검증할 수 없으므로 Source의 Apple XCTest에 실패 좌표 쌍을 고정한 검사를 연결한다.
+
+### 2. 정식 앱 경로를 시뮬레이터에서 검증
+
+`Apple/iOS/HeavyMach2.xcodeproj`에서 `HeavyMach2Source`의 Debug XCTest를 실행한다. iOS 26.5의 iPhone Air와 iPad Air 11인치를 각기 지정하며, 13인치 고정 카메라는 별도 iPad 조건으로 비교한다. 실제 UIKit 입력은 `HeavyMach2UITests/WorldInputTests`의 `testOSMultiplePathThenSinglePathThenDoubleTap`, `testOSMultiplePathThenMultiplePathThenDoubleTap`을 기기·경로별 5회씩 실행한다. 실행을 다시 시작할 때마다 새 시험 저장을 쓴다. 첫 실패와 입력 이력을 보관하며, 재시도 성공으로 앞선 실패를 지우지 않는다. OS가 깨끗한 탭만 보낸 표본은 위 고정 좌표 XCTest와 함께 판정한다.
+
+기기마다 `HM2_TEST_SIM_ID`, 빌드 디렉터리 `HM2_TEST_BUILD`, 새 결과 경로 `HM2_TEST_RESULT`를 지정한다. 아래 명령을 각 기기에서 한 번씩 실행한다.
+
+```sh
+xcodebuild -project Apple/iOS/HeavyMach2.xcodeproj -scheme HeavyMach2Source \
+  -configuration Debug -destination "platform=iOS Simulator,id=$HM2_TEST_SIM_ID" \
+  -derivedDataPath "$HM2_TEST_BUILD" -resultBundlePath "$HM2_TEST_RESULT" \
+  -parallel-testing-enabled NO -test-iterations 5 -test-repetition-relaunch-enabled YES \
+  -only-testing:HeavyMach2UITests/WorldInputTests/testOSMultiplePathThenSinglePathThenDoubleTap \
+  -only-testing:HeavyMach2UITests/WorldInputTests/testOSMultiplePathThenMultiplePathThenDoubleTap test
+```
+
+`HeavyMach2AppleTests/SessionRendererTests`에서 실제 GameRuntime의 창 크기 변경·첫 GPU 프레임, `testColdShopPagePreparesFirstUseIconsThroughGameRuntime`, `testPhoneBottomHUDAndOriginalPortalRoutes`를 확인한다. 축소한 창을 넣어 보는 검사는 실제 OS 창 전환과 분리해 기록한다. 휴대폰의 두 경로와 iPad를 각각 별도 `.xcresult`에 남긴다. Debug가 통과한 후보의 Source Release 시뮬레이터 빌드로도 타이틀→슬롯→전장·메뉴의 일반 플레이와 저장·재실행을 확인한다. 시험 저장 주입 경로는 Debug에서만 사용한다.
+
+### 3. 치트빌드로 동시 실행과 상태 보존 검증
+
+`HeavyMach2Validation`은 앱 스킴으로 빌드한다. 각 시뮬레이터에 `xcrun simctl install`로 설치하고 `xcrun simctl launch`로 `com.gelb2.heavymach2.validation`을 실행한다. `xcrun simctl get_app_container <기기 ID> com.gelb2.heavymach2.validation data`로 컨테이너를 찾고, 이번 실행에서 생성된 `Documents/ConcurrentValidation/<UUID>/report.json`을 가져온다. 화면을 사용하는 현재 실행기의 기준은 126개 상태·2,100프레임이다. 최종 프레임 수와 보고서의 `frames`·`presented`를 대조한다. 기존 케이스를 모두 유지하고 새 케이스를 추가하면 총수를 함께 기록한다. [치트 앱 빌드·실행 명령](public/build-and-install.md#치트-앱-실행과-결과)
+
+- 기존 경로 교체 케이스 115·116과 표적 줌·유휴·HUD·중단 케이스에 상태 비교를 연결한다. HUD 경계 이동과 상점 끝 페이지 창 변경도 독립 세션에서 실행한다. 다른 전투 세션이 같은 프레임에 움직이고 공격하는지 `frameActivity`로 확인한다.
+- 현재 `ConcurrentRuntime::setDisplay`는 모든 세션을 갱신한다. 메뉴 창 변경 케이스는 해당 시험 세션과 화면만 재구성한다. `pressButton`의 `revealButton`은 아이템이 있는 페이지를 먼저 열 수 있다. 빈 페이지 회귀는 실제로 보이는 페이지 버튼만 눌러 재현하고, 창 변경 직후 첫 프레임의 목록·상세·리소스를 확인한다.
+- 시작 조건만 준비하고 입력·전투·거래·저장·GPU 준비는 제품 경로에서 일어나야 한다. 조건별 합격, 버튼 실패 수, 이동·발사·메뉴 활동의 겹침, 렌더 오류와 예열 후 자원 재사용을 기록한다. 치트의 공통 입력은 UIKit 원시 좌표를 거치지 않으므로 점프 어댑터의 합격 근거에는 Source XCTest를 함께 붙인다. 기존 [작업 순서](validation-build.md#작업-순서)에 따라 최종 HD 포팅판 대조는 iPad에서 일괄 처리한다.
+
+### 롤백과 실기기 전환
+
+- **실기기 검증 후보.** 변경한 결함의 고정 재현 테스트와 iPhone·iPad Source 검사가 모두 통과하고, 치트빌드의 기존·추가 케이스 및 iPad 전후 비교에 새 실패가 없어야 한다. 그 커밋의 서명된 Source Release를 후보로 삼는다. 기기 연결과 저장 백업을 확인한 뒤 iPhone에서 같은 손 입력과 이동을 확인하고 iPad에서 기존 동작을 재확인한다.
+- **실패 또는 롤백.** 새 회귀가 확인되면 해당 커밋의 `.xcresult`·프레임·`report.json`과 기준 비교 결과를 보존하고 실기기 전환을 보류한다. 원인을 수정한 뒤 해당 검사를 다시 실행한다. 되돌릴 경우 입력·카메라·메뉴 중 회귀를 낸 구현 커밋만 `git revert`로 취소하고 같은 iPad 검사와 나머지 수정의 회귀 검사를 다시 실행한다. 상점 크래시 수정 `1420cc1`과 기존 증거는 유지한다. 되돌린 결함은 미해결로 기록한다.
+- **실행 환경 오류.** 부팅 실패나 결과 파일 누락은 미검증으로 기록한다. 원인을 확인한 뒤 같은 후보의 해당 실행을 다시 수행한다.
+
+이 계획 보강에서 확인한 범위는 기존 CTest 등록, Xcode 스킴과 테스트 경로, 시뮬레이터 목록, 치트 실행기의 종료·결과 파일 경로다. 수정 후보의 새 검증은 구현 후 실행한다.
+
 ## 카메라와 레이어
 
 상점 수정 `1420cc1`을 포함한 분석 브랜치 `audit/iphone-original-logic-20261116`의 `3140e0e`를 사용했다. 준비된 원본 맵과 HD 공통 전투 코드로 포털 시작점 78곳을 각 480틱 실행했다. 두 화면 프로필은 같은 시작점·저장 형식·난수 시드를 사용했다. 입력은 해당 프레임의 카메라로 지정한 뒤 캔버스 안으로 제한했다. 프로필에 따라 투영된 입력 위치와 이후 이동 궤적은 달라질 수 있다.

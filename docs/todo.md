@@ -9,6 +9,8 @@
 
 [수정 계획과 회귀 검사](iphone-module-audit-20261118.md#수정-계획)에 실행 기준을 기록했다. 같은 문서에 파일별 대조 범위와 REA 근거를 연결했다.
 
+- [ ] **실기기 전환 판정.** 고정 재현·호스트 회귀, iPhone/iPad Source 시뮬레이터, 동시 치트빌드와 iPad 전후 대조 결과를 함께 확인한다. 새 회귀가 있으면 해당 구현 커밋만 되돌릴 수 있도록 근거를 보존한다. [실행 순서와 판정 기준](iphone-module-audit-20261118.md#수정-후-검증과-전환-기준)
+
 공통 C++의 `compact`는 UIKit size class와 별개다. CPU 검사에서 짧은 변 599pt의 tablet은 `compactFocus`, 600pt의 tablet은 `fixedSurface`였고 둘 다 HD 메뉴였다. iPad 회귀에서 이 두 창과 기존 13인치 기준을 각각 비교한다. [화면 분기 근거](iphone-module-audit-20261118.md#ios-size-class와-실제-분기)
 
 ## 원본 분석 목적·복원 모듈의 부작용 — 2026-11-16 추가 지시
