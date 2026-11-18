@@ -1,3 +1,13 @@
+## 2026-11-18 포팅 모듈 분석
+
+후속 변경은 [수정 계획과 회귀 검사](docs/iphone-module-audit-20261118.md#수정-계획)를 따른다. 점프는 UIKit 좌표 변환 뒤의 중복 move, 카메라는 HUD 접근 보정, 상점·인벤토리는 창 변경 뒤 내부 페이지를 고치는 계획이다. Skyway는 실제 GPU 프레임으로 레이어와 원인을 확인하는 단계다.
+
+상점 수정 이후 분리한 `audit/iphone-original-logic-20261116`의 `3140e0e`를 분석했다. iPhone Air 시뮬레이터의 여러 점→한 점→더블탭 실패에서 UIKit x의 수치 차이 약 5.68×10⁻¹⁴가 필터를 통과해, 같은 캔버스 좌표의 move가 탭 기록을 지우는 것을 확인했다. iPhone 화면 프로필의 이동 중 카메라 배율 급변과 창 변경 뒤 빈 상품·인벤토리 페이지도 재현했다. 물리 iPhone의 실패 빈도, Skyway의 GPU 레이어, 원본 전체 로직 대조는 미완료다. 제품 소스와 물리 기기·사용자 저장을 바꾸지 않았다. [후속 분석](docs/iphone-module-audit-20261118.md) · [TODO](docs/todo.md)
+
+## 2026-11-16 추가 범위 — 원본과 복원 모듈의 부작용 대조
+
+사용자는 원본아이폰 분석의 목적에 현재복원판의 예상밖 부작용·화면떨림 원인 추적이 포함된다고 명시했다. 새버전 모듈 전체의 의미/상호작용 분석은 미완료다. [TODO 상단](docs/todo.md), [모듈 CPU근거](docs/evidence/module-side-effects-20261116.json)를 읽는다. 새소스13파일·기존수정48파일을 대상으로 원본→복원모듈/상태/호출순서→발생커밋→같은조건 관측을 연결한다. CameraPresentation의 HUD경계에서 1단위 이동만으로 배율0.892371→1의 단일갱신 변화가 CPU재현됐다. 실제Skyway 레이어/실기기 원인 확정은 아니다. 분석브랜치에서 제품소스를 추가수정하지 않았다.
+
 ## 2026-11-16 현행 분석 브랜치
 
 상점수정1420cc1을 기준으로 `audit/iphone-original-logic-20261116`을 만들었다. [원본 아이폰판 분석 시작 기록](docs/iphone-original-logic-audit-20261116.md)을 읽는다. REA로 일반판2.0.1 IPA·원본실행파일/armv7의 입력동일성을 확인하고, 카메라·월드갱신·입력3함수 dossier/선택명령을 재대조했다. 기존1077본문 목록과 미대조 상태를 함께 기록했다. 전체 의미대조·점프원인/수정은 미완료다. 원본/전체디컴파일은 외부 로컬 공간에만 보존하고 REA세션을 닫았다. [상점 수정 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-fix-20261116) 게시succeeded. 실기기앱/저장은 변경하지 않았다.
