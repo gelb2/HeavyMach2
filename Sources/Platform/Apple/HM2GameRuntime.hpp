@@ -16,12 +16,13 @@ struct InputObservation {
     unsigned pathBefore=0,pathAfter=0;float tapBefore=0,tapAfter=0,specialBefore=0,specialAfter=0;
     double worldTimeBefore=0,worldTimeAfter=0;std::uint64_t dashStartsBefore=0,dashStartsAfter=0;
     Vec2 playerBefore{},worldPoint{};
-    bool overlayConsumed=false,uiConsumed=false,worldConsumed=false,terminalCancelled=false;
+    bool overlayConsumed=false,uiConsumed=false,worldConsumed=false,terminalCancelled=false,sameCanvasMove=false;
 };
 // Apple adapter for the shared HD game state. The view supplies logical
 // canvas/safe-area geometry; game UI and world output remain in the core.
 class GameRuntime {
     struct Impl;std::unique_ptr<Impl> impl_;
+    bool dispatchInput(PointerPhase,Vec2,std::uintptr_t,bool sameCanvasMove);
 public:
     GameRuntime(NSURL* resourceRoot,NSURL* isolatedSaveFile,std::function<void(const NativeRequest&)>,std::function<std::uint32_t()> absoluteTimeLow={});
     ~GameRuntime();
@@ -29,6 +30,7 @@ public:
     void tick();
     void draw(CAEAGLLayer*);
     bool input(PointerPhase,Vec2,std::uintptr_t);
+    bool inputFromView(PointerPhase,CGPoint current,CGPoint previous,std::uintptr_t);
     bool provideName(unsigned,std::string_view,std::string_view country);
     bool confirmDelete(unsigned);
     bool confirmGameOver(std::uint64_t token);

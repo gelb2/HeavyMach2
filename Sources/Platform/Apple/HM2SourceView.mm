@@ -179,7 +179,7 @@
 }
 - (void)input:(NSSet<UITouch*>*)touches phase:(hm2::PointerPhase)phase {
     if(!_runtime||!_active)return;
-    try{for(UITouch* touch in touches){hm2::Vec2 logical{};const auto identifier=reinterpret_cast<std::uintptr_t>((__bridge void*)touch);
+    try{for(UITouch* touch in touches){const auto identifier=reinterpret_cast<std::uintptr_t>((__bridge void*)touch);
         const CGPoint current=[touch locationInView:self],previous=[touch previousLocationInView:self];
         const bool duplicateMove=phase==hm2::PointerPhase::move&&current.x==previous.x&&current.y==previous.y;
 #if DEBUG
@@ -189,14 +189,11 @@
             else if(phase==hm2::PointerPhase::move)++_testPositiveMovesForwarded;
         }
 #endif
-        // Modern Apple compatibility policy: a moved callback whose two raw
-        // CGPoint positions are exactly equal carries no physical movement.
-        // The original EAGL adapter did not filter it. Keep every nonzero raw
-        // movement, however small, and leave original Dash/Nav rules intact.
+        // Keep the existing filter for exactly equal raw positions. Preserve
+        // other moves for UI handling before applying the world position test.
         if(duplicateMove)continue;
         const auto before=_uiTesting&&_runtime->session().battle()?_runtime->session().battle()->selectedEnemy():0;
-        if(_runtime->logicalPoint(current,logical))_runtime->input(phase,logical,identifier);
-        else if(phase==hm2::PointerPhase::end||phase==hm2::PointerPhase::cancel)_runtime->input(hm2::PointerPhase::cancel,{},identifier);
+        _runtime->inputFromView(phase,current,previous,identifier);
         if(_uiTesting&&phase==hm2::PointerPhase::begin)if(const auto* scene=_runtime->session().battle();scene&&scene->selectedEnemy()!=before){_selectedByTouch=scene->selectedEnemy();++_selectionTouches;}
     }}catch(const std::exception& e){[self failRuntime:[NSString stringWithUTF8String:e.what()]];}[self updateTestInputHistory];[self updateTestState];
 }
@@ -216,9 +213,9 @@
     // Serialize only after an actual OS input batch. Display callbacks reuse
     // this bounded memory snapshot; production never creates accessibility data.
     NSMutableArray* events=[NSMutableArray new];for(const auto& e:_runtime->inputHistory()){
-        [events addObject:@[@(unsigned(e.phase)),@(e.pointer),@(e.canvas.x),@(e.canvas.y),@(e.movePointerBefore),@(e.movePointerAfter),@(e.pathBefore),@(e.pathAfter),@(e.tapBefore),@(e.tapAfter),@(e.specialBefore),@(e.specialAfter),@(e.worldTimeBefore),@(e.worldTimeAfter),@(e.dashStartsBefore),@(e.dashStartsAfter),@(e.playerBefore.x),@(e.playerBefore.y),@(e.worldPoint.x),@(e.worldPoint.y),@(e.overlayConsumed),@(e.uiConsumed),@(e.worldConsumed),@(e.terminalCancelled)]];
+        [events addObject:@[@(unsigned(e.phase)),@(e.pointer),@(e.canvas.x),@(e.canvas.y),@(e.movePointerBefore),@(e.movePointerAfter),@(e.pathBefore),@(e.pathAfter),@(e.tapBefore),@(e.tapAfter),@(e.specialBefore),@(e.specialAfter),@(e.worldTimeBefore),@(e.worldTimeAfter),@(e.dashStartsBefore),@(e.dashStartsAfter),@(e.playerBefore.x),@(e.playerBefore.y),@(e.worldPoint.x),@(e.worldPoint.y),@(e.overlayConsumed),@(e.uiConsumed),@(e.worldConsumed),@(e.terminalCancelled),@(e.sameCanvasMove)]];
     }
-    const auto columns=@[@"phase",@"pointer",@"canvasX",@"canvasY",@"ownerBefore",@"ownerAfter",@"pathBefore",@"pathAfter",@"tapBefore",@"tapAfter",@"spBefore",@"spAfter",@"worldTimeBefore",@"worldTimeAfter",@"dashBefore",@"dashAfter",@"playerX",@"playerY",@"worldX",@"worldY",@"overlay",@"ui",@"world",@"terminalCancelled"];
+    const auto columns=@[@"phase",@"pointer",@"canvasX",@"canvasY",@"ownerBefore",@"ownerAfter",@"pathBefore",@"pathAfter",@"tapBefore",@"tapAfter",@"spBefore",@"spAfter",@"worldTimeBefore",@"worldTimeAfter",@"dashBefore",@"dashAfter",@"playerX",@"playerY",@"worldX",@"worldY",@"overlay",@"ui",@"world",@"terminalCancelled",@"sameCanvasMove"];
     NSDictionary* apple=@{@"zeroDeltaMoveFilters":@(_testZeroDeltaMoveFilters),@"positiveMovesForwarded":@(_testPositiveMovesForwarded),@"lastRaw":@{@"x":@(_testLastRawCurrent.x),@"y":@(_testLastRawCurrent.y),@"previousX":@(_testLastRawPrevious.x),@"previousY":@(_testLastRawPrevious.y),@"timestamp":@(_testLastRawTimestamp),@"pointer":@(_testLastRawPointer),@"phase":@(_testLastRawPhase)},@"lastFiltered":@{@"x":@(_testLastFilteredCurrent.x),@"y":@(_testLastFilteredCurrent.y),@"previousX":@(_testLastFilteredPrevious.x),@"previousY":@(_testLastFilteredPrevious.y),@"timestamp":@(_testLastFilteredTimestamp),@"pointer":@(_testLastFilteredPointer)}};
     NSData* data=[NSJSONSerialization dataWithJSONObject:@{@"columns":columns,@"events":events,@"capacity":@256,@"appleInput":apple} options:0 error:nil];_testInputHistoryBase64=[data base64EncodedStringWithOptions:0];
 #endif
