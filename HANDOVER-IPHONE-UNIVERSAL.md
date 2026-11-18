@@ -1,10 +1,12 @@
 ## 2026-11-18 포팅 모듈 분석
 
-후속 변경은 [수정 계획과 회귀 검사](docs/iphone-module-audit-20261118.md#수정-계획)를 따른다. UIKit은 중복 좌표를 판정하고 `GameRuntime`은 월드 전달만 제어한다. 카메라는 `compactFocus` 내부에서 HUD 보정을 나누며, 현재 작은 tablet 경로도 회귀 대상으로 고정한다. 상점·인벤토리 내부 페이지는 `MenuGridLayout`에서 계산하고 `Screens`가 적용한다. Skyway는 실제 GPU 프레임으로 레이어와 원인을 확인하는 단계다.
+후속 변경은 [수정 계획과 회귀 검사](docs/iphone-module-audit-20261118.md#수정-계획)를 따른다. UIKit은 중복 좌표를 판정하고 `GameRuntime`은 월드 전달을 제어한다. 카메라는 `compactFocus`에서 HUD 보정을 조정한다. `MapPreview`는 배경 가로 위치를 제한한다. 상점·인벤토리 내부 페이지는 `MenuGridLayout`에서 계산하고 `Screens`가 적용한다. 소형 tablet에서도 기존 배경과 카메라 동작을 비교한다.
 
 [실기기 전환 기준](docs/iphone-module-audit-20261118.md#수정-후-검증과-전환-기준)에 공통 코드·두 Source 시뮬레이터·치트빌드의 합격 조건과 회귀가 난 커밋의 롤백 절차를 기록했다.
 
-상점 수정 이후 분리한 `audit/iphone-original-logic-20261116`의 `3140e0e`를 분석했다. iPhone Air 시뮬레이터의 여러 점→한 점→더블탭 실패에서 UIKit x의 수치 차이 약 5.68×10⁻¹⁴가 필터를 통과해, 같은 캔버스 좌표의 move가 탭 기록을 지우는 것을 확인했다. iPhone 화면 프로필의 이동 중 카메라 배율 급변과 창 변경 뒤 빈 상품·인벤토리 페이지도 재현했다. 물리 iPhone의 실패 빈도, Skyway의 GPU 레이어, 원본 전체 로직 대조는 미완료다. 제품 소스와 물리 기기·사용자 저장을 바꾸지 않았다. [후속 분석](docs/iphone-module-audit-20261118.md) · [TODO](docs/todo.md)
+Wasteland Base의 Skyway 출구는 Base003→Stage02_04 게이트 1이다. iPhone·iPad GPU 시퀀스로 해당 진입을 확인했다. iPhone에서 배경 가로 위치 급변 60회가 중심 제한 실험에서 0회로 줄었다. [GPU 근거와 수정 범위](docs/iphone-module-audit-20261118.md#wasteland-base에서-skyway로-나간-뒤의-떨림)를 따른다.
+
+상점 수정 이후 분리한 `audit/iphone-original-logic-20261116`의 `3140e0e`를 분석했다. iPhone Air 시뮬레이터의 여러 점→한 점→더블탭 실패에서 UIKit x의 수치 차이 약 5.68×10⁻¹⁴가 필터를 통과해, 같은 캔버스 좌표의 move가 탭 기록을 지우는 것을 확인했다. iPhone 화면 프로필의 이동 중 카메라 배율 급변과 창 변경 뒤 빈 상품·인벤토리 페이지도 재현했다. 물리 iPhone의 실패 빈도와 원본 전체 로직 대조가 남아 있다. 제품 소스와 물리 기기·사용자 저장을 바꾸지 않았다. [후속 분석](docs/iphone-module-audit-20261118.md) · [TODO](docs/todo.md)
 
 ## 2026-11-16 추가 범위 — 원본과 복원 모듈의 부작용 대조
 
