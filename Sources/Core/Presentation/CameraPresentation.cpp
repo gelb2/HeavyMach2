@@ -7,6 +7,7 @@
 namespace hm2 {
 namespace {
 constexpr float idleScale=1,maximumReferenceFocus=1.6f,finiteMapSpan=1022;
+constexpr float hudLeadTicks=28,hudEaseTicks=12,maxHudScaleStep=.008f;
 float requestedFocus(const CameraFocus& focus){
     const auto target=focus.target?focus.target:focus.lastPath;
     const float dx=target?target->x-focus.player.x:0,dy=target?target->y-focus.player.y:0;
@@ -15,10 +16,38 @@ float requestedFocus(const CameraFocus& focus){
     // than multiplying it by a screen-cover factor a second time.
     return std::clamp(2.f-std::max(std::abs(dx)/360.f,std::abs(dy)/240.f),1.f,maximumReferenceFocus)/maximumReferenceFocus;
 }
+
+float hudScale(const DisplayLayout& layout,Vec2 player,float floor,float ceiling,float reachScale,
+               bool anticipate,float descent){
+    const float bottomDistance=player.y+512;
+    if(!(bottomDistance>0))return floor;
+    const float left=(player.x-512)*reachScale+layout.configuration().canvas.width;
+    const float right=(player.x+512)*reachScale;
+    float scale=floor;
+    for(unsigned group=0;group<hud::count;++group){
+        const auto bounds=hud::visualBounds({},group,layout);
+        const float top=bounds.y+bounds.height+2;
+        if(anticipate){
+            const float gap=std::max({0.f,left-(bounds.x+bounds.width),bounds.x-right});
+            // Begin raising the target within one HUD height of overlap.
+            // At overlap the full correction contributes to the target.
+            const float weight=1-std::clamp(gap/bounds.height,0.f,1.f);
+            // Lead a descending player. Standing near the bottom must still
+            // allow the target distance to zoom out as far as HUD clearance permits.
+            const float lead=std::min(bounds.height*.5f/reachScale,descent*hudLeadTicks);
+            const float distanceAhead=bottomDistance-lead;
+            const float required=distanceAhead>top/ceiling?top/distanceAhead:ceiling;
+            scale=std::max(scale,std::lerp(floor,required,weight));
+        }else if(left<=bounds.x+bounds.width&&right>=bounds.x){
+            scale=std::max(scale,std::min(ceiling,top/bottomDistance));
+        }
+    }
+    return scale;
+}
 }
 void CameraPresentation::configure(DisplayConfiguration display){
     (void)display.content();
-    display_=display;distance_={};state_={};
+    display_=display;distance_={};previousPlayerY_.reset();state_={};
     if(!display.enabled)return;
     state_.policy=display.compact&&display.focusZoom?CameraPolicy::compactFocus:CameraPolicy::fixedSurface;
     state_.fillSurface=display.compact;
@@ -51,18 +80,20 @@ void CameraPresentation::project(){
 }
 void CameraPresentation::advance(CameraFocus focus){
     if(state_.policy!=CameraPolicy::compactFocus)return;
-    float minimum=state_.minimumScale;
-    const float bottomDistance=focus.player.y+512;
-    if(bottomDistance>0){
-        // A finite map cannot pan below its bottom edge. Keep the player's
-        // center above the default HUD at that edge while zooming out. User
-        // placements remain intentional overlays and do not change the world.
-        const DisplayLayout layout(display_);const float scale=state_.worldScale;
-        const float left=(focus.player.x-512)*scale+display_.canvas.width,right=(focus.player.x+512)*scale;
-        for(unsigned group=0;group<hud::count;++group){const auto b=hud::visualBounds({},group,layout);if(left<=b.x+b.width&&right>=b.x)minimum=std::max(minimum,std::min(state_.idleScale,(b.y+b.height+2)/bottomDistance));}
-    }
-    distance_.target=std::max(minimum/state_.idleScale,requestedFocus(focus));
-    distance_.current=std::max(minimum/state_.idleScale,distance_.current+(distance_.target-distance_.current)/100.f);
+    // A finite map cannot pan below its bottom edge. Keep the default HUD
+    // correction independent of user placements and of the previous phone zoom.
+    const bool tablet=display_.device==DisplayDevice::tablet;
+    const float descent=std::max(0.f,previousPlayerY_.value_or(focus.player.y)-focus.player.y);
+    const float targetFloor=hudScale(DisplayLayout(display_),focus.player,state_.minimumScale,state_.idleScale,
+                                     tablet?state_.worldScale:state_.idleScale,!tablet,descent);
+    const float currentFloor=tablet?targetFloor:state_.minimumScale;
+    distance_.target=std::max(targetFloor/state_.idleScale,requestedFocus(focus));
+    float step=(distance_.target-distance_.current)/100.f;
+    const float hudGap=targetFloor/state_.idleScale-distance_.current;
+    // Move in sooner for the HUD while retaining the distance zoom's ease.
+    if(!tablet&&hudGap>0)step=std::max(step,std::min(hudGap/hudEaseTicks,maxHudScaleStep/state_.idleScale));
+    distance_.current=std::max(currentFloor/state_.idleScale,distance_.current+step);
+    previousPlayerY_=focus.player.y;
     state_.currentZoom=distance_.current;state_.targetZoom=distance_.target;project();
 }
 }

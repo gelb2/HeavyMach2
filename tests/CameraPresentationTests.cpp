@@ -1,4 +1,5 @@
 #include "Core/Presentation/CameraPresentation.hpp"
+#include "Core/Presentation/HUDLayout.hpp"
 #include <cassert>
 #include <cmath>
 #include <iostream>
@@ -45,5 +46,57 @@ void wideSurfaceAndValidation(){
     view.configure(DisplayConfiguration::surface({912,420}));bool failed=false;try{view.advance({{},Vec2{std::numeric_limits<float>::quiet_NaN(),0},{}});}catch(const std::invalid_argument&){failed=true;}assert(failed);
     auto fixed=DisplayConfiguration::surface({912,420});fixed.focusZoom=false;view.configure(fixed);view.advance({{},Vec2{1000,0},{}});assert(view.snapshot().worldScale==1);
 }
+void phoneHUDZoomDoesNotJump(){
+    auto display=DisplayConfiguration::surface({912,420},{68,20,68,0});
+    display.device=DisplayDevice::phone;
+    CameraPresentation phone;phone.configure(display);
+    for(unsigned i=0;i<480;++i)phone.advance({{-360,-340},Vec2{680,-340},{}});
+    float previous=phone.snapshot().worldScale;
+    assert(previous<.92f);
+    for(int x=-360;x<=-300;++x){
+        phone.advance({{float(x),-450},Vec2{float(x)+1000,-450},{}});
+        const auto& frame=phone.snapshot();
+        assert(frame.worldScale>=frame.minimumScale&&frame.viewport.width<=1022.001f);
+        assert(std::abs(frame.worldScale-previous)<.01f);
+        previous=frame.worldScale;
+    }
+    assert(phone.snapshot().targetZoom==1&&phone.snapshot().worldScale>.93f);
+    for(unsigned i=0;i<1200;++i)phone.advance({{-300,-450},Vec2{700,-450},{}});
+    assert(near(phone.snapshot().worldScale,1));
+
+    // At the lower camera limit the default gauge can cover the player if
+    // easing starts only once the exact vertical threshold is crossed.
+    phone.configure(display);
+    for(unsigned i=0;i<480;++i)phone.advance({{-270,-380},Vec2{730,-380},{}});
+    const auto gauge=hud::visualBounds({},hud::gauges,DisplayLayout(display));
+    for(int y=-381;y>=-412;--y){
+        const float prior=phone.snapshot().worldScale;
+        phone.advance({{-270,float(y)},Vec2{730,float(y)},{}});
+        const float scale=phone.snapshot().worldScale;
+        assert((float(y)+511)*scale>gauge.y+gauge.height);
+        assert(std::abs(scale-prior)<.01f);
+    }
+    for(unsigned i=0;i<600;++i)phone.advance({{-270,-412},Vec2{730,-412},{}});
+    const float settled=phone.snapshot().worldScale;
+    assert(settled<.99f&&(100-1)*settled>gauge.y+gauge.height);
+
+    phone.configure(display);
+    for(unsigned i=0;i<480;++i)phone.advance({{-225,-360},Vec2{775,-360},{}});
+    for(int y=-361;y>=-417;--y){
+        const float prior=phone.snapshot().worldScale;
+        phone.advance({{-225,float(y)},Vec2{775,float(y)},{}});
+        const float scale=phone.snapshot().worldScale;
+        assert((float(y)+511)*scale>gauge.y+gauge.height);
+        assert(std::abs(scale-prior)<.01f);
+    }
+
+    display.device=DisplayDevice::tablet;
+    CameraPresentation tablet;tablet.configure(display);
+    for(unsigned i=0;i<480;++i)tablet.advance({{-360,-400},Vec2{680,-400},{}});
+    const float before=tablet.snapshot().worldScale;
+    assert(before<.92f);
+    for(int x=-360;x<=-300;++x)tablet.advance({{float(x),-450},Vec2{float(x)+1000,-450},{}});
+    assert(tablet.snapshot().worldScale==1);
 }
-int main(){regularIsolation();compactIdleAndFocus();wideSurfaceAndValidation();std::cout<<"HM2_CAMERA_POLICY PASS legacy/regular parity; per-instance isolation; idle1200; target priority; path zoom; inverse input; rotation reset; finite source bounds without overscan\n";}
+}
+int main(){regularIsolation();compactIdleAndFocus();wideSurfaceAndValidation();phoneHUDZoomDoesNotJump();std::cout<<"HM2_CAMERA_POLICY PASS legacy/regular parity; per-instance isolation; idle1200; target priority; path zoom; inverse input; rotation reset; finite source bounds; continuous Phone HUD zoom\n";}

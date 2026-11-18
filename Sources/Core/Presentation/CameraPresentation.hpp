@@ -18,6 +18,7 @@ struct CameraPresentationState {
 class CameraPresentation {
     DisplayConfiguration display_;
     struct DistanceZoom {float current=1,target=1;} distance_;
+    std::optional<float> previousPlayerY_;
     CameraPresentationState state_;
     void project();
 public:
