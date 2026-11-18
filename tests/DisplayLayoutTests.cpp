@@ -208,6 +208,112 @@ void phoneButtonPages(Files& files){
  }
  std::cout<<"PHONE_BUTTON_PAGES 3 surfaces / all24stock+25inventory / no horizontal or vertical scroll PASS\n";
 }
+void phoneMenuResize(Files& files){
+ const auto shortPhone=DisplayConfiguration::surface({912,420},{68,20,68,0});
+ const auto tallPhone=DisplayConfiguration::surface({912,550},{68,20,68,0});
+ assert(menu::visibleRows(shortPhone)==2&&menu::visibleRows(tallPhone)==3);
+ Host host;
+ PreparedTiles tiles("phone-menu-resize");
+ ui::Screens screens(files,tiles,host);
+ screens.setDisplay(shortPhone);
+ ui::ScreensState state;
+ state.screen=ui::ScreenId::shop;
+ state.baseId="Base003";
+ state.shopPage=state.inventoryPage=1;
+ state.inventoryVisible=true;
+ state.inventoryPages=2;
+ for(unsigned i=0;i<50;++i){
+  ui::ItemView item;
+  item.icon="Icon10011.png";
+  item.dataId="inventory"+std::to_string(i);
+  item.count=1;
+  state.inventory.push_back(item);
+  if(i<46){
+   item.dataId="stock"+std::to_string(i);
+   state.shopItems.push_back(item);
+  }
+ }
+ screens.refresh(state,0);
+ const auto key=[&](unsigned id){
+  for(const auto& value:screens.buttons())if(value.id==id)return value;
+  throw std::runtime_error("Missing resize fixture button "+std::to_string(id));
+ };
+ const auto press=[&](unsigned id){
+  const auto point=screens.buttonScreenPosition(key(id));
+  screens.input(PointerPhase::begin,point,45000+id,1);
+  screens.input(PointerPhase::end,point,45000+id,1.1f);
+ };
+ const auto expectCells=[&](unsigned base,unsigned capacity,unsigned first,unsigned count){
+  std::vector<unsigned> actual,expected;
+  for(const auto& value:screens.buttons())if(value.id>=base&&value.id<base+capacity)actual.push_back(value.id-base);
+  for(unsigned i=first;i<first+count;++i)expected.push_back(i);
+  assert(actual==expected);
+ };
+ press(2106);press(2106);press(6091);press(6091);
+ expectCells(2200,24,16,6);
+ expectCells(6000,25,20,5);
+ screens.setDisplay(tallPhone);
+ expectCells(2200,24,12,10);
+ expectCells(6000,25,15,10);
+ screens.setDisplay(shortPhone);
+ expectCells(2200,24,8,8);
+ expectCells(6000,25,10,10);
+
+ screens.setDisplay(tallPhone);
+ press(2106);
+ state.selectedShop=21;
+ state.shopDetailVisible=true;
+ screens.refresh(state,2);
+ screens.setDisplay(shortPhone);
+ expectCells(2200,24,16,6);
+ assert(key(2221).dataId=="stock45"&&screens.button(key(2102))->visible);
+ state.selectedShop=-1;
+ state.shopDetailVisible=false;
+ screens.refresh(state,3);
+ screens.setDisplay(tallPhone);
+ press(6091);
+ state.selectedInventory=24;
+ state.detailInventory=49;
+ state.detailItem=state.inventory.back();
+ screens.refresh(state,4);
+ screens.setDisplay(shortPhone);
+ expectCells(6000,25,20,5);
+ assert(key(6024).dataId=="inventory49"&&screens.button(key(2103))->visible);
+ state.selectedInventory=state.detailInventory=-1;
+ state.detailItem={};
+ screens.refresh(state,5);
+ const auto source=screens.buttonScreenPosition(key(6024));
+ const auto target=screens.buttonScreenPosition(key(6020));
+ host.events.clear();
+ screens.input(PointerPhase::begin,source,45800,5);
+ screens.input(PointerPhase::move,target,45800,5.1f);
+ screens.input(PointerPhase::end,target,45800,5.2f);
+ bool mapped=false;
+ for(const auto& event:host.events)if(event.button.type==ui::ButtonEventType::move&&event.dropCoordinates){
+  assert(event.button.key.id==6024&&near(event.dropCoordinates->inventory.x,408)&&near(event.dropCoordinates->inventory.y,192));
+  mapped=true;
+ }
+ assert(mapped);
+
+ auto stock=std::move(state.shopItems);
+ state.shopItems.clear();
+ screens.refresh(state,6);
+ screens.setDisplay(tallPhone);
+ expectCells(2200,24,0,0);
+ state.shopItems=std::move(stock);
+ screens.refresh(state,7);
+ expectCells(2200,24,0,12);
+
+ state.screen=ui::ScreenId::maintenance;
+ state.inventory.clear();
+ screens.setDisplay(shortPhone);
+ screens.refresh(state,8);
+ press(6091);press(6091);
+ expectCells(6000,25,20,5);
+ screens.setDisplay(tallPhone);
+ expectCells(6000,25,15,10);
+ std::cout<<"PHONE_MENU_RESIZE 2/3 rows / HD page 2 / partial and empty / detail and drop PASS\n";
+}
 void phoneLiveMenuSession(Files& files){
  Host host;DarwinWorldRandom random(1);SaveData saved;saved.initializeSlot(0,"Menus","kr",1794268800);progression::SlotView slot(saved.slot(0));slot.string(0x2d,16,"Base001");slot.u32(0x1b5c,5);slot.credit(500000);slot.string(0x8c+8*6,6,"01001");slot.byte(0x53c+8,3);
  GameSession game(files,host,random,std::move(saved));PreparedTiles tiles("live-phone-menu");ui::Screens ui(files,tiles,host);host.game=&game;host.screens=&ui;const auto phone=DisplayConfiguration::surface({912,420},{68,20,68,0});game.setDisplay(phone);ui.setDisplay(phone);assert(game.selectSlot(0));game.enterBase();
@@ -252,4 +358,4 @@ void session(Files& files,DisplayConfiguration config){Host host;DarwinWorldRand
  const auto pos=scene->player().position;const auto hp=scene->playerHP();game.setDisplay(DisplayConfiguration::surface({1024,1366}));assert(scene->player().position.x==pos.x&&scene->playerHP()==hp&&host.writes==writes);assert(game.workingSlot().size()==before.size());
 }
 }
-int main(int argc,char** argv){if(argc<2)return 77;fullScreenWorld();transforms();Files files(argv[1]);originalHDWorldParity(files);tabletMenuCoverage(files);entryCamera(files);allMapEdges(files);fullCanvasBanners(files);phoneArtwork(files);phoneMenus(files);phoneMenuGrids(files);phoneButtonPages(files);phoneLiveMenuSession(files);for(auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({852,393},{59,21,59,0}),DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({1024,1366},{0,20,0,24})}){screens(files,config);help(files,config);session(files,config);}std::cout<<"HM2_DISPLAY PASS 4 canvases / full-screen world / terrain edge coverage / HUD size / six base menus / Phone-original-art/no-menu-scroll/Retina-JPEG / first mission rows / safe-area / inverse-hit / HD25+24+6 / drag / warm100 / help-scroll / common-world / no-display-save\n";}
+int main(int argc,char** argv){if(argc<2)return 77;fullScreenWorld();transforms();Files files(argv[1]);originalHDWorldParity(files);tabletMenuCoverage(files);entryCamera(files);allMapEdges(files);fullCanvasBanners(files);phoneArtwork(files);phoneMenus(files);phoneMenuGrids(files);phoneButtonPages(files);phoneMenuResize(files);phoneLiveMenuSession(files);for(auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({852,393},{59,21,59,0}),DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({1024,1366},{0,20,0,24})}){screens(files,config);help(files,config);session(files,config);}std::cout<<"HM2_DISPLAY PASS 4 canvases / full-screen world / terrain edge coverage / HUD size / six base menus / Phone-original-art/no-menu-scroll/Retina-JPEG / first mission rows / safe-area / inverse-hit / HD25+24+6 / drag / warm100 / help-scroll / common-world / no-display-save\n";}

@@ -21,6 +21,9 @@ inline unsigned visibleRows(const DisplayConfiguration& c){
     const float scale=menuScale(c),first=c.canvas.height-menuHeader(c)-35;
     return unsigned(std::clamp(int(std::floor((first-124-36*scale)/(40*scale)))+1,1,4));
 }
+inline unsigned subpageForCell(unsigned cell,unsigned cellsPerPage,unsigned cellCount){
+    return cellCount==0?0:std::min(cell,cellCount-1)/cellsPerPage;
+}
 inline bool menuRegion(DisplayRegion r){return r==DisplayRegion::phoneMenu||r==DisplayRegion::phoneStock||r==DisplayRegion::phoneInventory||r==DisplayRegion::phoneStockHeader||r==DisplayRegion::phoneEquipment||r==DisplayRegion::phoneFooter||r==DisplayRegion::phoneHeader||r==DisplayRegion::phoneCategoryHeader||r==DisplayRegion::phoneInventoryPages||r==DisplayRegion::phoneCommandList||r==DisplayRegion::phoneCommandInfo||r==DisplayRegion::phoneTrade;}
 inline Vec2 originalHDInventory(Vec2 point,bool maintenance){
     const Vec2 root{384,maintenance?512.f:312.f};

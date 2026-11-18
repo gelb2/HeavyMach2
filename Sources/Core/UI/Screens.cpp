@@ -221,12 +221,34 @@ struct Screens::Impl {
     std::vector<CommandNode> commandNodes;
     float commandSelectedRowY=0;
     bool baseNoticeVisible=true;
+    void resizePhoneMenuWindows(const Impl& old){
+        if(!phoneMenu()||!old.phoneMenu()||state.screen!=old.state.screen||state.baseId!=old.state.baseId||menuRows()==old.menuRows())return;
+        const auto resizedWindow=[](unsigned oldWindow,unsigned oldCells,unsigned newCells,unsigned count,int detailCell){
+            const unsigned first=oldWindow*oldCells;
+            // Keep an open detail with its cell if that cell was on screen.
+            if(detailCell>=0){
+                const auto cell=unsigned(detailCell);
+                if(cell<count&&cell>=first&&cell-first<oldCells)return menu::subpageForCell(cell,newCells,count);
+            }
+            return menu::subpageForCell(first,newCells,count);
+        };
+        if(state.screen==ScreenId::shop&&state.shopPage==old.state.shopPage&&state.shopCategory==old.state.shopCategory){
+            const auto offset=std::size_t(std::max(0,state.shopPage))*24;
+            const auto count=offset<state.shopItems.size()?unsigned(std::min<std::size_t>(24,state.shopItems.size()-offset)):0;
+            const int selected=state.shopDetailVisible&&!old.phoneEquipment?state.selectedShop:-1;
+            stockWindow=resizedWindow(old.stockWindow,old.stockCells(),stockCells(),count,selected);
+        }
+        if(state.inventoryPage==old.state.inventoryPage){
+            const int detailCell=state.detailInventory>=0&&state.detailInventory/25==state.inventoryPage&&!state.detailItem.dataId.empty()?state.detailInventory%25:-1;
+            inventoryWindow=resizedWindow(old.inventoryWindow,old.inventoryCells(),inventoryCells(),25,detailCell);
+        }
+    }
     Impl(ResourceAccess& r,PreparedTiles& t,ScreensHost& h,const ScreensState& s,float time,std::shared_ptr<Impl> old,DisplayConfiguration display,std::shared_ptr<HUDState> hudState,std::shared_ptr<PreparedTiles> ownerTiles,std::shared_ptr<std::uint64_t> generation)
         :resourceGeneration(std::move(generation)),resources(r),tiles(t),tileOwner(std::move(ownerTiles)),host(h),state(s),layout(display),hud(std::move(hudState)),previous(std::move(old)),now(time){
         ++*resourceGeneration;
         if(previous&&previous->state.screen==s.screen){if(menu::phone(previous->layout.configuration())==menu::phone(display))title=previous->title;else{const auto art=menu::title(display);title.bigX=art.bigStart;title.bgPosition=art.bgStart;title.start=time;}commandWindow=previous->commandWindow;phoneEquipment=previous->phoneEquipment;stockWindow=previous->state.shopCategory==s.shopCategory?previous->stockWindow:0;inventoryWindow=previous->inventoryWindow;message=previous->message;layers=previous->layers;shopPan=phoneMenu()?0.f:std::min(previous->shopPan,layout.shopPanLimit());if(previous->state.weaponChoiceType==s.weaponChoiceType&&previous->state.missionVisible==s.missionVisible)verticalPan=std::min(previous->verticalPan,verticalLimit());}
         else{const auto art=menu::title(display);title.bigX=art.bigStart;title.bgPosition=art.bgStart;title.start=time;layers=std::make_shared<std::array<VisualLayer,14>>();}
-        if(previous){fieldPresentation=previous->fieldPresentation;placeName=previous->placeName;}
+        if(previous){resizePhoneMenuWindows(*previous);fieldPresentation=previous->fieldPresentation;placeName=previous->placeName;}
         // accept5004 only invalidates Command.curState. Keep its existing rows
         // until the following Command tick actually refreshes the list.
         if(previous&&s.screen==ScreenId::command&&previous->state.screen==s.screen&&s.commandListRevision&&s.commandListRevision==previous->state.commandListRevision){
