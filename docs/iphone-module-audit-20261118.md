@@ -2,12 +2,55 @@
 
 아이폰 시뮬레이터에서 경로를 한 점 또는 여러 점으로 바꾼 뒤 점프가 간헐적으로 실패했다. UIKit 좌표의 미세한 수치 차이를 입력 어댑터가 이동으로 전달했고, 실제 캔버스 좌표가 그대로인데도 첫 탭의 기록이 지워졌다. 복원판 아이폰의 이동 중 뷰포트 급변과 창 높이 변경 뒤 빈 상점·인벤토리 페이지도 재현했다. 실제 iPhone의 실패 빈도와 Skyway의 미세한 레이어 떨림은 별도 확인이 필요하다.
 
+## iOS size class와 실제 분기
+
+정식판의 [HM2SourceView::updateDisplay](../Sources/Platform/Apple/HM2SourceView.mm#L107)와 치트판의 [HM2PreviewView::updateDisplay](../Sources/Platform/Apple/HM2Application.mm#L58)는 `bounds`, `safeAreaInsets`, `userInterfaceIdiom`을 받는다. 저장소의 현행 제품·검사 코드와 제품 소스 이력에서 `horizontalSizeClass`, `verticalSizeClass`를 읽거나 그 변경을 구독하는 경로를 찾지 못했다. Apple도 size class와 interface idiom을 각각 별도의 trait로 정의한다. [Apple UIKit 문서](https://developer.apple.com/documentation/uikit/uitraitcollection)
+
+공통 C++의 [DisplayConfiguration::surface](../Sources/Core/Presentation/DisplayLayout.cpp#L20)가 `min(폭, 높이) < 600pt`를 자체 `compact`와 `focusZoom`에 넣는다. [CameraPresentation::configure](../Sources/Core/Presentation/CameraPresentation.cpp#L20)는 이 두 값을 보고 줌 정책을 고른다. [menu::phone](../Sources/Core/Presentation/MenuArtwork.hpp#L8)은 명시적 phone과 소형 자동 프로필만 Phone 메뉴로 고른다. [menu::visibleRows](../Sources/Core/Presentation/MenuGridLayout.hpp#L15)는 캔버스 크기로 행 수를 계산한다. 이 때문에 세 분기는 서로 다른 경계에서 바뀐다.
+
+같은 코어로 창 크기와 기기 프로필을 바꿔 확인했다. 아래의 작은 iPad는 명시적 tablet 프로필을 준 CPU 검사 입력이다. 실제 iPad 창의 크기나 UIKit trait를 계측한 값은 없다.
+
+| 입력 | 공통 `compact` | 카메라 | 메뉴 |
+| --- | --- | --- | --- |
+| iPhone 912×420 → 912×550 | 둘 다 켜짐 | 둘 다 `compactFocus` | Phone 2행 → 3행 |
+| iPad 1024×1366 | 꺼짐 | `legacyHD` | HD |
+| iPad 500×700 | 켜짐 | `compactFocus` | HD |
+| iPhone 500×700 | 켜짐 | `compactFocus` | Phone 4행 |
+| iPad 599×820 → 600×820 | 켜짐 → 꺼짐 | `compactFocus` → `fixedSurface` | 둘 다 HD |
+
+창 변경이 UIKit size class 변경과 함께 일어날 수 있다. 현재 게임이 받는 직접 신호는 창 크기·안전 영역이다. 이 값이 바뀌면 `GameRuntime::setDisplay → CombatScene::setDisplay`에서 포인터를 정리하고 카메라를 초기화한다. 이 재구성은 이동 중 HUD 경계에서 발생한 배율 급변과 별도로 계측한다. 점프의 재현 사례에서는 첫 탭에 들어온 같은 캔버스 위치의 `move`가 기록을 지웠다. 상점 빈 페이지는 공통 `compact` 값이 그대로인 두 크기에서도 재현됐다. iPad 앱의 현재 plist는 `UIRequiresFullScreen=true`다. 작은 tablet의 CPU 분기 관측과 실제 기기에서 그 창을 사용할 수 있는지는 검증 범위가 다르다. [화면 정책 검사](evidence/iphone-display-policy-20261118.txt)
+
 ## 수정 계획
 
-1. **점프 입력.** `bc3323a`의 UIKit 어댑터에서 현재와 이전 위치를 같은 캔버스 변환에 넣는다. 두 위치가 유효하고 변환 후 같은 점이면 해당 `move`를 전달하지 않는다. 캔버스에서 위치가 바뀐 `move`와 터치 종료·취소는 기존 경로로 전달한다. 공통 경로 편집, 0.5초 미만·SP 100 이상 점프 기준, 실제 드래그 시 탭 기록 초기화는 유지한다. 실패 로그의 원시 좌표 쌍으로 회귀를 재현하고, 한 점·여러 점 교체 뒤 점프와 SP 100 소비, 작은 실제 이동의 전달과 포인터 정리를 iPhone·iPad에서 검사한다.
-2. **뷰포트 급변.** `b63f588`의 기본 HUD 교차 조건이 현재 배율을 즉시 올린다. `CameraPresentation`에서 맵을 덮는 최소 배율은 보장하고, HUD 접근에 따른 보정은 교차 전에 연속적으로 커지는 목표값으로 적용한다. 현재 배율은 그 목표를 향해 보간한다. 기존 `Stage02_04` 경로와 포털 78곳에서 한 틱 점프, 맵 밖 노출, 플레이어 가림, 표시·역입력·가시성을 함께 확인한다. iPad의 고정 카메라와 편집 HUD 배치도 전후 대조한다.
-3. **상점·인벤토리 빈 페이지.** `ca424ab`은 행 수가 달라져도 이전 내부 페이지 번호를 복사한다. `Screens`에서 변경 전 첫 표시 칸의 인덱스를 기준으로 새 내부 페이지를 계산하고 유효 범위에 맞춘다. 상점 상품의 최대 24개와 인벤토리 25칸 기준, 게임 페이지 번호, 거래·저장과 `1420cc1`의 GPU 준비 경계를 유지한다. 마지막 내부 페이지에서 2행↔3행 변경, 적은 상품 수, 양방향 페이지 이동, 새로 보이는 아이콘의 첫 렌더를 확인한다.
-4. **Skyway 레이어.** 떨리는 레이어의 원인은 미확정이다. 같은 이동 입력으로 연속 GPU 프레임을 캡처하고 배경과 지형·오브젝트의 화면 좌표, 반올림 시점, 텍스처 샘플링을 대조한다. 확인한 레이어의 변환 또는 샘플링 경로만 고친 뒤 같은 이동으로 재검사한다.
+### 점프 입력 — 플랫폼 어댑터와 월드 전달 분리
+
+- [HM2SourceView::input:phase:](../Sources/Platform/Apple/HM2SourceView.mm#L180)는 UIKit 터치의 현재 위치와 이전 위치를 기존 `GameRuntime::logicalPoint`로 변환한다. 이전 위치를 변환해 같은 캔버스 점인지 확인하는 부분만 Apple 어댑터의 작은 함수로 분리한다. `move`이고 두 투영이 유효할 때만 비교한다. 기존 raw 좌표 완전 일치 필터와 화면 밖에서의 종료·취소 처리는 유지한다.
+- [GameRuntime::input](../Sources/Platform/Apple/HM2GameRuntime.mm#L102)에 현재 이벤트의 판정값을 전달한다. 도움말·HUD·메뉴의 입력을 기존 순서대로 처리하고, 그쪽에서 받지 않은 같은 캔버스 위치의 `move`만 월드로 전달하기 직전에 거른다. [Button::input](../Sources/Core/UI/Button.cpp#L69)은 같은 위치의 `move`에서도 포인터가 캡처돼 있으면 콜백을 만든다. 이 콜백이 아이템 드래그와 상세·선택 상태에 쓰이는 것이 공통 UIKit 진입점에서 추가 이벤트를 일괄 제거하지 않는 근거다.
+- 판정은 기기 이름이나 size class 없이 동일하게 적용한다. 현재 콜백의 좌표 두 개만 비교하고 포인터별 새 캐시를 두지 않는다. 유효한 이동과 종료·취소, 화면↔월드 역변환, 공통 `DashGesture`·`WorldNavigation`의 시간·SP·거리 기준은 기존 계약을 따른다. 앱 테스트는 raw 좌표와 투영 좌표, 월드 전달 결과를 각각 기록한다. 실패 좌표 쌍과 유효 이동, HUD 편집·아이템 드래그, 화면 밖 취소, 한 점·여러 점 교체 뒤 점프와 SP 100 소비를 양쪽에서 확인한다.
+
+### 뷰포트 — 공통 카메라 안에서 보정만 바꾼다
+
+- `CameraPresentation.cpp`의 파일 내부 함수로 목표 배율 계산을 분리한다. 기존 `requestedFocus`는 표적·경로와 플레이어 거리만 계산한다. HUD 보정 함수는 후보 배율, 기본 HUD bounds, 플레이어 위치를 받아 연속적인 목표 하한만 반환한다. HUD 좌우 경계까지 남은 거리로 보정 강도를 계산하고, 직전 프레임의 `worldScale`을 겹침 판정에 다시 넣는 경로를 끊는다. 맵을 덮는 최소 배율은 고정 제약으로 적용한다. `advance`가 목표와 현재 배율을 갱신하고 `project`가 기존 결과 형식으로 내보낸다.
+- 새 보정의 선택은 공통 C++ 카메라의 기존 `compactFocus` 경계 한곳에서 한다. 명시적 phone과 소형 자동 프로필에 새 계산을 적용한다. 좁은 명시적 tablet도 `compactFocus`를 쓰므로 그 경로는 기존 HUD 하한 계산과 갱신 순서를 작은 함수로 보존한다. `legacyHD`와 `fixedSurface`는 기존 조기 반환을 사용한다. `DisplayConfiguration::compact`는 입력·배치와 `Screens::HUDState::selectProfile`의 저장 프로필까지 결정하므로 임계값 600과 프로필 판정은 그대로 둔다.
+- `CombatScene::updateDisplay`는 표적·경로를 전달하고 결과를 `MapCamera`에 반영한다. `WorldNavigation::constrainCamera`의 위치·맵 경계, `GameSession::drawWorld/inputWorld`의 공통 정·역변환, `CombatScene::tick`의 가시성 갱신 순서를 보존한다. 기본 및 편집 HUD, 하단 포털, 방향 전환을 포함해 시작·이동·정지 구간의 HUD 가림과 맵 밖 노출을 각각 기록한다. 보간 때문에 가림이 생기면 HUD 접근 전에 목표를 올리는 구간을 조정하고 같은 경로를 다시 검사한다.
+
+### 상점·인벤토리 — 내부 페이지 계산을 하나로 모은다
+
+- `MenuGridLayout.hpp`의 순수 함수는 이전 페이지의 기준 칸, 새 페이지당 칸 수, 현재 게임 페이지의 유효 칸 수를 받아 새 내부 페이지를 반환한다. 기준 칸을 유효 범위로 제한한 뒤 새 칸 수로 나눈다. 빈 목록은 내부 페이지 0이다. `Screens::Impl`이 현재 게임 페이지의 상품 수와 인벤토리 25칸을 넘긴다.
+- [Screens::refresh](../Sources/Core/UI/Screens.cpp#L1398)가 새 `Impl`을 조립할 때, 같은 기지·Phone 상점/정비 화면과 같은 게임 페이지를 유지하며 행 수가 달라진 경우에만 다시 계산한다. 상품 쪽은 분류도 같아야 한다. 보통 이전 화면의 첫 표시 칸을 기준으로 삼고, 상세창의 항목이 이전 페이지에서 보였다면 그 항목의 칸을 기준으로 상세창과 셀을 같이 유지한다. 상품 분류·게임 페이지 이동, Phone 메뉴 버튼, 거래 확인은 각자의 기존 경로를 사용한다.
+- `phoneShop`·`inventory`·`buildDetail`·`phoneDropPoint`가 같은 `stockWindow/inventoryWindow`를 읽는다. HD 메뉴는 기존 조립 경로를 사용한다. `Screens::setDisplay`의 입력 정리, `resourceGeneration`과 정식·치트 렌더러의 첫 사용 텍스처 준비를 유지한다. 2행↔3행에서 끝 페이지·부분 페이지·빈 목록, 상세창 및 아이템 드롭, iPad의 버튼·거래·저장을 검사한다.
+
+### Skyway — 증거가 나온 계층에서 수정한다
+
+`MapPreview::compose`의 배경·지형 중심과 실제 캔버스 정점, 같은 프레임의 GPU 픽셀을 처음부터 같은 입력으로 대조한다. 배경 위치나 폭 보정이 원인이면 해당 레이어의 기하 계산을 `MapPreview` 안에서 분리한다. 정점은 연속이고 픽셀만 흔들리면 의심 텍스처의 UV·패딩과 샘플링 경계를 먼저 확인한다. 지형의 원본 반올림 순서, 공용 `GL_LINEAR`, iPad의 배경 시차는 회귀 기준으로 고정한다. 원인에 따라 고칠 함수와 적용 조건을 확정한다.
+
+### iPad 전후 검사와 변경 순서
+
+`9f2d3e1`의 제품 소스와 기존 결과를 기준으로, 입력·카메라·메뉴를 독립 커밋으로 검사한다. Apple 입력의 변경 허용 범위는 같은 캔버스 좌표의 월드 move다. 고정 iPad와 좁은 명시적 tablet을 별도로 실행한다. 599/600pt, 기존 13인치 1024×1366 기준, 창 크기·인셋 변화, 소형/일반 화면 전환, iPhone·iPad 세션 동시 진행을 포함한다.
+
+iPad는 같은 시작·입력·장비·seed에서 카메라 배율·중심·시야, 정점·레이어·clip, 입력 결과와 터치 해제, 표적·피해·시간·RNG·저장 결과를 비교한다. 타깃 검사는 기존 `SharedCameraPolicyAndIsolation`, `PhonePortalRoutesAndHUDInput`, `UniversalDisplayAndInput`, `ConcurrentTabletDisplay`, `WorldInputTests`, 첫 사용 상점 아이콘 검사에 연결한다. 표시·게임 상태를 새 기준으로 바꾸기 전 기존 iPad 결과와 달라진 사건의 원인을 확인한다. 이 절은 구현과 검사의 계획이다.
+
+창 재구성의 Native 검사에서는 가로·세로 size class, 기기 분류, bounds, 인셋, `setDisplay` 호출을 따로 기록한다. 같은 bounds·인셋에서 trait만 바꾼 표본과 trait를 유지한 채 bounds를 바꾼 표본을 비교한다. 카메라 초기화·입력 정리가 어떤 변경에서 일어나는지 구분한다.
 
 ## 카메라와 레이어
 

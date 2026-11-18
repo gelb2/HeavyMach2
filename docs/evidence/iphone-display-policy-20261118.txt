@@ -1,0 +1,18 @@
+2026-11-18 display policy CPU probe
+Product baseline: 9f2d3e1 (Sources and Apple match 3140e0e)
+Local source: .local/evidence/iphone-display-policy-20261118/display-policy.cpp
+Source SHA-256: 151b2799a48ae1ab3461821ba87e5e06bcbf70aeb9725cd13123968e3ebe80ef
+Command: clang++ -std=c++20 -O2 -I Sources .local/evidence/iphone-display-policy-20261118/display-policy.cpp build/core/libHeavyMach2Core.a -lz -o .local/evidence/iphone-display-policy-20261118/display-policy
+Each row calls DisplayConfiguration::surface, assigns the stated device profile,
+calls CameraPresentation::configure, and advances 600 times from player (0,0)
+toward target (1000,300). Menu checks call menu::phone and menu::visibleRows.
+Each expected policy and menu choice is asserted. No UIKit traits are supplied.
+
+phone 912x420 compact=1 camera=compactFocus phoneMenu=1 phoneGridRows=2 worldScale=1->0.892627
+phone taller 912x550 compact=1 camera=compactFocus phoneMenu=1 phoneGridRows=3 worldScale=1->0.892627
+phone without insets 912x420 compact=1 camera=compactFocus phoneMenu=1 phoneGridRows=2 worldScale=1->0.892627
+tablet regular 1024x1366 compact=0 camera=legacyHD phoneMenu=0 phoneGridRows=0 worldScale=1.33398->1.33398
+tablet narrow 500x700 compact=1 camera=compactFocus phoneMenu=0 phoneGridRows=0 worldScale=1->0.685689
+phone same geometry 500x700 compact=1 camera=compactFocus phoneMenu=1 phoneGridRows=4 worldScale=1->0.685689
+tablet below threshold 599x820 compact=1 camera=compactFocus phoneMenu=0 phoneGridRows=0 worldScale=1->0.802824
+tablet at threshold 600x820 compact=0 camera=fixedSurface phoneMenu=0 phoneGridRows=0 worldScale=0.800781->0.800781
