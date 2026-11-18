@@ -1,3 +1,7 @@
+## 2026-11-18 iPhone 네 문제 수정 및 시뮬레이터 검사
+
+점프·Skyway 배경·뷰포트·메뉴 페이지를 수정한 후보 `f8e82d8`의 결과를 비공개 보고 페이지와 HeavyMach2 누적 목록에 게시했다. 사이트 소스 `ba8fb66`, 배포 `appgdep_6afd9d613f1c8191a0d282d8af39241e`가 성공했다. 공통 76개, Source Native 9개, OS 더블탭 양쪽 10회씩, 치트빌드 양쪽 126조건·2,100프레임을 확인했다. [비공개 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#runtime-fixes-20261118) · [실행 근거](evidence/iphone-runtime-regressions-20261118.json)
+
 ## 2026-11-16 상점 GPU 오류 수정 게시
 
 [상점 수정·검사](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-fix-20261116)를 기존 보고서와 고정 누적 목록에 추가했다. 수정1420cc1, iPhone Native4/4·iPad Native3/3. Site소스c7084e1, 배포appgdep_6afa6f44499481919f06154b55146bac succeeded. [게시 근거](evidence/shop-texture-fix-publication-20261116.json). 본인만 접근하는 설정과 기존미디어를 유지했다. 새브라우저 시각검수·실기기설치는 하지 않았다.

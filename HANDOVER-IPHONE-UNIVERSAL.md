@@ -1,3 +1,7 @@
+## 2026-11-18 네 문제 수정
+
+`fix/iphone-runtime-regressions-20261118`에서 점프 입력 `20ccf0d`, Skyway 배경 `5b07e44`, 뷰포트 `e57a623`, 상점 페이지 `ab41cda`를 수정했다. Source Native·OS 회귀 검사까지 연결한 후보는 `f8e82d8`다. [실행 결과와 남은 검사](docs/iphone-module-audit-20261118.md#수정과-시뮬레이터-검증)를 읽는다. 실기기에서 같은 조작과 플레이를 확인하는 일은 남아 있다.
+
 ## 2026-11-18 포팅 모듈 분석
 
 후속 변경은 [수정 계획과 회귀 검사](docs/iphone-module-audit-20261118.md#수정-계획)를 따른다. UIKit은 중복 좌표를 판정하고 `GameRuntime`은 월드 전달을 제어한다. 카메라는 `compactFocus`에서 HUD 보정을 조정한다. `MapPreview`는 배경 가로 위치를 제한한다. 상점·인벤토리 내부 페이지는 `MenuGridLayout`에서 계산하고 `Screens`가 적용한다. 소형 tablet에서도 기존 배경과 카메라 동작을 비교한다.
