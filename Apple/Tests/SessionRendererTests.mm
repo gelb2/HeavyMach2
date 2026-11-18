@@ -13,6 +13,8 @@
 #include "Core/Presentation/VisualLayer.hpp"
 #include "Core/Simulation/DarwinWorldRandom.hpp"
 #include <algorithm>
+#include <cmath>
+#include <limits>
 #include <map>
 #include <set>
 
@@ -66,6 +68,166 @@ UIImage* image(NSData* rgba,CGSize size){
 }
 @interface SessionRendererTests:XCTestCase @end
 @implementation SessionRendererTests
+- (void)testWastelandExitToSkywayKeepsBackgroundStable {
+    using namespace hm2;
+    self.continueAfterFailure=NO;
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];
+    XCTAssertNotNil(root);
+    const bool phone=UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPhone;
+    const hm2::Size canvas=phone?hm2::Size{912,420}:hm2::Size{820,1180};
+    const DisplayInsets insets=phone?DisplayInsets{68,20,68,0}:DisplayInsets{0,20,0,24};
+    UIWindow* window=[[UIWindow alloc]initWithFrame:CGRectMake(0,0,canvas.width,canvas.height)];
+    UIViewController* controller=[UIViewController new];
+    HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:window.bounds];
+    surface.contentScaleFactor=UIScreen.mainScreen.scale;
+    controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];
+    surface.frame=CGRectMake(0,0,canvas.width,canvas.height);[surface layoutIfNeeded];
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;
+    layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    NSURL* save=[NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:NSUUID.UUID.UUIDString]];
+    SaveData fixture;fixture.initializeSlot(0,"SKY","kr",1794268800);
+    progression::SlotView working(fixture.slot(0));
+    working.string(0x2d,16,"Base003");working.string(0x55,16,"Base003");working.level(25);working.u32(0x1b5c,5);
+    DarwinWorldRandom random(1);const auto bytes=fixture.encode(random,1);
+    XCTAssertTrue([[NSData dataWithBytes:bytes.data() length:bytes.size()] writeToURL:save atomically:YES]);
+    try{
+        apple::GameRuntime runtime(root,save,{},[]{return 1u;});
+        auto display=DisplayConfiguration::surface(canvas,insets);
+        display.device=phone?DisplayDevice::phone:DisplayDevice::tablet;
+        runtime.setDisplay(display);
+        XCTAssertTrue(runtime.session().selectSlot(0));runtime.session().enterBase();runtime.synchronize();settle(runtime,layer);
+        XCTAssertTrue(runtime.session().state().baseId=="Base003");
+        const auto pressSkyway=[&]{
+            for(const auto& key:runtime.screens().buttons())if(key.id==2005){
+                const auto point=runtime.screens().buttonScreenPosition(key);
+                runtime.input(PointerPhase::begin,point,70001);runtime.input(PointerPhase::end,point,70001);return true;
+            }
+            return false;
+        };
+        XCTAssertTrue(pressSkyway());XCTAssertEqual(runtime.session().state().selectedBaseButton,5);
+        XCTAssertTrue(pressSkyway());settle(runtime,layer);
+        XCTAssertEqual(runtime.session().state().screen,ui::ScreenId::field);
+        auto slot=Bytes(runtime.session().workingSlot().begin(),runtime.session().workingSlot().end());
+        progression::SlotView landed(slot);
+        XCTAssertTrue(landed.string(0x2d,16)=="Stage02_04");XCTAssertEqual(landed.u32(0x68),1u);
+        const auto* original=runtime.session().battle();XCTAssertNotEqual(original,nullptr);
+        const auto spawn=original->player().position;
+        XCTAssertEqual(spawn.x,403.f);XCTAssertEqual(spawn.y,419.f);
+        apple::Files mapFiles(root.fileSystemRepresentation);
+        const MapPreview skyway(mapFiles,"Stage02_04");
+        float previousX=0,maxStep=0,travel=0;
+        Vec2 previousPosition=spawn;
+        unsigned accepted=0;
+        for(unsigned tick=0;tick<300;++tick){@autoreleasepool{
+            XCTAssertEqual(runtime.session().battle(),original);
+            if(runtime.session().help()){
+                const Vec2 point{canvas.width*.5f,canvas.height*.5f};
+                runtime.input(PointerPhase::begin,point,70999);runtime.input(PointerPhase::end,point,70999);
+            }
+            if(tick==24||tick==160||tick==240){
+                const auto p=original->player().position;
+                const Vec2 aim=tick==24?Vec2{std::max(-380.f,p.x-570),p.y-92}:
+                    tick==160?Vec2{std::max(-385.f,p.x-190),p.y-130}:Vec2{p.x+175,p.y-30};
+                auto point=runtime.session().worldCanvasPoint(original->camera().toScreen(aim));
+                point.x=std::clamp(point.x,88.f,canvas.width-88);point.y=std::clamp(point.y,151.f,canvas.height-30);
+                runtime.input(PointerPhase::begin,point,71000+tick);
+                accepted+=unsigned(runtime.inputHistory().back().worldConsumed);
+                runtime.input(PointerPhase::end,point,71000+tick);
+            }
+            runtime.tick();
+            const auto frame=skyway.compose(original->camera());
+            const auto background=std::find_if(frame.sprites.begin(),frame.sprites.end(),[](const auto& s){return s.image=="Stage02_04BG.jpg";});
+            XCTAssertTrue(background!=frame.sprites.end());
+            const float backgroundX=runtime.session().worldCanvasPoint(background->center).x;
+            if(tick)maxStep=std::max(maxStep,std::abs(backgroundX-previousX));
+            previousX=backgroundX;
+            const auto p=original->player().position;
+            travel+=std::hypot(p.x-previousPosition.x,p.y-previousPosition.y);previousPosition=p;
+            runtime.captureNextFrame();runtime.draw(layer);
+            NSData* pixels=runtime.pixels();const auto size=runtime.drawableSize();
+            XCTAssertEqual(pixels.length,std::size_t(size.width)*std::size_t(size.height)*4);
+            XCTAssertGreaterThan(pixels.length,0u);
+            if(tick==0||tick==27||tick==170){
+                auto* snapshot=[XCTAttachment attachmentWithImage:image(pixels,size)];
+                snapshot.name=[NSString stringWithFormat:@"skyway-%@-%03u",phone?@"phone":@"tablet",tick];
+                snapshot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:snapshot];
+            }
+        }}
+        XCTAssertEqual(accepted,3u);XCTAssertGreaterThan(travel,250.f);XCTAssertLessThanOrEqual(maxStep,1.f);
+        NSLog(@"HM2_SKYWAY_STABLE %@ gate=1 frames=300 moves=%u travel=%.3f maxBackgroundStep=%.6f",phone?@"phone":@"ipad",accepted,travel,maxStep);
+    }catch(const std::exception& e){XCTFail(@"Wasteland exit and Skyway presentation: %s",e.what());}
+    [NSFileManager.defaultManager removeItemAtURL:save error:nil];window.hidden=YES;
+}
+
+- (void)testSameCanvasUIKitMovePreservesWorldDoubleTap {
+    using namespace hm2;
+    self.continueAfterFailure=NO;
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];
+    XCTAssertNotNil(root);
+    const bool phone=UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPhone;
+    const hm2::Size canvas=phone?hm2::Size{912,420}:hm2::Size{768,1024};
+    UIWindow* window=[[UIWindow alloc]initWithFrame:CGRectMake(0,0,canvas.width,canvas.height)];
+    UIViewController* controller=[UIViewController new];
+    HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:window.bounds];
+    surface.contentScaleFactor=1;
+    controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];
+    surface.frame=CGRectMake(0,0,canvas.width,canvas.height);[surface layoutIfNeeded];
+    auto* layer=(CAEAGLLayer*)surface.layer;
+    layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    NSURL* save=[NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:NSUUID.UUID.UUIDString]];
+    SaveData fixture;fixture.initializeSlot(0,"DASH","kr",1794268800);fixture.slot(0)[0x1b5c]=5;
+    DarwinWorldRandom random(1);const auto bytes=fixture.encode(random,1);
+    XCTAssertTrue([[NSData dataWithBytes:bytes.data() length:bytes.size()] writeToURL:save atomically:YES]);
+    try{
+        apple::GameRuntime runtime(root,save,{},[]{return 1u;});
+        auto display=DisplayConfiguration::surface(canvas);
+        display.device=phone?DisplayDevice::phone:DisplayDevice::tablet;runtime.setDisplay(display);
+        XCTAssertTrue(runtime.session().selectSlot(0));XCTAssertTrue(runtime.session().enterField("Stage01_01",0));
+        runtime.synchronize();settle(runtime,layer);
+        if(runtime.session().help()){
+            const Vec2 center{canvas.width*.5f,canvas.height*.5f};
+            runtime.input(PointerPhase::begin,center,10);runtime.input(PointerPhase::end,center,10);
+        }
+        auto* scene=runtime.session().battle();XCTAssertNotEqual(scene,nullptr);
+        for(unsigned n=0;n<240&&(scene->dashState().special<100||scene->clock().worldTime()<.7);++n)runtime.tick();
+        XCTAssertGreaterThanOrEqual(scene->dashState().special,100.f);
+        runtime.draw(layer);
+        const auto distance=[](Vec2 a,Vec2 b){return std::hypot(a.x-b.x,a.y-b.y);};
+        CGPoint point{};bool found=false;
+        for(float y=185;y<canvas.height-110&&!found;y+=40)for(float x=100;x<canvas.width-100&&!found;x+=40){
+            const auto raw=CGPointMake(x,canvas.height-y);Vec2 logical;
+            if(!runtime.logicalPoint(raw,logical))continue;
+            const auto target=scene->camera().toWorld(scene->cameraPresentation().worldToCanvas.inverse(logical));
+            if(distance(target,scene->player().position)<100)continue;
+            const auto& enemies=scene->enemies();
+            if(std::any_of(enemies.begin(),enemies.end(),[&](const auto& e){return e.hp>0&&distance(target,e.position)<100;}))continue;
+            point=raw;found=true;
+        }
+        XCTAssertTrue(found);
+        const CGPoint previous=CGPointMake(std::nextafter(point.x,std::numeric_limits<CGFloat>::infinity()),point.y);
+        Vec2 currentCanvas,previousCanvas;
+        XCTAssertNotEqual(point.x,previous.x);
+        XCTAssertTrue(runtime.logicalPoint(point,currentCanvas));XCTAssertTrue(runtime.logicalPoint(previous,previousCanvas));
+        XCTAssertEqual(currentCanvas.x,previousCanvas.x);XCTAssertEqual(currentCanvas.y,previousCanvas.y);
+        const auto before=scene->metrics().dashStarts;
+        XCTAssertTrue(runtime.inputFromView(PointerPhase::begin,point,point,7001));
+        XCTAssertTrue(runtime.inputHistory().back().worldConsumed);
+        const auto first=scene->dashState();XCTAssertGreaterThan(first.tapTime,0.f);XCTAssertGreaterThan(first.pathCount,0u);
+        XCTAssertFalse(runtime.inputFromView(PointerPhase::move,point,previous,7001));
+        const auto ignored=runtime.inputHistory().back();
+        XCTAssertTrue(ignored.sameCanvasMove);XCTAssertFalse(ignored.worldConsumed);
+        XCTAssertEqual(ignored.tapAfter,first.tapTime);XCTAssertEqual(ignored.pathAfter,first.pathCount);
+        runtime.inputFromView(PointerPhase::end,point,point,7001);
+        runtime.inputFromView(PointerPhase::begin,point,point,7002);
+        const auto dash=runtime.inputHistory().back();
+        XCTAssertEqual(dash.dashStartsAfter,before+1);XCTAssertEqual(dash.specialBefore-dash.specialAfter,100.f);
+        runtime.inputFromView(PointerPhase::end,point,point,7002);
+        XCTAssertEqual(scene->dashState().movePointer,0u);
+        NSLog(@"HM2_DASH_SAME_CANVAS %@ rawDelta=%.17g dash=1 cost=100",phone?@"phone":@"ipad",point.x-previous.x);
+    }catch(const std::exception& e){XCTFail(@"UIKit move and world double tap: %s",e.what());}
+    [NSFileManager.defaultManager removeItemAtURL:save error:nil];window.hidden=YES;
+}
+
 - (void)testColdShopPagePreparesFirstUseIconsThroughGameRuntime {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     for(bool phone:{true,false}){
@@ -101,6 +263,16 @@ UIImage* image(NSData* rgba,CGSize size){
             for(unsigned n=0;n<120;++n){runtime.tick();runtime.draw(layer);}
             XCTAssertEqual(runtime.resourceReads(),warmReads);XCTAssertEqual(runtime.textureUploads(),warmUploads);XCTAssertEqual(runtime.session().metrics().saveRequests,writes);
             runtime.captureNextFrame();runtime.draw(layer);XCTAssertNotNil(runtime.pixels());XCTAttachment* shot=[XCTAttachment attachmentWithImage:image(runtime.pixels(),runtime.drawableSize())];shot.name=phone?@"cold-phone-shop-Icon10113":@"cold-tablet-shop-Icon10113";shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];
+            if(phone){
+                const hm2::Size taller{912,550};
+                auto resized=hm2::DisplayConfiguration::surface(taller);resized.device=hm2::DisplayDevice::phone;
+                surface.frame=CGRectMake(0,0,taller.width,taller.height);[surface layoutIfNeeded];runtime.setDisplay(resized);
+                hm2::Frame visible;runtime.screens().append(visible,runtime.session().renderTime());
+                XCTAssertTrue(owns(visible));
+                runtime.captureNextFrame();runtime.draw(layer);
+                XCTAssertEqual(runtime.pixels().length,912u*550u*4u);
+                XCTAssertEqual(runtime.session().metrics().saveRequests,writes);
+            }
             NSLog(@"HM2_COLD_SHOP %@ catalog=9 firstUseIcon=Icon10113.png internalPage=%d repeatPagePairs=%u warmFrames=120 warmIO0Upload0=1",phone?@"phone":@"tablet",phone,phone?3u:0u);
         }catch(const std::exception& e){XCTFail(@"Cold shop product resource boundary (%@): %s",phone?@"phone":@"tablet",e.what());}
         window.hidden=YES;window.rootViewController=nil;
