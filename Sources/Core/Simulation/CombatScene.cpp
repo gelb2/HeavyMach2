@@ -66,6 +66,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
     CombatMetrics metrics;
     DisplayConfiguration display;CameraPresentation presentation;
     void updateDisplay(std::optional<Vec2> target,bool advance){
+        camera.clampBackgroundXToViewport=display.enabled&&display.compact&&display.device!=DisplayDevice::tablet;
         if(!display.enabled){camera.viewport={768,1024};camera.inputMinimumY=100;camera.fitWorld=camera.keepFocusVisible=camera.fillSurface=false;camera.lowerOverscan=94;return;}
         if(advance)presentation.advance({playerMotion.state().position,target,navigation.count()?std::optional<Vec2>(navigation.point(navigation.count()-1)):std::nullopt});
         const auto& view=presentation.snapshot();const DisplayLayout layout(display);

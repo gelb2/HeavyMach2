@@ -15,6 +15,7 @@ struct MapCamera {
     bool fitWorld=false,keepFocusVisible=false,fillSurface=false;
     float lowerOverscan=94,focusMinimumY=100,focusRadius=25;
     float focusLeft=0,focusRight=0;
+    bool clampBackgroundXToViewport=false;
     [[nodiscard]] Vec2 toScreen(Vec2 world)const;
     [[nodiscard]] Vec2 toWorld(Vec2 screen)const;
 };

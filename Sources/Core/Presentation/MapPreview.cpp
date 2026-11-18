@@ -16,6 +16,12 @@ void originalQuad(Sprite& sprite,Size pixels){
     image.screenPosition=sprite.center;image.scale={sprite.size.width/pixels.width,sprite.size.height/pixels.height};
     sprite.strip=originalTileSprite(image).strip;
 }
+float boundedBackgroundX(float center,float width,float viewportWidth){
+    // The cover scale can round a nominally exact fit slightly below the viewport width.
+    const float midpoint=viewportWidth*.5f;
+    const float travel=std::max(0.f,width-viewportWidth)*.5f;
+    return std::clamp(center,midpoint-travel,midpoint+travel);
+}
 
 }
 Vec2 MapCamera::toScreen(Vec2 p)const {valid(*this);return {p.x-center.x+viewport.width/2-offset.x,p.y-center.y+viewport.height/2-offset.y};}
@@ -42,7 +48,8 @@ Frame MapPreview::compose(const MapCamera& camera)const{
             size={size.width*cover,size.height*cover};
             const float halfX=size.width*.5f,halfY=size.height*.5f;
             auto bounded=center;
-            if(size.width>=camera.viewport.width)bounded.x=std::clamp(bounded.x,camera.viewport.width-halfX,halfX);
+            if(camera.clampBackgroundXToViewport)bounded.x=boundedBackgroundX(bounded.x,size.width,camera.viewport.width);
+            else if(size.width>=camera.viewport.width)bounded.x=std::clamp(bounded.x,camera.viewport.width-halfX,halfX);
             if(size.height>=camera.viewport.height)bounded.y=std::clamp(bounded.y,camera.viewport.height-halfY,halfY);
             Sprite background{background_,bounded,size};originalQuad(background,backgroundSize_);frame.sprites.push_back(std::move(background));
         }else
