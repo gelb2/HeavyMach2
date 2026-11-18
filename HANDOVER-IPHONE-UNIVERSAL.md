@@ -1,3 +1,7 @@
+## 2026-11-19 실기기 Release 및 iPhone 상점 TODO
+
+`f8e82d8`의 Source Release를 iPhone Air·iPad Air 13인치에 설치했다. 실행 전 저장 내용 일치, 실기기 상점 페이지·웨이스트랜드 출구·Skyway 이동·더블탭과 기지 복귀를 확인했다. iPhone BUY와 Equip의 겹침은 캡처로 보존했다. 원본 Phone판 재캡처·스크롤·각 아이템 크기 대조를 기존 상점 TODO에 연결했다. [설치·캡처 기록](docs/dual-release-installation-20261119.md)
+
 ## 2026-11-18 네 문제 수정
 
 `fix/iphone-runtime-regressions-20261118`에서 점프 입력 `20ccf0d`, Skyway 배경 `5b07e44`, 뷰포트 `e57a623`, 상점 페이지 `ab41cda`를 수정했다. Source Native·OS 회귀 검사까지 연결한 후보는 `f8e82d8`다. [실행 결과와 남은 검사](docs/iphone-module-audit-20261118.md#수정과-시뮬레이터-검증)를 읽는다. 실기기에서 같은 조작과 플레이를 확인하는 일은 남아 있다.

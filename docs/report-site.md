@@ -1,3 +1,7 @@
+## 2026-11-19 두 실기기 Release 및 iPhone 상점 표시
+
+`f8e82d8`의 Source Release 설치와 실기기 확인, iPhone 상점 겹침 재현 및 원본 재캡처 TODO를 기존 비공개 보고와 누적 목록에 추가했다. 사이트 소스 `08814de`, 배포 `appgdep_6afdc2733570819190273f324d421f82`가 성공했다. [비공개 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#device-release-20261119) · [설치와 캡처 기록](dual-release-installation-20261119.md)
+
 ## 2026-11-18 iPhone 네 문제 수정 및 시뮬레이터 검사
 
 점프·Skyway 배경·뷰포트·메뉴 페이지를 수정한 후보 `f8e82d8`의 결과를 비공개 보고 페이지와 HeavyMach2 누적 목록에 게시했다. 사이트 소스 `ba8fb66`, 배포 `appgdep_6afd9d613f1c8191a0d282d8af39241e`가 성공했다. 공통 76개, Source Native 9개, OS 더블탭 양쪽 10회씩, 치트빌드 양쪽 126조건·2,100프레임을 확인했다. [비공개 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#runtime-fixes-20261118) · [실행 근거](evidence/iphone-runtime-regressions-20261118.json)
