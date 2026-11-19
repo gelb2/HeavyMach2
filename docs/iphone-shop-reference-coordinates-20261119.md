@@ -26,3 +26,13 @@ iPhone 상점·Equip 그림, 버튼, 터치, 드롭 좌표에 하나의 480×320
 `5759f2b`에서 추가한 허브 그림은 배경 결함으로 추적한다. Apple은 게임 메뉴가 다양한 화면 비율에 맞게 배치되고, 안전 영역 안에서 조작이 가능해야 한다고 안내한다. 배경은 화면 전체를 사용한다. [Apple 게임 디자인 지침](https://developer.apple.com/design/human-interface-guidelines/designing-for-games/) · [Apple WWDC 안전 영역과 전체 화면](https://developer.apple.com/videos/play/wwdc2024/10085/?time=549)
 
 와이드 실측과 PNG는 `.local/evidence/iphone-shop-viewport-audit-20261119.TpRaGA/viewport-observations.json`과 같은 폴더의 `wide-wasteland/wide-wasteland-shop.png`에 있다.
+
+## iPhone 상점 배경과 패널 분리
+
+`ShopBG.jpg`의 칸, 제목, 패널, 탭을 제거해 격납고만 남겼다. 원본 Phone과 같은 격납고가 그려진 HD 그림을 참고해 가려진 부분을 ImageGen으로 보정했다. 가로 화면에서 천장과 바닥이 들어오도록 양옆을 확장했다. 원본에서 보이는 구도와 조명 위치를 기준으로 결과를 비교했다. 가려진 부분과 양옆은 보정한 픽셀이다.
+
+`PhoneShopHangar.jpg`는 1902×827이며 화면 중앙에서 가로·세로에 같은 배율을 적용한다. 두 960×640 투명 패널의 칸·제목·탭은 원본 JPEG에서 분리했다. Shop과 Equip는 같은 격납고 배경을 쓰고 패널만 교체한다. `Screens::Impl::phoneShop`에서 기지 그림을 읽던 경로를 제거했다. 상품·상세창·거래 버튼은 기존 좌표와 입력을 쓴다. 파일은 `Resources/PhoneShopArt/`에 두고 준비 단계에서 원본과 구분해 해시를 기록한다.
+
+공통 검사 5개와 iPhone 시뮬레이터 검사 4개가 통과했다. 웨이스트랜드 다섯 분류와 Equip 전환, SG-1 상세, ML-K3 구매 확인창을 캡처했다. iPhone의 기지 6곳 상점과 Equip 4가지 크기에서 가장자리의 순수 검은 픽셀과 동일한 끝 픽셀 열은 각각 0건이었다. iPad 시뮬레이터의 기지 6곳 상점은 직전 후보와 달라진 픽셀이 0개였다. 양쪽 메뉴 36개에서 번들 배경 파일의 해시를 대조했다. 실기기 확인은 투두에 남겼다.
+
+캡처와 로그는 `.local/evidence/iphone-shop-clean-art-20261119.Dqz7aA/`에 있다. 별첨은 `iphone-wasteland-shop.png`, `iphone-wasteland-equip.png`, `iphone-sg1-detail.png`, `ipad-wasteland-shop.png`다. 측정 결과는 `iphone-edge-pixels.json`과 `ipad-shop-pixel-match.json`에 있다.

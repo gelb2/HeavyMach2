@@ -605,7 +605,7 @@ UIImage* image(NSData* rgba,CGSize size){
         NSString* name=[NSString stringWithFormat:@"menu-%@-Base00%u-%s",phone?@"iphone":@"ipad",base,screen==hm2::ui::ScreenId::base?"hub":screen==hm2::ui::ScreenId::shop?"shop":"command"];
         auto* shot=[XCTAttachment attachmentWithImage:image(renderer.readRGBA,extent)];shot.name=name;shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];
         NSMutableArray* backgrounds=[NSMutableArray new];
-        for(const auto& sprite:frame.sprites){const auto& path=sprite.image;if(path.find("Base00")==std::string::npos&&path.find("ShopBG.")==std::string::npos&&path.find("CmdCenterBG.")==std::string::npos)continue;
+        for(const auto& sprite:frame.sprites){const auto& path=sprite.image;if(path.find("Base00")==std::string::npos&&path.find("ShopBG.")==std::string::npos&&path.find("CmdCenterBG.")==std::string::npos&&path!="PhoneShopHangar.jpg")continue;
             NSString* relative=[NSString stringWithUTF8String:path.c_str()];NSData* bytes=[NSData dataWithContentsOfURL:[root URLByAppendingPathComponent:relative]];XCTAssertNotNil(bytes);
             [backgrounds addObject:@{@"image":relative,@"sha256":sha(bytes)}];}
         [rows addObject:@{@"device":phone?@"iphone":@"ipad",@"base":[NSString stringWithUTF8String:state.baseId.c_str()],@"screen":screen==hm2::ui::ScreenId::base?@"hub":screen==hm2::ui::ScreenId::shop?@"shop":@"command",@"capture":name,@"backgrounds":backgrounds}];

@@ -171,8 +171,9 @@ void fullCanvasBanners(Files& files){
 void phoneArtwork(Files& files){
  assert(validResourceName("PhoneMenu/Main_BG.png"));for(const auto bad:{"/Main_BG.png","../Main_BG.png","PhoneMenu/../Main_BG.png","PhoneMenu/sub/Main_BG.png","PhoneMenu/..","PhoneMenu/","PhoneMenu\\Main_BG.png"})assert(!validResourceName(bad));assert(!validResourceName(std::string_view("PhoneMenu/a\0.png",16)));
  const auto config=DisplayConfiguration::surface({912,420},{68,20,68,0});Host host;PreparedTiles tiles("phone-art");ui::Screens ui(files,tiles,host);ui.setDisplay(config);DarwinWorldRandom random(1);
+ const auto hangarInfo=imageInfo(files.read("PhoneShopHangar.jpg"));
  for(const auto screen:{ui::ScreenId::title,ui::ScreenId::slots,ui::ScreenId::command,ui::ScreenId::shop,ui::ScreenId::maintenance}){
-  ui::ScreensState state;state.screen=screen;ui.refresh(state,0);Frame prep;ui.appendPreparation(prep);const std::string name=screen==ui::ScreenId::title?"Main_BG.png":screen==ui::ScreenId::slots?"PhoneMenu/SelSlot_BG.jpg":screen==ui::ScreenId::command?"PhoneMenu/CmdCenterBG.jpg":screen==ui::ScreenId::shop?"PhoneMenu/ShopBG.jpg":"PhoneMenu/MaintenanceBG.jpg";bool found=false;
+  ui::ScreensState state;state.screen=screen;ui.refresh(state,0);Frame prep;ui.appendPreparation(prep);const std::string name=screen==ui::ScreenId::title?"Main_BG.png":screen==ui::ScreenId::slots?"PhoneMenu/SelSlot_BG.jpg":screen==ui::ScreenId::command?"PhoneMenu/CmdCenterBG.jpg":screen==ui::ScreenId::shop?"PhoneShopPanel.png":"PhoneEquipPanel.png";bool found=false;
   for(const auto& image:prep.sprites)if(image.image==name){found=true;const auto info=imageInfo(files.read(name));assert(info.width==(screen==ui::ScreenId::title?768u:960u)&&info.height==(screen==ui::ScreenId::title?1024u:640u));assert(decodeImage(files.read(name)).width==info.width);}assert(found);
   for(unsigned tick=0;tick<800;++tick){ui.tick(float(tick)/60,random);Frame f;ui.append(f,float(tick)/60);for(const auto& image:f.sprites)if(image.image==name){
        if(screen==ui::ScreenId::maintenance||screen==ui::ScreenId::shop){
@@ -181,11 +182,14 @@ void phoneArtwork(Files& files){
            assert(near(b.x,reference.offset.x)&&near(b.y,reference.offset.y));
            assert(near(b.width,720*reference.scale)&&near(b.height,480*reference.scale));
            uniformCover(image,config.canvas,1.5f,b);
-           const auto surround=std::find_if(f.sprites.begin(),f.sprites.end(),[](const auto& sprite){
-               return sprite.image=="PhoneMenu/Base001.jpg";
+           const auto backdrop=std::find_if(f.sprites.begin(),f.sprites.end(),[](const auto& sprite){
+               return sprite.image=="PhoneShopHangar.jpg";
            });
-           assert(surround!=f.sprites.end()&&&image>&*surround);
-           uniformCover(*surround,config.canvas);
+           assert(backdrop!=f.sprites.end()&&&image>&*backdrop);
+           assert(backdrop->clip&&near(backdrop->clip->x,0)&&near(backdrop->clip->y,0));
+           assert(near(backdrop->clip->width,config.canvas.width)&&near(backdrop->clip->height,config.canvas.height));
+           uniformCover(*backdrop,config.canvas,float(hangarInfo.width)/float(hangarInfo.height));
+           assert(std::none_of(f.sprites.begin(),f.sprites.end(),[](const auto& sprite){return sprite.image.starts_with("PhoneMenu/Base");}));
        }
        else uniformCover(image,config.canvas,screen==ui::ScreenId::title?.75f:1.5f);if(screen==ui::ScreenId::title){const auto b=quadBounds(image);assert(near(b.y+b.height,config.canvas.height));}}}
  }
@@ -198,13 +202,13 @@ void phoneMenuGrids(Files& files){
  const auto key=[&](unsigned id){for(const auto& k:ui.buttons())if(k.id==id)return k;throw std::runtime_error("Missing phone menu button "+std::to_string(id));};
  const auto tap=[&](unsigned id){auto k=key(id);ui.revealButton(k);const auto p=ui.buttonScreenPosition(k);ui.input(PointerPhase::begin,p,900+id,1);ui.input(PointerPhase::end,p,900+id,1.1f);};
  unsigned inv=0,stock=0;for(auto k:ui.buttons()){inv+=k.id>=6000&&k.id<6025;stock+=k.id>=2200&&k.id<2224;}assert(inv==(menu::phone(config)?menu::phoneShopRows*5:25)&&stock==(menu::phone(config)?menu::phoneShopRows*4:24));
- Frame f;ui.append(f,0);unsigned backgrounds=0;bool skin=false;for(const auto& s:f.sprites){backgrounds+=s.image=="PhoneMenu/ShopBG.jpg";assert(s.image!="ShopBG.png"&&s.image!="MaintenanceBG.png"&&s.image!="InvenBG.png"&&s.image!="ItemBox.png");if(s.image=="Icon10011.png"&&s.strip.empty())skin|=near(s.size.width,32*std::min(config.canvas.width/480,config.canvas.height/320));}assert(backgrounds==1&&skin);
+ Frame f;ui.append(f,0);unsigned backgrounds=0;bool skin=false;for(const auto& s:f.sprites){backgrounds+=s.image=="PhoneShopPanel.png";assert(s.image!="ShopBG.png"&&s.image!="MaintenanceBG.png"&&s.image!="InvenBG.png"&&s.image!="ItemBox.png");if(s.image=="Icon10011.png"&&s.strip.empty())skin|=near(s.size.width,32*std::min(config.canvas.width/480,config.canvas.height/320));}assert(backgrounds==1&&skin);
  for(unsigned i=1;i<(24+menu::phoneShopRows*4-1)/(menu::phoneShopRows*4);++i)tap(2106);for(unsigned i=1;i<(25+menu::phoneShopRows*5-1)/(menu::phoneShopRows*5);++i)tap(6091);const auto lastStock=ui.buttonScreenPosition(key(2223)),lastInventory=ui.buttonScreenPosition(key(6024));const DisplayLayout layout(config);const auto shopClip=layout.clip(DisplayRegion::phoneStock).value(),invClip=layout.clip(DisplayRegion::phoneInventory).value();assert(lastStock.y>=shopClip.y&&lastStock.y<=shopClip.y+shopClip.height&&lastInventory.y>=invClip.y&&lastInventory.y<=invClip.y+invClip.height);
  host.events.clear();const auto begin=ui.buttonScreenPosition(key(6024)),destination=ui.buttonScreenPosition(key(6020));ui.input(PointerPhase::begin,begin,999,2);ui.input(PointerPhase::move,destination,999,2.1f);ui.input(PointerPhase::end,destination,999,2.2f);bool mapped=false;for(const auto& e:host.events)if(e.button.type==ui::ButtonEventType::move&&e.dropCoordinates){assert(near(e.dropCoordinates->inventory.x,408)&&near(e.dropCoordinates->inventory.y,192));mapped=true;}assert(mapped);
- tap(9204);assert(ui.button(key(6100))->visible&&!ui.button(key(2223))->visible);f={};ui.append(f,2);backgrounds=0;for(const auto& s:f.sprites){backgrounds+=s.image=="PhoneMenu/MaintenanceBG.jpg";assert(s.image!="MaintenanceBG.png"&&s.image!="InvenBG.png"&&s.image!="ItemBox.png");}assert(backgrounds==1);
+ tap(9204);assert(ui.button(key(6100))->visible&&!ui.button(key(2223))->visible);f={};ui.append(f,2);backgrounds=0;for(const auto& s:f.sprites){backgrounds+=s.image=="PhoneEquipPanel.png";assert(s.image!="MaintenanceBG.png"&&s.image!="InvenBG.png"&&s.image!="ItemBox.png");}assert(backgrounds==1);
  for(const auto pair:{std::pair{6100u,Vec2{188,388}},std::pair{6302u,Vec2{326,270}}}){const auto from=ui.buttonScreenPosition(key(6024)),to=ui.buttonScreenPosition(key(pair.first));host.events.clear();ui.input(PointerPhase::begin,from,1001,3);ui.input(PointerPhase::move,to,1001,3.1f);ui.input(PointerPhase::end,to,1001,3.2f);mapped=false;for(const auto& e:host.events)if(e.button.type==ui::ButtonEventType::move&&e.dropCoordinates){assert(near(e.dropCoordinates->inventory.x,pair.second.x)&&near(e.dropCoordinates->inventory.y,pair.second.y));mapped=true;}assert(mapped);}
  tap(9205);assert(ui.button(key(2223))->visible&&!ui.button(key(6100))->visible);
- std::cout<<"PHONE_MENU_GRIDS originalBakedCells/HD24and25/70OriginalAssets/noDuplicatePanels/buttonPages/equipmentTab/HDdragInverse PASS\n";
+ std::cout<<"PHONE_MENU_GRIDS separatedPanels/HD24and25/noDuplicatePanels/buttonPages/equipmentTab/HDdragInverse PASS\n";
 }
 void phoneButtonPages(Files& files){
  for(const auto extent:{Size{667,375},Size{912,420},Size{1280,360}}){
@@ -483,7 +487,10 @@ void phoneDirectMaintenance(Files& files){
  assert(game.metrics().unsupportedActions==unsupported);
  Frame preparation;screens.appendPreparation(preparation);
  assert(std::any_of(preparation.sprites.begin(),preparation.sprites.end(),[](const Sprite& sprite){
-  return sprite.image=="PhoneMenu/Base004.jpg";
+  return sprite.image=="PhoneShopHangar.jpg";
+ }));
+ assert(std::none_of(preparation.sprites.begin(),preparation.sprites.end(),[](const Sprite& sprite){
+  return sprite.image.starts_with("PhoneMenu/Base");
  }));
  const auto after=screens.buttons();
  assert(std::any_of(after.begin(),after.end(),[&](const auto& key){return key.id==first->id;}));

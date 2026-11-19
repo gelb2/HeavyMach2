@@ -14,6 +14,7 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 ALLOWED = {'.png', '.jpg', '.wav', '.mp3', '.mcb', '.tbl', '.tble'}
 HD103_SHA256 = '7eeb36590b3c19a28741e21671379029d9023864ceb241a5b8560eef045112d2'
+PHONE_SHOP_ART = ('PhoneShopHangar.jpg', 'PhoneShopPanel.png', 'PhoneEquipPanel.png')
 
 def prepare(output):
     output = output.resolve()
@@ -67,13 +68,23 @@ def prepare(output):
                 if 'pixels' not in record:
                     raise ValueError('PNG IHDR missing')
             files.append(record)
-    if {file.name for file in output.iterdir()} - names - {'manifest.json', 'PhoneMenu'}:
+    if {file.name for file in output.iterdir()} - names - {'manifest.json', 'PhoneMenu', *PHONE_SHOP_ART}:
         raise ValueError('Unexpected prepared files; refusing to package unlisted data')
     if (output / 'PhoneMenu').exists():
         from prepare_phone_menu_assets import verify_prepared
         verify_prepared(output / 'PhoneMenu')
+    derived = []
+    for name in PHONE_SHOP_ART:
+        data = (ROOT / 'Resources/PhoneShopArt' / name).read_bytes()
+        target = output / name
+        if target.is_symlink():
+            raise ValueError('Phone shop artwork must not link to another source: ' + name)
+        if not target.exists() or target.read_bytes() != data:
+            target.write_bytes(data)
+        derived.append({'name': name, 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()})
     record = {'profile': 'hd103', 'ipa_sha256': digest, 'unchanged_resource_bytes': True,
-              'original_executable_included': False, 'files': sorted(files, key=lambda x: x['name'])}
+              'original_executable_included': False, 'files': sorted(files, key=lambda x: x['name']),
+              'phone_shop_art': derived}
     (output / 'manifest.json').write_text(json.dumps(record, ensure_ascii=False, indent=2) + '\n')
     print(json.dumps({'output': str(output), 'files': len(files), 'bytes': sum(f['bytes'] for f in files)}))
 

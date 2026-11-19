@@ -122,8 +122,6 @@ struct Screens::Impl {
     ResourceAccess& resources;PreparedTiles& tiles;std::shared_ptr<PreparedTiles> tileOwner;ScreensHost& host;ScreensState state;
     std::vector<Node> nodes;
     DisplayLayout layout;
-    struct BaseArtwork {std::string asset;Vec2 center;float scale;};
-    std::optional<BaseArtwork> phoneShopSurround;
     std::shared_ptr<HUDState> hud;int currentHUDGroup=-1;
     std::map<const Button*,int> buttonHUDGroups;
     Region region=Region::content;
@@ -251,7 +249,6 @@ struct Screens::Impl {
         if(phoneMenu()&&s.screen==ScreenId::maintenance)phoneEquipment=true;
         if(previous){
             if(previous->state.baseId==state.baseId&&phoneMenu()&&previous->phoneMenu()){
-                phoneShopSurround=previous->phoneShopSurround;
                 if(previous->state.screen==ScreenId::maintenance&&state.screen==ScreenId::shop&&state.inventoryPage==previous->state.inventoryPage)
                     inventoryWindow=previous->inventoryWindow;
             }
@@ -303,7 +300,7 @@ struct Screens::Impl {
     }
     TileImage* tile(std::string_view name,unsigned columns=1,unsigned rows=1){
         if(name.starts_with("PhoneMenu/")&&!menu::phone(layout.configuration()))return nullptr;
-        auto* t=tiles.prepare(resources,name);if(t){t->columns=columns;t->rows=rows;if(name.starts_with("PhoneMenu/"))t->forRetina=menu::retina(name);}return t;
+        auto* t=tiles.prepare(resources,name);if(t){t->columns=columns;t->rows=rows;if(name.starts_with("PhoneMenu/"))t->forRetina=menu::retina(name);else if(name=="PhoneShopPanel.png"||name=="PhoneEquipPanel.png")t->forRetina=true;}return t;
     }
     void image(std::string_view name,Vec2 position,unsigned columns=1,unsigned rows=1,unsigned index=0,
                Vec2 scale={1,1},bool atlas=false,unsigned blend=0,float alpha=1,unsigned layer=7,std::string tag={}){
@@ -858,33 +855,17 @@ void Screens::Impl::inventoryDialog(Vec2 origin,bool shopMode){
     if(!shopMode&&state.detailInventory>=0&&!state.detailItem.dataId.empty())buildDetail(DetailKind::inventory,state.detailItem,origin,state.detailInventory);
 }
 void Screens::Impl::phoneShop(bool maintenance){
-    // The original shop and equipment artwork already contains the grid and
-    // tabs. Fit it with the original UI; the current base remains visible
-    // around the menu on a wider or taller phone.
     const auto canvas=layout.configuration().canvas;
-    const float fit=menu::phoneReferenceScale(layout.configuration());
-    if(canvas.width>480*fit+.01f||canvas.height>320*fit+.01f){
-        if(!phoneShopSurround){
-            const auto table=DataTable::parse(resources.read(menu::phoneAsset(state.baseId+".tble")));
-            for(std::size_t row=0;row<table.rowCount();++row){
-                if(table.value(row,"Type")!="Image"||table.integer(row,"ID")>10)continue;
-                phoneShopSurround=BaseArtwork{
-                    menu::phoneAsset(table.value(row,"ImageFile").value()),
-                    {240.f+table.real(row,"X"),160.f+table.real(row,"Y")},
-                    table.real(row,"Scale")
-                };
-                break;
-            }
-        }
-        if(phoneShopSurround){
-            const auto& [asset,center,scale]=*phoneShopSurround;
-            RegionScope surround(*this,Region::artBackdrop);
-            image(asset,center,1,1,0,{scale,scale},false,0,1,0);
-        }
+    constexpr auto hangar="PhoneShopHangar.jpg";
+    if(const auto* art=tile(hangar)){
+        const float scale=std::max(canvas.width/art->pixels.width,canvas.height/art->pixels.height);
+        RegionScope backdrop(*this,Region::surface);
+        image(hangar,{canvas.width*.5f,canvas.height*.5f},1,1,0,{scale,scale},false,0,1,0);
     }
+    // These transparent layers preserve the original grid and tab coordinates.
     {RegionScope art(*this,Region::artBanner);
-        image(menu::background(layout.configuration(),"ShopBG.png"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.stock.bg");
-        image(menu::phoneAsset("MaintenanceBG.jpg"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.equip.bg");
+        image("PhoneShopPanel.png",{240,160},1,1,0,{1,1},false,0,1,0,"phone.stock.bg");
+        image("PhoneEquipPanel.png",{240,160},1,1,0,{1,1},false,0,1,0,"phone.equip.bg");
     }
     inventory(menu::inventoryGrid,!maintenance,true);
     {RegionScope equipment(*this,Region::phoneEquipment);equip(menu::equipmentRoot,9,true);bots(menu::botRoot,true);

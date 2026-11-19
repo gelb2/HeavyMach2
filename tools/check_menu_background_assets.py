@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only original-background check; native hooks never deny a tool."""
+"""Read-only menu artwork provenance check."""
 import argparse, hashlib, json, sys, time, zipfile
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,6 +21,8 @@ def verify(data, package=PACKAGE):
         if sha(path.read_bytes()) != identity: raise ValueError('Original IPA changed: ' + device)
         with zipfile.ZipFile(path) as archive:
             originals[device] = {Path(n).name: sha(archive.read(n)) for n in archive.namelist() if len(Path(n).parts) == 3 and Path(n).suffix.lower() in ('.jpg', '.png')}
+    phone_shop = 'PhoneShopHangar.jpg'
+    phone_shop_hash = sha((ROOT / 'Resources/PhoneShopArt' / phone_shop).read_bytes())
     seen, failures = set(), []
     if data['binarySHA256'] != sha((package / 'HeavyMach2Source').read_bytes()): raise ValueError('Captured executable is stale')
     if data.get('gameSHA256') != sha((package / 'HeavyMach2Source.debug.dylib').read_bytes()): raise ValueError('Captured game library is stale')
@@ -29,13 +31,26 @@ def verify(data, package=PACKAGE):
         if key not in expected or key in seen: raise ValueError('Unexpected/duplicate context: ' + str(key))
         seen.add(key); device, base, screen = key
         hub = next(x['background'] for x in census['entries'] if x['profile'] == device and x['base'] == base)
-        wanted = hub if screen == 'hub' else (('PhoneMenu/' if device == 'iphone' else '') + {'shop': 'ShopBG', 'command': 'CmdCenterBG'}[screen] + ('.jpg' if device == 'iphone' else '.png'))
+        edited_shop = device == 'iphone' and screen == 'shop'
+        if edited_shop:
+            wanted = phone_shop
+        elif screen == 'hub':
+            wanted = hub
+        elif device == 'iphone':
+            wanted = 'PhoneMenu/CmdCenterBG.jpg'
+        else:
+            wanted = {'shop': 'ShopBG.png', 'command': 'CmdCenterBG.png'}[screen]
         if wanted not in [x['image'] for x in row['backgrounds']]: failures.append(str(key) + ': missing ' + wanted)
         for image in row['backgrounds']:
             name = image['image']; path = package / 'HD' / name
             if not path.resolve().is_relative_to((package / 'HD').resolve()) or path.is_symlink(): raise ValueError('Invalid background path')
-            actual = sha(path.read_bytes()); original = originals[device].get(Path(name).name)
-            if actual != image['sha256'] or actual != original or name.startswith('PhoneMenu/') != (device == 'iphone'): failures.append(str(key) + ': wrong source ' + name)
+            actual = sha(path.read_bytes())
+            if edited_shop:
+                valid_source = name == phone_shop and actual == phone_shop_hash
+            else:
+                valid_source = (actual == originals[device].get(Path(name).name)
+                                and name.startswith('PhoneMenu/') == (device == 'iphone'))
+            if actual != image['sha256'] or not valid_source: failures.append(str(key) + ': wrong source ' + name)
     if seen != expected: raise ValueError('Missing contexts: ' + str(sorted(expected - seen)))
     return {'status': 'FAIL' if failures else 'PASS', 'contexts': len(seen), 'failures': failures}
 def main():
