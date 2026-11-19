@@ -13,6 +13,8 @@ iPhone 상점·Equip 그림, 버튼, 터치, 드롭 좌표에 하나의 480×320
 
 ## 캡처와 검사
 
+이 문서의 기지 여섯 곳 GPU 대조는 각 상점 화면의 기지 ID를 시험 상태에 직접 지정해 실행했다. `Base004`는 White Mt. Base 일러스트와 시설 UI가 남아 있는 미연결 기지다. [원본 기지 조사](original-unused-content-20261119.md#화이트마운틴과-전장)
+
 원본은 `.local/evidence/iphone-shop-20261119.7atGic/original/07-weapon-detail.png`에 있다. 복원판 레벨 1은 `.local/evidence/iphone-shop-reference-layout-20261119.0sCST9/iphone-reference-final/live-phone-reference-level1-sg1-detail.png`에 있다. 같은 폴더의 `sg1-detail-pixel-rows.json`에 외곽선 비교를 기록했다. [파일과 실행 결과](evidence/iphone-shop-reference-coordinates-20261119.json)
 
 ## 원본 와이드 확인

@@ -1,0 +1,2556 @@
+{
+  "scope": "Six archived original HM2 builds; native routes in Phone 2.0.1, HD 1.0.0 and 1.0.3. Data-path reachability, not a full campaign replay.",
+  "variants": {
+    "phone100": {
+      "ipaSha256": "695df77db78b46dd6a42c58c923df4a3737f9637a96433c82650fb66a0e9ff60",
+      "armv7Sha256": "288d40343c3638ae7e2076f12319eeb4042e936953d237c169a78e3a2d151705",
+      "mapInfoSha256": "ccb4b66a2f7b7ce1deb72432a740d20368f1e493b142fda9bca65fb5004c9b70",
+      "maps": 33,
+      "portalRows": 68,
+      "missionCount": 60,
+      "missionLocalizationFiles": 120,
+      "stageArtFiles": 34,
+      "baseArtworkWithoutMap": [
+        "Base004.jpg",
+        "Base006.jpg"
+      ],
+      "base004Assets": {
+        "Base004.jpg": "f35ff4553f9e452eeb19ace9137eee5eb03752a2d7adcaaea4f4e4b0dba443b5",
+        "Base004.tble": "757f750f69d49ad2db24cc98d26c03be9446432b07050b6ad382d12543afba76",
+        "Base004_CmdCenter.png": "7233ea75b0fb2e8c4c820e5c2d555c17fa65e9f19a87739f9bcbbd0cfd1d0164",
+        "Base004_Maintenance.png": "3edd881c1c4afd8edf34683e4f80fb702c4e595f86415f07f2b212a7e961cdac",
+        "Base004_Shop.png": "e2e1b2deb4876de8f08f7201d7fc71004186ded220d533c1254dca2c95ae86c5"
+      },
+      "stageArtworkWithoutMap": [],
+      "invalidPortalTargets": [],
+      "invalidPortalEntries": [],
+      "eventOnlyMaps": [
+        "Stage01_08",
+        "Stage01_09",
+        "Stage02_07",
+        "Stage04_12"
+      ],
+      "unreachableWithEventMissions": [],
+      "enemyModelsWithoutSpawnerOrMission": [
+        "Boss_05",
+        "Boss_06",
+        "Boss_07",
+        "Boss_08",
+        "E_Plane_01",
+        "E_Plane_02",
+        "E_Plane_05",
+        "E_Tank_27",
+        "E_Tank_28",
+        "E_Tank_29",
+        "E_Tank_30",
+        "E_Tank_31",
+        "E_Tank_32",
+        "E_Turret_06",
+        "E_Turret_20"
+      ],
+      "modelRowsWithoutMapMissionOrBotAssignment": [
+        "Boss_05",
+        "Boss_06",
+        "Boss_07",
+        "Boss_08",
+        "Bot_D01",
+        "Bot_D02",
+        "Bot_P04",
+        "Bot_P05",
+        "Bot_P06",
+        "Dummy",
+        "E_Plane_01",
+        "E_Plane_02",
+        "E_Plane_05",
+        "E_Tank_27",
+        "E_Tank_28",
+        "E_Tank_29",
+        "E_Tank_30",
+        "E_Tank_31",
+        "E_Tank_32",
+        "E_Turret_06",
+        "E_Turret_20"
+      ],
+      "numericItemIconsOutsideActiveItemTable": [
+        "Icon00010.png",
+        "Icon02001.png",
+        "Icon02002.png",
+        "Icon02003.png",
+        "Icon02006.png",
+        "Icon04101.png",
+        "Icon04102.png",
+        "Icon04204.png",
+        "Icon04205.png",
+        "Icon04206.png",
+        "Icon10311.png",
+        "Icon10312.png",
+        "Icon10313.png",
+        "Icon10314.png",
+        "Icon10315.png",
+        "Icon10316.png",
+        "Icon10317.png",
+        "Icon10318.png",
+        "Icon10319.png",
+        "Icon10320.png",
+        "Icon10321.png",
+        "Icon10331.png",
+        "Icon10332.png",
+        "Icon10333.png",
+        "Icon10334.png",
+        "Icon10335.png",
+        "Icon10336.png",
+        "Icon10337.png",
+        "Icon10338.png",
+        "Icon10339.png",
+        "Icon10340.png"
+      ],
+      "commentedItemRows": 27,
+      "playerWeapons": 102,
+      "shopWeapons": 99,
+      "activeNonCoin": 230,
+      "noObservedPositiveAcquisition": [
+        {
+          "05106": "radar"
+        }
+      ],
+      "tableHashes": {
+        "ItemInfo.tble": "e6d138a4b17a8ae41574df8b05c187c5ae61b1f098080847d5969f546df17153",
+        "WeaponInfo.tble": "48bbfc84eae6381366d3d742febccfdfca09d386121ca424d17f42f0b25e0e06",
+        "ItemRegen.tble": "64ffd0a354bdb196747746fa033db1b9977522ac0f4d32c54996a290aa117041",
+        "MachList.tble": "9170648d5c7a13f802a8203e0ee68aee7e6996ee879bcb85613d2b238c326702",
+        "MapInfo.mcb": "ccb4b66a2f7b7ce1deb72432a740d20368f1e493b142fda9bca65fb5004c9b70",
+        "MachInfo.mcb": "229dacfbe8404d4096b257a75eddcfe200c680b3bffa868a9d0630fe3fadead2",
+        "PartsInfo.mcb": "0ece8aeba4eaf13ad516c867547074aaffd28e1f00d5223c6b76daaf9dfe30f7",
+        "MissionList.tble": "b43674d2c24d380bfcf2d8d2e7295fb485702b154d8a453247015b8a9deaf902",
+        "M021060_kr.tble": "ee61df37118e32c4947fdcf15e8ef44a139e1a02038ec714bd79621b7a224fb8",
+        "M021060_us.tble": "19e73f8ba5fa1f171b269cfd164ef82679c37bdc1cc017cab3a975be1e14c5e0",
+        "Wpn_Laser.wav": "fafab8bd6f950fcc50551f1cda53b47b0a0e502dc9cd4369163fef9d28ae0f79"
+      },
+      "audioCounts": {
+        ".wav": 55
+      },
+      "noDirectAudioNameReference": [
+        "Wpn_Default.wav"
+      ],
+      "uniqueFireSoundNames": 24,
+      "missingFireSoundFiles": [],
+      "laserFireSoundParts": [
+        {
+          "id": "P_Wpn_Lsr_101",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_104",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_105",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_102",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_103",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_106",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_107",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_108",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_111",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_201",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_202",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_203",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_204",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_205",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_206",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_207",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_208",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_209",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_210",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_109",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_110",
+          "kind": "Laser"
+        },
+        {
+          "id": "AS_LASER_01",
+          "kind": "Laser"
+        }
+      ],
+      "laserMountsInMachineModels": {}
+    },
+    "phone110": {
+      "ipaSha256": "4223a877fae11da54b8cc7239ecb6ee22fc0bff53743a5e84abba53d18b9d251",
+      "armv7Sha256": "75cce15a00443a6e87e33fa3778aa9c65298c59605d2e90d77a36287af3beb24",
+      "mapInfoSha256": "ccb4b66a2f7b7ce1deb72432a740d20368f1e493b142fda9bca65fb5004c9b70",
+      "maps": 33,
+      "portalRows": 68,
+      "missionCount": 60,
+      "missionLocalizationFiles": 120,
+      "stageArtFiles": 34,
+      "baseArtworkWithoutMap": [
+        "Base004.jpg",
+        "Base006.jpg"
+      ],
+      "base004Assets": {
+        "Base004.jpg": "f35ff4553f9e452eeb19ace9137eee5eb03752a2d7adcaaea4f4e4b0dba443b5",
+        "Base004.tble": "757f750f69d49ad2db24cc98d26c03be9446432b07050b6ad382d12543afba76",
+        "Base004_CmdCenter.png": "7233ea75b0fb2e8c4c820e5c2d555c17fa65e9f19a87739f9bcbbd0cfd1d0164",
+        "Base004_Maintenance.png": "3edd881c1c4afd8edf34683e4f80fb702c4e595f86415f07f2b212a7e961cdac",
+        "Base004_Shop.png": "e2e1b2deb4876de8f08f7201d7fc71004186ded220d533c1254dca2c95ae86c5"
+      },
+      "stageArtworkWithoutMap": [],
+      "invalidPortalTargets": [],
+      "invalidPortalEntries": [],
+      "eventOnlyMaps": [
+        "Stage01_08",
+        "Stage01_09",
+        "Stage02_07",
+        "Stage04_12"
+      ],
+      "unreachableWithEventMissions": [],
+      "enemyModelsWithoutSpawnerOrMission": [
+        "Boss_05",
+        "Boss_06",
+        "Boss_07",
+        "Boss_08",
+        "E_Plane_01",
+        "E_Plane_02",
+        "E_Plane_05",
+        "E_Tank_27",
+        "E_Tank_28",
+        "E_Tank_29",
+        "E_Tank_30",
+        "E_Tank_31",
+        "E_Tank_32",
+        "E_Turret_06",
+        "E_Turret_20"
+      ],
+      "modelRowsWithoutMapMissionOrBotAssignment": [
+        "Boss_05",
+        "Boss_06",
+        "Boss_07",
+        "Boss_08",
+        "Bot_D01",
+        "Bot_D02",
+        "Bot_P04",
+        "Bot_P05",
+        "Bot_P06",
+        "Dummy",
+        "E_Plane_01",
+        "E_Plane_02",
+        "E_Plane_05",
+        "E_Tank_27",
+        "E_Tank_28",
+        "E_Tank_29",
+        "E_Tank_30",
+        "E_Tank_31",
+        "E_Tank_32",
+        "E_Turret_06",
+        "E_Turret_20"
+      ],
+      "numericItemIconsOutsideActiveItemTable": [
+        "Icon00010.png",
+        "Icon02001.png",
+        "Icon02002.png",
+        "Icon02003.png",
+        "Icon02006.png",
+        "Icon04101.png",
+        "Icon04102.png",
+        "Icon04204.png",
+        "Icon04205.png",
+        "Icon04206.png",
+        "Icon06001.png",
+        "Icon06002.png",
+        "Icon06003.png",
+        "Icon10311.png",
+        "Icon10312.png",
+        "Icon10313.png",
+        "Icon10314.png",
+        "Icon10315.png",
+        "Icon10316.png",
+        "Icon10317.png",
+        "Icon10318.png",
+        "Icon10319.png",
+        "Icon10320.png",
+        "Icon10321.png",
+        "Icon10331.png",
+        "Icon10332.png",
+        "Icon10333.png",
+        "Icon10334.png",
+        "Icon10335.png",
+        "Icon10336.png",
+        "Icon10337.png",
+        "Icon10338.png",
+        "Icon10339.png",
+        "Icon10340.png"
+      ],
+      "commentedItemRows": 30,
+      "playerWeapons": 102,
+      "shopWeapons": 99,
+      "activeNonCoin": 230,
+      "noObservedPositiveAcquisition": [
+        {
+          "05106": "radar"
+        }
+      ],
+      "tableHashes": {
+        "ItemInfo.tble": "494dd443fd9cd60abf80a3fa6466fe4e430f73a6dd3b5757ecb90e26003ffd83",
+        "WeaponInfo.tble": "48bbfc84eae6381366d3d742febccfdfca09d386121ca424d17f42f0b25e0e06",
+        "ItemRegen.tble": "64ffd0a354bdb196747746fa033db1b9977522ac0f4d32c54996a290aa117041",
+        "MachList.tble": "9170648d5c7a13f802a8203e0ee68aee7e6996ee879bcb85613d2b238c326702",
+        "MapInfo.mcb": "ccb4b66a2f7b7ce1deb72432a740d20368f1e493b142fda9bca65fb5004c9b70",
+        "MachInfo.mcb": "229dacfbe8404d4096b257a75eddcfe200c680b3bffa868a9d0630fe3fadead2",
+        "PartsInfo.mcb": "0ece8aeba4eaf13ad516c867547074aaffd28e1f00d5223c6b76daaf9dfe30f7",
+        "MissionList.tble": "b43674d2c24d380bfcf2d8d2e7295fb485702b154d8a453247015b8a9deaf902",
+        "M021060_kr.tble": "ee61df37118e32c4947fdcf15e8ef44a139e1a02038ec714bd79621b7a224fb8",
+        "M021060_us.tble": "19e73f8ba5fa1f171b269cfd164ef82679c37bdc1cc017cab3a975be1e14c5e0",
+        "Wpn_Laser.wav": "fafab8bd6f950fcc50551f1cda53b47b0a0e502dc9cd4369163fef9d28ae0f79"
+      },
+      "audioCounts": {
+        ".wav": 55
+      },
+      "noDirectAudioNameReference": [
+        "Wpn_Default.wav"
+      ],
+      "uniqueFireSoundNames": 24,
+      "missingFireSoundFiles": [],
+      "laserFireSoundParts": [
+        {
+          "id": "P_Wpn_Lsr_101",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_104",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_105",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_102",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_103",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_106",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_107",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_108",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_111",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_201",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_202",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_203",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_204",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_205",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_206",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_207",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_208",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_209",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_210",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_109",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_110",
+          "kind": "Laser"
+        },
+        {
+          "id": "AS_LASER_01",
+          "kind": "Laser"
+        }
+      ],
+      "laserMountsInMachineModels": {}
+    },
+    "phone130": {
+      "ipaSha256": "c446bab6bb022abc704ce0bad41e8b18e74cec2cec19861dcc630c53d1b1b56b",
+      "armv7Sha256": "183570673665a8a6fc945b343d84f43e1210c4b9c7423b12ef4a187f1fbefa6d",
+      "mapInfoSha256": "ab697612198efce5f9d9e9d8a085fc9f0a51cca683489c57b7edc3ade6b74bc8",
+      "maps": 43,
+      "portalRows": 90,
+      "missionCount": 60,
+      "missionLocalizationFiles": 120,
+      "stageArtFiles": 43,
+      "baseArtworkWithoutMap": [
+        "Base004.jpg"
+      ],
+      "base004Assets": {
+        "Base004.jpg": "f35ff4553f9e452eeb19ace9137eee5eb03752a2d7adcaaea4f4e4b0dba443b5",
+        "Base004.tble": "757f750f69d49ad2db24cc98d26c03be9446432b07050b6ad382d12543afba76",
+        "Base004_CmdCenter.png": "7233ea75b0fb2e8c4c820e5c2d555c17fa65e9f19a87739f9bcbbd0cfd1d0164",
+        "Base004_Maintenance.png": "3edd881c1c4afd8edf34683e4f80fb702c4e595f86415f07f2b212a7e961cdac",
+        "Base004_Shop.png": "e2e1b2deb4876de8f08f7201d7fc71004186ded220d533c1254dca2c95ae86c5"
+      },
+      "stageArtworkWithoutMap": [],
+      "invalidPortalTargets": [],
+      "invalidPortalEntries": [],
+      "eventOnlyMaps": [
+        "Stage01_08",
+        "Stage01_09",
+        "Stage02_07",
+        "Stage04_12"
+      ],
+      "unreachableWithEventMissions": [],
+      "enemyModelsWithoutSpawnerOrMission": [
+        "Boss_05",
+        "Boss_06",
+        "Boss_07",
+        "Boss_08",
+        "E_Plane_01",
+        "E_Plane_02",
+        "E_Plane_05",
+        "E_Tank_30",
+        "E_Turret_06"
+      ],
+      "modelRowsWithoutMapMissionOrBotAssignment": [
+        "Boss_05",
+        "Boss_06",
+        "Boss_07",
+        "Boss_08",
+        "Bot_D01",
+        "Bot_D02",
+        "Bot_P04",
+        "Bot_P05",
+        "Bot_P06",
+        "Dummy",
+        "E_Plane_01",
+        "E_Plane_02",
+        "E_Plane_05",
+        "E_Tank_30",
+        "E_Turret_06"
+      ],
+      "numericItemIconsOutsideActiveItemTable": [
+        "Icon00010.png",
+        "Icon02001.png",
+        "Icon02002.png",
+        "Icon02003.png",
+        "Icon02006.png",
+        "Icon04101.png",
+        "Icon04102.png",
+        "Icon04204.png",
+        "Icon04205.png",
+        "Icon04206.png",
+        "Icon06001.png",
+        "Icon06002.png",
+        "Icon06003.png",
+        "Icon10311.png",
+        "Icon10312.png",
+        "Icon10313.png",
+        "Icon10314.png",
+        "Icon10315.png",
+        "Icon10316.png",
+        "Icon10317.png",
+        "Icon10318.png",
+        "Icon10319.png",
+        "Icon10320.png",
+        "Icon10321.png",
+        "Icon10331.png",
+        "Icon10332.png",
+        "Icon10333.png",
+        "Icon10334.png",
+        "Icon10335.png",
+        "Icon10336.png",
+        "Icon10337.png",
+        "Icon10338.png",
+        "Icon10339.png",
+        "Icon10340.png"
+      ],
+      "commentedItemRows": 30,
+      "playerWeapons": 102,
+      "shopWeapons": 99,
+      "activeNonCoin": 236,
+      "noObservedPositiveAcquisition": [
+        {
+          "05106": "radar"
+        }
+      ],
+      "tableHashes": {
+        "ItemInfo.tble": "96a47c1a5918dea91c06f2e86612cfc586703eb72765ade99d26eca0d74a560b",
+        "WeaponInfo.tble": "bd1fb05ef7a59fcbaf30f1268a2ee177d0cdf2e2214e5d93c2cc2dbf938b5434",
+        "ItemRegen.tble": "64ffd0a354bdb196747746fa033db1b9977522ac0f4d32c54996a290aa117041",
+        "MachList.tble": "9170648d5c7a13f802a8203e0ee68aee7e6996ee879bcb85613d2b238c326702",
+        "MapInfo.mcb": "ab697612198efce5f9d9e9d8a085fc9f0a51cca683489c57b7edc3ade6b74bc8",
+        "MachInfo.mcb": "229dacfbe8404d4096b257a75eddcfe200c680b3bffa868a9d0630fe3fadead2",
+        "PartsInfo.mcb": "0ece8aeba4eaf13ad516c867547074aaffd28e1f00d5223c6b76daaf9dfe30f7",
+        "MissionList.tble": "b43674d2c24d380bfcf2d8d2e7295fb485702b154d8a453247015b8a9deaf902",
+        "M021060_kr.tble": "ee61df37118e32c4947fdcf15e8ef44a139e1a02038ec714bd79621b7a224fb8",
+        "M021060_us.tble": "19e73f8ba5fa1f171b269cfd164ef82679c37bdc1cc017cab3a975be1e14c5e0",
+        "Wpn_Laser.wav": "fafab8bd6f950fcc50551f1cda53b47b0a0e502dc9cd4369163fef9d28ae0f79"
+      },
+      "audioCounts": {
+        ".wav": 54,
+        ".mp3": 1
+      },
+      "noDirectAudioNameReference": [
+        "Wpn_Default.wav"
+      ],
+      "uniqueFireSoundNames": 24,
+      "missingFireSoundFiles": [],
+      "laserFireSoundParts": [
+        {
+          "id": "P_Wpn_Lsr_101",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_104",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_105",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_102",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_103",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_106",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_107",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_108",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_111",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_201",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_202",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_203",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_204",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_205",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_206",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_207",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_208",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_209",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_210",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_109",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_110",
+          "kind": "Laser"
+        },
+        {
+          "id": "AS_LASER_01",
+          "kind": "Laser"
+        }
+      ],
+      "laserMountsInMachineModels": {}
+    },
+    "phone201": {
+      "ipaSha256": "23ff9c74c7d890cc6f28952b4845f6c616bae4bb7207a393f80ed9ed76062d32",
+      "armv7Sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+      "mapInfoSha256": "ab697612198efce5f9d9e9d8a085fc9f0a51cca683489c57b7edc3ade6b74bc8",
+      "maps": 43,
+      "portalRows": 90,
+      "missionCount": 60,
+      "missionLocalizationFiles": 120,
+      "stageArtFiles": 43,
+      "baseArtworkWithoutMap": [
+        "Base004.jpg"
+      ],
+      "base004Assets": {
+        "Base004.jpg": "f35ff4553f9e452eeb19ace9137eee5eb03752a2d7adcaaea4f4e4b0dba443b5",
+        "Base004.tble": "757f750f69d49ad2db24cc98d26c03be9446432b07050b6ad382d12543afba76",
+        "Base004_CmdCenter.png": "7233ea75b0fb2e8c4c820e5c2d555c17fa65e9f19a87739f9bcbbd0cfd1d0164",
+        "Base004_Maintenance.png": "3edd881c1c4afd8edf34683e4f80fb702c4e595f86415f07f2b212a7e961cdac",
+        "Base004_Shop.png": "e2e1b2deb4876de8f08f7201d7fc71004186ded220d533c1254dca2c95ae86c5"
+      },
+      "stageArtworkWithoutMap": [],
+      "invalidPortalTargets": [],
+      "invalidPortalEntries": [],
+      "eventOnlyMaps": [
+        "Stage01_08",
+        "Stage01_09",
+        "Stage02_07",
+        "Stage04_12"
+      ],
+      "unreachableWithEventMissions": [],
+      "enemyModelsWithoutSpawnerOrMission": [
+        "Boss_05",
+        "Boss_06",
+        "Boss_07",
+        "Boss_08",
+        "E_Plane_01",
+        "E_Plane_02",
+        "E_Plane_05",
+        "E_Tank_30",
+        "E_Turret_06"
+      ],
+      "modelRowsWithoutMapMissionOrBotAssignment": [
+        "Boss_05",
+        "Boss_06",
+        "Boss_07",
+        "Boss_08",
+        "Bot_D01",
+        "Bot_D02",
+        "Bot_P04",
+        "Bot_P05",
+        "Bot_P06",
+        "Dummy",
+        "E_Plane_01",
+        "E_Plane_02",
+        "E_Plane_05",
+        "E_Tank_30",
+        "E_Turret_06"
+      ],
+      "numericItemIconsOutsideActiveItemTable": [
+        "Icon00010.png",
+        "Icon02001.png",
+        "Icon02002.png",
+        "Icon02003.png",
+        "Icon02006.png",
+        "Icon04101.png",
+        "Icon04102.png",
+        "Icon04204.png",
+        "Icon04205.png",
+        "Icon04206.png",
+        "Icon06001.png",
+        "Icon06002.png",
+        "Icon06003.png",
+        "Icon10311.png",
+        "Icon10312.png",
+        "Icon10313.png",
+        "Icon10314.png",
+        "Icon10315.png",
+        "Icon10316.png",
+        "Icon10317.png",
+        "Icon10318.png",
+        "Icon10319.png",
+        "Icon10320.png",
+        "Icon10321.png",
+        "Icon10331.png",
+        "Icon10332.png",
+        "Icon10333.png",
+        "Icon10334.png",
+        "Icon10335.png",
+        "Icon10336.png",
+        "Icon10337.png",
+        "Icon10338.png",
+        "Icon10339.png",
+        "Icon10340.png",
+        "Icon10501.png",
+        "Icon10502.png",
+        "Icon10503.png",
+        "Icon10504.png"
+      ],
+      "commentedItemRows": 34,
+      "playerWeapons": 106,
+      "shopWeapons": 103,
+      "activeNonCoin": 242,
+      "noObservedPositiveAcquisition": [
+        {
+          "05106": "radar"
+        }
+      ],
+      "tableHashes": {
+        "ItemInfo.tble": "32a3af1c86513692304a8710e0c05144d99aeb307b5386a7230b6f0dc8bc8012",
+        "WeaponInfo.tble": "5943dd62f3452e5c13bb209066870113dcfdfd3b9e570760ea8d7baa8bca8278",
+        "ItemRegen.tble": "64ffd0a354bdb196747746fa033db1b9977522ac0f4d32c54996a290aa117041",
+        "MachList.tble": "9170648d5c7a13f802a8203e0ee68aee7e6996ee879bcb85613d2b238c326702",
+        "MapInfo.mcb": "ab697612198efce5f9d9e9d8a085fc9f0a51cca683489c57b7edc3ade6b74bc8",
+        "MachInfo.mcb": "011e8d82f288e0f7a5e2c324f4ac450c36c752771461b59b643ef590c9d25297",
+        "PartsInfo.mcb": "5c030e00f2dea2c3a20dba5300ea8721e35d33ebfbf55e5938b468b6f3ad768e",
+        "MissionList.tble": "b43674d2c24d380bfcf2d8d2e7295fb485702b154d8a453247015b8a9deaf902",
+        "M021060_kr.tble": "ee61df37118e32c4947fdcf15e8ef44a139e1a02038ec714bd79621b7a224fb8",
+        "M021060_us.tble": "19e73f8ba5fa1f171b269cfd164ef82679c37bdc1cc017cab3a975be1e14c5e0",
+        "Wpn_Laser.wav": "fafab8bd6f950fcc50551f1cda53b47b0a0e502dc9cd4369163fef9d28ae0f79"
+      },
+      "audioCounts": {
+        ".wav": 56,
+        ".mp3": 1
+      },
+      "noDirectAudioNameReference": [
+        "SFX_GameOver.wav",
+        "Wpn_Default.wav",
+        "Wpn_Laser01.wav"
+      ],
+      "uniqueFireSoundNames": 24,
+      "missingFireSoundFiles": [],
+      "laserFireSoundParts": [
+        {
+          "id": "P_Wpn_Lsr_101",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_104",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_105",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_102",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_103",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_106",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_107",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_108",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_111",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_201",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_202",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_203",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_204",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_205",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_206",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_207",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_208",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_209",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_210",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_109",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_110",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Sni_101",
+          "kind": "Sniper"
+        },
+        {
+          "id": "P_Wpn_Sni_102",
+          "kind": "Sniper"
+        },
+        {
+          "id": "P_Wpn_Sni_103",
+          "kind": "Sniper"
+        },
+        {
+          "id": "P_Wpn_Sni_104",
+          "kind": "Sniper"
+        },
+        {
+          "id": "AS_LASER_01",
+          "kind": "Laser"
+        }
+      ],
+      "laserMountsInMachineModels": {}
+    },
+    "hd100": {
+      "ipaSha256": "31ebed81043fe9a7c5ab25a7adaf13eaa3629f885bce18c3793f5d78f571cc56",
+      "armv7Sha256": "ff9db936a0fd54f58df1b8a5333a08c897efe87772029f17f06df9e45d28de9f",
+      "mapInfoSha256": "ab697612198efce5f9d9e9d8a085fc9f0a51cca683489c57b7edc3ade6b74bc8",
+      "maps": 43,
+      "portalRows": 90,
+      "missionCount": 60,
+      "missionLocalizationFiles": 120,
+      "stageArtFiles": 43,
+      "baseArtworkWithoutMap": [
+        "Base004.jpg"
+      ],
+      "base004Assets": {
+        "Base004.jpg": "ac91ccb2bb46071adca0b390b80e84a737dc718f19c0352880f5b5c569884cf7",
+        "Base004.tbl": "24720df667b74acdf326a647c64f5aa9ae04e1f6513d0972b1c92290722ff5e6",
+        "Base004.tble": "a72470bae2bcd19764e72df352666955ebda15f88e5b544eb22f24914a81ba68",
+        "Base004_CmdCenter.png": "5250ee368707ee1875fe487795c4d2a2b9b71e954017708a678dd877adc963f8",
+        "Base004_Maintenance.png": "c1cc3b466e69d40d0f08140f7b93af21eecd7b2e75accad72b0cece0ba1f1b04",
+        "Base004_Shop.png": "41ac46d34620dc5d5fc39ad02b787fa42ae9417338c15090fa22c647a34ba489"
+      },
+      "stageArtworkWithoutMap": [],
+      "invalidPortalTargets": [],
+      "invalidPortalEntries": [],
+      "eventOnlyMaps": [
+        "Stage01_08",
+        "Stage01_09",
+        "Stage02_07",
+        "Stage04_12"
+      ],
+      "unreachableWithEventMissions": [],
+      "enemyModelsWithoutSpawnerOrMission": [
+        "Boss_05",
+        "Boss_06",
+        "Boss_07",
+        "Boss_08",
+        "E_Plane_01",
+        "E_Plane_02",
+        "E_Plane_05",
+        "E_Tank_30",
+        "E_Turret_06"
+      ],
+      "modelRowsWithoutMapMissionOrBotAssignment": [
+        "Boss_05",
+        "Boss_06",
+        "Boss_07",
+        "Boss_08",
+        "Bot_D01",
+        "Bot_D02",
+        "Bot_P04",
+        "Bot_P05",
+        "Bot_P06",
+        "Dummy",
+        "E_Plane_01",
+        "E_Plane_02",
+        "E_Plane_05",
+        "E_Tank_30",
+        "E_Turret_06"
+      ],
+      "numericItemIconsOutsideActiveItemTable": [
+        "Icon00010.png",
+        "Icon02001.png",
+        "Icon02002.png",
+        "Icon02003.png",
+        "Icon02006.png",
+        "Icon04101.png",
+        "Icon04102.png",
+        "Icon04204.png",
+        "Icon04205.png",
+        "Icon04206.png",
+        "Icon06001.png",
+        "Icon06002.png",
+        "Icon06003.png",
+        "Icon10311.png",
+        "Icon10312.png",
+        "Icon10313.png",
+        "Icon10314.png",
+        "Icon10315.png",
+        "Icon10316.png",
+        "Icon10317.png",
+        "Icon10318.png",
+        "Icon10319.png",
+        "Icon10320.png",
+        "Icon10321.png",
+        "Icon10331.png",
+        "Icon10332.png",
+        "Icon10333.png",
+        "Icon10334.png",
+        "Icon10335.png",
+        "Icon10336.png",
+        "Icon10337.png",
+        "Icon10338.png",
+        "Icon10339.png",
+        "Icon10340.png"
+      ],
+      "commentedItemRows": 30,
+      "playerWeapons": 110,
+      "shopWeapons": 103,
+      "activeNonCoin": 246,
+      "noObservedPositiveAcquisition": [
+        {
+          "05106": "radar"
+        },
+        {
+          "10501": "Sn-IGn"
+        },
+        {
+          "10502": "Sn-Eagle"
+        },
+        {
+          "10503": "Sn-Hawk"
+        },
+        {
+          "10504": "Sn-HawkEye"
+        }
+      ],
+      "tableHashes": {
+        "ItemInfo.tble": "4d1914c5b95b9639804497af0fedaef6cc9e021d7c38c1a0d26808ae53708434",
+        "WeaponInfo.tble": "c601174aee2bdfb3ed55a087dc6f41f97664f3a670ba999f9401c725d5a6439b",
+        "ItemRegen.tble": "64ffd0a354bdb196747746fa033db1b9977522ac0f4d32c54996a290aa117041",
+        "MachList.tble": "9170648d5c7a13f802a8203e0ee68aee7e6996ee879bcb85613d2b238c326702",
+        "MapInfo.mcb": "ab697612198efce5f9d9e9d8a085fc9f0a51cca683489c57b7edc3ade6b74bc8",
+        "MachInfo.mcb": "011e8d82f288e0f7a5e2c324f4ac450c36c752771461b59b643ef590c9d25297",
+        "PartsInfo.mcb": "5c030e00f2dea2c3a20dba5300ea8721e35d33ebfbf55e5938b468b6f3ad768e",
+        "MissionList.tble": "b43674d2c24d380bfcf2d8d2e7295fb485702b154d8a453247015b8a9deaf902",
+        "M021060_kr.tble": "ee61df37118e32c4947fdcf15e8ef44a139e1a02038ec714bd79621b7a224fb8",
+        "M021060_us.tble": "f43916ea135a7a7e5339961cc3075d1cc496b6742ced2872b006f46d6f15b380",
+        "Wpn_Laser.wav": "fafab8bd6f950fcc50551f1cda53b47b0a0e502dc9cd4369163fef9d28ae0f79"
+      },
+      "audioCounts": {
+        ".wav": 57,
+        ".mp3": 1
+      },
+      "noDirectAudioNameReference": [
+        "SFX_GameOver.wav",
+        "Wpn_Default.wav",
+        "Wpn_Laser01.wav"
+      ],
+      "uniqueFireSoundNames": 24,
+      "missingFireSoundFiles": [],
+      "laserFireSoundParts": [
+        {
+          "id": "P_Wpn_Lsr_101",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_104",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_105",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_102",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_103",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_106",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_107",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_108",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_111",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_201",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_202",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_203",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_204",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_205",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_206",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_207",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_208",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_209",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_210",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_109",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_110",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Sni_101",
+          "kind": "Sniper"
+        },
+        {
+          "id": "P_Wpn_Sni_102",
+          "kind": "Sniper"
+        },
+        {
+          "id": "P_Wpn_Sni_103",
+          "kind": "Sniper"
+        },
+        {
+          "id": "P_Wpn_Sni_104",
+          "kind": "Sniper"
+        },
+        {
+          "id": "AS_LASER_01",
+          "kind": "Laser"
+        }
+      ],
+      "laserMountsInMachineModels": {}
+    },
+    "hd103": {
+      "ipaSha256": "7eeb36590b3c19a28741e21671379029d9023864ceb241a5b8560eef045112d2",
+      "armv7Sha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+      "mapInfoSha256": "ab697612198efce5f9d9e9d8a085fc9f0a51cca683489c57b7edc3ade6b74bc8",
+      "maps": 43,
+      "portalRows": 90,
+      "missionCount": 60,
+      "missionLocalizationFiles": 120,
+      "stageArtFiles": 43,
+      "baseArtworkWithoutMap": [
+        "Base004.png"
+      ],
+      "base004Assets": {
+        "Base004.png": "49cfa1f79d1c204957a9d10d15136743af939fcb5c3cc0e255781e408ebdf8a5",
+        "Base004.tbl": "fb9616103944f2a40b30c22242f85ec3faf3d03b006302e50035f80345c51bf6",
+        "Base004.tble": "0f86dd7013450dcb2160c0a8a34d6e838ee1ab54d3912ff4448cd7baa08e0c9e",
+        "Base004_CmdCenter.png": "5250ee368707ee1875fe487795c4d2a2b9b71e954017708a678dd877adc963f8",
+        "Base004_Maintenance.png": "c1cc3b466e69d40d0f08140f7b93af21eecd7b2e75accad72b0cece0ba1f1b04",
+        "Base004_Shop.png": "41ac46d34620dc5d5fc39ad02b787fa42ae9417338c15090fa22c647a34ba489"
+      },
+      "stageArtworkWithoutMap": [],
+      "invalidPortalTargets": [],
+      "invalidPortalEntries": [],
+      "eventOnlyMaps": [
+        "Stage01_08",
+        "Stage01_09",
+        "Stage02_07",
+        "Stage04_12"
+      ],
+      "unreachableWithEventMissions": [],
+      "enemyModelsWithoutSpawnerOrMission": [
+        "Boss_05",
+        "Boss_06",
+        "Boss_07",
+        "Boss_08",
+        "E_Plane_01",
+        "E_Plane_02",
+        "E_Plane_05",
+        "E_Tank_30",
+        "E_Turret_06"
+      ],
+      "modelRowsWithoutMapMissionOrBotAssignment": [
+        "Boss_05",
+        "Boss_06",
+        "Boss_07",
+        "Boss_08",
+        "Bot_D01",
+        "Bot_D02",
+        "Bot_P04",
+        "Bot_P05",
+        "Bot_P06",
+        "Dummy",
+        "E_Plane_01",
+        "E_Plane_02",
+        "E_Plane_05",
+        "E_Tank_30",
+        "E_Turret_06"
+      ],
+      "numericItemIconsOutsideActiveItemTable": [
+        "Icon00010.png",
+        "Icon02001.png",
+        "Icon02002.png",
+        "Icon02003.png",
+        "Icon02006.png",
+        "Icon04101.png",
+        "Icon04102.png",
+        "Icon04204.png",
+        "Icon04205.png",
+        "Icon04206.png",
+        "Icon06001.png",
+        "Icon06002.png",
+        "Icon06003.png",
+        "Icon10311.png",
+        "Icon10312.png",
+        "Icon10313.png",
+        "Icon10314.png",
+        "Icon10315.png",
+        "Icon10316.png",
+        "Icon10317.png",
+        "Icon10318.png",
+        "Icon10319.png",
+        "Icon10320.png",
+        "Icon10321.png",
+        "Icon10331.png",
+        "Icon10332.png",
+        "Icon10333.png",
+        "Icon10334.png",
+        "Icon10335.png",
+        "Icon10336.png",
+        "Icon10337.png",
+        "Icon10338.png",
+        "Icon10339.png",
+        "Icon10340.png"
+      ],
+      "commentedItemRows": 30,
+      "playerWeapons": 110,
+      "shopWeapons": 103,
+      "activeNonCoin": 246,
+      "noObservedPositiveAcquisition": [
+        {
+          "05106": "radar"
+        },
+        {
+          "10501": "Sn-IGn"
+        },
+        {
+          "10502": "Sn-Eagle"
+        },
+        {
+          "10503": "Sn-Hawk"
+        },
+        {
+          "10504": "Sn-HawkEye"
+        }
+      ],
+      "tableHashes": {
+        "ItemInfo.tble": "4d1914c5b95b9639804497af0fedaef6cc9e021d7c38c1a0d26808ae53708434",
+        "WeaponInfo.tble": "c601174aee2bdfb3ed55a087dc6f41f97664f3a670ba999f9401c725d5a6439b",
+        "ItemRegen.tble": "64ffd0a354bdb196747746fa033db1b9977522ac0f4d32c54996a290aa117041",
+        "MachList.tble": "9170648d5c7a13f802a8203e0ee68aee7e6996ee879bcb85613d2b238c326702",
+        "MapInfo.mcb": "ab697612198efce5f9d9e9d8a085fc9f0a51cca683489c57b7edc3ade6b74bc8",
+        "MachInfo.mcb": "011e8d82f288e0f7a5e2c324f4ac450c36c752771461b59b643ef590c9d25297",
+        "PartsInfo.mcb": "5c030e00f2dea2c3a20dba5300ea8721e35d33ebfbf55e5938b468b6f3ad768e",
+        "MissionList.tble": "b43674d2c24d380bfcf2d8d2e7295fb485702b154d8a453247015b8a9deaf902",
+        "M021060_kr.tble": "ee61df37118e32c4947fdcf15e8ef44a139e1a02038ec714bd79621b7a224fb8",
+        "M021060_us.tble": "f43916ea135a7a7e5339961cc3075d1cc496b6742ced2872b006f46d6f15b380",
+        "Wpn_Laser.wav": "fafab8bd6f950fcc50551f1cda53b47b0a0e502dc9cd4369163fef9d28ae0f79"
+      },
+      "audioCounts": {
+        ".wav": 57,
+        ".mp3": 1
+      },
+      "noDirectAudioNameReference": [
+        "SFX_GameOver.wav",
+        "Wpn_Default.wav",
+        "Wpn_Laser01.wav"
+      ],
+      "uniqueFireSoundNames": 24,
+      "missingFireSoundFiles": [],
+      "laserFireSoundParts": [
+        {
+          "id": "P_Wpn_Lsr_101",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_104",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_105",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_102",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_103",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_106",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_107",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_108",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_111",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_201",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_202",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_203",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_204",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_205",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_206",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_207",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_208",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_209",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_210",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_109",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Lsr_110",
+          "kind": "Laser"
+        },
+        {
+          "id": "P_Wpn_Sni_101",
+          "kind": "Sniper"
+        },
+        {
+          "id": "P_Wpn_Sni_102",
+          "kind": "Sniper"
+        },
+        {
+          "id": "P_Wpn_Sni_103",
+          "kind": "Sniper"
+        },
+        {
+          "id": "P_Wpn_Sni_104",
+          "kind": "Sniper"
+        },
+        {
+          "id": "AS_LASER_01",
+          "kind": "Laser"
+        }
+      ],
+      "laserMountsInMachineModels": {}
+    }
+  },
+  "nativeREA": {
+    "phone201": {
+      "literalInventory": "ev_1461dd8b9afa15ba9b625c1dc7901ed67634dd7219c0e733e96f8a314b6ea03f",
+      "review": [
+        {
+          "string": "MapInfo.mcb",
+          "address": "0x5efa0",
+          "id": "ev_80f0cb960292894d06d2a9e7365471aaae5e762a50f286d8ba6fb6222ab0057f",
+          "refs": [
+            "0x14438"
+          ]
+        },
+        {
+          "string": "ItemInfo.tble",
+          "address": "0x5efcc",
+          "id": "ev_50521affb06e367606f93cb254aa50c81182344bbecfb07cd56d8dc427832d4e",
+          "refs": [
+            "0x14822",
+            "0x43b04"
+          ]
+        },
+        {
+          "string": "WeaponInfo.tble",
+          "address": "0x5f034",
+          "id": "ev_4c5e5d11de4ac7f530476b3340404f4720deec0110cddfb4e6ccee4de82d940b",
+          "refs": [
+            "0x15190",
+            "0x1849e"
+          ]
+        },
+        {
+          "string": "ItemRegen.tble",
+          "address": "0x5f544",
+          "id": "ev_6bbf7b890f05ed1af072ff53d0a546905c45ecc02cc2c8e3596956278f56c9c2",
+          "refs": [
+            "0x1e89a"
+          ]
+        },
+        {
+          "string": "MissionList.tble",
+          "address": "0x5f690",
+          "id": "ev_ad63605722db839607384fe1c6574aeb2ac2adaa011e690572b11b9a55b44aeb",
+          "refs": [
+            "0x22d02"
+          ]
+        },
+        {
+          "string": "Base001",
+          "address": "0x5f74c",
+          "id": "ev_534fab851199725a39e839c17534cc536519c926cd2794d6b74e255f0ad427b7",
+          "refs": [
+            "0x259b0",
+            "0x36582",
+            "0x66c50",
+            "0x674b0"
+          ]
+        },
+        {
+          "string": "Base002",
+          "address": "0x5f754",
+          "id": "ev_08a14fe57359f3d9d4476d690fd8f44e2f8441796dc60837dae5a8ef06ca4b8b",
+          "refs": [
+            "0x66c54",
+            "0x674b4"
+          ]
+        },
+        {
+          "string": "Base003",
+          "address": "0x5f75c",
+          "id": "ev_fecd658f7570932b312ba05b24da610d0732b8b5d5e106009b67edb78bbc7604",
+          "refs": [
+            "0x66c58",
+            "0x674b8"
+          ]
+        },
+        {
+          "string": "Base005",
+          "address": "0x5f764",
+          "id": "ev_661eb20f118150dd3ccc2764b855095b16e34848652072f4fb46e1958183012d",
+          "refs": [
+            "0x66c5c",
+            "0x674bc"
+          ]
+        },
+        {
+          "string": "Base006",
+          "address": "0x5f76c",
+          "id": "ev_85b63e2e5bc08770436a6e58722cedb98f4965e4e3da666c1150887288a09f1c",
+          "refs": [
+            "0x66c60",
+            "0x674c0"
+          ]
+        },
+        {
+          "string": "Base004",
+          "address": "0x5f774",
+          "id": "ev_989db6f814284ea087734de1ee412b2a3825938a6e0e0cbfa84bcb075c5417a0",
+          "refs": [
+            "0x66c64",
+            "0x674c4"
+          ]
+        }
+      ],
+      "mapInfo": "ev_96cac3f2358380d7e682465bc90e76930a5d6224c22353981c27594ac0aef7bd",
+      "airliftConstructor": "ev_0f9c66d8246b186d3d128f2758cff6a0dd216292dd8e7f892e1bd1c24014cced",
+      "airliftTable": "ev_532714e8537cb83da76771e38d2f653f5ce423cadc8a854d3ca0c331becc956e",
+      "visitedWriter": "ev_18fb2f3246a6b1b41990fa6ba41dea146b9feafaa6f6e6e02541b04d37a476d0",
+      "visitedTable": "ev_0ce02cde6f85b1bea0418526d9c01c95a611465ca2f24d3c4538f091411247ef",
+      "emptyDescription": "ev_98d1b5492d04433abf9a3559d183365393f3a2b0cced9a211ac3d3aad3c5af56"
+    },
+    "hd100": {
+      "storeKitAndSelectors": "ev_1b47f9b1f8aab555d791b769a6aab4f0bcb0d5f54af0c8d2909aca83bf18ef53",
+      "inventorySelectorRefs": [
+        {
+          "i": 0,
+          "id": "ev_4cdf0530ed83f2c6cca667bd05d82e49bfb2d735b1106035677cb25003aef065",
+          "val": [
+            "0xddd9e",
+            "0xdddea",
+            "0xdf9d8",
+            "0xdfe64",
+            "0x14f4c0",
+            "0x1780ec"
+          ]
+        },
+        {
+          "i": 1,
+          "id": "ev_cc67f4e6c7e4467877b4c8e3fc86ab76ef26cf94bbadd7a1b564103cda58aa43",
+          "val": [
+            "0xc34b4",
+            "0xd07a6",
+            "0xd96cc",
+            "0xd9ee4",
+            "0xe442a",
+            "0xe49ec",
+            "0xe7676",
+            "0x14ef88",
+            "0x1780e0"
+          ]
+        },
+        {
+          "i": 2,
+          "id": "ev_5760ec01e42c06deb12c423a39d8d5a5dcbb1637cd0fc6619d6d76d08abb80d7",
+          "val": [
+            "0x156424"
+          ]
+        },
+        {
+          "i": 3,
+          "id": "ev_8c50cce592029f50d72f4453a54e8a6a017b757aed706de255faf71ca2f5a66f",
+          "val": [
+            "0x144180",
+            "0x169e50"
+          ]
+        }
+      ],
+      "resolvedInventoryConsumers": [
+        {
+          "address": "0xddd9e",
+          "id": "ev_dda4c2f33d3761f8247cc8b3ca8252c3079774227f56cb0e170457697b50b866",
+          "owner": "-[GuiCommandCenter_acceptMission:]",
+          "procedure": "0xddc38"
+        },
+        {
+          "address": "0xdddea",
+          "id": "ev_79e3edf1e77e167e314d3f125836440c8944677aab41a132152eacb49ec96e2a",
+          "owner": "-[GuiCommandCenter_acceptMission:]",
+          "procedure": "0xddc38"
+        },
+        {
+          "address": "0xdf9d8",
+          "id": "ev_3d92a2cb4bcb2add0c7c85dfab81d950195bb4a3e658bbc8e0af01f1c8397a65",
+          "owner": "-[GuiCommandCenter_completeMission:]",
+          "procedure": "0xdf750"
+        },
+        {
+          "address": "0xdfe64",
+          "id": "ev_d048dc691c6b56c12d9a2bea707d9e8b3b58cc1e36c7bb5fddfb188755373397",
+          "owner": "-[GuiCommandCenter_completeMission:]",
+          "procedure": "0xdf750"
+        },
+        {
+          "address": "0xc34b4",
+          "id": "ev_6b5b205144a54d3ab58ac04daa462b1f498f2175413b689b9bdeb9965c66cc54",
+          "owner": "-[GobHvM_Player_pickupItem:Count:]",
+          "procedure": "0xc33b0"
+        },
+        {
+          "address": "0xd07a6",
+          "id": "ev_2a5bb4757fb79e8acfbf09dcb5803a3e66bb8c195037a53e5ab3a0979ac8c2ab",
+          "owner": "-[Inventory_addItemWithCode:Count:]",
+          "procedure": "0xd0774"
+        },
+        {
+          "address": "0xd96cc",
+          "id": "ev_f73e637c375ce39a5e5e0070d03a32744bf2b81d57a891bb49c51b2227bd071e",
+          "owner": "-[DlgInven_handleButton:]",
+          "procedure": "0xd8efc"
+        },
+        {
+          "address": "0xd9ee4",
+          "id": "ev_7e02bbc7d518b82ee7855d193b4f7c74cea5e53327039e814e6d755fae9168d7",
+          "owner": "-[DlgInven_handleButton:]",
+          "procedure": "0xd8efc"
+        },
+        {
+          "address": "0xe442a",
+          "id": "ev_0edfe105885b290c0d74d354bc98c4b2e22dc588ab912b4c268722153d5903f9",
+          "owner": "-[GuiMaintenance_handleButton:]",
+          "procedure": "0xe3ee4"
+        },
+        {
+          "address": "0xe49ec",
+          "id": "ev_7f430cef1fe78681e4fcaa3eafe2d1fc7c22589fb60163245b69737445352035",
+          "owner": "-[GuiMaintenance_handleButton:]",
+          "procedure": "0xe3ee4"
+        },
+        {
+          "address": "0xe7676",
+          "id": "ev_267800f507fa613e7e8ea2ebe643df2077ddc79fef611f1d6395302916090373",
+          "owner": "-[GuiShop_handleButton:]",
+          "procedure": "0xe6f08"
+        }
+      ]
+    },
+    "hd103": {
+      "selectorOwners": [
+        {
+          "query": "0x25ff6",
+          "id": "ev_457ca0d01ec3176ffb34a730354c7fca4928fd22fac61b12136a1cc778908238",
+          "val": {
+            "name": "GuiCommandCenter::acceptMission:",
+            "address": "0x25e90"
+          }
+        },
+        {
+          "query": "0x26042",
+          "id": "ev_e9e23417675b131ad9fb7e7dde502f6aab4823bdb67321fdfeb2d642e901db6c",
+          "val": {
+            "name": "GuiCommandCenter::acceptMission:",
+            "address": "0x25e90"
+          }
+        },
+        {
+          "query": "0x27c30",
+          "id": "ev_99e5545755b919ed9f1e3b4f6147f50af5cf7aa44580ed34eeabdd6c034fb8c6",
+          "val": {
+            "name": "GuiCommandCenter::completeMission:",
+            "address": "0x279a8"
+          }
+        },
+        {
+          "query": "0x280bc",
+          "id": "ev_de8243922139591030658597e3f9583ea327833b0454addb2374fba121e9818e",
+          "val": {
+            "name": "GuiCommandCenter::completeMission:",
+            "address": "0x279a8"
+          }
+        },
+        {
+          "query": "0xb558",
+          "id": "ev_0e0aab9b167fa1b9af83c6a11e839525f3748115ba180b3dc2ba14ff7caf5227",
+          "val": {
+            "name": "GobHvM_Player::pickupItem:Count:",
+            "address": "0xb454"
+          }
+        },
+        {
+          "query": "0x189e6",
+          "id": "ev_49d85be3473c25a2ff720810bb806596f11f891e3fb7c596d50d4e12b6959d05",
+          "val": {
+            "name": "Inventory::addItemWithCode:Count:",
+            "address": "0x189b4"
+          }
+        },
+        {
+          "query": "0x2190c",
+          "id": "ev_60bf17b9a8865b07c1877ce43c97f6b1ea20c4d393867369d6d812048f79c4c3",
+          "val": {
+            "name": "DlgInven::handleButton:",
+            "address": "0x2113c"
+          }
+        },
+        {
+          "query": "0x22124",
+          "id": "ev_c9e8466724c5ec5afd130cb139822b49e164ee3fa2b78305910018a6efa1de65",
+          "val": {
+            "name": "DlgInven::handleButton:",
+            "address": "0x2113c"
+          }
+        },
+        {
+          "query": "0x2c73e",
+          "id": "ev_7eef8248599a85dfe2b139b2979c88890e8515cf741a00d204aee92e19b22468",
+          "val": {
+            "name": "GuiMaintenance::handleButton:",
+            "address": "0x2c1f8"
+          }
+        },
+        {
+          "query": "0x2cd00",
+          "id": "ev_b233410bf0dc4074a466e64b6ebce19e625d4d6b19b1512db73bb77445ef6a0d",
+          "val": {
+            "name": "GuiMaintenance::handleButton:",
+            "address": "0x2c1f8"
+          }
+        },
+        {
+          "query": "0x2f98a",
+          "id": "ev_39c2c66bb8cfb752db72ea2a24a554cf6f799035a45ba05d4963cf67e2b79c85",
+          "val": {
+            "name": "GuiShop::handleButton:",
+            "address": "0x2f21c"
+          }
+        },
+        {
+          "query": "0x1a46e",
+          "id": "ev_d9915687300dc25809593e6e7e475f8ccdbef8b3abcd34327ec3a8895813df3a",
+          "val": {
+            "name": "Action::initWithValue:",
+            "address": "0x1a3f8"
+          }
+        },
+        {
+          "query": "0x466f0",
+          "id": "ev_c46630d64021c490336a3259b6e7c6896a767b8b363e7f432933a05aeb9573f5",
+          "val": [
+            "0x5e034"
+          ]
+        }
+      ],
+      "queries": [
+        {
+          "address": "strings",
+          "id": "ev_4eecf1133de0fe9efc87b172ef923ac5bf49fea2ae3f187d898b9b71cd9ce2ab"
+        },
+        {
+          "address": "0x246d4",
+          "id": "ev_2462a313073660aa5f5e351e4224d0c9ea66ba572178156e268270bbac1d62b8"
+        },
+        {
+          "address": "0x1f5b8",
+          "id": "ev_0b4e17c3071ea12a457f42889115f801798edbd7800f262b5ec71a2bef429cec"
+        },
+        {
+          "address": "0x1f838",
+          "id": "ev_e0dc1cf4e8103a20dba1c2de7ddc479b7014e822a8afbe40fc0dc90fe689cb9a"
+        },
+        {
+          "address": "0x30e4c",
+          "id": "ev_38b94dd08bedd570c08520c34872e0ca231a37f4bc4e0daf6de56634505685f5"
+        },
+        {
+          "address": "0x17e10",
+          "id": "ev_798cfdc2f8fbccc54991f163636568347af316cc6aaa2254990a16ec7bccee44"
+        },
+        {
+          "address": "0x189b4",
+          "id": "ev_e4c643712bfdae801db64e1ca9ae99b1467d3b46cc981939988642a93833b763"
+        }
+      ],
+      "airliftArray": "ev_ca0cf2cd41a8fa2afa580b5920001edf97318b681c4821f981cac9072271c00b",
+      "bindings": {
+        "openMap": "ev_99213570b47c5e20f8d42b7f49e7b480f0f1113c3bc8e11d4770a9f97a2a7685",
+        "openItemInfo": "ev_f7ab31409ff29ca9f4d544092a688466f763550947ea57c17df81fb27dcb8aaf",
+        "itemSpawnerInit": "ev_b3c79d7e886f8086f7f07e8ec3fd0d20a6fa01756fd5ca9e6f9637b2ac3e7189",
+        "itemSpawnerDraw": "ev_7eeed4d3e997fac36f703a3a31650de63e5fe4dd32a02ed3d0fdb6f55b528330",
+        "missionActionReader": "ev_d9915687300dc25809593e6e7e475f8ccdbef8b3abcd34327ec3a8895813df3a"
+      }
+    }
+  },
+  "unavailableOrCommentedWeaponsInHD103": [
+    {
+      "code": "02001",
+      "name": "Dash attack",
+      "active": false,
+      "type": "SpAtk",
+      "attr": "BSQC",
+      "level": 0,
+      "weaponPart": "none",
+      "weaponType": null,
+      "wav": null,
+      "icon": "Icon02001.png",
+      "iconExists": true,
+      "partExists": false,
+      "partImageExists": false
+    },
+    {
+      "code": "02002",
+      "name": "Flame throwing",
+      "active": false,
+      "type": "SpAtk",
+      "attr": "BSQC",
+      "level": 0,
+      "weaponPart": "none",
+      "weaponType": null,
+      "wav": null,
+      "icon": "Icon02002.png",
+      "iconExists": true,
+      "partExists": false,
+      "partImageExists": false
+    },
+    {
+      "code": "02003",
+      "name": "EMP shock",
+      "active": false,
+      "type": "SpAtk",
+      "attr": "BSQC",
+      "level": 0,
+      "weaponPart": "none",
+      "weaponType": null,
+      "wav": null,
+      "icon": "Icon02003.png",
+      "iconExists": true,
+      "partExists": false,
+      "partImageExists": false
+    },
+    {
+      "code": "02006",
+      "name": "Air-strike : Laser",
+      "active": false,
+      "type": "SpAtk",
+      "attr": "BSQC",
+      "level": 0,
+      "weaponPart": "AS_LASER_01",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon02006.png",
+      "iconExists": true,
+      "partExists": false,
+      "partImageExists": false
+    },
+    {
+      "code": "10311",
+      "name": "LS-D",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 1,
+      "weaponPart": "P_Wpn_Lsr_101",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10311.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10312",
+      "name": "LS-102",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 14,
+      "weaponPart": "P_Wpn_Lsr_102",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10312.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10313",
+      "name": "LS-103",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 17,
+      "weaponPart": "P_Wpn_Lsr_103",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10313.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10314",
+      "name": "LS-D2",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 5,
+      "weaponPart": "P_Wpn_Lsr_104",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10314.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10315",
+      "name": "LS-10",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 9,
+      "weaponPart": "P_Wpn_Lsr_105",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10315.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10316",
+      "name": "LS-103D",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 19,
+      "weaponPart": "P_Wpn_Lsr_106",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10316.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10317",
+      "name": "LS-L20",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 21,
+      "weaponPart": "P_Wpn_Lsr_107",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10317.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10318",
+      "name": "LS-L21",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 23,
+      "weaponPart": "P_Wpn_Lsr_108",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10318.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10319",
+      "name": "LS-X100",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 57,
+      "weaponPart": "P_Wpn_Lsr_109",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10319.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10320",
+      "name": "LS-UL1",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 59,
+      "weaponPart": "P_Wpn_Lsr_110",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10320.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10321",
+      "name": "LS-L30",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 26,
+      "weaponPart": "P_Wpn_Lsr_111",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10321.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10331",
+      "name": "LS-27",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 28,
+      "weaponPart": "P_Wpn_Lsr_201",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10331.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10332",
+      "name": "LS-27s",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 31,
+      "weaponPart": "P_Wpn_Lsr_202",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10332.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10333",
+      "name": "LS-B1",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 34,
+      "weaponPart": "P_Wpn_Lsr_203",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10333.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10334",
+      "name": "LS-47",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 38,
+      "weaponPart": "P_Wpn_Lsr_204",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10334.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10335",
+      "name": "LS-47 mk2",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 41,
+      "weaponPart": "P_Wpn_Lsr_205",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10335.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10336",
+      "name": "LS-S20",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 44,
+      "weaponPart": "P_Wpn_Lsr_206",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10336.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10337",
+      "name": "LS-S21",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 48,
+      "weaponPart": "P_Wpn_Lsr_207",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10337.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10338",
+      "name": "LS-S100",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 50,
+      "weaponPart": "P_Wpn_Lsr_208",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10338.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10339",
+      "name": "LS-K100",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 53,
+      "weaponPart": "P_Wpn_Lsr_209",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10339.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10340",
+      "name": "LS-K102",
+      "active": false,
+      "type": "PtWpn",
+      "attr": "BS",
+      "level": 55,
+      "weaponPart": "P_Wpn_Lsr_210",
+      "weaponType": "Laser",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10340.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10501",
+      "name": "Sn-IGn",
+      "active": true,
+      "type": "PtWpn",
+      "attr": "S",
+      "level": 41,
+      "weaponPart": "P_Wpn_Sni_101",
+      "weaponType": "Sniper",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10501.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10502",
+      "name": "Sn-Eagle",
+      "active": true,
+      "type": "PtWpn",
+      "attr": "S",
+      "level": 55,
+      "weaponPart": "P_Wpn_Sni_102",
+      "weaponType": "Sniper",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10502.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10503",
+      "name": "Sn-Hawk",
+      "active": true,
+      "type": "PtWpn",
+      "attr": "S",
+      "level": 70,
+      "weaponPart": "P_Wpn_Sni_103",
+      "weaponType": "Sniper",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10503.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    },
+    {
+      "code": "10504",
+      "name": "Sn-HawkEye",
+      "active": true,
+      "type": "PtWpn",
+      "attr": "S",
+      "level": 85,
+      "weaponPart": "P_Wpn_Sni_104",
+      "weaponType": "Sniper",
+      "wav": "Wpn_Laser.wav",
+      "icon": "Icon10504.png",
+      "iconExists": true,
+      "partExists": true,
+      "partImageExists": true
+    }
+  ],
+  "normalNonShopWeapons": {
+    "10011": "starting MG-16",
+    "10111": "starting ML-1",
+    "10145": "ML-901 mission M021060"
+  },
+  "ml901RequirementSources": [
+    {
+      "group": "Tank_L27",
+      "weight": 5,
+      "maxCount": 2,
+      "machines": [
+        "E_Tank_27",
+        "E_Tank_28",
+        "E_Tank_29",
+        "E_Tank_30",
+        "E_Tank_31",
+        "E_Tank_32",
+        "E_Turret_16",
+        "E_Turret_17",
+        "E_Turret_18",
+        "E_Turret_19",
+        "E_Turret_20"
+      ]
+    },
+    {
+      "group": "Boss04",
+      "weight": 100,
+      "maxCount": 3,
+      "machines": [
+        "Boss_04"
+      ]
+    }
+  ],
+  "ml901EnemyMaps": {
+    "E_Tank_27": [
+      "Stage03_03"
+    ],
+    "E_Tank_28": [
+      "Stage03_02",
+      "Stage03_06"
+    ],
+    "E_Tank_29": [
+      "Stage03_01"
+    ],
+    "E_Tank_30": [],
+    "E_Tank_31": [
+      "Stage03_01",
+      "Stage03_05"
+    ],
+    "E_Tank_32": [
+      "Stage03_05"
+    ],
+    "E_Turret_16": [
+      "Stage04_04"
+    ],
+    "E_Turret_17": [
+      "Stage04_01"
+    ],
+    "E_Turret_18": [
+      "Stage03_05",
+      "Stage03_06",
+      "Stage04_01"
+    ],
+    "E_Turret_19": [
+      "Stage04_01"
+    ],
+    "E_Turret_20": [
+      "Stage03_04",
+      "Stage03_05",
+      "Stage03_07"
+    ],
+    "Boss_04": [
+      "Stage04_12"
+    ]
+  },
+  "radarMissingCount": {
+    "originalActions": [
+      [
+        "M012040",
+        "kr",
+        "AcceptAct",
+        "giveItem 05106"
+      ],
+      [
+        "M012040",
+        "us",
+        "AcceptAct",
+        "giveItem 05106"
+      ]
+    ],
+    "hd103Effect": "Zero quantity; Inventory add requires a positive count",
+    "phone201Effect": "Constructor leaves quantity unwritten and parser only writes given quantity; actual runtime result not measured",
+    "rea": {
+      "hd103Action": "ev_a4a608fa5bd866ea7248ca98d4a08cddbe51e04da19bd69ad6f9eb10d7603467",
+      "hd103Inventory": "ev_135af19fe511ad57c72a7d2a5c1c43a1820a97f8f9894cc4d50ccbae966e3765",
+      "phone201Constructor": "ev_b547664f601ad0cd4978041b5bf9343b974b6351c0e8180f3504824100b93d15",
+      "phone201Parser": "ev_a16d1f9592d3f5e08f33a71595723d8b1b3487b6201aaa8300e48975e316249c",
+      "phone201AcceptRecord": "ev_bd0d2386dff9b24630211ac65c4621d3516a38bbc439ff9120444c594d5cccdd"
+    }
+  },
+  "airliftHD103": {
+    "order": [
+      "Base001",
+      "Base002",
+      "Base003",
+      "Base005",
+      "Base006",
+      "Base004"
+    ],
+    "priceCr": [
+      50,
+      300,
+      1000,
+      4000,
+      16000,
+      24000
+    ],
+    "sixthVisitSaveOffset": "0x1b74"
+  },
+  "knownEventGateMissions": [
+    {
+      "file": "M001070_kr.tble",
+      "row": [
+        "AcceptAct",
+        "openGate Stage01_02"
+      ],
+      "missionList": [
+        "M001070",
+        "Base001",
+        "Base001",
+        "0",
+        "M001060"
+      ]
+    },
+    {
+      "file": "M001070_us.tble",
+      "row": [
+        "AcceptAct",
+        "openGate Stage01_02"
+      ],
+      "missionList": [
+        "M001070",
+        "Base001",
+        "Base001",
+        "0",
+        "M001060"
+      ]
+    },
+    {
+      "file": "M001120_kr.tble",
+      "row": [
+        "AcceptAct",
+        "openGate Stage01_07"
+      ],
+      "missionList": [
+        "M001120",
+        "Base002",
+        "Base002",
+        "0",
+        "M001110"
+      ]
+    },
+    {
+      "file": "M001120_us.tble",
+      "row": [
+        "AcceptAct",
+        "openGate Stage01_07"
+      ],
+      "missionList": [
+        "M001120",
+        "Base002",
+        "Base002",
+        "0",
+        "M001110"
+      ]
+    },
+    {
+      "file": "M001170_kr.tble",
+      "row": [
+        "AcceptAct",
+        "openGate Stage02_06"
+      ],
+      "missionList": [
+        "M001170",
+        "Base002",
+        "Base002",
+        "0",
+        "M001160"
+      ]
+    },
+    {
+      "file": "M001170_us.tble",
+      "row": [
+        "AcceptAct",
+        "openGate Stage02_06"
+      ],
+      "missionList": [
+        "M001170",
+        "Base002",
+        "Base002",
+        "0",
+        "M001160"
+      ]
+    },
+    {
+      "file": "M001230_kr.tble",
+      "row": [
+        "AcceptAct",
+        "openGate Stage04_11"
+      ],
+      "missionList": [
+        "M001230",
+        "Base005",
+        "Base005",
+        "0",
+        "M001220"
+      ]
+    },
+    {
+      "file": "M001230_us.tble",
+      "row": [
+        "AcceptAct",
+        "openGate Stage04_11"
+      ],
+      "missionList": [
+        "M001230",
+        "Base005",
+        "Base005",
+        "0",
+        "M001220"
+      ]
+    }
+  ],
+  "sameLaserSample": {
+    "hm1IpaSha256": "477c672f92110c6020be3f744dfa7a3456739e6f970c66715e3b7b3cd32b7776",
+    "name": "Wpn_Laser.wav",
+    "sha256": "fafab8bd6f950fcc50551f1cda53b47b0a0e502dc9cd4369163fef9d28ae0f79",
+    "bytes": 116118,
+    "wave": {
+      "channels": 1,
+      "width_bytes": 2,
+      "rate_hz": 48000,
+      "frames": 57239,
+      "pcm_sha256": "1eb1c5c35be0ab7a521c2a6a1d6fdf90643cf84c2749ffe87aed6e3eee656481"
+    }
+  },
+  "cheatNativeOpenAL": [
+    {
+      "path": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/final-validation/cheat-ipad-report.json",
+      "sha256": "bc445bbc51ace5331abad5e61cda4029014e7f8a5670deef2220ede566811fc7",
+      "frames": 2100,
+      "scenarios": 126,
+      "active_weapon_defs": 110,
+      "laser_in_openal_progressing_samples": true,
+      "laser_parts_fired_by_case": {
+        "53": {
+          "label": "combat 10501 + 10502",
+          "emissions": {
+            "P_Wpn_Sni_101": 7,
+            "P_Wpn_Sni_102": 6
+          }
+        },
+        "54": {
+          "label": "combat 10503 + 10504",
+          "emissions": {
+            "P_Wpn_Sni_103": 6,
+            "P_Wpn_Sni_104": 7
+          }
+        },
+        "125": {
+          "label": "synchronized original ready / menu pause / resume P_Wpn_Sni_104",
+          "emissions": {
+            "P_Wpn_Sni_104": 1
+          }
+        }
+      }
+    },
+    {
+      "path": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/final-validation/cheat-phone-report.json",
+      "sha256": "4a019efa13d0ac9251e9713e430190283958fccf17e034902ca29302681ede63",
+      "frames": 2100,
+      "scenarios": 126,
+      "active_weapon_defs": 110,
+      "laser_in_openal_progressing_samples": true,
+      "laser_parts_fired_by_case": {
+        "53": {
+          "label": "combat 10501 + 10502",
+          "emissions": {
+            "P_Wpn_Sni_101": 4,
+            "P_Wpn_Sni_102": 3
+          }
+        },
+        "54": {
+          "label": "combat 10503 + 10504",
+          "emissions": {
+            "P_Wpn_Sni_103": 3,
+            "P_Wpn_Sni_104": 2
+          }
+        },
+        "125": {
+          "label": "synchronized original ready / menu pause / resume P_Wpn_Sni_104",
+          "emissions": {
+            "P_Wpn_Sni_104": 1
+          }
+        }
+      }
+    }
+  ],
+  "cheatCoreTrace": {
+    "frames": 2100,
+    "scenarios": 126,
+    "playRequests": {
+      "53": 10,
+      "54": 12,
+      "125": 1
+    },
+    "Wpn_Laser01.wavRequests": 0
+  },
+  "readOnlyLocalEvidence": {
+    ".local/evidence/unused-content-world/audit.py": "f450ac088c670eb79d5aa06c171575f94795769780ac1cdf1c56fc1b74a4e734",
+    ".local/evidence/unused-content-world/world-audit.json": "fe85b14a007884734ef034531ee783341448970941193da2d45127f524c45945",
+    ".local/evidence/unused-content-world/world-summary.json": "ac7b05da201499562ebb04b904849e7d717b68293881b4950de2d27c50f71f4d",
+    ".local/evidence/unused-content-world/base004-hd103-crop.jpg": "7e5b2d690c7627362cdb0d697ad1fad2a9252ea1a4ee1266503ce5bec06b58d7",
+    ".local/evidence/unused-content-world/stages-sheet.jpg": "00ed216d5f532d97bd867e8a2d4a4b4962fa05221c90d78ea0f65f759731b707",
+    ".local/evidence/unused-content-weapons/audit.py": "8a85fe0d51d18ba0ac9af4c3e38c7ff879fdbfe582dfccbc6cda8240d98c371c",
+    ".local/evidence/unused-content-weapons/weapon-census.json": "0e13c5f99317c07650f16d37bd11654a840d10a6c229f193e2d61f59d28ac7c2",
+    ".local/evidence/unused-content-weapons/map-filtered.py": "bdac200975d54b1ae85441c896e7a27b29f5f5eb9c7a222fe71793ed748b74b5",
+    ".local/evidence/unused-content-weapons/map-filtered-item-routes.json": "83f3e5e0193f105d0c5900c772948711ed5619af70ae98298bf73e58bd35b896",
+    ".local/evidence/unused-content-audio/audit_audio.py": "4280a8dbe4ebaa4d2686890a09d39790633eb2ca9273e0333dc5f28a8e8e7779",
+    ".local/evidence/unused-content-audio/audio-audit.json": "586ae0b261c79c987ee5a2ee9a8f9691f871f51cb2ca684f6635e9816dcbb1f2",
+    ".local/evidence/unused-content-audio/probe_audio.cpp": "4d28e23b1fbc79689db893776d1557f5ea928d27fd4b1b733794ccb216af5833",
+    ".local/evidence/unused-content-audio/cheat-laser-trace.log": "9bcb793b222ee5bf2aad9f6a518efa54053ddbcec4634878df5fde8a0b08c69e",
+    ".local/evidence/original-unused-content-20261119.694MyT/asset-links.py": "f212eb91892b816ed43326ca8ceeb94c6e1701c9bbfc0e7ede612a193fa5a119",
+    ".local/evidence/original-unused-content-20261119.694MyT/asset-links.json": "06e580b21dcc29b572e8d2c1a7f22fc5e0f0d0b18436170f9807e7b63d5f3bca",
+    ".local/evidence/original-unused-content-20261119.694MyT/native-package-literals.json": "f3c0431e73b259dbe2d89e58aa273880f563da50fdf3502e0960d36c490aa76f"
+  },
+  "positiveExceptionToUnassignedIcons": {
+    "asset": "Icon00010.png",
+    "use": "Phone 2.0.1 experience reward popup; enemy coin generator is limited to 00001 through 00009 in HD 1.0.3",
+    "phone201": "ev_df6c0f6059f3e6d16a6b6c09acdf420135144abdbf26463727227abf90f8fd63",
+    "hd103": "ev_3863ea0731e92b9cfec9150a6acb6070ce3a954a1c1c966dc832adb7bb31671c"
+  }
+}
