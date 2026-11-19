@@ -1,3 +1,9 @@
+## 화이트마운틴 전장과 미등장 콘텐츠 기술조사 — 2026-11-19
+
+MachDefense 설원 4종과 헤비멕 2 HD 1.0.0에서 찾은 설원 PNG 6장, 양쪽 게임의 공통 지면 비교 이미지, 적·무기·스킬의 호스트 검사와 신규 전장 작업 범위를 게시했다. 앞선 원본 조사에 설원 PNG 누락의 정정과 후속 보고 링크를 넣었다. 기존 누적 목록에서 두 보고서를 열 수 있다. [기술조사 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/white-mountain-feasibility-20261119.html)
+
+비공개 사이트 버전 319, 소스 `a84b264`, 배포 `appgdep_6afedd55fab88191ac402101a3a0b2e1`의 성공을 확인했다. 인증 요청 6건에서 두 본문과 JSON·비교 그림·누적 목록을 대조했고, 비인증 요청 3건은 모두 403이었다. 접근은 기존 본인 1명이다. [게시 근거](evidence/white-mountain-feasibility-publication-20261119.json)
+
 ## 원본의 화이트마운틴·미연결 무기·레이저음 — 2026-11-19
 
 원본 6종의 맵·입수 경로·발사음 조사와 판본별 근거 목록을 기존 비공개 사이트에 게시했다. 이전 iPhone 심층진단의 화이트마운틴 조사 항목과 누적 목록에서 연결한다. 조사 커밋 `9fac612`, 사이트 소스 `7359851`, 배포 `appgdep_6afed0b4aee4819185a5984cf214aab6`다. 인증 요청 4건에서 본문과 링크를 확인했고, 다운로드 근거를 풀어 저장소 JSON과 바이트 단위로 대조했다. 페이지와 근거 파일 모두 비인증 요청은 403이었다. [비공개 보고서](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/original-unused-content-20261119.html) · [원본 목록과 근거](evidence/original-unused-content-20261119.json)
