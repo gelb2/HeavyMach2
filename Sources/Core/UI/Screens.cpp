@@ -884,7 +884,7 @@ void Screens::Impl::phoneShop(bool maintenance){
     {RegionScope art(*this,Region::artScene);image(menu::background(layout.configuration(),"ShopBG.png"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.stock.bg");image(menu::phoneAsset("MaintenanceBG.jpg"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.equip.bg");}
     inventory(menu::inventoryGrid,!maintenance,true);
     {RegionScope equipment(*this,Region::phoneEquipment);equip(menu::equipmentRoot,9,true);bots(menu::botRoot,true);
-        if(state.selectedBot>=0)addButton(Panel::root,6310,"Btn_Disarm.png",{288,124.5f},2,1,0,1,{},0,{}, {1,1});
+        if(state.selectedBot>=0)addButton(Panel::root,6310,menu::phoneAsset("Btn_Disarm.png"),{288,equipmentLayout.disarmY},2,1,0,1,Size{72,61.5f},0,{}, {1,1},true,9,false);
         addButton(Panel::root,9205,"",{97.5f,34.5f},1,1,0,0,Size{150,60});}
     if(!maintenance){
         {RegionScope header(*this,Region::phoneCategoryHeader);image(menu::phoneAsset("ShopCategory.png"),{172.5f,menu::categoryY},1,8,unsigned(std::clamp(state.shopCategory,0,4)));

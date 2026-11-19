@@ -24,6 +24,7 @@ struct EquipmentLayout {
     DisplayTransform equipment,tab,inventory,pages,header,footer;
     ClipRect inventoryClip,pagesClip;
     unsigned inventoryRows;
+    float disarmY;
 };
 inline EquipmentLayout equipmentLayout(const DisplayConfiguration& c){
     const auto [width,height]=c.canvas;
@@ -71,6 +72,7 @@ inline EquipmentLayout equipmentLayout(const DisplayConfiguration& c){
         hudUnits(rightTop),hudUnits(rightBottom),
         {rightMiddle.map({247,0}).x,gridBottom,200*rightScale,gridSpan},
         {split,pagerCenter-pagerHalf,width-split,2*pagerHalf},rows,
+        std::max(83.f,leftMiddleSource+21.f)*1.5f,
     };
     return result;
 }

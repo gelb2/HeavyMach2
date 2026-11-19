@@ -2,6 +2,7 @@
 #import <UIKit/UIKit.h>
 #import <CommonCrypto/CommonDigest.h>
 #include "Core/Presentation/MenuArtwork.hpp"
+#include "Core/Presentation/MenuGridLayout.hpp"
 #include "Platform/Apple/HM2GameRuntime.hpp"
 #include "Platform/Apple/HM2ConcurrentRuntime.hpp"
 #import "Platform/Apple/HM2Renderer.h"
@@ -337,6 +338,21 @@ UIImage* image(NSData* rgba,CGSize size){
         auto* shot=[XCTAttachment attachmentWithImage:image(renderer.readRGBA,CGSizeMake(width,height))];
         shot.name=[NSString stringWithFormat:@"phone-equipment-%ux%u",width,height];
         shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];
+        if(width==912&&height==420){
+            state.selectedBot=2;ui.refresh(state,0);
+            hm2::Frame selected,selectedPreparation;ui.appendPreparation(selectedPreparation);ui.append(selected,0);
+            [renderer prepareFrame:selectedPreparation];[renderer prepareFrame:selected];
+            [renderer captureNextFrame];[renderer drawFrame:selected layer:layer];
+            const auto tabTop=hm2::menu::equipmentLayout(display).bands[2].clip.height;
+            bool sawDisarm=false;
+            for(const auto& node:selected.sprites)if(node.image=="PhoneMenu/Btn_Disarm.png"){
+                sawDisarm=true;
+                XCTAssertGreaterThan(node.center.y-node.size.height*.5f,tabTop);
+            }
+            XCTAssertTrue(sawDisarm);
+            auto* chosen=[XCTAttachment attachmentWithImage:image(renderer.readRGBA,CGSizeMake(width,height))];
+            chosen.name=@"phone-equipment-third-bot-disarm";chosen.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:chosen];
+        }
     }
     window.hidden=YES;window.rootViewController=nil;
 }
