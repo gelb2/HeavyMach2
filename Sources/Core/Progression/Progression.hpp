@@ -36,7 +36,7 @@ struct Action {
     static constexpr int placeSpawner=8;
     int type=0,value=0;
     std::string item,enemy,place;
-    int x=0,y=0;
+    int x=0,y=0,activationRadius=0;
 };
 struct MissionDefinition {
     std::string id,name,owner,completePlace,previous,comment;int level=0;

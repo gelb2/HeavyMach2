@@ -15,9 +15,9 @@
     "Base004": {"name": "White Mt. Base"}
   },
   "links": [
-    [["Stage04_09", 3, 450, 474], ["SnowPass", 0, -474, 0]],
-    [["SnowPass", 1, 474, 0], ["Base004", 0, -116, 10]],
-    [["Base004", 1, 65, 10], ["SnowBasin", 0, -474, 0]],
+    [["Stage04_09", 3, 450, 474], ["Base004", 0, -116, 10]],
+    [["Base004", 1, 65, 10], ["SnowPass", 0, -474, 0]],
+    [["SnowPass", 1, 474, 0], ["SnowBasin", 0, -474, 0]],
     [["SnowBasin", 1, 474, 0], ["SnowField", 0, -474, 0]],
     [["SnowField", 1, 474, 0], ["SnowRidge", 0, -474, 0]],
     [["SnowRidge", 1, 474, 0], ["SnowFort", 0, -474, 0]],

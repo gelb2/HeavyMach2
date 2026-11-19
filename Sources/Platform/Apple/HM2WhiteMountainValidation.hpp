@@ -206,8 +206,13 @@ public:
         std::stable_sort(routes_.begin(),routes_.end(),[](const Route& a,const Route& b){
             return isExpansion(a.source)<isExpansion(b.source);
         });
-        require(routes_.size()==14&&routes_.front().source=="Stage04_09"&&routes_.front().gate.linkMap=="SnowPass",
-                "Expected the original approach and 14 White Mountain portal routes");
+        require(routes_.size()==14&&routes_.front().source=="Stage04_09"&&routes_.front().gate.linkMap=="Base004",
+                "Expected desert 01 to lead directly to White Mountain in the 14 portal routes");
+        for(const auto& [button,destination]:{std::pair{2005u,"Stage04_09"},std::pair{2006u,"SnowPass"}}){
+            require(std::any_of(routes_.begin(),routes_.end(),[&](const auto& route){
+                return route.source=="Base004"&&route.baseExit==button&&route.gate.linkMap==destination;
+            }),"White Mountain base exit points to the wrong map");
+        }
         report(@"running");
     }
     void report(NSString* status,NSString* failure=@""){

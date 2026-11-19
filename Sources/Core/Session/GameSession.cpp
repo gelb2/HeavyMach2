@@ -655,7 +655,9 @@ bool GameSession::enterField(std::string_view map,int gate){
             if(action.type==5)setup.missionObjects.push_back({MissionFieldObject::Kind::item,action.item,{float(action.x),float(action.y)}});
             else if(action.type==6)setup.missionObjects.push_back({MissionFieldObject::Kind::enemy,action.enemy});
             else if(action.type==7)setup.openEventGate=true;
-            else if(action.type==progression::Action::placeSpawner)setup.missionSpawners.push_back({action.enemy,{float(action.x),float(action.y)}});
+            else if(action.type==progression::Action::placeSpawner){
+                setup.missionSpawners.push_back({action.enemy,{float(action.x),float(action.y)},float(action.activationRadius)});
+            }
         }
     }
     setup.map=map;setup.gate=gate;setup.playerHP=p.slot().hp();setup.equipment=p.equipment->codes();setup.random=&p.random;setup.initialRenderTime=p.clock.renderTime();setup.initialWorldTime=p.worldTime;setup.offsetInsideGate=true;setup.isSave=p.worldSaveAllowed;

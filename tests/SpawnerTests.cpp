@@ -19,6 +19,15 @@ int main(){
     for(Vec2 point: {Vec2{1024,0},Vec2{0,-1024}}){Host edge;EnemySpawner s({"E_Tank_01",point},false);s.tick(.0166,{},edge);assert(!edge.spawns);s.tick(.5,point,edge);assert(!edge.spawns);s.tick(1,point,edge);assert(edge.spawns==1);}
     Host inside;EnemySpawner strict({"E_Tank_01",{std::nextafter(1024.f,0.f),0}},false);strict.tick(.0166,{},inside);assert(inside.spawns==1);
     Host failure;failure.success=false;EnemySpawner failed({"E_Tank_01",{}},false);failed.tick(.0166,{},failure);assert(failed.state().regenCount==1);
+    Host approachHost;
+    EnemySpawner approach({"Boss_05",{0,70},240},true);
+    approach.tick(.02,{200,250},approachHost);
+    assert(!approachHost.spawns);
+    approach.tick(1,{240,70},approachHost);
+    assert(approachHost.spawns==1);
+    approach.enemyDead(2,approachHost);
+    approach.tick(400,{0,70},approachHost);
+    assert(approachHost.spawns==1);
     Host bossHost;EnemySpawner boss({"Boss_01",{}},false,{0,-1,0,1});boss.tick(10,{},bossHost);assert(!bossHost.spawns&&boss.state().checkTime==-1);
     Host renewed;EnemySpawner camera({"E_Tank_01",{}},false,{0,-1,0,1});camera.tick(1,{},renewed);assert(!renewed.spawns&&renewed.cameraChecks==0);camera.tick(2,{},renewed);assert(!renewed.spawns&&renewed.cameraChecks==1);renewed.camera=false;camera.tick(3,{},renewed);assert(renewed.spawns==1);
     const auto oldWorld=clock.worldTime();const auto oldRender=clock.renderTime();clock.step(true);assert(clock.worldTime()==oldWorld&&clock.renderTime()>oldRender);const auto n=clock.frames();assert(!clock.step(false,false)&&clock.frames()==n);

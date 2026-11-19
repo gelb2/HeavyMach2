@@ -26,6 +26,9 @@ def apply_campaign_missions(directory, definition, maps, append_rows):
         x, y = mission['at']
         if type(x) is not int or type(y) is not int or max(abs(x), abs(y)) > 400:
             raise ValueError(f'Invalid campaign boss position: {stage} {(x,y)}')
+        radius = mission['activationRadius']
+        if type(radius) is not int or not 1 <= radius <= 1024:
+            raise ValueError(f'Invalid campaign boss approach radius: {mission_id}')
         hp = int(machines[enemy]['HP'])
         # The last original boss contract awards roughly 3.33 Cr and XP per HP.
         reward = hp*3
@@ -37,13 +40,13 @@ def apply_campaign_missions(directory, definition, maps, append_rows):
                 raise ValueError(f'Invalid or duplicate campaign mission text: {path.name}')
             rows = (
                 ('Category','Value'), ('Name',name),
-                ('AcptComment',comment), ('AcceptAct',f'placeSpawner {enemy} {stage} {x} {y}'),
+                ('AcptComment',comment), ('AcceptAct',f'placeSpawner {enemy} {stage} {x} {y} {radius}'),
                 ('Require',f'killAt {enemy} 1 {stage}'), ('CompleteInf','return'),
                 ('CompleteAct',f'giveMoney {reward}'), ('CompleteAct',f'giveExp {reward}'),
             )
             path.write_text(''.join(f'{kind}\t{text}\n' for kind,text in rows), encoding='utf-8')
         existing.add(mission_id)
         reports.append(dict(id=mission_id,map=stage,model=enemy,hitPoints=hp,level=level,
-                            previous=previous,credits=reward,experience=reward))
+                            previous=previous,credits=reward,experience=reward,activationRadius=radius))
     append_rows(original_missions, mission_rows)
     return reports

@@ -31,7 +31,8 @@ class WhiteMountainBossValidation final:public NativeValidationScenario {
     std::uint64_t bossID_=0;
     int beforeReward_=0,afterReward_=0,reward_=0,lowestHP_=0;
     std::uint64_t playerShots_=0,enemyShots_=0,bossShots_=0,kills_=0,playRequests_=0,damageCalls_=0;
-    float bossShotDistance_=0;
+    Vec2 spawnPoint_;
+    float bossShotDistance_=0, entryDistance_=0, activationRadius_=0;
     std::uintptr_t pointer_=500;
     bool done_=false,active_=true,audio_=true,deathCapture_=false,engaged_=false;
 
@@ -98,6 +99,12 @@ class WhiteMountainBossValidation final:public NativeValidationScenario {
         const auto defs=definitions();
         const auto mission=std::find_if(defs.missions().begin(),defs.missions().end(),[this](const auto& m){return m.id==current().mission;});
         require(mission!=defs.missions().end()&&mission->owner=="Base004","Missing authored White Mountain boss mission");
+        const auto spawn=std::find_if(mission->acceptActions.begin(),mission->acceptActions.end(),[](const auto& action){
+            return action.type==progression::Action::placeSpawner;
+        });
+        require(spawn!=mission->acceptActions.end()&&spawn->activationRadius>0,"Missing authored boss approach radius");
+        spawnPoint_={float(spawn->x),float(spawn->y)};
+        activationRadius_=float(spawn->activationRadius);
         reward_=0;
         for(const auto& action:mission->completeActions)if(action.type==0)reward_+=action.value;
         require(reward_>0,"Missing White Mountain boss credit reward");
@@ -200,8 +207,27 @@ class WhiteMountainBossValidation final:public NativeValidationScenario {
         auto* battle=game.battle();
         const auto boss=target();
         if(!bossID_){
-            if(!boss){require(ticks_-stepStarted_<180,"Accepted mission did not spawn its boss");return;}
-            require(boss->boss&&boss->hp==current().health,"The authored boss did not start at full original HP");
+            const auto player=battle->player().position;
+            const Vec2 delta{spawnPoint_.x-player.x,spawnPoint_.y-player.y};
+            const auto distance=std::hypot(delta.x,delta.y);
+            const auto elapsed=ticks_-stepStarted_;
+            if(elapsed<=50){
+                require(!boss&&distance>400.f,"Boss is already present at the arrival gate");
+                entryDistance_=distance;
+                if(elapsed==12)capture(layer,@"arrival");
+                return;
+            }
+            if(!boss){
+                require(elapsed<800,"Player approached but the accepted boss did not spawn");
+                if(distance>activationRadius_&&(!lastApproach_||ticks_-lastApproach_>=72)){
+                    const auto fraction=std::min(1.f-160.f/distance,140.f/distance);
+                    require(worldTap({player.x+delta.x*fraction,player.y+delta.y*fraction}),"Boss arena approach input failed");
+                    lastApproach_=ticks_;
+                }
+                return;
+            }
+            require(distance<=activationRadius_&&boss->boss&&boss->hp==current().health,
+                    "The authored boss did not spawn within the approach radius at full HP");
             bossID_=boss->id;
         }
         if(ticks_%12==0)observeFiring();
@@ -213,7 +239,7 @@ class WhiteMountainBossValidation final:public NativeValidationScenario {
             const Vec2 delta{boss->position.x-player.x,boss->position.y-player.y};
             const float distance=std::hypot(delta.x,delta.y);
             if(!bossFirstShot_&&shotsByBoss(combat)>0){bossFirstShot_=ticks_;bossShotDistance_=distance;}
-            require(ticks_-stepStarted_<820,"The boss never fired its own weapons before Player attack");
+            require(ticks_-stepStarted_<1500,"The boss never fired its own weapons before Player attack");
             if(!bossFirstShot_&&distance>170.f&&(!lastApproach_||ticks_-lastApproach_>=72)){
                 // Enemy detection requires less than 200 logical units.
                 // Walk nearby without tapping the actor and starting an attack.
@@ -302,7 +328,7 @@ class WhiteMountainBossValidation final:public NativeValidationScenario {
             require(game.state().commandListVisible&&game.state().completedMission.dataId.empty()&&game.state().credits==afterReward_,
                     "Reopening Command paid the same boss mission again");
             [results_ addObject:@{@"mission":string(current().mission),@"map":string(current().map),@"boss":string(current().boss),
-                @"bossInitialHP":@(current().health),@"playerShots":@(playerShots_),@"enemyShots":@(enemyShots_),
+                @"bossInitialHP":@(current().health),@"entryDistance":@(entryDistance_),@"playerShots":@(playerShots_),@"enemyShots":@(enemyShots_),
                 @"bossShots":@(bossShots_),@"firstBossShotDistance":@(bossShotDistance_),@"kills":@(kills_),
                 @"damageCalls":@(damageCalls_),@"effectPlayRequests":@(playRequests_),@"sampledPlayingEffects":[[played_ allObjects] sortedArrayUsingSelector:@selector(compare:)],
                 @"repairKits":@(repairs_),@"lowestPlayerHP":@(lowestHP_),@"reward":@(reward_),@"firstCredits":@(beforeReward_),

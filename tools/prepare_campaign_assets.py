@@ -184,18 +184,26 @@ def import_snow_images(directory, definition):
     return copied
 
 
-def base_exits(directory):
+def base_exits(directory, definition):
+    assets = {'Stage04_09': 'Btn_GoDesert01.png', 'SnowPass': 'Btn_GoSnowPass.png'}
+    routes = {start[1]: assets[end[0]] for link in definition['links']
+              for start, end in (link, link[::-1]) if start[0] == 'Base004'}
+    if routes.keys() != {0, 1}:
+        raise ValueError('White Mountain needs two consecutive base exits')
+    outputs = []
     for location, y, x in ((directory, -190, -233), (directory/'PhoneMenu', -72, -148)):
         table_path = location/'Base004.tble'
         if not table_path.exists():
             raise ValueError('Prepare the original Phone menu and HD resources first')
         rows = []
-        for index, destination in enumerate(('SnowPass', 'SnowBasin')):
-            button = 'Btn_Go'+destination+'.png'
+        for index, button in sorted(routes.items()):
             shutil.copyfile(AUTHORING/button, location/button)
+            outputs.append((location/button).relative_to(directory).as_posix())
             offset = 68 if location == directory else 42
             rows.append(('Button', button, x, y-offset*index, 1, 5+index))
         append_rows(table_path, rows)
+        outputs.append(table_path.relative_to(directory).as_posix())
+    return outputs
 
 
 def prepare(output=OUTPUT):
@@ -222,11 +230,9 @@ def prepare(output=OUTPUT):
         images = import_snow_images(pending, definition)
         phone_manifest = pending/'PhoneMenu/manifest.json'
         phone_source = digest(phone_manifest.read_bytes())
-        base_exits(pending)
+        exits = base_exits(pending, definition)
         phone_manifest.unlink()
-        patched = ['MapInfo.mcb', 'MapList.tble', 'Base004.tble', 'PhoneMenu/Base004.tble',
-                   'Btn_GoSnowPass.png', 'Btn_GoSnowBasin.png',
-                   'PhoneMenu/Btn_GoSnowPass.png', 'PhoneMenu/Btn_GoSnowBasin.png']
+        patched = ['MapInfo.mcb', 'MapList.tble', *exits]
         patched.extend([*aircraft_patches, *items_patches, 'MissionList.tble'])
         for mission in missions:
             patched.extend(f"{mission['id']}_{locale}.tble" for locale in ('kr', 'us'))

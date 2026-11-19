@@ -34,10 +34,11 @@ int authoredInteger(std::string_view text,int minimum,int maximum){
 Action action(std::string_view text){
     const auto w=words(text);Action a;if(w.empty())return a;
     if(w[0]=="placeSpawner"){
-        if(w.size()!=5)throw std::runtime_error("Invalid campaign spawner action");
+        if(w.size()!=5&&w.size()!=6)throw std::runtime_error("Invalid campaign spawner action");
         a.type=Action::placeSpawner;
         a.enemy=word(w,1);a.place=word(w,2);
         a.x=authoredInteger(w[3],-490,490);a.y=authoredInteger(w[4],-490,490);
+        if(w.size()==6)a.activationRadius=authoredInteger(w[5],1,1024);
         return a;
     }
     constexpr std::string_view names[]={"giveMoney","giveExp","giveItem","takeItem","warpTo","setItem","setEnemy","openGate"};

@@ -1,3 +1,7 @@
+## 2026-11-20 화이트마운틴과 두 실기기 Release
+
+화이트마운틴 기지 출구를 Desert 01·SnowPass로 연결하고, 설원 보스가 접근 후 등장하도록 수정했다. 두 시뮬레이터에서 각 포털 14방향과 보스 4건을 확인했다. iPhone Air와 iPad Air 13형에 같은 정식 앱을 설치했다. 여섯 기지 방문을 기록한 iPad 저장을 양쪽에서 다시 읽어 대조했다. [실행 기록](docs/white-mountain-dual-release-20261120.md)
+
 ## 2026-11-19 실기기 Release 및 iPhone 상점 TODO
 
 `f8e82d8`의 Source Release를 iPhone Air·iPad Air 13인치에 설치했다. 실행 전 저장 내용 일치, 실기기 상점 페이지·웨이스트랜드 출구·Skyway 이동·더블탭과 기지 복귀를 확인했다. iPhone BUY와 Equip의 겹침은 캡처로 보존했다. 원본 Phone판 재캡처·스크롤·각 아이템 크기 대조를 기존 상점 TODO에 연결했다. [설치·캡처 기록](docs/dual-release-installation-20261119.md)
