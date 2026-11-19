@@ -425,6 +425,13 @@ struct ConcurrentValidation::Impl {
         if(game.state().hpRate<.65f)worldQuick(index,0,scene->player().position);
         const auto& map=descriptions[index].map;const bool aircraft=map=="Stage02_07"||map=="Stage03_04",turret=map=="Stage01_02";
         if(!aircraft&&!turret)return;const auto kind=aircraft?MachineKind::aircraft:MachineKind::turret;
+        const auto provokeAircraft=[&](Vec2 world){
+            // The enemy audit needs a surviving target to observe retaliation.
+            // Use the original payload here. The quick-slot cases test scaling separately.
+            scene->startAirStrike(&catalog.weapon("AS_NUCLEAR_01"),2.f,world);
+            c.worldStrikeUsed=true;
+            c.lastWorldStrike=counters.frames;
+        };
         if(game.display().enabled){
             const auto enemies=scene->enemies();if(!c.worldTarget&&counters.frames>=2)for(const auto& e:enemies)if(e.kind==kind&&e.hp>0&&!e.corpse){c.worldTarget=e.id;break;}
             const auto found=std::find_if(enemies.begin(),enemies.end(),[&](const auto& e){return e.id==c.worldTarget&&e.hp>0&&!e.corpse;});if(found==enemies.end())return;
@@ -432,10 +439,10 @@ struct ConcurrentValidation::Impl {
             if(scene->metrics().enemyEmissionsByKind.at(kind)>0)c.worldEnemyFired=true;
             if(aircraft&&(!c.worldStrikeUsed||(scene->camera().fillSurface&&c.worldEnemyFired&&counters.frames>=c.lastWorldStrike+180))){
                 const Vec2 aim{std::clamp(point.x,16.f,scene->camera().viewport.width-16),std::clamp(point.y,scene->camera().inputMinimumY+1,scene->camera().viewport.height-16)};
-                // Use another owned original02007 through actual QuickItems,
-                // aimed at visible ground near the observed aircraft. Normal
-                // missile travel/splash decides whether it hits; no HP writes.
-                if(std::hypot(aim.x-point.x,aim.y-point.y)<=64&&worldQuick(index,1,scene->camera().toWorld(aim))){c.worldStrikeUsed=true;c.lastWorldStrike=counters.frames;}
+                if(std::hypot(aim.x-point.x,aim.y-point.y)<=64){
+                    if(!c.worldStrikeUsed)provokeAircraft(scene->camera().toWorld(aim));
+                    else if(worldQuick(index,1,scene->camera().toWorld(aim)))c.lastWorldStrike=counters.frames;
+                }
             }
             if(c.worldEnemyFired&&visible&&scene->selectedEnemy()!=c.worldTarget){scene->selectEnemy(c.worldTarget);scene->selectEnemy(c.worldTarget);}
             if((!visible||!c.worldEnemyFired)&&(counters.frames-2)%31==0)approachTarget(index,{found->position.x+(turret?65.f:0.f),found->position.y});
@@ -443,7 +450,7 @@ struct ConcurrentValidation::Impl {
         }
         if(counters.frames==2){
             for(const auto& e:scene->enemies())if(e.kind==kind&&e.hp>0){c.worldTarget=e.id;
-                if(aircraft)worldQuick(index,1,e.position);
+                if(aircraft)provokeAircraft(e.position);
                 else {const auto p=scene->camera().toScreen({e.position.x+65,e.position.y});const Vec2 point{std::clamp(p.x,16.f,752.f),std::clamp(p.y,120.f,1008.f)};
                     constexpr std::uintptr_t pointer=0x54555252;game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(point),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(point),pointer);}break;}
         }

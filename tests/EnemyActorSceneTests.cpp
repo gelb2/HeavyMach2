@@ -71,7 +71,11 @@ void battle(Files& files,const DataTable& items,const Weapons& weapons,std::stri
     const auto xpAt=[&]{auto s=game.workingSlot();return std::uint32_t(s[0x70])|(std::uint32_t(s[0x71])<<8)|(std::uint32_t(s[0x72])<<16)|(std::uint32_t(s[0x73])<<24);};const auto xpBefore=xpAt();
     resources.run([&]{game.tick();});resources.draw([&]{return game.drawWorld();});auto* scene=game.battle();const MachineKind required=aircraft?MachineKind::aircraft:MachineKind::turret;
     auto findLiving=[&](MachineKind kind)->CombatEnemySnapshot{for(const auto& e:scene->enemies())if(e.kind==kind&&e.hp>0)return e;assert(false);return {};};
-    const auto target=findLiving(required);if(aircraft){assert(target.boss);resources.run([&]{quick(game,1,target.position);});}else{
+    const auto target=findLiving(required);if(aircraft){
+        assert(target.boss);
+        // A level-scaled strike can destroy this boss before its retaliation.
+        resources.run([&]{scene->startAirStrike(&weapons.weapon("AS_NUCLEAR_01"),2.f,target.position);});
+    }else{
         // Walk to unoccupied ground near the real turret, without selecting it
         // yet, so its original attack AI can acquire/fire before Player kills it.
         const auto point=scene->camera().toScreen({target.position.x+65,target.position.y});assert(game.inputWorld(PointerPhase::begin,point,220));(void)game.inputWorld(PointerPhase::end,point,220);
