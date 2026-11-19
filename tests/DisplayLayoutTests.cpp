@@ -17,10 +17,11 @@ using namespace hm2;
 namespace {
 bool near(float a,float b){return std::abs(a-b)<.002f;}
 ClipRect quadBounds(const Sprite& s){if(s.strip.empty())return {s.center.x-s.size.width*.5f,s.center.y-s.size.height*.5f,s.size.width,s.size.height};assert(s.strip.size()==4);float l=s.strip[0].position.x,r=l,b=s.strip[0].position.y,t=b;for(const auto& v:s.strip){l=std::min(l,v.position.x);r=std::max(r,v.position.x);b=std::min(b,v.position.y);t=std::max(t,v.position.y);}return {l,b,r-l,t-b};}
-void uniformCover(const Sprite& s,Size canvas,float ratio=1.5f){
+void uniformCover(const Sprite& s,Size canvas,float ratio=1.5f,std::optional<ClipRect> visible={}){
  assert(s.strip.size()==4);const auto o=s.strip[0].position,a=s.strip[2].position,b=s.strip[1].position;const Vec2 x{a.x-o.x,a.y-o.y},y{b.x-o.x,b.y-o.y};const float xx=x.x*x.x+x.y*x.y,yy=y.x*y.x+y.y*y.y;
  assert(near(std::sqrt(xx)/std::sqrt(yy),ratio));
- for(const auto p:{Vec2{0,0},Vec2{canvas.width,0},Vec2{0,canvas.height},Vec2{canvas.width,canvas.height}}){const Vec2 d{p.x-o.x,p.y-o.y};const float u=(d.x*x.x+d.y*x.y)/xx,v=(d.x*y.x+d.y*y.y)/yy;assert(u>=-.0001f&&u<=1.0001f&&v>=-.0001f&&v<=1.0001f);}
+ const auto r=visible.value_or(ClipRect{0,0,canvas.width,canvas.height});
+ for(const auto p:{Vec2{r.x,r.y},Vec2{r.x+r.width,r.y},Vec2{r.x,r.y+r.height},Vec2{r.x+r.width,r.y+r.height}}){const Vec2 d{p.x-o.x,p.y-o.y};const float u=(d.x*x.x+d.y*x.y)/xx,v=(d.x*y.x+d.y*y.y)/yy;assert(u>=-.0001f&&u<=1.0001f&&v>=-.0001f&&v<=1.0001f);}
 }
 void fullScreenWorld(){
  for(auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({912,420},{0,20,68,0})}){
@@ -173,7 +174,15 @@ void phoneArtwork(Files& files){
  for(const auto screen:{ui::ScreenId::title,ui::ScreenId::slots,ui::ScreenId::command,ui::ScreenId::shop,ui::ScreenId::maintenance}){
   ui::ScreensState state;state.screen=screen;ui.refresh(state,0);Frame prep;ui.appendPreparation(prep);const std::string name=screen==ui::ScreenId::title?"Main_BG.png":screen==ui::ScreenId::slots?"PhoneMenu/SelSlot_BG.jpg":screen==ui::ScreenId::command?"PhoneMenu/CmdCenterBG.jpg":screen==ui::ScreenId::shop?"PhoneMenu/ShopBG.jpg":"PhoneMenu/MaintenanceBG.jpg";bool found=false;
   for(const auto& image:prep.sprites)if(image.image==name){found=true;const auto info=imageInfo(files.read(name));assert(info.width==(screen==ui::ScreenId::title?768u:960u)&&info.height==(screen==ui::ScreenId::title?1024u:640u));assert(decodeImage(files.read(name)).width==info.width);}assert(found);
-  for(unsigned tick=0;tick<800;++tick){ui.tick(float(tick)/60,random);Frame f;ui.append(f,float(tick)/60);for(const auto& image:f.sprites)if(image.image==name){uniformCover(image,config.canvas,screen==ui::ScreenId::title?.75f:1.5f);if(screen==ui::ScreenId::title){const auto b=quadBounds(image);assert(near(b.y+b.height,config.canvas.height));}}}
+  for(unsigned tick=0;tick<800;++tick){ui.tick(float(tick)/60,random);Frame f;ui.append(f,float(tick)/60);for(const auto& image:f.sprites)if(image.image==name){
+       if(screen==ui::ScreenId::maintenance){
+           assert(image.clip&&image.strip.size()==4);
+           const auto& a=image.strip[0];const auto& b=image.strip[3];
+           assert(near((b.position.x-a.position.x)/((b.uv.x-a.uv.x)*480),(a.position.y-b.position.y)/((b.uv.y-a.uv.y)*320)));
+           for(const auto& vertex:image.strip)
+               assert(vertex.uv.x>=-.001f&&vertex.uv.x<=1.001f&&vertex.uv.y>=-.001f&&vertex.uv.y<=1.001f);
+       }
+       else uniformCover(image,config.canvas,screen==ui::ScreenId::title?.75f:1.5f);if(screen==ui::ScreenId::title){const auto b=quadBounds(image);assert(near(b.y+b.height,config.canvas.height));}}}
  }
  MapLoading loading(files,nullptr,true);const auto prep=loading.preparationFrame();assert(prep.sprites.size()==1&&prep.sprites[0].image=="PhoneMenu/StageClearBG.png"&&loading.artworkViewport().width==480);
 }
@@ -187,7 +196,7 @@ void phoneMenuGrids(Files& files){
  Frame f;ui.append(f,0);unsigned backgrounds=0;bool skin=false;for(const auto& s:f.sprites){backgrounds+=s.image=="PhoneMenu/ShopBG.jpg";assert(s.image!="ShopBG.png"&&s.image!="MaintenanceBG.png"&&s.image!="InvenBG.png"&&s.image!="ItemBox.png");if(s.image=="Icon10011.png"&&s.strip.empty())skin|=near(s.size.width,32*std::max(config.canvas.width/480,config.canvas.height/320));}assert(backgrounds==3&&skin);
  for(unsigned i=1;i<(24+menu::visibleRows(config)*4-1)/(menu::visibleRows(config)*4);++i)tap(2106);for(unsigned i=1;i<(25+menu::visibleRows(config)*5-1)/(menu::visibleRows(config)*5);++i)tap(6091);const auto lastStock=ui.buttonScreenPosition(key(2223)),lastInventory=ui.buttonScreenPosition(key(6024));const DisplayLayout layout(config);const auto shopClip=layout.clip(DisplayRegion::phoneStock).value(),invClip=layout.clip(DisplayRegion::phoneInventory).value();assert(lastStock.y>=shopClip.y&&lastStock.y<=shopClip.y+shopClip.height&&lastInventory.y>=invClip.y&&lastInventory.y<=invClip.y+invClip.height);
  host.events.clear();const auto begin=ui.buttonScreenPosition(key(6024)),destination=ui.buttonScreenPosition(key(6020));ui.input(PointerPhase::begin,begin,999,2);ui.input(PointerPhase::move,destination,999,2.1f);ui.input(PointerPhase::end,destination,999,2.2f);bool mapped=false;for(const auto& e:host.events)if(e.button.type==ui::ButtonEventType::move&&e.dropCoordinates){assert(near(e.dropCoordinates->inventory.x,408)&&near(e.dropCoordinates->inventory.y,192));mapped=true;}assert(mapped);
- tap(9204);assert(ui.button(key(6100))->visible&&!ui.button(key(2223))->visible);f={};ui.append(f,2);backgrounds=0;for(const auto& s:f.sprites){backgrounds+=s.image=="PhoneMenu/MaintenanceBG.jpg";assert(s.image!="MaintenanceBG.png"&&s.image!="InvenBG.png"&&s.image!="ItemBox.png");}assert(backgrounds==3);
+ tap(9204);assert(ui.button(key(6100))->visible&&!ui.button(key(2223))->visible);f={};ui.append(f,2);backgrounds=0;for(const auto& s:f.sprites){backgrounds+=s.image=="PhoneMenu/MaintenanceBG.jpg";assert(s.image!="MaintenanceBG.png"&&s.image!="InvenBG.png"&&s.image!="ItemBox.png");}assert(backgrounds==7);
  for(const auto pair:{std::pair{6100u,Vec2{188,388}},std::pair{6302u,Vec2{326,270}}}){const auto from=ui.buttonScreenPosition(key(6024)),to=ui.buttonScreenPosition(key(pair.first));host.events.clear();ui.input(PointerPhase::begin,from,1001,3);ui.input(PointerPhase::move,to,1001,3.1f);ui.input(PointerPhase::end,to,1001,3.2f);mapped=false;for(const auto& e:host.events)if(e.button.type==ui::ButtonEventType::move&&e.dropCoordinates){assert(near(e.dropCoordinates->inventory.x,pair.second.x)&&near(e.dropCoordinates->inventory.y,pair.second.y));mapped=true;}assert(mapped);}
  tap(9205);assert(ui.button(key(2223))->visible&&!ui.button(key(6100))->visible);
  std::cout<<"PHONE_MENU_GRIDS originalBakedCells/HD24and25/70OriginalAssets/noDuplicatePanels/buttonPages/equipmentTab/HDdragInverse PASS\n";
@@ -308,10 +317,15 @@ void phoneMenuResize(Files& files){
  state.inventory.clear();
  screens.setDisplay(shortPhone);
  screens.refresh(state,8);
- press(6091);press(6091);
- expectCells(6000,25,20,5);
+ const auto shortCells=5*menu::equipmentLayout(shortPhone).inventoryRows;
+ const auto tallCells=5*menu::equipmentLayout(tallPhone).inventoryRows;
+ const auto lastWindow=(25-1)/shortCells;
+ for(unsigned i=0;i<lastWindow;++i)press(6091);
+ const auto first=lastWindow*shortCells;
+ expectCells(6000,25,first,25-first);
  screens.setDisplay(tallPhone);
- expectCells(6000,25,15,10);
+ const auto nextFirst=first/tallCells*tallCells;
+ expectCells(6000,25,nextFirst,std::min(tallCells,25-nextFirst));
  std::cout<<"PHONE_MENU_RESIZE 2/3 rows / HD page 2 / partial and empty / detail and drop PASS\n";
 }
 void phoneLiveMenuSession(Files& files){
@@ -358,6 +372,25 @@ void phoneLiveMenuSession(Files& files){
  tapVisible(6000);assert(game.state().detailInventory==0&&!has(2103));
  tapVisible(2200);assert(game.state().shopDetailVisible&&game.state().selectedShop==0);verifyDetail(2102);
  tapVisible(9204);assert(!game.state().shopDetailVisible&&game.state().selectedShop==-1&&game.state().detailInventory==-1&&!has(2102));
+ const auto equipLayout=menu::equipmentLayout(phone);
+ const auto hitTab=ui.buttonScreenBounds(key(9205));
+ assert(!has(9204)||!ui.button(key(9204))->visible);
+ for(unsigned i=0;i<3;++i){
+  const auto bot=ui.buttonScreenBounds(key(6300+i));
+  assert(inside(bot,equipLayout.bands[1].clip)&&!overlaps(bot,hitTab));
+ }
+ for(unsigned i=0;i<6;++i)assert(inside(ui.buttonScreenBounds(key(6100+i)),equipLayout.bands[1].clip));
+ Frame equipmentFrame;ui.append(equipmentFrame,game.renderTime());
+ const auto& statClip=equipLayout.bands[1].clip;
+ std::set<int> statRows;
+ for(const auto& sprite:equipmentFrame.sprites)if(sprite.image=="NumSet01b.png"&&sprite.atlasBatch){
+  for(const auto& quad:sprite.atlasBatch->quads){
+   const auto p=quad.vertices[0].position;
+   if(p.x<statClip.width){assert(p.y>statClip.y);statRows.insert(int(std::round(p.y)));}
+  }
+ }
+ assert(statRows.size()==3);
+ if(!has(6008))tapVisible(6091);
  tapVisible(6008);assert(game.state().detailInventory==8&&!has(2103));
  tapVisible(9205);assert(game.state().detailInventory==-1);
  tapVisible(6008);assert(game.state().detailInventory==8&&has(2103));verifyDetail(2103);
@@ -379,6 +412,42 @@ void phoneLiveMenuSession(Files& files){
  ui.input(PointerPhase::begin,{20,200},33445,game.renderTime());ui.input(PointerPhase::move,{20,340},33445,game.renderTime());ui.input(PointerPhase::end,{20,340},33445,game.renderTime());const auto exit=ui.buttonScreenPosition(key(2100));assert(exit.y>0&&exit.y<phone.canvas.height);ui.input(PointerPhase::begin,exit,33446,game.renderTime());ui.input(PointerPhase::end,exit,33446,game.renderTime());settle();assert(game.state().screen==ui::ScreenId::base);
  std::cout<<"PHONE_LIVE_MENU SessionCallbacks/detailPushClose/tradeModalBlocksTabsAndScroll/surfaceReuse/noSelectionWrites/realPurchaseAndSale PASS\n";
 }
+void phoneDirectMaintenance(Files& files){
+ Host host;DarwinWorldRandom random(1);SaveData saved;saved.initializeSlot(0,"Equipment","kr",1794268800);
+ progression::SlotView slot(saved.slot(0));slot.string(0x2d,16,"Base004");slot.u32(0x1b5c,5);
+ GameSession game(files,host,random,std::move(saved));PreparedTiles tiles("phone-direct-equipment");
+ ui::Screens screens(files,tiles,host);host.game=&game;host.screens=&screens;
+ const auto display=DisplayConfiguration::surface({912,420});game.setDisplay(display);screens.setDisplay(display);
+ assert(game.selectSlot(0));game.enterBase();
+ const auto settle=[&]{
+  for(unsigned n=0;game.screenTransition().phase!=8&&n<250;++n){game.tick();(void)game.drawWorld();}
+  assert(game.screenTransition().phase==8);screens.refresh(game.state(),game.renderTime());
+ };
+ const auto tap=[&](unsigned id){
+  for(const auto& key:screens.buttons())if(key.id==id&&screens.button(key)->visible){
+   const auto point=screens.buttonScreenPosition(key);
+   assert(screens.input(PointerPhase::begin,point,61000+id,game.renderTime()));
+   screens.input(PointerPhase::end,point,61000+id,game.renderTime());
+   return;
+  }
+  assert(false&&"Missing visible phone facility button");
+ };
+ settle();tap(2003);tap(2003);settle();
+ assert(game.state().screen==ui::ScreenId::maintenance);
+ for(unsigned tries=0;game.state().inventoryPage<1&&tries<6;++tries)tap(6091);
+ assert(game.state().inventoryPage==1);
+ tap(6091);
+ const auto writes=host.writes;
+ const auto unsupported=game.metrics().unsupportedActions;
+ const auto before=screens.buttons();
+ const auto first=std::find_if(before.begin(),before.end(),[](const auto& key){return key.id>=6000&&key.id<6025;});
+ assert(first!=before.end());
+ tap(9205);
+ assert(game.state().screen==ui::ScreenId::shop&&game.state().inventoryPage==1&&host.writes==writes);
+ assert(game.metrics().unsupportedActions==unsupported);
+ const auto after=screens.buttons();
+ assert(std::any_of(after.begin(),after.end(),[&](const auto& key){return key.id==first->id;}));
+}
 void originalHDWorldParity(Files& files){
  Host oldHost,newHost;DarwinWorldRandom oldRandom(1),newRandom(1);GameSession original(files,oldHost,oldRandom),restored(files,newHost,newRandom);
  for(auto* game:{&original,&restored}){assert(game->createSlot(0,"Parity","kr"));assert(game->enterField("Stage01_01",0));}
@@ -397,4 +466,4 @@ void session(Files& files,DisplayConfiguration config){Host host;DarwinWorldRand
  const auto pos=scene->player().position;const auto hp=scene->playerHP();game.setDisplay(DisplayConfiguration::surface({1024,1366}));assert(scene->player().position.x==pos.x&&scene->playerHP()==hp&&host.writes==writes);assert(game.workingSlot().size()==before.size());
 }
 }
-int main(int argc,char** argv){if(argc<2)return 77;fullScreenWorld();transforms();Files files(argv[1]);originalHDWorldParity(files);tabletMenuCoverage(files);entryCamera(files);allMapEdges(files);fullCanvasBanners(files);phoneArtwork(files);phoneMenus(files);phoneMenuGrids(files);phoneButtonPages(files);phoneMenuResize(files);phoneLiveMenuSession(files);for(auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({852,393},{59,21,59,0}),DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({1024,1366},{0,20,0,24})}){screens(files,config);help(files,config);session(files,config);}std::cout<<"HM2_DISPLAY PASS 4 canvases / full-screen world / terrain edge coverage / HUD size / six base menus / Phone-original-art/no-menu-scroll/Retina-JPEG / first mission rows / safe-area / inverse-hit / HD25+24+6 / drag / warm100 / help-scroll / common-world / no-display-save\n";}
+int main(int argc,char** argv){if(argc<2)return 77;fullScreenWorld();transforms();Files files(argv[1]);originalHDWorldParity(files);tabletMenuCoverage(files);entryCamera(files);allMapEdges(files);fullCanvasBanners(files);phoneArtwork(files);phoneMenus(files);phoneMenuGrids(files);phoneButtonPages(files);phoneMenuResize(files);phoneLiveMenuSession(files);phoneDirectMaintenance(files);for(auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({852,393},{59,21,59,0}),DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({1024,1366},{0,20,0,24})}){screens(files,config);help(files,config);session(files,config);}std::cout<<"HM2_DISPLAY PASS 4 canvases / full-screen world / terrain edge coverage / HUD size / six base menus / Phone-original-art/no-menu-scroll/Retina-JPEG / first mission rows / safe-area / inverse-hit / HD25+24+6 / drag / warm100 / help-scroll / common-world / no-display-save\n";}

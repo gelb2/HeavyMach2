@@ -122,6 +122,7 @@ struct Screens::Impl {
     ResourceAccess& resources;PreparedTiles& tiles;std::shared_ptr<PreparedTiles> tileOwner;ScreensHost& host;ScreensState state;
     std::vector<Node> nodes;
     DisplayLayout layout;
+    const menu::EquipmentLayout equipmentLayout;
     std::shared_ptr<HUDState> hud;int currentHUDGroup=-1;
     std::map<const Button*,int> buttonHUDGroups;
     Region region=Region::content;
@@ -149,7 +150,11 @@ struct Screens::Impl {
         }
         if constexpr(std::is_same_v<T,ButtonNode>){
             const auto id=node.button->key().id;
-            if(phoneMenu()&&(id==2100||id==9204||id==9205))node.region=Region::phoneFooter;
+            if(phoneMenu()){
+                if(id==2100)node.region=Region::phoneFooter;
+                if(id==9204)node.region=Region::phoneStockFooter;
+                if(id==9205)node.region=Region::phoneEquipmentFooter;
+            }
             if(phoneMenu()&&id==6093)node.region=Region::phoneHeader;
             if(state.screen==ScreenId::slots&&id!=1009)node.region=Region::bottom;
             if(state.screen==ScreenId::shop&&id==2100&&!phoneMenu())node.region=Region::shopFooter;
@@ -163,14 +168,42 @@ struct Screens::Impl {
     }
     unsigned menuRows()const{return menu::visibleRows(layout.configuration());}
     unsigned stockCells()const{return menuRows()*4;}
-    unsigned inventoryCells()const{return menuRows()*5;}
+    unsigned inventoryRows()const{
+        return phoneEquipment?equipmentLayout.inventoryRows:menuRows();
+    }
+    unsigned inventoryCells()const{return inventoryRows()*5;}
     bool phoneMenu()const{return menu::phone(layout.configuration())&&(state.screen==ScreenId::shop||state.screen==ScreenId::maintenance);}
-    bool phoneNodeVisible(Region r)const{if(!phoneMenu())return true;if(r==Region::phoneEquipment)return phoneEquipment;if(r==Region::phoneStock||r==Region::phoneStockHeader||r==Region::phoneCategoryHeader)return !phoneEquipment;return true;}
-    void setPhoneEquipment(bool value){phoneEquipment=value;for(const auto& [button,r]:buttonRegions)const_cast<Button*>(button)->visible=phoneNodeVisible(r);}
+    bool phoneNodeVisible(Region r)const{
+        if(!phoneMenu())return true;
+        if(r==Region::phoneEquipment||r==Region::phoneEquipmentFooter)return phoneEquipment;
+        if(r==Region::phoneStock||r==Region::phoneStockHeader||r==Region::phoneCategoryHeader||r==Region::phoneStockFooter)return !phoneEquipment;
+        return true;
+    }
+    void setPhoneEquipment(bool value){
+        phoneEquipment=value;
+        for(const auto& [button,r]:buttonRegions)const_cast<Button*>(button)->visible=phoneNodeVisible(r);
+    }
     Region scrollingRegion()const{return state.weaponChoiceType?Region::chooser:Region::list;}
     float verticalLimit()const{if(menu::phone(layout.configuration())&&(state.screen==ScreenId::base||state.screen==ScreenId::shop||state.screen==ScreenId::maintenance||state.screen==ScreenId::command))return 0;if(!layout.configuration().enabled)return 0;const auto r=scrollingRegion();if(!layout.configuration().compact&&r==Region::list)return 0;if(r==Region::list&&state.screen!=ScreenId::command&&!state.missionVisible)return 0;const float height=r==Region::chooser?std::max(1024.f,float(state.weaponChoices.size())*36+200):listTop-listBottom+12;return std::max(0.f,height*layout.ui(r).scale-layout.clip(r)->height);}
     bool tabletMenu()const{return layout.configuration().enabled&&!menu::phone(layout.configuration())&&(state.screen==ScreenId::base||state.screen==ScreenId::shop||state.screen==ScreenId::command);}
-    DisplayTransform presentation(Region r)const{if(tabletMenu())return layout.ui(Region::tabletMenu);auto t=layout.ui(r,r==Region::artScene||menu::menuRegion(r)?0.f:r==Region::list||r==Region::chooser?verticalPan:shopPan);if(r==Region::list&&layout.configuration().enabled&&layout.configuration().compact)t.offset.y+=(1024-listTop)*t.scale-8;return t;}
+    DisplayTransform presentation(Region r)const{
+        if(tabletMenu())return layout.ui(Region::tabletMenu);
+        if(phoneMenu()&&phoneEquipment){
+            const auto& equip=equipmentLayout;
+            switch(r){
+            case Region::phoneEquipment:return equip.equipment;
+            case Region::phoneEquipmentFooter:return equip.tab;
+            case Region::phoneInventory:return equip.inventory;
+            case Region::phoneInventoryPages:return equip.pages;
+            case Region::phoneHeader:return equip.header;
+            case Region::phoneFooter:return equip.footer;
+            default:break;
+            }
+        }
+        auto transform=layout.ui(r,r==Region::artScene||menu::menuRegion(r)?0.f:r==Region::list||r==Region::chooser?verticalPan:shopPan);
+        if(r==Region::list&&layout.configuration().enabled&&layout.configuration().compact)transform.offset.y+=(1024-listTop)*transform.scale-8;
+        return transform;
+    }
     DisplayTransform presentation(Region r,int group)const{
         auto t=presentation(r);if(group<0||!hud)return t;
         const auto base=layout.ui(Region::bottom),custom=hud::transform(hud->active(),unsigned(group),layout);
@@ -181,6 +214,11 @@ struct Screens::Impl {
     }
     std::optional<ClipRect> clipping(Region r,int group=-1)const{
         if(tabletMenu())return layout.clip(Region::tabletMenu);
+        if(phoneMenu()&&phoneEquipment){
+            const auto& equip=equipmentLayout;
+            if(r==Region::phoneInventory)return equip.inventoryClip;
+            if(r==Region::phoneInventoryPages)return equip.pagesClip;
+        }
         if(group>=0&&hud&&hud->active().customized()){
             return hud::originalClip(hud->active(),unsigned(group),layout);
         }
@@ -222,7 +260,9 @@ struct Screens::Impl {
     float commandSelectedRowY=0;
     bool baseNoticeVisible=true;
     void resizePhoneMenuWindows(const Impl& old){
-        if(!phoneMenu()||!old.phoneMenu()||state.screen!=old.state.screen||state.baseId!=old.state.baseId||menuRows()==old.menuRows())return;
+        const bool directEquipmentTab=old.state.screen==ScreenId::maintenance&&state.screen==ScreenId::shop;
+        if(!phoneMenu()||!old.phoneMenu()||state.baseId!=old.state.baseId||
+            (state.screen!=old.state.screen&&!directEquipmentTab))return;
         const auto resizedWindow=[](unsigned oldWindow,unsigned oldCells,unsigned newCells,unsigned count,int detailCell){
             const unsigned first=oldWindow*oldCells;
             // Keep an open detail with its cell if that cell was on screen.
@@ -232,22 +272,23 @@ struct Screens::Impl {
             }
             return menu::subpageForCell(first,newCells,count);
         };
-        if(state.screen==ScreenId::shop&&state.shopPage==old.state.shopPage&&state.shopCategory==old.state.shopCategory){
+        if(!directEquipmentTab&&menuRows()!=old.menuRows()&&state.screen==ScreenId::shop&&state.shopPage==old.state.shopPage&&state.shopCategory==old.state.shopCategory){
             const auto offset=std::size_t(std::max(0,state.shopPage))*24;
             const auto count=offset<state.shopItems.size()?unsigned(std::min<std::size_t>(24,state.shopItems.size()-offset)):0;
             const int selected=state.shopDetailVisible&&!old.phoneEquipment?state.selectedShop:-1;
             stockWindow=resizedWindow(old.stockWindow,old.stockCells(),stockCells(),count,selected);
         }
-        if(state.inventoryPage==old.state.inventoryPage){
+        if((directEquipmentTab||inventoryRows()!=old.inventoryRows())&&state.inventoryPage==old.state.inventoryPage){
             const int detailCell=state.detailInventory>=0&&state.detailInventory/25==state.inventoryPage&&!state.detailItem.dataId.empty()?state.detailInventory%25:-1;
             inventoryWindow=resizedWindow(old.inventoryWindow,old.inventoryCells(),inventoryCells(),25,detailCell);
         }
     }
     Impl(ResourceAccess& r,PreparedTiles& t,ScreensHost& h,const ScreensState& s,float time,std::shared_ptr<Impl> old,DisplayConfiguration display,std::shared_ptr<HUDState> hudState,std::shared_ptr<PreparedTiles> ownerTiles,std::shared_ptr<std::uint64_t> generation)
-        :resourceGeneration(std::move(generation)),resources(r),tiles(t),tileOwner(std::move(ownerTiles)),host(h),state(s),layout(display),hud(std::move(hudState)),previous(std::move(old)),now(time){
+        :resourceGeneration(std::move(generation)),resources(r),tiles(t),tileOwner(std::move(ownerTiles)),host(h),state(s),layout(display),equipmentLayout(menu::equipmentLayout(display)),hud(std::move(hudState)),previous(std::move(old)),now(time){
         ++*resourceGeneration;
         if(previous&&previous->state.screen==s.screen){if(menu::phone(previous->layout.configuration())==menu::phone(display))title=previous->title;else{const auto art=menu::title(display);title.bigX=art.bigStart;title.bgPosition=art.bgStart;title.start=time;}commandWindow=previous->commandWindow;phoneEquipment=previous->phoneEquipment;stockWindow=previous->state.shopCategory==s.shopCategory?previous->stockWindow:0;inventoryWindow=previous->inventoryWindow;message=previous->message;layers=previous->layers;shopPan=phoneMenu()?0.f:std::min(previous->shopPan,layout.shopPanLimit());if(previous->state.weaponChoiceType==s.weaponChoiceType&&previous->state.missionVisible==s.missionVisible)verticalPan=std::min(previous->verticalPan,verticalLimit());}
         else{const auto art=menu::title(display);title.bigX=art.bigStart;title.bgPosition=art.bgStart;title.start=time;layers=std::make_shared<std::array<VisualLayer,14>>();}
+        if(phoneMenu()&&s.screen==ScreenId::maintenance)phoneEquipment=true;
         if(previous){resizePhoneMenuWindows(*previous);fieldPresentation=previous->fieldPresentation;placeName=previous->placeName;}
         // accept5004 only invalidates Command.curState. Keep its existing rows
         // until the following Command tick actually refreshes the list.
@@ -663,15 +704,11 @@ void Screens::Impl::buildDetail(DetailKind kind,const ItemView& entry,Vec2 origi
         d.up=row>=2;
         d.descPos={(kind==DetailKind::shop?-136.f:106.f)*1.5f,(60-40.f*row+(d.up?20.f:-21.f))*1.5f};
         const Vec2 preferred=plus(d.origin,plus(d.descPos,{0,d.up?93.f:-93.f}));
-        if(state.screen==ScreenId::shop){
-            const auto fitted=menu::shopDetail(layout,preferred,kind==DetailKind::shop);
-            d.phoneScale=fitted.scale;
-            if(d.phoneScale==0){detail.reset();return;}
-            d.origin={fitted.center.x-d.descPos.x,fitted.center.y-d.descPos.y-(d.up?93.f:-93.f)*d.phoneScale};
-        }else{
-            const auto shift=layout.keepControlVisible(Region::phoneMenu,preferred,{-192,-96,384,192});
-            d.origin=plus(d.origin,{shift.x-preferred.x,shift.y-preferred.y});
-        }
+        const auto* equipmentInventory=phoneEquipment?&equipmentLayout.inventoryClip:nullptr;
+        const auto fitted=menu::shopDetail(layout,preferred,kind==DetailKind::shop,equipmentInventory);
+        d.phoneScale=fitted.scale;
+        if(d.phoneScale==0){detail.reset();return;}
+        d.origin={fitted.center.x-d.descPos.x,fitted.center.y-d.descPos.y-(d.up?93.f:-93.f)*d.phoneScale};
     }
     d.layer=phone?13u:kind==DetailKind::inventory?13u:kind==DetailKind::shop?3u:9u;
     if(phone||kind!=DetailKind::shop){
@@ -844,12 +881,11 @@ void Screens::Impl::inventoryDialog(Vec2 origin,bool shopMode){
     if(!shopMode&&state.detailInventory>=0&&!state.detailItem.dataId.empty())buildDetail(DetailKind::inventory,state.detailItem,origin,state.detailInventory);
 }
 void Screens::Impl::phoneShop(bool maintenance){
-    if(maintenance)phoneEquipment=true;
     {RegionScope art(*this,Region::artScene);image(menu::background(layout.configuration(),"ShopBG.png"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.stock.bg");image(menu::phoneAsset("MaintenanceBG.jpg"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.equip.bg");}
     inventory(menu::inventoryGrid,!maintenance,true);
     {RegionScope equipment(*this,Region::phoneEquipment);equip(menu::equipmentRoot,9,true);bots(menu::botRoot,true);
         if(state.selectedBot>=0)addButton(Panel::root,6310,"Btn_Disarm.png",{288,124.5f},2,1,0,1,{},0,{}, {1,1});
-        if(!maintenance)addButton(Panel::root,9205,"",{97.5f,34.5f},1,1,0,0,Size{150,60});}
+        addButton(Panel::root,9205,"",{97.5f,34.5f},1,1,0,0,Size{150,60});}
     if(!maintenance){
         {RegionScope header(*this,Region::phoneCategoryHeader);image(menu::phoneAsset("ShopCategory.png"),{172.5f,menu::categoryY},1,8,unsigned(std::clamp(state.shopCategory,0,4)));
             addButton(Panel::root,2104,menu::phoneAsset("Btn_ShopLeft.png"),{75,menu::categoryY},2,1,0,1,Size{120,menu::categoryHitHeight},(state.shopCategory+4)%5,{}, {1,1},true,9,false);
@@ -874,7 +910,7 @@ void Screens::Impl::phoneShop(bool maintenance){
 }
 Vec2 Screens::Impl::phoneDropPoint(Vec2 canvas)const{
     const auto in=[](Vec2 p,ClipRect b){return p.x>=b.x&&p.x<b.x+b.width&&p.y>=b.y&&p.y<b.y+b.height;};
-    if(const auto clip=clipping(Region::phoneInventory);clip&&in(canvas,*clip)){auto point=presentation(Region::phoneInventory).inverse(canvas);point.y-=float(inventoryWindow*menuRows()*60);return menu::originalHDInventory(point,state.screen==ScreenId::maintenance);}
+    if(const auto clip=clipping(Region::phoneInventory);clip&&in(canvas,*clip)){auto point=presentation(Region::phoneInventory).inverse(canvas);point.y-=float(inventoryWindow*inventoryRows()*60);return menu::originalHDInventory(point,state.screen==ScreenId::maintenance);}
     if(phoneEquipment){const auto p=presentation(Region::phoneEquipment).inverse(canvas);const Vec2 root{384,state.screen==ScreenId::maintenance?512.f:312.f};const Vec2 oldEquip{root.x+(state.screen==ScreenId::maintenance?-148.f:-196.f),root.y+(state.screen==ScreenId::maintenance?52.f:76.f)};constexpr Vec2 oldOffsets[]={{0,0},{0,-74},{-56,-9},{56,-9},{56,-74},{-56,-74}};
         for(unsigned i=0;i<6;++i){const auto center=plus(menu::equipmentRoot,menu::equipmentOffsets[i]);if(std::abs(p.x-center.x)<30&&std::abs(p.y-center.y)<30)return plus(plus(oldEquip,oldOffsets[i]),{(p.x-center.x)/1.5f,(p.y-center.y)/1.5f});}
         const float x=p.x-menu::botRoot.x,y=(menu::botRoot.y+28.5f-p.y)/57.f;if(x>=-28.5f&&x<=28.5f&&y>=0&&y<3){const Vec2 oldBot{root.x+(state.screen==ScreenId::maintenance?-47.f:-58.f),root.y+(state.screen==ScreenId::maintenance?52.f:78.f)};return {oldBot.x+x/1.5f,oldBot.y+30-y*60};}}
@@ -1246,9 +1282,13 @@ void Screens::Impl::build(){
             window=!next&&page>0&&targetCount?(targetCount-1)/visible:0;
             auto advance=event;advance.type=ButtonEventType::push;host.action({screen,panel,advance});return;
         }
-        if(phoneMenu()&&(id==9204||id==9205)){
+        if(phoneMenu()&&screen==ScreenId::shop&&(id==9204||id==9205)){
             if(event.type!=ButtonEventType::pop||state.tradeVisible)return;
-            dispatcher.discardAll();setPhoneEquipment(id==9204);
+            dispatcher.discardAll();
+            const unsigned firstCell=state.detailInventory>=0?unsigned(state.detailInventory)%25:inventoryWindow*inventoryCells();
+            setPhoneEquipment(id==9204);
+            inventoryWindow=menu::subpageForCell(firstCell,inventoryCells(),25);
+            pageRebuild=true;
             if(state.shopDetailVisible||state.detailInventory>=0){auto clear=event;clear.type=ButtonEventType::push;clear.key={owner(state.screen,state.screen==ScreenId::maintenance?Panel::root:Panel::inventory),2112,0,{}};host.action({state.screen,state.screen==ScreenId::maintenance?Panel::root:Panel::inventory,clear});}else host.sfx(0);
             return;
         }
@@ -1335,7 +1375,23 @@ void Screens::Impl::append(Frame& frame,float time){
                 // full-size quads with floor/ceil-rounded internal scissors.
                 for(unsigned group=0;group<hud::count;++group){layer.setPresentation(presentation(n.region,int(group)),clipping(n.region,int(group)));layer.submitNonAtlas(n.hudBackgroundParts->at(group));}
             }else if(n.menuPanel)layer.submitNonAtlas(*n.menuPanel);
-            else if(n.tag=="phone.stock.bg"||n.tag=="phone.equip.bg"||n.tag=="phone.command.bg"){
+            else if(n.tag=="phone.equip.bg"){
+                // Map adjacent source slices to exact destination edges.
+                // All slices use the same original texture and a uniform scale.
+                const auto source=originalTileSprite(image);
+                layer.setPresentation({},clipping(n.region,n.hudGroup));
+                for(const auto& band:equipmentLayout.bands){
+                    const auto& r=band.clip;
+                    auto piece=source;
+                    const Vec2 corners[]={{r.x,r.y+r.height},{r.x,r.y},{r.x+r.width,r.y+r.height},{r.x+r.width,r.y}};
+                    for(unsigned i=0;i<4;++i){
+                        const auto point=band.artwork.inverse(corners[i]);
+                        piece.strip[i].position=corners[i];
+                        piece.strip[i].uv={point.x/480,1-point.y/320};
+                    }
+                    layer.submitNonAtlas(std::move(piece));
+                }
+            }else if(n.tag=="phone.stock.bg"||n.tag=="phone.command.bg"){
                 const auto c=layout.configuration().canvas;const float s=std::max(c.width/480,c.height/320),header=menu::menuHeader(layout.configuration()),footer=menu::menuFooter(layout.configuration());
                 for(unsigned band=0;band<3;++band){const float offset=band==0?c.height-320*s:band==1?c.height-header-35-220*s:0;const ClipRect clip=band==0?ClipRect{0,c.height-header,c.width,header}:band==1?ClipRect{0,footer,c.width,std::max(0.f,c.height-header-footer)}:ClipRect{0,0,c.width,footer};layer.setPresentation({s,{(c.width-480*s)*.5f,offset}},clip);layer.submitImage(image);}
             }else layer.submitImage(image);}

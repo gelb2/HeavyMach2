@@ -2,6 +2,7 @@
 #include "Core/Progression/Equipment.hpp"
 #include "Core/Data/Descriptions.hpp"
 #include "Core/Progression/QuickItems.hpp"
+#include "Core/Presentation/MenuArtwork.hpp"
 #include "Core/Presentation/PartSprites.hpp"
 #include "Core/Presentation/Visibility.hpp"
 #include "Core/Presentation/SharedAssetPreparation.hpp"
@@ -773,6 +774,15 @@ void GameSession::action(const ui::ScreenAction& a){
         return;
     }
     // The original tradeBG blocks every underlying Push/Pop receiver.
+    if(a.screen==ui::ScreenId::maintenance&&id==9205&&menu::phone(p.display)){
+        if(event==ui::ButtonEventType::pop){
+            const auto inventoryPage=p.view.inventoryPage;
+            p.screen(ui::ScreenId::shop);
+            p.view.inventoryPage=inventoryPage;
+            p.uiSound(0);
+        }
+        return;
+    }
     if(a.screen==ui::ScreenId::shop&&p.view.tradeVisible){p.shopAction(a);return;}
     if(p.inventoryAction(a))return;
     if(p.shopAction(a))return;

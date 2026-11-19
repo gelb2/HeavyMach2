@@ -297,6 +297,49 @@ UIImage* image(NSData* rgba,CGSize size){
         window.hidden=YES;window.rootViewController=nil;
     }
 }
+- (void)testPhoneEquipmentSurface {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];
+    UIViewController* controller=[UIViewController new];
+    HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,912,420)];
+    surface.contentScaleFactor=1;controller.view=surface;window.rootViewController=controller;
+    [window makeKeyAndVisible];
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;
+    layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    HM2Renderer* renderer=[[HM2Renderer alloc]initWithResourceRoot:root];HUDIdentityHost host(renderer);
+    hm2::apple::Files files(root.fileSystemRepresentation);hm2::PreparedTiles tiles("phone-equipment-surface");
+    hm2::ui::Screens ui(files,tiles,host);
+    for(const auto size:{hm2::Size{667,375},hm2::Size{852,393},hm2::Size{912,420},hm2::Size{912,550}}){
+        surface.frame=CGRectMake(0,0,size.width,size.height);[surface layoutIfNeeded];
+        auto display=hm2::DisplayConfiguration::surface(size);display.device=hm2::DisplayDevice::phone;ui.setDisplay(display);
+        hm2::ui::ScreensState state;state.screen=hm2::ui::ScreenId::maintenance;state.inventoryPages=3;state.credits=12345;
+        for(unsigned i=0;i<25;++i){
+            hm2::ui::ItemView item;item.dataId=std::to_string(i);item.icon="Icon10011.png";item.count=1;state.inventory.push_back(item);
+        }
+        for(auto& part:state.equipment)part=state.inventory.front();
+        for(auto& bot:state.bots){bot=state.inventory.front();bot.icon="Icon04201.png";}
+        state.equipmentStats.attackLeft=122;state.equipmentStats.attackRight=102;state.equipmentStats.baseHP=676;
+        state.equipmentStats.bonusHP=240;state.equipmentStats.bodyDefense=22;state.equipmentStats.stepSize=31;
+        state.equipmentStats.boosterMaximum=314;state.equipmentStats.boosterRegen=1.2f;
+        ui.refresh(state,0);
+        hm2::Frame frame,preparation;ui.appendPreparation(preparation);ui.append(frame,0);
+        [renderer prepareFrame:preparation];[renderer prepareFrame:frame];
+        [renderer drawFrame:frame layer:layer];[renderer captureNextFrame];[renderer drawFrame:frame layer:layer];
+        const unsigned width=size.width,height=size.height;
+        XCTAssertEqual(renderer.readRGBA.length,std::size_t(width)*height*4);
+        if(renderer.readRGBA.length!=std::size_t(width)*height*4)continue;
+        const auto* bytes=static_cast<const std::uint8_t*>(renderer.readRGBA.bytes);
+        for(const unsigned y:{height-3, height-30, 3u})
+            for(const unsigned x:{3u,width/5,width-4}){
+                const auto offset=(y*width+x)*4;
+                XCTAssertGreaterThan(unsigned(bytes[offset])+bytes[offset+1]+bytes[offset+2],10u,@"black background at (%u,%u) on %ux%u",x,y,width,height);
+            }
+        auto* shot=[XCTAttachment attachmentWithImage:image(renderer.readRGBA,CGSizeMake(width,height))];
+        shot.name=[NSString stringWithFormat:@"phone-equipment-%ux%u",width,height];
+        shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];
+    }
+    window.hidden=YES;window.rootViewController=nil;
+}
 - (void)testPhoneMenuPolicyOnConcurrentClock {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     const CGSize extent=CGSizeMake(912,420);UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,912,420)];surface.contentScaleFactor=1;controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];surface.frame=CGRectMake(0,0,912,420);
