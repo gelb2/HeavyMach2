@@ -1,3 +1,9 @@
+## 설원 원본 6장과 미등장 콘텐츠 이미지 표 — 2026-11-19
+
+설원 원본 6장과 미배치 적·보스, 무기·스킬·BOT, 기지·기타 그림을 8개 표로 정리했다. `STAGE 15A.png`에는 바위와 시설이 그려져 있고 연결된 배치 정의는 없다. 설원 6장의 열람용 PNG를 원본 디코딩 결과의 1024×1024 RGBA와 전부 대조했다. [비공개 이미지 표](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/white-mountain-gallery-20261119.html)
+
+기존 이미지 검수 사이트 버전 16에 그림 94장을 게시했다. 누적 보고 사이트 버전 320의 기술조사와 누적 목록에서 별첨을 연결했다. 본인 인증으로 이미지 94장의 해시와 두 링크를 HTTP에서 대조했다. 비인증 요청은 403이다. 브라우저 호스트에 연결할 수 없어 브라우저 화면 확인은 하지 못했다. [게시와 그림별 대조 근거](evidence/white-mountain-gallery-publication-20261119.json)
+
 ## 화이트마운틴 전장과 미등장 콘텐츠 기술조사 — 2026-11-19
 
 MachDefense 설원 4종과 헤비멕 2 HD 1.0.0에서 찾은 설원 PNG 6장, 양쪽 게임의 공통 지면 비교 이미지, 적·무기·스킬의 호스트 검사와 신규 전장 작업 범위를 게시했다. 앞선 원본 조사에 설원 PNG 누락의 정정과 후속 보고 링크를 넣었다. 기존 누적 목록에서 두 보고서를 열 수 있다. [기술조사 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/white-mountain-feasibility-20261119.html)
