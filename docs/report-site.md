@@ -1,3 +1,7 @@
+## iPhone 상점 전체 화면 배경 이미지 — 2026-11-19
+
+수정판 `9e5c08a`의 1902×827 격납고 JPEG를 기존 비공개 보고서 본문에 넣고 누적 목록에 연결했다. 사이트 소스 `508499d`, 배포 `appgdep_6afec2ad987c81918e7877deadcaaee1`가 성공했다. 인증 요청으로 보고서·이미지·누적 목록을 확인했고 게시 JPEG는 앱 자원과 바이트가 일치했다. 배포 용량을 맞추기 위해 이전 PNG 3장의 인코딩을 무손실로 바꿨다. 브라우저 창 연결에는 실패했다. [보고서에서 이미지 보기](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-fullscreen-art-20261119) · [게시 근거](evidence/iphone-shop-art-publication-20261119.json)
+
 ## iPhone 상점 스크린샷 별첨 — 2026-11-19
 
 일반판 2.0.1, 이전 실기기 겹침 재현, 수정판 시뮬레이터 화면을 PNG 15장으로 별첨했다. 본인 전용 두 기존 사이트를 사용했다. 보고 사이트는 소스 `bcb3185`·배포 `appgdep_6afea94b3dbc8191812ad637eaa01c50`, 별첨은 소스 `3285efd`·배포 `appgdep_6afea8c2a134819188993a9b16270f4e`로 성공했다. 인증된 다운로드 15건의 SHA-256을 원본과 대조했고 두 사이트는 인증 없는 요청을 거부했다. [보고서의 별첨 링크](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-screenshots-attachment) · [스크린샷 별첨](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/iphone-shop-screenshots-20261119.html) · [파일별 검증 기록](evidence/iphone-shop-screenshots-publication-20261119.json)
