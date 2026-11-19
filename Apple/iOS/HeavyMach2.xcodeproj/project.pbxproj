@@ -236,6 +236,7 @@
 		443FCD917436FAD7495F0523 /* VehicleMotion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VehicleMotion.hpp; sourceTree = "<group>"; };
 		445AC8953F5F5E2C23FC8379 /* PlayerMapPreview.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PlayerMapPreview.hpp; sourceTree = "<group>"; };
 		45491C48F5B63AF8D4B660ED /* VehicleMotion.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VehicleMotion.cpp; sourceTree = "<group>"; };
+		45530954687D6714B682BCFB /* HM2WhiteMountainBossValidation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HM2WhiteMountainBossValidation.hpp; sourceTree = "<group>"; };
 		49C104D835D6C387F27F4E88 /* Particles.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Particles.cpp; sourceTree = "<group>"; };
 		4A9AE12FE861C196B58943BF /* HeavyMach2Validation.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HeavyMach2Validation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B10E038B5329E8FCF91F5F1 /* PlayerEquipment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PlayerEquipment.cpp; sourceTree = "<group>"; };
@@ -257,6 +258,7 @@
 		613BC791A02B06C23C2A3BEA /* Weapons.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Weapons.cpp; sourceTree = "<group>"; };
 		64F853F472810DD8824250E3 /* Help.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Help.hpp; sourceTree = "<group>"; };
 		657FC22FCF40C8DCFD2C5DF1 /* PreparedTiles.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PreparedTiles.hpp; sourceTree = "<group>"; };
+		66A59761162B494B726CF7E6 /* HM2NativeValidation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HM2NativeValidation.hpp; sourceTree = "<group>"; };
 		67696AD5E96C7983E526B79E /* HM2Renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HM2Renderer.h; sourceTree = "<group>"; };
 		68FE8721C5BB680AFE6731E1 /* WorldRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WorldRandom.hpp; sourceTree = "<group>"; };
 		690416CAE340A22C399D793A /* GameSession.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GameSession.hpp; sourceTree = "<group>"; };
@@ -501,6 +503,7 @@
 				1124C71EDFD2EB2281DC160D /* HM2GameRuntime.hpp */,
 				1A72523C693BCCDC6274159F /* HM2GameRuntime.mm */,
 				13F2346C339F63643FB7B0C7 /* HM2HUDStorage.hpp */,
+				66A59761162B494B726CF7E6 /* HM2NativeValidation.hpp */,
 				886A7335138D1103D5379EFF /* HM2Profiling.hpp */,
 				67696AD5E96C7983E526B79E /* HM2Renderer.h */,
 				935D56609040C44D67B6E633 /* HM2Renderer.mm */,
@@ -509,6 +512,7 @@
 				53644980D69E07491B00CCE9 /* HM2SourceView.mm */,
 				7F17A8BA4D1A29FD295182A9 /* HM2TextRasterizer.h */,
 				D4C8284C6796F6A4F01CE879 /* HM2TextRasterizer.mm */,
+				45530954687D6714B682BCFB /* HM2WhiteMountainBossValidation.hpp */,
 				A3E53D30CFE44085EA20F99F /* HM2WhiteMountainValidation.hpp */,
 			);
 			name = Apple;

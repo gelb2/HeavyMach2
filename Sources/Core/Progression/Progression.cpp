@@ -2,6 +2,7 @@
 #include "Core/Audio/SoundIDs.hpp"
 #include <algorithm>
 #include <bit>
+#include <charconv>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -23,20 +24,41 @@ std::vector<std::string> words(std::string_view s){
 }
 int number(const std::vector<std::string>& w,std::size_t p){return p<w.size()?std::atoi(w[p].c_str()):0;}
 std::string word(const std::vector<std::string>& w,std::size_t p){return p<w.size()?w[p]:"";}
+int authoredInteger(std::string_view text,int minimum,int maximum){
+    int value=0;
+    const auto result=std::from_chars(text.data(),text.data()+text.size(),value);
+    if(result.ec!=std::errc{}||result.ptr!=text.data()+text.size()||value<minimum||value>maximum)
+        throw std::runtime_error("Invalid campaign mission integer");
+    return value;
+}
 Action action(std::string_view text){
     const auto w=words(text);Action a;if(w.empty())return a;
+    if(w[0]=="placeSpawner"){
+        if(w.size()!=5)throw std::runtime_error("Invalid campaign spawner action");
+        a.type=Action::placeSpawner;
+        a.enemy=word(w,1);a.place=word(w,2);
+        a.x=authoredInteger(w[3],-490,490);a.y=authoredInteger(w[4],-490,490);
+        return a;
+    }
     constexpr std::string_view names[]={"giveMoney","giveExp","giveItem","takeItem","warpTo","setItem","setEnemy","openGate"};
     for(int i=0;i<8;++i)if(w[0]==names[i])a.type=i;
     if(a.type<2)a.value=number(w,1);
     else if(a.type<5){a.item=word(w,1);a.value=number(w,2);}
     else if(a.type==5){a.item=word(w,1);a.place=word(w,2);a.x=number(w,3);a.y=number(w,4);}
     else if(a.type==6){a.enemy=word(w,1);a.place=word(w,2);}
-    else a.place=word(w,1);return a;
+    else a.place=word(w,1);
+    return a;
 }
 Requirement requirement(std::string_view text){
     const auto w=words(text);Requirement r;if(w.empty())return r;
-    if(w[0]=="arrive")r.type=1;else if(w[0]=="kill")r.type=2;else if(w[0]=="item")r.type=3;
-    r.object=word(w,1);r.count=number(w,2);r.place=word(w,3);return r;
+    if(w[0]=="arrive")r.type=1;else if(w[0]=="kill"||w[0]=="killAt")r.type=2;else if(w[0]=="item")r.type=3;
+    r.object=word(w,1);r.count=number(w,2);r.place=word(w,3);
+    r.matchMap=w[0]=="killAt";
+    if(r.matchMap){
+        if(w.size()!=4)throw std::runtime_error("Invalid campaign kill requirement");
+        r.count=authoredInteger(w[2],1,127);
+    }
+    return r;
 }
 std::optional<std::size_t> index(const Definitions& defs,std::string_view id){
     const auto& all=defs.missions();for(std::size_t i=0;i<all.size();++i)if(all[i].id==id)return i;return {};
@@ -182,8 +204,8 @@ bool Missions::accept(std::string_view id){
 }
 bool Missions::finish(std::string_view id){const auto i=index(defs_,id);if(!i)return false;states_[*i].complete=true;accepted_.erase(std::remove(accepted_.begin(),accepted_.end(),*i),accepted_.end());return true;}
 void Missions::kill(std::string_view enemy,int count,std::string_view place,int screen){
-    (void)place;for(const auto i:accepted_){auto& s=states_[i];if(s.requireComplete)continue;bool changed=false;const auto& d=defs_.missions()[i];
-        for(std::size_t j=0;j<d.requirements.size();++j){const auto& r=d.requirements[j];if(r.type==2&&r.object==enemy&&s.did[j]<r.count){s.did[j]=std::min(r.count,addInt(s.did[j],count));changed=true;}}
+    for(const auto i:accepted_){auto& s=states_[i];if(s.requireComplete)continue;bool changed=false;const auto& d=defs_.missions()[i];
+        for(std::size_t j=0;j<d.requirements.size();++j){const auto& r=d.requirements[j];if(r.type==2&&r.object==enemy&&(!r.matchMap||r.place==place)&&s.did[j]<r.count){s.did[j]=std::min(r.count,addInt(s.did[j],count));changed=true;}}
         if(changed){check(i);refresh(i,screen);}
     }
 }

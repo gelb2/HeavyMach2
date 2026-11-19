@@ -15,6 +15,7 @@
 // restored sessions on the same display clock.
 #if HM2_VALIDATION
 #include "Platform/Apple/HM2WhiteMountainValidation.hpp"
+#include "Platform/Apple/HM2WhiteMountainBossValidation.hpp"
 @interface HM2PreviewView:UIView
 - (void)setActive:(BOOL)active;
 - (void)setAudioActive:(BOOL)active;
@@ -31,7 +32,7 @@
     CADisplayLink* _display;
 
     std::unique_ptr<hm2::apple::ConcurrentRuntime> _concurrent;
-    std::unique_ptr<hm2::apple::WhiteMountainValidation> _whiteMountain;
+    std::unique_ptr<hm2::apple::NativeValidationScenario> _nativeScenario;
     NSURL* _validationDirectory;
     BOOL _validationFinished;
     BOOL _uiTesting;
@@ -47,8 +48,9 @@
     if(!root)throw std::runtime_error("Prepared original HD resources are missing from app");
     NSURL* documents=[NSFileManager.defaultManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].firstObject;
     _validationDirectory=[[documents URLByAppendingPathComponent:@"ConcurrentValidation" isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];
-    if([NSProcessInfo.processInfo.environment[@"HM2_WHITE_MOUNTAIN_VALIDATION"] isEqualToString:@"1"])
-        _whiteMountain=std::make_unique<hm2::apple::WhiteMountainValidation>(root,_validationDirectory);
+    NSString* mode=NSProcessInfo.processInfo.environment[@"HM2_WHITE_MOUNTAIN_VALIDATION"];
+    if([mode isEqualToString:@"1"])_nativeScenario=std::make_unique<hm2::apple::WhiteMountainValidation>(root,_validationDirectory);
+    else if([mode isEqualToString:@"2"])_nativeScenario=std::make_unique<hm2::apple::WhiteMountainBossValidation>(root,_validationDirectory);
     else _concurrent=std::make_unique<hm2::apple::ConcurrentRuntime>(root,_validationDirectory);
     _uiTesting=[NSProcessInfo.processInfo.environment[@"HM2_UI_TESTING"] isEqualToString:@"1"];
     if(_uiTesting){self.isAccessibilityElement=YES;self.accessibilityIdentifier=@"hm2.world";self.accessibilityLabel=@"HeavyMach2 World";[self updateTestState];}
@@ -64,7 +66,7 @@
     const auto a=self.safeAreaInsets;const auto size=self.bounds.size;
     auto next=hm2::DisplayConfiguration::surface({float(size.width),float(size.height)},{float(a.left),float(a.bottom),float(a.right),float(a.top)});
     next.device=self.traitCollection.userInterfaceIdiom==UIUserInterfaceIdiomPad?hm2::DisplayDevice::tablet:hm2::DisplayDevice::phone;
-    if(_whiteMountain){_whiteMountain->setDisplay(next);return;}
+    if(_nativeScenario){_nativeScenario->setDisplay(next);return;}
     const auto& old=_concurrent->validation().session(0).display();
     if(old.enabled&&old.device==next.device&&old.canvas.width==next.canvas.width&&old.canvas.height==next.canvas.height&&old.insets.left==next.insets.left&&old.insets.right==next.insets.right&&old.insets.top==next.insets.top&&old.insets.bottom==next.insets.bottom)return;
     _concurrent->setDisplay(next);
@@ -76,8 +78,8 @@
 }
 - (void)display:(CADisplayLink*)link {
     if(!_validationFinished&&self.window&&self.bounds.size.width>0&&self.bounds.size.height>0){
-        if(_whiteMountain){
-            if(_whiteMountain->step((CAEAGLLayer*)self.layer)){_validationFinished=YES;_display.paused=YES;}
+        if(_nativeScenario){
+            if(_nativeScenario->step((CAEAGLLayer*)self.layer)){_validationFinished=YES;_display.paused=YES;}
             return;
         }
         _concurrent->tick();const bool finished=_concurrent->validation().metrics().frames>=hm2::validation::displayValidationFrames(_concurrent->validation().session(0).display());
@@ -95,13 +97,13 @@
 }
 - (void)setActive:(BOOL)active{_display.paused=!active;
     if(_validationFinished)_display.paused=YES;
-    else if(_whiteMountain)_whiteMountain->setActive(active);
+    else if(_nativeScenario)_nativeScenario->setActive(active);
     else _concurrent->setActive(active);
 
 }
 - (void)setAudioActive:(BOOL)active{
     if(_validationFinished)return;
-    if(_whiteMountain)_whiteMountain->setAudioActive(active);else _concurrent->setAudioActive(active);
+    if(_nativeScenario)_nativeScenario->setAudioActive(active);else _concurrent->setAudioActive(active);
 }
 - (void)dealloc{[_display invalidate];}
 @end

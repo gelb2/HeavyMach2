@@ -30,8 +30,13 @@ struct Item {
     bool buy=false,sell=false,quick=false,countable=false;
     std::string iconImage()const;
 };
-struct Requirement {int type=0;std::string object,place;int count=0;};
-struct Action {int type=0,value=0;std::string item,enemy,place;int x=0,y=0;};
+struct Requirement {int type=0;std::string object,place;int count=0;bool matchMap=false;};
+struct Action {
+    static constexpr int placeSpawner=8;
+    int type=0,value=0;
+    std::string item,enemy,place;
+    int x=0,y=0;
+};
 struct MissionDefinition {
     std::string id,name,owner,completePlace,previous,comment;int level=0;
     std::vector<Requirement> requirements;std::vector<Action> acceptActions,completeActions;

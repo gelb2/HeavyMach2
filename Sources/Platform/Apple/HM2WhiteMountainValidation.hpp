@@ -1,7 +1,7 @@
 #pragma once
 // Included only by the cheat application. Start conditions use fresh
 // ordinary save envelopes. Navigation, rendering and screen actions use GameRuntime.
-#include "Platform/Apple/HM2GameRuntime.hpp"
+#include "Platform/Apple/HM2NativeValidation.hpp"
 #include "Platform/Apple/HM2Resources.hpp"
 #include "Core/Progression/Progression.hpp"
 #include "Core/Simulation/DarwinWorldRandom.hpp"
@@ -11,7 +11,7 @@
 #include <set>
 
 namespace hm2::apple {
-class WhiteMountainValidation {
+class WhiteMountainValidation final:public NativeValidationScenario {
     struct Route {std::string source;MapGate gate;unsigned baseExit=0;};
     static constexpr std::array<std::string_view,7> maps_{
         "SnowPass","Base004","SnowBasin","SnowField","SnowRidge","SnowFort","SnowValley"
@@ -136,23 +136,7 @@ class WhiteMountainValidation {
     }
     void capture(CAEAGLLayer* layer,const std::string& id){
         if(!captures_.insert(id).second)return;
-        runtime_->captureNextFrame();
-        runtime_->draw(layer);
-        NSData* rgba=runtime_->pixels();
-        const CGSize size=runtime_->drawableSize();
-        const auto width=std::size_t(size.width),height=std::size_t(size.height),stride=width*4;
-        require(width&&height&&rgba.length==height*stride,"No White Mountain GPU framebuffer");
-        NSMutableData* topDown=[NSMutableData dataWithLength:rgba.length];
-        const auto* begin=static_cast<const std::uint8_t*>(rgba.bytes);
-        auto* end=static_cast<std::uint8_t*>(topDown.mutableBytes);
-        for(std::size_t y=0;y<height;++y)std::copy_n(begin+(height-1-y)*stride,stride,end+y*stride);
-        CGDataProviderRef provider=CGDataProviderCreateWithCFData((__bridge CFDataRef)topDown);
-        CGColorSpaceRef colors=CGColorSpaceCreateDeviceRGB();
-        CGImageRef image=CGImageCreate(width,height,8,32,stride,colors,kCGImageAlphaNoneSkipLast|kCGBitmapByteOrderDefault,provider,nullptr,false,kCGRenderingIntentDefault);
-        NSData* png=UIImagePNGRepresentation([UIImage imageWithCGImage:image]);
-        CGImageRelease(image);CGColorSpaceRelease(colors);CGDataProviderRelease(provider);
-        require(png&&[png writeToURL:[directory_ URLByAppendingPathComponent:[string(id) stringByAppendingString:@".png"]] atomically:YES],
-                "Cannot export White Mountain GPU capture");
+        captureValidationFrame(*runtime_,layer,[directory_ URLByAppendingPathComponent:[string(id) stringByAppendingString:@".png"]]);
     }
     void record(CAEAGLLayer* layer){
         auto& game=runtime_->session();
@@ -234,19 +218,19 @@ public:
             @"activeSource":current_<routes_.size()?string(route().source):@"",
             @"activeDestination":current_<routes_.size()?string(route().gate.linkMap):@""});
     }
-    void setDisplay(DisplayConfiguration display){
+    void setDisplay(DisplayConfiguration display) override{
         display_=display;
         if(runtime_)runtime_->setDisplay(display);
     }
-    void setActive(bool active){
+    void setActive(bool active) override{
         active_=active;
         if(runtime_)runtime_->setActive(active);
     }
-    void setAudioActive(bool active){
+    void setAudioActive(bool active) override{
         audioActive_=active;
         if(runtime_)runtime_->setAudioActive(active);
     }
-    bool step(CAEAGLLayer* layer){
+    bool step(CAEAGLLayer* layer) override{
         if(finished_||!active_)return finished_;
         try{
             if(!runtime_)begin();

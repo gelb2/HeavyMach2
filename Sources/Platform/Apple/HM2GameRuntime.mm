@@ -171,6 +171,7 @@ std::size_t GameRuntime::preparedTextCount()const{return impl_->textCache.size()
 std::vector<std::string> GameRuntime::preparedTextIdentities()const{std::vector<std::string> names;names.reserve(impl_->textNames.size());for(const auto& [bitmap,name]:impl_->textNames){(void)bitmap;names.push_back(name);}return names;}
 NSUInteger GameRuntime::textureUploads()const{return impl_->renderer.textureUploads;}
 NSDictionary<NSString*,NSNumber*>* GameRuntime::audioMetrics()const{return impl_->audio.metrics;}
+NSArray<NSDictionary*>* GameRuntime::audioPlaybackSnapshot()const{return impl_->audio.playbackSnapshot;}
 NSDictionary<NSString*,NSNumber*>* GameRuntime::resourceMetrics()const{
     auto& p=*impl_;return @{@"residentTextures":@(p.renderer.residentTextures),@"residentTextureBytes":@(p.renderer.residentTextureBytes),@"textureUploads":@(p.renderer.textureUploads),@"imageTextureUploads":@(p.renderer.imageTextureUploads),@"textureDeletes":@(p.renderer.textureDeletes),@"imageResourceReads":@(p.renderer.imageResourceReads),@"imageDecodes":@(p.renderer.imageDecodeCalls),@"textBitmaps":@(p.textCache.size()),@"textIdentities":@(p.textNames.size()),@"worldResourceRevision":@(p.game->resourceRevision()),@"uiResourceGeneration":@(p.ui->resourceGeneration()),@"hudLayoutWrites":@(p.hudLayoutWrites),@"thermalState":@(NSProcessInfo.processInfo.thermalState)};
 }

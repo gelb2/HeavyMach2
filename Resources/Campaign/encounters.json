@@ -1,0 +1,34 @@
+{
+  "missions": [
+    {
+      "id": "M041010", "map": "SnowBasin", "model": "Boss_05", "at": [-215, 75],
+      "level": 27, "previous": "M001230",
+      "kr": ["설원 분지의 포대", "설원 분지의 포대를 제거하고 화이트마운틴 사령부에 보고하라."],
+      "us": ["The Basin Battery", "Destroy the battery in Snow Basin and report to White Mt. Command."]
+    },
+    {
+      "id": "M041020", "map": "SnowField", "model": "Boss_06", "at": [-205, 50],
+      "level": 34, "previous": "M041010",
+      "kr": ["설원 평원의 비행 전함", "설원 평원의 비행 전함을 떨어뜨리고 기지로 복귀하라."],
+      "us": ["Gunship Over Snow Field", "Bring down the gunship in Snow Field and return to base."]
+    },
+    {
+      "id": "M041030", "map": "SnowRidge", "model": "Boss_07", "at": [-210, 65],
+      "level": 41, "previous": "M041020",
+      "kr": ["설원 능선의 중전차", "설원 능선의 중전차를 격파하고 화이트마운틴 사령부에 보고하라."],
+      "us": ["Armor on Snow Ridge", "Destroy the heavy armor on Snow Ridge and report to White Mt. Command."]
+    },
+    {
+      "id": "M041040", "map": "SnowValley", "model": "Boss_08", "at": [-205, 65],
+      "level": 48, "previous": "M041030",
+      "kr": ["설원 골짜기의 최후 방어선", "설원 골짜기의 거대 전차를 격파하고 기지로 돌아오라."],
+      "us": ["The Last Valley Defense", "Destroy the giant tank in Snow Valley and return to base."]
+    }
+  ],
+  "fieldEnemies": {
+    "SnowBasin": [["E_Plane_01", 20, 265]],
+    "SnowField": [["E_Plane_02", 40, -285], ["E_Turret_06", -65, -245]],
+    "SnowRidge": [["E_Plane_05", 90, 265]],
+    "SnowValley": [["E_Tank_30", 130, 270]]
+  }
+}

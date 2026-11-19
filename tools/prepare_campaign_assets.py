@@ -13,6 +13,8 @@ import tempfile
 import zipfile
 
 from audit_ipa_versions import decode, table
+from campaign_missions import apply_campaign_missions
+from campaign_aircraft import extend_aircraft
 from prepare_hd_assets import prepare as prepare_original_hd
 from prepare_phone_menu_assets import prepare as prepare_original_phone
 
@@ -34,7 +36,7 @@ class Chunk:
         return struct.pack('<III', size, self.kind, len(self.data)) + self.data + struct.pack('<I', len(self.children)) + children
 
 
-def parse_chunk(data):
+def parse_chunk(data, root_kind=0):
     def read(at):
         declared, kind, length = struct.unpack_from('<III', data, at)
         start = at + 12
@@ -48,7 +50,7 @@ def parse_chunk(data):
         return Chunk(kind, data[start:end], children, declared), at
 
     root, end = read(0)
-    if end != len(data) or root.kind != 0 or root.data:
+    if end != len(data) or root.kind != root_kind or root.data:
         raise ValueError('Invalid original MCB root')
     return root
 
@@ -202,13 +204,19 @@ def prepare(output=OUTPUT):
     if not output.is_relative_to(campaign_root) or output == campaign_root:
         raise ValueError('Prepare expansion resources under .local/prepared/Campaign')
     definition = json.loads((AUTHORING/'white-mountain.json').read_text())
+    encounters = json.loads((AUTHORING/'encounters.json').read_text())
+    aircraft = json.loads((AUTHORING/'aircraft.json').read_text())
+    for map_id, enemies in encounters['fieldEnemies'].items():
+        definition['maps'][map_id].setdefault('enemies', []).extend(enemies)
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='campaign-', dir=output.parent) as temporary:
         pending = Path(temporary)/'HD'
         prepare_original_hd(pending)
         prepare_original_phone(pending/'PhoneMenu')
         source_manifest = digest((pending/'manifest.json').read_bytes())
+        aircraft_patches = extend_aircraft(pending, aircraft, parse_chunk=parse_chunk)
         gate_count = extend_maps(pending, definition)
+        missions = apply_campaign_missions(pending, encounters, definition['maps'], append_rows)
         images = import_snow_images(pending, definition)
         phone_manifest = pending/'PhoneMenu/manifest.json'
         phone_source = digest(phone_manifest.read_bytes())
@@ -217,7 +225,10 @@ def prepare(output=OUTPUT):
         patched = ['MapInfo.mcb', 'MapList.tble', 'Base004.tble', 'PhoneMenu/Base004.tble',
                    'Btn_GoSnowPass.png', 'Btn_GoSnowBasin.png',
                    'PhoneMenu/Btn_GoSnowPass.png', 'PhoneMenu/Btn_GoSnowBasin.png']
-        manifest = dict(profile='white-mountain', originalManifestSha256=source_manifest,
+        patched.extend([*aircraft_patches, 'MissionList.tble'])
+        for mission in missions:
+            patched.extend(f"{mission['id']}_{locale}.tble" for locale in ('kr', 'us'))
+        manifest = dict(profile='white-mountain', missions=missions, originalManifestSha256=source_manifest,
                         originalPhoneMenuManifestSha256=phone_source,
                         newMaps=list(definition['maps']), newGates=gate_count,
                         hd100Terrain=images, patches={name:digest((pending/name).read_bytes()) for name in patched})

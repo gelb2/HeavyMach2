@@ -1,0 +1,33 @@
+{
+  "pod": "E_Plane05_Wpn",
+  "muzzle": [6, 0],
+  "aircraft": {
+    "E_Plane_01": {
+      "bodySockets": [[5, 0]],
+      "mountSockets": [1],
+      "weapon": {
+        "part": "E_Plane01_Mk2_Wpn",
+        "donor": "E_Turret_Wpn_02",
+        "fields": {"Dmg": 32, "Range": 55, "ShtRng": 200, "ShtCnt": 1, "RldDly": 2.4, "AimRt": 0.7}
+      }
+    },
+    "E_Plane_02": {
+      "bodySockets": [[6, 13], [6, -13]],
+      "mountSockets": [1, 2],
+      "weapon": {
+        "part": "E_Plane02_Mk2_Wpn",
+        "donor": "E_Turret_Wpn_04",
+        "fields": {"Dmg": 38, "Range": 58, "ShtRng": 220, "ShtCnt": 1, "RldDly": 2.8, "AimRt": 0.65}
+      }
+    },
+    "E_Plane_05": {
+      "bodySockets": [],
+      "mountSockets": [5, 6, 7, 8],
+      "weapon": {
+        "part": "E_Plane05_Mk2_Wpn",
+        "donor": "E_Turret_Wpn_06",
+        "fields": {"Dmg": 34, "Range": 66, "ShtRng": 240, "ShtCnt": 1, "RldDly": 3.2, "AimRt": 0.65}
+      }
+    }
+  }
+}

@@ -48,6 +48,7 @@ public:
     [[nodiscard]] std::vector<std::string> preparedTextIdentities()const;
     [[nodiscard]] NSUInteger textureUploads()const;
     [[nodiscard]] NSDictionary<NSString*,NSNumber*>* audioMetrics()const;
+    [[nodiscard]] NSArray<NSDictionary*>* audioPlaybackSnapshot()const;
     [[nodiscard]] NSDictionary<NSString*,NSNumber*>* resourceMetrics()const;
     [[nodiscard]] std::vector<InputObservation> inputHistory()const;
     [[nodiscard]] NSData* pixels();
