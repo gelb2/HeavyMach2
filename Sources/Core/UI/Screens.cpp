@@ -630,6 +630,7 @@ RegionScope card(*this,Region(unsigned(Region::slot0)+i));
         if(magnitude<5)displayed=target;
     }
     void inventory(Vec2,bool=false,bool=false);
+    void phonePageDots(Vec2,std::size_t,std::size_t);
     void equip(Vec2,unsigned=9,bool=false);
     void bots(Vec2,bool=false);
     void inventoryDialog(Vec2,bool=false);
@@ -692,7 +693,8 @@ void Screens::Impl::buildDetail(DetailKind kind,const ItemView& entry,Vec2 origi
             if(nodes.size()==count)return std::shared_ptr<Text>{};auto result=std::get<TextNode>(nodes.back()).text;nodes.pop_back();return result;
         };
         d.title=label(source+".title",entry.name,maintenance?Size{128,16}:Size{160,24},maintenance?12.f:16.f,TextAlign::center,{});
-        d.description=label(source+".description",entry.description,{160,90},12,TextAlign::left,kind==DetailKind::shop?Color{120.f/255,240.f/255,240.f/255,1}:Color{});
+        const auto descriptionColor=kind==DetailKind::shop&&!phone?Color{120.f/255,240.f/255,240.f/255,1}:Color{};
+        d.description=label(source+".description",entry.description,{160,90},12,TextAlign::left,descriptionColor);
         if(entry.originalType==10||entry.originalType==11||entry.originalType==12)if(auto* t=tile(entry.largeIcon)){
             VisualImage image;image.tile=tiles.visual(*t);image.tileNo=0;image.useAtlas=false;d.large=std::move(image);
         }
@@ -769,6 +771,12 @@ void Screens::Impl::tickRange(WorldRandom& random){
     for(auto& node:nodes)if(auto* n=std::get_if<ImageNode>(&node)){if(n->tag=="hud.rangeLeft")n->image.show=fieldPresentation.range[0];else if(n->tag=="hud.rangeRight")n->image.show=fieldPresentation.range[1];}
 }
 
+void Screens::Impl::phonePageDots(Vec2 center,std::size_t count,std::size_t selected){
+    for(std::size_t i=0;i<count;++i){
+        const float x=center.x+(float(i)-(float(count)-1.f)*.5f)*18.f;
+        image("InvenPage.png",{x,center.y},2,1,i==selected?1u:0u,{1,1},false,0,1,9);
+    }
+}
 void Screens::Impl::inventory(Vec2 origin,bool shopMode,bool phone){
     if(!phone){
     (void)shopMode;
@@ -807,8 +815,10 @@ void Screens::Impl::inventory(Vec2 origin,bool shopMode,bool phone){
         if(state.selectedInventory==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.8f,9);
         if(state.extInventory==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.5f,9);
     }}
-    RegionScope pages(*this,phone?Region::phoneInventoryPages:region);tile("InvenPage.png",2,1);
-    for(int page=0;page<state.inventoryPages;++page){float x=(float(page)-float(state.inventoryPages)*.5f)*(phone?18.f:12.f)+origin.x+(phone?120.f:86.f);image("InvenPage.png",{x,origin.y-(phone?234.f:290.f)},2,1,page==state.inventoryPage?1u:0u,Vec2{1,1},false,0,1,9);}
+    RegionScope pages(*this,Region::phoneInventoryPages);
+    const auto windows=menu::pageWindows(25,inventoryCells());
+    phonePageDots({origin.x+111.f,menu::pagerY},std::size_t(std::max(0,state.inventoryPages))*windows,
+                  std::size_t(std::max(0,state.inventoryPage))*windows+inventoryWindow);
     addButton(Panel::inventory,6090,menu::phoneAsset("Btn_InvenPage.png"),{origin.x-3.f,menu::pagerY},2,1,0,0,Size{120,menu::pagerHitHeight},0,{},Vec2{1,1},true,9,false);
     addButton(Panel::inventory,6091,menu::phoneAsset("Btn_InvenPage.png"),{origin.x+243.f,menu::pagerY},2,1,1,1,Size{120,menu::pagerHitHeight},0,{},Vec2{1,1},true,9,false);
 }
@@ -877,9 +887,15 @@ void Screens::Impl::phoneShop(bool maintenance){
             addButton(Panel::root,2104,menu::phoneAsset("Btn_ShopRight.png"),{270,menu::categoryY},2,1,0,1,Size{120,menu::categoryHitHeight},(state.shopCategory+1)%5,{}, {1,1},true,9,false);
             addButton(Panel::root,9204,"",{250.5f,34.5f},1,1,0,0,Size{150,60});
             RegionScope pagesRegion(*this,Region::phoneStockHeader);
-            const auto pages=state.shopItems.size()/24+1;for(std::size_t page=0;page<pages;++page){const float x=(float(page)-float(pages)*.5f)*18+99;image("InvenPage.png",plus(menu::stockGrid,{x,-231}),2,1,page==std::size_t(state.shopPage)?1u:0u,{1,1});}
-            addButton(Panel::root,2105,menu::phoneAsset("Btn_InvenPage.png"),{menu::stockGrid.x-7.5f,menu::pagerY},2,1,0,0,Size{120,menu::pagerHitHeight},0,{}, {1,1},true,9,false);
-            addButton(Panel::root,2106,menu::phoneAsset("Btn_InvenPage.png"),{menu::stockGrid.x+186,menu::pagerY},2,1,1,1,Size{120,menu::pagerHitHeight},0,{}, {1,1},true,9,false);
+            const auto count=state.shopItems.size();
+            const auto windows=menu::pageWindows(24,stockCells());
+            const auto pages=count/24*windows+menu::pageWindows(count%24,stockCells());
+            const auto selected=std::size_t(std::max(0,state.shopPage))*windows+stockWindow;
+            phonePageDots({menu::stockGrid.x+90.f,menu::stockGrid.y-231.f},pages,selected);
+            if(pages>1){
+                addButton(Panel::root,2105,menu::phoneAsset("Btn_InvenPage.png"),{menu::stockGrid.x-7.5f,menu::pagerY},2,1,0,0,Size{120,menu::pagerHitHeight},0,{}, {1,1},true,9,false);
+                addButton(Panel::root,2106,menu::phoneAsset("Btn_InvenPage.png"),{menu::stockGrid.x+186,menu::pagerY},2,1,1,1,Size{120,menu::pagerHitHeight},0,{}, {1,1},true,9,false);
+            }
         }
         {RegionScope stock(*this,Region::phoneStock);for(unsigned i=stockWindow*stockCells();i<std::min(24u,(stockWindow+1)*stockCells());++i){const auto index=std::size_t(std::max(0,state.shopPage))*24+i;if(index>=state.shopItems.size())break;const auto& entry=state.shopItems[index];const auto at=plus(menu::stockGrid,{60.f*float(i%4),-60.f*float((i%stockCells())/4)});addButton(Panel::root,2200+i,entry.icon,at,entry.iconColumns,entry.iconRows,entry.iconTile,entry.iconTile,Size{60,60},0,entry.dataId,{1,1},entry.enabled);if(state.selectedShop==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.8f);}}
     }

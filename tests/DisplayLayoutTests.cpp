@@ -215,6 +215,24 @@ void phoneButtonPages(Files& files){
   const auto config=DisplayConfiguration::surface(extent);Host host;PreparedTiles tiles("phone-button-pages");ui::Screens ui(files,tiles,host);ui.setDisplay(config);ui::ScreensState state;state.screen=ui::ScreenId::shop;state.inventoryVisible=true;state.inventoryPages=1;
   for(unsigned i=0;i<25;++i){ui::ItemView item;item.dataId=std::to_string(i);item.icon="Icon10011.png";item.count=1;state.inventory.push_back(item);if(i<24)state.shopItems.push_back(item);}ui.refresh(state,0);
   const auto press=[&](unsigned id){for(auto k:ui.buttons())if(k.id==id){auto p=ui.buttonScreenPosition(k);ui.input(PointerPhase::begin,p,44000+id,1);ui.input(PointerPhase::end,p,44000+id,1);return;}throw std::runtime_error("Missing pager "+std::to_string(id));};
+  const auto pagerDots=[&](bool stock){
+   Frame frame;ui.append(frame,0);
+   std::vector<std::pair<float,float>> dots;
+   for(const auto& sprite:frame.sprites){
+    if(sprite.image!="InvenPage.png"||sprite.strip.size()!=4)continue;
+    const auto center=quadBounds(sprite).x+quadBounds(sprite).width*.5f;
+    if((center<extent.width*.5f)==stock)dots.emplace_back(center,sprite.strip.front().uv.x);
+   }
+   std::sort(dots.begin(),dots.end());
+   return dots;
+  };
+  const auto firstStockDots=pagerDots(true),firstInventoryDots=pagerDots(false);
+  assert(firstStockDots.size()==3&&firstInventoryDots.size()==2);
+  press(2106);press(6091);
+  const auto secondStockDots=pagerDots(true),secondInventoryDots=pagerDots(false);
+  assert(firstStockDots[0].second==secondStockDots[1].second&&firstStockDots[0].second!=secondStockDots[0].second);
+  assert(firstInventoryDots[0].second==secondInventoryDots[1].second&&firstInventoryDots[0].second!=secondInventoryDots[0].second);
+  press(2105);press(6090);
   std::set<unsigned> stock,inventory;
   for(unsigned page=0;page<7;++page){for(auto k:ui.buttons()){if(k.id>=2200&&k.id<2224)stock.insert(k.id);if(k.id>=6000&&k.id<6025)inventory.insert(k.id);}if((page+1)*menu::phoneShopRows*4<24)press(2106);if((page+1)*menu::phoneShopRows*5<25)press(6091);}
   assert(stock.size()==24&&inventory.size()==25);
@@ -223,6 +241,9 @@ void phoneButtonPages(Files& files){
   state.shopPage=1;ui.refresh(state,1);press(2106);host.events.clear();press(2106);bool forwarded=false;for(const auto& event:host.events)forwarded|=event.button.key.id==2106&&event.button.type==ui::ButtonEventType::push;assert(forwarded);
 
   for(const auto end:{Vec2{extent.width-5,extent.height*.5f},Vec2{5,extent.height-5},Vec2{5,5}}){std::vector<Vec2> before;for(auto k:ui.buttons())before.push_back(ui.buttonScreenPosition(k));ui.input(PointerPhase::begin,{5,extent.height*.5f},331,2);ui.input(PointerPhase::move,end,331,2.1f);ui.input(PointerPhase::end,end,331,2.2f);unsigned i=0;for(auto k:ui.buttons()){auto p=ui.buttonScreenPosition(k);assert(near(p.x,before[i].x)&&near(p.y,before[i].y));++i;}assert((ui.menuScrollOffsets()==std::array<float,2>{}));}
+  state.shopItems.resize(5);state.shopCategory=1;state.shopPage=0;ui.refresh(state,3);
+  assert(pagerDots(true).size()==1);
+  for(const auto& key:ui.buttons())assert(key.id!=2105&&key.id!=2106);
  }
  std::cout<<"PHONE_BUTTON_PAGES 3 surfaces / all24stock+25inventory / no horizontal or vertical scroll PASS\n";
 }

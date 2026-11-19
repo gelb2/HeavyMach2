@@ -36,3 +36,13 @@ iPhone 상점·Equip 그림, 버튼, 터치, 드롭 좌표에 하나의 480×320
 공통 검사 5개와 iPhone 시뮬레이터 검사 4개가 통과했다. 웨이스트랜드 다섯 분류와 Equip 전환, SG-1 상세, ML-K3 구매 확인창을 캡처했다. iPhone의 기지 6곳 상점과 Equip 4가지 크기에서 가장자리의 순수 검은 픽셀과 동일한 끝 픽셀 열은 각각 0건이었다. iPad 시뮬레이터의 기지 6곳 상점은 직전 후보와 달라진 픽셀이 0개였다. 양쪽 메뉴 36개에서 번들 배경 파일의 해시를 대조했다. 실기기 확인은 투두에 남겼다.
 
 캡처와 로그는 `.local/evidence/iphone-shop-clean-art-20261119.Dqz7aA/`에 있다. 별첨은 `iphone-wasteland-shop.png`, `iphone-wasteland-equip.png`, `iphone-sg1-detail.png`, `ipad-wasteland-shop.png`다. 측정 결과는 `iphone-edge-pixels.json`과 `ipad-shop-pixel-match.json`에 있다.
+
+## 수정한 배경을 적용한 상점의 페이지 표시
+
+일반판 2.0.1의 웨이스트랜드 레벨 22에서 Weapon과 Parts는 여러 화면으로 넘어가며 좌우 화살표가 보였다. BOT·Skill·Etc는 한 화면에 들어와 화살표가 없었다. 기존 복원판은 한 화면인 목록에도 화살표를 표시했고, HD의 같은 페이지 안에서 다음 묶음으로 넘어가면 점 표시가 움직이지 않았다.
+
+`Screens`에서 상점에 실제로 보이는 묶음이 둘 이상일 때 페이지 화살표를 등록한다. 상품·인벤토리의 점은 화면에 보이는 묶음 번호를 따른다. HD 페이지당 24상품·25인벤토리와 정렬·드롭은 기존 코드를 사용한다. iPhone 상품 상세 설명은 원본 캡처와 같은 흰색을 쓴다. 보고서의 격납고 JPEG를 Release 번들에서도 바이트 단위로 확인했다.
+
+공통 코어 검사 5개와 iPhone GPU 검사 5개를 통과했다. 공통 세션에서 SG-1 구매와 판매를 검사했다. iPhone GPU에서 웨이스트랜드 다섯 분류, ML-K3 상세와 구매 확인, 세 번째 BOT의 DISARM과 능력치 세 줄을 캡처했다. iPhone 상점 6곳과 Equip 4가지 크기의 캡처를 확인했다. iPad 상점 6곳의 이전 캡처와 달라진 픽셀은 0개였다.
+
+정식 Release 앱은 두 시뮬레이터에 설치해 시작을 확인했다. 앱 호스트를 참조하는 XCTest 링크가 Release에서 실패해 GPU와 입력 검사는 Debug에서 실행했다. 실기기 iPhone은 연결 불가였다. 캡처와 두 구성의 로그는 `.local/evidence/iphone-shop-ui-release-20261119.VKfBFH/`에 있다.

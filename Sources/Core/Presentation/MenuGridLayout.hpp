@@ -15,6 +15,9 @@ inline constexpr Size tradeActionSize{48,85.5f},detailTextureSize{384,192},detai
 inline constexpr float pagerY=96;
 inline constexpr float categoryY=402,pagerHitHeight=27,categoryHitHeight=60;
 inline constexpr unsigned phoneShopRows=4;
+inline std::size_t pageWindows(std::size_t count,std::size_t visible){
+    return count==0?1:1+(count-1)/visible;
+}
 inline constexpr float equipmentFooterY=76.5f,disarmY=124.5f;
 inline float phoneReferenceScale(const DisplayConfiguration& c){
     return std::min(c.canvas.width/480,c.canvas.height/320);

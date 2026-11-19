@@ -443,6 +443,11 @@ UIImage* image(NSData* rgba,CGSize size){
                         XCTAssertTrue(press(2107));capturedMLK3=true;
                     }
                 }
+                if(count<=hm2::menu::phoneShopRows*4){
+                    XCTAssertFalse(press(2106));
+                    XCTAssertFalse(press(2105));
+                    break;
+                }
                 XCTAssertTrue(press(2106));
                 if(runtime.session().state().shopPage==page&&stockIDs()==buttons)break;
                 if(runtime.session().state().shopPage<page)break;
