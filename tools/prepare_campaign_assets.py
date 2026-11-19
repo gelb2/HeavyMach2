@@ -14,6 +14,7 @@ import zipfile
 
 from audit_ipa_versions import decode, table
 from campaign_missions import apply_campaign_missions
+from campaign_items import apply_campaign_items
 from campaign_aircraft import extend_aircraft
 from prepare_hd_assets import prepare as prepare_original_hd
 from prepare_phone_menu_assets import prepare as prepare_original_phone
@@ -217,6 +218,7 @@ def prepare(output=OUTPUT):
         aircraft_patches = extend_aircraft(pending, aircraft, parse_chunk=parse_chunk)
         gate_count = extend_maps(pending, definition)
         missions = apply_campaign_missions(pending, encounters, definition['maps'], append_rows)
+        items_patches = apply_campaign_items(pending, AUTHORING/'items.json')
         images = import_snow_images(pending, definition)
         phone_manifest = pending/'PhoneMenu/manifest.json'
         phone_source = digest(phone_manifest.read_bytes())
@@ -225,7 +227,7 @@ def prepare(output=OUTPUT):
         patched = ['MapInfo.mcb', 'MapList.tble', 'Base004.tble', 'PhoneMenu/Base004.tble',
                    'Btn_GoSnowPass.png', 'Btn_GoSnowBasin.png',
                    'PhoneMenu/Btn_GoSnowPass.png', 'PhoneMenu/Btn_GoSnowBasin.png']
-        patched.extend([*aircraft_patches, 'MissionList.tble'])
+        patched.extend([*aircraft_patches, *items_patches, 'MissionList.tble'])
         for mission in missions:
             patched.extend(f"{mission['id']}_{locale}.tble" for locale in ('kr', 'us'))
         manifest = dict(profile='white-mountain', missions=missions, originalManifestSha256=source_manifest,

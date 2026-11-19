@@ -323,6 +323,7 @@
 		C476A681B159BDC1743B96DD /* ProjectileMotion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ProjectileMotion.hpp; sourceTree = "<group>"; };
 		C530196FF2D99A1D04F34CB3 /* Weapons.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Weapons.hpp; sourceTree = "<group>"; };
 		C7F133A700775D4A6288358A /* PartShadowRendererTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PartShadowRendererTests.mm; sourceTree = "<group>"; };
+		D00509D92DAC78422C222EA5 /* HM2WhiteMountainItemsValidation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HM2WhiteMountainItemsValidation.hpp; sourceTree = "<group>"; };
 		D20A52335CC38B671CC4932C /* MusicBufferPolicy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MusicBufferPolicy.hpp; sourceTree = "<group>"; };
 		D4C8284C6796F6A4F01CE879 /* HM2TextRasterizer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = HM2TextRasterizer.mm; sourceTree = "<group>"; };
 		D6E5F7305A80A92CD84797AB /* HM2AudioQueueMusic.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HM2AudioQueueMusic.hpp; sourceTree = "<group>"; };
@@ -513,6 +514,7 @@
 				7F17A8BA4D1A29FD295182A9 /* HM2TextRasterizer.h */,
 				D4C8284C6796F6A4F01CE879 /* HM2TextRasterizer.mm */,
 				45530954687D6714B682BCFB /* HM2WhiteMountainBossValidation.hpp */,
+				D00509D92DAC78422C222EA5 /* HM2WhiteMountainItemsValidation.hpp */,
 				A3E53D30CFE44085EA20F99F /* HM2WhiteMountainValidation.hpp */,
 			);
 			name = Apple;

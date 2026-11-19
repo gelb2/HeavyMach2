@@ -240,7 +240,15 @@ int main(int argc,char** argv){
         assert(failed==0&&m.commonFrameInterval&&m.activeWeaponDefinitions==110&&m.activeWeaponKinds==5&&m.maxConcurrentWeaponKinds>=5&&m.steadyReadRequests==0&&m.steadyExistsRequests==0&&m.steadyReadMisses==0&&m.steadyExistsMisses==0);return 0;
     }
     assert(runtime.scenarioCount()==validation::concurrentScenarioCount&&runtime.metrics().combatScenarios==55);std::set<std::string> itemCodes;
-    const auto originalItems=DataTable::parse(runtime.cachedResources().read("ItemInfo.tble"));std::vector<std::string> originalWeaponCodes;for(std::size_t row=0;row<originalItems.rowCount();++row)if(originalItems.value(row,"Type")=="PtWpn")originalWeaponCodes.emplace_back(originalItems.value(row,"Code").value());assert(originalWeaponCodes.size()==110);
+    const auto originalItems=DataTable::parse(runtime.cachedResources().read("ItemInfo.tble"));
+    const auto weaponDefinitions=Weapons::parse(DataTable::parse(runtime.cachedResources().read("WeaponInfo.tble")));
+    std::vector<std::string> originalWeaponCodes;
+    for(std::size_t row=0;row<originalItems.rowCount();++row){
+        if(originalItems.value(row,"Type")!="PtWpn")continue;
+        if(weaponDefinitions.weapon(originalItems.value(row,"strParam").value()).kind==WeaponKind::laser)continue;
+        originalWeaponCodes.emplace_back(originalItems.value(row,"Code").value());
+    }
+    assert(originalWeaponCodes.size()==110);
     for(std::size_t i=0;i<55;++i){const auto& descriptor=runtime.scenarios()[i];assert(descriptor.role==validation::ScenarioRole::combat&&descriptor.weapons.size()==2);for(unsigned side=0;side<2;++side){const auto& code=descriptor.weapons[side];assert(code==originalWeaponCodes[i*2+side]);itemCodes.insert(code);assert(runtime.session(unsigned(i)).state().equipment[side+2].dataId==code);}assert(runtime.session(unsigned(i)).battle());}
     assert(itemCodes.size()==110);const auto warmReads=files.reads,warmProbes=files.probes;
     compositor(runtime,host);

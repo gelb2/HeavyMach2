@@ -221,7 +221,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         if(const auto* item=definitions.findItem(code))addFieldItem(progression::FieldItem::create(*item,1,position,rng),true);
     }
     void dropEnemyLoot(const MachineInfo& info,Vec2 p,double,float,WorldRandom& rng)override{
-        progress->itemSpawner.drop(info,p,rng,[this](auto item){addFieldItem(std::move(item));});
+        progress->itemSpawner.drop(info,p,rng,[this](auto item){addFieldItem(std::move(item));},slot().level());
     }
     void rewardEnemyKill(const MachineInfo& info,Vec2,double,float,WorldRandom&)override{
         progress->killed(info.name,info.experience,mapName);

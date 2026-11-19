@@ -28,6 +28,7 @@ public:
 struct Item {
     std::string code,name,stringParameter;int icon=0,type=0,level=0,price=0;float param1=0,param2=0,param3=0;
     bool buy=false,sell=false,quick=false,countable=false;
+    int dropMinimumLevel=0;
     std::string iconImage()const;
 };
 struct Requirement {int type=0;std::string object,place;int count=0;bool matchMap=false;};
@@ -141,7 +142,7 @@ public:
     const Item* spawnItem(std::string_view,WorldRandom&)const;
     // Call in enemy onCrash AFTER base/bot cleanup and BEFORE spawner-death /
     // target cleanup / mission.kill / addExp. create consumes original RNG2.
-    void drop(const MachineInfo&,Vec2,WorldRandom&,const std::function<void(FieldItem)>&)const;
+    void drop(const MachineInfo&,Vec2,WorldRandom&,const std::function<void(FieldItem)>&,int playerLevel=99)const;
 };
 class Progression {
     SlotView slot_;const Definitions& defs_;Events& events_;int screen_=7;

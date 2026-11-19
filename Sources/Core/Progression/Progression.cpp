@@ -88,6 +88,8 @@ Definitions Definitions::parse(DataTable items,DataTable regeneration,DataTable 
         i.icon=items.integer(row,"Icon");i.level=items.integer(row,"Lv");i.price=items.integer(row,"Price");i.param1=items.real(row,"Param1");i.param2=items.real(row,"Param2");i.param3=items.real(row,"Param3");
         const auto type=items.value(row,"Type");for(const auto& [name,value]:types)if(type==name)i.type=value;
         const auto attr=items.value(row,"Attr").value_or("");i.buy=attr.find('B')!=attr.npos;i.sell=attr.find('S')!=attr.npos;i.quick=attr.find('Q')!=attr.npos;i.countable=attr.find('C')!=attr.npos;
+        if(const auto floor=items.value(row,"DropLv");floor&&!floor->empty())
+            i.dropMinimumLevel=authoredInteger(*floor,0,99);
         if(i.code.empty()||i.code.size()>5)throw std::runtime_error("Original ItemInfo code is invalid");out.items_.insert_or_assign(i.code,std::move(i));
     }
     for(std::size_t row=0;row<regeneration.rowCount();++row){
@@ -253,12 +255,16 @@ void FieldItem::tick(double time,Vec2 player,std::span<const PickupBot> bots,Wor
 }
 int ItemSpawner::spawnCount(std::string_view name,WorldRandom& random)const{const auto* s=defs_.findSpawn(name);return s?int(random.random()%std::uint32_t(s->maximum+1-s->minimum))+s->minimum:0;}
 const Item* ItemSpawner::spawnItem(std::string_view name,WorldRandom& random)const{const auto* s=defs_.findSpawn(name);if(!s)return nullptr;if(s->totalWeight<1)throw std::runtime_error("Original ItemRegen has zero total weight");const int value=int(random.random()%std::uint32_t(s->totalWeight));for(const auto& [id,end]:s->cumulative)if(value<end)return defs_.findItem(id);return nullptr;}
-void ItemSpawner::drop(const MachineInfo& machine,Vec2 position,WorldRandom& random,const std::function<void(FieldItem)>& emit)const{
+void ItemSpawner::drop(const MachineInfo& machine,Vec2 position,WorldRandom& random,const std::function<void(FieldItem)>& emit,int playerLevel)const{
     if(int(random.random()%100)<machine.coinRate){const float unit=randomUnit(random);const float count=float(machine.coin)+unit*(float(machine.coin)/3.f);const int value=int(count);
         constexpr int limits[]={5,10,50,100,500,1000,5000,10000};int n=0;while(n<8&&value>=limits[n])++n;char code[6];std::snprintf(code,sizeof(code),"%05d",n+1);
         const auto* item=defs_.findItem(code);if(!item)throw std::runtime_error("Unresolved original coin item");emit(FieldItem::create(*item,value,position,random));
     }
-    const auto n=spawnCount(machine.itemRegeneration,random);for(int i=0;i<n;++i)if(const auto* item=spawnItem(machine.itemRegeneration,random))emit(FieldItem::create(*item,1,position,random,true));
+    const auto count=spawnCount(machine.itemRegeneration,random);
+    for(int i=0;i<count;++i){
+        const auto* item=spawnItem(machine.itemRegeneration,random);
+        if(item&&playerLevel>=item->dropMinimumLevel)emit(FieldItem::create(*item,1,position,random,true));
+    }
 }
 Progression::Progression(SlotView slot,const Definitions& defs,Events& events):slot_(slot),defs_(defs),events_(events),inventory(defs),experience(slot,events),missions(defs,inventory,events),itemSpawner(defs){inventory.countChanged=[this](const Item& item){missions.checkItemCount(item,screen_);events_.changed(Change::inventory);};}
 void Progression::restore(){inventory.importSlot(slot_);missions.importSlot(slot_);experience.recalculate();}

@@ -247,7 +247,10 @@ UIImage* image(NSData* rgba,CGSize size){
             XCTAssertTrue(runtime.session().selectSlot(0));runtime.session().enterBase();runtime.synchronize();
             const auto press=[&](unsigned id){for(const auto key:runtime.screens().buttons())if(key.id==id){const auto p=runtime.screens().buttonScreenPosition(key);runtime.input(hm2::PointerPhase::begin,p,991);runtime.input(hm2::PointerPhase::end,p,991);settle(runtime,layer);return true;}return false;};
             XCTAssertTrue(press(2002));XCTAssertTrue(press(2002));XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::shop);
-            const auto& stock=runtime.session().state().shopItems;XCTAssertEqual(stock.size(),9u);if(stock.size()!=9)throw std::runtime_error("Original level5 shop catalog changed");XCTAssertEqual(stock[8].icon,std::string("Icon10113.png"));
+            const auto& stock=runtime.session().state().shopItems;
+            XCTAssertGreaterThanOrEqual(stock.size(),9u);
+            if(stock.size()<9)throw std::runtime_error("Original level5 shop item is missing");
+            XCTAssertEqual(stock[8].icon,std::string("Icon10113.png"));
             hm2::Frame initial;runtime.screens().appendPreparation(initial);const auto owns=[](const hm2::Frame& frame){return std::any_of(frame.sprites.begin(),frame.sprites.end(),[](const auto& s){return s.image=="Icon10113.png";});};
             // With four original rows, this level-five item first appears
             // at shop entry. Keep the cold GameRuntime -> draw regression.

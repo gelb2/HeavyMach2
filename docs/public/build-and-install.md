@@ -99,6 +99,14 @@ xcrun simctl launch "$HM2_SIM_ID" com.gelb2.heavymach2.restored
 
 `HeavyMach2Validation`을 빌드해 일반 앱과 별도로 설치한다. 앱 ID는 `com.gelb2.heavymach2.validation`, 이름은 **HM2 Validation**, 아이콘에는 `TEST`가 있다. 실제 iPad의 치트 앱 설치·검증은 최신 기록에서 완료하지 않았으며, 현재 확인된 자동 실행 대상은 iPad 시뮬레이터다.
 
+화이트마운틴 전용 검사는 같은 치트 앱의 실행 모드를 고른다. 시뮬레이터의 기존 검증 앱을 종료한 뒤 다음 명령에서 모드 값을 바꾼다. 값 1은 전장·포털, 2는 보스·의뢰, 3은 무기·공습·BOT을 실행한다.
+
+```sh
+SIMCTL_CHILD_HM2_WHITE_MOUNTAIN_VALIDATION=1 xcrun simctl launch "$HM2_SIM_ID" com.gelb2.heavymach2.validation
+```
+
+결과와 GPU 캡처는 검증 앱 컨테이너의 `Documents/ConcurrentValidation/<실행 UUID>/`에 저장한다.
+
 ```sh
 xcrun simctl install "$HM2_SIM_ID" build/ios-simulator/Build/Products/Release-iphonesimulator/HeavyMach2Validation.app
 xcrun simctl launch "$HM2_SIM_ID" com.gelb2.heavymach2.validation

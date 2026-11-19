@@ -160,7 +160,14 @@ struct ConcurrentValidation::Impl {
     static int repairCount(GameSession& game){int count=0;for(const auto& item:game.state().inventory)if(item.dataId=="01001")count+=item.count;return count;}
     explicit Impl(ResourceAccess& source,ValidationHost& sink):resources(source),host(sink),catalog(Weapons::parse(DataTable::parse(resources.read("WeaponInfo.tble")))){
         const auto items=DataTable::parse(resources.read("ItemInfo.tble"));std::vector<WeaponStart> weapons;
-        for(std::size_t row=0;row<items.rowCount();++row)if(items.value(row,"Type")=="PtWpn")weapons.push_back({std::string(items.value(row,"Code").value_or("")),std::string(items.value(row,"strParam").value_or("")),items.integer(row,"Lv")});
+        for(std::size_t row=0;row<items.rowCount();++row){
+            if(items.value(row,"Type")!="PtWpn")continue;
+            const auto part=items.value(row,"strParam").value_or("");
+            // Keep the original regression scenarios pinned. The campaign
+            // cheat mode drives the previously dormant laser class separately.
+            if(catalog.weapon(part).kind==WeaponKind::laser)continue;
+            weapons.push_back({std::string(items.value(row,"Code").value_or("")),std::string(part),items.integer(row,"Lv")});
+        }
         if(weapons.size()!=110)throw std::runtime_error("Expected original HD110 player-weapon items; no enemy weapons may be substituted");
         descriptions.reserve(concurrentScenarioCount);observations.resize(concurrentScenarioCount);cases.reserve(concurrentScenarioCount);
         for(std::size_t i=0;i<weapons.size();i+=2){const std::span pair(weapons.data()+i,std::size_t(2));
