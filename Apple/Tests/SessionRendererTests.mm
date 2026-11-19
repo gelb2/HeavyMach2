@@ -249,17 +249,9 @@ UIImage* image(NSData* rgba,CGSize size){
             XCTAssertTrue(press(2002));XCTAssertTrue(press(2002));XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::shop);
             const auto& stock=runtime.session().state().shopItems;XCTAssertEqual(stock.size(),9u);if(stock.size()!=9)throw std::runtime_error("Original level5 shop catalog changed");XCTAssertEqual(stock[8].icon,std::string("Icon10113.png"));
             hm2::Frame initial;runtime.screens().appendPreparation(initial);const auto owns=[](const hm2::Frame& frame){return std::any_of(frame.sprites.begin(),frame.sprites.end(),[](const auto& s){return s.image=="Icon10113.png";});};
-            XCTAssertEqual(owns(initial),!phone);runtime.draw(layer);
-            const auto revision=runtime.session().presentationRevision(),generation=runtime.screens().resourceGeneration();const auto uploads=[runtime.resourceMetrics()[@"imageTextureUploads"] unsignedIntegerValue];
-            if(phone){
-                // No revealButton, renderer preparation, catalog injection or
-                // direct Screens refresh: only the product input/sync/draw path.
-                XCTAssertTrue(press(2106));XCTAssertEqual(runtime.session().presentationRevision(),revision);XCTAssertGreaterThan(runtime.screens().resourceGeneration(),generation);
-                hm2::Frame visible;runtime.screens().append(visible,runtime.session().renderTime());XCTAssertTrue(owns(visible));runtime.draw(layer);
-                XCTAssertEqual([runtime.resourceMetrics()[@"imageTextureUploads"] unsignedIntegerValue],uploads+1);
-                for(unsigned repeat=0;repeat<3;++repeat){XCTAssertTrue(press(2105));XCTAssertTrue(press(2106));runtime.draw(layer);}
-                XCTAssertEqual([runtime.resourceMetrics()[@"imageTextureUploads"] unsignedIntegerValue],uploads+1);
-            }
+            // With four original rows, this level-five item first appears
+            // at shop entry. Keep the cold GameRuntime -> draw regression.
+            XCTAssertTrue(owns(initial));runtime.draw(layer);
             const auto warmReads=runtime.resourceReads();const auto warmUploads=runtime.textureUploads();const auto writes=runtime.session().metrics().saveRequests;
             for(unsigned n=0;n<120;++n){runtime.tick();runtime.draw(layer);}
             XCTAssertEqual(runtime.resourceReads(),warmReads);XCTAssertEqual(runtime.textureUploads(),warmUploads);XCTAssertEqual(runtime.session().metrics().saveRequests,writes);
@@ -325,11 +317,64 @@ UIImage* image(NSData* rgba,CGSize size){
                     XCTAssertTrue(press(2109));XCTAssertFalse(runtime.session().state().tradeVisible);
                     XCTAssertEqual(runtime.session().state().credits,375u);
                 }
+
             }
-            NSLog(@"HM2_COLD_SHOP %@ catalog=9 firstUseIcon=Icon10113.png internalPage=%d repeatPagePairs=%u warmFrames=120 warmIO0Upload0=1",phone?@"phone":@"tablet",phone,phone?3u:0u);
+            NSLog(@"HM2_COLD_SHOP %@ catalog=9 firstUseIcon=Icon10113.png warmFrames=120 warmIO0Upload0=1",phone?@"phone":@"tablet");
         }catch(const std::exception& e){XCTFail(@"Cold shop product resource boundary (%@): %s",phone?@"phone":@"tablet",e.what());}
         window.hidden=YES;window.rootViewController=nil;
     }
+}
+- (void)testPhoneShopReferenceLevelOne {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    NSURL* directory=[NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:NSUUID.UUID.UUIDString] isDirectory:YES];
+    XCTAssertTrue([NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:nil]);
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];
+    HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,912,420)];surface.contentScaleFactor=1;
+    controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];
+    surface.frame=CGRectMake(0,0,912,420);[surface layoutIfNeeded];
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;
+    layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    try{
+        hm2::SaveData reference;reference.initializeSlot(0,"SHOP","kr",1794268800);
+        hm2::progression::SlotView slot(reference.slot(0));slot.level(1);slot.u32(0x1b5c,1);
+        hm2::DarwinWorldRandom random(1);const auto bytes=reference.encode(random,1);
+        NSURL* path=[directory URLByAppendingPathComponent:@"ShopReference.sav"];
+        XCTAssertTrue([[NSData dataWithBytes:bytes.data() length:bytes.size()] writeToURL:path atomically:YES]);
+        hm2::apple::GameRuntime runtime(root,path,{});
+        runtime.setDisplay(hm2::DisplayConfiguration::surface({912,420},{68,20,68,0}));
+        XCTAssertTrue(runtime.session().selectSlot(0));runtime.session().enterBase();runtime.synchronize();
+        const auto press=[&](unsigned id){
+            for(const auto& key:runtime.screens().buttons()){
+                if(key.id!=id||!runtime.screens().button(key)->visible)continue;
+                const auto point=runtime.screens().buttonScreenPosition(key);
+                runtime.input(hm2::PointerPhase::begin,point,991);runtime.input(hm2::PointerPhase::end,point,991);
+                settle(runtime,layer);return true;
+            }
+            return false;
+        };
+        const auto dismissHelp=[&]{
+            runtime.input(hm2::PointerPhase::begin,{456,210},996);runtime.input(hm2::PointerPhase::end,{456,210},996);
+        };
+        for(unsigned n=0;n<6&&runtime.session().state().screen!=hm2::ui::ScreenId::shop;++n){
+            if(runtime.session().help())dismissHelp();
+            else XCTAssertTrue(press(2002));
+        }
+        if(runtime.session().help())dismissHelp();
+        XCTAssertEqual(runtime.session().state().level,1);
+        XCTAssertEqual(runtime.session().state().credits,500);
+        XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::shop);
+        XCTAssertFalse(runtime.session().state().shopItems.empty());
+        if(runtime.session().state().shopItems.empty())throw std::runtime_error("Missing original Level 1 catalog");
+        XCTAssertEqual(runtime.session().state().shopItems[0].name,std::string("SG-1"));
+        XCTAssertTrue(press(2200));
+        for(unsigned n=0;n<30;++n){runtime.tick();runtime.draw(layer);}
+        runtime.captureNextFrame();runtime.draw(layer);
+        auto* match=[XCTAttachment attachmentWithImage:image(runtime.pixels(),runtime.drawableSize())];
+        match.name=@"live-phone-reference-level1-sg1-detail";
+        match.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:match];
+    }catch(const std::exception& e){XCTFail(@"Phone Level 1 reference: %s",e.what());}
+    window.hidden=YES;window.rootViewController=nil;
+    [NSFileManager.defaultManager removeItemAtURL:directory error:nil];
 }
 - (void)testPhoneWastelandShopCatalog {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
@@ -458,7 +503,7 @@ UIImage* image(NSData* rgba,CGSize size){
             hm2::Frame selected,selectedPreparation;ui.appendPreparation(selectedPreparation);ui.append(selected,0);
             [renderer prepareFrame:selectedPreparation];[renderer prepareFrame:selected];
             [renderer captureNextFrame];[renderer drawFrame:selected layer:layer];
-            const auto tabTop=hm2::menu::equipmentLayout(display).bands[2].clip.height;
+            const auto tabTop=hm2::menu::phoneReferenceUI(display).map({0,hm2::menu::equipmentFooterY}).y;
             bool sawDisarm=false;
             for(const auto& node:selected.sprites)if(node.image=="PhoneMenu/Btn_Disarm.png"){
                 sawDisarm=true;
@@ -498,7 +543,7 @@ UIImage* image(NSData* rgba,CGSize size){
     for(const auto name:{"command","command-detail","command-last-page"}){auto* f=make(name,hm2::ui::ScreenId::command);for(unsigned n=0;n<5;++n){hm2::ui::ItemView item;item.dataId="mission"+std::to_string(n);item.name="임무 "+std::to_string(n);item.enabled=true;f->state.availableMissions.push_back(item);item.dataId="accepted"+std::to_string(n);f->state.acceptedMissions.push_back(item);}if(f->name=="command-detail"){f->state.selectedMission=0;f->state.missionTitle="적 탱크 파괴";f->state.missionBody="적 탱크 E-10을 파괴하고 사령부로 복귀하라.";}}
     make("title",hm2::ui::ScreenId::title)->capture=720;make("logo",hm2::ui::ScreenId::title)->capture=240;auto* stage=make("stage-name",hm2::ui::ScreenId::field);stage->capture=30;stage->state.hasWorkingSlot=true;stage->state.fieldPlaceRevision=1;stage->state.fieldPlaceName="폐허 지역";
     const auto press=[](Fixture& f,unsigned id){for(auto k:f.ui.buttons())if(k.id==id){const auto p=f.ui.buttonScreenPosition(k);f.ui.input(hm2::PointerPhase::begin,p,50000+id,0);f.ui.input(hm2::PointerPhase::end,p,50000+id,0);return true;}return false;};
-    for(auto& f:fixtures){f->ui.refresh(f->state,0);if(f->name=="shop-last-page"){for(unsigned n=0;n<2;++n){press(*f,2106);press(*f,6091);}}if(f->name=="command-last-page")press(*f,9301);if(f->name=="shop-equipment")XCTAssertTrue(press(*f,9204));}
+    for(auto& f:fixtures){f->ui.refresh(f->state,0);if(f->name=="shop-last-page"){press(*f,2106);press(*f,6091);}if(f->name=="command-last-page")press(*f,9301);if(f->name=="shop-equipment")XCTAssertTrue(press(*f,9204));}
     const auto sha=[](NSData* bytes){unsigned char digest[CC_SHA256_DIGEST_LENGTH];CC_SHA256(bytes.bytes,CC_LONG(bytes.length),digest);NSMutableString* text=[NSMutableString new];for(auto byte:digest)[text appendFormat:@"%02x",byte];return text;};
     const auto rect=[](hm2::ClipRect r){return @[@(r.x),@(r.y),@(r.width),@(r.height)];};
     NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];

@@ -49,21 +49,18 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
     case DisplayRegion::tabletMenu:{const auto c=configuration_.canvas;return anchored({384,512},{c.width*.5f,c.height*.5f},std::max(c.width/768,c.height/1024));}
     case DisplayRegion::titleBackdrop:{const auto c=configuration_.canvas;return anchored({384,1024},{c.width*.5f,c.height},std::max(c.width/768,c.height/1024));}
     case DisplayRegion::artBanner:{const auto c=configuration_.canvas;return anchored({240,160},{c.width*.5f,c.height*.5f},std::min(c.width/480,c.height/320));}
-    case DisplayRegion::phoneEquipmentFooter:case DisplayRegion::phoneStockFooter:case DisplayRegion::phoneFooter:{auto t=ui(DisplayRegion::phoneMenu);t.offset.y=0;return t;}
-    case DisplayRegion::phoneInventoryPages:case DisplayRegion::phoneStockHeader:{auto t=ui(DisplayRegion::phoneMenu);t.offset.y=72*menu::phoneReferenceScale(configuration_)-96*t.scale;return t;}
-    case DisplayRegion::phoneCategoryHeader:case DisplayRegion::phoneHeader:{auto t=ui(DisplayRegion::phoneMenu);t.offset.y=configuration_.canvas.height-480*t.scale;return t;}
+    case DisplayRegion::phoneFooter:return anchored({360,0},{configuration_.canvas.width*.5f,0},menu::menuScale(configuration_)*2.f/3.f);
+    case DisplayRegion::phoneHeader:return anchored({360,480},{configuration_.canvas.width*.5f,configuration_.canvas.height},menu::menuScale(configuration_)*2.f/3.f);
+    case DisplayRegion::phoneEquipmentFooter:case DisplayRegion::phoneStockFooter:
+    case DisplayRegion::phoneInventoryPages:case DisplayRegion::phoneStockHeader:case DisplayRegion::phoneCategoryHeader:
     case DisplayRegion::phoneTrade:return menu::phoneReferenceUI(configuration_);
     case DisplayRegion::phoneCommandList:case DisplayRegion::phoneCommandInfo:{
         const auto c=configuration_.canvas;const float header=menu::menuHeader(configuration_),footer=menu::menuFooter(configuration_);const float s=std::min(menu::menuScale(configuration_)*2.f/3.f,std::max(1.f,c.height-header-footer-12)/275.f);
         if(region==DisplayRegion::phoneCommandList)return anchored({222,342},{c.width*148.f/480,c.height-header-24},s);
         return anchored({540,240},{c.width*.75f,footer+(c.height-header-footer)*.5f},s);
     }
-    case DisplayRegion::phoneStock:case DisplayRegion::phoneInventory:case DisplayRegion::phoneEquipment:{
-        auto t=ui(DisplayRegion::phoneMenu);t.offset.y=configuration_.canvas.height-menu::menuHeader(configuration_)-35-330*t.scale;return t;
-    }
-    case DisplayRegion::phoneMenu:{
-        return anchored({360,240},{configuration_.canvas.width*.5f,configuration_.canvas.height*.5f},menu::menuScale(configuration_)*2.f/3.f);
-    }
+    case DisplayRegion::phoneStock:case DisplayRegion::phoneInventory:case DisplayRegion::phoneEquipment:
+    case DisplayRegion::phoneMenu:return menu::phoneReferenceUI(configuration_);
     case DisplayRegion::artBackdrop:case DisplayRegion::artScene:{
         const auto canvas=configuration_.canvas;const float scale=std::max(canvas.width/480,canvas.height/320);
         const float travel=std::max(0.f,320*scale-canvas.height)*.5f;
