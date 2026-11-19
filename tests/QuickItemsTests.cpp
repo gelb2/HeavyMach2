@@ -133,6 +133,15 @@ int main(int argc,char** argv){
         const auto& request=host.attacks.back();assert(request.item==item&&request.weapon==&weapons.weapon(attackKeys[i])&&request.weaponKey==attackKeys[i]&&request.fireDelay==delays[i]&&request.attackCount==request.weapon->shotCount&&request.position.x==33&&request.position.y==101&&request.worldTime==40+i);
         assert(inventory.count(*item)==prior-1&&!quick.inUseItem());assert(host.events.front()=="airstrike"&&host.events[1]=="subtract"&&host.events[2].starts_with("count:")&&host.events[3]=="select:-1"&&host.events[4]=="hide");
     }
+    const auto* bomb=defs.findItem("02004");
+    assert(bomb);
+    for(const auto& [level,damage]:{std::pair{42,1480},std::pair{48,1952}}){
+        slot.level(level);
+        assert(inventory.setItem(21,bomb,2));inventory.quickSlot(1,bomb);
+        assert(quick.press(1,2,false)&&quick.input(PointerPhase::begin,{400,600},camera,false,36,46));
+        const auto& request=host.attacks.back();
+        assert(request.impactDamage==damage&&request.weapon->damage==80&&request.attackCount==10);
+    }
     assert(files.reads==warmReads&&files.probes==warmProbes); // No asset/DB/save path on use.
     std::cout<<"QUICK_ITEMS sixOriginalAidKits HP/quantity/particle/RNG/order/target/boundary/paused gates PASS; airstrike request boundary only, actual Scene integration pending\n";
 }

@@ -157,7 +157,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
     void message(std::string_view key,int background,bool autoHide)override{view.messageVisible=true;view.messageBackground=background;view.messageAutoHide=autoHide;view.messageWorldTime=scene?scene->clock().worldTime():view.messageWorldTime;++view.messageRevision;view.message.clear();view.message=descriptions.lookup(key).value_or("");dirty=true;}
     void hideMessage()override{view.messageVisible=false;view.messageWorldTime=scene?scene->clock().worldTime():view.messageWorldTime;++view.messageRevision;view.message.clear();dirty=true;}
     void refreshQuickItem(const progression::Item& item,int count)override{for(unsigned i=0;i<5;++i)if(progress->inventory.quickSlots()[i]==&item)view.quick[i].count=count;dirty=true;}
-    void startAirStrike(const progression::AirStrikeRequest& request)override{if(!scene)throw std::logic_error("Missing live AirStrike world");scene->startAirStrike(request.weapon,request.fireDelay,request.position);}
+    void startAirStrike(const progression::AirStrikeRequest& request)override{if(!scene)throw std::logic_error("Missing live AirStrike world");scene->startAirStrike(request.weapon,request.fireDelay,request.position,request.impactDamage);}
     void setParts(std::string_view,unsigned partsType)override{if(scene&&equipment&&(partsType==5||partsType==6))scene->equipWeapon(equipment->codes(),partsType==5?2:3);}
     void statsChanged(const progression::EquipStats&)override{dirty=true;}
     void levelUp()override{

@@ -134,7 +134,7 @@ public:
     // Explicit repair-item use boundary, never a draw/shot cache fallback.
     [[nodiscard]] const TileImage* prepareRepairEffect(std::string_view originalIcon);
     [[nodiscard]] bool isPaused()const;
-    void startAirStrike(const WeaponInfo*,float fireDelay,Vec2 target);
+    void startAirStrike(const WeaponInfo*,float fireDelay,Vec2 target,int impactDamage=0);
     [[nodiscard]] std::size_t activeAirStrikes()const;
     void setPlayerHP(int); // Original setHp: field writer; no damage/death event.
     void setIsSave(bool); // Original0xfea0 field writer, independent of HP.
