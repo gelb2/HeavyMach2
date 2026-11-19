@@ -1,3 +1,9 @@
+## 화이트마운틴 구현과 치트 검증 — 2026-11-20
+
+설원 6곳과 기지, 보스 의뢰 4건, 일반 적 5종, 무기 25종, 레이저 공습과 수집 BOT 3종의 검증을 이미지 83장과 표 7개에 담았다. iPhone 보스전의 지형 소실 전후 이미지도 함께 게시했다. [비공개 보고서](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/white-mountain-campaign-results-20261120.html) · [누적 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)
+
+그림 검수 사이트 버전 17과 누적 보고 버전 321의 배포가 성공했다. 인증 상태에서 이미지 83장의 해시, 두 사이트의 목록 링크와 기술조사 링크를 확인했다. 비인증 요청은 403이었다. 로컬 Chrome의 390px 화면에서 목차와 검토 항목의 배치를 확인했다. [배포와 최종 실행 근거](evidence/white-mountain-campaign-publication-20261120.json)
+
 ## 설원 원본 6장과 미등장 콘텐츠 이미지 표 — 2026-11-19
 
 설원 원본 6장과 미배치 적·보스, 무기·스킬·BOT, 기지·기타 그림을 8개 표로 정리했다. `STAGE 15A.png`에는 바위와 시설이 그려져 있고 연결된 배치 정의는 없다. 설원 6장의 열람용 PNG를 원본 디코딩 결과의 1024×1024 RGBA와 전부 대조했다. [비공개 이미지 표](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/white-mountain-gallery-20261119.html)
