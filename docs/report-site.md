@@ -1,3 +1,7 @@
+## iPhone 상점 크기·거래·마지막 페이지 재검사 — 2026-11-19
+
+원본과 같은 아이콘·거래 버튼 크기, 판매 취소 뒤의 표시, 웨이스트랜드 다섯 분류의 마지막 묶음과 iPad 여섯 상점의 픽셀 대조를 기존 비공개 보고에 갱신했다. 사이트 소스 `f07e3e9`, 배포 `appgdep_6afe98436c308191b406e095c6af8855`가 성공했다. [상점 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-capture-20261119) · [캡처와 검사](iphone-shop-layout-verification-20261119.md)
+
 ## 2026-11-19 iPhone Equip 잘림과 원본 여러 페이지 검사
 
 Equip 능력치·BOT과 웨이스트랜드 레벨 22의 원본 페이지를 기존 비공개 보고에 반영했다. DISARM 캡처는 로컬 검사 기록에 있다. 사이트 소스 `e2e2949`, 배포 `appgdep_6afe70f9b8a88191b451ba2b6dbed668`가 성공했다. [비공개 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-capture-20261119) · [로컬 캡처와 검사](iphone-shop-equipment-20261119.md)

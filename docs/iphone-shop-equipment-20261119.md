@@ -26,6 +26,8 @@ iPhone 시뮬레이터의 667×375·852×393·912×420·912×550에서 GPU 화�
 
 복원판은 iPhone의 넓은 화면에 맞춰 양쪽 영역에 서로 다른 비례를 사용한다. iPhone Air에서 32px 아이콘은 Shop 약 60.8pt, Equip의 장비 쪽 약 46.3pt, 인벤토리 쪽 약 75.3pt다. 같은 기기의 원본 포팅판은 480×320 화면을 맞춰 약 42pt로 표시한다. 원본과 아이콘·상세창 표시 크기를 모두 맞추는 일과 수정 후보의 실기기 확인은 TODO에 남겼다.
 
+후속 수정에서 32px 아이콘을 Shop과 Equip 모두 42pt로 맞췄다. 상세창·거래 버튼과 웨이스트랜드 페이지 재검증은 [상점 크기와 페이지 검사](iphone-shop-layout-verification-20261119.md)에 있다.
+
 ## 캡처와 실행 경로
 
 `.local/evidence/iphone-equipment-20261119.90kAZo/`에 원본과 수정판의 PNG·결과 파일·실패한 초안이 있다. `original-advanced-retry/`가 레벨 22 원본 실행 캡처이다. `original-bots-verified/`에 세 번째 BOT 선택·DISARM이 있다. `phone-delivery/`와 `phone-disarm/`은 복원판의 거래·Equip·DISARM 캡처다. PNG는 시뮬레이터에서 받은 바이트를 보존했다. 최신 빌드의 결과와 해시는 [검사 근거](evidence/iphone-shop-equipment-20261119.json)에 있다.
