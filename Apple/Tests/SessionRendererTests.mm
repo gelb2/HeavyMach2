@@ -272,6 +272,25 @@ UIImage* image(NSData* rgba,CGSize size){
                 runtime.captureNextFrame();runtime.draw(layer);
                 XCTAssertEqual(runtime.pixels().length,912u*550u*4u);
                 XCTAssertEqual(runtime.session().metrics().saveRequests,writes);
+                surface.frame=CGRectMake(0,0,canvas.width,canvas.height);[surface layoutIfNeeded];runtime.setDisplay(display);
+                const auto visibleKeys=runtime.screens().buttons();
+                const auto firstVisible=std::any_of(visibleKeys.begin(),visibleKeys.end(),[](const auto& key){return key.id==2200;});
+                if(!firstVisible)XCTAssertTrue(press(2105));
+                XCTAssertEqual(runtime.session().state().shopItems[0].name,std::string("SG-1"));
+                XCTAssertTrue(press(2200));
+                XCTAssertEqual(runtime.session().state().selectedShop,0);
+                for(unsigned n=0;n<30;++n){runtime.tick();runtime.draw(layer);}
+                const auto attach=[&](NSString* name){
+                    runtime.captureNextFrame();runtime.draw(layer);
+                    auto* item=[XCTAttachment attachmentWithImage:image(runtime.pixels(),runtime.drawableSize())];
+                    item.name=name;item.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:item];
+                };
+                attach(@"live-phone-sg1-detail");
+                XCTAssertTrue(press(2102));XCTAssertTrue(runtime.session().state().tradeVisible);
+                attach(@"live-phone-sg1-buy-confirm");
+                XCTAssertTrue(press(2107));XCTAssertFalse(runtime.session().state().tradeVisible);
+                XCTAssertEqual(runtime.session().metrics().saveRequests,writes);
+
             }
             NSLog(@"HM2_COLD_SHOP %@ catalog=9 firstUseIcon=Icon10113.png internalPage=%d repeatPagePairs=%u warmFrames=120 warmIO0Upload0=1",phone?@"phone":@"tablet",phone,phone?3u:0u);
         }catch(const std::exception& e){XCTFail(@"Cold shop product resource boundary (%@): %s",phone?@"phone":@"tablet",e.what());}
@@ -289,15 +308,23 @@ UIImage* image(NSData* rgba,CGSize size){
     std::vector<std::unique_ptr<Fixture>> fixtures;NSMutableArray* rows=[NSMutableArray new];
     const auto make=[&](std::string name,hm2::ui::ScreenId screen){auto f=std::make_unique<Fixture>(name,files,host);f->state.screen=screen;f->state.locale="kr";f->state.credits=12345;f->ui.setDisplay(display);auto* result=f.get();fixtures.push_back(std::move(f));return result;};
     for(unsigned base=1;base<=6;++base){auto* f=make("hub-Base00"+std::to_string(base),hm2::ui::ScreenId::base);f->state.baseId="Base00"+std::to_string(base);}
-    for(const auto name:{"shop","shop-detail","shop-last-page","shop-trade"}){auto* f=make(name,hm2::ui::ScreenId::shop);f->state.inventoryVisible=true;f->state.inventoryPages=1;
+    for(const auto name:{"shop","shop-detail","shop-detail-row2","shop-last-page","shop-trade","shop-sell","shop-sell-trade","shop-equipment"}){auto* f=make(name,hm2::ui::ScreenId::shop);f->state.inventoryVisible=true;f->state.inventoryPages=1;
         for(unsigned n=0;n<25;++n){hm2::ui::ItemView item;item.dataId="fixture"+std::to_string(n);item.name="장비 "+std::to_string(n);item.description="원본 상품 정보와 구매 버튼을 확인한다.";item.icon="Icon10011.png";item.count=1;item.enabled=true;f->state.inventory.push_back(item);if(n<24)f->state.shopItems.push_back(item);}
-        if(f->name=="shop-detail"){f->state.shopDetailVisible=true;f->state.selectedShop=0;}
-        if(f->name=="shop-trade"){f->state.tradeVisible=true;f->state.buyMode=true;f->state.tradeItemId="fixture0";f->state.tradeCount=1;f->state.tradePrice=100;}
+        if(f->name=="shop-detail"||f->name=="shop-detail-row2"){f->state.shopDetailVisible=true;f->state.selectedShop=f->name=="shop-detail"?0:4;}
+        if(f->name=="shop-sell"){f->state.selectedInventory=8;f->state.detailInventory=8;f->state.detailItem=f->state.inventory[8];}
+        if(f->name=="shop-equipment"){
+            for(auto& bot:f->state.bots){bot=f->state.inventory[0];bot.icon="Icon04201.png";}
+            f->state.equipmentStats.attackLeft=122;f->state.equipmentStats.attackRight=102;
+            f->state.equipmentStats.baseHP=676;f->state.equipmentStats.bonusHP=240;
+            f->state.equipmentStats.bodyDefense=22;f->state.equipmentStats.stepSize=31;
+            f->state.equipmentStats.boosterMaximum=314;f->state.equipmentStats.boosterRegen=1.2f;
+        }
+        if(f->name=="shop-trade"||f->name=="shop-sell-trade"){f->state.tradeVisible=true;f->state.buyMode=f->name=="shop-trade";f->state.tradeItemId="fixture0";f->state.tradeCount=1;f->state.tradePrice=100;}
     }
     for(const auto name:{"command","command-detail","command-last-page"}){auto* f=make(name,hm2::ui::ScreenId::command);for(unsigned n=0;n<5;++n){hm2::ui::ItemView item;item.dataId="mission"+std::to_string(n);item.name="임무 "+std::to_string(n);item.enabled=true;f->state.availableMissions.push_back(item);item.dataId="accepted"+std::to_string(n);f->state.acceptedMissions.push_back(item);}if(f->name=="command-detail"){f->state.selectedMission=0;f->state.missionTitle="적 탱크 파괴";f->state.missionBody="적 탱크 E-10을 파괴하고 사령부로 복귀하라.";}}
     make("title",hm2::ui::ScreenId::title)->capture=720;make("logo",hm2::ui::ScreenId::title)->capture=240;auto* stage=make("stage-name",hm2::ui::ScreenId::field);stage->capture=30;stage->state.hasWorkingSlot=true;stage->state.fieldPlaceRevision=1;stage->state.fieldPlaceName="폐허 지역";
     const auto press=[](Fixture& f,unsigned id){for(auto k:f.ui.buttons())if(k.id==id){const auto p=f.ui.buttonScreenPosition(k);f.ui.input(hm2::PointerPhase::begin,p,50000+id,0);f.ui.input(hm2::PointerPhase::end,p,50000+id,0);return true;}return false;};
-    for(auto& f:fixtures){f->ui.refresh(f->state,0);if(f->name=="shop-last-page"){for(unsigned n=0;n<2;++n){press(*f,2106);press(*f,6091);}}if(f->name=="command-last-page")press(*f,9301);}
+    for(auto& f:fixtures){f->ui.refresh(f->state,0);if(f->name=="shop-last-page"){for(unsigned n=0;n<2;++n){press(*f,2106);press(*f,6091);}}if(f->name=="command-last-page")press(*f,9301);if(f->name=="shop-equipment")XCTAssertTrue(press(*f,9204));}
     const auto sha=[](NSData* bytes){unsigned char digest[CC_SHA256_DIGEST_LENGTH];CC_SHA256(bytes.bytes,CC_LONG(bytes.length),digest);NSMutableString* text=[NSMutableString new];for(auto byte:digest)[text appendFormat:@"%02x",byte];return text;};
     const auto rect=[](hm2::ClipRect r){return @[@(r.x),@(r.y),@(r.width),@(r.height)];};
     NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];
@@ -319,7 +346,7 @@ UIImage* image(NSData* rgba,CGSize size){
             }
         }}
         NSMutableDictionary* record=[@{@"rows":rows,@"binarySHA256":sha([NSData dataWithContentsOfFile:NSBundle.mainBundle.executablePath]),@"gameSHA256":sha([NSData dataWithContentsOfFile:[NSBundle.mainBundle.executablePath stringByAppendingString:@".debug.dylib"]]),@"concurrentCombat":combat.report(),@"frames":@720,@"fixtures":@(fixtures.size())} mutableCopy];
-        auto* attachment=[XCTAttachment attachmentWithData:[NSJSONSerialization dataWithJSONObject:record options:NSJSONWritingPrettyPrinted error:nil] uniformTypeIdentifier:@"public.json"];attachment.name=@"phone-policy-observations";attachment.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:attachment];XCTAssertEqual(rows.count,16u);combat.setActive(false);
+        auto* attachment=[XCTAttachment attachmentWithData:[NSJSONSerialization dataWithJSONObject:record options:NSJSONWritingPrettyPrinted error:nil] uniformTypeIdentifier:@"public.json"];attachment.name=@"phone-policy-observations";attachment.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:attachment];XCTAssertEqual(rows.count,20u);combat.setActive(false);
     }catch(const std::exception& error){XCTFail(@"Phone policy batch failed: %s",error.what());}
     [window setHidden:YES];[NSFileManager.defaultManager removeItemAtURL:directory error:nil];
 }

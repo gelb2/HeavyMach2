@@ -322,18 +322,57 @@ void phoneLiveMenuSession(Files& files){
  const auto has=[&](unsigned id){for(const auto& k:ui.buttons())if(k.id==id)return true;return false;};
  const auto tap=[&](unsigned id){auto k=key(id);ui.revealButton(k);const auto p=ui.buttonScreenPosition(k);ui.input(PointerPhase::begin,p,20000+id,game.renderTime());ui.input(PointerPhase::end,p,20000+id,game.renderTime());};
  tap(2002);tap(2002);settle();assert(game.state().screen==ui::ScreenId::shop);const auto writes=host.writes;const Bytes before(game.workingSlot().begin(),game.workingSlot().end());
- tap(2200);assert(game.state().shopDetailVisible&&game.state().selectedShop==0);for(unsigned n=0;n<30;++n){game.tick();ui.tick(game.renderTime(),random);}Frame popup;ui.append(popup,game.renderTime());bool panel=false;for(const auto& image:popup.sprites)if(image.image=="PhoneMenu/ItemDesc.png"){const auto bounds=quadBounds(image),area=phone.content();assert(bounds.x>=area.x-.01f&&bounds.y>=area.y-.01f&&bounds.x+bounds.width<=area.x+area.width+.01f&&bounds.y+bounds.height<=area.y+area.height+.01f);panel=true;}assert(panel);const auto verifyAction=[&](unsigned id){Frame f;ui.append(f,game.renderTime());std::optional<ClipRect> panel,action;for(const auto& image:f.sprites){if(image.image=="PhoneMenu/ItemDesc.png")panel=quadBounds(image);if(image.image==(id==2102?"PhoneMenu/Common_Btn_BUY.png":"PhoneMenu/Common_Btn_SELL.png"))action=quadBounds(image);}assert(panel&&action);std::cerr<<"TRADE_BOUNDS id="<<id<<" panel="<<panel->x<<","<<panel->y<<","<<panel->width<<","<<panel->height<<" action="<<action->x<<","<<action->y<<","<<action->width<<","<<action->height<<std::endl;assert(action->x+action->width<=panel->x||panel->x+panel->width<=action->x||action->y+action->height<=panel->y||panel->y+panel->height<=action->y);const auto a=phone.content();assert(action->x>=a.x-.01f&&action->y>=a.y-.01f&&action->x+action->width<=a.x+a.width+.01f&&action->y+action->height<=a.y+a.height+.01f);const auto point=ui.buttonScreenPosition(key(id));assert(near(point.x,action->x+action->width*.5f)&&near(point.y,action->y+action->height*.5f));};verifyAction(2102);tap(9204);assert(!game.state().shopDetailVisible&&game.state().selectedShop==-1&&game.state().detailInventory==-1&&!has(2102));
- tap(6008);assert(game.state().detailInventory==8&&has(2103));for(unsigned n=0;n<30;++n){game.tick();ui.tick(game.renderTime(),random);}verifyAction(2103);tap(9205);assert(game.state().detailInventory==-1&&!has(2103));
+ const auto tapVisible=[&](unsigned id){
+  const auto k=key(id);assert(ui.button(k)->visible);
+  const auto point=ui.buttonScreenPosition(k);
+  assert(ui.input(PointerPhase::begin,point,20000+id,game.renderTime()));
+  ui.input(PointerPhase::end,point,20000+id,game.renderTime());
+ };
+ const auto overlaps=[](ClipRect a,ClipRect b){
+  return a.x<b.x+b.width&&b.x<a.x+a.width&&a.y<b.y+b.height&&b.y<a.y+a.height;
+ };
+ const auto inside=[](ClipRect a,ClipRect b){
+  return a.x>=b.x-.01f&&a.y>=b.y-.01f&&a.x+a.width<=b.x+b.width+.01f&&a.y+a.height<=b.y+b.height+.01f;
+ };
+ const auto verifyDetail=[&](unsigned actionID){
+  for(unsigned n=0;n<30;++n){game.tick();ui.tick(game.renderTime(),random);}
+  Frame frame;ui.append(frame,game.renderTime());
+  std::optional<ClipRect> background,action;
+  for(const auto& sprite:frame.sprites){
+   if(sprite.image=="PhoneMenu/ItemDesc.png")background=quadBounds(sprite);
+   if(sprite.image==(actionID==2102?"PhoneMenu/Btn_ShopBuy.png":"PhoneMenu/Btn_ShopSell.png"))action=quadBounds(sprite);
+  }
+  assert(background&&action&&inside(*background,phone.content())&&inside(*action,phone.content()));
+  const auto hit=ui.buttonScreenBounds(key(actionID));
+  assert(inside(hit,*action)&&inside(*action,hit));
+  assert(!overlaps(*background,*action));
+  for(const auto& k:ui.buttons()){
+   if(!ui.button(k)->visible)continue;
+   const auto bounds=ui.buttonScreenBounds(k);
+   if(k.id==2100||k.id==9204||k.id==9205||k.id==2104||k.id==2105||k.id==2106||k.id==6090||k.id==6091)
+    assert(!overlaps(*background,bounds));
+   if((k.id>=6000&&k.id<6025)||(k.id>=2200&&k.id<2224))assert(!overlaps(*action,bounds));
+  }
+ };
+ assert(game.state().inventory[0].equipped&&!game.state().inventory[0].enabled);
+ tapVisible(6000);assert(game.state().detailInventory==0&&!has(2103));
+ tapVisible(2200);assert(game.state().shopDetailVisible&&game.state().selectedShop==0);verifyDetail(2102);
+ tapVisible(9204);assert(!game.state().shopDetailVisible&&game.state().selectedShop==-1&&game.state().detailInventory==-1&&!has(2102));
+ tapVisible(6008);assert(game.state().detailInventory==8&&!has(2103));
+ tapVisible(9205);assert(game.state().detailInventory==-1);
+ tapVisible(6008);assert(game.state().detailInventory==8&&has(2103));verifyDetail(2103);
+ tapVisible(6091);assert(game.state().detailInventory==-1);
+ tapVisible(6090);
  // Open the original buy-confirmation flow, then attempt the new controls behind it.
  for(const auto& k:ui.buttons())if(k.id==2104&&k.intData==4){ui.revealButton(k);const auto p=ui.buttonScreenPosition(k);ui.input(PointerPhase::begin,p,777,game.renderTime());ui.input(PointerPhase::end,p,777,game.renderTime());break;}
- tap(2200);tap(2102);assert(game.state().tradeVisible);{Frame tradeFrame;ui.append(tradeFrame,game.renderTime());bool backdrop=false;for(const auto& sprite:tradeFrame.sprites)if(sprite.image=="PhoneMenu/TradeItemBG.png"){backdrop=true;auto b=quadBounds(sprite);std::cout<<"PHONE_TRADE_PANEL bounds="<<b.x<<","<<b.y<<","<<b.width<<","<<b.height<<" alpha="<<sprite.color.a<<" clip="<<(sprite.clip?sprite.clip->height:0)<<"\n";assert(b.y>=0&&b.y+b.height<=phone.canvas.height);}assert(backdrop);}const auto first=ui.buttonScreenPosition(key(6000));const auto selected=game.state().selectedShop;const auto shopVisible=ui.button(key(2200))->visible;
+ tapVisible(2200);tapVisible(2102);assert(game.state().tradeVisible);{Frame tradeFrame;ui.append(tradeFrame,game.renderTime());bool backdrop=false;for(const auto& sprite:tradeFrame.sprites)if(sprite.image=="PhoneMenu/TradeItemBG.png"){backdrop=true;auto b=quadBounds(sprite);std::cout<<"PHONE_TRADE_PANEL bounds="<<b.x<<","<<b.y<<","<<b.width<<","<<b.height<<" alpha="<<sprite.color.a<<" clip="<<(sprite.clip?sprite.clip->height:0)<<"\n";assert(b.y>=0&&b.y+b.height<=phone.canvas.height);}assert(backdrop);}const auto first=ui.buttonScreenPosition(key(6000));const auto selected=game.state().selectedShop;const auto shopVisible=ui.button(key(2200))->visible;
  for(unsigned id:{6091u,9204u}){const auto p=ui.buttonScreenPosition(key(id));ui.input(PointerPhase::begin,p,888+id,game.renderTime());ui.input(PointerPhase::end,p,888+id,game.renderTime());}
  assert(game.state().tradeVisible&&game.state().selectedShop==selected&&ui.button(key(2200))->visible==shopVisible);const auto after=ui.buttonScreenPosition(key(6000));assert(near(first.x,after.x)&&near(first.y,after.y));tap(2107);assert(!game.state().tradeVisible);
  assert(host.writes==writes&&Bytes(game.workingSlot().begin(),game.workingSlot().end())==before);
  // Purchase and sell through the same rendered Phone controls and real Session.
  const auto countItem=[&](const std::string& code){int result=0;for(const auto& item:game.state().inventory)if(item.dataId==code)result+=item.count;return result;};
- tap(2200);tap(2102);assert(game.state().tradeVisible);auto code=game.state().tradeItemId;auto count=countItem(code);auto quantity=game.state().tradeCount;auto credit=game.state().credits;auto price=game.state().tradePrice;assert(price>0&&credit>=price);tap(2108);assert(!game.state().tradeVisible&&game.state().credits==credit-price&&countItem(code)==count+quantity);
- tap(6008);tap(2103);assert(game.state().tradeVisible&&!game.state().buyMode);credit=game.state().credits;price=game.state().tradePrice;code=game.state().tradeItemId;count=countItem(code);quantity=game.state().tradeCount;tap(2109);assert(!game.state().tradeVisible&&game.state().credits==credit+price&&countItem(code)==count-quantity);
+ tapVisible(2200);tapVisible(2102);assert(game.state().tradeVisible);auto code=game.state().tradeItemId;auto count=countItem(code);auto quantity=game.state().tradeCount;auto credit=game.state().credits;auto price=game.state().tradePrice;assert(price>0&&credit>=price);tap(2108);assert(!game.state().tradeVisible&&game.state().credits==credit-price&&countItem(code)==count+quantity);
+ tapVisible(6008);tapVisible(2103);assert(game.state().tradeVisible&&!game.state().buyMode);credit=game.state().credits;price=game.state().tradePrice;code=game.state().tradeItemId;count=countItem(code);quantity=game.state().tradeCount;tap(2109);assert(!game.state().tradeVisible&&game.state().credits==credit+price&&countItem(code)==count-quantity);
  // A reused button must restore the HD snap contract across both surface profiles.
  tap(6008);for(unsigned n=0;n<3;++n){game.tick();ui.tick(game.renderTime(),random);}const auto current=game.state();ui.setDisplay(DisplayConfiguration::surface({1024,1366}));for(auto k:ui.buttons())assert(ui.button(k)->positionSnap==ui::PositionSnap::none);ui.setDisplay(phone);for(auto k:ui.buttons())assert(ui.button(k)->positionSnap==ui::PositionSnap::none);
  // Background gestures must leave the always visible EXIT unchanged.

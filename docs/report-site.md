@@ -1,3 +1,7 @@
+## 2026-11-19 iPhone 상점 원본 재검사와 거래 버튼
+
+일반판 2.0.1의 거래·스크롤 관측, 수정한 세로 Buy·Sell, iPad 상점 대조와 Equip 결함을 기존 비공개 보고와 누적 목록에 추가했다. 사이트 소스 `38e3970`, 배포 `appgdep_6afe6691f9c081918dea64b4685ffacd`가 성공했다. 원본과 복원판의 PNG, 파일별 크기·해시는 로컬 증거에 있다. [비공개 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-capture-20261119) · [캡처와 수정 근거](iphone-shop-comparison-20261119.md)
+
 ## 2026-11-19 두 실기기 Release 및 iPhone 상점 표시
 
 `f8e82d8`의 Source Release 설치와 실기기 확인, iPhone 상점 겹침 재현 및 원본 재캡처 TODO를 기존 비공개 보고와 누적 목록에 추가했다. 사이트 소스 `08814de`, 배포 `appgdep_6afdc2733570819190273f324d421f82`가 성공했다. [비공개 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#device-release-20261119) · [설치와 캡처 기록](dual-release-installation-20261119.md)
