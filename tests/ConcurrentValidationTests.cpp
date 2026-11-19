@@ -191,9 +191,10 @@ void recentRegressions(validation::ConcurrentValidation& runtime){
     assert(hud.menuOpened&&hud.editorOpened&&hud.dragMoved&&hud.applied&&hud.reloaded&&hud.resumed&&hud.inputs>=7);
     const auto& samples=runtime.observations()[117].recentInput.zoom;assert(samples.size()==6&&samples[1].target&&samples[3].target);
     float lo=samples.front().zoom,hi=lo;for(const auto& sample:samples){lo=std::min(lo,sample.zoom);hi=std::max(hi,sample.zoom);assert(sample.output.width==samples.front().output.width&&sample.output.height==samples.front().output.height);std::cout<<"ZOOM_CONCURRENT frame="<<sample.frame<<" selected="<<sample.target<<" zoom="<<sample.zoom<<" world="<<sample.viewport.width<<":"<<sample.viewport.height<<" output="<<sample.output.width<<":"<<sample.output.height<<std::endl;}
-    if(runtime.session(117).display().focusZoom)assert(hi-lo>.01f);else assert(lo==1&&hi==1);
+    const auto& display=runtime.session(117).display();const float sourceScale=display.enabled&&!display.compact?std::max(display.canvas.width/768.f,display.canvas.height/1024.f):1.f;
+    if(display.focusZoom)assert(hi-lo>.01f);else assert(lo==hi&&std::abs(lo-sourceScale)<.00001f);
     const auto& idle=runtime.observations()[120].recentInput.zoom;assert(idle.size()>=6);
-    for(const auto& sample:idle){assert(sample.zoom==1&&sample.currentZoom==1&&sample.targetZoom==1&&!sample.target&&!sample.pathCount);const auto& config=runtime.session(120).display();const auto extent=config.enabled?(config.compact?ClipRect{0,0,config.canvas.width,config.canvas.height}:config.content()):ClipRect{0,0,768,1024};assert(sample.viewport.width==extent.width&&sample.viewport.height==extent.height);}
+    for(const auto& sample:idle){assert(std::abs(sample.zoom-sourceScale)<.00001f&&sample.currentZoom==1&&sample.targetZoom==1&&!sample.target&&!sample.pathCount);const auto& config=runtime.session(120).display();const bool originalHD=!config.enabled||(!config.compact&&std::round(config.canvas.width/sourceScale)==768&&std::round(config.canvas.height/sourceScale)==1024);const auto width=originalHD?768.f:config.canvas.width/sourceScale,height=originalHD?1024.f:config.canvas.height/sourceScale;assert(std::abs(sample.viewport.width-width)<.0001f&&std::abs(sample.viewport.height-height)<.0001f);}
     std::cout<<"CAMERA_IDLE_CONCURRENT samples="<<idle.size()<<" scale="<<idle.back().zoom<<" viewport="<<idle.back().viewport.width<<":"<<idle.back().viewport.height<<std::endl;
 
 }
@@ -224,6 +225,7 @@ int main(int argc,char** argv){
             }
         }
         const auto m=runtime.metrics();unsigned failed=0;for(unsigned i=0;i<runtime.scenarioCount();++i){const auto& o=runtime.observations()[i];failed+=o.buttonFailures;std::cout<<"DISPLAY_CASE "<<i<<" ticks="<<o.ticks<<" buttonFailures="<<o.buttonFailures<<" emissions="<<o.playerEmissions<<" saves="<<o.saves<<std::endl;assert(o.ticks==frames);const auto frame=runtime.scenarioFrame(i);assert(frame.width==runtime.session(i).display().canvas.width);}
+        {auto* b=runtime.session(106).battle();const auto& o=runtime.observations()[106];std::cout<<"ATTACK_DIAGNOSTIC nav="<<o.navigationRequests<<" distance="<<o.distanceMoved<<" player="<<b->player().position.x<<","<<b->player().position.y<<" blocked="<<b->player().blocked<<std::endl;for(const auto& bot:b->bots())std::cout<<"ATTACK_BOT slot="<<bot.slot<<" pos="<<bot.position.x<<","<<bot.position.y<<" hp="<<bot.hp<<" emissions="<<bot.metrics.emissions<<" damage="<<bot.enemyHPRemoved<<std::endl;}
         for(unsigned i=68;i<105;++i)if(runtime.scenarios()[i].map=="Stage01_02"||runtime.scenarios()[i].map=="Stage02_07"||runtime.scenarios()[i].map=="Stage03_04"){const auto& o=runtime.observations()[i];const unsigned k=runtime.scenarios()[i].map=="Stage01_02"?1:2;std::cout<<"DISPLAY_FIELD map="<<runtime.scenarios()[i].map<<" emissions="<<o.enemyEmissions[k]<<" damage="<<o.enemyDamage[k]<<" kills="<<o.enemyKills[k]<<" removed="<<o.enemyRemovals[k]<<" killFrame="<<o.firstKillFrames[k]<<" removalFrame="<<o.firstRemovalFrames[k]<<std::endl;assert(o.enemyEmissions[k]>0&&o.enemyDamage[k]>0&&o.enemyKills[k]>0&&o.enemyRemovals[k]>0);}
         std::cout<<"DISPLAY_CONCURRENT frames="<<m.frames<<" scenarios="<<runtime.scenarioCount()<<" weapons="<<m.activeWeaponDefinitions<<" kinds="<<m.activeWeaponKinds<<" buttonFailures="<<failed<<" warmReads="<<m.warmReadMisses<<" warmExists="<<m.warmExistsMisses<<" commonInterval="<<m.commonFrameInterval<<" maxSameFrameKinds="<<m.maxConcurrentWeaponKinds<<std::endl;
         if(m.maxConcurrentWeaponKinds<5)for(const auto& activity:runtime.frameActivity())if(activity.emittedWeaponKinds.size()>=4||std::find(activity.emittedWeaponKinds.begin(),activity.emittedWeaponKinds.end(),WeaponKind::railgun)!=activity.emittedWeaponKinds.end()||std::find(activity.emittedWeaponKinds.begin(),activity.emittedWeaponKinds.end(),WeaponKind::sniper)!=activity.emittedWeaponKinds.end()){std::cout<<"DISPLAY_KIND_FRAME "<<activity.frame;for(auto kind:activity.emittedWeaponKinds)std::cout<<" "<<int(kind);std::cout<<" parts=";for(const auto& part:activity.emittedWeaponParts)std::cout<<part<<",";std::cout<<std::endl;}
@@ -238,7 +240,15 @@ int main(int argc,char** argv){
         assert(failed==0&&m.commonFrameInterval&&m.activeWeaponDefinitions==110&&m.activeWeaponKinds==5&&m.maxConcurrentWeaponKinds>=5&&m.steadyReadRequests==0&&m.steadyExistsRequests==0&&m.steadyReadMisses==0&&m.steadyExistsMisses==0);return 0;
     }
     assert(runtime.scenarioCount()==validation::concurrentScenarioCount&&runtime.metrics().combatScenarios==55);std::set<std::string> itemCodes;
-    const auto originalItems=DataTable::parse(runtime.cachedResources().read("ItemInfo.tble"));std::vector<std::string> originalWeaponCodes;for(std::size_t row=0;row<originalItems.rowCount();++row)if(originalItems.value(row,"Type")=="PtWpn")originalWeaponCodes.emplace_back(originalItems.value(row,"Code").value());assert(originalWeaponCodes.size()==110);
+    const auto originalItems=DataTable::parse(runtime.cachedResources().read("ItemInfo.tble"));
+    const auto weaponDefinitions=Weapons::parse(DataTable::parse(runtime.cachedResources().read("WeaponInfo.tble")));
+    std::vector<std::string> originalWeaponCodes;
+    for(std::size_t row=0;row<originalItems.rowCount();++row){
+        if(originalItems.value(row,"Type")!="PtWpn")continue;
+        if(weaponDefinitions.weapon(originalItems.value(row,"strParam").value()).kind==WeaponKind::laser)continue;
+        originalWeaponCodes.emplace_back(originalItems.value(row,"Code").value());
+    }
+    assert(originalWeaponCodes.size()==110);
     for(std::size_t i=0;i<55;++i){const auto& descriptor=runtime.scenarios()[i];assert(descriptor.role==validation::ScenarioRole::combat&&descriptor.weapons.size()==2);for(unsigned side=0;side<2;++side){const auto& code=descriptor.weapons[side];assert(code==originalWeaponCodes[i*2+side]);itemCodes.insert(code);assert(runtime.session(unsigned(i)).state().equipment[side+2].dataId==code);}assert(runtime.session(unsigned(i)).battle());}
     assert(itemCodes.size()==110);const auto warmReads=files.reads,warmProbes=files.probes;
     compositor(runtime,host);

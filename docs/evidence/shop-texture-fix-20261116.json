@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-16",
+  "cause": "UI-only Phone page rebuild changes resource generation without GameSession presentation revision; new UI textures were not uploaded",
+  "fixture": {
+    "level": 5,
+    "shopItems": 9,
+    "firstUseIcon": "Icon10113.png",
+    "originalIndex": 8
+  },
+  "before": {
+    "phone": "GPU error: Frame uses unprepared original texture: Icon10113.png",
+    "tablet": "passed"
+  },
+  "after": {
+    "iPhoneNative": {
+      "passed": 4,
+      "failed": 0
+    },
+    "iPadNative": {
+      "passed": 3,
+      "failed": 0
+    },
+    "phoneFirstIconUploads": 1,
+    "phoneBackNextPairs": 3,
+    "additionalUploadsOnRevisit": 0,
+    "warmFramesPerCondition": 120,
+    "warmResourceReads": 0,
+    "warmUploads": 0,
+    "warmSaveRequests": 0
+  },
+  "limits": [
+    "Physical devices not changed or retested",
+    "No Release install",
+    "iPad first run stopped before tests with simulator Busy; bootstatus readiness resolved launch",
+    "Initial test compile error corrected before real failing run"
+  ],
+  "sourceSHA256": {
+    "Sources/Platform/Apple/HM2GameRuntime.mm": "edb0ae9cd078a2786e245ae38a2832310d37be84a61b27b4b4be2b9f0eb3dec6",
+    "Sources/Platform/Apple/HM2ConcurrentRuntime.mm": "ce8c0d3151aca8f83d3bbf2663a7a904e7dbb8b9b4fee0165d17b4fe3d1b2764",
+    "Apple/Tests/SessionRendererTests.mm": "52a61a54efa543de0c45004fcaddf72721dcde97dd4453727b96dc2dc43de992"
+  },
+  "logs": {
+    "red.log": "301e8762caf048244af684d3dfec866901edba3b425325fb0e2b6b2c5e2132d4",
+    "green.log": "276c55c33f4897f8af3f16c38d75d6a59d56a3094b0c9cc746481bcdb151189d",
+    "green-ipad-ready.log": "a1bc2a9cd880621f16aec7072ecb49115acbdcab620d73bbf4ec5e77a1421f36",
+    "export.log": "33cc32e3d4bf5d4fb4b4ea2d3129e369f8fec7f94b415208d6f2c72889ebc379",
+    "green-ipad.log": "af68d46c7981dde74c8125df95b68e769ddcbf3e479d12d65182d02f357b1e2c",
+    "ipad-bootstatus.log": "ad0d4e00d56076a5eb9ce7e1570acbcfe2f59725c0b9708d062e00bf4bc80d4d",
+    "red-runtime.log": "66dfa1e624f5c837ae479772e7632914f7c308256af4510964bed1b68ec183a8"
+  }
+}

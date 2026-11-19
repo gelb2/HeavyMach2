@@ -1,3 +1,71 @@
+## 화이트마운틴 구현과 치트 검증 — 2026-11-20
+
+설원 6곳과 기지, 보스 의뢰 4건, 일반 적 5종, 무기 25종, 레이저 공습과 수집 BOT 3종의 검증을 이미지 83장과 표 7개에 담았다. iPhone 보스전의 지형 소실 전후 이미지도 함께 게시했다. [비공개 보고서](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/white-mountain-campaign-results-20261120.html) · [누적 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)
+
+그림 검수 사이트 버전 17과 누적 보고 버전 321의 배포가 성공했다. 인증 상태에서 이미지 83장의 해시, 두 사이트의 목록 링크와 기술조사 링크를 확인했다. 비인증 요청은 403이었다. 로컬 Chrome의 390px 화면에서 목차와 검토 항목의 배치를 확인했다. [배포와 최종 실행 근거](evidence/white-mountain-campaign-publication-20261120.json)
+
+## 설원 원본 6장과 미등장 콘텐츠 이미지 표 — 2026-11-19
+
+설원 원본 6장과 미배치 적·보스, 무기·스킬·BOT, 기지·기타 그림을 8개 표로 정리했다. `STAGE 15A.png`에는 바위와 시설이 그려져 있고 연결된 배치 정의는 없다. 설원 6장의 열람용 PNG를 원본 디코딩 결과의 1024×1024 RGBA와 전부 대조했다. [비공개 이미지 표](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/white-mountain-gallery-20261119.html)
+
+기존 이미지 검수 사이트 버전 16에 그림 94장을 게시했다. 누적 보고 사이트 버전 320의 기술조사와 누적 목록에서 별첨을 연결했다. 본인 인증으로 이미지 94장의 해시와 두 링크를 HTTP에서 대조했다. 비인증 요청은 403이다. 브라우저 호스트에 연결할 수 없어 브라우저 화면 확인은 하지 못했다. [게시와 그림별 대조 근거](evidence/white-mountain-gallery-publication-20261119.json)
+
+## 화이트마운틴 전장과 미등장 콘텐츠 기술조사 — 2026-11-19
+
+MachDefense 설원 4종과 헤비멕 2 HD 1.0.0에서 찾은 설원 PNG 6장, 양쪽 게임의 공통 지면 비교 이미지, 적·무기·스킬의 호스트 검사와 신규 전장 작업 범위를 게시했다. 앞선 원본 조사에 설원 PNG 누락의 정정과 후속 보고 링크를 넣었다. 기존 누적 목록에서 두 보고서를 열 수 있다. [기술조사 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/white-mountain-feasibility-20261119.html)
+
+비공개 사이트 버전 319, 소스 `a84b264`, 배포 `appgdep_6afedd55fab88191ac402101a3a0b2e1`의 성공을 확인했다. 인증 요청 6건에서 두 본문과 JSON·비교 그림·누적 목록을 대조했고, 비인증 요청 3건은 모두 403이었다. 접근은 기존 본인 1명이다. [게시 근거](evidence/white-mountain-feasibility-publication-20261119.json)
+
+## 원본의 화이트마운틴·미연결 무기·레이저음 — 2026-11-19
+
+원본 6종의 맵·입수 경로·발사음 조사와 판본별 근거 목록을 기존 비공개 사이트에 게시했다. 이전 iPhone 심층진단의 화이트마운틴 조사 항목과 누적 목록에서 연결한다. 조사 커밋 `9fac612`, 사이트 소스 `7359851`, 배포 `appgdep_6afed0b4aee4819185a5984cf214aab6`다. 인증 요청 4건에서 본문과 링크를 확인했고, 다운로드 근거를 풀어 저장소 JSON과 바이트 단위로 대조했다. 페이지와 근거 파일 모두 비인증 요청은 403이었다. [비공개 보고서](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/original-unused-content-20261119.html) · [원본 목록과 근거](evidence/original-unused-content-20261119.json)
+
+## iPhone 상점 전체 화면 배경 이미지 — 2026-11-19
+
+수정판 `9e5c08a`의 1902×827 격납고 JPEG를 기존 비공개 보고서 본문에 넣고 누적 목록에 연결했다. 사이트 소스 `508499d`, 배포 `appgdep_6afec2ad987c81918e7877deadcaaee1`가 성공했다. 인증 요청으로 보고서·이미지·누적 목록을 확인했고 게시 JPEG는 앱 자원과 바이트가 일치했다. 배포 용량을 맞추기 위해 이전 PNG 3장의 인코딩을 무손실로 바꿨다. 브라우저 창 연결에는 실패했다. [보고서에서 이미지 보기](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-fullscreen-art-20261119) · [게시 근거](evidence/iphone-shop-art-publication-20261119.json)
+
+## iPhone 상점 스크린샷 별첨 — 2026-11-19
+
+일반판 2.0.1, 이전 실기기 겹침 재현, 수정판 시뮬레이터 화면을 PNG 15장으로 별첨했다. 본인 전용 두 기존 사이트를 사용했다. 보고 사이트는 소스 `bcb3185`·배포 `appgdep_6afea94b3dbc8191812ad637eaa01c50`, 별첨은 소스 `3285efd`·배포 `appgdep_6afea8c2a134819188993a9b16270f4e`로 성공했다. 인증된 다운로드 15건의 SHA-256을 원본과 대조했고 두 사이트는 인증 없는 요청을 거부했다. [보고서의 별첨 링크](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-screenshots-attachment) · [스크린샷 별첨](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/iphone-shop-screenshots-20261119.html) · [파일별 검증 기록](evidence/iphone-shop-screenshots-publication-20261119.json)
+
+## iPhone 상점 원본 좌표와 실기기 설치 — 2026-11-19
+
+원본 슬롯 간격과 SG-1 상세창의 최대 2픽셀 차이, iPad 설치와 잠금 상태, iPhone 연결 상태를 기존 비공개 보고에 갱신했다. 사이트 소스 `b4a76cf`, 배포 `appgdep_6afe9dfdfbec8191b2c01182eeca0ceb`가 성공했다. [상점 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-capture-20261119) · [검사 기록](iphone-shop-reference-coordinates-20261119.md)
+
+## iPhone 상점 크기·거래·마지막 페이지 재검사 — 2026-11-19
+
+원본과 같은 아이콘·거래 버튼 크기, 판매 취소 뒤의 표시, 웨이스트랜드 다섯 분류의 마지막 묶음과 iPad 여섯 상점의 픽셀 대조를 기존 비공개 보고에 갱신했다. 사이트 소스 `f07e3e9`, 배포 `appgdep_6afe98436c308191b406e095c6af8855`가 성공했다. [상점 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-capture-20261119) · [캡처와 검사](iphone-shop-layout-verification-20261119.md)
+
+## 2026-11-19 iPhone Equip 잘림과 원본 여러 페이지 검사
+
+Equip 능력치·BOT과 웨이스트랜드 레벨 22의 원본 페이지를 기존 비공개 보고에 반영했다. DISARM 캡처는 로컬 검사 기록에 있다. 사이트 소스 `e2e2949`, 배포 `appgdep_6afe70f9b8a88191b451ba2b6dbed668`가 성공했다. [비공개 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-capture-20261119) · [로컬 캡처와 검사](iphone-shop-equipment-20261119.md)
+
+## 2026-11-19 iPhone 상점 원본 재검사와 거래 버튼
+
+일반판 2.0.1의 거래·스크롤 관측, 수정한 세로 Buy·Sell, iPad 상점 대조와 Equip 결함을 기존 비공개 보고와 누적 목록에 추가했다. 사이트 소스 `38e3970`, 배포 `appgdep_6afe6691f9c081918dea64b4685ffacd`가 성공했다. 원본과 복원판의 PNG, 파일별 크기·해시는 로컬 증거에 있다. [비공개 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-capture-20261119) · [캡처와 수정 근거](iphone-shop-comparison-20261119.md)
+
+## 2026-11-19 두 실기기 Release 및 iPhone 상점 표시
+
+`f8e82d8`의 Source Release 설치와 실기기 확인, iPhone 상점 겹침 재현 및 원본 재캡처 TODO를 기존 비공개 보고와 누적 목록에 추가했다. 사이트 소스 `08814de`, 배포 `appgdep_6afdc2733570819190273f324d421f82`가 성공했다. [비공개 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#device-release-20261119) · [설치와 캡처 기록](dual-release-installation-20261119.md)
+
+## 2026-11-18 iPhone 네 문제 수정 및 시뮬레이터 검사
+
+점프·Skyway 배경·뷰포트·메뉴 페이지를 수정한 후보 `f8e82d8`의 결과를 비공개 보고 페이지와 HeavyMach2 누적 목록에 게시했다. 사이트 소스 `ba8fb66`, 배포 `appgdep_6afd9d613f1c8191a0d282d8af39241e`가 성공했다. 공통 76개, Source Native 9개, OS 더블탭 양쪽 10회씩, 치트빌드 양쪽 126조건·2,100프레임을 확인했다. [비공개 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#runtime-fixes-20261118) · [실행 근거](evidence/iphone-runtime-regressions-20261118.json)
+
+## 2026-11-16 상점 GPU 오류 수정 게시
+
+[상점 수정·검사](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-fix-20261116)를 기존 보고서와 고정 누적 목록에 추가했다. 수정1420cc1, iPhone Native4/4·iPad Native3/3. Site소스c7084e1, 배포appgdep_6afa6f44499481919f06154b55146bac succeeded. [게시 근거](evidence/shop-texture-fix-publication-20261116.json). 본인만 접근하는 설정과 기존미디어를 유지했다. 새브라우저 시각검수·실기기설치는 하지 않았다.
+
+# 2026-11-16 iPhone 코드·에셋 심층진단 게시
+
+[상세 진단 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html)를 기존 비공개 사이트에 게시하고 HeavyMach2 고정 누적 목록에서 연결했다. 소스d42f016, 배포appgdep_6afa64333a208191bad038da306b3b1c succeeded. [게시 명세](evidence/iphone-code-asset-diagnosis-publication-20261116.json). 본인1명 접근을 유지했다. 브라우저 시각검수는 하지 않았다.
+
+상점 페이지 준비 누락의 CPU재현·로딩/시간 계약불일치·검사공백/구조위험과 미검증을 구분한다. 코드142파일 목록·자원1548개 해시대조·공통78/78은 실제GPU/실기기 전수검사 완료가 아니다. 게임소스·기기·저장은 변경하지 않았다. 용량제한 실패후 macOS부가메타데이터를 제외하고 기존 plan.html·docs/todo.html의 원문/주소를 유지한 gzip표시로 패키징했다. 압축해제 원문 바이트일치, 최종tar268424192바이트를 확인했다. 기존미디어는 삭제하지 않았다. 상세원문은 [저장소 보고](iphone-code-asset-diagnosis-20261116.md)다.
+
+## 2026-11-15 최신 — iPad 메뉴 배율 회귀 수정
+
+[이전 FAIL·수정 후 실제 캡처](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/ipad-menu-fix.html)를 기존 비공개 사이트 첫 화면·이전 Phone 메뉴/배경/하네스 문서에서 연결했다. 원인7622bd1, 공통 메뉴 변환과 입력/drop 수정, 공통2검사와 최종 배경/화면 하네스 각각36/36 PASS를 기록했다. 최종 짧은 Native 검사의 시간 중첩0 집계 FAIL과 이전18화면 FAIL도 보존했다. Site 소스90dc65d1d5d7884039c52221bbc0dc5d63c45d9a·배포appgdep_6af95f4fe40881918e796e5e16be59c0는 succeeded다. 본인1명·그룹0·외부0 접근을 유지했다. 아직 실제 기기 정식 설치와 네이티브 훅 자동 발동 완료는 아니다. [구현·검사](ipad-menu-regression-20261115.md)를 따른다.
+
 # HeavyMach 2 보고 사이트
 
 ## 2026-11-15 후속 — 메뉴 버튼 페이지·상점 원본 일치 TODO

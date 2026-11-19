@@ -7,10 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A11CA0000000000000000001 /* CameraPresentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11CA0000000000000000003 /* CameraPresentation.cpp */; };
-		A11CA0000000000000000002 /* CameraPresentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A11CA0000000000000000003 /* CameraPresentation.cpp */; };
 		016FCED80D64E201528A7AC2 /* LocomotionScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC4647D2C2976A4283A509AD /* LocomotionScene.cpp */; };
 		0170BE3B8C5BE0FBC7573BD3 /* Weapons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 613BC791A02B06C23C2A3BEA /* Weapons.cpp */; };
+		02281A1116A775702DD3F56D /* CameraPresentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F710A918137748B8FAA0EA65 /* CameraPresentation.cpp */; };
 		0766EDE5469E68F0A94467F1 /* Screens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA851BB9990AA00129E04AC /* Screens.cpp */; };
 		0993BFC8FAA10C0844A16FC0 /* AppIcons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2AA858307D90793D8B5AD6AD /* AppIcons.xcassets */; };
 		0B2EF24C8FBAFF38763843FC /* Machines.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C414272E8429546DA101F9E9 /* Machines.cpp */; };
@@ -90,6 +89,7 @@
 		72394AE430AEC32F2A067AA6 /* PlayerEquipment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4B10E038B5329E8FCF91F5F1 /* PlayerEquipment.cpp */; };
 		745DCE4929F78A7B31A7DD52 /* SharedAssetPreparation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CD6E1709AD010ACDFCEA276 /* SharedAssetPreparation.cpp */; };
 		7508D662CE3C94491BC3D84C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BF9C424C63A4584046C92FF /* QuartzCore.framework */; };
+		7691E47EF7302C5D33C0AC22 /* CameraPresentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F710A918137748B8FAA0EA65 /* CameraPresentation.cpp */; };
 		7AC368B9A5A8D7B3A50469FB /* TerrainCollision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB8957B62F2A77CCDA274CF1 /* TerrainCollision.cpp */; };
 		7B0BA843B9CA98105BCD6DFC /* Particles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C104D835D6C387F27F4E88 /* Particles.cpp */; };
 		7BAB3CBC95A28A51C3EE2E16 /* EnemySpawner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 809917EBA6022B9ADE3A61E5 /* EnemySpawner.cpp */; };
@@ -188,11 +188,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		A11CA0000000000000000007 /* MenuGridLayout.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MenuGridLayout.hpp; sourceTree = "<group>"; };
-		A11CA0000000000000000005 /* MenuArtwork.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MenuArtwork.hpp; sourceTree = "<group>"; };
-		A11CA0000000000000000006 /* ResourceName.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ResourceName.hpp; sourceTree = "<group>"; };
-		A11CA0000000000000000003 /* CameraPresentation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CameraPresentation.cpp; sourceTree = "<group>"; };
-		A11CA0000000000000000004 /* CameraPresentation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CameraPresentation.hpp; sourceTree = "<group>"; };
+		00ADDD279FD51BDBF91F487A /* MenuGridLayout.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MenuGridLayout.hpp; sourceTree = "<group>"; };
 		02500EBECE46105EB3FABE8A /* DisplayLayout.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DisplayLayout.hpp; sourceTree = "<group>"; };
 		043AD228C3E3A40192B65C5E /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		0578E11DBD56762668331013 /* ScreenTransition.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ScreenTransition.hpp; sourceTree = "<group>"; };
@@ -208,7 +204,7 @@
 		166C5DAA03A5A25AB8F316FB /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		178929D99CCF1A53F011DD11 /* ProjectileVisual.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ProjectileVisual.cpp; sourceTree = "<group>"; };
 		1A72523C693BCCDC6274159F /* HM2GameRuntime.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = HM2GameRuntime.mm; sourceTree = "<group>"; };
-		1AD56BEEAD2F8B2131068154 /* HD */ = {isa = PBXFileReference; lastKnownFileType = folder; name = HD; path = ../../.local/prepared/HD; sourceTree = SOURCE_ROOT; };
+		1AD56BEEAD2F8B2131068154 /* HD */ = {isa = PBXFileReference; lastKnownFileType = folder; name = HD; path = ../../.local/prepared/Campaign/HD; sourceTree = SOURCE_ROOT; };
 		1C6BBD07C4A45A179689E68C /* SoundIDs.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SoundIDs.hpp; sourceTree = "<group>"; };
 		1E5451F715CD842FE04E2462 /* Button.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Button.hpp; sourceTree = "<group>"; };
 		20E224574929641709B8F31A /* Dash.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Dash.cpp; sourceTree = "<group>"; };
@@ -240,6 +236,7 @@
 		443FCD917436FAD7495F0523 /* VehicleMotion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VehicleMotion.hpp; sourceTree = "<group>"; };
 		445AC8953F5F5E2C23FC8379 /* PlayerMapPreview.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PlayerMapPreview.hpp; sourceTree = "<group>"; };
 		45491C48F5B63AF8D4B660ED /* VehicleMotion.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VehicleMotion.cpp; sourceTree = "<group>"; };
+		45530954687D6714B682BCFB /* HM2WhiteMountainBossValidation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HM2WhiteMountainBossValidation.hpp; sourceTree = "<group>"; };
 		49C104D835D6C387F27F4E88 /* Particles.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Particles.cpp; sourceTree = "<group>"; };
 		4A9AE12FE861C196B58943BF /* HeavyMach2Validation.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HeavyMach2Validation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B10E038B5329E8FCF91F5F1 /* PlayerEquipment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PlayerEquipment.cpp; sourceTree = "<group>"; };
@@ -261,6 +258,7 @@
 		613BC791A02B06C23C2A3BEA /* Weapons.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Weapons.cpp; sourceTree = "<group>"; };
 		64F853F472810DD8824250E3 /* Help.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Help.hpp; sourceTree = "<group>"; };
 		657FC22FCF40C8DCFD2C5DF1 /* PreparedTiles.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PreparedTiles.hpp; sourceTree = "<group>"; };
+		66A59761162B494B726CF7E6 /* HM2NativeValidation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HM2NativeValidation.hpp; sourceTree = "<group>"; };
 		67696AD5E96C7983E526B79E /* HM2Renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HM2Renderer.h; sourceTree = "<group>"; };
 		68FE8721C5BB680AFE6731E1 /* WorldRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WorldRandom.hpp; sourceTree = "<group>"; };
 		690416CAE340A22C399D793A /* GameSession.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GameSession.hpp; sourceTree = "<group>"; };
@@ -287,6 +285,7 @@
 		91A0D30A250D4AE32CA30332 /* HM2Application.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = HM2Application.mm; sourceTree = "<group>"; };
 		935D56609040C44D67B6E633 /* HM2Renderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = HM2Renderer.mm; sourceTree = "<group>"; };
 		947197BB90E6A55E8955A177 /* QuickItems.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = QuickItems.cpp; sourceTree = "<group>"; };
+		96624835C6116208F9873331 /* CameraPresentation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CameraPresentation.hpp; sourceTree = "<group>"; };
 		9865A54E5C9D5F5BA4EA0641 /* Descriptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Descriptions.hpp; sourceTree = "<group>"; };
 		98FD21A2735AF92691E370B2 /* WeaponController.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WeaponController.hpp; sourceTree = "<group>"; };
 		9A11F90D201FE7265367DF16 /* AssemblyPreview.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AssemblyPreview.cpp; sourceTree = "<group>"; };
@@ -297,6 +296,7 @@
 		A0589CBBBD075AA1E71A2FC3 /* EnemyVehicle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EnemyVehicle.cpp; sourceTree = "<group>"; };
 		A165999C6469516FFE74F603 /* CombatScene.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CombatScene.cpp; sourceTree = "<group>"; };
 		A25F6E2BB4E11ABB4FF5561B /* EnemyActors.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = EnemyActors.hpp; sourceTree = "<group>"; };
+		A3E53D30CFE44085EA20F99F /* HM2WhiteMountainValidation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HM2WhiteMountainValidation.hpp; sourceTree = "<group>"; };
 		AA86D0A34F79009CF2357F30 /* WorldGates.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WorldGates.hpp; sourceTree = "<group>"; };
 		AADB2E30563D23861736C5F1 /* Button.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Button.cpp; sourceTree = "<group>"; };
 		AB99442F94F11D7964A77D4A /* Trail.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Trail.cpp; sourceTree = "<group>"; };
@@ -310,6 +310,7 @@
 		B61FDC38BFE7A6A2FE22F969 /* MapPreview.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MapPreview.hpp; sourceTree = "<group>"; };
 		B86295E6394B282CE3E6C6B3 /* Bot.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bot.hpp; sourceTree = "<group>"; };
 		B86D52DDA92BBBB46585E535 /* ObjectCollision.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ObjectCollision.hpp; sourceTree = "<group>"; };
+		B8B7CAA8BBBB189D722C3250 /* ResourceName.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ResourceName.hpp; sourceTree = "<group>"; };
 		B8CF2FA140E7BCAEF006C920 /* Maps.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Maps.cpp; sourceTree = "<group>"; };
 		BC4A48ECC028DFAA80002E16 /* ScreenTransition.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ScreenTransition.cpp; sourceTree = "<group>"; };
 		BDE644B4E59C33D54692C40B /* TerrainCollision.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TerrainCollision.hpp; sourceTree = "<group>"; };
@@ -322,6 +323,7 @@
 		C476A681B159BDC1743B96DD /* ProjectileMotion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ProjectileMotion.hpp; sourceTree = "<group>"; };
 		C530196FF2D99A1D04F34CB3 /* Weapons.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Weapons.hpp; sourceTree = "<group>"; };
 		C7F133A700775D4A6288358A /* PartShadowRendererTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PartShadowRendererTests.mm; sourceTree = "<group>"; };
+		D00509D92DAC78422C222EA5 /* HM2WhiteMountainItemsValidation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HM2WhiteMountainItemsValidation.hpp; sourceTree = "<group>"; };
 		D20A52335CC38B671CC4932C /* MusicBufferPolicy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MusicBufferPolicy.hpp; sourceTree = "<group>"; };
 		D4C8284C6796F6A4F01CE879 /* HM2TextRasterizer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = HM2TextRasterizer.mm; sourceTree = "<group>"; };
 		D6E5F7305A80A92CD84797AB /* HM2AudioQueueMusic.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HM2AudioQueueMusic.hpp; sourceTree = "<group>"; };
@@ -351,6 +353,8 @@
 		F140813C1815FA9B07E0F84D /* HM2ConcurrentRuntime.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = HM2ConcurrentRuntime.mm; sourceTree = "<group>"; };
 		F25E088ABE6949017001368D /* HM2Audio.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = HM2Audio.mm; sourceTree = "<group>"; };
 		F541CD73F7283BBB71906CE0 /* Equipment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Equipment.cpp; sourceTree = "<group>"; };
+		F710A918137748B8FAA0EA65 /* CameraPresentation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CameraPresentation.cpp; sourceTree = "<group>"; };
+		F7A96A234DEF1323121DF9DD /* MenuArtwork.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MenuArtwork.hpp; sourceTree = "<group>"; };
 		F7F50A2A20F66D0A8B046783 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		FDC2C3484F60AA6ACF7FDAFB /* AssemblyRendererTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AssemblyRendererTests.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -449,7 +453,7 @@
 				78D24A69AF7B3BB23FC0E7CD /* Models.hpp */,
 				4B10E038B5329E8FCF91F5F1 /* PlayerEquipment.cpp */,
 				D756CCC0C471868117741AC8 /* PlayerEquipment.hpp */,
-				A11CA0000000000000000006 /* ResourceName.hpp */,
+				B8B7CAA8BBBB189D722C3250 /* ResourceName.hpp */,
 				E55A40FF267F407934E8B2C5 /* Resources.hpp */,
 				41FE054D095EED8F45207257 /* SaveData.cpp */,
 				323FADCEB8FC482A695B5AE5 /* SaveData.hpp */,
@@ -500,6 +504,7 @@
 				1124C71EDFD2EB2281DC160D /* HM2GameRuntime.hpp */,
 				1A72523C693BCCDC6274159F /* HM2GameRuntime.mm */,
 				13F2346C339F63643FB7B0C7 /* HM2HUDStorage.hpp */,
+				66A59761162B494B726CF7E6 /* HM2NativeValidation.hpp */,
 				886A7335138D1103D5379EFF /* HM2Profiling.hpp */,
 				67696AD5E96C7983E526B79E /* HM2Renderer.h */,
 				935D56609040C44D67B6E633 /* HM2Renderer.mm */,
@@ -508,6 +513,9 @@
 				53644980D69E07491B00CCE9 /* HM2SourceView.mm */,
 				7F17A8BA4D1A29FD295182A9 /* HM2TextRasterizer.h */,
 				D4C8284C6796F6A4F01CE879 /* HM2TextRasterizer.mm */,
+				45530954687D6714B682BCFB /* HM2WhiteMountainBossValidation.hpp */,
+				D00509D92DAC78422C222EA5 /* HM2WhiteMountainItemsValidation.hpp */,
+				A3E53D30CFE44085EA20F99F /* HM2WhiteMountainValidation.hpp */,
 			);
 			name = Apple;
 			path = ../../Sources/Platform/Apple;
@@ -600,10 +608,8 @@
 			children = (
 				9A11F90D201FE7265367DF16 /* AssemblyPreview.cpp */,
 				ADDEAEEA7BB8B54C41E3C295 /* AssemblyPreview.hpp */,
-				A11CA0000000000000000003 /* CameraPresentation.cpp */,
-				A11CA0000000000000000004 /* CameraPresentation.hpp */,
-				A11CA0000000000000000005 /* MenuArtwork.hpp */,
-				A11CA0000000000000000007 /* MenuGridLayout.hpp */,
+				F710A918137748B8FAA0EA65 /* CameraPresentation.cpp */,
+				96624835C6116208F9873331 /* CameraPresentation.hpp */,
 				E06DB341BE24022D95107498 /* DisplayLayout.cpp */,
 				02500EBECE46105EB3FABE8A /* DisplayLayout.hpp */,
 				E512BB88B19866ABD2271298 /* HUDLayout.hpp */,
@@ -611,6 +617,8 @@
 				86DED0BA017FEFB8B559DCB6 /* MapLoading.hpp */,
 				E8FB007411CC043C0FAE3938 /* MapPreview.cpp */,
 				B61FDC38BFE7A6A2FE22F969 /* MapPreview.hpp */,
+				F7A96A234DEF1323121DF9DD /* MenuArtwork.hpp */,
+				00ADDD279FD51BDBF91F487A /* MenuGridLayout.hpp */,
 				4B3FC619F66EED86AE7208E8 /* MovementPathVisual.cpp */,
 				0A5576257104A81917B5DC14 /* MovementPathVisual.hpp */,
 				3808C2D095948480E45FC211 /* PartSprites.cpp */,
@@ -878,11 +886,11 @@
 				FE90D06D25B782321989D29E /* BipodMotion.cpp in Sources */,
 				C6C7867954D869883A3F5391 /* Bot.cpp in Sources */,
 				69471B6AD198FEC5767862D4 /* Button.cpp in Sources */,
+				7691E47EF7302C5D33C0AC22 /* CameraPresentation.cpp in Sources */,
 				AA6142C98549069CF77BCF61 /* Chunk.cpp in Sources */,
 				AAE2C97ABEE691B01335359A /* CombatScene.cpp in Sources */,
 				3D25EBB05635C26601A47106 /* Dash.cpp in Sources */,
 				936C708FD04DAA8F6164D13B /* DataTable.cpp in Sources */,
-				A11CA0000000000000000001 /* CameraPresentation.cpp in Sources */,
 				C0ECBB41CA6DF0B97AD26051 /* DisplayLayout.cpp in Sources */,
 				86F46E67BA5856322CF8C0E4 /* EnemyActors.cpp in Sources */,
 				7BAB3CBC95A28A51C3EE2E16 /* EnemySpawner.cpp in Sources */,
@@ -951,12 +959,12 @@
 				195674EAD113FFEE819CC98E /* BipodMotion.cpp in Sources */,
 				BFDDB89E3C0B7F7482A6322F /* Bot.cpp in Sources */,
 				B4407F73DBB9F251AC49C077 /* Button.cpp in Sources */,
+				02281A1116A775702DD3F56D /* CameraPresentation.cpp in Sources */,
 				E68037BE7FF34C7A7977083F /* Chunk.cpp in Sources */,
 				C2DC456C6186E0607C055BC9 /* CombatScene.cpp in Sources */,
 				B56F79F1D8121F0408543154 /* ConcurrentValidation.cpp in Sources */,
 				63983B9254B17B90537EAEFB /* Dash.cpp in Sources */,
 				87E36D97DBE0C16AB3E344FC /* DataTable.cpp in Sources */,
-				A11CA0000000000000000002 /* CameraPresentation.cpp in Sources */,
 				DA0168D7DC0E79FE2F65FF28 /* DisplayLayout.cpp in Sources */,
 				96017CD8E417490E92DF73E1 /* EnemyActors.cpp in Sources */,
 				F0576F911A458759C1C4614E /* EnemySpawner.cpp in Sources */,

@@ -36,28 +36,31 @@ Vec2 DisplayTransform::inverse(Vec2 p)const{
 }
 DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
     if(!configuration_.enabled)return {};
-    const auto a=configuration_.content();const Vec2 center{a.x+a.width*.5f,a.y+a.height*.5f};
-    const float nominal=configuration_.compact?2.f/3.f:1.f;
+    const auto a=configuration_.compact?configuration_.content():ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};const Vec2 center{a.x+a.width*.5f,a.y+a.height*.5f};
+    // HD widgets retain their 768x1024 source layout, as before the Phone
+    // adaptation; a physical display point is not one original HUD unit.
+    const float nominal=configuration_.compact?2.f/3.f:std::min(a.width/768,a.height/1024);
     const auto fit=[&](float w,float h){return std::min({nominal,a.width/w,a.height/h});};
     const auto centered=[&](float w,float h){return anchored({384,512},center,fit(w,h));};
     switch(region){
+    // One HD menu projection for artwork, controls, text and inverse input.
+    // World projection and movable HUD sizing remain separate consumers of
+    // the original HD canvas, not extra per-platform UI implementations.
+    case DisplayRegion::tabletMenu:{const auto c=configuration_.canvas;return anchored({384,512},{c.width*.5f,c.height*.5f},std::max(c.width/768,c.height/1024));}
     case DisplayRegion::titleBackdrop:{const auto c=configuration_.canvas;return anchored({384,1024},{c.width*.5f,c.height},std::max(c.width/768,c.height/1024));}
     case DisplayRegion::artBanner:{const auto c=configuration_.canvas;return anchored({240,160},{c.width*.5f,c.height*.5f},std::min(c.width/480,c.height/320));}
-    case DisplayRegion::phoneFooter:{auto t=ui(DisplayRegion::phoneMenu);t.offset.y=0;return t;}
-    case DisplayRegion::phoneInventoryPages:case DisplayRegion::phoneStockHeader:{auto t=ui(DisplayRegion::phoneMenu);t.offset.y=120-96*t.scale;return t;}
-    case DisplayRegion::phoneCategoryHeader:case DisplayRegion::phoneHeader:{auto t=ui(DisplayRegion::phoneMenu);t.offset.y=configuration_.canvas.height-480*t.scale;return t;}
-    case DisplayRegion::phoneTrade:return anchored({360,240},{configuration_.canvas.width*.5f,configuration_.canvas.height*.5f},std::min(menu::menuScale(configuration_)*2.f/3.f,(configuration_.canvas.height-24)/384));
+    case DisplayRegion::phoneFooter:return anchored({360,0},{configuration_.canvas.width*.5f,0},menu::menuScale(configuration_)*2.f/3.f);
+    case DisplayRegion::phoneHeader:return anchored({360,480},{configuration_.canvas.width*.5f,configuration_.canvas.height},menu::menuScale(configuration_)*2.f/3.f);
+    case DisplayRegion::phoneEquipmentFooter:case DisplayRegion::phoneStockFooter:
+    case DisplayRegion::phoneInventoryPages:case DisplayRegion::phoneStockHeader:case DisplayRegion::phoneCategoryHeader:
+    case DisplayRegion::phoneTrade:return menu::phoneReferenceUI(configuration_);
     case DisplayRegion::phoneCommandList:case DisplayRegion::phoneCommandInfo:{
         const auto c=configuration_.canvas;const float header=menu::menuHeader(configuration_),footer=menu::menuFooter(configuration_);const float s=std::min(menu::menuScale(configuration_)*2.f/3.f,std::max(1.f,c.height-header-footer-12)/275.f);
         if(region==DisplayRegion::phoneCommandList)return anchored({222,342},{c.width*148.f/480,c.height-header-24},s);
         return anchored({540,240},{c.width*.75f,footer+(c.height-header-footer)*.5f},s);
     }
-    case DisplayRegion::phoneStock:case DisplayRegion::phoneInventory:case DisplayRegion::phoneEquipment:{
-        auto t=ui(DisplayRegion::phoneMenu);t.offset.y=configuration_.canvas.height-menu::menuHeader(configuration_)-35-330*t.scale;return t;
-    }
-    case DisplayRegion::phoneMenu:{
-        return anchored({360,240},{configuration_.canvas.width*.5f,configuration_.canvas.height*.5f},menu::menuScale(configuration_)*2.f/3.f);
-    }
+    case DisplayRegion::phoneStock:case DisplayRegion::phoneInventory:case DisplayRegion::phoneEquipment:
+    case DisplayRegion::phoneMenu:return menu::phoneReferenceUI(configuration_);
     case DisplayRegion::artBackdrop:case DisplayRegion::artScene:{
         const auto canvas=configuration_.canvas;const float scale=std::max(canvas.width/480,canvas.height/320);
         const float travel=std::max(0.f,320*scale-canvas.height)*.5f;
@@ -72,9 +75,9 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
         const float scale=std::min({nominal,std::max(1.f,a.width-24)/(3*512+32),std::max(1.f,a.height-72)/256});
         return anchored({384,760-float(index)*240},{a.x+a.width*(float(index)+.5f)/3,a.y+a.height*.57f},scale);
     }
-    case DisplayRegion::bottom:return anchored({384,0},{center.x,configuration_.compact?0.f:a.y},configuration_.compact?std::min({.75f,a.width/768,a.height/256}):1.f);
+    case DisplayRegion::bottom:return configuration_.compact?anchored({384,0},{center.x,0.f},std::min({.75f,a.width/768,a.height/256})):anchored({384,0},{configuration_.canvas.width*.5f,0},nominal);
     case DisplayRegion::top:return anchored({384,1024},{center.x,a.y+a.height},ui(DisplayRegion::bottom).scale);
-    case DisplayRegion::banner:return anchored({384,512},menu::phone(configuration_)?Vec2{configuration_.canvas.width*.5f,configuration_.canvas.height*.5f}:center,configuration_.compact?ui(DisplayRegion::bottom).scale:1.f);
+    case DisplayRegion::banner:return anchored({384,512},menu::phone(configuration_)?Vec2{configuration_.canvas.width*.5f,configuration_.canvas.height*.5f}:center,configuration_.compact?ui(DisplayRegion::bottom).scale:nominal);
     case DisplayRegion::panel:return centered(768,560);
     case DisplayRegion::maintenance:return centered(640,440);
     case DisplayRegion::list:{if(!configuration_.compact)return centered(768,1024);const float s=std::min(nominal,a.width/768);return anchored({384,1024},{center.x,a.y+a.height+pan},s);}
@@ -104,14 +107,14 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
 }
 std::optional<ClipRect> DisplayLayout::clip(DisplayRegion region,float pan)const{
     if(!configuration_.enabled)return {};
-    if(region==DisplayRegion::titleBackdrop||region==DisplayRegion::artBanner||(menu::phone(configuration_)&&region==DisplayRegion::banner))return ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};
+    if(region==DisplayRegion::world||region==DisplayRegion::surface||region==DisplayRegion::tabletMenu||region==DisplayRegion::titleBackdrop||region==DisplayRegion::artBanner||(menu::phone(configuration_)&&region==DisplayRegion::banner))return ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};
     if(configuration_.compact&&(region==DisplayRegion::world||region==DisplayRegion::backdrop||region==DisplayRegion::artBackdrop||region==DisplayRegion::artScene))return ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};
     if(configuration_.compact&&menu::menuRegion(region)){
         const auto canvas=ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height};
         if(region!=DisplayRegion::phoneStock&&region!=DisplayRegion::phoneInventory)return canvas;
         const auto source=region==DisplayRegion::phoneStock?menu::stockWindow:menu::inventoryWindow;const auto t=ui(region,pan);const auto p=t.map({source.x,source.y});return intersection(canvas,{p.x,p.y,source.width*t.scale,source.height*t.scale});
     }
-    auto result=configuration_.compact&&region==DisplayRegion::bottom?ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height}:configuration_.content();
+    auto result=region==DisplayRegion::bottom?ClipRect{0,0,configuration_.canvas.width,configuration_.canvas.height}:configuration_.content();
     if(region==DisplayRegion::bottom){
         // HD gauge tiles slide through the original screen's left edge.
         // Move that768-wide boundary with HUD instead of exposing the hidden

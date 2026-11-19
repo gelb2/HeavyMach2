@@ -1,0 +1,431 @@
+{
+  "sizeCommit": "eb8c788047a81ade5e7db1f7e56bbdc2cf49a77b",
+  "lastPageCommit": "f51c8043811ef44b06e86a2e665980ed578d7bcd",
+  "saleDetailCommit": "262a6937ed4ff9aba3bde47b21f3b81fedcde130",
+  "original": {
+    "04-shop": {
+      "file": ".local/evidence/iphone-shop-20261119.7atGic/original/04-shop.png",
+      "sha256": "9a296854d600afbd0c7afded84a2c0df59818975ad77ebf4ff45653c7905031f",
+      "pixelSize": [
+        1260,
+        2736
+      ]
+    },
+    "05-drag-horizontal": {
+      "file": ".local/evidence/iphone-shop-20261119.7atGic/original/05-drag-horizontal.png",
+      "sha256": "9a296854d600afbd0c7afded84a2c0df59818975ad77ebf4ff45653c7905031f",
+      "pixelSize": [
+        1260,
+        2736
+      ]
+    },
+    "06-drag-vertical": {
+      "file": ".local/evidence/iphone-shop-20261119.7atGic/original/06-drag-vertical.png",
+      "sha256": "9a296854d600afbd0c7afded84a2c0df59818975ad77ebf4ff45653c7905031f",
+      "pixelSize": [
+        1260,
+        2736
+      ]
+    },
+    "07-weapon-detail": {
+      "file": ".local/evidence/iphone-shop-20261119.7atGic/original/07-weapon-detail.png",
+      "sha256": "c6574fde850370ee95f5e3aa55c0f5c4e69c4d228ed345f583de4a17410a249f",
+      "pixelSize": [
+        1260,
+        2736
+      ]
+    },
+    "08-buy-confirm": {
+      "file": ".local/evidence/iphone-shop-20261119.7atGic/original/08-buy-confirm.png",
+      "sha256": "f5a279581e86f3aea9eb370484e28eddf3e1ece977663769ac6b06e6182943c0",
+      "pixelSize": [
+        1260,
+        2736
+      ]
+    },
+    "12-sell-confirm-candidate": {
+      "file": ".local/evidence/iphone-shop-20261119.7atGic/original/12-sell-confirm-candidate.png",
+      "sha256": "8afbc2a2b3c7b21f948181b3a1472f53292297bda3d11bfe60bc8888542cd5d6",
+      "pixelSize": [
+        1260,
+        2736
+      ]
+    },
+    "13-sell-cancel-candidate": {
+      "file": ".local/evidence/iphone-shop-20261119.7atGic/original/13-sell-cancel-candidate.png",
+      "sha256": "1ac6cb9dc9e91b5cb5db7a29c168dc341b837fccd434ff8aef36b3e7d193c173",
+      "pixelSize": [
+        1260,
+        2736
+      ]
+    }
+  },
+  "restored": {
+    "live-phone-sg1-buy-confirm": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-phone-sg1-buy-confirm.png",
+      "sha256": "8803dc186e35a9a97af13ae58bf1fbb7c033358ae7b7343e8ca5df4ad22ac442",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-phone-sg1-detail": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-phone-sg1-detail.png",
+      "sha256": "80d2cda47c50098a3a85afa96475e74e15cbddfb274d0c9d2c67de223f758a6f",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-phone-sg1-sell-cancel": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-phone-sg1-sell-cancel.png",
+      "sha256": "0e537c9ac865078c40d34508a40ae779fecaa612c37b70b880af1f7ceb26d0a1",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-phone-sg1-sell-confirm": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-phone-sg1-sell-confirm.png",
+      "sha256": "955976be4ee23c62ce01829c7dad4da4a3931bdca823e36c0abf185fd69e08e7",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-phone-sg1-sell-detail": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-phone-sg1-sell-detail.png",
+      "sha256": "d0bf9004daae2770e5f0e663c3675447c267510e49fb756bf995e1ecfa880c78",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-phone-weapon-page": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-phone-weapon-page.png",
+      "sha256": "c19a2313bcafda5b50a9c9a59450036d4e3c0e208187ec81b7d7feddc077e109",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-wasteland-ML-K3-buy": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-wasteland-ML-K3-buy.png",
+      "sha256": "0c94c54377df19605ebf4f39c19a8d3716fc64a9210e8fd74cd92274889546d2",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-wasteland-ML-K3-detail": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-wasteland-ML-K3-detail.png",
+      "sha256": "aa85c96b5ecca03d2dbbf78692e218e8bc6223f4292869e22881d7c29e101011",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-wasteland-category-0-page-01": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-wasteland-category-0-page-01.png",
+      "sha256": "a0e33b8a7ed2266e332d5d4d0985a1a7318dca7b094ce6c5c8632fca9bb2af8d",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-wasteland-category-0-page-02": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-wasteland-category-0-page-02.png",
+      "sha256": "c8622bb773f38400edbe6690bed8720d2c500ba70ae9278a39f4797b93a0085f",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-wasteland-category-0-page-03": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-wasteland-category-0-page-03.png",
+      "sha256": "ed1a21f580ae4e8c568e13c5ac7bec03400248b051ee9276fd92290a64597cdd",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-wasteland-category-0-page-04": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-wasteland-category-0-page-04.png",
+      "sha256": "963fb557ddb6e0a67a2bb776427e9795d9fb236e6d3e83fcb0826f88e0508251",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-wasteland-category-0-page-05": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-wasteland-category-0-page-05.png",
+      "sha256": "0144ef4b72ba2e67fbe3104a7b0a05049bf342cbfd4a40e64254a9a4b64e309d",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-wasteland-category-0-page-06": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-wasteland-category-0-page-06.png",
+      "sha256": "df7a56bb86dee33218fc0e73abf22054d9efceea179870ced9ba0512abc32340",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-wasteland-category-1-page-01": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-wasteland-category-1-page-01.png",
+      "sha256": "03f1c7e95f2d855615a150572c3da93320d3704ae4410680efad836e1adce36b",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-wasteland-category-1-page-02": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-wasteland-category-1-page-02.png",
+      "sha256": "3a6c60aa1690a02aa2d7b0e7144d5b74f36140bca120f7a66e15b581abcd502f",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-wasteland-category-1-page-03": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-wasteland-category-1-page-03.png",
+      "sha256": "c60affb4d211e277503f7ce4e70ca514fbd426f7d21eedb0ce914b8007303fb7",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-wasteland-category-1-page-04": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-wasteland-category-1-page-04.png",
+      "sha256": "bd6ad39c87f3f354d9b82101d18911577d66b4c5eebdb298b9df80250a5a4423",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-wasteland-category-2-page-01": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-wasteland-category-2-page-01.png",
+      "sha256": "e4647d8ba3b3c87a08f4cdede462cc869e07e1d5f8a9e0a0e47fd89a8a0e478e",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-wasteland-category-3-page-01": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-wasteland-category-3-page-01.png",
+      "sha256": "fc94cea58e6cf65a81e011ab36908cfe5834844c57fba01a49444ed33b836f1d",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-wasteland-category-4-page-01": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-wasteland-category-4-page-01.png",
+      "sha256": "d8bc25f7804b46a2a4c3a0c5b71709e04421b6331cad1b8a4982f10411d96913",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "live-wasteland-equipment": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/live-wasteland-equipment.png",
+      "sha256": "99e29e5e9424ad1681b65912785d0bd21d890febc9284c3fbdc90809a707d550",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "phone-equipment-667x375": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/phone-equipment-667x375.png",
+      "sha256": "ccdf972631d47d05ac461d57a7d8f08945a2ef6a63cc424f54fab77005af79d1",
+      "pixelSize": [
+        667,
+        375
+      ]
+    },
+    "phone-equipment-852x393": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/phone-equipment-852x393.png",
+      "sha256": "5c3a4b17a30f65e3d19de283513135f98e24ed88cc4b791e875117f3a4385daf",
+      "pixelSize": [
+        852,
+        393
+      ]
+    },
+    "phone-equipment-912x420": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/phone-equipment-912x420.png",
+      "sha256": "77aab6ac06f4c095bf6ff5b7483f5e840c980dd650e7c13bef7efe791807155a",
+      "pixelSize": [
+        912,
+        420
+      ]
+    },
+    "phone-equipment-912x550": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/phone-equipment-912x550.png",
+      "sha256": "c4adfb5cfd0bd00912cee2f139961c7a4a3d69ea3c35ae8d68ade65ca3d7d2c9",
+      "pixelSize": [
+        912,
+        550
+      ]
+    },
+    "phone-equipment-third-bot-disarm": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final/phone-equipment-third-bot-disarm.png",
+      "sha256": "4562e2851631cc420818d274478327ef1c82de80ac90d30915f629cfd3363883",
+      "pixelSize": [
+        912,
+        420
+      ]
+    }
+  },
+  "pointsAt912x420": {
+    "iconSide": 42,
+    "detailTexture": [
+      336,
+      168
+    ],
+    "detailTouch": [
+      270.375,
+      168
+    ],
+    "buyAndSell": [
+      42,
+      74.8125
+    ],
+    "sg1DetailEdgeDifferenceY": [
+      24,
+      26
+    ]
+  },
+  "wastelandLevel22": {
+    "items": [
+      41,
+      26,
+      6,
+      3,
+      6
+    ],
+    "restoredPages": [
+      6,
+      4,
+      1,
+      1,
+      1
+    ],
+    "originalPages": [
+      3,
+      2,
+      1,
+      1,
+      1
+    ]
+  },
+  "coreLog": {
+    "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-core.log",
+    "sha256": "da51e58203db91514b483980b8637fd7c67b2cc47ec6fc7a5ce2b07da5f1b6a8"
+  },
+  "sequenceNative": {
+    "result": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/sell-final.xcresult",
+    "passed": 3,
+    "failed": 0
+  },
+  "phonePolicyNative": {
+    "result": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/phone-policy-current.xcresult",
+    "passed": 2,
+    "failed": 0
+  },
+  "ipadNative": {
+    "result": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/ipad-policy-current.xcresult",
+    "passed": 1,
+    "failed": 0
+  },
+  "ipadShopPixels": {
+    "menu-ipad-Base001-shop": {
+      "candidate": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/ipad-policy-current/6C5F338C-757F-4794-87FD-30FD1DF41F8B.png",
+      "candidateSHA256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "baseline": ".local/evidence/iphone-equipment-20261119.90kAZo/ipad-tab-final/3F5CF26A-FEDF-4394-B5D5-3DA71CDC079A.png",
+      "baselineSHA256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "changedPixels": 0
+    },
+    "menu-ipad-Base002-shop": {
+      "candidate": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/ipad-policy-current/B8143147-90A3-4042-9F65-F0090280D06E.png",
+      "candidateSHA256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "baseline": ".local/evidence/iphone-equipment-20261119.90kAZo/ipad-tab-final/DA4619B7-18C8-4AF1-90E0-CA34DE6236B1.png",
+      "baselineSHA256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "changedPixels": 0
+    },
+    "menu-ipad-Base003-shop": {
+      "candidate": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/ipad-policy-current/70E3DB08-FCAD-46CE-89EF-44607C8D9EED.png",
+      "candidateSHA256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "baseline": ".local/evidence/iphone-equipment-20261119.90kAZo/ipad-tab-final/5BAD862D-F6DD-442A-8552-361C238064A5.png",
+      "baselineSHA256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "changedPixels": 0
+    },
+    "menu-ipad-Base004-shop": {
+      "candidate": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/ipad-policy-current/8266B582-36A0-4B2A-9CAD-448446C901CC.png",
+      "candidateSHA256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "baseline": ".local/evidence/iphone-equipment-20261119.90kAZo/ipad-tab-final/51FB4948-9CF7-4E4C-BBF7-2055EB8433F7.png",
+      "baselineSHA256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "changedPixels": 0
+    },
+    "menu-ipad-Base005-shop": {
+      "candidate": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/ipad-policy-current/8BCFC492-C097-48CE-8350-8C469150363E.png",
+      "candidateSHA256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "baseline": ".local/evidence/iphone-equipment-20261119.90kAZo/ipad-tab-final/666597F6-6A70-492C-91E8-0CD6528CF4E2.png",
+      "baselineSHA256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "changedPixels": 0
+    },
+    "menu-ipad-Base006-shop": {
+      "candidate": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/ipad-policy-current/E1F7EB08-3313-4F26-9B8A-653E70AE63F3.png",
+      "candidateSHA256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "baseline": ".local/evidence/iphone-equipment-20261119.90kAZo/ipad-tab-final/11F3ADFB-71F8-4851-81B7-4165ACB179CA.png",
+      "baselineSHA256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "changedPixels": 0
+    }
+  },
+  "standaloneValidation": {
+    "phone": {
+      "report": {
+        "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/validation-verified/cheat-phone-report.json",
+        "sha256": "ae464f8e6624bba0121e664229ae401fb42978d1ddd6bd48e47adfbcf26d0a8c"
+      },
+      "frames": 2100,
+      "presented": 2100,
+      "scenarios": 126,
+      "buttonFailures": 0
+    },
+    "ipad": {
+      "report": {
+        "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/validation-verified/cheat-ipad-report.json",
+        "sha256": "4c6d44e7d905f3f6dde7d5fe9a50335d320dc274f13818fa145fde008e58f15d"
+      },
+      "frames": 2100,
+      "presented": 2100,
+      "scenarios": 126,
+      "buttonFailures": 0
+    }
+  },
+  "sourceReleaseLog": {
+    "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/source-release.log",
+    "sha256": "2f20f7730cd99e8ed4086a30164926f9369ed5ed45403e6482be30b64db1925d"
+  },
+  "sourceReleaseLaunches": {
+    "iphone": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/iphone-source-release-launch.png",
+      "sha256": "0605916625ba1caf1634d3366c96109caaae87f44e86e9db205ff0733c0f351b",
+      "pixelSize": [
+        2736,
+        1260
+      ]
+    },
+    "ipad": {
+      "file": ".local/evidence/iphone-shop-scale-20261119.pwRCnc/ipad-source-release-launch.png",
+      "sha256": "0ba66eb6d7d15fcf5ff1b92a725520498e624efd8ce68e1e2b8d0508a67c6334",
+      "pixelSize": [
+        1640,
+        2360
+      ]
+    }
+  },
+  "physicalInstall": false
+}

@@ -9,7 +9,7 @@
 - 저장소를 읽을 수 있는 GitHub 계정과 Git 인증 설정.
 - Apple Silicon Mac, iOS SDK와 iPad 시뮬레이터 런타임을 설치한 Xcode.
 - Python 3.11 이상, CMake 3.20 이상, XcodeGen. 로컬 커밋에는 기존 훅이 사용하는 `gitleaks`도 필요하다.
-- [원본 명세](../source-provenance.json)에 등록된 HD 1.0.3 원본을 로컬에 보유한 환경.
+- [원본 명세](../source-provenance.json)에 등록된 HD 1.0.3, HD 1.0.0, 일반판 2.0.1 원본을 로컬에 보유한 환경.
 - 실기기 설치에는 본인의 Apple 개발 팀, 연결된 iPad와 개발자 모드.
 
 2026년 11월 13일 문서 확인 환경은 Xcode 27.1, XcodeGen 2.45.4, CMake 4.4.4, Python 3.14.6이다. 앱 설정의 최소 OS는 iOS/iPadOS 15.0이며, Apple 자동검사 타깃은 17.0이다. 최소 OS별 실제 플레이 검증은 남아 있다. 현재 Apple 빌드는 arm64를 대상으로 한다.
@@ -39,12 +39,15 @@ git config core.hooksPath .githooks
 ```sh
 python3 tools/prepare_hd_assets.py
 python3 tools/prepare_phone_menu_assets.py
+python3 tools/prepare_campaign_assets.py
 python3 tools/prepare_app_icons.py
 ```
 
 첫 명령은 원본 해시를 검사하고 허용된 자원을 `.local/prepared/HD/`에 바이트 그대로 준비한다. 파일별 크기·SHA-256은 그 안의 `manifest.json`에 기록한다. 현재 준비 명세는 자원 1,479개다. 실행파일은 포함하지 않는다.
 
-두 번째 명령은 탭투스타트의 `Main_BG.png`로 `.local/prepared/AppIcons.xcassets/`를 만든다. 일반 아이콘은 원본 일러스트의 중앙 정사각형 영역을 사용하고 치트 아이콘에는 `TEST`를 표시한다. [아이콘 생성 방식](../app-icons.md)
+확장 자원 준비는 원본을 수정하지 않고 HD·Phone 자원을 `.local/prepared/Campaign/HD`에 따로 만들어 Apple 앱에서 사용한다. 원본 명세의 HD 1.0.0도 필요하다.
+
+마지막 명령은 탭투스타트의 `Main_BG.png`로 `.local/prepared/AppIcons.xcassets/`를 만든다. 일반 아이콘은 원본 일러스트의 중앙 정사각형 영역을 사용하고 치트 아이콘에는 `TEST`를 표시한다. [아이콘 생성 방식](../app-icons.md)
 
 두 디렉터리는 Git 추적에서 제외한다. 원본 IPA와 원작 포함 앱은 로컬에 보관한다. 준비 도구가 `Existing prepared resource differs`로 중단하면 기존 파일과 해시 차이의 원인을 확인하고, 보존한 자원을 임의로 덮어쓰지 않는다.
 
@@ -95,6 +98,14 @@ xcrun simctl launch "$HM2_SIM_ID" com.gelb2.heavymach2.restored
 ## 치트 앱 실행과 결과
 
 `HeavyMach2Validation`을 빌드해 일반 앱과 별도로 설치한다. 앱 ID는 `com.gelb2.heavymach2.validation`, 이름은 **HM2 Validation**, 아이콘에는 `TEST`가 있다. 실제 iPad의 치트 앱 설치·검증은 최신 기록에서 완료하지 않았으며, 현재 확인된 자동 실행 대상은 iPad 시뮬레이터다.
+
+화이트마운틴 전용 검사는 같은 치트 앱의 실행 모드를 고른다. 시뮬레이터의 기존 검증 앱을 종료한 뒤 다음 명령에서 모드 값을 바꾼다. 값 1은 전장·포털, 2는 보스·의뢰, 3은 무기·공습·BOT을 실행한다.
+
+```sh
+SIMCTL_CHILD_HM2_WHITE_MOUNTAIN_VALIDATION=1 xcrun simctl launch "$HM2_SIM_ID" com.gelb2.heavymach2.validation
+```
+
+결과와 GPU 캡처는 검증 앱 컨테이너의 `Documents/ConcurrentValidation/<실행 UUID>/`에 저장한다.
 
 ```sh
 xcrun simctl install "$HM2_SIM_ID" build/ios-simulator/Build/Products/Release-iphonesimulator/HeavyMach2Validation.app

@@ -11,7 +11,7 @@ struct MapGate {
     std::string linkMap;
     bool eventOnly=false;
 };
-struct MapSpawner {std::string model;Vec2 position;};
+struct MapSpawner {std::string model;Vec2 position;float activationRadius=0;};
 struct Map {
     std::string name,description;
     std::vector<MapGate> gates;

@@ -16,7 +16,7 @@ namespace hm2::validation {
 // Compact lock-on kills occur later in the measured visible field. Both852
 // and912-wide probes retain the original corpse deadline beyond frame1800;
 // All concurrent conditions therefore share2100 frames, without changing that clock.
-constexpr unsigned displayValidationFrames(const DisplayConfiguration& display){return display.enabled&&display.compact?2100u:1200u;}
+constexpr unsigned displayValidationFrames(const DisplayConfiguration& display){return display.enabled?2100u:1200u;}
 inline constexpr unsigned concurrentScenarioCount=126;
 enum class ScenarioRole {combat,shop,mission,saveRestart,movementLoot,aidKit,airStrike,worldAudit,dash,botAttack,botPicker,help,gameOver,rankingUnavailable,completedMissions,pathReplacementSingle,pathReplacementMany,focusZoom,lifecycle,hudLayout,cameraIdle,synchronizedWeapons};
 struct ScenarioDescription {std::string label;ScenarioRole role=ScenarioRole::combat;std::vector<std::string> weapons;std::string map{};};

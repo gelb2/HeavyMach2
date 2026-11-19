@@ -66,9 +66,11 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
     CombatMetrics metrics;
     DisplayConfiguration display;CameraPresentation presentation;
     void updateDisplay(std::optional<Vec2> target,bool advance){
+        camera.clampBackgroundXToViewport=display.enabled&&display.compact&&display.device!=DisplayDevice::tablet;
         if(!display.enabled){camera.viewport={768,1024};camera.inputMinimumY=100;camera.fitWorld=camera.keepFocusVisible=camera.fillSurface=false;camera.lowerOverscan=94;return;}
         if(advance)presentation.advance({playerMotion.state().position,target,navigation.count()?std::optional<Vec2>(navigation.point(navigation.count()-1)):std::nullopt});
         const auto& view=presentation.snapshot();const DisplayLayout layout(display);
+        if(view.policy==CameraPolicy::legacyHD){camera.viewport={768,1024};camera.inputMinimumY=100;camera.fitWorld=camera.keepFocusVisible=camera.fillSurface=false;camera.lowerOverscan=94;return;}
         camera.fillSurface=view.fillSurface;camera.viewport=view.viewport;
         const float uiRatio=layout.ui(DisplayRegion::bottom).scale/view.worldScale;
         // Compact surfaces have movable HUD groups. The UI dispatcher owns
@@ -183,11 +185,13 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
             }
         }
         for(const auto kind:{MachineKind::vehicle,MachineKind::turret,MachineKind::aircraft}){metrics.enemySpawnsByKind.emplace(kind,0);metrics.enemyEmissionsByKind.emplace(kind,0);metrics.enemyDamageCallsByKind.emplace(kind,0);metrics.enemyKillsByKind.emplace(kind,0);metrics.enemyRemovalsByKind.emplace(kind,0);}
-        for(const auto& s:map.map().spawners){
-            const auto& info=machines.machine(s.model);
-            if(!EnemyActor::supports(info.kind))throw std::runtime_error("Original map enemy kind has no restored consumer");
-            spawners.emplace_back(s,info.attack!=0);
-        }
+        const auto addSpawner=[&](const MapSpawner& spawn){
+            const auto& info=machines.machine(spawn.model);
+            if(!EnemyActor::supports(info.kind))throw std::runtime_error("Map enemy kind has no restored consumer");
+            spawners.emplace_back(spawn,info.attack!=0);
+        };
+        for(const auto& spawn:map.map().spawners)addSpawner(spawn);
+        for(const auto& spawn:setup.missionSpawners)addSpawner(spawn);
         WorldGateNames gateNames(r);gates=std::make_unique<WorldGates>(r,tiles,map.map().gates,setup.openEventGate,gateNames,[this](const ui::TextRasterRequest& request){return hooks.prepareWorldText(request);});
         // setStage calls addMissionObjects after openMap and before Player/BOT.
         for(const auto& object:setup.missionObjects){

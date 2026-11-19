@@ -1,3 +1,57 @@
+## 2026-11-20 화이트마운틴과 두 실기기 Release
+
+화이트마운틴 기지 출구를 Desert 01·SnowPass로 연결하고, 설원 보스가 접근 후 등장하도록 수정했다. 두 시뮬레이터에서 각 포털 14방향과 보스 4건을 확인했다. iPhone Air와 iPad Air 13형에 같은 정식 앱을 설치했다. 여섯 기지 방문을 기록한 iPad 저장을 양쪽에서 다시 읽어 대조했다. [실행 기록](docs/white-mountain-dual-release-20261120.md)
+
+## 2026-11-19 실기기 Release 및 iPhone 상점 TODO
+
+`f8e82d8`의 Source Release를 iPhone Air·iPad Air 13인치에 설치했다. 실행 전 저장 내용 일치, 실기기 상점 페이지·웨이스트랜드 출구·Skyway 이동·더블탭과 기지 복귀를 확인했다. iPhone BUY와 Equip의 겹침은 캡처로 보존했다. 원본 Phone판 재캡처·스크롤·각 아이템 크기 대조를 기존 상점 TODO에 연결했다. [설치·캡처 기록](docs/dual-release-installation-20261119.md)
+
+## 2026-11-18 네 문제 수정
+
+`fix/iphone-runtime-regressions-20261118`에서 점프 입력 `20ccf0d`, Skyway 배경 `5b07e44`, 뷰포트 `e57a623`, 상점 페이지 `ab41cda`를 수정했다. Source Native·OS 회귀 검사까지 연결한 후보는 `f8e82d8`다. [실행 결과와 남은 검사](docs/iphone-module-audit-20261118.md#수정과-시뮬레이터-검증)를 읽는다. 실기기에서 같은 조작과 플레이를 확인하는 일은 남아 있다.
+
+## 2026-11-18 포팅 모듈 분석
+
+후속 변경은 [수정 계획과 회귀 검사](docs/iphone-module-audit-20261118.md#수정-계획)를 따른다. UIKit은 중복 좌표를 판정하고 `GameRuntime`은 월드 전달을 제어한다. 카메라는 `compactFocus`에서 HUD 보정을 조정한다. `MapPreview`는 배경 가로 위치를 제한한다. 상점·인벤토리 내부 페이지는 `MenuGridLayout`에서 계산하고 `Screens`가 적용한다. 소형 tablet에서도 기존 배경과 카메라 동작을 비교한다.
+
+[실기기 전환 기준](docs/iphone-module-audit-20261118.md#수정-후-검증과-전환-기준)에 공통 코드·두 Source 시뮬레이터·치트빌드의 합격 조건과 회귀가 난 커밋의 롤백 절차를 기록했다.
+
+Wasteland Base의 Skyway 출구는 Base003→Stage02_04 게이트 1이다. iPhone·iPad GPU 시퀀스로 해당 진입을 확인했다. iPhone에서 배경 가로 위치 급변 60회가 중심 제한 실험에서 0회로 줄었다. [GPU 근거와 수정 범위](docs/iphone-module-audit-20261118.md#wasteland-base에서-skyway로-나간-뒤의-떨림)를 따른다.
+
+상점 수정 이후 분리한 `audit/iphone-original-logic-20261116`의 `3140e0e`를 분석했다. iPhone Air 시뮬레이터의 여러 점→한 점→더블탭 실패에서 UIKit x의 수치 차이 약 5.68×10⁻¹⁴가 필터를 통과해, 같은 캔버스 좌표의 move가 탭 기록을 지우는 것을 확인했다. iPhone 화면 프로필의 이동 중 카메라 배율 급변과 창 변경 뒤 빈 상품·인벤토리 페이지도 재현했다. 물리 iPhone의 실패 빈도와 원본 전체 로직 대조가 남아 있다. 제품 소스와 물리 기기·사용자 저장을 바꾸지 않았다. [후속 분석](docs/iphone-module-audit-20261118.md) · [TODO](docs/todo.md)
+
+## 2026-11-16 추가 범위 — 원본과 복원 모듈의 부작용 대조
+
+사용자는 원본아이폰 분석의 목적에 현재복원판의 예상밖 부작용·화면떨림 원인 추적이 포함된다고 명시했다. 새버전 모듈 전체의 의미/상호작용 분석은 미완료다. [TODO 상단](docs/todo.md), [모듈 CPU근거](docs/evidence/module-side-effects-20261116.json)를 읽는다. 새소스13파일·기존수정48파일을 대상으로 원본→복원모듈/상태/호출순서→발생커밋→같은조건 관측을 연결한다. CameraPresentation의 HUD경계에서 1단위 이동만으로 배율0.892371→1의 단일갱신 변화가 CPU재현됐다. 실제Skyway 레이어/실기기 원인 확정은 아니다. 분석브랜치에서 제품소스를 추가수정하지 않았다.
+
+## 2026-11-16 현행 분석 브랜치
+
+상점수정1420cc1을 기준으로 `audit/iphone-original-logic-20261116`을 만들었다. [원본 아이폰판 분석 시작 기록](docs/iphone-original-logic-audit-20261116.md)을 읽는다. REA로 일반판2.0.1 IPA·원본실행파일/armv7의 입력동일성을 확인하고, 카메라·월드갱신·입력3함수 dossier/선택명령을 재대조했다. 기존1077본문 목록과 미대조 상태를 함께 기록했다. 전체 의미대조·점프원인/수정은 미완료다. 원본/전체디컴파일은 외부 로컬 공간에만 보존하고 REA세션을 닫았다. [상점 수정 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-fix-20261116) 게시succeeded. 실기기앱/저장은 변경하지 않았다.
+
+## 2026-11-16 상점 GPU 오류 수정·분석 순서
+
+[상점 수정과 검사](docs/shop-texture-fix-20261116.md)를 읽는다. 실제레벨5 상점상품Icon10113.png의 Phone페이지 첫 사용 GPU오류를 재현하고 정식/치트의 자원변경 경계를 수정했다. iPhone Native4/4·iPad Native3/3을 통과했다. 실기기앱/저장은 변경하지 않았고 정식Release설치는 남았다. 사용자 지시에 따라 이 수정·검증·커밋 후 수정본에서 별도브랜치를 만들어 원본아이폰IPA와 포팅판을 REA로 전수분석한다. 카메라배율·점프/부스터·path와 전체로직을 포함하고 일반판/HD판 차이와 복원결함을 구분한다. 아래 미수정/CPU재현만의 기록은 당시 상태다.
+
+## 2026-11-16 추가 TODO — 점프 실패와 원본 아이폰판 전체 로직
+
+사용자는 아이폰에서 점프가 자주 동작하지 않고 아이패드에서는 재현되지 않는다고 추가 보고했다. 부스터 값·이동·path 그리기와의 연관성은 사용자 추정이다. [TODO 상단](docs/todo.md)에 원문과 원본 아이폰 포팅판의 카메라 배율을 포함한 모든 로직 전수검사 요구를 기록했다. 점프/이동 일부로 범위를 줄이지 않는다. 아이폰 대응에서 추가한 우회·임의 보정·상태/호출 순서 변경을 발생 커밋·소비 코드·재현 근거와 연결하고 정상 iPad·저장·원본을 보존한다. 이번 추가는 TODO 기록이며 원본 분석·전수 실행·점프 수정 완료가 아니다.
+
+## 2026-11-16 코드·에셋 심층진단
+
+[진단 결과](docs/iphone-code-asset-diagnosis-20261116.md)와 [현행 TODO](docs/todo.md)부터 읽는다. 조사 기준 HEAD57f078a, 미커밋 문서/검사요약만 추가했다. Phone상점 내부페이지의 GPU준비 누락을 CPU재현했고 로딩자원/정렬과 타이틀시간의 계약불일치를 확인했다. 자원1548개 준비본·설치용Release번들 해시는 일치하고 공통검사78/78이다. 실제GPU예외/사용자저장상품순서·Skyway연속프레임은 미검증이다. 현재훅은 자동호출됐으나 stale 증거로ERROR다. 제품소스·기기앱·저장은 변경하지 않았다. 게임커밋/병합/설치 없이 조사문서를 남긴다. [비공개 상세보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html) 게시succeeded. 아래 과거 최신표기와 자동발동미확인은 당시 기록이다.
+
+## 2026-11-16 두 실기기 정식 설치
+
+사용자 후속 요청으로 `ffec654`의 Source Release를 iPhone·iPad 모두 업데이트했다. 각 기기의 기존 저장28,204바이트와 iPhone HUD43바이트가 설치 후 실행 전에도 동일했다. 앱 시작·프로세스 유지를 확인했다. [설치 기록](docs/dual-release-installation-20261116.md)을 따른다. 실제 화면·플레이 재검사와 develop/main 병합은 아직 하지 않았다. 아래11월15일의 미설치 문장은 당시 상태다.
+
+## 2026-11-15 최종 — iPad 전장·HUD와 인게임 캡처
+
+같은 `fix/ipad-menu-fullscreen-20261115`/PR20에서 메뉴에 이어 전장·HUD 회귀를 수정했다. [인게임 결과](docs/ipad-menu-regression-20261115.md)와 [검사 명세](docs/evidence/ipad-field-regression-20261115.json)를 읽는다. iPad768×1024의 원래 카메라·가시성·입력 바닥100·하단 여유94를 유지하고 출력만 화면에 맞췄다. source 데이터·유닛 비례·포탈 좌표는 바꾸지 않았다. 일반 GameRuntime 캡처6장, Native6검사, 공통3검사, 두 기기 각각126상태×2100프레임 동시 검사가 통과했다. 이전 실패는 보존했다. 자동 검사에 원작 지형을 따라 걷는 입력 계획을 연결했고 게임 결과/HP를 주입하지 않았다. 실제 기기 앱·저장 업데이트는 아직 하지 않았다. 훅 자동 발동 미확인, 원본 Phone 상점 전수 일치·타이틀 구도·화이트마운틴 원본 조사 TODO는 유지한다.
+
+## 2026-11-15 후속 — iPad 메뉴 배율 회귀 수정
+
+현행 작업 브랜치는 `fix/ipad-menu-fullscreen-20261115`다. [원인·수정·검사](docs/ipad-menu-regression-20261115.md)를 먼저 읽는다. iPad의 기존 검은 여백 FAIL18건을 알고도 수정하지 않은 설치 판단을 철회했다. 회귀는 아이폰 표시 대응 `7622bd1`의 메뉴 최대1배 제한에서 시작했다. 11월15일 실패 캡처끼리 같음을 정상 iPad와 같다는 증거로 사용하지 않는다. 공통 HD 메뉴 변환과 입력/drop을 고쳤다. 공통2검사·최종 두 기기 실제36배경 검사를 통과하고 두 독립 하네스가 각각36/36 PASS다. 마지막 짧은 Native 실행의 시간 중첩0 집계 FAIL은 보존한다. 이전 동시126상태 검사의 성공과 구분한다. 실기기 저장·앱은 이 작업에서 변경하지 않았다. 자동 네이티브 훅 미확인은 남는다.
+
 ## 2026-11-15 최신 — Phone 메뉴 버튼 페이지
 
 현재 작업은 `fix/phone-menu-policy-20261115`다. [원본 배치·버튼 페이지 보고](docs/phone-menu-pages-20261115.md)와 [최신 TODO](docs/todo.md)를 먼저 읽는다. Phone 메뉴의 scene/item 팬을 제거하고 원본 버튼으로 페이지를 전환했다. 원본70자원과 HD24상품/25인벤 규칙을 보존한다. 정확히24상품일 때의 마지막 빈 페이지 경계도 RED→GREEN으로 수정했다. Native720프레임·126상태,16UI사례·36배경조건을 실제 캡처/바이너리 해시로 연결했다. iPad18장 PNG는 이전과 같다. iPhone 정식 Release를 설치하고 저장/HUD 보존을 확인했다.

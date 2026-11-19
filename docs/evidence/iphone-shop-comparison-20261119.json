@@ -1,0 +1,2757 @@
+{
+  "date": "2026-11-19",
+  "baseCommit": "b41c5fa",
+  "original": {
+    "version": "2.0.1",
+    "ipaSHA256": "23ff9c74c7d890cc6f28952b4845f6c616bae4bb7207a393f80ed9ed76062d32",
+    "armv7SHA256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+    "simulator": "83C06F3F-E833-404F-8A09-745FC8DA7C7B",
+    "guestCanvas": [
+      480,
+      320
+    ],
+    "save": "local copy of level 1 Ruin Field test save",
+    "offsetsAreGuestTopLeft": true,
+    "scroll": {
+      "horizontalSameFrame": true,
+      "verticalSameFrame": true,
+      "fileSHA256": "9a296854d600afbd0c7afded84a2c0df59818975ad77ebf4ff45653c7905031f"
+    },
+    "visibleStockPerPage": 16,
+    "visibleInventoryPerPage": 20,
+    "gridSpacing": [
+      40,
+      40
+    ],
+    "observedStockPagesByCategory": {
+      "Weapon": 1,
+      "Parts": 1,
+      "BOT": 1,
+      "Attack": 1,
+      "Etc": 1
+    },
+    "observedInventoryPages": 3,
+    "sg1": {
+      "initialCredits": 500,
+      "buy": 250,
+      "creditsAfterBuy": 250,
+      "sell": 125,
+      "creditsAfterSell": 375
+    },
+    "inlineTrade": {
+      "center": [
+        222,
+        158
+      ],
+      "tiles": [
+        2,
+        1
+      ],
+      "artworkLogicalSize": [
+        32,
+        57
+      ]
+    },
+    "itemDetailOriginalHitSize": [
+      206,
+      128
+    ],
+    "rea": {
+      "functionBatch": "ev_a2a9c36c5bf4b4826ed00539c014ee926737eb29c2e278a446be8ff8c0234d06",
+      "inlineBuyXrefs": "ev_c505a5815f1ff28169a155c791b81ebd7f128cd057256d4fa7cbd9be6f14d0c1",
+      "inlineSellXrefs": "ev_1a035722ee4019466ce1cb810eb953f9ced8b3afff30ee376c02ec0c634d6c8a",
+      "itemDetailXrefs": "ev_df7a7a304e859f0e0708a19883af56630bc240d8f835cd8f439498405b65daac",
+      "functions": {
+        "shopList": "0x40f2c",
+        "inlineTrade": "0x4369c",
+        "shopItemDetail": "0x442c8"
+      }
+    },
+    "controls": {
+      "Btn_ArrangeItem.png": {
+        "width": 160,
+        "height": 64,
+        "sha256": "239da33b48ed75dca45e4e79e33bdfe0b48faa4eb8ab1a6f293c0c8d0f437b7a"
+      },
+      "Btn_Disarm.png": {
+        "width": 192,
+        "height": 82,
+        "sha256": "b72d8405a44970e5ffa9399fa6350be59035cd9891789e36bd972d37dbcfdf48"
+      },
+      "Btn_InvenPage.png": {
+        "width": 128,
+        "height": 64,
+        "sha256": "141e6da0c9e3526c21b43cb11c2f6976c29903ae42cd0d0cd041489e709434a1"
+      },
+      "Btn_ShopBuy.png": {
+        "width": 128,
+        "height": 114,
+        "sha256": "8ba4654e6b7a44ea7be3de100d233e6d46b4d46647a668910f9e7c2485a1ce15"
+      },
+      "Btn_ShopExit.png": {
+        "width": 368,
+        "height": 80,
+        "sha256": "ab01dbbfac01d5851918e91a5478f5b152de98c0ac87c9d79c87f44adb343505"
+      },
+      "Btn_ShopLeft.png": {
+        "width": 128,
+        "height": 64,
+        "sha256": "5e9dbb2fe6aeff6d11ca18f79c4eabaac7bea7290701bbf52737e0cea98207ac"
+      },
+      "Btn_ShopRight.png": {
+        "width": 128,
+        "height": 64,
+        "sha256": "bcf2a5c9039dc9df2e13c098841dbf891cf1644bfb99f43ea0294e8159583d1c"
+      },
+      "Btn_ShopSell.png": {
+        "width": 128,
+        "height": 114,
+        "sha256": "8c5098d1fd6a1e8211178856bd3c4fdcf00a4bae4ee0f135250e91eb32b0aa4e"
+      },
+      "Common_Btn_BUY.png": {
+        "width": 128,
+        "height": 64,
+        "sha256": "05089d4f6905cf49e1254f96776c6ac26fc2778f34d4c003358bf68e54303664"
+      },
+      "Common_Btn_CANCEL.png": {
+        "width": 128,
+        "height": 64,
+        "sha256": "4de61bb75f04d1cd24dc91822efb67e0cac708c52c62fc5e1bfcfee53f2ead4d"
+      },
+      "Common_Btn_DEC.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "6e1c368f1317dd83fdf57018082560ef5118bd7da1f35c9f10474ee11b63672a"
+      },
+      "Common_Btn_INC.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "05cdb89d4135d9495e17527404d2b2ea645b919cf1daa0df3e334e553368e6e0"
+      },
+      "Common_Btn_SELL.png": {
+        "width": 128,
+        "height": 64,
+        "sha256": "2a56787a25876361f028aa6c0bed7c140ec4db093136c3bbde7f9440584b4de3"
+      },
+      "EquipBtn_Armor.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "932f60561c8378b1a59eda9f2fa6846779d7239205aaa93fdfb610b417c22495"
+      },
+      "EquipBtn_Body.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "67b7b0893095d9a74dc43aa0fc21088fa85834fb604f96fcd7a961151466a90c"
+      },
+      "EquipBtn_Btm.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "5b0ac0b66a0c6419d91e5e3893dacb0d3a6101de06141f9830f0ec6bfdc87f10"
+      },
+      "EquipBtn_Sp.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "eb42140fd43162d69281103db3827781cab32c927d40a96a6f33b88a618bfc75"
+      },
+      "EquipBtn_Wpn.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "3150b10d9267732a0fc0349215d84aeb77af381674453dea2d7d027d6b96fc34"
+      },
+      "InvenPage.png": {
+        "width": 32,
+        "height": 16,
+        "sha256": "f595af5c9f769ef7b53aaa7b715887078a6d0dd41a17789c68df60aa22488e47"
+      },
+      "Inven_BtnItem.png": {
+        "width": 32,
+        "height": 32,
+        "sha256": "0f607c9409a7ca20467b100b9bd4b3c12cc258676781b5f20ee79c4343e5056e"
+      },
+      "Inven_Sel.png": {
+        "width": 128,
+        "height": 64,
+        "sha256": "b350751f9357949a41a511a2f0f3a8ed5e90f2364255a5fa1dba1a365fbb9190"
+      },
+      "ItemDesc.png": {
+        "width": 512,
+        "height": 256,
+        "sha256": "970f434824daf95416661e092bd86d3c08e6829549c14b8f63f3292a9f0d7006"
+      },
+      "MaintenanceBG.jpg": {
+        "width": 960,
+        "height": 640,
+        "sha256": "d09af7fd03350ba0baf0901d27a83fb351dca32812bf8fdc0dc00d3477999ac8"
+      },
+      "NumSet01b.png": {
+        "width": 128,
+        "height": 8,
+        "sha256": "1c883f63503ae5e38c809b23d29e5b1f8b8d3692bb2e5609d99db5a70db17e85"
+      },
+      "ShopBG.jpg": {
+        "width": 960,
+        "height": 640,
+        "sha256": "03a5d53847d8c375dee2102bba8e9928e2642d86b267ec00c6babed86bbbdaec"
+      },
+      "ShopCategory.png": {
+        "width": 256,
+        "height": 512,
+        "sha256": "da810277eaf85788106d2111a7bdaf11bf7bb6a188db158bfe1c689558c4e0f2"
+      },
+      "TradeItemBG.png": {
+        "width": 512,
+        "height": 512,
+        "sha256": "867c92e45c48b37fc5246aaf1d891e17a80448b1c3369f97211d672c469f6399"
+      }
+    },
+    "numberedIconFiles": {
+      "Icon00001.png": {
+        "width": 32,
+        "height": 32,
+        "sha256": "e5619c6c89308c082dc9282fb39ff1bd889dde6122980382bf08ba013e178689"
+      },
+      "Icon00002.png": {
+        "width": 32,
+        "height": 32,
+        "sha256": "93c645ab85e12f6a27a1676b807dd7f826471b5d9cf21e62151b1cdc7e5b2e1e"
+      },
+      "Icon00003.png": {
+        "width": 32,
+        "height": 32,
+        "sha256": "070764a7ceb3ab0410f0ae10d8e32230db4830d5fbc43b40c690f9094b76555e"
+      },
+      "Icon00004.png": {
+        "width": 32,
+        "height": 32,
+        "sha256": "1e5371a17c1f8557bec82d270c452a680c7d969a07149031c7780d1e73e5920a"
+      },
+      "Icon00005.png": {
+        "width": 32,
+        "height": 32,
+        "sha256": "65a7b8bad6600121322d5fb5b3722f0cf498fa2cd185ecf4eeaf0ebf9bf44d39"
+      },
+      "Icon00006.png": {
+        "width": 32,
+        "height": 32,
+        "sha256": "1dae91899575f8e2dd872d02fedb8528a4611bd3c737dcaf282d6034a06d594a"
+      },
+      "Icon00007.png": {
+        "width": 32,
+        "height": 32,
+        "sha256": "bebca82516299ac94a455f09ada56c6d8422cf8809b53cf572b73eda9f669690"
+      },
+      "Icon00008.png": {
+        "width": 32,
+        "height": 32,
+        "sha256": "52a2de349f83ee739d9282af296e61a98a848a3e4aa0949d5f0eec73b1503ccd"
+      },
+      "Icon00009.png": {
+        "width": 32,
+        "height": 32,
+        "sha256": "f486f6c7a70b3b3d48f5f4079fe39afd8f5ee57f94b8f1358fd1b88e002cc074"
+      },
+      "Icon00010.png": {
+        "width": 32,
+        "height": 32,
+        "sha256": "0e16e586b24f3785240022576c76cfa2dc048e93b3f3eb2965d64e893e0ae9f9"
+      },
+      "Icon01001.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "c50a5c193b46431dbef11ad1f1436064454d47b9e01425959bb291f73c7af672"
+      },
+      "Icon01002.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "790d73491e7506f1eb67a87e6cded1f0375ffba1a7fbbb5ab88986eb300ae50c"
+      },
+      "Icon01003.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "a4869ec2027afc3a89d9c3f68ed22ebd2c67675a008d790b7234326d1c0a08f2"
+      },
+      "Icon01004.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "c2405c1e0359d75588f09f3e3b25673e742f66b6b726f1cb8e1db32e6efe5c59"
+      },
+      "Icon01005.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "9242ec37cf18caf59c1a6ffdee805ae03ef1388bab84c2be2702c34f54e82791"
+      },
+      "Icon01006.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "36c50385496898170d525078ac096dd99b2d7880a8743c8f646c3b792dd0ad91"
+      },
+      "Icon02001.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "72683cae58f1b9dd55246a79712408a2c57ba30387501353874bb54fddc7f37e"
+      },
+      "Icon02002.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d382c63f08cb5d8f7810627847f475a3df503b671e8296dd3e168839e2f681e9"
+      },
+      "Icon02003.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "96dec3c6444790200dd56353686fbc14654fc8a2512f8c7e529d5e7c77b8a997"
+      },
+      "Icon02004.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "8623363c547b8f6e8fed0cebb57f3027a4130b1dd51c9e00e02f90fbe948dea7"
+      },
+      "Icon02005.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "166b6ab70f0b1bc5ae07ed7b63e5919917ad1352d9598c961f9620d815d0f3e8"
+      },
+      "Icon02006.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "5f5c5d9fdc109c0dcc4134c3cecd8accd9cc4823efd85390495d7f4018017bb6"
+      },
+      "Icon02007.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "a48024e1f25c5c172a5ed268e04b8f4d61599423dea7d6601c557b401966df4f"
+      },
+      "Icon04001.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d2bfd44dafe0adeaad15585b5480200526e49bce4f29eb2078055672d9687ed8"
+      },
+      "Icon04002.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "e39c72a61b2f88d0f4662a6edd7811e901867cb5192b6fd719a8f68df95c4a97"
+      },
+      "Icon04003.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "348002b3179b35d631a702e74871257d78befe093a8e417cb735cd8acc6e920a"
+      },
+      "Icon04101.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "31464b84bb918265f451cebcb9a645a7dc5593f76c459e90b9fbebd59cd6c2bb"
+      },
+      "Icon04102.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "f16b47ec210cff78cda7b6a9ccf2c36dbcd50913009bcb08cc7547f6318107df"
+      },
+      "Icon04201.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "a2cd67bf28ef4468a71e346a1c0e7b333a8b1a79e8188e393b85da5a38809cb7"
+      },
+      "Icon04202.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "0686eecc533337b8f76791c83d03f65620d4dce4e829a00997bd75d8b20bc540"
+      },
+      "Icon04203.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "50cf315caf58a9243c61a3a450d78ec4da37244e6aa79c95f8fa02cb24302ed0"
+      },
+      "Icon04204.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "ed037442046cc0aa95c92c63842826289c980cac1151bc1832d8d86f821199ff"
+      },
+      "Icon04205.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "cf7df5d5671164ec2f44706b649fcf589df182906a3b2c99fde72ca8942219e0"
+      },
+      "Icon04206.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "8d58e9dd54a8306dc732b5c1fbad17b4074020ea7b591da06b08d9a4e9f65e78"
+      },
+      "Icon05001.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d803704fd4863f2ade17529724be9f4285c3ee85daa9b65f1db5caeb1eb8c298"
+      },
+      "Icon05002.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "a3e4900eb95d1d79203ae3ad728ca15588b45bcdc94b9a871918dc69be0967dc"
+      },
+      "Icon05003.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "57886a5a6dff38e04f9054fcb412856a36e4aa3419340e0b59a3ece76ebbfc46"
+      },
+      "Icon05004.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "049a4c85c6008a0a704527548cb90791636d7462a1886fa87d72aa864f8ef554"
+      },
+      "Icon05005.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "9d317bbfd9dab4538e43afb58d9d710d82c20883b646ae22ab5f405b0fdf8e07"
+      },
+      "Icon05006.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "ff1132d2cf6659816633baca502b281399f5026b4bcdc10da956605705dcfad7"
+      },
+      "Icon05007.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "70be89db8067cbd82e23a48c1f6b8b5f990b17fe048c9c7dce6ebde6ec27ff27"
+      },
+      "Icon05008.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "0af9154ec3c09898208c4a16cd9f0496e1270c36c3d1d2cd934519e927a251f4"
+      },
+      "Icon05009.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "677f88731664d242b1ee3f63885550da8f58b95377587209a4928703a80eb742"
+      },
+      "Icon05010.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "a28ff5ffe3b2cf206f725d1def84f7336630b489cade67077ada59aa16c075be"
+      },
+      "Icon05011.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "c06f695cd934cdead4d19aed037ff6b54829e2c9e9906aed767126e99f0f63a7"
+      },
+      "Icon05012.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d64a7b305603c0c424b40dc9ba422300bc52362181026e7c10c8c3beba9d95d7"
+      },
+      "Icon05013.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "3df6f4ec0cc8f1baa784668b68ee37a925767dee15db232a37868fef3f88dffa"
+      },
+      "Icon05014.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "1b9ecbd00de3d541fbf61433ddff821302a1ea24e2caa09864b787d1da524a0d"
+      },
+      "Icon05015.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "24ad99d308d744e977fde2e5569679067acb833eb03a4f823aef49dbc076c0cb"
+      },
+      "Icon05016.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "998c9c57f4ed77818c8edf6778dc5d682294d5c6eae75f826a22e2c688c0bc5b"
+      },
+      "Icon05017.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "f7d9f3a78525d5331f14ec9b77bb394090aebdcd5b822197fe8587133b6d1331"
+      },
+      "Icon05018.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "6e506b2438e1b14eb0ab11147d6775fca26b0deba068c52fd3a9eab69caa77d2"
+      },
+      "Icon05019.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "a0e2885c48ebee442b0a9039985992d55cffc61c7f0e7301a6057a4585eeda8c"
+      },
+      "Icon05020.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "cc727d9fe80fd3a2baf318064fd4b9a455d428aca2d7a9c842d51b304dcb1e0a"
+      },
+      "Icon05021.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d0e45a8e39b50c2af8e91ee0e5cad3e8ff1f50f75b2c85b40271dd1ed15e7224"
+      },
+      "Icon05022.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "72482cbc02211382c15135a583f7d667cdc07ce563249f4ea51ad66cb41b5f3d"
+      },
+      "Icon05023.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "a49a07d5f700d05e8e8aa58e8c3b867ed8da154d571b252456fb2179d13cddfe"
+      },
+      "Icon05024.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "12681619ffce153ea930835980051e18467bcabdb0246d4647720f12b26138a5"
+      },
+      "Icon05025.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "f30ed8aad4c23e340aa694779a2c81606318a53fa6ef7fbdaa3a5d5f9b29a3f5"
+      },
+      "Icon05026.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "ba83994c220b6cace0f60234bc5e1d59d4badc675e830584ede5dc235365c1ca"
+      },
+      "Icon05027.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "0dc435984a8937048b2cd2006024293442456b828a0fd8ad6c4f4b5b0ddb07c0"
+      },
+      "Icon05028.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "8c8caf4bb10c1ddf5ac617c492b227fc0cc8481a6d030eced474cf9353c47eeb"
+      },
+      "Icon05029.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "fdac71a95252ac0c35af0c29bfc05ae090fe24d091b46039372d2c1b67d9b9c4"
+      },
+      "Icon05030.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "71842aafb1db27b406648370c749390e9df4b526ced4ec3b486a0e0168d203c0"
+      },
+      "Icon05031.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "cff1ff61e293157ff928a428e6b3e7b652be3f45624e7febbdc4693dd6f0decd"
+      },
+      "Icon05032.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "93552af39b386f1042e01dba23193edfa56ecdfa6114c78e96fdb3f90628ba91"
+      },
+      "Icon05033.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "0f2fa66af55efc8b48f1ab8e10febf0ac71daa362a0bab9f477885f1ec0f99ee"
+      },
+      "Icon05034.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "deff973117e3af7b25f6119983f9790c2514adb8afb59b75740e9e2267cdcdc7"
+      },
+      "Icon05035.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "18aa36c31fc66e5531bb253dbffa7edb278f66bb2361fdf45b813060b75892dd"
+      },
+      "Icon05036.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "bfea155a2a3e90246e5f43a30ee5c88b065455003b33a297e11b286809ded5db"
+      },
+      "Icon05037.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d96e2a11f06ffcf882519d8d2d136a70d616fcb77a006d961f3d4a9e5eabab4c"
+      },
+      "Icon05038.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "b3ec9dc3e2087ea4d360a8f0fa6fcc367d8c1310c20f94438cca7f1bbc24fb8a"
+      },
+      "Icon05039.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "4cec7fefcd924f9b47edaf6f1eb749fccbc5ef1bcace0328520001283453cd96"
+      },
+      "Icon05040.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d15b955f5ea8504746ead8e0036c068bee4b66519e766b095b8b184e1c7881ea"
+      },
+      "Icon05041.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "8baa01176dde5e2bad36ea0c07d234fbaa03561e77f25ab0e780a44e543751e3"
+      },
+      "Icon05042.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "8d44e4bacffc8b56c470edcf1e2e7e7e21cfd680ef845b7ddb35690703881fa7"
+      },
+      "Icon05043.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "7985aa468a0869f9f377c8993b38bfbee746cbb0360aaa3bb156f201099de2d1"
+      },
+      "Icon05044.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "4d59ebbc1209b13733368dc090a008c1e4efd1504f748d43f674053978c8e490"
+      },
+      "Icon05045.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "e59f0865a8d4eeb9856b0f5f138c7230f707f58244e25796cbf122956ba1fe53"
+      },
+      "Icon05046.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "0767c56ab11747249fadab315090140d9b33e0c8ee7e6af47d47d7d1f471b45e"
+      },
+      "Icon05047.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "27fdf29bdbbd2138fc72989e702cee07c522424ad326862b4d34489674ca52b8"
+      },
+      "Icon05048.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "e4f1ab62aabdd21c0279d370c49c0740b9a0ae9d085a9d9cf7b4817af345ac77"
+      },
+      "Icon05049.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "2a673bbf8770871f1799d18c564286ad0d348e6a68250367b889ab169de9e155"
+      },
+      "Icon05050.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "feb1e1eb19f901c2cb82f4886bc92bc1f9703cf9c31cc17990fb453d8652d06a"
+      },
+      "Icon05051.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "89c7968f5b95a129d703808d2047f6b5c0c480e42bcd53da550d4fb8cf001dfd"
+      },
+      "Icon05052.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "40e0049af7c84c62c862bc9a111960cd2c29ec00e4756a007259453121ad0e53"
+      },
+      "Icon05053.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "1611a9c2d99150d0664f7191b5e5801d537c4106fa0920831c0a635fb77701b3"
+      },
+      "Icon05054.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "4e03bfdf91bb7e394d4f8e31ac4e0551d88f5a0da7c1ac4019254bb8b704cb74"
+      },
+      "Icon05055.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "5ed9bc7a6306c6bcc0234dba8b02802b681ee5790265e7f22e5a513ca3d8f29b"
+      },
+      "Icon05056.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "dcffb121397b5adb4ddc02c87ae5aeeacb022f1435ce3a5611586fc00c84e8a9"
+      },
+      "Icon05057.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "980e600e8d02fee8f2958d1a9d024bccd3d859b3080d678ab1af405bf341ccde"
+      },
+      "Icon05058.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "9b6bda524d5af7a3214eef60440719ce941287e8aac174fb790cb8cd0d53a005"
+      },
+      "Icon06001.png": {
+        "width": 32,
+        "height": 32,
+        "sha256": "ab3960511846b0ea963720feca963687c8e7c7fb0030a1accef19a6a20c55ed7"
+      },
+      "Icon06002.png": {
+        "width": 32,
+        "height": 32,
+        "sha256": "36a5180385daa31f6eba1b179bf8e8eef31771c6dfc982878f06f6ee6ba9754c"
+      },
+      "Icon06003.png": {
+        "width": 32,
+        "height": 32,
+        "sha256": "de781893f3fd75b0b0cfd84300e473d9a2112f0c76557e309f57952382d1be7a"
+      },
+      "Icon10011.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "8e69868e91a4b716cb298d0ae3b457933cded8c278e3d49569377df09a3d8ae6"
+      },
+      "Icon10012.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "2e47461e9e6c57d5ad5c2f61cdfbebba65fe06a14b1b56d79b5b526bbe1a9f88"
+      },
+      "Icon10013.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "6979f1a893c2dd44e390c890e384a5ba7dfd36eb9fd0426879dafc48391a9990"
+      },
+      "Icon10014.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "ca2cb3f6c06a8cb96a89fb9d17073f1304725fcc69aeb02a36a5c68883114720"
+      },
+      "Icon10015.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "84f8f8098b26137659b684fbf2542c86b1ed7127d660fea98c9bf804fbb2117f"
+      },
+      "Icon10016.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "719873c5c18282afa8a875781893360fc45bc55092d94c4ec77dd7d500559bec"
+      },
+      "Icon10021.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "3102e5e523d571175720f30e170b904b5eb3f501aedb38abb66ebab060c93867"
+      },
+      "Icon10022.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "cee7fad48039ca36f3992c8207f961cff2e57ffce8ec3cedbfb026d9bc9ff746"
+      },
+      "Icon10023.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "2aba79a8d508c55dbc9a2559573db7fe616906f972e22dabae5981a00dc2bb4e"
+      },
+      "Icon10024.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "24b0808d81a7871372c1367c9482c0370f9c1805d6245fb8d2ebaab39268572e"
+      },
+      "Icon10025.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "705d21d35fec1a72c7bae399b7873220071a8bbcec54509bc28eebd141087347"
+      },
+      "Icon10026.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "a7b83688fa117437c0fc531535ba00930030895bd7340a56bd7f9178cdcc6bc1"
+      },
+      "Icon10031.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "887db46657eed7cd1a61e25335817c6ded21ca3ab5bd7d6d946e94803a3d33fe"
+      },
+      "Icon10032.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "46477b3223af69eb694ecedc6296b0dccb9ae898fdc4a4a900594c7c63665b0a"
+      },
+      "Icon10033.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "f9a074867f2e74a9020cf8f433bf67a355376ad4e094c656a2350e4b30bf6575"
+      },
+      "Icon10034.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "f42d8ff1005651ce68d95945c2a7020a588770e19a63ebe6ef8b82dcacb511fe"
+      },
+      "Icon10035.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "1f24f7a45dd546a6185b7ab425afc4aa1da32a0bd4aba363c3a0436269ad09b5"
+      },
+      "Icon10041.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "bd95fc7ad938ad1a1dc8e797bffcf38e8919ff66fec4b1cd5c2fec498d211b06"
+      },
+      "Icon10042.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "197fc717321fb800efdeb517d37bedc920919e66b8e1cb8a16b681d61ac0c71a"
+      },
+      "Icon10043.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "b5ffce4ab213f5432bfca5d7fecc7cbeb00d3a26f5a2183f6f6c1d4a8ee1a0de"
+      },
+      "Icon10044.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "f7e3e6e6c4587882e2b07ffcd0101fd2db3c4c84bc15ec3e2ca6f81b9642855c"
+      },
+      "Icon10045.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d81a66954799f2556f1158fd8f9349aea0fc447f5e11234147f106a2e5d62b5c"
+      },
+      "Icon10046.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "3661d29db7cd81fe4973cda707e7b3761fd166da18351afee8918df86205a61e"
+      },
+      "Icon10047.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "f8ec07e699374fabc3c55babfb1f82d09b616a3385fbf1017ffd9e3876e1aadc"
+      },
+      "Icon10048.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "3dd4ffcc60c37d297362e0e6183e2e454650014750aeab4e2aaf9e5cf042798f"
+      },
+      "Icon10111.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "283ef9e98641173e430170ab0cc0e9c73f6a95d1cb0cdda6cbad1c413161f804"
+      },
+      "Icon10112.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "b032ac9b68df7ecf4a8a1b2511671b22ac2aa9e189296817d69656753ef0fef0"
+      },
+      "Icon10113.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "bf2c7c077b964f43ae0f3ba5bead4cd98ec12fc7f870d0cbc0631d69f01ffc7c"
+      },
+      "Icon10114.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "c200659e243879f996b639dfa46b37be97e7d7f853259d5a3ae167a8820cb11e"
+      },
+      "Icon10115.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "41dccdc1c428f2f8c175d8fc727ff45930c296a97a960474f0627f47231406c2"
+      },
+      "Icon10116.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "50c7efe3388210e4812b85e4781863decf213d3a57b1172614594029d7154014"
+      },
+      "Icon10117.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "ce2f2dbdcc1f7b644fef34194ab1a47cb0c9b026158972ee3eb65fd47b108e00"
+      },
+      "Icon10118.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "360218d74acda4eb712932d52da854f94d51ee9940930279ad222fd8085e156f"
+      },
+      "Icon10119.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d986878afed9ad7ab20f1367a5493ea59babcfd70387ea9b039b5b1d478aff2e"
+      },
+      "Icon10120.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "0a22704320db83b4be31b4fff8b273c7988c5a1c9471eaf3d8b6d75381b18a59"
+      },
+      "Icon10121.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "3c99b5f77e0dad888b616118235ae94e0cdfbd396fb085c35ea2dc0739f9a155"
+      },
+      "Icon10122.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "253cb8d4c2852364ea657a80043eb4fc02975c5533134ed84d87e726abcb5af9"
+      },
+      "Icon10123.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "81d9773272a813c5edc0e38da3f85b09f3be6a25b063ce98864d03c18a225ddd"
+      },
+      "Icon10124.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d971fe9ccd84d5bdfa6b8f3b827ed70b7304d0195ffee0d3bb31a20ff6a0cc36"
+      },
+      "Icon10125.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "c4953367c3806d43b995413bc5ad3be4704a128c6a91b769f68474b98b1ca295"
+      },
+      "Icon10126.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d76ccd32d32c5abea0193062c70a55ae9fb6fa6e64e87c472a03dbdae5b49637"
+      },
+      "Icon10127.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "1edaea28f6520d31529e1b6055384ca1096a6c6986df7b7f26e14917249720fc"
+      },
+      "Icon10128.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "f5db922464d7872845edf0c9fbbcda5eceee32cbe99d0abef8c37337027d432d"
+      },
+      "Icon10129.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "a5fbf95eddc522640898d4553bfb119d8f636d10fdfd040588774659a32d69a3"
+      },
+      "Icon10130.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "3e4307113a956cd5f0b2fc09d9ed90a9d07841c2f3a1187d7df1b1d616701666"
+      },
+      "Icon10131.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "a715595120631ebee05da0d0772856d327b0b28b85352533dcc7b3431e9eb4f5"
+      },
+      "Icon10132.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "e4408f11608fea341bacbc1cbb47891c59083e90907df9d0a17b917ce67edc4e"
+      },
+      "Icon10133.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "9819c780fcf8f4f8624a0b65e7fbc7a6d881105b7fa8deca4008cd9db0069f2f"
+      },
+      "Icon10134.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "9628bed3e14c4ec6b261ce57cde44414182844595007219a895b45417d652566"
+      },
+      "Icon10135.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "6e3e4b6de95a5bc82577eecb669c08164a093b05463f6da21605904321576c01"
+      },
+      "Icon10136.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "dc8b047eea2d25710cf1038c0b2ee498fc0edb35036ab51a9925ae0104ea7337"
+      },
+      "Icon10137.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "4720775c3c40114ed730293e69038965af852438828ede4fa5cc6685efbf6b07"
+      },
+      "Icon10138.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "8269fc7a2a5a5439b8b1f12cfe653d001d8d70d17b2ec4380fe6553a4a42e51d"
+      },
+      "Icon10139.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "f94bfa00bdb7a8165904000072f3aa609414d1a3b84ec4f3c1467236957488e4"
+      },
+      "Icon10140.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "531d6549a46bf3d9cc064409561ffb400570c6116549a4937c81243a55f73bff"
+      },
+      "Icon10141.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "3c70dbebe7cc31360bf72f2851550bbe227d085018dcdbd919659152a0447d24"
+      },
+      "Icon10142.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "e84d6567e5b64d4442b670ff04b616f6b2333a1420497d6c989b5bd3ddf74b47"
+      },
+      "Icon10143.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "4b614627d6fb04c5ac826b5b44a5cb754625658c3a7ee7d8a95796c61b9b0ff0"
+      },
+      "Icon10144.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "9e22981c93b19026dba4905b8c3b53804657840038e4b60cb508586276e016a4"
+      },
+      "Icon10145.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "9bdb53c4bb31a6f0cfc6ac11a7149ab9d1b766e5602f7224fffd30774fa4d211"
+      },
+      "Icon10146.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "23977564a361fe9f218742c0a14155a24fa8a3df3b83c99773388a22431161d4"
+      },
+      "Icon10147.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "488e024fd5f12a29f59cb01651af4a185f8f8e630470f1690b375fbda1bf6b27"
+      },
+      "Icon10148.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "9f0170a346c6a80196b5173c242238b7590e6066a63c83b4890d4fe98aa6e84a"
+      },
+      "Icon10149.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "6644835d16ebf707af8574e89120167e1736d39256f1af9ba8975dabf20f0a41"
+      },
+      "Icon10211.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "96392b0aceb666a7535ff2ea3c85476b65f0bc41aab6ab2d89035285b83c7c58"
+      },
+      "Icon10212.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "eec79386e83a36478c04f2bc04b74aafa16045604b7821a9bb062ceea90b5137"
+      },
+      "Icon10213.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "1b88cd74b01ed16db67ab7b4314db267f72c65d2bf7fa4c77c17cf529a75442d"
+      },
+      "Icon10214.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d023828ef8a9f322afb42f35a8641188cd32c80af6f49c9ed8f9fa147b2758e1"
+      },
+      "Icon10215.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "bf3f4c86931831671c4c1b48cf8ed889be3878c27476451e3fc921644708f4d9"
+      },
+      "Icon10216.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "f7e5f29e0a8c6717dac62636bae3419009ae96ec7c683d25f54189e5b5b1189b"
+      },
+      "Icon10217.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "db02356f1da68058ffd7075bc48ea40372959d197a456e411bd139556b0e5329"
+      },
+      "Icon10218.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d54bf576e0f1a181f78f647c84220cc119e8b6505e208110a34d781355f0f1a8"
+      },
+      "Icon10219.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "42e3c5d54bdc779b76c79091ac345ab78827fdb7ba3698dac3709b01fd2df738"
+      },
+      "Icon10220.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "2fc2cc52ca6d457472f6f4318fe25a10849d100c11b3f1eaf5b03be3c7a162b3"
+      },
+      "Icon10221.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "e416a6b8ad3ddd5dee588d71c4c0906ec8cd301662db3d7c1c288eaab7ab96da"
+      },
+      "Icon10222.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "0aa00dbe52c08662841b1584c7ae631c56aae627665e708d3e1a77888661cf0d"
+      },
+      "Icon10223.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "8b65a10904055f1c87087214e9aa7cb67d9f42b833980b8df45886f9e25d584d"
+      },
+      "Icon10224.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "758a2a1d9034e63b9c9c2f0c8c17da799d0102e790552c60f46077323fc62d0b"
+      },
+      "Icon10225.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "f2469027cbd927dda22f812131944d4acaecd099f59b11cac788caf5b8bcf313"
+      },
+      "Icon10226.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "f03a64e886d53ac480a75fbf7f5e2318c306266e91866dda183364fbce1765c6"
+      },
+      "Icon10227.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "2ccb89f15baba7adb7e30e4903741cd0d131c7f99a6da33ac0da68c3e314fdb5"
+      },
+      "Icon10228.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "b90e94c24553dcb4d1031a0373877177c2302e0585aec05ab71bb6ccb60a4a37"
+      },
+      "Icon10229.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "3e02b32f9e64c88de724c2cdd377156f591c97462bbb4158cd6a5bd6419d9e2b"
+      },
+      "Icon10230.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "2b91a556646df002df2d4fa2440346ea11e5604ed17f483443bbbb48a84a0abf"
+      },
+      "Icon10231.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "ccbe28df7d8e61ab6b510c47442a3e8993957f6097625897a1be0ff74793b8b8"
+      },
+      "Icon10311.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "059f2a4af2fb4e1f1078c4c3d680d5a48bc703ab453ec65d4422bd145f0008c9"
+      },
+      "Icon10312.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "7ae8e12f67ab847729b49bef1fc88b142ab487cd25fdc294f874931c688b0f8b"
+      },
+      "Icon10313.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "e7360a24eb1e958b1db17bf57d500b4c84f042744cb9461cafc0c4f972e2db6b"
+      },
+      "Icon10314.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "52321277f9194e6d450ba3268743bd21be2739e551de6aa927298468e491f861"
+      },
+      "Icon10315.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "7bb90cde0a04ac5733c7d78f8678873a848454c10dc00f8beda2a0a85cec96c6"
+      },
+      "Icon10316.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "808629dc6c899a11bb1574da830573ec561550a379c06bb26c0121e3871d0ff3"
+      },
+      "Icon10317.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "6b0ecd19194b843d9e6db2ac786cbe2cef509ffd9c06477271bb15aa66d2bc23"
+      },
+      "Icon10318.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "48e135ea12723e2a0a64d726bc949224ac48ef2c07500bb6bbc6f1244edea868"
+      },
+      "Icon10319.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "5d5d4860650aebad47f8cfe85e81691793d316b115246df723f69f4d7745f990"
+      },
+      "Icon10320.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "6bff2d0705a7df26997699798b8358c5b204f400af1569438c14e29a59fac846"
+      },
+      "Icon10321.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "6ab059400bbe09e3ca8de80217563291b03111839333c76d1088f2cfe73aa8fe"
+      },
+      "Icon10331.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "c5b823985cd01ac24ecdc893f84afc5eee93160d5eca1679349592e206c4a291"
+      },
+      "Icon10332.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "93f75c035223940b0107719d5f624e6cd5f245eae80327638b0c25bbc98d7342"
+      },
+      "Icon10333.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "f2bec16bddf88685370b99c8d34e72972502b2ea5322078c8b42949893e2d4f3"
+      },
+      "Icon10334.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "6b844655e93bb276bbc59f8b2fe6839dc07632f0329db3a0eab83c1d089859fe"
+      },
+      "Icon10335.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "42e3c5d54bdc779b76c79091ac345ab78827fdb7ba3698dac3709b01fd2df738"
+      },
+      "Icon10336.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "4a124e3b49a53f66e5640d29fb3469808399eb6561eb5a07c6939c471dc331e9"
+      },
+      "Icon10337.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "42ee9b4fdaebb810adb589f6478c611067867913216e1447fb4e053d3666bfda"
+      },
+      "Icon10338.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "4dbefc35ae2828f036f5dbc6362738748374c2190c70cf8606966401433754f7"
+      },
+      "Icon10339.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "702ff81bf0374325d971b3ddc44e118c7521c0ed2f53e3fb5780acf42617d90c"
+      },
+      "Icon10340.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "04caa8dc8287ad1a823ffc7c4ed65a452421d40ba1fc2ba1f0e86d35893bc358"
+      },
+      "Icon10411.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "2b1ddfcab61af044223342a33d12a605afc943b191d3e5fa5ad3fa84d602fd73"
+      },
+      "Icon10412.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "21e58a8f53d164b6ec8ea4db25045a9e2e0fa347908f46fffc0b0bed9195784d"
+      },
+      "Icon10413.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "17f7ffaa27712f513181dcbee999413983508608af9865bc1f9de2e8b67e8811"
+      },
+      "Icon10414.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "1ebeaa24dcbc898b3ca3e00446d09cf4b77d5898dae650417b52329878a3d226"
+      },
+      "Icon10415.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "b2884b971e73b37c2a3c881d4562876b2719b3a5ce99422fd3bea573d32e1f93"
+      },
+      "Icon10416.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "0d86903f1ab12a94e59e967c6c0435ebe8dfd5dfaff40c2c5622241fe6853eeb"
+      },
+      "Icon10417.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "67a745e732a7fd8f953332d64b56fce99a699cbabfe666e42b561cd3f933eb29"
+      },
+      "Icon10418.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "49bcd26106cd6d911ee638b24ba42053fba490ffe7dafd2028a792eeac5c6bbe"
+      },
+      "Icon10419.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "f4d05be4227b1c6223b950979060c36575f626ad4becc0926bc5671f9875ecc1"
+      },
+      "Icon10420.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "b074bab36b923603f5e7b43cbff3712d88030495ba8c695e6999daef9f0b5a96"
+      },
+      "Icon10421.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "fcf577a843e05c861bc95c70319ea588629232ace24faffc4aaaed21da5a4661"
+      },
+      "Icon10422.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "681bd13c82be1d5523bee88657cde567f17f1da221d6da098624ae1939aa2d69"
+      },
+      "Icon10423.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "abcc85b513531222e260769619776908d81d90b54dd8ae2994739cb1a37dd431"
+      },
+      "Icon10424.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "ac211312c53ea8a9fdcdf7cd97610c6737faaa0fa3964d72dea06ec1e774b8f3"
+      },
+      "Icon10425.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "734b26f6362f4bc83a46c70722d1729d80b7cfb72cf949a84aed96a4f1b6d984"
+      },
+      "Icon10426.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "a4f7e2305f052af2cc1cf943731d4b7685585a8a32fd3f454fd60e9f1821fc18"
+      },
+      "Icon10427.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "593695dbf78705a362917a1dee08117444874dc84f98c47eeb899c8dc012c345"
+      },
+      "Icon10428.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "a6bfe4243723b8877fd6e36a0da57d1a7bbdaee5886365ec2b939f6ba342ad9e"
+      },
+      "Icon10429.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "b2cea07d926e3ab4fa7bc54ee3174dfd74f5bb22a540c5abf9e375ca0b5f0393"
+      },
+      "Icon10430.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "50212711bd3ddf1abdf8d570ed1da62221c29506f37dffe692b405b73dbf5bb5"
+      },
+      "Icon10431.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "69cb9f59c4b11fbcf201cc6268cb37ea5324992e7d88da33ea2f7b2ff6e5ee9c"
+      },
+      "Icon10501.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d0efe70ca624a04ccf9be643098e846313f19b6b82eb4f8a7289d86af013fc54"
+      },
+      "Icon10502.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "7e9cd8873cb3c8a8ed7dbaa25af7cfa4e876c28dc7c110819ff7e815aa0b0fbf"
+      },
+      "Icon10503.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "fe4dcf3aa8375a136ae34cda95622b87c6f75d7d504403ae776b07a742ac66d5"
+      },
+      "Icon10504.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "58c8fc2696aa18c0b11a423a488c2a79a840a3a75e568609a7fc66dffe98c32e"
+      },
+      "Icon11001.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "6fd224b72c80c282eebc2b2620d9566d381842181d9dac00aca0cefe1d4e1dbb"
+      },
+      "Icon11002.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d249d3c108bdf110d95d19d3d2335844e475134c68269f765de50823b8b34220"
+      },
+      "Icon11003.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d5f1680d71d152bcfdb41faac4aa05d48bf0a86cd85eae172538443896f901ab"
+      },
+      "Icon11004.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "9296a65e0442b07ad44e5ace00605d6ac3099b81196df91aadecd52948754b41"
+      },
+      "Icon11005.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "515013976d758dc8bbcc2cd69999f4f5dbfd71b1d6686dfcc63ebdbf528884fc"
+      },
+      "Icon11006.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "927ef5e72ccbdddd39fe5baf3e5b482f5f3701f2717b3c72ccfcb609ad831f3e"
+      },
+      "Icon11010.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "37b17f3c97a751d7a9ad8c29d2835527938ab566fadcb805feec242bc36efad1"
+      },
+      "Icon11011.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "64b77aee530d4df99b3c2fa119fba918fd63985a95684fe6c507b357438b9e7e"
+      },
+      "Icon11012.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "6b3eb5ef4bb3b8f1b0d4319c6eaaf3c83dab1903de67983f6b33a254b07220b8"
+      },
+      "Icon11013.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "1f3371394392cdac5d9134b333136123faa7d903262c138a680b2da5f2b40552"
+      },
+      "Icon11014.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d52937c78b7ab8650a936190b0171cec8dcfc46e772d44fcbf31fd3406bf9aec"
+      },
+      "Icon11015.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "b916a2f711992e84f8082c3525020cbd8fb51817311274367f797b0906f9041f"
+      },
+      "Icon11016.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "2e8d83274719bfc2a1caa431b1a2369b9a6909eefbd180808860d29a72e62460"
+      },
+      "Icon11017.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "66c56d603e4104df35cb6a8aa42c6b70fb446caff9b8a2e9af300bdc11a4e03b"
+      },
+      "Icon11018.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "355f22971926a40fc5716d594ff3077262ec45ed284e01186b9ce68ef1dcf713"
+      },
+      "Icon11020.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "22693d1c322b472d79cd1afb4ffb3a8abe94a6b5d1f6baadaa03d6852cb4ee98"
+      },
+      "Icon11021.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "175981f37455d8fbb5f5713d937a097ea65add263b2f225026d57f340d61191c"
+      },
+      "Icon11022.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "f77237c43d1a0ab7e5e167cece51398e90b14d97057fcb53c961a726b9f28145"
+      },
+      "Icon11023.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "cd48a2fe3c89a60b6a1288bfc70b0847fbc85c8196a4eab4e5d2d0a3a1b2283e"
+      },
+      "Icon11030.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "2f9f6941a88d793bc0017063ef681fafdbfc9b0720bf59c23405d02603b8ec11"
+      },
+      "Icon11031.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "70478cfa804debb687c3bb679c4d183e7bc506bf82e29e60c1d88d8fa4f73b2a"
+      },
+      "Icon11032.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "1aa3e1ec13c6cd4f377b946cac85b0e9089c5e55c3d1cd6b14cd1dd36c842d49"
+      },
+      "Icon11033.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "a0e2dfe89144f8e17576ac5d1599a21794dba4525bf0b395abb4d28df85e506a"
+      },
+      "Icon11034.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "2d4d7639f22bd41c7ac0d0254a0303301bcd1b816448918ad38a8e81df47f0dc"
+      },
+      "Icon114.png": {
+        "width": 114,
+        "height": 114,
+        "sha256": "09c0f562d760dd26b24fd058699ed77825094a327ce8d14451eec44ef8bfba01"
+      },
+      "Icon12001.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "cba54a37e7b01f66a3f555a6d8a5079eafc6c0ff437e6f258158ed61e8140696"
+      },
+      "Icon12002.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "1859194dfc40431f08812f3a0dc3711f2c2bfdae7f2234ab4a39752b6355d5c8"
+      },
+      "Icon12003.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "0ec48fec5bdc92c0fc64be8f696ad63f891f139ba4324f73138bcfac58f44051"
+      },
+      "Icon12004.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "edec12231dfb545abeafd6e5ca0f88a03c7b904279e9fcf07c4d975b6ef71710"
+      },
+      "Icon12005.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "c4853a08b811d6e99cd5a5326876ba89d4f03c2cb9ad5ace46ed299e6b9920b6"
+      },
+      "Icon12006.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "3527d4b8170adc6d728608989e1c658722c79a1c0979abba5639b333c6ff3684"
+      },
+      "Icon12007.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "2bd8f9b270f5d189d6663b73de7e75baaf74baebdf74756e93b6ae0591798514"
+      },
+      "Icon12008.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "05b72677b2464168e7899f2b0346149c5dee94d620acbc53809ad14c189a5f0f"
+      },
+      "Icon12009.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "8f289cc3541498799d5abfcb883e9777e93f8405b3f335196c5cd3d861576d3b"
+      },
+      "Icon12010.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "e87642473c92c6f21ed3ba2dbe042aa27b0b42e867693b00c841b4e3c5a09724"
+      },
+      "Icon12011.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "6a5c06a31d8aab4fe4f2a943f600068306357302817122632cd91e3c29013c87"
+      },
+      "Icon12012.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "ff258cd786bf9a2419f138ba2cc5d8e880a02af6995f862f47a4eacbe0f4cdfb"
+      },
+      "Icon12013.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "9b4aefad65b46b539f8187ac613079a3538eb737a34f920dbf82ed4a023803a2"
+      },
+      "Icon12014.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "214914399040e57a126ac47650d4b254c36193dbc74c940f11d0a4a0bb05068a"
+      },
+      "Icon12015.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "97e5c7806ca77eb9dbe3f03329f77605df427f4ed38eee752945f0b65e84e66c"
+      },
+      "Icon12016.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "d33411d6873f6f21bcc038455b891cee9cf7f4f4903ea9f90038c840f009eb71"
+      },
+      "Icon12017.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "eda4b35aa1bcf4c0c9b2f9cd641167c3e246b55eff4b3a7d74cdec45672bec43"
+      },
+      "Icon12018.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "2ef25c2695a55ef3c0625266ef103970da5c218d0e6f06f55133444e6dc3e1ec"
+      },
+      "Icon12019.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "5cfcb82be21f3084e0681cadb5c095922fe7afb1514e342167b1b82e6de4dd8a"
+      },
+      "Icon12020.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "43fc2e663f914a64b6d36bc4f4b65ccba5384b3223313a153223f8127bdbfdd0"
+      },
+      "Icon12021.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "a9422b6ea453fe2be39a76950cf6537fe353051902c96a2005f2cafb8840f277"
+      },
+      "Icon12022.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "54f2e59be4c29b85dd77da2c761935df811c458610a2cb2e193badeb8cceeca5"
+      },
+      "Icon12023.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "2d9f822a6ec4acbd8c3fbbb65106e0916fed46426eabdb92496693b7a3a44f2f"
+      },
+      "Icon13001.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "0dd0d7847193cd1f344b193767b2d17fce3a379f7114b448c14723f44599a45a"
+      },
+      "Icon13002.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "9019b3ed61fdccbda5e3f00420ce4593e0183458236be36e2f65e45bed00b477"
+      },
+      "Icon13003.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "c6c94b6dd96ea1e0289452cef7bc736f71065bf9d6b0c65d2660f29428ee0ff7"
+      },
+      "Icon13004.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "b3d2482eccf684cf95fc8d76b63eab69a7dd2e845f15b74fa8e84842c03cf0d3"
+      },
+      "Icon13005.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "0703480249b3389981ea9a1654a9b8c3aa8e2df935fd06eb15df4e6ba06220d4"
+      },
+      "Icon13006.png": {
+        "width": 64,
+        "height": 64,
+        "sha256": "30c41145929053b761b7a8063e01fc3ff41c4e5aeb921439133981859252ba80"
+      },
+      "Icon57.png": {
+        "width": 57,
+        "height": 57,
+        "sha256": "7e3d67fc2871e7e95e7389d07bcac65a6cc227358f94cff16fabc2aab6ff158b"
+      },
+      "Icon72.png": {
+        "width": 72,
+        "height": 72,
+        "sha256": "7dc32a7d90d25be5d25264b59720fececfd3ec60470f2a69ef8438c6a6ad15b6"
+      }
+    },
+    "captures": {
+      "equipment-body-detail": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/FF5D6A6C-4E76-411F-BDE0-01782854D76E.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "59479eb2a6d05876cd084b9d2ce1a6f86893ceb549a7d253ea77c198e9fc2f02"
+      },
+      "equipment-in-shop": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/80A81105-6E21-4D88-A4C6-401F80B3A4D5.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "59479eb2a6d05876cd084b9d2ce1a6f86893ceb549a7d253ea77c198e9fc2f02"
+      },
+      "inventory-page-3": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/E73FEC01-5E03-49AE-8734-44C5E0B58BF2.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "e0ca11d41a246360485e4331c8388100e7100ea29d1211e10e8b7b35aeafd55c"
+      },
+      "inventory-page-2": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/59489117-DE0D-42EB-9DC6-D0EFE9605E64.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "d71fb189811bb3ad53e8f73c91116397143bfbc7fd8f59549262660c4d20bcb2"
+      },
+      "category-4-next-4": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/AAB7EF0A-9347-4071-B677-836ABD18C02D.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "f2c95f159dbb2c1753024cc8715c2cb3701dfac05a42d103d2c263365fcc97cc"
+      },
+      "category-4-next-3": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/919E6CF2-02EE-4BB0-840E-491B4311CC42.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "f2c95f159dbb2c1753024cc8715c2cb3701dfac05a42d103d2c263365fcc97cc"
+      },
+      "category-4-next-2": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/5272790E-B625-479E-AF6E-6AF85C7F4742.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "f2c95f159dbb2c1753024cc8715c2cb3701dfac05a42d103d2c263365fcc97cc"
+      },
+      "category-4-next-1": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/91642493-7946-4043-9D2A-A0889B72D524.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "f2c95f159dbb2c1753024cc8715c2cb3701dfac05a42d103d2c263365fcc97cc"
+      },
+      "category-4-page-start": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/278511FB-4975-4B7D-8ABB-5FB41321C3EC.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "f2c95f159dbb2c1753024cc8715c2cb3701dfac05a42d103d2c263365fcc97cc"
+      },
+      "category-3-next-4": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/2A0960D5-46E7-40D0-B959-70AB7790B9B1.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "15e31bf5b34c985e7da4dbc696ca6cb880bd59adfee1d1599517e4b7a6577150"
+      },
+      "category-3-next-3": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/4E263A7F-D16E-466F-9825-3928A212E7C2.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "15e31bf5b34c985e7da4dbc696ca6cb880bd59adfee1d1599517e4b7a6577150"
+      },
+      "category-3-next-2": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/825BFD8F-B7FB-477C-9D64-C470FB9C1041.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "15e31bf5b34c985e7da4dbc696ca6cb880bd59adfee1d1599517e4b7a6577150"
+      },
+      "category-3-next-1": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/0408354C-97F9-4D40-A8B0-4A439D78B9AA.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "15e31bf5b34c985e7da4dbc696ca6cb880bd59adfee1d1599517e4b7a6577150"
+      },
+      "category-3-page-start": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/93C61977-7A00-45D5-B783-BEB859EA9CAE.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "15e31bf5b34c985e7da4dbc696ca6cb880bd59adfee1d1599517e4b7a6577150"
+      },
+      "category-2-next-4": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/7F6FF573-D8E0-4718-ADD5-BD24BBE435D0.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "85f5ee2eb2d8ba4241517d9f88d7353212ce02f6f7cf1e67aed01f283463ad37"
+      },
+      "category-2-next-3": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/2C3B8B2F-DE08-4197-ABFB-80145DAA4BFD.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "85f5ee2eb2d8ba4241517d9f88d7353212ce02f6f7cf1e67aed01f283463ad37"
+      },
+      "category-2-next-2": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/FF0B8FD4-82A8-4650-B3CD-2F5EEA19811A.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "85f5ee2eb2d8ba4241517d9f88d7353212ce02f6f7cf1e67aed01f283463ad37"
+      },
+      "category-2-next-1": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/01E92F38-DCC0-40A6-8DAF-781401B3DC0D.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "85f5ee2eb2d8ba4241517d9f88d7353212ce02f6f7cf1e67aed01f283463ad37"
+      },
+      "category-2-page-start": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/1AF7F08E-3AD8-4458-9507-662AB43E9437.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "85f5ee2eb2d8ba4241517d9f88d7353212ce02f6f7cf1e67aed01f283463ad37"
+      },
+      "category-1-next-4": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/351B2DE5-7E0B-4947-B807-478C5FF659FF.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "19b5d648154e9c857ac4e30f66b8d016b9a966001f43dbb93bd86561893de72b"
+      },
+      "category-1-next-3": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/51CCF1F2-F77D-4EFE-A69D-D61591F0E9BD.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "19b5d648154e9c857ac4e30f66b8d016b9a966001f43dbb93bd86561893de72b"
+      },
+      "category-1-next-2": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/71BC2CEA-67D7-4868-83C3-BA9A1DA08953.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "19b5d648154e9c857ac4e30f66b8d016b9a966001f43dbb93bd86561893de72b"
+      },
+      "category-1-next-1": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/C8D850D9-8494-490E-B779-41AD3EEBEBD4.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "19b5d648154e9c857ac4e30f66b8d016b9a966001f43dbb93bd86561893de72b"
+      },
+      "category-1-page-start": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/FE09BBF1-8633-4D9B-9EBE-689192AA4936.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "19b5d648154e9c857ac4e30f66b8d016b9a966001f43dbb93bd86561893de72b"
+      },
+      "category-0-next-4": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/89E3D6C4-3714-4D81-8D15-00EF5DC2E1F6.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "1ac6cb9dc9e91b5cb5db7a29c168dc341b837fccd434ff8aef36b3e7d193c173"
+      },
+      "category-0-next-3": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/9A49629C-6E5D-4FB4-9284-977E614F548C.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "1ac6cb9dc9e91b5cb5db7a29c168dc341b837fccd434ff8aef36b3e7d193c173"
+      },
+      "category-0-next-2": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/868F5D96-B181-4A7B-8F28-1A103E96FDEE.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "1ac6cb9dc9e91b5cb5db7a29c168dc341b837fccd434ff8aef36b3e7d193c173"
+      },
+      "category-0-next-1": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/E3805605-D9F4-4628-8384-E4C9F8F53769.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "1ac6cb9dc9e91b5cb5db7a29c168dc341b837fccd434ff8aef36b3e7d193c173"
+      },
+      "category-0-page-start": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/3EB676A8-468F-4C9E-A0C6-F218FE7E0945.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "1ac6cb9dc9e91b5cb5db7a29c168dc341b837fccd434ff8aef36b3e7d193c173"
+      },
+      "13-sell-cancel-candidate": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/9344096C-C94A-404F-8B4F-3A657D349AF7.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "1ac6cb9dc9e91b5cb5db7a29c168dc341b837fccd434ff8aef36b3e7d193c173"
+      },
+      "12-sell-confirm-candidate": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/4418E965-3746-425E-9F51-6E14D7DEB5EA.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "8afbc2a2b3c7b21f948181b3a1472f53292297bda3d11bfe60bc8888542cd5d6"
+      },
+      "11-inventory-detail": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/77B38506-523B-4D52-8C96-FEA82A0C1A75.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "572be4ee84556b0bf17477f54fee0a8332618b79e9ec9660a2f2ff2173377734"
+      },
+      "10-buy-done": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/6C0022EE-116F-4A33-AC1D-4AC198E1FE38.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "0e881335a315547cf16a76a9c6895c265d4bc127ba913efd7dd68d5b7dff1bc2"
+      },
+      "09-buy-cancelled": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/1DED5563-3C50-4095-B74B-596F57254CCC.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "88e0ae9b2056969c0aa8a6cd5f64b8c9cbe606b20b67605e118bc51eef1d9f5f"
+      },
+      "08-buy-confirm": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/12AE9D1C-C4B0-4A15-93F0-72BAC074826B.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "f5a279581e86f3aea9eb370484e28eddf3e1ece977663769ac6b06e6182943c0"
+      },
+      "07-weapon-detail": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/61AA258A-FBEC-4714-8C35-E7C024E88E3F.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "c6574fde850370ee95f5e3aa55c0f5c4e69c4d228ed345f583de4a17410a249f"
+      },
+      "06-drag-vertical": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/1640FCD5-1703-4ADE-A811-9AA69214892C.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "9a296854d600afbd0c7afded84a2c0df59818975ad77ebf4ff45653c7905031f"
+      },
+      "05-drag-horizontal": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/D24F3E8B-091F-4531-A8AA-C6E253D70594.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "9a296854d600afbd0c7afded84a2c0df59818975ad77ebf4ff45653c7905031f"
+      },
+      "04-shop": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/479606B0-A76E-4299-8BCA-5A9DE385A9EA.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "9a296854d600afbd0c7afded84a2c0df59818975ad77ebf4ff45653c7905031f"
+      },
+      "00-equipment-start": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original/FE000A7C-533C-4FB7-9074-176E361EA817.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "c8be0a784f54936e2a2264682e153f11c5d13d383b9c9618a28d5b1d7200c3f5"
+      }
+    },
+    "tradeCaptures": {
+      "equipment-bot-2": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/87A781C1-9416-4472-97B2-0C68C354F6AD.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "71977deba10425d4d7e39a572e27f578446f386e4049dda475941f4786aa2567"
+      },
+      "equipment-bot-1": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/820C601B-419A-40DD-9721-9FA156E615DA.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "71977deba10425d4d7e39a572e27f578446f386e4049dda475941f4786aa2567"
+      },
+      "equipment-bot-0": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/CE59C336-8106-42CE-948C-F33C9E7E8FE3.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "71977deba10425d4d7e39a572e27f578446f386e4049dda475941f4786aa2567"
+      },
+      "equipment": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/04C40072-BF6C-400C-BC92-C975CAB0108C.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "8176ecc1c36d4dba36dbd0bb445e5d261180d4a96a9411a9cb4e0e606289c0fc"
+      },
+      "category-4-row2": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/999524AB-5E51-4BD0-B77F-6F94FC84D8BA.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "1f5f5045fccdfa48b6e341a995cbd77ed1c628fd67cc2af52c06b4545d0db356"
+      },
+      "category-4-details": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/544F005A-6EAE-4981-9E6A-6B31551D66F7.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "53c1eac319a5a811bde1003ef6b6fa6e38d1d4b5994c1c30c412f4610c219547"
+      },
+      "category-4-start": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/D6AF7BE2-DA47-4A7A-90CB-C847890EE4D6.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "1f5f5045fccdfa48b6e341a995cbd77ed1c628fd67cc2af52c06b4545d0db356"
+      },
+      "category-3-row2": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/2B2761DA-350A-412D-9306-3F052CB8DC3C.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "1f5f5045fccdfa48b6e341a995cbd77ed1c628fd67cc2af52c06b4545d0db356"
+      },
+      "category-3-details": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/7300FC9D-D409-4533-8B34-A677F7B51FFE.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "53c1eac319a5a811bde1003ef6b6fa6e38d1d4b5994c1c30c412f4610c219547"
+      },
+      "category-3-start": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/E07C8644-9647-484E-A829-C3D45CF02A66.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "1f5f5045fccdfa48b6e341a995cbd77ed1c628fd67cc2af52c06b4545d0db356"
+      },
+      "category-2-row2": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/52562873-9B70-4A60-94EB-6256F20E2B15.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "1f5f5045fccdfa48b6e341a995cbd77ed1c628fd67cc2af52c06b4545d0db356"
+      },
+      "category-2-details": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/5DA6B82B-CA23-482C-A8A5-FACCBCF7B883.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "53c1eac319a5a811bde1003ef6b6fa6e38d1d4b5994c1c30c412f4610c219547"
+      },
+      "category-2-start": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/1EA8F69B-ED55-47CC-BAB8-56663BDC7EF5.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "1f5f5045fccdfa48b6e341a995cbd77ed1c628fd67cc2af52c06b4545d0db356"
+      },
+      "category-1-row2": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/5946A298-F277-4186-AD11-284C7EFBEFA5.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "1f5f5045fccdfa48b6e341a995cbd77ed1c628fd67cc2af52c06b4545d0db356"
+      },
+      "category-1-details": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/02390BFC-1739-40A6-A179-4308AD6420E9.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "53c1eac319a5a811bde1003ef6b6fa6e38d1d4b5994c1c30c412f4610c219547"
+      },
+      "category-1-start": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/1BFAECCA-BAC8-4BF2-9A65-AF1DC9A936FB.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "1f5f5045fccdfa48b6e341a995cbd77ed1c628fd67cc2af52c06b4545d0db356"
+      },
+      "category-0-row2": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/8C496C51-9302-4556-9DD3-DA65F905249A.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "1f5f5045fccdfa48b6e341a995cbd77ed1c628fd67cc2af52c06b4545d0db356"
+      },
+      "category-0-details": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/AA60B5F1-9FE9-4A03-8AA0-2AB8146B54E0.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "53c1eac319a5a811bde1003ef6b6fa6e38d1d4b5994c1c30c412f4610c219547"
+      },
+      "category-0-start": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/7FF14658-7310-490E-B98F-A3780FBEDAC8.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "1f5f5045fccdfa48b6e341a995cbd77ed1c628fd67cc2af52c06b4545d0db356"
+      },
+      "sell-done": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/ED716BC4-9056-4A15-A543-E411A18CFEBA.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "1f5f5045fccdfa48b6e341a995cbd77ed1c628fd67cc2af52c06b4545d0db356"
+      },
+      "sell-confirm": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/77F620EB-DC3F-4AA1-B455-0BB2494BE358.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "465e097e6b077dbd666c07dfebfd18c353c15b59cea218bae86eae41b0609d92"
+      },
+      "sell-before": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/BCF28C51-74D4-4BCC-8003-C22B49ABB51B.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "57d0bbd3b1a934f8cd520e6f71f4c1d7139e886dae0f8ff5a3c67546110a22d7"
+      },
+      "equip-inventory-picked": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/769A08BC-A00A-4DD0-853F-09F28F1BAEDA.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "80f0b87a6c86b84f30bde2a4bb724a8415a1cd0dfbb227590f2b4dd75237a90c"
+      },
+      "equip-start": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/original-trade-and-categories/0DBBD2D0-0EA0-4B27-9255-2A2B3EC02D61.png",
+        "width": 1260,
+        "height": 2736,
+        "sha256": "59479eb2a6d05876cd084b9d2ce1a6f86893ceb549a7d253ea77c198e9fc2f02"
+      }
+    },
+    "itemInfo": {
+      "encodedTableSHA256": "32a3af1c86513692304a8710e0c05144d99aeb307b5386a7230b6f0dc8bc8012",
+      "columns": [
+        "original item type",
+        "icon filename",
+        "original width px",
+        "original height px",
+        "HD same-name width px",
+        "HD same-name height px"
+      ],
+      "itemsByCode": {
+        "00001": ["Coin", "Icon00001.png", 32, 32, 32, 32],
+        "00002": ["Coin", "Icon00002.png", 32, 32, 32, 32],
+        "00003": ["Coin", "Icon00003.png", 32, 32, 32, 32],
+        "00004": ["Coin", "Icon00004.png", 32, 32, 32, 32],
+        "00005": ["Coin", "Icon00005.png", 32, 32, 32, 32],
+        "00006": ["Coin", "Icon00006.png", 32, 32, 32, 32],
+        "00007": ["Coin", "Icon00007.png", 32, 32, 32, 32],
+        "00008": ["Coin", "Icon00008.png", 32, 32, 32, 32],
+        "00009": ["Coin", "Icon00009.png", 32, 32, 32, 32],
+        "01001": ["AidKit", "Icon01001.png", 64, 64, 32, 32],
+        "01002": ["AidKit", "Icon01002.png", 64, 64, 32, 32],
+        "01003": ["AidKit", "Icon01003.png", 64, 64, 32, 32],
+        "01004": ["AidKit", "Icon01004.png", 64, 64, 32, 32],
+        "01005": ["AidKit", "Icon01005.png", 64, 64, 32, 32],
+        "01006": ["AidKit", "Icon01006.png", 64, 64, 32, 32],
+        "//02001": ["SpAtk", "Icon02001.png", 64, 64, 32, 32],
+        "//02002": ["SpAtk", "Icon02002.png", 64, 64, 32, 32],
+        "//02003": ["SpAtk", "Icon02003.png", 64, 64, 32, 32],
+        "02004": ["SpAtk", "Icon02004.png", 64, 64, 32, 32],
+        "//02006": ["SpAtk", "Icon02006.png", 64, 64, 32, 32],
+        "02005": ["SpAtk", "Icon02005.png", 64, 64, 32, 32],
+        "02007": ["SpAtk", "Icon02007.png", 64, 64, 32, 32],
+        "04001": ["Bot", "Icon04001.png", 64, 64, 32, 32],
+        "04002": ["Bot", "Icon04002.png", 64, 64, 32, 32],
+        "04003": ["Bot", "Icon04003.png", 64, 64, 32, 32],
+        "//04101": ["Bot", "Icon04101.png", 64, 64, 32, 32],
+        "//04102": ["Bot", "Icon04102.png", 64, 64, 32, 32],
+        "04201": ["Bot", "Icon04201.png", 64, 64, 32, 32],
+        "04202": ["Bot", "Icon04202.png", 64, 64, 32, 32],
+        "04203": ["Bot", "Icon04203.png", 64, 64, 32, 32],
+        "05001": ["Etc", "Icon05001.png", 64, 64, 32, 32],
+        "05002": ["Etc", "Icon05002.png", 64, 64, 32, 32],
+        "05003": ["Etc", "Icon05003.png", 64, 64, 32, 32],
+        "05004": ["Etc", "Icon05004.png", 64, 64, 32, 32],
+        "05005": ["Etc", "Icon05005.png", 64, 64, 32, 32],
+        "05006": ["Etc", "Icon05006.png", 64, 64, 32, 32],
+        "05007": ["Etc", "Icon05007.png", 64, 64, 32, 32],
+        "05008": ["Etc", "Icon05008.png", 64, 64, 32, 32],
+        "05009": ["Etc", "Icon05009.png", 64, 64, 32, 32],
+        "05010": ["Etc", "Icon05010.png", 64, 64, 32, 32],
+        "05011": ["Etc", "Icon05011.png", 64, 64, 32, 32],
+        "05012": ["Etc", "Icon05012.png", 64, 64, 32, 32],
+        "05013": ["Etc", "Icon05013.png", 64, 64, 32, 32],
+        "05014": ["Etc", "Icon05014.png", 64, 64, 32, 32],
+        "05015": ["Etc", "Icon05015.png", 64, 64, 32, 32],
+        "05016": ["Etc", "Icon05016.png", 64, 64, 32, 32],
+        "05017": ["Etc", "Icon05017.png", 64, 64, 32, 32],
+        "05018": ["Etc", "Icon05018.png", 64, 64, 32, 32],
+        "05019": ["Etc", "Icon05019.png", 64, 64, 32, 32],
+        "05020": ["Etc", "Icon05020.png", 64, 64, 32, 32],
+        "05021": ["Etc", "Icon05021.png", 64, 64, 32, 32],
+        "05022": ["Etc", "Icon05022.png", 64, 64, 32, 32],
+        "05023": ["Etc", "Icon05023.png", 64, 64, 32, 32],
+        "05024": ["Etc", "Icon05024.png", 64, 64, 32, 32],
+        "05025": ["Etc", "Icon05025.png", 64, 64, 32, 32],
+        "05026": ["Etc", "Icon05026.png", 64, 64, 32, 32],
+        "05027": ["Etc", "Icon05027.png", 64, 64, 32, 32],
+        "05028": ["Etc", "Icon05028.png", 64, 64, 32, 32],
+        "05029": ["Etc", "Icon05029.png", 64, 64, 32, 32],
+        "05030": ["Etc", "Icon05030.png", 64, 64, 32, 32],
+        "05031": ["Etc", "Icon05031.png", 64, 64, 32, 32],
+        "05032": ["Etc", "Icon05032.png", 64, 64, 32, 32],
+        "05033": ["Etc", "Icon05033.png", 64, 64, 32, 32],
+        "05034": ["Etc", "Icon05034.png", 64, 64, 32, 32],
+        "05035": ["Etc", "Icon05035.png", 64, 64, 32, 32],
+        "05036": ["Etc", "Icon05036.png", 64, 64, 32, 32],
+        "05037": ["Etc", "Icon05037.png", 64, 64, 32, 32],
+        "05038": ["Etc", "Icon05038.png", 64, 64, 32, 32],
+        "05039": ["Etc", "Icon05039.png", 64, 64, 32, 32],
+        "05040": ["Etc", "Icon05040.png", 64, 64, 32, 32],
+        "05041": ["Etc", "Icon05041.png", 64, 64, 32, 32],
+        "05042": ["Etc", "Icon05042.png", 64, 64, 32, 32],
+        "05043": ["Etc", "Icon05043.png", 64, 64, 32, 32],
+        "05044": ["Etc", "Icon05044.png", 64, 64, 32, 32],
+        "05045": ["Etc", "Icon05045.png", 64, 64, 32, 32],
+        "05046": ["Etc", "Icon05046.png", 64, 64, 32, 32],
+        "05047": ["Etc", "Icon05047.png", 64, 64, 32, 32],
+        "05048": ["Etc", "Icon05048.png", 64, 64, 32, 32],
+        "05049": ["Etc", "Icon05049.png", 64, 64, 32, 32],
+        "05050": ["Etc", "Icon05050.png", 64, 64, 32, 32],
+        "05051": ["Etc", "Icon05051.png", 64, 64, 32, 32],
+        "05052": ["Etc", "Icon05052.png", 64, 64, 32, 32],
+        "05053": ["Etc", "Icon05053.png", 64, 64, 32, 32],
+        "05054": ["Etc", "Icon05054.png", 64, 64, 32, 32],
+        "05055": ["Etc", "Icon05055.png", 64, 64, 32, 32],
+        "05056": ["Etc", "Icon05056.png", 64, 64, 32, 32],
+        "05057": ["Etc", "Icon05057.png", 64, 64, 32, 32],
+        "05058": ["Etc", "Icon05058.png", 64, 64, 32, 32],
+        "05100": ["Etc", "Icon05054.png", 64, 64, 32, 32],
+        "05101": ["Etc", "Icon05037.png", 64, 64, 32, 32],
+        "05102": ["Etc", "Icon05057.png", 64, 64, 32, 32],
+        "05103": ["Etc", "Icon05056.png", 64, 64, 32, 32],
+        "05104": ["Etc", "Icon05055.png", 64, 64, 32, 32],
+        "05105": ["Etc", "Icon05014.png", 64, 64, 32, 32],
+        "05106": ["Etc", "Icon05035.png", 64, 64, 32, 32],
+        "05107": ["Etc", "Icon05057.png", 64, 64, 32, 32],
+        "05108": ["Etc", "Icon05055.png", 64, 64, 32, 32],
+        "05109": ["Etc", "Icon05052.png", 64, 64, 32, 32],
+        "//06001": ["Ticket", "Icon06001.png", 32, 32, 32, 32],
+        "//06002": ["Ticket", "Icon06002.png", 32, 32, 32, 32],
+        "//06003": ["Ticket", "Icon06003.png", 32, 32, 32, 32],
+        "10011": ["PtWpn", "Icon10011.png", 64, 64, 32, 32],
+        "10111": ["PtWpn", "Icon10111.png", 64, 64, 32, 32],
+        "//10311": ["PtWpn", "Icon10311.png", 64, 64, 32, 32],
+        "10211": ["PtWpn", "Icon10211.png", 64, 64, 32, 32],
+        "10021": ["PtWpn", "Icon10021.png", 64, 64, 32, 32],
+        "10132": ["PtWpn", "Icon10132.png", 64, 64, 32, 32],
+        "//10314": ["PtWpn", "Icon10314.png", 64, 64, 32, 32],
+        "10212": ["PtWpn", "Icon10212.png", 64, 64, 32, 32],
+        "10031": ["PtWpn", "Icon10031.png", 64, 64, 32, 32],
+        "10112": ["PtWpn", "Icon10112.png", 64, 64, 32, 32],
+        "//10315": ["PtWpn", "Icon10315.png", 64, 64, 32, 32],
+        "10411": ["PtWpn", "Icon10411.png", 64, 64, 32, 32],
+        "10213": ["PtWpn", "Icon10213.png", 64, 64, 32, 32],
+        "10113": ["PtWpn", "Icon10113.png", 64, 64, 32, 32],
+        "10041": ["PtWpn", "Icon10041.png", 64, 64, 32, 32],
+        "10416": ["PtWpn", "Icon10416.png", 64, 64, 32, 32],
+        "10134": ["PtWpn", "Icon10134.png", 64, 64, 32, 32],
+        "//10312": ["PtWpn", "Icon10312.png", 64, 64, 32, 32],
+        "10214": ["PtWpn", "Icon10214.png", 64, 64, 32, 32],
+        "10012": ["PtWpn", "Icon10012.png", 64, 64, 32, 32],
+        "10146": ["PtWpn", "Icon10146.png", 64, 64, 32, 32],
+        "10417": ["PtWpn", "Icon10417.png", 64, 64, 32, 32],
+        "//10313": ["PtWpn", "Icon10313.png", 64, 64, 32, 32],
+        "10022": ["PtWpn", "Icon10022.png", 64, 64, 32, 32],
+        "10147": ["PtWpn", "Icon10147.png", 64, 64, 32, 32],
+        "10215": ["PtWpn", "Icon10215.png", 64, 64, 32, 32],
+        "//10316": ["PtWpn", "Icon10316.png", 64, 64, 32, 32],
+        "10032": ["PtWpn", "Icon10032.png", 64, 64, 32, 32],
+        "10418": ["PtWpn", "Icon10418.png", 64, 64, 32, 32],
+        "10148": ["PtWpn", "Icon10148.png", 64, 64, 32, 32],
+        "10216": ["PtWpn", "Icon10216.png", 64, 64, 32, 32],
+        "10042": ["PtWpn", "Icon10042.png", 64, 64, 32, 32],
+        "//10317": ["PtWpn", "Icon10317.png", 64, 64, 32, 32],
+        "10149": ["PtWpn", "Icon10149.png", 64, 64, 32, 32],
+        "10412": ["PtWpn", "Icon10412.png", 64, 64, 32, 32],
+        "10013": ["PtWpn", "Icon10013.png", 64, 64, 32, 32],
+        "10114": ["PtWpn", "Icon10114.png", 64, 64, 32, 32],
+        "//10318": ["PtWpn", "Icon10318.png", 64, 64, 32, 32],
+        "10023": ["PtWpn", "Icon10023.png", 64, 64, 32, 32],
+        "10115": ["PtWpn", "Icon10115.png", 64, 64, 32, 32],
+        "10217": ["PtWpn", "Icon10217.png", 64, 64, 32, 32],
+        "10413": ["PtWpn", "Icon10413.png", 64, 64, 32, 32],
+        "10116": ["PtWpn", "Icon10116.png", 64, 64, 32, 32],
+        "10033": ["PtWpn", "Icon10033.png", 64, 64, 32, 32],
+        "//10321": ["PtWpn", "Icon10321.png", 64, 64, 32, 32],
+        "10117": ["PtWpn", "Icon10117.png", 64, 64, 32, 32],
+        "10043": ["PtWpn", "Icon10043.png", 64, 64, 32, 32],
+        "10118": ["PtWpn", "Icon10118.png", 64, 64, 32, 32],
+        "10424": ["PtWpn", "Icon10424.png", 64, 64, 32, 32],
+        "10218": ["PtWpn", "Icon10218.png", 64, 64, 32, 32],
+        "//10331": ["PtWpn", "Icon10331.png", 64, 64, 32, 32],
+        "10014": ["PtWpn", "Icon10014.png", 64, 64, 32, 32],
+        "10119": ["PtWpn", "Icon10119.png", 64, 64, 32, 32],
+        "10425": ["PtWpn", "Icon10425.png", 64, 64, 32, 32],
+        "10024": ["PtWpn", "Icon10024.png", 64, 64, 32, 32],
+        "10120": ["PtWpn", "Icon10120.png", 64, 64, 32, 32],
+        "//10332": ["PtWpn", "Icon10332.png", 64, 64, 32, 32],
+        "10219": ["PtWpn", "Icon10219.png", 64, 64, 32, 32],
+        "10121": ["PtWpn", "Icon10121.png", 64, 64, 32, 32],
+        "10034": ["PtWpn", "Icon10034.png", 64, 64, 32, 32],
+        "10414": ["PtWpn", "Icon10414.png", 64, 64, 32, 32],
+        "10220": ["PtWpn", "Icon10220.png", 64, 64, 32, 32],
+        "//10333": ["PtWpn", "Icon10333.png", 64, 64, 32, 32],
+        "10122": ["PtWpn", "Icon10122.png", 64, 64, 32, 32],
+        "10044": ["PtWpn", "Icon10044.png", 64, 64, 32, 32],
+        "10123": ["PtWpn", "Icon10123.png", 64, 64, 32, 32],
+        "10419": ["PtWpn", "Icon10419.png", 64, 64, 32, 32],
+        "10015": ["PtWpn", "Icon10015.png", 64, 64, 32, 32],
+        "10124": ["PtWpn", "Icon10124.png", 64, 64, 32, 32],
+        "10221": ["PtWpn", "Icon10221.png", 64, 64, 32, 32],
+        "//10334": ["PtWpn", "Icon10334.png", 64, 64, 32, 32],
+        "10125": ["PtWpn", "Icon10125.png", 64, 64, 32, 32],
+        "10420": ["PtWpn", "Icon10420.png", 64, 64, 32, 32],
+        "10025": ["PtWpn", "Icon10025.png", 64, 64, 32, 32],
+        "10133": ["PtWpn", "Icon10133.png", 64, 64, 32, 32],
+        "10222": ["PtWpn", "Icon10222.png", 64, 64, 32, 32],
+        "//10335": ["PtWpn", "Icon10335.png", 64, 64, 32, 32],
+        "//10501": ["PtWpn", "Icon10501.png", 64, 64, 32, 32],
+        "10135": ["PtWpn", "Icon10135.png", 64, 64, 32, 32],
+        "10421": ["PtWpn", "Icon10421.png", 64, 64, 32, 32],
+        "10035": ["PtWpn", "Icon10035.png", 64, 64, 32, 32],
+        "10224": ["PtWpn", "Icon10224.png", 64, 64, 32, 32],
+        "10136": ["PtWpn", "Icon10136.png", 64, 64, 32, 32],
+        "//10336": ["PtWpn", "Icon10336.png", 64, 64, 32, 32],
+        "10225": ["PtWpn", "Icon10225.png", 64, 64, 32, 32],
+        "10415": ["PtWpn", "Icon10415.png", 64, 64, 32, 32],
+        "10045": ["PtWpn", "Icon10045.png", 64, 64, 32, 32],
+        "10137": ["PtWpn", "Icon10137.png", 64, 64, 32, 32],
+        "10226": ["PtWpn", "Icon10226.png", 64, 64, 32, 32],
+        "10422": ["PtWpn", "Icon10422.png", 64, 64, 32, 32],
+        "10138": ["PtWpn", "Icon10138.png", 64, 64, 32, 32],
+        "//10337": ["PtWpn", "Icon10337.png", 64, 64, 32, 32],
+        "10227": ["PtWpn", "Icon10227.png", 64, 64, 32, 32],
+        "10016": ["PtWpn", "Icon10016.png", 64, 64, 32, 32],
+        "10139": ["PtWpn", "Icon10139.png", 64, 64, 32, 32],
+        "10427": ["PtWpn", "Icon10427.png", 64, 64, 32, 32],
+        "//10338": ["PtWpn", "Icon10338.png", 64, 64, 32, 32],
+        "10140": ["PtWpn", "Icon10140.png", 64, 64, 32, 32],
+        "10228": ["PtWpn", "Icon10228.png", 64, 64, 32, 32],
+        "10426": ["PtWpn", "Icon10426.png", 64, 64, 32, 32],
+        "10026": ["PtWpn", "Icon10026.png", 64, 64, 32, 32],
+        "//10339": ["PtWpn", "Icon10339.png", 64, 64, 32, 32],
+        "10229": ["PtWpn", "Icon10229.png", 64, 64, 32, 32],
+        "10142": ["PtWpn", "Icon10142.png", 64, 64, 32, 32],
+        "10428": ["PtWpn", "Icon10428.png", 64, 64, 32, 32],
+        "//10502": ["PtWpn", "Icon10502.png", 64, 64, 32, 32],
+        "//10340": ["PtWpn", "Icon10340.png", 64, 64, 32, 32],
+        "10230": ["PtWpn", "Icon10230.png", 64, 64, 32, 32],
+        "10429": ["PtWpn", "Icon10429.png", 64, 64, 32, 32],
+        "10143": ["PtWpn", "Icon10143.png", 64, 64, 32, 32],
+        "//10319": ["PtWpn", "Icon10319.png", 64, 64, 32, 32],
+        "10046": ["PtWpn", "Icon10046.png", 64, 64, 32, 32],
+        "10430": ["PtWpn", "Icon10430.png", 64, 64, 32, 32],
+        "10223": ["PtWpn", "Icon10223.png", 64, 64, 32, 32],
+        "10144": ["PtWpn", "Icon10144.png", 64, 64, 32, 32],
+        "//10320": ["PtWpn", "Icon10320.png", 64, 64, 32, 32],
+        "10423": ["PtWpn", "Icon10423.png", 64, 64, 32, 32],
+        "10126": ["PtWpn", "Icon10126.png", 64, 64, 32, 32],
+        "10127": ["PtWpn", "Icon10127.png", 64, 64, 32, 32],
+        "10047": ["PtWpn", "Icon10047.png", 64, 64, 32, 32],
+        "10231": ["PtWpn", "Icon10231.png", 64, 64, 32, 32],
+        "10128": ["PtWpn", "Icon10128.png", 64, 64, 32, 32],
+        "10141": ["PtWpn", "Icon10141.png", 64, 64, 32, 32],
+        "10145": ["PtWpn", "Icon10145.png", 64, 64, 32, 32],
+        "//10503": ["PtWpn", "Icon10503.png", 64, 64, 32, 32],
+        "10048": ["PtWpn", "Icon10048.png", 64, 64, 32, 32],
+        "10129": ["PtWpn", "Icon10129.png", 64, 64, 32, 32],
+        "10431": ["PtWpn", "Icon10431.png", 64, 64, 32, 32],
+        "10130": ["PtWpn", "Icon10130.png", 64, 64, 32, 32],
+        "10131": ["PtWpn", "Icon10131.png", 64, 64, 32, 32],
+        "//10504": ["PtWpn", "Icon10504.png", 64, 64, 32, 32],
+        "11001": ["PtBody", "Icon11001.png", 64, 64, 32, 32],
+        "11002": ["PtBody", "Icon11002.png", 64, 64, 32, 32],
+        "11003": ["PtBody", "Icon11003.png", 64, 64, 32, 32],
+        "11004": ["PtBody", "Icon11004.png", 64, 64, 32, 32],
+        "11005": ["PtBody", "Icon11005.png", 64, 64, 32, 32],
+        "11006": ["PtBody", "Icon11006.png", 64, 64, 32, 32],
+        "11013": ["PtBody", "Icon11013.png", 64, 64, 32, 32],
+        "11010": ["PtBody", "Icon11010.png", 64, 64, 32, 32],
+        "11011": ["PtBody", "Icon11011.png", 64, 64, 32, 32],
+        "11012": ["PtBody", "Icon11012.png", 64, 64, 32, 32],
+        "11014": ["PtBody", "Icon11014.png", 64, 64, 32, 32],
+        "11015": ["PtBody", "Icon11015.png", 64, 64, 32, 32],
+        "11016": ["PtBody", "Icon11016.png", 64, 64, 32, 32],
+        "11017": ["PtBody", "Icon11017.png", 64, 64, 32, 32],
+        "11018": ["PtBody", "Icon11018.png", 64, 64, 32, 32],
+        "11020": ["PtBody", "Icon11020.png", 64, 64, 32, 32],
+        "11030": ["PtBody", "Icon11030.png", 64, 64, 32, 32],
+        "11031": ["PtBody", "Icon11031.png", 64, 64, 32, 32],
+        "11032": ["PtBody", "Icon11032.png", 64, 64, 32, 32],
+        "11021": ["PtBody", "Icon11021.png", 64, 64, 32, 32],
+        "11022": ["PtBody", "Icon11022.png", 64, 64, 32, 32],
+        "11023": ["PtBody", "Icon11023.png", 64, 64, 32, 32],
+        "11033": ["PtBody", "Icon11033.png", 64, 64, 32, 32],
+        "11034": ["PtBody", "Icon11034.png", 64, 64, 32, 32],
+        "12001": ["PtBtm", "Icon12001.png", 64, 64, 32, 32],
+        "12002": ["PtBtm", "Icon12002.png", 64, 64, 32, 32],
+        "12003": ["PtBtm", "Icon12003.png", 64, 64, 32, 32],
+        "12004": ["PtBtm", "Icon12004.png", 64, 64, 32, 32],
+        "12005": ["PtBtm", "Icon12005.png", 64, 64, 32, 32],
+        "12006": ["PtBtm", "Icon12006.png", 64, 64, 32, 32],
+        "12007": ["PtBtm", "Icon12007.png", 64, 64, 32, 32],
+        "12008": ["PtBtm", "Icon12008.png", 64, 64, 32, 32],
+        "12009": ["PtBtm", "Icon12009.png", 64, 64, 32, 32],
+        "12010": ["PtBtm", "Icon12010.png", 64, 64, 32, 32],
+        "12011": ["PtBtm", "Icon12011.png", 64, 64, 32, 32],
+        "12012": ["PtBtm", "Icon12012.png", 64, 64, 32, 32],
+        "12013": ["PtBtm", "Icon12013.png", 64, 64, 32, 32],
+        "12014": ["PtBtm", "Icon12014.png", 64, 64, 32, 32],
+        "12015": ["PtBtm", "Icon12015.png", 64, 64, 32, 32],
+        "12016": ["PtBtm", "Icon12016.png", 64, 64, 32, 32],
+        "12017": ["PtBtm", "Icon12017.png", 64, 64, 32, 32],
+        "12018": ["PtBtm", "Icon12018.png", 64, 64, 32, 32],
+        "12019": ["PtBtm", "Icon12019.png", 64, 64, 32, 32],
+        "12020": ["PtBtm", "Icon12020.png", 64, 64, 32, 32],
+        "12021": ["PtBtm", "Icon12021.png", 64, 64, 32, 32],
+        "12022": ["PtBtm", "Icon12022.png", 64, 64, 32, 32],
+        "12023": ["PtBtm", "Icon12023.png", 64, 64, 32, 32],
+        "13001": ["PtArmor", "Icon13001.png", 64, 64, 32, 32],
+        "13002": ["PtArmor", "Icon13002.png", 64, 64, 32, 32],
+        "13003": ["PtArmor", "Icon13003.png", 64, 64, 32, 32],
+        "13004": ["PtArmor", "Icon13004.png", 64, 64, 32, 32],
+        "13005": ["PtArmor", "Icon13005.png", 64, 64, 32, 32],
+        "13006": ["PtArmor", "Icon13006.png", 64, 64, 32, 32]
+      }
+    }
+  },
+  "candidate": {
+    "sourceNative": {
+      "iPhone": {
+        "passedTests": 3,
+        "failedTests": 0
+      },
+      "iPad": {
+        "passedTests": 2,
+        "failedTests": 0
+      }
+    },
+    "binarySHA256": "959658cb6c90b2944fbe453b0e3ee7ec71be2bd614c127062131abf6396f1052",
+    "gameSHA256": "327704eafebf1807df803c5039823528bc688a0fb863a4fb8a0887ecbdc36ca5",
+    "validation": {
+      "configuration": "Release iOS Simulator",
+      "binarySHA256": "f3cf8175779553d04f2f0a5a2c5b334fccd3b9320a76dadc08b4f5cf5d762842",
+      "phone": {
+        "frames": 2100,
+        "presented": 2100,
+        "scenarios": 126,
+        "buttonFailures": 0,
+        "report": ".local/evidence/iphone-shop-20261119.7atGic/cheat-phone-report.json",
+        "sha256": "4db33628b4498986655d6374b7263eeafafa3657438ea04de9717ee14a3b72fa"
+      },
+      "ipad": {
+        "frames": 2100,
+        "presented": 2100,
+        "scenarios": 126,
+        "buttonFailures": 0,
+        "report": ".local/evidence/iphone-shop-20261119.7atGic/cheat-ipad-report.json",
+        "sha256": "bdbf90f57722495eab4186e8e8256609a9997c247c0c90c63f056e970e8b6671"
+      }
+    },
+    "simulatorCaptureSize": [
+      912,
+      420
+    ],
+    "phoneConcurrentFrames": 720,
+    "phoneMenuFixtureRows": 20,
+    "iphoneCaptures": {
+      "cold-tablet-shop-Icon10113": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/C8D47ABA-5095-4D3A-8AF9-D84B03745188.png",
+        "width": 1032,
+        "height": 1376,
+        "sha256": "01cdc76a55bdff7c4bc90717eec21139ce7f2e3c1792fcda7c5b3210200c0b03"
+      },
+      "live-phone-sg1-buy-confirm": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/F2EAF7DA-9E36-43A4-B13F-B4A34D1FCD7E.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "a9229dc28c0ea2b83c215a50a23b21a33270e9a9a54a4bd4fe53c2a2e2d38831"
+      },
+      "live-phone-sg1-detail": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/5DB770DB-76E6-4C27-9867-6746128FE291.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "24771062db3f64de3d207a7d9d9e55dd7c373d85808530b5cf712cb42553812d"
+      },
+      "cold-phone-shop-Icon10113": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/F37465D3-EE64-4886-A00E-50DB9F5F0A7D.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "e561574e844990f2d519e1bc751439ec09702edc95d7b9d4f6663ca96e79f119"
+      },
+      "menu-iphone-Base006-command": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/14C9B842-2BD9-400E-AA39-3DA747EE88A7.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "f9b1698c53c6f7bf4ddd4070e81149e63fc9c652eedb80167e1cd8b889f384a2"
+      },
+      "menu-iphone-Base006-shop": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/80B60904-38FA-4470-9B5A-301D50D92974.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "f0ea0303e26d9a0eba5ca62301aea1b4029b1f9d5acccfdfae9c0328ae6feecb"
+      },
+      "menu-iphone-Base006-hub": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/C7E979D6-04C2-463C-AAA9-A566D623DC45.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "d3347e2767cf472169132ac0ba06dd12722045cda57fccb0ef2fa5e992f93378"
+      },
+      "menu-iphone-Base005-command": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/AE2BC360-0879-40F8-9391-9FCB68537EBB.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "f9b1698c53c6f7bf4ddd4070e81149e63fc9c652eedb80167e1cd8b889f384a2"
+      },
+      "menu-iphone-Base005-shop": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/91DA844D-702B-4E5F-80EF-8C89F28E6A7A.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "f0ea0303e26d9a0eba5ca62301aea1b4029b1f9d5acccfdfae9c0328ae6feecb"
+      },
+      "menu-iphone-Base005-hub": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/A74058BB-B7BF-469C-8C08-B73F4D6A2C43.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "4b378b49760e257e442927ed91d65f561f5329f099ebda0665104b9b9fe83128"
+      },
+      "menu-iphone-Base004-command": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/529AF3D0-6101-482A-8A8D-44B1523EB46E.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "f9b1698c53c6f7bf4ddd4070e81149e63fc9c652eedb80167e1cd8b889f384a2"
+      },
+      "menu-iphone-Base004-shop": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/9D5F1E14-BAB2-4921-A7C2-8D8EFA553E39.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "f0ea0303e26d9a0eba5ca62301aea1b4029b1f9d5acccfdfae9c0328ae6feecb"
+      },
+      "menu-iphone-Base004-hub": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/D10FA393-B98E-4B65-BC18-9FAA5FC7A363.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "1455d6eb8dbba0b1bd4c24d54cad5bbb6e79809db5cad77a984f7fdd2bc73dc9"
+      },
+      "menu-iphone-Base003-command": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/62929C4A-1F86-4E9C-A6E7-E1DEA9191276.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "f9b1698c53c6f7bf4ddd4070e81149e63fc9c652eedb80167e1cd8b889f384a2"
+      },
+      "menu-iphone-Base003-shop": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/D3E184CA-D2F9-4F08-9F01-DD5E3966D5EE.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "f0ea0303e26d9a0eba5ca62301aea1b4029b1f9d5acccfdfae9c0328ae6feecb"
+      },
+      "menu-iphone-Base003-hub": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/598EA2A7-522B-47F0-AED2-83C5E10B734E.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "84f5f34bc75e37b6fb819c1da73daf610fc4341e60872e218d8cb6c08c63820d"
+      },
+      "menu-iphone-Base002-command": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/4C8C2638-E639-4920-A0F7-AC121062EF39.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "f9b1698c53c6f7bf4ddd4070e81149e63fc9c652eedb80167e1cd8b889f384a2"
+      },
+      "menu-iphone-Base002-shop": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/914689EB-7BD3-4421-8644-7F0FCED03FEF.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "f0ea0303e26d9a0eba5ca62301aea1b4029b1f9d5acccfdfae9c0328ae6feecb"
+      },
+      "menu-iphone-Base002-hub": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/25A9CB79-CB20-4676-8039-4AF2E780F6AB.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "4bdb8ad8eaba10a68ace3804c1686a77c0d4a2099af4ac551a65ce207526dfe3"
+      },
+      "menu-iphone-Base001-command": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/D3612264-19F1-4510-8C5E-4EEDCE838664.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "f9b1698c53c6f7bf4ddd4070e81149e63fc9c652eedb80167e1cd8b889f384a2"
+      },
+      "menu-iphone-Base001-shop": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/0A8C0C75-3FB4-4280-A993-661BF227BFEC.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "f0ea0303e26d9a0eba5ca62301aea1b4029b1f9d5acccfdfae9c0328ae6feecb"
+      },
+      "menu-iphone-Base001-hub": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/2A43B7C3-9C1A-4EC3-B4CD-B503A6C235F1.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "38b2341d9a9aea40a58f04e3d3f77c2ecb19689c42b8f991e1e5edf73b278555"
+      },
+      "phone-policy-title": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/4DBC356D-C1E0-409B-BECB-26D4A7E0F095.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "389e85c98dd786f0371ac24d13736eb62e365a227a83802803f3655e0a29ad43"
+      },
+      "phone-policy-logo": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/BCCF43A3-02AD-4EC6-9126-9A338265F4FC.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "c769b2b0a59ed4729d995c323ed1f63153dbbfc8b2550e56afe9bb6c896ad8a0"
+      },
+      "phone-policy-command-last-page": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/DA6A8482-60A1-4112-A035-C6361BF155A5.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "8046ef86506041f81d253740eefa3754635a7bba884e014b7bdf6755be1211c2"
+      },
+      "phone-policy-command-detail": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/90F7CCC4-3C64-435E-BCE4-B0AF5BA5A90C.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "c311c7c361f346a43a54bb69409cd63956ec8d6f037fad7068665ecff5eae031"
+      },
+      "phone-policy-command": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/9B697DFD-2233-404A-BB91-BF1EFD3AE5B9.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "af82f5d3525cc6b84acd855bd4655c8631309e01bbf41f45056be2ad537766b1"
+      },
+      "phone-policy-shop-equipment": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/B8E26E02-0671-4EB7-BF20-C18F39A9BABD.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "7333e014d536fa6696cbb32861de60fa7bd5c99344a9d90638700f1622828ca9"
+      },
+      "phone-policy-shop-sell-trade": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/2B64531E-82A7-42CA-B09E-75C8D6134648.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "d95fc1938202bd30ca7c931fe986490655ebf4778825329845c0079238789bd1"
+      },
+      "phone-policy-shop-sell": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/43A65C71-E63E-4129-84B5-DEEEE9A7CB54.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "cd45003007695e75535a11ce62bcfcca9cef21ea99fde1c7d0a311aa8fed4939"
+      },
+      "phone-policy-shop-trade": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/7FE26602-5C46-4C69-99CE-C0F1A310836D.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "f55bc418bab19d6b80d182489c3b78f5b1dad7c5bd00a01f4fb3de39fff3b2e6"
+      },
+      "phone-policy-shop-last-page": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/407B68B3-079C-4F3A-84FF-C85111787ECE.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "cefb577f9c8e5a6b3fe73488dac9dfe1e70166e7995ebeeada2bf80de84b4b0b"
+      },
+      "phone-policy-shop-detail-row2": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/20058FE7-EC74-404B-8202-8D201A9C45E6.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "f9316e7227e762e2746281555326eade5a2462505fc491094f9585e0748665dc"
+      },
+      "phone-policy-shop-detail": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/D19023E3-0E89-4170-ABCB-E8E43B50FFF5.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "55ed9fa381f7258bdd7f24195841b810c9920860f3b45814e5549c83321409ef"
+      },
+      "phone-policy-shop": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/46690515-56D5-4D4E-9692-87CF7B77C70B.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "76b855daf0aa7297d857f6cb9fe3ffd02615d7ff6c9b0d3bac4062a5545cbe36"
+      },
+      "phone-policy-hub-Base006": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/991E5F72-0838-42C3-B4FD-4FE9A9814AC0.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "73e4db790690ee90001ec067f44dda85970113dbc6f0350a308ca5fb83ac0a64"
+      },
+      "phone-policy-hub-Base005": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/A0D0A696-E6B4-4BEC-BB8B-F992995CD0AE.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "31f230f7cf89b46a67b6ac29bfb699bdfa6aba602ea7160366b0ef6fae6dbc5e"
+      },
+      "phone-policy-hub-Base004": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/DAE61D17-E5B6-4352-9B14-152A48D96F98.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "9b3762fa634086ba555774230c77b856487bca14dc14ebb15b06717079da61c1"
+      },
+      "phone-policy-hub-Base003": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/3FF7E96D-106E-448E-AC05-A57ECD1B0BFE.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "d20197cf6b4279c3de98912d8321546a29a61e38c12e23ba3d2dd66169a85cb2"
+      },
+      "phone-policy-hub-Base002": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/C0DE63A6-5F08-483E-967D-DCE9372C8292.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "f7ba759223d7d758431b03d6cc1c26d70bfdbac0575a2cdecdd1bb995257be75"
+      },
+      "phone-policy-hub-Base001": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/E18C628A-0367-4C6C-882F-0430BA06D88F.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "a65467c7dc84e4cc9c29571d5c0f54d0b57b2e582d8c499f2f723ae0917ac0ba"
+      },
+      "phone-policy-stage-name": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/phone-delivery/9DE63125-1488-4034-B42F-465DDD8DA9C2.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "9e5d12079befe7155c1f9e4b01e639e6ab1e2e8767898ac998171d99624f2a24"
+      }
+    },
+    "ipadByteIdenticalShopScreens": [
+      "menu-ipad-Base001-shop",
+      "menu-ipad-Base002-shop",
+      "menu-ipad-Base003-shop",
+      "menu-ipad-Base004-shop",
+      "menu-ipad-Base005-shop",
+      "menu-ipad-Base006-shop"
+    ],
+    "ipadCaptures": {
+      "cold-tablet-shop-Icon10113": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/717007D4-9F9D-4BE5-93CD-3CDB77250C36.png",
+        "width": 1032,
+        "height": 1376,
+        "sha256": "01cdc76a55bdff7c4bc90717eec21139ce7f2e3c1792fcda7c5b3210200c0b03"
+      },
+      "live-phone-sg1-buy-confirm": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/0DADF07D-BA81-4692-8BA3-94CF8B28105A.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "a9229dc28c0ea2b83c215a50a23b21a33270e9a9a54a4bd4fe53c2a2e2d38831"
+      },
+      "live-phone-sg1-detail": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/F231319F-EE9A-4B77-AAD2-71F43403E8FB.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "24771062db3f64de3d207a7d9d9e55dd7c373d85808530b5cf712cb42553812d"
+      },
+      "cold-phone-shop-Icon10113": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/DA088CE6-90E9-4BF2-B673-9692BB288E5D.png",
+        "width": 912,
+        "height": 420,
+        "sha256": "e561574e844990f2d519e1bc751439ec09702edc95d7b9d4f6663ca96e79f119"
+      },
+      "menu-ipad-Base006-command": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/F3F07081-63AC-4D29-A362-F253E32659F8.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "ecb61c131c675ff75f328000202a690e64443319c240f94bc563a3707d06c54f"
+      },
+      "menu-ipad-Base006-shop": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/5922B8B3-DD52-4007-B4CD-CD73B2CEDCA2.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142"
+      },
+      "menu-ipad-Base006-hub": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/799CDD38-AC34-4770-A027-C887513C218D.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "8ed6e8de4eda13a4b3464c23be16c414284127f68d4c34b04b6cc3a8f79a8392"
+      },
+      "menu-ipad-Base005-command": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/8B2FE152-6392-4B09-B685-31DD1660C345.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "ecb61c131c675ff75f328000202a690e64443319c240f94bc563a3707d06c54f"
+      },
+      "menu-ipad-Base005-shop": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/77FF424B-D9D1-4064-A21A-E8D7E355EC1F.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142"
+      },
+      "menu-ipad-Base005-hub": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/F16A4F67-F0F4-4961-B573-19261A0C4EB0.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "29666276214b456bd1ad0ef4424bc44e1b98846f8be849145ee22d9e451ce621"
+      },
+      "menu-ipad-Base004-command": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/08C6FE5A-7863-4763-B77D-8631228EFB1F.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "ecb61c131c675ff75f328000202a690e64443319c240f94bc563a3707d06c54f"
+      },
+      "menu-ipad-Base004-shop": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/D4FCCF6E-9EA5-4CCD-BA49-7EA7706A1EBF.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142"
+      },
+      "menu-ipad-Base004-hub": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/2F0E5A73-BCD5-4504-83D9-7B3CC6FD7753.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "57b36a66ecbd18df835dd5b441cb6b828f05a8793d85d2e5ff2119ee5fb7e8dc"
+      },
+      "menu-ipad-Base003-command": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/5808E162-C6D3-4B58-9F30-57468BB94D28.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "ecb61c131c675ff75f328000202a690e64443319c240f94bc563a3707d06c54f"
+      },
+      "menu-ipad-Base003-shop": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/8D0A541F-1C22-40E5-B7E9-5718FD3069DC.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142"
+      },
+      "menu-ipad-Base003-hub": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/A90B2DA6-6FB1-4C42-894D-FCFBB6EC9D0B.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "d695cc28c93e1a60c073ca109d894d54a31df4ab88bce2ca0d04c0ee1fd4b676"
+      },
+      "menu-ipad-Base002-command": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/26AE3C82-07FC-4F7C-90A5-D022E4FF52DD.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "ecb61c131c675ff75f328000202a690e64443319c240f94bc563a3707d06c54f"
+      },
+      "menu-ipad-Base002-shop": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/1908D8EA-8DD7-4B9D-B3F0-CFA13773E08E.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142"
+      },
+      "menu-ipad-Base002-hub": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/8C55EF4B-0B9D-4E61-AA71-C22A5F3EB48F.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "df038479cfa4aeeb149536e7fc0bee4bfaaad6124243c080fe303d6962b7e378"
+      },
+      "menu-ipad-Base001-command": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/DD74AFD6-D2A6-4D79-92E1-8C94B72470C0.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "ecb61c131c675ff75f328000202a690e64443319c240f94bc563a3707d06c54f"
+      },
+      "menu-ipad-Base001-shop": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/9343010E-4F44-4039-B7A8-2AE574E31904.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142"
+      },
+      "menu-ipad-Base001-hub": {
+        "file": ".local/evidence/iphone-shop-20261119.7atGic/ipad-delivery/C2EB1EC8-6394-4B13-9FF3-B29B2B4D4BCB.png",
+        "width": 1024,
+        "height": 1366,
+        "sha256": "5e029c7e28d477e6a0ec3ca2482e4a90160bb638de3e90fa439ee67d74b37def"
+      }
+    },
+    "sourceHashes": {
+      "Sources/Core/UI/Screens.cpp": "c80f0593222f3aeb9d91199ad1e6a734a2ce2ac4fe20f27e5870a16847d99a62",
+      "Sources/Core/Presentation/MenuArtwork.hpp": "2677098b769360d17916df3a670f045e3bdc2fac4290765c308f029d12b5bd34",
+      "Sources/Core/Presentation/MenuGridLayout.hpp": "bed470927375fcff4782bbbb3c1a1fdd1bf6e62ae5b60cac5b217ee5339529c6",
+      "tools/prepare_phone_menu_assets.py": "306690e6bf6c8d3c4f86f07f81ade42c3657015d8179747636dfa299df8b9ba1",
+      "tests/DisplayLayoutTests.cpp": "37c7c98616fe603759e9936a9981acd04b0820911ed25434270f02ad1e894b55",
+      "Apple/Tests/SessionRendererTests.mm": "891249c1bc3a2710e655906e6d94d8082599d14e54737ad56c2e2c62ef2e3d02"
+    }
+  },
+  "open": [
+    "Equip stat rows and third BOT overlap and crop",
+    "Original higher-level catalogs and multi-page stock runtime",
+    "Original filled BOT slots 2 and 3 and original drag/drop parity",
+    "Full on-screen size comparison across the original item catalog; PNG dimensions verified for all 285 ItemInfo rows",
+    "Candidate physical install/play verification"
+  ]
+}

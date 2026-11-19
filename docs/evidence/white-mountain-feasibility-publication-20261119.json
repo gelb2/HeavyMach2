@@ -1,0 +1,40 @@
+{
+  "version": 319,
+  "sourceCommit": "a84b264b47809c290439c45285c07be5111b0c24",
+  "deploymentId": "appgdep_6afedd55fab88191ac402101a3a0b2e1",
+  "deploymentStatus": "succeeded",
+  "publishedUrl": "https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/white-mountain-feasibility-20261119.html",
+  "access": {
+    "owners": 1,
+    "users": 1,
+    "groups": 0,
+    "external": 0
+  },
+  "archive": {
+    "compressed": 257254034,
+    "expanded": 268432896
+  },
+  "verified": {
+    "authenticatedStatus": {
+      "white-mountain-feasibility-20261119.html": 200,
+      "original-unused-content-20261119.html": 200,
+      "evidence/white-mountain-feasibility-20261119.json.gz": 200,
+      "evidence/original-unused-content-20261119.json.gz": 200,
+      "evidence/shared-snow-art-registration-compact.webp": 200,
+      "report-index-content.bin": 200
+    },
+    "unauthenticatedStatus": {
+      "white-mountain-feasibility-20261119.html": 403,
+      "evidence/white-mountain-feasibility-20261119.json.gz": 403,
+      "evidence/shared-snow-art-registration-compact.webp": 403
+    },
+    "verifiedResponseSha256": {
+      "white-mountain-feasibility-20261119.html": "b0ba081d97324aed0a85de1a910f9c251641d580c5d71e022653880bcd27f380",
+      "original-unused-content-20261119.html": "99049e188b98a7206436977dd9f60b177701a2544ee58eff062fb9f11929bdb5",
+      "evidence/white-mountain-feasibility-20261119.json.gz": "5153e177aaffc49546e521dbb0ef54723e96042fc343381a90363057af378b04",
+      "evidence/original-unused-content-20261119.json.gz": "58d62b50016ba7f4c33ffb300ae85563bc040d81429ad8f044eb7ba8767c8cdd",
+      "evidence/shared-snow-art-registration-compact.webp": "54b666339e1402048c01e7741a23d6bc0512f426f8c6c5bb24ec87eb88b76d19",
+      "report-index-content.bin": "143ec273b21040828a0968bbdf860ad4497ac8b7fcc84bf31e91cac9208b766a"
+    }
+  }
+}

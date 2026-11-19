@@ -1,0 +1,212 @@
+{
+  "sourceCommit": "f8e82d85b0f4893fe7b56fa448e4db6955b05a82",
+  "configuration": "Release",
+  "scheme": "HeavyMach2Source",
+  "package": {
+    "bundleId": "com.gelb2.heavymach2.restored",
+    "version": "0.1.0",
+    "build": "1",
+    "arch": "arm64",
+    "signedForBothDevices": true,
+    "profileExpires": "2026-11-20T11:15:54",
+    "executableSHA256": "afb3932442872cff4d5791e8607a98275040091ba0cd839e7fb2ca4798dec101",
+    "uuid": "12E5C3C2-A3C1-3421-9351-4D24A07D65D4",
+    "assets": {
+      "HD": 1550
+    }
+  },
+  "codesignStrictVerified": true,
+  "signedForBothDevices": true,
+  "playInput": "Xcode Device Hub to locally paired physical iOS devices",
+  "sourceEvidence": ".local/evidence/dual-release-install-f8e82d8.RFJjX3",
+  "physicalScreenRecordingAvailable": false,
+  "profiles": {
+    "iphone": {
+      "osVersion": "27.2.1",
+      "installationSucceeded": true,
+      "launchSucceeded": true,
+      "fullPreInstallBackup": {
+        "files": 10,
+        "bytes": 7369597
+      },
+      "saveBytesEqualBeforeFirstLaunch": 28204,
+      "existingHUDUnchanged": true,
+      "shopNextPageAndDetailsObserved": true,
+      "inventoryNextPageObserved": true,
+      "wastelandBaseToSkywayGate1": true,
+      "worldMovementObserved": true,
+      "doubleTapBoostObserved": true,
+      "boosterGaugeDecreased": true,
+      "baseOnReturn": "Base003",
+      "experienceGainedDuringPlay": 200,
+      "levelCreditAndHealthEqualAfterPlay": true,
+      "reportedAppCrashFilesAfterPlay": 0,
+      "screenshotsSha256": {
+        "release-launch": "2d13102c801dfff2166a20e3e11f52ea57ccc5fafe7a6e51f4b890b650ba150e",
+        "shop-next-detail": "0ddfdedfd01d6bf3b510a2fe0b3b4a1256bf5c46248a25d996e4e72e3af21a2c",
+        "after-skyway": "72eecaa476069f3ffb08dee159ea0046c2aa48bf0adce4f0a7f1ad4dc2a161cf"
+      }
+    },
+    "ipad": {
+      "osVersion": "27.2.1",
+      "installationSucceeded": true,
+      "launchSucceeded": true,
+      "fullPreInstallBackup": {
+        "files": 10,
+        "bytes": 21779234
+      },
+      "saveBytesEqualBeforeFirstLaunch": 28204,
+      "existingHUDUnchanged": null,
+      "shopNextPageAndDetailsObserved": true,
+      "inventoryNextPageObserved": false,
+      "wastelandBaseToSkywayGate1": true,
+      "worldMovementObserved": true,
+      "doubleTapBoostObserved": true,
+      "boosterGaugeDecreased": true,
+      "baseOnReturn": "Base003",
+      "experienceGainedDuringPlay": 200,
+      "levelCreditAndHealthEqualAfterPlay": true,
+      "reportedAppCrashFilesAfterPlay": 0,
+      "screenshotsSha256": {
+        "release-launch": "76623f6e62f6cd77cef7636710d613d1ff9a279e3a1285b0dfd6a070b8940972",
+        "shop-next-detail": "f809fe2cb67ed08554abbb300a24e0d6f4c09bc298a82f2012bf4524e8e25d81",
+        "after-skyway": "bc9b644206f5668526930d0b1cd86a7c00f0e63cd8003ff0aef1eb38126af66f"
+      },
+      "existingHUDFile": false
+    }
+  },
+  "limits": [
+    "Physical tests use live view and screenshots. No physical per-frame micro-jitter or zoom trace was collected.",
+    "Menu row count changes were reproduced and verified in the simulator.",
+    "No physical duration or failure-rate benchmark was run."
+  ],
+  "physicalIPhoneShopDisplayDefects": [
+    {
+      "file": "iphone-shop-next-detail.png",
+      "pixels": [
+        2736,
+        1260
+      ],
+      "sha256": "0ddfdedfd01d6bf3b510a2fe0b3b4a1256bf5c46248a25d996e4e72e3af21a2c",
+      "observation": "ML-K3 details obscure the stock pager and footer, and BUY obscures inventory cells and quantity labels."
+    },
+    {
+      "file": "iphone-shop-equipment-overlap.png",
+      "pixels": [
+        2736,
+        1260
+      ],
+      "sha256": "3e965a5cbe7a3519bbe4c5b58b0e7b32c55c45e6283fb3679d96ca3e751b9700",
+      "observation": "Equipment stat text overlaps the Shop and Equip footer and is clipped at the lower edge. The third BOT icon crosses the equipment panel's lower boundary."
+    }
+  ],
+  "restoredPhoneShopSimulatorSnapshots": {
+    "examples": [
+      {
+        "file": "iphone-shop-simulator-captures/shop-trade.png",
+        "sha256": "f55bc418bab19d6b80d182489c3b78f5b1dad7c5bd00a01f4fb3de39fff3b2e6"
+      },
+      {
+        "file": "iphone-shop-simulator-captures/shop-last-page.png",
+        "sha256": "cefb577f9c8e5a6b3fe73488dac9dfe1e70166e7995ebeeada2bf80de84b4b0b"
+      },
+      {
+        "file": "iphone-shop-simulator-captures/shop-detail.png",
+        "sha256": "7ead69eaea5a7feda88ad909050bf450f1992ae1531dfe06ed0da7edd59ea07f"
+      },
+      {
+        "file": "iphone-shop-simulator-captures/shop.png",
+        "sha256": "76b855daf0aa7297d857f6cb9fe3ffd02615d7ff6c9b0d3bac4062a5545cbe36"
+      }
+    ],
+    "cases": [
+      {
+        "case": "shop",
+        "canvas": [
+          912,
+          420
+        ],
+        "frame": 180,
+        "scrollBefore": [
+          0,
+          0
+        ],
+        "scrollAfterHorizontal": [
+          0,
+          0
+        ],
+        "scrollAfterVertical": [
+          0,
+          0
+        ],
+        "controlsUnmovedAfterDrag": true
+      },
+      {
+        "case": "shop-detail",
+        "canvas": [
+          912,
+          420
+        ],
+        "frame": 180,
+        "scrollBefore": [
+          0,
+          0
+        ],
+        "scrollAfterHorizontal": [
+          0,
+          0
+        ],
+        "scrollAfterVertical": [
+          0,
+          0
+        ],
+        "controlsUnmovedAfterDrag": true
+      },
+      {
+        "case": "shop-last-page",
+        "canvas": [
+          912,
+          420
+        ],
+        "frame": 180,
+        "scrollBefore": [
+          0,
+          0
+        ],
+        "scrollAfterHorizontal": [
+          0,
+          0
+        ],
+        "scrollAfterVertical": [
+          0,
+          0
+        ],
+        "controlsUnmovedAfterDrag": true
+      },
+      {
+        "case": "shop-trade",
+        "canvas": [
+          912,
+          420
+        ],
+        "frame": 180,
+        "scrollBefore": [
+          0,
+          0
+        ],
+        "scrollAfterHorizontal": [
+          0,
+          0
+        ],
+        "scrollAfterVertical": [
+          0,
+          0
+        ],
+        "controlsUnmovedAfterDrag": true
+      }
+    ],
+    "runtime": "iOS 26.5 iPhone Air Simulator",
+    "source": "f8e82d8 Debug Native XCTest",
+    "fixtureTestSucceeded": true
+  }
+}

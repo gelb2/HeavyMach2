@@ -49,7 +49,7 @@ struct BaseDescriptionNode {
 enum class DetailKind {shop,inventory,maintenance};
 struct DetailPresentation {
     DetailKind kind=DetailKind::shop;std::uint64_t revision=0;int absolute=-1;
-    ItemView entry;Vec2 origin,descPos;float x=.01f,y=.01f;bool vertical=false,up=false,phoneArtwork=false;
+    ItemView entry;Vec2 origin,descPos;float x=.01f,y=.01f,phoneScale=1;bool vertical=false,up=false,phoneArtwork=false;
     unsigned layer=9;std::shared_ptr<Button> background;
     std::shared_ptr<Text> title,description;std::optional<VisualImage> large;
 };
@@ -149,7 +149,11 @@ struct Screens::Impl {
         }
         if constexpr(std::is_same_v<T,ButtonNode>){
             const auto id=node.button->key().id;
-            if(phoneMenu()&&(id==2100||id==9204||id==9205))node.region=Region::phoneFooter;
+            if(phoneMenu()){
+                if(id==2100)node.region=Region::phoneFooter;
+                if(id==9204)node.region=Region::phoneStockFooter;
+                if(id==9205)node.region=Region::phoneEquipmentFooter;
+            }
             if(phoneMenu()&&id==6093)node.region=Region::phoneHeader;
             if(state.screen==ScreenId::slots&&id!=1009)node.region=Region::bottom;
             if(state.screen==ScreenId::shop&&id==2100&&!phoneMenu())node.region=Region::shopFooter;
@@ -161,15 +165,30 @@ struct Screens::Impl {
         if(node.region==Region::top)node.hudGroup=-1;
         nodes.push_back(std::move(node));
     }
-    unsigned menuRows()const{return menu::visibleRows(layout.configuration());}
-    unsigned stockCells()const{return menuRows()*4;}
-    unsigned inventoryCells()const{return menuRows()*5;}
+    static constexpr unsigned stockCells(){return menu::phoneShopRows*4;}
+    static constexpr unsigned inventoryCells(){return menu::phoneShopRows*5;}
     bool phoneMenu()const{return menu::phone(layout.configuration())&&(state.screen==ScreenId::shop||state.screen==ScreenId::maintenance);}
-    bool phoneNodeVisible(Region r)const{if(!phoneMenu())return true;if(r==Region::phoneEquipment)return phoneEquipment;if(r==Region::phoneStock||r==Region::phoneStockHeader||r==Region::phoneCategoryHeader)return !phoneEquipment;return true;}
-    void setPhoneEquipment(bool value){phoneEquipment=value;for(const auto& [button,r]:buttonRegions)const_cast<Button*>(button)->visible=phoneNodeVisible(r);}
+    bool phoneNodeVisible(Region r)const{
+        if(!phoneMenu())return true;
+        if(r==Region::phoneEquipment||r==Region::phoneEquipmentFooter)return phoneEquipment;
+        if(r==Region::phoneStock||r==Region::phoneStockHeader||r==Region::phoneCategoryHeader||r==Region::phoneStockFooter)return !phoneEquipment;
+        return true;
+    }
+    void setPhoneEquipment(bool value){
+        phoneEquipment=value;
+        for(const auto& [button,r]:buttonRegions)const_cast<Button*>(button)->visible=phoneNodeVisible(r);
+    }
     Region scrollingRegion()const{return state.weaponChoiceType?Region::chooser:Region::list;}
     float verticalLimit()const{if(menu::phone(layout.configuration())&&(state.screen==ScreenId::base||state.screen==ScreenId::shop||state.screen==ScreenId::maintenance||state.screen==ScreenId::command))return 0;if(!layout.configuration().enabled)return 0;const auto r=scrollingRegion();if(!layout.configuration().compact&&r==Region::list)return 0;if(r==Region::list&&state.screen!=ScreenId::command&&!state.missionVisible)return 0;const float height=r==Region::chooser?std::max(1024.f,float(state.weaponChoices.size())*36+200):listTop-listBottom+12;return std::max(0.f,height*layout.ui(r).scale-layout.clip(r)->height);}
-    DisplayTransform presentation(Region r)const{auto t=layout.ui(r,r==Region::artScene||menu::menuRegion(r)?0.f:r==Region::list||r==Region::chooser?verticalPan:shopPan);if(r==Region::list&&layout.configuration().enabled&&layout.configuration().compact)t.offset.y+=(1024-listTop)*t.scale-8;return t;}
+    bool tabletMenu()const{return layout.configuration().enabled&&!menu::phone(layout.configuration())&&(state.screen==ScreenId::base||state.screen==ScreenId::shop||state.screen==ScreenId::command);}
+    DisplayTransform presentation(Region r)const{
+        if(tabletMenu())return layout.ui(Region::tabletMenu);
+        if(phoneMenu()&&(r==Region::phoneHeader||r==Region::phoneFooter))
+            return menu::phoneReferenceUI(layout.configuration());
+        auto transform=layout.ui(r,r==Region::artScene||menu::menuRegion(r)?0.f:r==Region::list||r==Region::chooser?verticalPan:shopPan);
+        if(r==Region::list&&layout.configuration().enabled&&layout.configuration().compact)transform.offset.y+=(1024-listTop)*transform.scale-8;
+        return transform;
+    }
     DisplayTransform presentation(Region r,int group)const{
         auto t=presentation(r);if(group<0||!hud)return t;
         const auto base=layout.ui(Region::bottom),custom=hud::transform(hud->active(),unsigned(group),layout);
@@ -179,6 +198,7 @@ struct Screens::Impl {
         t.offset.x+=delta(custom.offset.x,base.offset.x);t.offset.y+=delta(custom.offset.y,base.offset.y);return t;
     }
     std::optional<ClipRect> clipping(Region r,int group=-1)const{
+        if(tabletMenu())return layout.clip(Region::tabletMenu);
         if(group>=0&&hud&&hud->active().customized()){
             return hud::originalClip(hud->active(),unsigned(group),layout);
         }
@@ -214,7 +234,9 @@ struct Screens::Impl {
     PlaceNamePresentation placeName;
     std::vector<std::pair<std::shared_ptr<Button>,Vec2>> chooserMoves;
     float now=0;
-    std::shared_ptr<DetailPresentation> detail;FieldPresentation fieldPresentation;
+    std::shared_ptr<DetailPresentation> detail;
+    std::optional<std::uint64_t> dismissedSaleDetail;
+    FieldPresentation fieldPresentation;
     CommandPresentation command;
     std::vector<CommandNode> commandNodes;
     float commandSelectedRowY=0;
@@ -224,9 +246,22 @@ struct Screens::Impl {
         ++*resourceGeneration;
         if(previous&&previous->state.screen==s.screen){if(menu::phone(previous->layout.configuration())==menu::phone(display))title=previous->title;else{const auto art=menu::title(display);title.bigX=art.bigStart;title.bgPosition=art.bgStart;title.start=time;}commandWindow=previous->commandWindow;phoneEquipment=previous->phoneEquipment;stockWindow=previous->state.shopCategory==s.shopCategory?previous->stockWindow:0;inventoryWindow=previous->inventoryWindow;message=previous->message;layers=previous->layers;shopPan=phoneMenu()?0.f:std::min(previous->shopPan,layout.shopPanLimit());if(previous->state.weaponChoiceType==s.weaponChoiceType&&previous->state.missionVisible==s.missionVisible)verticalPan=std::min(previous->verticalPan,verticalLimit());}
         else{const auto art=menu::title(display);title.bigX=art.bigStart;title.bgPosition=art.bgStart;title.start=time;layers=std::make_shared<std::array<VisualLayer,14>>();}
-        if(previous){fieldPresentation=previous->fieldPresentation;placeName=previous->placeName;}
+        if(phoneMenu()&&s.screen==ScreenId::maintenance)phoneEquipment=true;
+        if(previous){
+            if(previous->state.baseId==state.baseId&&phoneMenu()&&previous->phoneMenu()){
+                if(previous->state.screen==ScreenId::maintenance&&state.screen==ScreenId::shop&&state.inventoryPage==previous->state.inventoryPage)
+                    inventoryWindow=previous->inventoryWindow;
+            }
+            fieldPresentation=previous->fieldPresentation;placeName=previous->placeName;
+        }
         // accept5004 only invalidates Command.curState. Keep its existing rows
         // until the following Command tick actually refreshes the list.
+        if(phoneMenu()){
+            const auto offset=std::size_t(std::max(0,state.shopPage))*24;
+            const auto remaining=state.shopItems.size()-std::min(offset,state.shopItems.size());
+            const auto count=unsigned(std::min<std::size_t>(24,remaining));
+            stockWindow=std::min(stockWindow,count?(count-1)/stockCells():0u);
+        }
         if(previous&&s.screen==ScreenId::command&&previous->state.screen==s.screen&&s.commandListRevision&&s.commandListRevision==previous->state.commandListRevision){
             state.availableMissions=previous->state.availableMissions;state.acceptedMissions=previous->state.acceptedMissions;
             state.selectedMission=-1;
@@ -265,7 +300,7 @@ struct Screens::Impl {
     }
     TileImage* tile(std::string_view name,unsigned columns=1,unsigned rows=1){
         if(name.starts_with("PhoneMenu/")&&!menu::phone(layout.configuration()))return nullptr;
-        auto* t=tiles.prepare(resources,name);if(t){t->columns=columns;t->rows=rows;if(name.starts_with("PhoneMenu/"))t->forRetina=menu::retina(name);}return t;
+        auto* t=tiles.prepare(resources,name);if(t){t->columns=columns;t->rows=rows;if(name.starts_with("PhoneMenu/"))t->forRetina=menu::retina(name);else if(name=="PhoneShopPanel.png"||name=="PhoneEquipPanel.png")t->forRetina=true;}return t;
     }
     void image(std::string_view name,Vec2 position,unsigned columns=1,unsigned rows=1,unsigned index=0,
                Vec2 scale={1,1},bool atlas=false,unsigned blend=0,float alpha=1,unsigned layer=7,std::string tag={}){
@@ -581,7 +616,6 @@ RegionScope card(*this,Region(unsigned(Region::slot0)+i));
     void buildDetail(DetailKind,const ItemView&,Vec2,int=-1);
     void layoutDetail();
     void tickDetail();
-    void placePhoneTradeAction();
     void syncEnemyName();
     void tickRange(WorldRandom&);
     void tickFieldCredits(){
@@ -596,10 +630,12 @@ RegionScope card(*this,Region(unsigned(Region::slot0)+i));
         if(magnitude<5)displayed=target;
     }
     void inventory(Vec2,bool=false,bool=false);
+    void phonePageDots(Vec2,std::size_t,std::size_t);
     void equip(Vec2,unsigned=9,bool=false);
     void bots(Vec2,bool=false);
     void inventoryDialog(Vec2,bool=false);
     void phoneShop(bool);
+    void phoneTradeAction();
     Vec2 phoneDropPoint(Vec2)const;
     void maintenance();
     void shop();
@@ -634,17 +670,19 @@ void Screens::Impl::buildDetail(DetailKind kind,const ItemView& entry,Vec2 origi
         else{const int cell=absolute%25;d.up=cell>9;d.descPos={108,float(61-(cell/5)*40+(d.up?20:-21))};}
     }
     if(phone){
-        const float row=kind==DetailKind::shop?float(std::max(0,state.selectedShop)/4)-float(stockWindow*menuRows()):float(std::max(0,absolute)%25/5)-float(inventoryWindow*menuRows());
-        d.up=row>=2;d.descPos={(kind==DetailKind::shop?-136.f:106.f)*1.5f,(60-40*row+(d.up?20.f:-21.f))*1.5f};
-        // Preserve the original popup geometry. Place the complete animated
-        // panel inside the current content area before it opens.
-        const auto t=presentation(Region::phoneMenu);const auto area=layout.configuration().content();const auto center=t.map(plus(d.origin,{d.descPos.x,d.descPos.y+(d.up?93.f:-93.f)}));const float hx=192*t.scale,hy=96*t.scale;
-        if(area.width>=hx*2)d.origin.x+=(std::clamp(center.x,area.x+hx,area.x+area.width-hx)-center.x)/t.scale;
-        if(area.height>=hy*2){const float delta=std::clamp(center.y,area.y+hy,area.y+area.height-hy)-center.y;d.origin.y+=delta/t.scale;}
+        const int cell=kind==DetailKind::shop?absolute%int(stockCells()):absolute%25%int(inventoryCells());
+        const int row=cell/(kind==DetailKind::shop?4:5);
+        d.up=row>=2;
+        d.descPos={(kind==DetailKind::shop?-136.f:106.f)*1.5f,(60-40.f*row+(d.up?20.f:-21.f))*1.5f};
+        const Vec2 preferred=plus(d.origin,plus(d.descPos,{0,d.up?93.f:-93.f}));
+        const auto fitted=menu::shopDetail(layout.configuration(),preferred,kind==DetailKind::shop,phoneEquipment);
+        d.phoneScale=fitted.scale;
+        if(d.phoneScale==0){detail.reset();return;}
+        d.origin={fitted.center.x-d.descPos.x,fitted.center.y-d.descPos.y-(d.up?93.f:-93.f)*d.phoneScale};
     }
     d.layer=phone?13u:kind==DetailKind::inventory?13u:kind==DetailKind::shop?3u:9u;
     if(phone||kind!=DetailKind::shop){
-        d.background=addButton(kind==DetailKind::maintenance?Panel::root:Panel::inventory,2112,phone?menu::phoneAsset("ItemDesc.png"):"ItemDesc.png",plus(origin,d.descPos),1,1,0,0,phone?Size{309,192}:Size{206,128},0,{}, {d.x,d.y},true,d.layer,false,reuse);
+        d.background=addButton(kind==DetailKind::maintenance?Panel::root:Panel::inventory,2112,phone?menu::phoneAsset("ItemDesc.png"):"ItemDesc.png",plus(origin,d.descPos),1,1,0,0,phone?Size{menu::detailHitSize.width*d.phoneScale,menu::detailHitSize.height*d.phoneScale}:Size{206,128},0,{}, {d.x,d.y},true,d.layer,false,reuse);
     }
     if(!reuse){
         const bool maintenance=phone||kind==DetailKind::maintenance;
@@ -655,7 +693,8 @@ void Screens::Impl::buildDetail(DetailKind kind,const ItemView& entry,Vec2 origi
             if(nodes.size()==count)return std::shared_ptr<Text>{};auto result=std::get<TextNode>(nodes.back()).text;nodes.pop_back();return result;
         };
         d.title=label(source+".title",entry.name,maintenance?Size{128,16}:Size{160,24},maintenance?12.f:16.f,TextAlign::center,{});
-        d.description=label(source+".description",entry.description,{160,90},12,TextAlign::left,kind==DetailKind::shop?Color{120.f/255,240.f/255,240.f/255,1}:Color{});
+        const auto descriptionColor=kind==DetailKind::shop&&!phone?Color{120.f/255,240.f/255,240.f/255,1}:Color{};
+        d.description=label(source+".description",entry.description,{160,90},12,TextAlign::left,descriptionColor);
         if(entry.originalType==10||entry.originalType==11||entry.originalType==12)if(auto* t=tile(entry.largeIcon)){
             VisualImage image;image.tile=tiles.visual(*t);image.tileNo=0;image.useAtlas=false;d.large=std::move(image);
         }
@@ -664,7 +703,23 @@ void Screens::Impl::buildDetail(DetailKind kind,const ItemView& entry,Vec2 origi
 }
 void Screens::Impl::layoutDetail(){
     if(!detail)return;auto& d=*detail;const bool shop=d.kind==DetailKind::shop,maintenance=d.kind==DetailKind::maintenance;
-    if(d.phoneArtwork){const float parentY=d.descPos.y+(d.vertical?(d.up?93.f:-93.f)*d.y:0);const auto parent=plus(d.origin,{d.descPos.x,parentY});if(d.background){d.background->position=parent;d.background->scale={d.x*1.5f,d.y*1.5f};}if(d.title){d.title->position=plus(parent,{0,d.vertical?70.5f*d.y:0});d.title->scale={d.x*1.5f,d.y*1.5f};d.title->visible=d.vertical;}if(d.description){d.description->position=plus(parent,{d.large?(d.entry.originalType==10?48.f:114.f):0,d.vertical?-18.f*d.y:0});d.description->scale={d.x*1.5f,d.y*1.5f};d.description->visible=d.vertical;}if(d.large){d.large->screenPosition=plus(parent,{d.entry.originalType==10?-114.f:-78.f,d.vertical?-15.f*d.y:0});d.large->scale={1.5f,d.vertical?1.5f*d.y:1.5f};d.large->show=d.vertical;}return;}
+    if(d.phoneArtwork){
+        const float y=d.vertical?d.y:0;
+        const float scale=d.phoneScale;
+        const Vec2 parent=plus(d.origin,plus(d.descPos,{0,(d.up?93.f:-93.f)*y*scale}));
+        const Vec2 animatedScale{1.5f*d.x*scale,1.5f*d.y*scale};
+        if(d.background){
+            d.background->position=parent;
+            d.background->scale={1,1};
+            d.background->setBoundWidthHeight(menu::detailHitSize.width*d.x*scale,menu::detailHitSize.height*d.y*scale);
+            d.background->scale=animatedScale;
+        }
+        if(d.title){d.title->position=plus(parent,{0,70.5f*y*scale});d.title->scale=animatedScale;d.title->visible=d.vertical;}
+        const bool weapon=d.entry.originalType==10;
+        if(d.description){d.description->position=plus(parent,{d.large?(weapon?48.f:114.f)*scale:0,-18.f*y*scale});d.description->scale=animatedScale;d.description->visible=d.vertical;}
+        if(d.large){d.large->screenPosition=plus(parent,{(weapon?-114.f:-78.f)*scale,-15.f*y*scale});d.large->scale={1.5f*scale,1.5f*y*scale};d.large->show=d.vertical;}
+        return;
+    }
     float parentY=d.descPos.y;if(d.vertical)parentY+=(shop?-62.f:maintenance?(d.up?62.f:-62.f):-96.f)*d.y;
     const Vec2 parent=plus(d.origin,{d.descPos.x,parentY});
     if(d.background){d.background->position=parent;d.background->scale={d.x,d.y};}
@@ -673,27 +728,21 @@ void Screens::Impl::layoutDetail(){
     if(d.description){d.description->position=plus(parent,{hasLarge?(weapon?32.f:76.f):0,d.vertical?(shop?-36.f:-12.f)*d.y:0});d.description->scale={d.x,d.y};d.description->visible=d.vertical;}
     if(d.large){d.large->screenPosition=plus(parent,{weapon?-76.f:-52.f,d.vertical?(shop?-36.f:-10.f)*d.y:0});d.large->scale={1,d.vertical?d.y:1};d.large->show=d.vertical;}
 }
-void Screens::Impl::placePhoneTradeAction(){
-    if(!detail||!detail->phoneArtwork)return;
-    const auto& d=*detail;const auto t=presentation(Region::phoneMenu);
-    const auto area=layout.configuration().content();const auto low=t.inverse({area.x,area.y}),high=t.inverse({area.x+area.width,area.y+area.height});
-    // The original fixed BUY/SELL position can overlap a popup after the
-    // complete popup has been fitted into a wide phone viewport. Move only
-    // the action, using the same transform for its sprite and input receiver.
-    const Vec2 center=plus(d.origin,{d.descPos.x,d.descPos.y+(d.up?93.f:-93.f)});
-    for(const auto& key:keys)if(key.id==2102||key.id==2103)if(auto b=dispatcher.find(key)){
-        const float left=center.x-192,right=center.x+192,bottom=center.y-96,top=center.y+96;
-        Vec2 at{333,237};
-        if(at.x+96>left&&at.x-96<right&&at.y+48>bottom&&at.y-48<top){
-            const float preferred=d.kind==DetailKind::shop?right+102:left-102;
-            const float other=d.kind==DetailKind::shop?left-102:right+102;
-            if(preferred>=low.x+96&&preferred<=high.x-96)at.x=preferred;
-            else if(other>=low.x+96&&other<=high.x-96)at.x=other;
-            else if(bottom-54>=low.y+48)at.y=bottom-54;
-            else if(top+54<=high.y-48)at.y=top+54;
-        }
-        at.x=std::clamp(at.x,low.x+96,high.x-96);at.y=std::clamp(at.y,low.y+48,high.y-48);b->position=at;
+void Screens::Impl::phoneTradeAction(){
+    if(phoneEquipment)return;
+    const bool buy=detail&&detail->kind==DetailKind::shop;
+    if(!buy){
+        if(state.detailInventory<0||state.selectedInventory<0)return;
+        const auto position=std::size_t(std::max(0,state.inventoryPage))*25+std::size_t(state.selectedInventory);
+        if(!itemAt(state.inventory,position).enabled)return;
     }
+    RegionScope scope(*this,Region::phoneMenu);
+    const auto button=addButton(Panel::root,buy?2102:2103,
+        menu::phoneAsset(buy?"Btn_ShopBuy.png":"Btn_ShopSell.png"),menu::tradeAction,
+        2,1,0,1,menu::tradeActionSize,0,{}, {1,1},true,13,false);
+    // The receiver and the two frames of the original button share a rectangle.
+    button->pushDepth=0;
+    button->releaseHeight=0;
 }
 void Screens::Impl::tickDetail(){
     if(!detail)return;auto& d=*detail;
@@ -722,6 +771,12 @@ void Screens::Impl::tickRange(WorldRandom& random){
     for(auto& node:nodes)if(auto* n=std::get_if<ImageNode>(&node)){if(n->tag=="hud.rangeLeft")n->image.show=fieldPresentation.range[0];else if(n->tag=="hud.rangeRight")n->image.show=fieldPresentation.range[1];}
 }
 
+void Screens::Impl::phonePageDots(Vec2 center,std::size_t count,std::size_t selected){
+    for(std::size_t i=0;i<count;++i){
+        const float x=center.x+(float(i)-(float(count)-1.f)*.5f)*18.f;
+        image("InvenPage.png",{x,center.y},2,1,i==selected?1u:0u,{1,1},false,0,1,9);
+    }
+}
 void Screens::Impl::inventory(Vec2 origin,bool shopMode,bool phone){
     if(!phone){
     (void)shopMode;
@@ -760,10 +815,12 @@ void Screens::Impl::inventory(Vec2 origin,bool shopMode,bool phone){
         if(state.selectedInventory==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.8f,9);
         if(state.extInventory==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.5f,9);
     }}
-    RegionScope pages(*this,phone?Region::phoneInventoryPages:region);tile("InvenPage.png",2,1);
-    for(int page=0;page<state.inventoryPages;++page){float x=(float(page)-float(state.inventoryPages)*.5f)*(phone?18.f:12.f)+origin.x+(phone?120.f:86.f);image("InvenPage.png",{x,origin.y-(phone?234.f:290.f)},2,1,page==state.inventoryPage?1u:0u,Vec2{1,1},false,0,1,9);}
-    addButton(Panel::inventory,6090,menu::phoneAsset("Btn_InvenPage.png"),plus(origin,{phone?-3.f:-2.f,phone?-234.f:-290.f}),2,1,0,0,phone?Size{120,48}:Size{80,40},0,{},Vec2{1,1},true,9,!phone);
-    addButton(Panel::inventory,6091,menu::phoneAsset("Btn_InvenPage.png"),plus(origin,{phone?243.f:161.f,phone?-234.f:-290.f}),2,1,1,1,phone?Size{120,48}:Size{80,40},0,{},Vec2{1,1},true,9,!phone);
+    RegionScope pages(*this,Region::phoneInventoryPages);
+    const auto windows=menu::pageWindows(25,inventoryCells());
+    phonePageDots({origin.x+111.f,menu::pagerY},std::size_t(std::max(0,state.inventoryPages))*windows,
+                  std::size_t(std::max(0,state.inventoryPage))*windows+inventoryWindow);
+    addButton(Panel::inventory,6090,menu::phoneAsset("Btn_InvenPage.png"),{origin.x-3.f,menu::pagerY},2,1,0,0,Size{120,menu::pagerHitHeight},0,{},Vec2{1,1},true,9,false);
+    addButton(Panel::inventory,6091,menu::phoneAsset("Btn_InvenPage.png"),{origin.x+243.f,menu::pagerY},2,1,1,1,Size{120,menu::pagerHitHeight},0,{},Vec2{1,1},true,9,false);
 }
 void Screens::Impl::equip(Vec2 origin,unsigned inheritedLayer,bool phone){
     constexpr Vec2 hdPositions[]={{0,0},{0,-74},{-56,-9},{56,-9},{56,-74},{-56,-74}};
@@ -808,21 +865,37 @@ void Screens::Impl::inventoryDialog(Vec2 origin,bool shopMode){
     if(!shopMode&&state.detailInventory>=0&&!state.detailItem.dataId.empty())buildDetail(DetailKind::inventory,state.detailItem,origin,state.detailInventory);
 }
 void Screens::Impl::phoneShop(bool maintenance){
-    if(maintenance)phoneEquipment=true;
-    {RegionScope art(*this,Region::artScene);image(menu::background(layout.configuration(),"ShopBG.png"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.stock.bg");image(menu::phoneAsset("MaintenanceBG.jpg"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.equip.bg");}
+    const auto canvas=layout.configuration().canvas;
+    constexpr auto hangar="PhoneShopHangar.jpg";
+    if(const auto* art=tile(hangar)){
+        const float scale=std::max(canvas.width/art->pixels.width,canvas.height/art->pixels.height);
+        RegionScope backdrop(*this,Region::surface);
+        image(hangar,{canvas.width*.5f,canvas.height*.5f},1,1,0,{scale,scale},false,0,1,0);
+    }
+    // These transparent layers preserve the original grid and tab coordinates.
+    {RegionScope art(*this,Region::artBanner);
+        image("PhoneShopPanel.png",{240,160},1,1,0,{1,1},false,0,1,0,"phone.stock.bg");
+        image("PhoneEquipPanel.png",{240,160},1,1,0,{1,1},false,0,1,0,"phone.equip.bg");
+    }
     inventory(menu::inventoryGrid,!maintenance,true);
     {RegionScope equipment(*this,Region::phoneEquipment);equip(menu::equipmentRoot,9,true);bots(menu::botRoot,true);
-        if(state.selectedBot>=0)addButton(Panel::root,6310,"Btn_Disarm.png",{288,124.5f},2,1,0,1,{},0,{}, {1,1});
-        if(!maintenance)addButton(Panel::root,9205,"",{97.5f,34.5f},1,1,0,0,Size{150,60});}
+        if(state.selectedBot>=0)addButton(Panel::root,6310,menu::phoneAsset("Btn_Disarm.png"),{288,menu::disarmY},2,1,0,1,Size{72,61.5f},0,{}, {1,1},true,9,false);
+        addButton(Panel::root,9205,"",{97.5f,34.5f},1,1,0,0,Size{150,60});}
     if(!maintenance){
-        {RegionScope header(*this,Region::phoneCategoryHeader);image(menu::phoneAsset("ShopCategory.png"),{172.5f,402},1,8,unsigned(std::clamp(state.shopCategory,0,4)));
-            addButton(Panel::root,2104,menu::phoneAsset("Btn_ShopLeft.png"),{75,402},2,1,0,1,Size{120,60},(state.shopCategory+4)%5,{}, {1,1},true,9,false);
-            addButton(Panel::root,2104,menu::phoneAsset("Btn_ShopRight.png"),{270,402},2,1,0,1,Size{120,60},(state.shopCategory+1)%5,{}, {1,1},true,9,false);
+        {RegionScope header(*this,Region::phoneCategoryHeader);image(menu::phoneAsset("ShopCategory.png"),{172.5f,menu::categoryY},1,8,unsigned(std::clamp(state.shopCategory,0,4)));
+            addButton(Panel::root,2104,menu::phoneAsset("Btn_ShopLeft.png"),{75,menu::categoryY},2,1,0,1,Size{120,menu::categoryHitHeight},(state.shopCategory+4)%5,{}, {1,1},true,9,false);
+            addButton(Panel::root,2104,menu::phoneAsset("Btn_ShopRight.png"),{270,menu::categoryY},2,1,0,1,Size{120,menu::categoryHitHeight},(state.shopCategory+1)%5,{}, {1,1},true,9,false);
             addButton(Panel::root,9204,"",{250.5f,34.5f},1,1,0,0,Size{150,60});
             RegionScope pagesRegion(*this,Region::phoneStockHeader);
-            const auto pages=state.shopItems.size()/24+1;for(std::size_t page=0;page<pages;++page){const float x=(float(page)-float(pages)*.5f)*18+99;image("InvenPage.png",plus(menu::stockGrid,{x,-231}),2,1,page==std::size_t(state.shopPage)?1u:0u,{1,1});}
-            addButton(Panel::root,2105,menu::phoneAsset("Btn_InvenPage.png"),plus(menu::stockGrid,{-7.5f,-231}),2,1,0,0,Size{120,48},0,{}, {1,1},true,9,false);
-            addButton(Panel::root,2106,menu::phoneAsset("Btn_InvenPage.png"),plus(menu::stockGrid,{186,-231}),2,1,1,1,Size{120,48},0,{}, {1,1},true,9,false);
+            const auto count=state.shopItems.size();
+            const auto windows=menu::pageWindows(24,stockCells());
+            const auto pages=count/24*windows+menu::pageWindows(count%24,stockCells());
+            const auto selected=std::size_t(std::max(0,state.shopPage))*windows+stockWindow;
+            phonePageDots({menu::stockGrid.x+90.f,menu::stockGrid.y-231.f},pages,selected);
+            if(pages>1){
+                addButton(Panel::root,2105,menu::phoneAsset("Btn_InvenPage.png"),{menu::stockGrid.x-7.5f,menu::pagerY},2,1,0,0,Size{120,menu::pagerHitHeight},0,{}, {1,1},true,9,false);
+                addButton(Panel::root,2106,menu::phoneAsset("Btn_InvenPage.png"),{menu::stockGrid.x+186,menu::pagerY},2,1,1,1,Size{120,menu::pagerHitHeight},0,{}, {1,1},true,9,false);
+            }
         }
         {RegionScope stock(*this,Region::phoneStock);for(unsigned i=stockWindow*stockCells();i<std::min(24u,(stockWindow+1)*stockCells());++i){const auto index=std::size_t(std::max(0,state.shopPage))*24+i;if(index>=state.shopItems.size())break;const auto& entry=state.shopItems[index];const auto at=plus(menu::stockGrid,{60.f*float(i%4),-60.f*float((i%stockCells())/4)});addButton(Panel::root,2200+i,entry.icon,at,entry.iconColumns,entry.iconRows,entry.iconTile,entry.iconTile,Size{60,60},0,entry.dataId,{1,1},entry.enabled);if(state.selectedShop==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.8f);}}
     }
@@ -832,14 +905,17 @@ void Screens::Impl::phoneShop(bool maintenance){
         addButton(Panel::root,2100,menu::phoneAsset("Btn_ShopExit.png"),{630,34.5f},2,1,0,1,Size{138,60},0,{}, {1,1},true,9,false);
     }
     if(state.shopDetailVisible&&state.selectedShop>=0&&!maintenance){const auto index=std::size_t(std::max(0,state.shopPage))*24+std::size_t(state.selectedShop);if(index<state.shopItems.size())buildDetail(DetailKind::shop,state.shopItems[index],{360,240},state.selectedShop);}
-    if(state.detailInventory>=0&&!state.detailItem.dataId.empty())buildDetail(maintenance?DetailKind::maintenance:DetailKind::inventory,state.detailItem,{360,240},state.detailInventory);
-    if(!maintenance&&((state.shopDetailVisible&&state.selectedShop>=0)||(state.detailInventory>=0&&state.selectedInventory>=0))){RegionScope action(*this,Region::phoneMenu);if(state.selectedShop>=0)addButton(Panel::root,2102,menu::phoneAsset("Common_Btn_BUY.png"),{333,237},1,2,0,1,Size{120,48},0,{}, {1,1},true,13,false);else if(itemAt(state.inventory,std::size_t(std::max(0,state.inventoryPage))*25+std::size_t(state.selectedInventory)).enabled)addButton(Panel::root,2103,menu::phoneAsset("Common_Btn_SELL.png"),{333,237},1,2,0,1,Size{120,48},0,{}, {1,1},true,13,false);}
-    placePhoneTradeAction();
+    if(state.tradeVisible&&!state.buyMode)dismissedSaleDetail=state.detailRevision;
+    else if(previous&&previous->state.screen==state.screen&&previous->dismissedSaleDetail==state.detailRevision)
+        dismissedSaleDetail=state.detailRevision;
+    if(!dismissedSaleDetail&&state.detailInventory>=0&&!state.detailItem.dataId.empty())
+        buildDetail(maintenance?DetailKind::maintenance:DetailKind::inventory,state.detailItem,{360,240},state.detailInventory);
+    if(!maintenance)phoneTradeAction();
     if(state.tradeVisible)trade();setPhoneEquipment(phoneEquipment);
 }
 Vec2 Screens::Impl::phoneDropPoint(Vec2 canvas)const{
     const auto in=[](Vec2 p,ClipRect b){return p.x>=b.x&&p.x<b.x+b.width&&p.y>=b.y&&p.y<b.y+b.height;};
-    if(const auto clip=clipping(Region::phoneInventory);clip&&in(canvas,*clip)){auto point=presentation(Region::phoneInventory).inverse(canvas);point.y-=float(inventoryWindow*menuRows()*60);return menu::originalHDInventory(point,state.screen==ScreenId::maintenance);}
+    if(const auto clip=clipping(Region::phoneInventory);clip&&in(canvas,*clip)){auto point=presentation(Region::phoneInventory).inverse(canvas);point.y-=float(inventoryWindow*menu::phoneShopRows*60);return menu::originalHDInventory(point,state.screen==ScreenId::maintenance);}
     if(phoneEquipment){const auto p=presentation(Region::phoneEquipment).inverse(canvas);const Vec2 root{384,state.screen==ScreenId::maintenance?512.f:312.f};const Vec2 oldEquip{root.x+(state.screen==ScreenId::maintenance?-148.f:-196.f),root.y+(state.screen==ScreenId::maintenance?52.f:76.f)};constexpr Vec2 oldOffsets[]={{0,0},{0,-74},{-56,-9},{56,-9},{56,-74},{-56,-74}};
         for(unsigned i=0;i<6;++i){const auto center=plus(menu::equipmentRoot,menu::equipmentOffsets[i]);if(std::abs(p.x-center.x)<30&&std::abs(p.y-center.y)<30)return plus(plus(oldEquip,oldOffsets[i]),{(p.x-center.x)/1.5f,(p.y-center.y)/1.5f});}
         const float x=p.x-menu::botRoot.x,y=(menu::botRoot.y+28.5f-p.y)/57.f;if(x>=-28.5f&&x<=28.5f&&y>=0&&y<3){const Vec2 oldBot{root.x+(state.screen==ScreenId::maintenance?-47.f:-58.f),root.y+(state.screen==ScreenId::maintenance?52.f:78.f)};return {oldBot.x+x/1.5f,oldBot.y+30-y*60};}}
@@ -1208,12 +1284,17 @@ void Screens::Impl::build(){
             const unsigned targetCount=id<6000?unsigned(count>targetPage*capacity?std::min<std::size_t>(capacity,count-targetPage*capacity):0):capacity;
             if((next&&(window+1)*visible<targetCount)||(!next&&window>0)){window=next?window+1:window-1;dispatcher.discardAll();pageRebuild=true;
                 if(state.shopDetailVisible||state.detailInventory>=0){auto close=event;close.type=ButtonEventType::push;close.key={owner(state.screen,state.screen==ScreenId::maintenance?Panel::root:Panel::inventory),2112,0,{}};host.action({state.screen,state.screen==ScreenId::maintenance?Panel::root:Panel::inventory,close});}host.sfx(0);return;}
-            window=!next&&page>0&&targetCount?(targetCount-1)/visible:0;
+            // The session clamps boundary presses. Keep the current strip
+            // when pressing Next on the last page.
+            const bool changesPage=next?std::size_t(page)+1<pages:page>0;
+            if(changesPage)window=!next&&targetCount?(targetCount-1)/visible:0;
             auto advance=event;advance.type=ButtonEventType::push;host.action({screen,panel,advance});return;
         }
-        if(phoneMenu()&&(id==9204||id==9205)){
+        if(phoneMenu()&&screen==ScreenId::shop&&(id==9204||id==9205)){
             if(event.type!=ButtonEventType::pop||state.tradeVisible)return;
-            dispatcher.discardAll();setPhoneEquipment(id==9204);
+            dispatcher.discardAll();
+            setPhoneEquipment(id==9204);
+            pageRebuild=true;
             if(state.shopDetailVisible||state.detailInventory>=0){auto clear=event;clear.type=ButtonEventType::push;clear.key={owner(state.screen,state.screen==ScreenId::maintenance?Panel::root:Panel::inventory),2112,0,{}};host.action({state.screen,state.screen==ScreenId::maintenance?Panel::root:Panel::inventory,clear});}else host.sfx(0);
             return;
         }
@@ -1226,7 +1307,7 @@ void Screens::Impl::build(){
         ScreenAction action{screen,panel,event};
         if(event.canvasPosition){
             const auto inventoryRegion=screen==ScreenId::shop?Region::shopInventory:screen==ScreenId::maintenance?Region::maintenance:Region::panel;
-            action.dropCoordinates=DropCoordinates{phoneMenu()?phoneDropPoint(*event.canvasPosition):layout.ui(inventoryRegion,shopPan).inverse(*event.canvasPosition),presentation(Region::bottom,hm2::hud::controls).inverse(*event.canvasPosition)};
+            action.dropCoordinates=DropCoordinates{phoneMenu()?phoneDropPoint(*event.canvasPosition):presentation(inventoryRegion).inverse(*event.canvasPosition),presentation(Region::bottom,hm2::hud::controls).inverse(*event.canvasPosition)};
         }
         host.action(action);
         if(screen==ScreenId::slots){
@@ -1300,7 +1381,7 @@ void Screens::Impl::append(Frame& frame,float time){
                 // full-size quads with floor/ceil-rounded internal scissors.
                 for(unsigned group=0;group<hud::count;++group){layer.setPresentation(presentation(n.region,int(group)),clipping(n.region,int(group)));layer.submitNonAtlas(n.hudBackgroundParts->at(group));}
             }else if(n.menuPanel)layer.submitNonAtlas(*n.menuPanel);
-            else if(n.tag=="phone.stock.bg"||n.tag=="phone.equip.bg"||n.tag=="phone.command.bg"){
+            else if(n.tag=="phone.command.bg"){
                 const auto c=layout.configuration().canvas;const float s=std::max(c.width/480,c.height/320),header=menu::menuHeader(layout.configuration()),footer=menu::menuFooter(layout.configuration());
                 for(unsigned band=0;band<3;++band){const float offset=band==0?c.height-320*s:band==1?c.height-header-35-220*s:0;const ClipRect clip=band==0?ClipRect{0,c.height-header,c.width,header}:band==1?ClipRect{0,footer,c.width,std::max(0.f,c.height-header-footer)}:ClipRect{0,0,c.width,footer};layer.setPresentation({s,{(c.width-480*s)*.5f,offset}},clip);layer.submitImage(image);}
             }else layer.submitImage(image);}
@@ -1330,9 +1411,9 @@ void Screens::Impl::append(Frame& frame,float time){
             }
         }
     },node);
-    if(state.screen==ScreenId::field&&message.initialized){auto& layer=layers->at(9);layer.setPresentation(layout.ui(Region::bottom),layout.clip(Region::bottom));layer.submitImage(message.background);if(message.text){Frame textFrame;message.text->append(textFrame);for(auto& s:textFrame.sprites)layer.submitNonAtlas(std::move(s));}}
+    if(state.screen==ScreenId::field&&message.initialized){auto& layer=layers->at(9);layer.setPresentation(presentation(Region::bottom),clipping(Region::bottom));layer.submitImage(message.background);if(message.text){Frame textFrame;message.text->append(textFrame);for(auto& s:textFrame.sprites)layer.submitNonAtlas(std::move(s));}}
     if(state.screen==ScreenId::field&&!placeName.background.tile.image.empty()&&placeName.background.show){
-        auto& layer=layers->at(9);layer.setPresentation(layout.ui(Region::banner),layout.clip(Region::banner));
+        auto& layer=layers->at(9);layer.setPresentation(presentation(Region::banner),clipping(Region::banner));
         auto background=placeName.background;background.screenPosition=menu::placeNamePosition(layout.configuration(),background.screenPosition);
         layer.submitImage(background);
         if(placeName.label){

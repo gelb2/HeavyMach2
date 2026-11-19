@@ -77,10 +77,13 @@ struct GameRuntime::Impl:SessionHost,ui::ScreensHost {
         const auto& state=game->state();
         const bool rebuilt=revision!=game->presentationRevision();
         if(rebuilt){
-            ui->refresh(state,game->renderTime());revision=game->presentationRevision();Frame prepared;ui->appendPreparation(prepared);[renderer prepareFrame:prepared];
+            ui->refresh(state,game->renderTime());revision=game->presentationRevision();
         }else ui->updateHUD(state);
         const bool resourcesChanged=rebuilt||game->battle()!=preparedWorld||resourceRevision!=game->resourceRevision()||uiResourceGeneration!=ui->resourceGeneration();
         if(resourcesChanged){
+            // Phone subpages rebuild Screens without a GameSession action.
+            // Prepare their first-use icons before drawing or retaining them.
+            Frame screenResources;ui->appendPreparation(screenResources);[renderer prepareFrame:screenResources];
             preparedWorld=game->battle();resourceRevision=game->resourceRevision();uiResourceGeneration=ui->resourceGeneration();
             const auto prepared=game->preparationFrame();[renderer prepareFrame:prepared];
             // New nodes are built and old nodes released before reclaiming the
@@ -97,7 +100,21 @@ GameRuntime::~GameRuntime()=default;
 void GameRuntime::tick(){auto& p=*impl_;if(!p.active)return;ProfileSpan phase(ProfileSpan::Phase::tick);p.game->tick([&p]{p.synchronize();p.ui->tick(p.game->renderTime(),p.random);});p.synchronize();}
 void GameRuntime::draw(CAEAGLLayer* layer){auto& p=*impl_;Frame frame;{ProfileSpan phase(ProfileSpan::Phase::frameBuild);frame=p.game->drawWorld();p.ui->append(frame,p.game->renderTime());p.game->appendOverlays(frame);}{ProfileSpan phase(ProfileSpan::Phase::present);[p.renderer drawFrame:frame layer:layer];}}
 bool GameRuntime::input(PointerPhase phase,Vec2 point,std::uintptr_t id){
+    return dispatchInput(phase,point,id,false);
+}
+bool GameRuntime::inputFromView(PointerPhase phase,CGPoint current,CGPoint previous,std::uintptr_t id){
+    Vec2 point;
+    if(!logicalPoint(current,point)){
+        if(phase==PointerPhase::end||phase==PointerPhase::cancel)return input(PointerPhase::cancel,{},id);
+        return false;
+    }
+    Vec2 prior;
+    const bool sameCanvasMove=phase==PointerPhase::move&&logicalPoint(previous,prior)&&point.x==prior.x&&point.y==prior.y;
+    return dispatchInput(phase,point,id,sameCanvasMove);
+}
+bool GameRuntime::dispatchInput(PointerPhase phase,Vec2 point,std::uintptr_t id,bool sameCanvasMove){
     auto& p=*impl_;if(!p.active)return false;InputObservation observation;observation.phase=phase;observation.canvas=point;observation.pointer=id;
+    observation.sameCanvasMove=sameCanvasMove;
     if(const auto* scene=p.game->battle()){
         const auto before=scene->dashState();observation.movePointerBefore=before.movePointer;observation.pathBefore=before.pathCount;observation.tapBefore=before.tapTime;observation.specialBefore=before.special;
         observation.worldTimeBefore=scene->clock().worldTime();observation.dashStartsBefore=scene->metrics().dashStarts;observation.playerBefore=scene->player().position;
@@ -107,7 +124,9 @@ bool GameRuntime::input(PointerPhase phase,Vec2 point,std::uintptr_t id){
     }
     bool used=observation.overlayConsumed=p.game->inputOverlay(phase,point,id);
     if(!used)used=observation.uiConsumed=p.ui->input(phase,point,id,p.game->renderTime());
-    if(!used){used=observation.worldConsumed=p.game->inputWorld(phase,point,id);
+    // A captured UI control can still act on this move. The world has no
+    // new position to track, so leave its tap history and path unchanged.
+    if(!used&&!sameCanvasMove){used=observation.worldConsumed=p.game->inputWorld(phase,point,id);
         if(phase==PointerPhase::begin&&used&&id)for(auto& pointer:p.worldPointers)if(!pointer||pointer==id){pointer=id;break;}
     }
     if(phase==PointerPhase::end||phase==PointerPhase::cancel){
@@ -152,6 +171,7 @@ std::size_t GameRuntime::preparedTextCount()const{return impl_->textCache.size()
 std::vector<std::string> GameRuntime::preparedTextIdentities()const{std::vector<std::string> names;names.reserve(impl_->textNames.size());for(const auto& [bitmap,name]:impl_->textNames){(void)bitmap;names.push_back(name);}return names;}
 NSUInteger GameRuntime::textureUploads()const{return impl_->renderer.textureUploads;}
 NSDictionary<NSString*,NSNumber*>* GameRuntime::audioMetrics()const{return impl_->audio.metrics;}
+NSArray<NSDictionary*>* GameRuntime::audioPlaybackSnapshot()const{return impl_->audio.playbackSnapshot;}
 NSDictionary<NSString*,NSNumber*>* GameRuntime::resourceMetrics()const{
     auto& p=*impl_;return @{@"residentTextures":@(p.renderer.residentTextures),@"residentTextureBytes":@(p.renderer.residentTextureBytes),@"textureUploads":@(p.renderer.textureUploads),@"imageTextureUploads":@(p.renderer.imageTextureUploads),@"textureDeletes":@(p.renderer.textureDeletes),@"imageResourceReads":@(p.renderer.imageResourceReads),@"imageDecodes":@(p.renderer.imageDecodeCalls),@"textBitmaps":@(p.textCache.size()),@"textIdentities":@(p.textNames.size()),@"worldResourceRevision":@(p.game->resourceRevision()),@"uiResourceGeneration":@(p.ui->resourceGeneration()),@"hudLayoutWrites":@(p.hudLayoutWrites),@"thermalState":@(NSProcessInfo.processInfo.thermalState)};
 }

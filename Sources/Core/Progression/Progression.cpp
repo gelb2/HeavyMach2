@@ -2,6 +2,7 @@
 #include "Core/Audio/SoundIDs.hpp"
 #include <algorithm>
 #include <bit>
+#include <charconv>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -23,20 +24,42 @@ std::vector<std::string> words(std::string_view s){
 }
 int number(const std::vector<std::string>& w,std::size_t p){return p<w.size()?std::atoi(w[p].c_str()):0;}
 std::string word(const std::vector<std::string>& w,std::size_t p){return p<w.size()?w[p]:"";}
+int authoredInteger(std::string_view text,int minimum,int maximum){
+    int value=0;
+    const auto result=std::from_chars(text.data(),text.data()+text.size(),value);
+    if(result.ec!=std::errc{}||result.ptr!=text.data()+text.size()||value<minimum||value>maximum)
+        throw std::runtime_error("Invalid campaign mission integer");
+    return value;
+}
 Action action(std::string_view text){
     const auto w=words(text);Action a;if(w.empty())return a;
+    if(w[0]=="placeSpawner"){
+        if(w.size()!=5&&w.size()!=6)throw std::runtime_error("Invalid campaign spawner action");
+        a.type=Action::placeSpawner;
+        a.enemy=word(w,1);a.place=word(w,2);
+        a.x=authoredInteger(w[3],-490,490);a.y=authoredInteger(w[4],-490,490);
+        if(w.size()==6)a.activationRadius=authoredInteger(w[5],1,1024);
+        return a;
+    }
     constexpr std::string_view names[]={"giveMoney","giveExp","giveItem","takeItem","warpTo","setItem","setEnemy","openGate"};
     for(int i=0;i<8;++i)if(w[0]==names[i])a.type=i;
     if(a.type<2)a.value=number(w,1);
     else if(a.type<5){a.item=word(w,1);a.value=number(w,2);}
     else if(a.type==5){a.item=word(w,1);a.place=word(w,2);a.x=number(w,3);a.y=number(w,4);}
     else if(a.type==6){a.enemy=word(w,1);a.place=word(w,2);}
-    else a.place=word(w,1);return a;
+    else a.place=word(w,1);
+    return a;
 }
 Requirement requirement(std::string_view text){
     const auto w=words(text);Requirement r;if(w.empty())return r;
-    if(w[0]=="arrive")r.type=1;else if(w[0]=="kill")r.type=2;else if(w[0]=="item")r.type=3;
-    r.object=word(w,1);r.count=number(w,2);r.place=word(w,3);return r;
+    if(w[0]=="arrive")r.type=1;else if(w[0]=="kill"||w[0]=="killAt")r.type=2;else if(w[0]=="item")r.type=3;
+    r.object=word(w,1);r.count=number(w,2);r.place=word(w,3);
+    r.matchMap=w[0]=="killAt";
+    if(r.matchMap){
+        if(w.size()!=4)throw std::runtime_error("Invalid campaign kill requirement");
+        r.count=authoredInteger(w[2],1,127);
+    }
+    return r;
 }
 std::optional<std::size_t> index(const Definitions& defs,std::string_view id){
     const auto& all=defs.missions();for(std::size_t i=0;i<all.size();++i)if(all[i].id==id)return i;return {};
@@ -66,6 +89,8 @@ Definitions Definitions::parse(DataTable items,DataTable regeneration,DataTable 
         i.icon=items.integer(row,"Icon");i.level=items.integer(row,"Lv");i.price=items.integer(row,"Price");i.param1=items.real(row,"Param1");i.param2=items.real(row,"Param2");i.param3=items.real(row,"Param3");
         const auto type=items.value(row,"Type");for(const auto& [name,value]:types)if(type==name)i.type=value;
         const auto attr=items.value(row,"Attr").value_or("");i.buy=attr.find('B')!=attr.npos;i.sell=attr.find('S')!=attr.npos;i.quick=attr.find('Q')!=attr.npos;i.countable=attr.find('C')!=attr.npos;
+        if(const auto floor=items.value(row,"DropLv");floor&&!floor->empty())
+            i.dropMinimumLevel=authoredInteger(*floor,0,99);
         if(i.code.empty()||i.code.size()>5)throw std::runtime_error("Original ItemInfo code is invalid");out.items_.insert_or_assign(i.code,std::move(i));
     }
     for(std::size_t row=0;row<regeneration.rowCount();++row){
@@ -182,8 +207,8 @@ bool Missions::accept(std::string_view id){
 }
 bool Missions::finish(std::string_view id){const auto i=index(defs_,id);if(!i)return false;states_[*i].complete=true;accepted_.erase(std::remove(accepted_.begin(),accepted_.end(),*i),accepted_.end());return true;}
 void Missions::kill(std::string_view enemy,int count,std::string_view place,int screen){
-    (void)place;for(const auto i:accepted_){auto& s=states_[i];if(s.requireComplete)continue;bool changed=false;const auto& d=defs_.missions()[i];
-        for(std::size_t j=0;j<d.requirements.size();++j){const auto& r=d.requirements[j];if(r.type==2&&r.object==enemy&&s.did[j]<r.count){s.did[j]=std::min(r.count,addInt(s.did[j],count));changed=true;}}
+    for(const auto i:accepted_){auto& s=states_[i];if(s.requireComplete)continue;bool changed=false;const auto& d=defs_.missions()[i];
+        for(std::size_t j=0;j<d.requirements.size();++j){const auto& r=d.requirements[j];if(r.type==2&&r.object==enemy&&(!r.matchMap||r.place==place)&&s.did[j]<r.count){s.did[j]=std::min(r.count,addInt(s.did[j],count));changed=true;}}
         if(changed){check(i);refresh(i,screen);}
     }
 }
@@ -231,12 +256,16 @@ void FieldItem::tick(double time,Vec2 player,std::span<const PickupBot> bots,Wor
 }
 int ItemSpawner::spawnCount(std::string_view name,WorldRandom& random)const{const auto* s=defs_.findSpawn(name);return s?int(random.random()%std::uint32_t(s->maximum+1-s->minimum))+s->minimum:0;}
 const Item* ItemSpawner::spawnItem(std::string_view name,WorldRandom& random)const{const auto* s=defs_.findSpawn(name);if(!s)return nullptr;if(s->totalWeight<1)throw std::runtime_error("Original ItemRegen has zero total weight");const int value=int(random.random()%std::uint32_t(s->totalWeight));for(const auto& [id,end]:s->cumulative)if(value<end)return defs_.findItem(id);return nullptr;}
-void ItemSpawner::drop(const MachineInfo& machine,Vec2 position,WorldRandom& random,const std::function<void(FieldItem)>& emit)const{
+void ItemSpawner::drop(const MachineInfo& machine,Vec2 position,WorldRandom& random,const std::function<void(FieldItem)>& emit,int playerLevel)const{
     if(int(random.random()%100)<machine.coinRate){const float unit=randomUnit(random);const float count=float(machine.coin)+unit*(float(machine.coin)/3.f);const int value=int(count);
         constexpr int limits[]={5,10,50,100,500,1000,5000,10000};int n=0;while(n<8&&value>=limits[n])++n;char code[6];std::snprintf(code,sizeof(code),"%05d",n+1);
         const auto* item=defs_.findItem(code);if(!item)throw std::runtime_error("Unresolved original coin item");emit(FieldItem::create(*item,value,position,random));
     }
-    const auto n=spawnCount(machine.itemRegeneration,random);for(int i=0;i<n;++i)if(const auto* item=spawnItem(machine.itemRegeneration,random))emit(FieldItem::create(*item,1,position,random,true));
+    const auto count=spawnCount(machine.itemRegeneration,random);
+    for(int i=0;i<count;++i){
+        const auto* item=spawnItem(machine.itemRegeneration,random);
+        if(item&&playerLevel>=item->dropMinimumLevel)emit(FieldItem::create(*item,1,position,random,true));
+    }
 }
 Progression::Progression(SlotView slot,const Definitions& defs,Events& events):slot_(slot),defs_(defs),events_(events),inventory(defs),experience(slot,events),missions(defs,inventory,events),itemSpawner(defs){inventory.countChanged=[this](const Item& item){missions.checkItemCount(item,screen_);events_.changed(Change::inventory);};}
 void Progression::restore(){inventory.importSlot(slot_);missions.importSlot(slot_);experience.recalculate();}

@@ -15,6 +15,7 @@ struct MapCamera {
     bool fitWorld=false,keepFocusVisible=false,fillSurface=false;
     float lowerOverscan=94,focusMinimumY=100,focusRadius=25;
     float focusLeft=0,focusRight=0;
+    bool clampBackgroundXToViewport=false;
     [[nodiscard]] Vec2 toScreen(Vec2 world)const;
     [[nodiscard]] Vec2 toWorld(Vec2 screen)const;
 };
@@ -22,6 +23,7 @@ class MapPreview {
     Maps maps_;
     std::string mapName_,foreground_,background_;
     Size foregroundSize_,backgroundSize_;
+    bool foregroundOpaque_=true;
 public:
     MapPreview(ResourceAccess&,std::string_view mapName);
     [[nodiscard]] const Maps& maps()const{return maps_;}

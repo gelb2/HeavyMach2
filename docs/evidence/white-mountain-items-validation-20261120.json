@@ -1,0 +1,589 @@
+{
+  "appSha256": "3a64df6c607c90cec4b88f3fb0b4d0d3a9e945a6a55bcdfb522f247fa878941d",
+  "native": {
+    "phone": {
+      "canvasWidth": 874,
+      "canvasHeight": 402,
+      "expected": 29,
+      "status": "passed",
+      "cases": [
+        {
+          "code": "10311",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_101",
+          "sampleOffset": 2048,
+          "targetHPAfter": 174,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10312",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_102",
+          "sampleOffset": 2560,
+          "targetHPAfter": 155,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10313",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_103",
+          "sampleOffset": 2560,
+          "targetHPAfter": 146,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10314",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_104",
+          "sampleOffset": 2560,
+          "targetHPAfter": 168,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10315",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_105",
+          "sampleOffset": 2560,
+          "targetHPAfter": 160,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10316",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_106",
+          "sampleOffset": 2048,
+          "targetHPAfter": 135,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10317",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_107",
+          "sampleOffset": 2560,
+          "targetHPAfter": 120,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10318",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_108",
+          "sampleOffset": 2560,
+          "targetHPAfter": 105,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10319",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_109",
+          "sampleOffset": 2560,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10320",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_110",
+          "sampleOffset": 2560,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10321",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_111",
+          "sampleOffset": 2048,
+          "targetHPAfter": 90,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10331",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_201",
+          "sampleOffset": 2048,
+          "targetHPAfter": 60,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10332",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_202",
+          "sampleOffset": 2560,
+          "targetHPAfter": 30,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10333",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_203",
+          "sampleOffset": 2560,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10334",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_204",
+          "sampleOffset": 2560,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10335",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_205",
+          "sampleOffset": 2048,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10336",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_206",
+          "sampleOffset": 2048,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10337",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_207",
+          "sampleOffset": 2560,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10338",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_208",
+          "sampleOffset": 2560,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10339",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_209",
+          "sampleOffset": 2560,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10340",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_210",
+          "sampleOffset": 2560,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10501",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Sni_101",
+          "sampleOffset": 2048,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10502",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Sni_102",
+          "sampleOffset": 2560,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10503",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Sni_103",
+          "sampleOffset": 2560,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10504",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Sni_104",
+          "sampleOffset": 2560,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "02006",
+          "enemyHPRemoved": 200,
+          "kind": "airstrike",
+          "projectiles": 10,
+          "purchasedPrice": 30,
+          "quickCountAfter": 0,
+          "sampleOffset": 9216,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "captures": 1,
+          "code": "04204",
+          "deliveredItem": "00001",
+          "kills": 4,
+          "kind": "picker",
+          "model": "Bot_P04"
+        },
+        {
+          "captures": 1,
+          "code": "04205",
+          "deliveredItem": "00001",
+          "kills": 4,
+          "kind": "picker",
+          "model": "Bot_P05"
+        },
+        {
+          "captures": 1,
+          "code": "04206",
+          "deliveredItem": "00001",
+          "kills": 4,
+          "kind": "picker",
+          "model": "Bot_P06"
+        }
+      ]
+    },
+    "ipad": {
+      "canvasWidth": 1032,
+      "canvasHeight": 1376,
+      "expected": 29,
+      "status": "passed",
+      "cases": [
+        {
+          "code": "10311",
+          "emissions": 2,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_101",
+          "sampleOffset": 25600,
+          "targetHPAfter": 174,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10312",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_102",
+          "sampleOffset": 3584,
+          "targetHPAfter": 155,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10313",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_103",
+          "sampleOffset": 3072,
+          "targetHPAfter": 146,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10314",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_104",
+          "sampleOffset": 3072,
+          "targetHPAfter": 168,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10315",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_105",
+          "sampleOffset": 3584,
+          "targetHPAfter": 160,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10316",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_106",
+          "sampleOffset": 3584,
+          "targetHPAfter": 135,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10317",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_107",
+          "sampleOffset": 3072,
+          "targetHPAfter": 120,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10318",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_108",
+          "sampleOffset": 3072,
+          "targetHPAfter": 105,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10319",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_109",
+          "sampleOffset": 4096,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10320",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_110",
+          "sampleOffset": 3584,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10321",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_111",
+          "sampleOffset": 3072,
+          "targetHPAfter": 90,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10331",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_201",
+          "sampleOffset": 3072,
+          "targetHPAfter": 60,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10332",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_202",
+          "sampleOffset": 3072,
+          "targetHPAfter": 30,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10333",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_203",
+          "sampleOffset": 3072,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10334",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_204",
+          "sampleOffset": 3072,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10335",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_205",
+          "sampleOffset": 3584,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10336",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_206",
+          "sampleOffset": 3072,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10337",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_207",
+          "sampleOffset": 3072,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10338",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_208",
+          "sampleOffset": 3072,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10339",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_209",
+          "sampleOffset": 3072,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10340",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Lsr_210",
+          "sampleOffset": 3584,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10501",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Sni_101",
+          "sampleOffset": 4096,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10502",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Sni_102",
+          "sampleOffset": 3072,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10503",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Sni_103",
+          "sampleOffset": 3072,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "10504",
+          "emissions": 1,
+          "kind": "weapon",
+          "part": "P_Wpn_Sni_104",
+          "sampleOffset": 3072,
+          "targetHPAfter": 0,
+          "targetHPBefore": 200,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "code": "02006",
+          "enemyHPRemoved": 200,
+          "kind": "airstrike",
+          "projectiles": 10,
+          "purchasedPrice": 30,
+          "quickCountAfter": 0,
+          "sampleOffset": 15872,
+          "wav": "Wpn_Laser.wav"
+        },
+        {
+          "captures": 1,
+          "code": "04204",
+          "deliveredItem": "00001",
+          "kills": 4,
+          "kind": "picker",
+          "model": "Bot_P04"
+        },
+        {
+          "captures": 1,
+          "code": "04205",
+          "deliveredItem": "00001",
+          "kills": 4,
+          "kind": "picker",
+          "model": "Bot_P05"
+        },
+        {
+          "captures": 1,
+          "code": "04206",
+          "deliveredItem": "00001",
+          "kills": 4,
+          "kind": "picker",
+          "model": "Bot_P06"
+        }
+      ]
+    }
+  }
+}

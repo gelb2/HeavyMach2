@@ -160,7 +160,14 @@ struct ConcurrentValidation::Impl {
     static int repairCount(GameSession& game){int count=0;for(const auto& item:game.state().inventory)if(item.dataId=="01001")count+=item.count;return count;}
     explicit Impl(ResourceAccess& source,ValidationHost& sink):resources(source),host(sink),catalog(Weapons::parse(DataTable::parse(resources.read("WeaponInfo.tble")))){
         const auto items=DataTable::parse(resources.read("ItemInfo.tble"));std::vector<WeaponStart> weapons;
-        for(std::size_t row=0;row<items.rowCount();++row)if(items.value(row,"Type")=="PtWpn")weapons.push_back({std::string(items.value(row,"Code").value_or("")),std::string(items.value(row,"strParam").value_or("")),items.integer(row,"Lv")});
+        for(std::size_t row=0;row<items.rowCount();++row){
+            if(items.value(row,"Type")!="PtWpn")continue;
+            const auto part=items.value(row,"strParam").value_or("");
+            // Keep the original regression scenarios pinned. The campaign
+            // cheat mode drives the previously dormant laser class separately.
+            if(catalog.weapon(part).kind==WeaponKind::laser)continue;
+            weapons.push_back({std::string(items.value(row,"Code").value_or("")),std::string(part),items.integer(row,"Lv")});
+        }
         if(weapons.size()!=110)throw std::runtime_error("Expected original HD110 player-weapon items; no enemy weapons may be substituted");
         descriptions.reserve(concurrentScenarioCount);observations.resize(concurrentScenarioCount);cases.reserve(concurrentScenarioCount);
         for(std::size_t i=0;i<weapons.size();i+=2){const std::span pair(weapons.data()+i,std::size_t(2));
@@ -341,7 +348,7 @@ struct ConcurrentValidation::Impl {
         if(bottom>=top)return false;
         const Vec2 desired{std::clamp(projected.x,16.f,camera.viewport.width-16),std::clamp(projected.y,bottom,top)};
         const auto enemies=scene->enemies();const auto player=scene->player().position;
-        const auto clearSegment=[&](Vec2 a,Vec2 b){if(!camera.fillSurface)return true;const float dx=b.x-a.x,dy=b.y-a.y;const unsigned steps=std::max(1u,unsigned(std::ceil(std::hypot(dx,dy)/8)));for(unsigned n=1;n<=steps;++n){const float t=float(n)/steps;const Vec2 p{a.x+dx*t,a.y+dy*t};const auto hit=scene->terrain().resolve(p);if(std::abs(hit.position.x-p.x)>.1f||std::abs(hit.position.y-p.y)>.1f)return false;for(const auto& enemy:enemies)if(enemy.hp>0&&!enemy.corpse&&enemy.kind!=MachineKind::aircraft){const float r=float(botRadii.at(enemy.name)+botRadii.at("Player"))+4;const float before=(a.x-enemy.position.x)*(a.x-enemy.position.x)+(a.y-enemy.position.y)*(a.y-enemy.position.y),after=(p.x-enemy.position.x)*(p.x-enemy.position.x)+(p.y-enemy.position.y)*(p.y-enemy.position.y);if(after<r*r&&(before>=r*r||after<before-.1f))return false;}}return true;};
+        const auto clearSegment=[&](Vec2 a,Vec2 b){if(!game.display().enabled)return true;const float dx=b.x-a.x,dy=b.y-a.y;const unsigned steps=std::max(1u,unsigned(std::ceil(std::hypot(dx,dy)/8)));for(unsigned n=1;n<=steps;++n){const float t=float(n)/steps;const Vec2 p{a.x+dx*t,a.y+dy*t};const auto hit=scene->terrain().resolve(p);if(std::abs(hit.position.x-p.x)>.1f||std::abs(hit.position.y-p.y)>.1f)return false;for(const auto& enemy:enemies)if(enemy.hp>0&&!enemy.corpse&&enemy.kind!=MachineKind::aircraft){const float r=float(botRadii.at(enemy.name)+botRadii.at("Player"))+4;const float before=(a.x-enemy.position.x)*(a.x-enemy.position.x)+(a.y-enemy.position.y)*(a.y-enemy.position.y),after=(p.x-enemy.position.x)*(p.x-enemy.position.x)+(p.y-enemy.position.y)*(p.y-enemy.position.y);if(after<r*r&&(before>=r*r||after<before-.1f))return false;}}return true;};
         const auto navigate=[&](Vec2 ground){const auto screen=camera.toScreen(ground);constexpr std::uintptr_t pointer=0x41505052;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(screen),pointer);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(screen),pointer);auto& o=observations[index];++o.navigationRequests;if(!accepted)++o.navigationRejected;o.navigation.push_back({counters.frames,player,ground,screen,"approach-visible-field-target",accepted,scene->player().blocked});return accepted;};
         for(const Vec2 delta:{Vec2{0,0},Vec2{60,0},Vec2{-60,0},Vec2{0,-60},Vec2{120,-60},Vec2{-120,-60}}){
             const Vec2 screen{std::clamp(desired.x+delta.x,16.f,camera.viewport.width-16),std::clamp(desired.y+delta.y,bottom,top)};const auto ground=camera.toWorld(screen);const float dx=ground.x-player.x,dy=ground.y-player.y;if(dx*dx+dy*dy<900)continue;
@@ -349,7 +356,7 @@ struct ConcurrentValidation::Impl {
             bool clear=true;for(const auto& enemy:enemies)if(enemy.hp>0&&!enemy.corpse){const float x=enemy.position.x-ground.x,y=enemy.position.y-ground.y,r=float(botRadii.at(enemy.name))+1;if(x*x+y*y<r*r)clear=false;}if(!clear)continue;
             if(clearSegment(player,ground))return navigate(ground);
         }
-        if(!game.display().enabled||!game.display().compact)return false;
+        if(!game.display().enabled)return false;
         // Validation input planning only. A short landscape view cannot tap a
         // distant aircraft through the coastline: route ordinary ground taps
         // around the real original polygons. No actor/HP/target outcome writes.
@@ -418,7 +425,7 @@ struct ConcurrentValidation::Impl {
         if(game.state().hpRate<.65f)worldQuick(index,0,scene->player().position);
         const auto& map=descriptions[index].map;const bool aircraft=map=="Stage02_07"||map=="Stage03_04",turret=map=="Stage01_02";
         if(!aircraft&&!turret)return;const auto kind=aircraft?MachineKind::aircraft:MachineKind::turret;
-        if(game.display().enabled&&(scene->camera().viewport.width<768||scene->camera().viewport.height<1024)){
+        if(game.display().enabled){
             const auto enemies=scene->enemies();if(!c.worldTarget&&counters.frames>=2)for(const auto& e:enemies)if(e.kind==kind&&e.hp>0&&!e.corpse){c.worldTarget=e.id;break;}
             const auto found=std::find_if(enemies.begin(),enemies.end(),[&](const auto& e){return e.id==c.worldTarget&&e.hp>0&&!e.corpse;});if(found==enemies.end())return;
             const auto point=scene->camera().toScreen(found->position);const bool visible=point.x>=16&&point.x<=scene->camera().viewport.width-16&&point.y>=fieldFloor(scene->camera())&&point.y<=scene->camera().viewport.height-16;
@@ -544,7 +551,8 @@ struct ConcurrentValidation::Impl {
                         if(score<best){best=score;chosen=screen;threat=e.name;chosenEnemy=e.id;}
                     }
                 }
-                if(!threat.empty()){cases[index]->worldTarget=chosenEnemy;constexpr std::uintptr_t id=0x424f544e;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(chosen),id);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(chosen),id);auto& o=observations[index];++o.navigationRequests;if(!accepted)++o.navigationRejected;o.botThreatName=threat;o.navigation.push_back({counters.frames,player,scene->camera().toWorld(chosen),chosen,threat+"#"+std::to_string(chosenEnemy),accepted,scene->player().blocked});}
+                if(!threat.empty()&&game.display().enabled){cases[index]->worldTarget=chosenEnemy;observations[index].botThreatName=threat;approachTarget(index,scene->camera().toWorld(chosen));}
+                else if(!threat.empty()){cases[index]->worldTarget=chosenEnemy;constexpr std::uintptr_t id=0x424f544e;const bool accepted=game.inputWorld(PointerPhase::begin,game.worldCanvasPoint(chosen),id);game.inputWorld(PointerPhase::end,game.worldCanvasPoint(chosen),id);auto& o=observations[index];++o.navigationRequests;if(!accepted)++o.navigationRejected;o.botThreatName=threat;o.navigation.push_back({counters.frames,player,scene->camera().toWorld(chosen),chosen,threat+"#"+std::to_string(chosenEnemy),accepted,scene->player().blocked});}
             }
             if(descriptions[index].role==ScenarioRole::botPicker&&positiveIncoming&&!cases[index]->worldEnemyFired&&(observations[index].navigation.empty()||counters.frames-observations[index].navigation.back().frame>=31)){
                 // After provoking a real counterattack, walk back into the

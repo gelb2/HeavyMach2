@@ -143,16 +143,30 @@
     const auto before=[self state:world];[self assertPathRemainsInOriginalField:before];const auto dashPair=[self clearGroundPair:before avoiding:nil];XCTAssertEqual(dashPair.count,2u);
     [[self coordinateLogical:[dashPair[0] CGPointValue] world:world] doubleTap];
     const auto after=[self state:world];[self attachPathState:before name:@"OS double-tap before"];[self attachPathState:after name:@"OS double-tap after with native 256-event ring"];[self capture:many?@"path-many-then-OS-doubletap":@"path-single-then-OS-doubletap"];[self assertPathRemainsInOriginalField:after];
-    XCTAssertGreaterThan([after[@"dashStarts"] longLongValue],[before[@"dashStarts"] longLongValue]);XCTAssertEqual([after[@"movePointer"] longLongValue],0ll);
+    XCTAssertEqual([after[@"dashStarts"] longLongValue],[before[@"dashStarts"] longLongValue]+1);XCTAssertEqual([after[@"movePointer"] longLongValue],0ll);
     const auto history=[self inputHistory:after];const NSArray* finalColumns=history[@"columns"];const auto dashBefore=[finalColumns indexOfObject:@"dashBefore"],dashAfter=[finalColumns indexOfObject:@"dashAfter"],spBefore=[finalColumns indexOfObject:@"spBefore"],spAfter=[finalColumns indexOfObject:@"spAfter"];BOOL actualCost=NO;
     NSDictionary* apple=history[@"appleInput"];XCTAssertNotNil(apple);const auto filtered=[apple[@"zeroDeltaMoveFilters"] unsignedLongLongValue];
     XCTAssertGreaterThanOrEqual(filtered,static_cast<unsigned long long>([before[@"zeroDeltaMoveFilters"] longLongValue]));
     // Some SDKs deliver begin/end only. Observe the count without requiring a
     // synthetic zero-distance move; if filtered, retain exact raw evidence.
     if(filtered){NSDictionary* raw=apple[@"lastFiltered"];XCTAssertEqual([raw[@"x"] doubleValue],[raw[@"previousX"] doubleValue]);XCTAssertEqual([raw[@"y"] doubleValue],[raw[@"previousY"] doubleValue]);XCTAssertGreaterThan([raw[@"timestamp"] doubleValue],0);}
+    const auto sameCanvas=[finalColumns indexOfObject:@"sameCanvasMove"],worldConsumed=[finalColumns indexOfObject:@"world"];
+    const auto overlayConsumed=[finalColumns indexOfObject:@"overlay"],uiConsumed=[finalColumns indexOfObject:@"ui"];
+    const auto tapBefore=[finalColumns indexOfObject:@"tapBefore"],tapAfter=[finalColumns indexOfObject:@"tapAfter"];
+    const auto finalPathBefore=[finalColumns indexOfObject:@"pathBefore"],finalPathAfter=[finalColumns indexOfObject:@"pathAfter"];
+    for(const auto column:{sameCanvas,worldConsumed,overlayConsumed,uiConsumed,tapBefore,tapAfter,finalPathBefore,finalPathAfter})XCTAssertNotEqual(column,NSNotFound);
+    unsigned sameCanvasMoves=0;
+    for(NSArray* e in history[@"events"])if([e[sameCanvas] boolValue]){
+        ++sameCanvasMoves;
+        XCTAssertFalse([e[worldConsumed] boolValue]);
+        if(![e[overlayConsumed] boolValue]&&![e[uiConsumed] boolValue]){
+            XCTAssertEqualObjects(e[tapBefore],e[tapAfter]);
+            XCTAssertEqualObjects(e[finalPathBefore],e[finalPathAfter]);
+        }
+    }
     if(dashBefore!=NSNotFound&&dashAfter!=NSNotFound&&spBefore!=NSNotFound&&spAfter!=NSNotFound)for(NSArray* e in history[@"events"])if([e[dashBefore] unsignedLongLongValue]>=static_cast<unsigned long long>([before[@"dashStarts"] longLongValue])&&[e[dashAfter] unsignedLongLongValue]>[e[dashBefore] unsignedLongLongValue]&&std::abs([e[spBefore] doubleValue]-[e[spAfter] doubleValue]-100)<.001)actualCost=YES;
     XCTAssertTrue(actualCost,@"Actual OS begin must start Dash and consume100SP. Inspect attached native input phases/tap times.");
-    NSLog(@"HM2_OS_PATH_DASH run=%@ replacement=%@ firstMaximumPath=%u beforeDash=%@ afterDash=%@ beforeSP=%@ afterSP=%@ zeroDeltaMoveFilters=%llu positiveMovesForwarded=%@",run,many?@"many":@"single",maximumPath,before[@"dashStarts"],after[@"dashStarts"],before[@"dashSP"],after[@"dashSP"],filtered,apple[@"positiveMovesForwarded"]);[app terminate];
+    NSLog(@"HM2_OS_PATH_DASH run=%@ replacement=%@ firstMaximumPath=%u beforeDash=%@ afterDash=%@ beforeSP=%@ afterSP=%@ zeroDeltaMoveFilters=%llu sameCanvasMoves=%u positiveMovesForwarded=%@",run,many?@"many":@"single",maximumPath,before[@"dashStarts"],after[@"dashStarts"],before[@"dashSP"],after[@"dashSP"],filtered,sameCanvasMoves,apple[@"positiveMovesForwarded"]);[app terminate];
 }
 - (void)testOSMultiplePathThenSinglePathThenDoubleTap{[self verifyOSPathReplacementMany:NO];}
 - (void)testOSMultiplePathThenMultiplePathThenDoubleTap{[self verifyOSPathReplacementMany:YES];}

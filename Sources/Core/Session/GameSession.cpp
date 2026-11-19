@@ -2,6 +2,7 @@
 #include "Core/Progression/Equipment.hpp"
 #include "Core/Data/Descriptions.hpp"
 #include "Core/Progression/QuickItems.hpp"
+#include "Core/Presentation/MenuArtwork.hpp"
 #include "Core/Presentation/PartSprites.hpp"
 #include "Core/Presentation/Visibility.hpp"
 #include "Core/Presentation/SharedAssetPreparation.hpp"
@@ -17,6 +18,10 @@
 namespace hm2 {
 namespace {
 using Slot=progression::SlotView;
+constexpr std::array<std::string_view,6> airliftBases{"Base001","Base002","Base003","Base005","Base006","Base004"};
+constexpr std::array<int,6> airliftPrices{50,300,1000,4000,16000,24000};
+constexpr std::size_t visitedBaseOffset(std::size_t index){return 0x1b60+index*4;}
+
 // Original OS alert callbacks check object identity. Tokens preserve that
 // identity across delayed callbacks without retaining a raw Scene pointer.
 std::atomic_uint64_t nextGameOverToken{1};
@@ -216,7 +221,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         if(const auto* item=definitions.findItem(code))addFieldItem(progression::FieldItem::create(*item,1,position,rng),true);
     }
     void dropEnemyLoot(const MachineInfo& info,Vec2 p,double,float,WorldRandom& rng)override{
-        progress->itemSpawner.drop(info,p,rng,[this](auto item){addFieldItem(std::move(item));});
+        progress->itemSpawner.drop(info,p,rng,[this](auto item){addFieldItem(std::move(item));},slot().level());
     }
     void rewardEnemyKill(const MachineInfo& info,Vec2,double,float,WorldRandom&)override{
         progress->killed(info.name,info.experience,mapName);
@@ -381,9 +386,14 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
             auto select=[&](const std::vector<ui::ItemView>& list,int start){for(std::size_t i=0;i<list.size();++i)if(list[i].dataId==selectedMissionId){view.selectedMission=start+int(i);view.missionBody=list[i].description;view.missionTitle=list[i].name;}};
             if(view.screen==ui::ScreenId::command)select(view.availableMissions,0);
             select(view.acceptedMissions,view.screen==ui::ScreenId::command?int(view.availableMissions.size()):0);
-            constexpr const char* airliftBases[]={"Base001","Base002","Base003","Base005","Base006","Base004"};
-            constexpr int airliftPrices[]={50,300,1000,4000,16000,24000};
-            for(unsigned i=0;i<6;++i){view.airlifts[i]={};if(s.u32(0x1b60+i*4)){view.airlifts[i].dataId=airliftBases[i];if(const auto map=maps.all().find(airliftBases[i]);map!=maps.all().end())view.airlifts[i].name=map->second.description;view.airlifts[i].price=airliftPrices[i];}}
+            for(std::size_t i=0;i<airliftBases.size();++i){
+                view.airlifts[i]={};
+                if(!s.u32(visitedBaseOffset(i)))continue;
+                const auto map=maps.all().find(airliftBases[i]);
+                view.airlifts[i].dataId=airliftBases[i];
+                if(map!=maps.all().end())view.airlifts[i].name=map->second.description;
+                view.airlifts[i].price=airliftPrices[i];
+            }
             for(unsigned side=2;side<=3;++side){const auto* e=progress->inventory.entry(progress->inventory.equipment()[side]);std::string icon;
                 if(e&&e->item){char name[64];std::snprintf(name,sizeof(name),"IconB%05d.png",e->item->icon);icon=name;}
                 (side==2?view.selectedWeaponLeft:view.selectedWeaponRight)=std::move(icon);
@@ -618,9 +628,13 @@ void GameSession::enterBase(){
     p.gameOverToken=0;
     auto s=p.slot();auto current=s.string(0x2d,16);if(!current.starts_with("Base")){current="Base001";s.string(0x2d,16,current);}s.string(0x55,16,current);
     s.hp(p.equipment->stats().maximumHP());for(unsigned i=0;i<3;++i)s.u32(0x64c+i*4,0);
-    if(const auto map=p.maps.all().find(current);map!=p.maps.all().end())s.string(0x3d,24,map->second.description);else s.string(0x3d,24,""); // Original nil map name; no invented Base004 definition.
-    constexpr const char* visited[]={"Base001","Base002","Base003","Base005","Base006"};
-    for(unsigned i=0;i<5;++i)if(current==visited[i])s.u32(0x1b60+i*4,1);
+    const auto map=p.maps.all().find(current);
+    const bool registered=map!=p.maps.all().end();
+    s.string(0x3d,24,registered?std::string_view(map->second.description):std::string_view{});
+    if(registered){
+        const auto visited=std::find(airliftBases.begin(),airliftBases.end(),current);
+        if(visited!=airliftBases.end())s.u32(visitedBaseOffset(std::size_t(visited-airliftBases.begin())),1);
+    }
     p.view.selectedBaseButton=0;p.screen(ui::ScreenId::base);p.closeDialogs();save(SaveReason::enterBase);
 }
 bool GameSession::enterField(std::string_view map,int gate){
@@ -641,6 +655,9 @@ bool GameSession::enterField(std::string_view map,int gate){
             if(action.type==5)setup.missionObjects.push_back({MissionFieldObject::Kind::item,action.item,{float(action.x),float(action.y)}});
             else if(action.type==6)setup.missionObjects.push_back({MissionFieldObject::Kind::enemy,action.enemy});
             else if(action.type==7)setup.openEventGate=true;
+            else if(action.type==progression::Action::placeSpawner){
+                setup.missionSpawners.push_back({action.enemy,{float(action.x),float(action.y)},float(action.activationRadius)});
+            }
         }
     }
     setup.map=map;setup.gate=gate;setup.playerHP=p.slot().hp();setup.equipment=p.equipment->codes();setup.random=&p.random;setup.initialRenderTime=p.clock.renderTime();setup.initialWorldTime=p.worldTime;setup.offsetInsideGate=true;setup.isSave=p.worldSaveAllowed;
@@ -773,6 +790,15 @@ void GameSession::action(const ui::ScreenAction& a){
         return;
     }
     // The original tradeBG blocks every underlying Push/Pop receiver.
+    if(a.screen==ui::ScreenId::maintenance&&id==9205&&menu::phone(p.display)){
+        if(event==ui::ButtonEventType::pop){
+            const auto inventoryPage=p.view.inventoryPage;
+            p.screen(ui::ScreenId::shop);
+            p.view.inventoryPage=inventoryPage;
+            p.uiSound(0);
+        }
+        return;
+    }
     if(a.screen==ui::ScreenId::shop&&p.view.tradeVisible){p.shopAction(a);return;}
     if(p.inventoryAction(a))return;
     if(p.shopAction(a))return;

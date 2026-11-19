@@ -135,6 +135,32 @@ int main(int argc,char** argv){assert(argc==3);Files files;files.root=argv[1];co
         MapPreview scene(files,"Stage01_01");const MapCamera camera{{-275,-462},{},{480,320}};
         const auto frame=scene.compose(camera);assert(frame.sprites.size()==1&&frame.sprites[0].image=="Stage01_01.jpg");same(frame.sprites[0].size.width,1024);same(frame.sprites[0].center.x,515);same(frame.sprites[0].center.y,622);
         MapPreview water(files,"Stage02_04");const auto waterFrame=water.compose({{.25f,-.75f},{},{768,1024}});assert(waterFrame.sprites.size()==2&&waterFrame.sprites[0].image=="Stage02_04BG.jpg"&&waterFrame.sprites[1].image=="Stage02_04.png");same(waterFrame.sprites[0].size.width,768);same(waterFrame.sprites[0].size.height,1024);same(waterFrame.sprites[0].center.x,383.75);same(waterFrame.sprites[1].center.x,384);same(waterFrame.sprites[1].center.y,513);
+        MapCamera skyway;
+        skyway.fillSurface=true;
+        skyway.viewport={912.f/.9957588911056519f,420.f/.9957588911056519f};
+        skyway.backgroundWorld={-3.2f,10.f};
+        const auto opaque=scene.compose(skyway);
+        assert(opaque.sprites.size()==1);
+        const auto& terrain=opaque.sprites[0];
+        assert(terrain.strip.size()==4);
+        const float left=terrain.center.x-terrain.size.width*.5f;
+        const float top=terrain.center.y+terrain.size.height*.5f;
+        for(const auto& vertex:terrain.strip){
+            assert(vertex.position.x>=0&&vertex.position.x<=skyway.viewport.width);
+            assert(vertex.position.y>=0&&vertex.position.y<=skyway.viewport.height);
+            same(vertex.uv.x,(vertex.position.x-left)/terrain.size.width);
+            same(vertex.uv.y,(top-vertex.position.y)/terrain.size.height);
+        }
+        const auto tablet=water.compose(skyway);
+        assert(tablet.sprites[0].size.width<skyway.viewport.width);
+        assert(tablet.sprites[1].strip.size()==4); // Transparent Skyway keeps its existing path.
+        same(tablet.sprites[0].center.x,skyway.toScreen(skyway.backgroundWorld).x);
+        skyway.clampBackgroundXToViewport=true;
+        const auto phone=water.compose(skyway);
+        same(phone.sprites[0].center.x,skyway.viewport.width*.5f);
+        assert(phone.sprites[0].size.width==tablet.sprites[0].size.width&&phone.sprites[0].size.height==tablet.sprites[0].size.height);
+        assert(phone.sprites[0].center.y==tablet.sprites[0].center.y);
+        assert(phone.sprites[1].center.x==tablet.sprites[1].center.x&&phone.sprites[1].center.y==tablet.sprites[1].center.y);
         const auto before=files.reads;for(int i=0;i<1200;++i){const auto a=scene.compose({{float(i)/4,float(-i)/8},{},{480,320}});const auto b=water.compose({{float(i)/4,float(-i)/8},{},{768,1024}});assert(a.sprites.size()==1&&b.sprites.size()==2);}assert(files.reads==before);
         std::cout<<"43 maps, 90 gates, 152 polygons, 695 spawners; JPEG/PNG fallback and optional 2x background, 2400 warm frames without reads\n";
     }else if(test=="images"){

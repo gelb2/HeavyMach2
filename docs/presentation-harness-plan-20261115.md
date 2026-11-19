@@ -129,7 +129,7 @@ Git pre-commit은 아래 판정을 호출하는 마지막 연결이다. 에이�
 
 ## 전수 검사 범위 — 실패 예시 3장과 구분
 
-**검사 대상은 원본에 등록된 모든 기지다. 현재 Base001~Base006 전부를 iPhone/iPad 각각 검사한다.** 아래 실패 예시 3장은 전체 검사 수나 허브 종류 수를 뜻하지 않는다.
+**Base001~Base006의 여섯 기지 화면 자원을 iPhone과 iPad에서 검사한다.** 일반 1.3.0 이후와 HD의 캠페인에는 이 가운데 기지 다섯 곳이 등록됐다. Base004는 화면 상태에 ID를 넣어 그릴 수 있다. [기지별 원본 맵과 진입 근거](original-unused-content-20261119.md#화이트마운틴과-전장)
 
 공통 C++ DataTable reader로 두 판본의 기지 테이블 12개를 읽었다. 이는 실행 화면 검사가 아닌 파일·참조 전수 조사다. [원본 참조·SHA 목록](evidence/hub-artwork-census-20261115.json)을 보존한다.
 
@@ -138,12 +138,12 @@ Git pre-commit은 아래 판정을 호출하는 마지막 연결이다. 에이�
 | Base001 | `PhoneMenu/Base001.jpg` | Base001_Maintenance.png, Base001_Shop.png, Base001_CmdCenter.png | `Base001.png` | 두 기기에서 각각 실제 진입·복귀 |
 | Base002 | `PhoneMenu/Base002.jpg` | Base005_Maintenance.png, Base005_Shop.png, Base005_CmdCenter.png | `Base002.png` | 두 기기에서 각각 실제 진입·복귀 |
 | Base003 | `PhoneMenu/Base003.jpg` | Base003_Maintenance.png, Base003_Shop.png, Base003_CmdCenter.png | `Base003.png` | 두 기기에서 각각 실제 진입·복귀 |
-| Base004 | `PhoneMenu/Base004.jpg` | Base004_Maintenance.png, Base004_Shop.png, Base004_CmdCenter.png | `Base004.png` | 두 기기에서 각각 실제 진입·복귀 |
+| Base004 | `PhoneMenu/Base004.jpg` | Base004_Maintenance.png, Base004_Shop.png, Base004_CmdCenter.png | `Base004.png` | 테스트 화면 상태에 ID를 지정해 출력 |
 | Base005 | `PhoneMenu/Base005.jpg` | Base002_Maintenance.png, Base002_Shop.png, Base002_CmdCenter.png | `Base005.png` | 두 기기에서 각각 실제 진입·복귀 |
 | Base006 | `PhoneMenu/Base006.jpg` | Base006_Maintenance.png, Base006_Shop.png, Base006_CmdCenter.png | `Base006.png` | 두 기기에서 각각 실제 진입·복귀 |
 
 - 허브 6개×기기 2종=12개 표시 조건을 검사한다. 각각 선택 전·시설/길 선택·설명·임무 알림·버튼/입력을 포함한다.
-- 각 기지에서 사령부와 상점의 실제 진입 경로를 두 기기에서 확인한다. 세 화면만으로 최소 36개 기지/기기/화면 조건이다. 상세·거래·임무·빈/최대 목록·페이지·복귀 상태는 각 조건에서 확장한다. **36은 캡처 상한이나 전체 테스트 수가 아니다.**
+- 캠페인에 등록된 다섯 기지에서 사령부와 상점의 진입 경로를 두 기기로 확인한다. Base004를 포함한 화면 자원 조합은 36개다. 상세·거래·임무·빈/최대 목록·페이지·복귀 상태는 각 조건에서 확장한다.
 - 현재 사령부 내부 배경은 Phone CmdCenterBG.jpg/HD CmdCenterBG.png, 상점은 Phone ShopBG.jpg/HD ShopBG.png다. 파일이 공통이어도 한 기지 검사로 다른 기지의 진입·상태·입력을 대신하지 않는다.
 - Phone Base002는 Base005 계열 시설 그림을, Base005는 Base002 계열을 참조한다. 원본 참조를 기지 번호로 추측해 교정하지 않는다. HD의 Image ID/파일 대응도 명세 그대로 읽는다.
 - 파일 존재나 준비 명세 통과를 전수 실행 합격으로 쓰지 않는다. HD 기지 버튼 ID는 합계 27개이며 이 공통 게임 기능 집합을 입력에 연결한다. Phone 표에 그림/버튼이 있다는 이유로 게임 기능을 임의 추가하지 않는다.

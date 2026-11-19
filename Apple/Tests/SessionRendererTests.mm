@@ -2,6 +2,7 @@
 #import <UIKit/UIKit.h>
 #import <CommonCrypto/CommonDigest.h>
 #include "Core/Presentation/MenuArtwork.hpp"
+#include "Core/Presentation/MenuGridLayout.hpp"
 #include "Platform/Apple/HM2GameRuntime.hpp"
 #include "Platform/Apple/HM2ConcurrentRuntime.hpp"
 #import "Platform/Apple/HM2Renderer.h"
@@ -13,6 +14,8 @@
 #include "Core/Presentation/VisualLayer.hpp"
 #include "Core/Simulation/DarwinWorldRandom.hpp"
 #include <algorithm>
+#include <cmath>
+#include <limits>
 #include <map>
 #include <set>
 
@@ -66,6 +69,461 @@ UIImage* image(NSData* rgba,CGSize size){
 }
 @interface SessionRendererTests:XCTestCase @end
 @implementation SessionRendererTests
+- (void)testWastelandExitToSkywayKeepsBackgroundStable {
+    using namespace hm2;
+    self.continueAfterFailure=NO;
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];
+    XCTAssertNotNil(root);
+    const bool phone=UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPhone;
+    const hm2::Size canvas=phone?hm2::Size{912,420}:hm2::Size{820,1180};
+    const DisplayInsets insets=phone?DisplayInsets{68,20,68,0}:DisplayInsets{0,20,0,24};
+    UIWindow* window=[[UIWindow alloc]initWithFrame:CGRectMake(0,0,canvas.width,canvas.height)];
+    UIViewController* controller=[UIViewController new];
+    HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:window.bounds];
+    surface.contentScaleFactor=UIScreen.mainScreen.scale;
+    controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];
+    surface.frame=CGRectMake(0,0,canvas.width,canvas.height);[surface layoutIfNeeded];
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;
+    layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    NSURL* save=[NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:NSUUID.UUID.UUIDString]];
+    SaveData fixture;fixture.initializeSlot(0,"SKY","kr",1794268800);
+    progression::SlotView working(fixture.slot(0));
+    working.string(0x2d,16,"Base003");working.string(0x55,16,"Base003");working.level(25);working.u32(0x1b5c,5);
+    DarwinWorldRandom random(1);const auto bytes=fixture.encode(random,1);
+    XCTAssertTrue([[NSData dataWithBytes:bytes.data() length:bytes.size()] writeToURL:save atomically:YES]);
+    try{
+        apple::GameRuntime runtime(root,save,{},[]{return 1u;});
+        auto display=DisplayConfiguration::surface(canvas,insets);
+        display.device=phone?DisplayDevice::phone:DisplayDevice::tablet;
+        runtime.setDisplay(display);
+        XCTAssertTrue(runtime.session().selectSlot(0));runtime.session().enterBase();runtime.synchronize();settle(runtime,layer);
+        XCTAssertTrue(runtime.session().state().baseId=="Base003");
+        const auto pressSkyway=[&]{
+            for(const auto& key:runtime.screens().buttons())if(key.id==2005){
+                const auto point=runtime.screens().buttonScreenPosition(key);
+                runtime.input(PointerPhase::begin,point,70001);runtime.input(PointerPhase::end,point,70001);return true;
+            }
+            return false;
+        };
+        XCTAssertTrue(pressSkyway());XCTAssertEqual(runtime.session().state().selectedBaseButton,5);
+        XCTAssertTrue(pressSkyway());settle(runtime,layer);
+        XCTAssertEqual(runtime.session().state().screen,ui::ScreenId::field);
+        auto slot=Bytes(runtime.session().workingSlot().begin(),runtime.session().workingSlot().end());
+        progression::SlotView landed(slot);
+        XCTAssertTrue(landed.string(0x2d,16)=="Stage02_04");XCTAssertEqual(landed.u32(0x68),1u);
+        const auto* original=runtime.session().battle();XCTAssertNotEqual(original,nullptr);
+        const auto spawn=original->player().position;
+        XCTAssertEqual(spawn.x,403.f);XCTAssertEqual(spawn.y,419.f);
+        apple::Files mapFiles(root.fileSystemRepresentation);
+        const MapPreview skyway(mapFiles,"Stage02_04");
+        float previousX=0,maxStep=0,travel=0;
+        Vec2 previousPosition=spawn;
+        unsigned accepted=0;
+        for(unsigned tick=0;tick<300;++tick){@autoreleasepool{
+            XCTAssertEqual(runtime.session().battle(),original);
+            if(runtime.session().help()){
+                const Vec2 point{canvas.width*.5f,canvas.height*.5f};
+                runtime.input(PointerPhase::begin,point,70999);runtime.input(PointerPhase::end,point,70999);
+            }
+            if(tick==24||tick==160||tick==240){
+                const auto p=original->player().position;
+                const Vec2 aim=tick==24?Vec2{std::max(-380.f,p.x-570),p.y-92}:
+                    tick==160?Vec2{std::max(-385.f,p.x-190),p.y-130}:Vec2{p.x+175,p.y-30};
+                auto point=runtime.session().worldCanvasPoint(original->camera().toScreen(aim));
+                point.x=std::clamp(point.x,88.f,canvas.width-88);point.y=std::clamp(point.y,151.f,canvas.height-30);
+                runtime.input(PointerPhase::begin,point,71000+tick);
+                accepted+=unsigned(runtime.inputHistory().back().worldConsumed);
+                runtime.input(PointerPhase::end,point,71000+tick);
+            }
+            runtime.tick();
+            const auto frame=skyway.compose(original->camera());
+            const auto background=std::find_if(frame.sprites.begin(),frame.sprites.end(),[](const auto& s){return s.image=="Stage02_04BG.jpg";});
+            XCTAssertTrue(background!=frame.sprites.end());
+            const float backgroundX=runtime.session().worldCanvasPoint(background->center).x;
+            if(tick)maxStep=std::max(maxStep,std::abs(backgroundX-previousX));
+            previousX=backgroundX;
+            const auto p=original->player().position;
+            travel+=std::hypot(p.x-previousPosition.x,p.y-previousPosition.y);previousPosition=p;
+            runtime.captureNextFrame();runtime.draw(layer);
+            NSData* pixels=runtime.pixels();const auto size=runtime.drawableSize();
+            XCTAssertEqual(pixels.length,std::size_t(size.width)*std::size_t(size.height)*4);
+            XCTAssertGreaterThan(pixels.length,0u);
+            if(tick==0||tick==27||tick==170){
+                auto* snapshot=[XCTAttachment attachmentWithImage:image(pixels,size)];
+                snapshot.name=[NSString stringWithFormat:@"skyway-%@-%03u",phone?@"phone":@"tablet",tick];
+                snapshot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:snapshot];
+            }
+        }}
+        XCTAssertEqual(accepted,3u);XCTAssertGreaterThan(travel,250.f);XCTAssertLessThanOrEqual(maxStep,1.f);
+        NSLog(@"HM2_SKYWAY_STABLE %@ gate=1 frames=300 moves=%u travel=%.3f maxBackgroundStep=%.6f",phone?@"phone":@"ipad",accepted,travel,maxStep);
+    }catch(const std::exception& e){XCTFail(@"Wasteland exit and Skyway presentation: %s",e.what());}
+    [NSFileManager.defaultManager removeItemAtURL:save error:nil];window.hidden=YES;
+}
+
+- (void)testSameCanvasUIKitMovePreservesWorldDoubleTap {
+    using namespace hm2;
+    self.continueAfterFailure=NO;
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];
+    XCTAssertNotNil(root);
+    const bool phone=UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPhone;
+    const hm2::Size canvas=phone?hm2::Size{912,420}:hm2::Size{768,1024};
+    UIWindow* window=[[UIWindow alloc]initWithFrame:CGRectMake(0,0,canvas.width,canvas.height)];
+    UIViewController* controller=[UIViewController new];
+    HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:window.bounds];
+    surface.contentScaleFactor=1;
+    controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];
+    surface.frame=CGRectMake(0,0,canvas.width,canvas.height);[surface layoutIfNeeded];
+    auto* layer=(CAEAGLLayer*)surface.layer;
+    layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    NSURL* save=[NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:NSUUID.UUID.UUIDString]];
+    SaveData fixture;fixture.initializeSlot(0,"DASH","kr",1794268800);fixture.slot(0)[0x1b5c]=5;
+    DarwinWorldRandom random(1);const auto bytes=fixture.encode(random,1);
+    XCTAssertTrue([[NSData dataWithBytes:bytes.data() length:bytes.size()] writeToURL:save atomically:YES]);
+    try{
+        apple::GameRuntime runtime(root,save,{},[]{return 1u;});
+        auto display=DisplayConfiguration::surface(canvas);
+        display.device=phone?DisplayDevice::phone:DisplayDevice::tablet;runtime.setDisplay(display);
+        XCTAssertTrue(runtime.session().selectSlot(0));XCTAssertTrue(runtime.session().enterField("Stage01_01",0));
+        runtime.synchronize();settle(runtime,layer);
+        if(runtime.session().help()){
+            const Vec2 center{canvas.width*.5f,canvas.height*.5f};
+            runtime.input(PointerPhase::begin,center,10);runtime.input(PointerPhase::end,center,10);
+        }
+        auto* scene=runtime.session().battle();XCTAssertNotEqual(scene,nullptr);
+        for(unsigned n=0;n<240&&(scene->dashState().special<100||scene->clock().worldTime()<.7);++n)runtime.tick();
+        XCTAssertGreaterThanOrEqual(scene->dashState().special,100.f);
+        runtime.draw(layer);
+        const auto distance=[](Vec2 a,Vec2 b){return std::hypot(a.x-b.x,a.y-b.y);};
+        CGPoint point{};bool found=false;
+        for(float y=185;y<canvas.height-110&&!found;y+=40)for(float x=100;x<canvas.width-100&&!found;x+=40){
+            const auto raw=CGPointMake(x,canvas.height-y);Vec2 logical;
+            if(!runtime.logicalPoint(raw,logical))continue;
+            const auto target=scene->camera().toWorld(scene->cameraPresentation().worldToCanvas.inverse(logical));
+            if(distance(target,scene->player().position)<100)continue;
+            const auto& enemies=scene->enemies();
+            if(std::any_of(enemies.begin(),enemies.end(),[&](const auto& e){return e.hp>0&&distance(target,e.position)<100;}))continue;
+            point=raw;found=true;
+        }
+        XCTAssertTrue(found);
+        const CGPoint previous=CGPointMake(std::nextafter(point.x,std::numeric_limits<CGFloat>::infinity()),point.y);
+        Vec2 currentCanvas,previousCanvas;
+        XCTAssertNotEqual(point.x,previous.x);
+        XCTAssertTrue(runtime.logicalPoint(point,currentCanvas));XCTAssertTrue(runtime.logicalPoint(previous,previousCanvas));
+        XCTAssertEqual(currentCanvas.x,previousCanvas.x);XCTAssertEqual(currentCanvas.y,previousCanvas.y);
+        const auto before=scene->metrics().dashStarts;
+        XCTAssertTrue(runtime.inputFromView(PointerPhase::begin,point,point,7001));
+        XCTAssertTrue(runtime.inputHistory().back().worldConsumed);
+        const auto first=scene->dashState();XCTAssertGreaterThan(first.tapTime,0.f);XCTAssertGreaterThan(first.pathCount,0u);
+        XCTAssertFalse(runtime.inputFromView(PointerPhase::move,point,previous,7001));
+        const auto ignored=runtime.inputHistory().back();
+        XCTAssertTrue(ignored.sameCanvasMove);XCTAssertFalse(ignored.worldConsumed);
+        XCTAssertEqual(ignored.tapAfter,first.tapTime);XCTAssertEqual(ignored.pathAfter,first.pathCount);
+        runtime.inputFromView(PointerPhase::end,point,point,7001);
+        runtime.inputFromView(PointerPhase::begin,point,point,7002);
+        const auto dash=runtime.inputHistory().back();
+        XCTAssertEqual(dash.dashStartsAfter,before+1);XCTAssertEqual(dash.specialBefore-dash.specialAfter,100.f);
+        runtime.inputFromView(PointerPhase::end,point,point,7002);
+        XCTAssertEqual(scene->dashState().movePointer,0u);
+        NSLog(@"HM2_DASH_SAME_CANVAS %@ rawDelta=%.17g dash=1 cost=100",phone?@"phone":@"ipad",point.x-previous.x);
+    }catch(const std::exception& e){XCTFail(@"UIKit move and world double tap: %s",e.what());}
+    [NSFileManager.defaultManager removeItemAtURL:save error:nil];window.hidden=YES;
+}
+
+- (void)testColdShopPagePreparesFirstUseIconsThroughGameRuntime {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    for(bool phone:{true,false}){
+        const hm2::Size canvas=phone?hm2::Size{912,420}:hm2::Size{1032,1376};
+        NSURL* directory=[NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:NSUUID.UUID.UUIDString] isDirectory:YES];
+        XCTAssertTrue([NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:nil]);
+        UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];
+        HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,canvas.width,canvas.height)];surface.contentScaleFactor=1;
+        CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+        controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];surface.frame=CGRectMake(0,0,canvas.width,canvas.height);[surface layoutIfNeeded];
+        try{
+            hm2::SaveData fixture;fixture.initializeSlot(0,"SHOP","kr",1794268800);hm2::progression::SlotView slot(fixture.slot(0));slot.level(5);slot.u32(0x1b5c,5);
+            hm2::DarwinWorldRandom random(1);const auto bytes=fixture.encode(random,1);const auto save=[directory URLByAppendingPathComponent:@"HeavyMach2.sav"];
+            XCTAssertTrue([[NSData dataWithBytes:bytes.data() length:bytes.size()] writeToURL:save atomically:YES]);
+            hm2::apple::GameRuntime runtime(root,save,{});auto display=hm2::DisplayConfiguration::surface(canvas);display.device=phone?hm2::DisplayDevice::phone:hm2::DisplayDevice::tablet;runtime.setDisplay(display);
+            XCTAssertTrue(runtime.session().selectSlot(0));runtime.session().enterBase();runtime.synchronize();
+            const auto press=[&](unsigned id){for(const auto key:runtime.screens().buttons())if(key.id==id){const auto p=runtime.screens().buttonScreenPosition(key);runtime.input(hm2::PointerPhase::begin,p,991);runtime.input(hm2::PointerPhase::end,p,991);settle(runtime,layer);return true;}return false;};
+            XCTAssertTrue(press(2002));XCTAssertTrue(press(2002));XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::shop);
+            const auto& stock=runtime.session().state().shopItems;
+            XCTAssertGreaterThanOrEqual(stock.size(),9u);
+            if(stock.size()<9)throw std::runtime_error("Original level5 shop item is missing");
+            XCTAssertEqual(stock[8].icon,std::string("Icon10113.png"));
+            hm2::Frame initial;runtime.screens().appendPreparation(initial);const auto owns=[](const hm2::Frame& frame){return std::any_of(frame.sprites.begin(),frame.sprites.end(),[](const auto& s){return s.image=="Icon10113.png";});};
+            // With four original rows, this level-five item first appears
+            // at shop entry. Keep the cold GameRuntime -> draw regression.
+            XCTAssertTrue(owns(initial));runtime.draw(layer);
+            const auto warmReads=runtime.resourceReads();const auto warmUploads=runtime.textureUploads();const auto writes=runtime.session().metrics().saveRequests;
+            for(unsigned n=0;n<120;++n){runtime.tick();runtime.draw(layer);}
+            XCTAssertEqual(runtime.resourceReads(),warmReads);XCTAssertEqual(runtime.textureUploads(),warmUploads);XCTAssertEqual(runtime.session().metrics().saveRequests,writes);
+            runtime.captureNextFrame();runtime.draw(layer);XCTAssertNotNil(runtime.pixels());XCTAttachment* shot=[XCTAttachment attachmentWithImage:image(runtime.pixels(),runtime.drawableSize())];shot.name=phone?@"cold-phone-shop-Icon10113":@"cold-tablet-shop-Icon10113";shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];
+            if(phone){
+                const hm2::Size taller{912,550};
+                auto resized=hm2::DisplayConfiguration::surface(taller);resized.device=hm2::DisplayDevice::phone;
+                surface.frame=CGRectMake(0,0,taller.width,taller.height);[surface layoutIfNeeded];runtime.setDisplay(resized);
+                hm2::Frame visible;runtime.screens().append(visible,runtime.session().renderTime());
+                XCTAssertTrue(owns(visible));
+                runtime.captureNextFrame();runtime.draw(layer);
+                XCTAssertEqual(runtime.pixels().length,912u*550u*4u);
+                XCTAssertEqual(runtime.session().metrics().saveRequests,writes);
+                surface.frame=CGRectMake(0,0,canvas.width,canvas.height);[surface layoutIfNeeded];runtime.setDisplay(display);
+                const auto visibleKeys=runtime.screens().buttons();
+                const auto firstVisible=std::any_of(visibleKeys.begin(),visibleKeys.end(),[](const auto& key){return key.id==2200;});
+                if(!firstVisible)XCTAssertTrue(press(2105));
+                XCTAssertEqual(runtime.session().state().shopItems[0].name,std::string("SG-1"));
+                const auto attach=[&](NSString* name){
+                    runtime.captureNextFrame();runtime.draw(layer);
+                    auto* item=[XCTAttachment attachmentWithImage:image(runtime.pixels(),runtime.drawableSize())];
+                    item.name=name;item.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:item];
+                };
+                attach(@"live-phone-weapon-page");
+                const auto itemCode=runtime.session().state().shopItems[0].dataId;
+                XCTAssertTrue(press(2200));
+                XCTAssertEqual(runtime.session().state().selectedShop,0);
+                for(unsigned n=0;n<30;++n){runtime.tick();runtime.draw(layer);}
+                attach(@"live-phone-sg1-detail");
+                XCTAssertTrue(press(2102));XCTAssertTrue(runtime.session().state().tradeVisible);
+                attach(@"live-phone-sg1-buy-confirm");
+                XCTAssertTrue(press(2107));XCTAssertFalse(runtime.session().state().tradeVisible);
+                XCTAssertEqual(runtime.session().metrics().saveRequests,writes);
+
+                XCTAssertEqual(runtime.session().state().credits,500u);
+                XCTAssertTrue(press(2200));XCTAssertTrue(press(2102));XCTAssertTrue(press(2108));
+                XCTAssertEqual(runtime.session().state().credits,250u);
+                const auto inventory=runtime.session().state().inventory;
+                const auto bought=std::find_if(inventory.begin(),inventory.end(),[&](const auto& item){
+                    return item.dataId==itemCode&&item.enabled&&item.count>0;
+                });
+                XCTAssertTrue(bought!=inventory.end());
+                if(bought!=inventory.end()){
+                    const auto cell=6000u+unsigned((bought-inventory.begin())%25);
+                    const auto visible=runtime.screens().buttons();
+                    if(std::none_of(visible.begin(),visible.end(),[&](const auto& key){return key.id==cell;}))
+                        XCTAssertTrue(press(6091));
+                    XCTAssertTrue(press(cell));
+                    for(unsigned n=0;n<30;++n){runtime.tick();runtime.draw(layer);}
+                    attach(@"live-phone-sg1-sell-detail");
+                    XCTAssertTrue(press(2103));XCTAssertTrue(runtime.session().state().tradeVisible);
+                    XCTAssertFalse(runtime.session().state().buyMode);
+                    const auto detailVisible=[&]{
+                        const auto keys=runtime.screens().buttons();
+                        return std::any_of(keys.begin(),keys.end(),[](const auto& key){return key.id==2112;});
+                    };
+                    XCTAssertFalse(detailVisible());
+                    attach(@"live-phone-sg1-sell-confirm");
+                    XCTAssertTrue(press(2107));XCTAssertFalse(runtime.session().state().tradeVisible);
+                    XCTAssertFalse(detailVisible());
+                    attach(@"live-phone-sg1-sell-cancel");
+                    XCTAssertTrue(press(2103));XCTAssertTrue(runtime.session().state().tradeVisible);
+                    XCTAssertTrue(press(2109));XCTAssertFalse(runtime.session().state().tradeVisible);
+                    XCTAssertEqual(runtime.session().state().credits,375u);
+                }
+
+            }
+            NSLog(@"HM2_COLD_SHOP %@ catalog=9 firstUseIcon=Icon10113.png warmFrames=120 warmIO0Upload0=1",phone?@"phone":@"tablet");
+        }catch(const std::exception& e){XCTFail(@"Cold shop product resource boundary (%@): %s",phone?@"phone":@"tablet",e.what());}
+        window.hidden=YES;window.rootViewController=nil;
+    }
+}
+- (void)testPhoneShopReferenceLevelOne {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    NSURL* directory=[NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:NSUUID.UUID.UUIDString] isDirectory:YES];
+    XCTAssertTrue([NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:nil]);
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];
+    HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,912,420)];surface.contentScaleFactor=1;
+    controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];
+    surface.frame=CGRectMake(0,0,912,420);[surface layoutIfNeeded];
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;
+    layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    try{
+        hm2::SaveData reference;reference.initializeSlot(0,"SHOP","kr",1794268800);
+        hm2::progression::SlotView slot(reference.slot(0));slot.level(1);slot.u32(0x1b5c,1);
+        hm2::DarwinWorldRandom random(1);const auto bytes=reference.encode(random,1);
+        NSURL* path=[directory URLByAppendingPathComponent:@"ShopReference.sav"];
+        XCTAssertTrue([[NSData dataWithBytes:bytes.data() length:bytes.size()] writeToURL:path atomically:YES]);
+        hm2::apple::GameRuntime runtime(root,path,{});
+        runtime.setDisplay(hm2::DisplayConfiguration::surface({912,420},{68,20,68,0}));
+        XCTAssertTrue(runtime.session().selectSlot(0));runtime.session().enterBase();runtime.synchronize();
+        const auto press=[&](unsigned id){
+            for(const auto& key:runtime.screens().buttons()){
+                if(key.id!=id||!runtime.screens().button(key)->visible)continue;
+                const auto point=runtime.screens().buttonScreenPosition(key);
+                runtime.input(hm2::PointerPhase::begin,point,991);runtime.input(hm2::PointerPhase::end,point,991);
+                settle(runtime,layer);return true;
+            }
+            return false;
+        };
+        const auto dismissHelp=[&]{
+            runtime.input(hm2::PointerPhase::begin,{456,210},996);runtime.input(hm2::PointerPhase::end,{456,210},996);
+        };
+        for(unsigned n=0;n<6&&runtime.session().state().screen!=hm2::ui::ScreenId::shop;++n){
+            if(runtime.session().help())dismissHelp();
+            else XCTAssertTrue(press(2002));
+        }
+        if(runtime.session().help())dismissHelp();
+        XCTAssertEqual(runtime.session().state().level,1);
+        XCTAssertEqual(runtime.session().state().credits,500);
+        XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::shop);
+        XCTAssertFalse(runtime.session().state().shopItems.empty());
+        if(runtime.session().state().shopItems.empty())throw std::runtime_error("Missing original Level 1 catalog");
+        XCTAssertEqual(runtime.session().state().shopItems[0].name,std::string("SG-1"));
+        XCTAssertTrue(press(2200));
+        for(unsigned n=0;n<30;++n){runtime.tick();runtime.draw(layer);}
+        runtime.captureNextFrame();runtime.draw(layer);
+        auto* match=[XCTAttachment attachmentWithImage:image(runtime.pixels(),runtime.drawableSize())];
+        match.name=@"live-phone-reference-level1-sg1-detail";
+        match.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:match];
+    }catch(const std::exception& e){XCTFail(@"Phone Level 1 reference: %s",e.what());}
+    window.hidden=YES;window.rootViewController=nil;
+    [NSFileManager.defaultManager removeItemAtURL:directory error:nil];
+}
+- (void)testPhoneWastelandShopCatalog {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    NSURL* directory=[NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:NSUUID.UUID.UUIDString] isDirectory:YES];
+    XCTAssertTrue([NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:nil]);
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];
+    HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,912,420)];surface.contentScaleFactor=1;
+    controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];
+    surface.frame=CGRectMake(0,0,912,420);[surface layoutIfNeeded];
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;
+    layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    try{
+        hm2::SaveData fixture;fixture.initializeSlot(0,"CATALOG","kr",1794268800);
+        hm2::progression::SlotView slot(fixture.slot(0));slot.string(0x2d,16,"Base003");slot.level(22);slot.u32(0x1b5c,22);
+        hm2::DarwinWorldRandom random(1);const auto bytes=fixture.encode(random,1);
+        const auto save=[directory URLByAppendingPathComponent:@"HeavyMach2.sav"];
+        XCTAssertTrue([[NSData dataWithBytes:bytes.data() length:bytes.size()] writeToURL:save atomically:YES]);
+        hm2::apple::GameRuntime runtime(root,save,{});
+        auto display=hm2::DisplayConfiguration::surface({912,420},{68,20,68,0});display.device=hm2::DisplayDevice::phone;runtime.setDisplay(display);
+        XCTAssertTrue(runtime.session().selectSlot(0));runtime.session().enterBase();runtime.synchronize();
+        const auto press=[&](unsigned id,int data=-1){
+            for(const auto& key:runtime.screens().buttons()){
+                if(key.id!=id||(data>=0&&key.intData!=data)||!runtime.screens().button(key)->visible)continue;
+                const auto p=runtime.screens().buttonScreenPosition(key);
+                runtime.input(hm2::PointerPhase::begin,p,991);runtime.input(hm2::PointerPhase::end,p,991);
+                settle(runtime,layer);return true;
+            }
+            return false;
+        };
+        const auto capture=[&](NSString* name){
+            runtime.captureNextFrame();runtime.draw(layer);
+            XCTAssertEqual(runtime.pixels().length,912u*420u*4u);
+            auto* shot=[XCTAttachment attachmentWithImage:image(runtime.pixels(),runtime.drawableSize())];
+            shot.name=name;shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];
+        };
+        XCTAssertTrue(press(2002));XCTAssertTrue(press(2002));
+        XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::shop);
+        XCTAssertEqual(runtime.session().state().baseId,std::string("Base003"));
+        bool capturedMLK3=false;
+        const auto stockIDs=[&]{
+            std::vector<unsigned> visible;
+            for(const auto& key:runtime.screens().buttons())
+                if(key.id>=2200&&key.id<2224&&runtime.screens().button(key)->visible)visible.push_back(key.id);
+            return visible;
+        };
+        for(int category=0;category<5;++category){
+            if(category!=0)XCTAssertTrue(press(2104,category));
+            XCTAssertEqual(runtime.session().state().shopCategory,category);
+            const auto count=runtime.session().state().shopItems.size();
+            std::set<std::size_t> seen;
+            unsigned captures=0;
+            for(;captures<20;++captures){
+                const int page=runtime.session().state().shopPage;
+                const auto buttons=stockIDs();
+                capture([NSString stringWithFormat:@"live-wasteland-category-%d-page-%02u",category,captures+1]);
+                for(const unsigned id:buttons){
+                    const auto index=std::size_t(page)*24+id-2200;
+                    if(index>=count)continue;
+                    seen.insert(index);
+                    if(!capturedMLK3&&runtime.session().state().shopItems[index].name=="ML-K3"){
+                        XCTAssertTrue(press(id));
+                        for(unsigned n=0;n<30;++n){runtime.tick();runtime.draw(layer);}
+                        capture(@"live-wasteland-ML-K3-detail");
+                        XCTAssertTrue(press(2102));XCTAssertTrue(runtime.session().state().tradeVisible);
+                        capture(@"live-wasteland-ML-K3-buy");
+                        XCTAssertTrue(press(2107));capturedMLK3=true;
+                    }
+                }
+                if(count<=hm2::menu::phoneShopRows*4){
+                    XCTAssertFalse(press(2106));
+                    XCTAssertFalse(press(2105));
+                    break;
+                }
+                XCTAssertTrue(press(2106));
+                if(runtime.session().state().shopPage==page&&stockIDs()==buttons)break;
+                if(runtime.session().state().shopPage<page)break;
+            }
+            XCTAssertLessThan(captures,20u);XCTAssertEqual(seen.size(),count);
+            NSLog(@"HM2_WASTELAND_SHOP category=%d items=%zu pages=%u",category,count,captures+1);
+        }
+        XCTAssertTrue(capturedMLK3);
+        XCTAssertTrue(press(9204));capture(@"live-wasteland-equipment");
+        XCTAssertTrue(press(9205));XCTAssertTrue(press(2100));
+        XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::base);
+    }catch(const std::exception& e){XCTFail(@"Wasteland shop: %s",e.what());}
+    window.hidden=YES;window.rootViewController=nil;
+    [NSFileManager.defaultManager removeItemAtURL:directory error:nil];
+}
+- (void)testPhoneEquipmentSurface {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];
+    UIViewController* controller=[UIViewController new];
+    HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,912,420)];
+    surface.contentScaleFactor=1;controller.view=surface;window.rootViewController=controller;
+    [window makeKeyAndVisible];
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;
+    layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    HM2Renderer* renderer=[[HM2Renderer alloc]initWithResourceRoot:root];HUDIdentityHost host(renderer);
+    hm2::apple::Files files(root.fileSystemRepresentation);hm2::PreparedTiles tiles("phone-equipment-surface");
+    hm2::ui::Screens ui(files,tiles,host);
+    for(const auto size:{hm2::Size{667,375},hm2::Size{852,393},hm2::Size{912,420},hm2::Size{912,550}}){
+        surface.frame=CGRectMake(0,0,size.width,size.height);[surface layoutIfNeeded];
+        auto display=hm2::DisplayConfiguration::surface(size);display.device=hm2::DisplayDevice::phone;ui.setDisplay(display);
+        hm2::ui::ScreensState state;state.screen=hm2::ui::ScreenId::maintenance;state.inventoryPages=3;state.credits=12345;
+        for(unsigned i=0;i<25;++i){
+            hm2::ui::ItemView item;item.dataId=std::to_string(i);item.icon="Icon10011.png";item.count=1;state.inventory.push_back(item);
+        }
+        for(auto& part:state.equipment)part=state.inventory.front();
+        for(auto& bot:state.bots){bot=state.inventory.front();bot.icon="Icon04201.png";}
+        state.equipmentStats.attackLeft=122;state.equipmentStats.attackRight=102;state.equipmentStats.baseHP=676;
+        state.equipmentStats.bonusHP=240;state.equipmentStats.bodyDefense=22;state.equipmentStats.stepSize=31;
+        state.equipmentStats.boosterMaximum=314;state.equipmentStats.boosterRegen=1.2f;
+        ui.refresh(state,0);
+        hm2::Frame frame,preparation;ui.appendPreparation(preparation);ui.append(frame,0);
+        [renderer prepareFrame:preparation];[renderer prepareFrame:frame];
+        [renderer drawFrame:frame layer:layer];[renderer captureNextFrame];[renderer drawFrame:frame layer:layer];
+        const unsigned width=size.width,height=size.height;
+        XCTAssertEqual(renderer.readRGBA.length,std::size_t(width)*height*4);
+        if(renderer.readRGBA.length!=std::size_t(width)*height*4)continue;
+        const auto* bytes=static_cast<const std::uint8_t*>(renderer.readRGBA.bytes);
+        for(const unsigned y:{height-3, height-30, 3u})
+            for(const unsigned x:{3u,width/5,width-4}){
+                const auto offset=(y*width+x)*4;
+                XCTAssertGreaterThan(unsigned(bytes[offset])+bytes[offset+1]+bytes[offset+2],10u,@"black background at (%u,%u) on %ux%u",x,y,width,height);
+            }
+        auto* shot=[XCTAttachment attachmentWithImage:image(renderer.readRGBA,CGSizeMake(width,height))];
+        shot.name=[NSString stringWithFormat:@"phone-equipment-%ux%u",width,height];
+        shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];
+        if(width==912&&height==420){
+            state.selectedBot=2;ui.refresh(state,0);
+            hm2::Frame selected,selectedPreparation;ui.appendPreparation(selectedPreparation);ui.append(selected,0);
+            [renderer prepareFrame:selectedPreparation];[renderer prepareFrame:selected];
+            [renderer captureNextFrame];[renderer drawFrame:selected layer:layer];
+            const auto tabTop=hm2::menu::phoneReferenceUI(display).map({0,hm2::menu::equipmentFooterY}).y;
+            bool sawDisarm=false;
+            for(const auto& node:selected.sprites)if(node.image=="PhoneMenu/Btn_Disarm.png"){
+                sawDisarm=true;
+                XCTAssertGreaterThan(node.center.y-node.size.height*.5f,tabTop);
+            }
+            XCTAssertTrue(sawDisarm);
+            auto* chosen=[XCTAttachment attachmentWithImage:image(renderer.readRGBA,CGSizeMake(width,height))];
+            chosen.name=@"phone-equipment-third-bot-disarm";chosen.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:chosen];
+        }
+    }
+    window.hidden=YES;window.rootViewController=nil;
+}
 - (void)testPhoneMenuPolicyOnConcurrentClock {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     const CGSize extent=CGSizeMake(912,420);UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,912,420)];surface.contentScaleFactor=1;controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];surface.frame=CGRectMake(0,0,912,420);
@@ -77,15 +535,23 @@ UIImage* image(NSData* rgba,CGSize size){
     std::vector<std::unique_ptr<Fixture>> fixtures;NSMutableArray* rows=[NSMutableArray new];
     const auto make=[&](std::string name,hm2::ui::ScreenId screen){auto f=std::make_unique<Fixture>(name,files,host);f->state.screen=screen;f->state.locale="kr";f->state.credits=12345;f->ui.setDisplay(display);auto* result=f.get();fixtures.push_back(std::move(f));return result;};
     for(unsigned base=1;base<=6;++base){auto* f=make("hub-Base00"+std::to_string(base),hm2::ui::ScreenId::base);f->state.baseId="Base00"+std::to_string(base);}
-    for(const auto name:{"shop","shop-detail","shop-last-page","shop-trade"}){auto* f=make(name,hm2::ui::ScreenId::shop);f->state.inventoryVisible=true;f->state.inventoryPages=1;
+    for(const auto name:{"shop","shop-detail","shop-detail-row2","shop-last-page","shop-trade","shop-sell","shop-sell-trade","shop-equipment"}){auto* f=make(name,hm2::ui::ScreenId::shop);f->state.inventoryVisible=true;f->state.inventoryPages=1;
         for(unsigned n=0;n<25;++n){hm2::ui::ItemView item;item.dataId="fixture"+std::to_string(n);item.name="장비 "+std::to_string(n);item.description="원본 상품 정보와 구매 버튼을 확인한다.";item.icon="Icon10011.png";item.count=1;item.enabled=true;f->state.inventory.push_back(item);if(n<24)f->state.shopItems.push_back(item);}
-        if(f->name=="shop-detail"){f->state.shopDetailVisible=true;f->state.selectedShop=0;}
-        if(f->name=="shop-trade"){f->state.tradeVisible=true;f->state.buyMode=true;f->state.tradeItemId="fixture0";f->state.tradeCount=1;f->state.tradePrice=100;}
+        if(f->name=="shop-detail"||f->name=="shop-detail-row2"){f->state.shopDetailVisible=true;f->state.selectedShop=f->name=="shop-detail"?0:4;}
+        if(f->name=="shop-sell"){f->state.selectedInventory=8;f->state.detailInventory=8;f->state.detailItem=f->state.inventory[8];}
+        if(f->name=="shop-equipment"){
+            for(auto& bot:f->state.bots){bot=f->state.inventory[0];bot.icon="Icon04201.png";}
+            f->state.equipmentStats.attackLeft=122;f->state.equipmentStats.attackRight=102;
+            f->state.equipmentStats.baseHP=676;f->state.equipmentStats.bonusHP=240;
+            f->state.equipmentStats.bodyDefense=22;f->state.equipmentStats.stepSize=31;
+            f->state.equipmentStats.boosterMaximum=314;f->state.equipmentStats.boosterRegen=1.2f;
+        }
+        if(f->name=="shop-trade"||f->name=="shop-sell-trade"){f->state.tradeVisible=true;f->state.buyMode=f->name=="shop-trade";f->state.tradeItemId="fixture0";f->state.tradeCount=1;f->state.tradePrice=100;}
     }
     for(const auto name:{"command","command-detail","command-last-page"}){auto* f=make(name,hm2::ui::ScreenId::command);for(unsigned n=0;n<5;++n){hm2::ui::ItemView item;item.dataId="mission"+std::to_string(n);item.name="임무 "+std::to_string(n);item.enabled=true;f->state.availableMissions.push_back(item);item.dataId="accepted"+std::to_string(n);f->state.acceptedMissions.push_back(item);}if(f->name=="command-detail"){f->state.selectedMission=0;f->state.missionTitle="적 탱크 파괴";f->state.missionBody="적 탱크 E-10을 파괴하고 사령부로 복귀하라.";}}
     make("title",hm2::ui::ScreenId::title)->capture=720;make("logo",hm2::ui::ScreenId::title)->capture=240;auto* stage=make("stage-name",hm2::ui::ScreenId::field);stage->capture=30;stage->state.hasWorkingSlot=true;stage->state.fieldPlaceRevision=1;stage->state.fieldPlaceName="폐허 지역";
     const auto press=[](Fixture& f,unsigned id){for(auto k:f.ui.buttons())if(k.id==id){const auto p=f.ui.buttonScreenPosition(k);f.ui.input(hm2::PointerPhase::begin,p,50000+id,0);f.ui.input(hm2::PointerPhase::end,p,50000+id,0);return true;}return false;};
-    for(auto& f:fixtures){f->ui.refresh(f->state,0);if(f->name=="shop-last-page"){for(unsigned n=0;n<2;++n){press(*f,2106);press(*f,6091);}}if(f->name=="command-last-page")press(*f,9301);}
+    for(auto& f:fixtures){f->ui.refresh(f->state,0);if(f->name=="shop-last-page"){press(*f,2106);press(*f,6091);}if(f->name=="command-last-page")press(*f,9301);if(f->name=="shop-equipment")XCTAssertTrue(press(*f,9204));}
     const auto sha=[](NSData* bytes){unsigned char digest[CC_SHA256_DIGEST_LENGTH];CC_SHA256(bytes.bytes,CC_LONG(bytes.length),digest);NSMutableString* text=[NSMutableString new];for(auto byte:digest)[text appendFormat:@"%02x",byte];return text;};
     const auto rect=[](hm2::ClipRect r){return @[@(r.x),@(r.y),@(r.width),@(r.height)];};
     NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];
@@ -107,7 +573,7 @@ UIImage* image(NSData* rgba,CGSize size){
             }
         }}
         NSMutableDictionary* record=[@{@"rows":rows,@"binarySHA256":sha([NSData dataWithContentsOfFile:NSBundle.mainBundle.executablePath]),@"gameSHA256":sha([NSData dataWithContentsOfFile:[NSBundle.mainBundle.executablePath stringByAppendingString:@".debug.dylib"]]),@"concurrentCombat":combat.report(),@"frames":@720,@"fixtures":@(fixtures.size())} mutableCopy];
-        auto* attachment=[XCTAttachment attachmentWithData:[NSJSONSerialization dataWithJSONObject:record options:NSJSONWritingPrettyPrinted error:nil] uniformTypeIdentifier:@"public.json"];attachment.name=@"phone-policy-observations";attachment.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:attachment];XCTAssertEqual(rows.count,16u);combat.setActive(false);
+        auto* attachment=[XCTAttachment attachmentWithData:[NSJSONSerialization dataWithJSONObject:record options:NSJSONWritingPrettyPrinted error:nil] uniformTypeIdentifier:@"public.json"];attachment.name=@"phone-policy-observations";attachment.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:attachment];XCTAssertEqual(rows.count,20u);combat.setActive(false);
     }catch(const std::exception& error){XCTFail(@"Phone policy batch failed: %s",error.what());}
     [window setHidden:YES];[NSFileManager.defaultManager removeItemAtURL:directory error:nil];
 }
@@ -134,11 +600,20 @@ UIImage* image(NSData* rgba,CGSize size){
         if(screen==hm2::ui::ScreenId::shop){state.inventoryVisible=true;for(unsigned n=0;n<25;++n){hm2::ui::ItemView item;item.dataId="fixture"+std::to_string(n);item.icon="Icon10011.png";item.count=1;state.inventory.push_back(item);if(n<24)state.shopItems.push_back(item);}}
         ui.refresh(state,0);for(unsigned tick=0;tick<180;++tick)ui.tick(float(tick)/60,random);hm2::Frame frame;ui.append(frame,3);
         hm2::Frame preparation;ui.appendPreparation(preparation);[renderer prepareFrame:preparation];[renderer prepareFrame:frame];[renderer drawFrame:frame layer:layer];[renderer captureNextFrame];[renderer drawFrame:frame layer:layer];
+        // A screenshot alone is not a passing check: reject the old central
+        // 768x1024 canvas before retaining the actual GPU evidence below.
+        if(!phone){const auto expected=screen==hm2::ui::ScreenId::base?state.baseId+".png":screen==hm2::ui::ScreenId::shop?std::string("ShopBG.png"):std::string("CmdCenterBG.png");bool found=false;
+            for(const auto& sprite:frame.sprites)if(sprite.image==expected){found=true;XCTAssertEqual(sprite.strip.size(),4u);if(sprite.strip.size()!=4)continue;
+                float l=INFINITY,r=-INFINITY,b=INFINITY,t=-INFINITY;for(const auto& v:sprite.strip){l=std::min(l,v.position.x);r=std::max(r,v.position.x);b=std::min(b,v.position.y);t=std::max(t,v.position.y);}
+                XCTAssertLessThanOrEqual(l,.01f);XCTAssertLessThanOrEqual(b,.01f);XCTAssertGreaterThanOrEqual(r,float(extent.width)-.01f);XCTAssertGreaterThanOrEqual(t,float(extent.height)-.01f);
+                XCTAssertEqualWithAccuracy((r-l)/(t-b),.75f,.0001f);XCTAssertTrue(sprite.clip.has_value());if(sprite.clip){XCTAssertEqualWithAccuracy(sprite.clip->x,0,.01f);XCTAssertEqualWithAccuracy(sprite.clip->y,0,.01f);XCTAssertEqualWithAccuracy(sprite.clip->width,extent.width,.01f);XCTAssertEqualWithAccuracy(sprite.clip->height,extent.height,.01f);}
+            }XCTAssertTrue(found);
+        }
         XCTAssertEqual(renderer.readRGBA.length,std::size_t(extent.width*extent.height)*4);if(renderer.readRGBA.length!=std::size_t(extent.width*extent.height)*4)continue;
         NSString* name=[NSString stringWithFormat:@"menu-%@-Base00%u-%s",phone?@"iphone":@"ipad",base,screen==hm2::ui::ScreenId::base?"hub":screen==hm2::ui::ScreenId::shop?"shop":"command"];
         auto* shot=[XCTAttachment attachmentWithImage:image(renderer.readRGBA,extent)];shot.name=name;shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];
         NSMutableArray* backgrounds=[NSMutableArray new];
-        for(const auto& sprite:frame.sprites){const auto& path=sprite.image;if(path.find("Base00")==std::string::npos&&path.find("ShopBG.")==std::string::npos&&path.find("CmdCenterBG.")==std::string::npos)continue;
+        for(const auto& sprite:frame.sprites){const auto& path=sprite.image;if(path.find("Base00")==std::string::npos&&path.find("ShopBG.")==std::string::npos&&path.find("CmdCenterBG.")==std::string::npos&&path!="PhoneShopHangar.jpg")continue;
             NSString* relative=[NSString stringWithUTF8String:path.c_str()];NSData* bytes=[NSData dataWithContentsOfURL:[root URLByAppendingPathComponent:relative]];XCTAssertNotNil(bytes);
             [backgrounds addObject:@{@"image":relative,@"sha256":sha(bytes)}];}
         [rows addObject:@{@"device":phone?@"iphone":@"ipad",@"base":[NSString stringWithUTF8String:state.baseId.c_str()],@"screen":screen==hm2::ui::ScreenId::base?@"hub":screen==hm2::ui::ScreenId::shop?@"shop":@"command",@"capture":name,@"backgrounds":backgrounds}];
@@ -563,6 +1038,29 @@ UIImage* image(NSData* rgba,CGSize size){
         }
     }catch(const std::exception& e){XCTFail(@"Phone full-screen failed: %s",e.what());}
     window.hidden=YES;window.rootViewController=nil;XCTAssertTrue([NSFileManager.defaultManager removeItemAtURL:directory error:&error]);
+}
+- (void)testFieldCapturesForDevice {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    const bool phone=UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPhone;const CGSize extent=phone?CGSizeMake(912,420):CGSizeMake(1024,1366);
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,extent.width,extent.height)];surface.contentScaleFactor=1;controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];surface.frame=CGRectMake(0,0,extent.width,extent.height);
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];[NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:nil];
+    try{
+        hm2::apple::GameRuntime runtime(root,[directory URLByAppendingPathComponent:@"HeavyMach2.sav"],{},[]{return 1u;});auto display=hm2::DisplayConfiguration::surface({float(extent.width),float(extent.height)},phone?hm2::DisplayInsets{68,20,68,0}:hm2::DisplayInsets{0,20,0,24});display.device=phone?hm2::DisplayDevice::phone:hm2::DisplayDevice::tablet;runtime.setDisplay(display);
+        XCTAssertTrue(runtime.session().createSlot(0,"FIELD","kr"));XCTAssertTrue(runtime.session().enterField("Stage01_01",0));runtime.synchronize();
+        if(runtime.session().help()){const hm2::Vec2 p{float(extent.width)*.5f,float(extent.height)*.5f};runtime.input(hm2::PointerPhase::begin,p,9900);runtime.input(hm2::PointerPhase::end,p,9900);}
+        NSMutableArray* observations=[NSMutableArray new];
+        const auto capture=[&](NSString* phase,unsigned ticks){for(unsigned i=0;i<ticks;++i){runtime.tick();runtime.draw(layer);}runtime.captureNextFrame();runtime.draw(layer);const auto pixels=runtime.pixels();XCTAssertEqual(pixels.length,std::size_t(extent.width*extent.height)*4);
+            if(pixels.length==std::size_t(extent.width*extent.height)*4){const auto* bytes=static_cast<const unsigned char*>(pixels.bytes);unsigned colored=0;for(unsigned x=0;x<unsigned(extent.width);++x){const auto at=(std::size_t(unsigned(extent.height)-1)*unsigned(extent.width)+x)*4;colored+=bytes[at]+bytes[at+1]+bytes[at+2]>8;}XCTAssertGreaterThan(colored,unsigned(extent.width)*3/4,@"Field top border must contain original terrain, not black filler");}
+            auto* shot=[XCTAttachment attachmentWithImage:image(pixels,extent)];shot.name=[NSString stringWithFormat:@"field-%@-%@",phone?@"iphone":@"ipad",phase];shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];const auto* battle=runtime.session().battle();XCTAssertTrue(battle!=nullptr);if(!battle)return;
+            const auto& c=battle->cameraPresentation();const auto& m=battle->metrics();[observations addObject:@{@"phase":phase,@"canvas":@[@(extent.width),@(extent.height)],@"scale":@(c.worldScale),@"viewport":@[@(c.viewport.width),@(c.viewport.height)],@"worldOffset":@[@(c.worldToCanvas.offset.x),@(c.worldToCanvas.offset.y)],@"position":@[@(battle->player().position.x),@(battle->player().position.y)],@"target":@(battle->selectedEnemy()),@"shots":@(m.playerEmissions),@"enemyShots":@(m.enemyEmissions),@"damage":@(m.damageCalls)}];};
+        capture(@"idle",30);auto* battle=runtime.session().battle();if(battle){const auto player=battle->player().position;const auto point=runtime.session().worldCanvasPoint(battle->camera().toScreen({player.x+90,player.y+90}));runtime.input(hm2::PointerPhase::begin,point,9901);runtime.input(hm2::PointerPhase::end,point,9901);capture(@"move",45);
+            float best=1e30f;hm2::Vec2 target;bool found=false;for(const auto& e:battle->enemies())if(e.hp>0&&!e.corpse){const auto p=runtime.session().worldCanvasPoint(battle->camera().toScreen(e.position));const auto dx=e.position.x-battle->player().position.x,dy=e.position.y-battle->player().position.y,d=dx*dx+dy*dy;if(p.x>20&&p.x<extent.width-20&&p.y>(phone?150:260)&&p.y<extent.height-20&&d<best){found=true;best=d;target=p;}}
+            XCTAssertTrue(found);if(found){runtime.input(hm2::PointerPhase::begin,target,9902);runtime.input(hm2::PointerPhase::end,target,9902);XCTAssertNotEqual(battle->selectedEnemy(),0u);capture(@"lock-on-combat",90);}
+        }
+        NSData* data=[NSJSONSerialization dataWithJSONObject:@{@"device":phone?@"iphone":@"ipad",@"observations":observations} options:NSJSONWritingPrettyPrinted error:nil];auto* record=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];record.name=phone?@"field-observations-iphone":@"field-observations-ipad";record.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:record];
+    }catch(const std::exception& e){XCTFail(@"Field capture failed: %s",e.what());}
+    [window setHidden:YES];[NSFileManager.defaultManager removeItemAtURL:directory error:nil];
 }
 - (void)testOriginalNameLengthCountryAndNoFallback {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;

@@ -1,0 +1,28 @@
+{
+  "url": "https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-fullscreen-art-20261119",
+  "gameCommit": "9e5c08a",
+  "siteSource": "508499d48ba7860a1bb78465ce71481ee3ffc1d7",
+  "deployment": "appgdep_6afec2ad987c81918e7877deadcaaee1",
+  "version": "appgprj_6addbf55aea081918d3d182d7e496e88~appgver_9970d083758481919881624d83062a61",
+  "status": "succeeded",
+  "http": {
+    "report": 200,
+    "image": 200,
+    "index": 200,
+    "assetHash": "b341759ffc7e9f6bfc6364af1ba10025fac8aff7f865f367cc3dc9ee89f45572",
+    "assetBytes": 387709,
+    "unauthenticated": {
+      "iphone-code-asset-diagnosis-20261116.html": 403,
+      "assets/phone-shop-hangar-20261119.jpg": 403
+    }
+  },
+  "access": {
+    "owner": 1,
+    "groups": 0,
+    "externalVisitors": 0
+  },
+  "archiveUnpackedBytes": 268370432,
+  "packaging": "Three existing PNGs were compressed losslessly. Decoded pixels and display metadata match.",
+  "browser": "Chrome and Safari were inaccessible through computer use (cgWindowNotFound).",
+  "evidence": ".local/evidence/iphone-shop-art-publication-20261119.fAgxXV"
+}

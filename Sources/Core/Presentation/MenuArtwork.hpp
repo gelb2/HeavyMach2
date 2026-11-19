@@ -16,7 +16,7 @@ inline std::string background(const DisplayConfiguration& c,std::string_view hd)
     return phoneAsset(hd);
 }
 inline bool retina(std::string_view name){
-    return name=="PhoneMenu/Btn_InvenPage.png"||name=="PhoneMenu/Btn_ArrangeItem.png"||name=="PhoneMenu/Btn_ShopLeft.png"||name=="PhoneMenu/Btn_ShopRight.png"||name=="PhoneMenu/TradeItemBG.png"||name=="PhoneMenu/Btn_ShopExit.png"||name=="PhoneMenu/Btn_Mission.png"||name=="PhoneMenu/AcceptedMark.png"||name=="PhoneMenu/ItemDesc.png"||name=="PhoneMenu/ShopCategory.png"||name=="PhoneMenu/SelSlot_BG.jpg"||name=="PhoneMenu/CmdCenterBG.jpg"||name=="PhoneMenu/ShopBG.jpg"||name=="PhoneMenu/MaintenanceBG.jpg"||name=="PhoneMenu/Main_Title.png"||name=="PhoneMenu/Main_Episode.png";
+    return name=="PhoneMenu/Btn_InvenPage.png"||name=="PhoneMenu/Btn_Disarm.png"||name=="PhoneMenu/Btn_ArrangeItem.png"||name=="PhoneMenu/Btn_ShopLeft.png"||name=="PhoneMenu/Btn_ShopRight.png"||name=="PhoneMenu/Btn_ShopBuy.png"||name=="PhoneMenu/Btn_ShopSell.png"||name=="PhoneMenu/TradeItemBG.png"||name=="PhoneMenu/Btn_ShopExit.png"||name=="PhoneMenu/Btn_Mission.png"||name=="PhoneMenu/AcceptedMark.png"||name=="PhoneMenu/ItemDesc.png"||name=="PhoneMenu/ShopCategory.png"||name=="PhoneMenu/SelSlot_BG.jpg"||name=="PhoneMenu/CmdCenterBG.jpg"||name=="PhoneMenu/ShopBG.jpg"||name=="PhoneMenu/MaintenanceBG.jpg"||name=="PhoneMenu/Main_Title.png"||name=="PhoneMenu/Main_Episode.png";
 }
 struct Title {float bigStart,bigEnd,bigStep,titleIn,episodeIn,prompt;Vec2 root,main,episode,tap,copyright,bgStart;};
 inline Title title(const DisplayConfiguration& c){

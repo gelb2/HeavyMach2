@@ -95,6 +95,7 @@ struct CombatSetup {
     bool openEventGate=false;
     // GobWorld.addMissionObjects consumes live accepted actions in order.
     std::vector<MissionFieldObject> missionObjects;
+    std::vector<MapSpawner> missionSpawners;
     std::array<CombatBotSetup,3> botSlots{};
     EquipmentCodes equipment=PlayerEquipment::startingCodes;
     std::uint32_t randomSeed=1;
