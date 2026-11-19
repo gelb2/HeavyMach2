@@ -1,3 +1,7 @@
+## 2026-11-19 iPhone Equip 잘림과 원본 여러 페이지 검사
+
+Equip 능력치·BOT과 웨이스트랜드 레벨 22의 원본 페이지를 기존 비공개 보고에 반영했다. DISARM 캡처는 로컬 검사 기록에 있다. 사이트 소스 `e2e2949`, 배포 `appgdep_6afe70f9b8a88191b451ba2b6dbed668`가 성공했다. [비공개 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-capture-20261119) · [로컬 캡처와 검사](iphone-shop-equipment-20261119.md)
+
 ## 2026-11-19 iPhone 상점 원본 재검사와 거래 버튼
 
 일반판 2.0.1의 거래·스크롤 관측, 수정한 세로 Buy·Sell, iPad 상점 대조와 Equip 결함을 기존 비공개 보고와 누적 목록에 추가했다. 사이트 소스 `38e3970`, 배포 `appgdep_6afe6691f9c081918dea64b4685ffacd`가 성공했다. 원본과 복원판의 PNG, 파일별 크기·해시는 로컬 증거에 있다. [비공개 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-capture-20261119) · [캡처와 수정 근거](iphone-shop-comparison-20261119.md)
