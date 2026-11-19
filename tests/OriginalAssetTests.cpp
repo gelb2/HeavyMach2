@@ -139,8 +139,21 @@ int main(int argc,char** argv){assert(argc==3);Files files;files.root=argv[1];co
         skyway.fillSurface=true;
         skyway.viewport={912.f/.9957588911056519f,420.f/.9957588911056519f};
         skyway.backgroundWorld={-3.2f,10.f};
+        const auto opaque=scene.compose(skyway);
+        assert(opaque.sprites.size()==1);
+        const auto& terrain=opaque.sprites[0];
+        assert(terrain.strip.size()==4);
+        const float left=terrain.center.x-terrain.size.width*.5f;
+        const float top=terrain.center.y+terrain.size.height*.5f;
+        for(const auto& vertex:terrain.strip){
+            assert(vertex.position.x>=0&&vertex.position.x<=skyway.viewport.width);
+            assert(vertex.position.y>=0&&vertex.position.y<=skyway.viewport.height);
+            same(vertex.uv.x,(vertex.position.x-left)/terrain.size.width);
+            same(vertex.uv.y,(top-vertex.position.y)/terrain.size.height);
+        }
         const auto tablet=water.compose(skyway);
         assert(tablet.sprites[0].size.width<skyway.viewport.width);
+        assert(tablet.sprites[1].strip.size()==4); // Transparent Skyway keeps its existing path.
         same(tablet.sprites[0].center.x,skyway.toScreen(skyway.backgroundWorld).x);
         skyway.clampBackgroundXToViewport=true;
         const auto phone=water.compose(skyway);

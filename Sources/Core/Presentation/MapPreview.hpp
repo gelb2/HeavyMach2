@@ -23,6 +23,7 @@ class MapPreview {
     Maps maps_;
     std::string mapName_,foreground_,background_;
     Size foregroundSize_,backgroundSize_;
+    bool foregroundOpaque_=true;
 public:
     MapPreview(ResourceAccess&,std::string_view mapName);
     [[nodiscard]] const Maps& maps()const{return maps_;}
