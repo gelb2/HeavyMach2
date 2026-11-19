@@ -28,7 +28,7 @@ targetTemplates:
       - path: ../../Sources/Assets
       - path: ../../Sources/Platform/Apple
         excludes: [HM2ConcurrentRuntime.mm]
-      - path: ../../.local/prepared/HD
+      - path: ../../.local/prepared/Campaign/HD
         type: folder
         buildPhase: resources
       - path: ../../.local/prepared/AppIcons.xcassets

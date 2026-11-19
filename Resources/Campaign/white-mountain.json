@@ -1,0 +1,26 @@
+{
+  "maps": {
+    "SnowPass": {"name": "Snow Pass", "image": "STAGE 12.png", "enemies": [["E_Tank_24", 120, 180], ["E_Tank_21", 210, -175]]},
+    "SnowBasin": {"name": "Snow Basin", "image": "STAGE 12A.png", "enemies": [["E_Tank_24", -120, 170], ["E_Turret_07", 160, 160], ["E_Tank_24", 200, -210]]},
+    "SnowField": {"name": "Snow Field", "image": "STAGE 13.png", "enemies": [["E_Tank_24", 120, -200], ["E_Tank_25", 150, 165]]},
+    "SnowRidge": {"name": "Snow Ridge", "image": "STAGE 15.png", "enemies": [["E_Tank_25", 130, 120], ["E_Tank_24", 180, -170]]},
+    "SnowFort": {"name": "Snow Fort", "image": "STAGE 15A.png",
+      "enemies": [["E_Turret_07", -270, -315], ["E_Turret_07", 40, -290], ["E_Tank_25", 270, 240]],
+      "collision": [
+        [[-117, 104], [-87, 162], [-14, 207], [66, 188], [124, 145], [143, 53], [79, -22], [-36, -41], [-104, 16]],
+        [[-239, -239], [-39, -239], [-39, -471], [-239, -471]]
+      ]
+    },
+    "SnowValley": {"name": "Snow Valley", "image": "STAGE 15B_01.png", "enemies": [["E_Tank_25", 96, -185], ["E_Tank_24", 118, 175]]},
+    "Base004": {"name": "White Mt. Base"}
+  },
+  "links": [
+    [["Stage04_09", 3, 450, 474], ["SnowPass", 0, -474, 0]],
+    [["SnowPass", 1, 474, 0], ["Base004", 0, -116, 10]],
+    [["Base004", 1, 65, 10], ["SnowBasin", 0, -474, 0]],
+    [["SnowBasin", 1, 474, 0], ["SnowField", 0, -474, 0]],
+    [["SnowField", 1, 474, 0], ["SnowRidge", 0, -474, 0]],
+    [["SnowRidge", 1, 474, 0], ["SnowFort", 0, -474, 0]],
+    [["SnowFort", 1, 474, 0], ["SnowValley", 0, -474, 0]]
+  ]
+}
