@@ -163,6 +163,20 @@ struct Screens::Impl {
             if(menu::phone(layout.configuration())&&state.screen==ScreenId::base&&id==2004){const auto b=node.button->bounds();node.button->position=layout.keepControlVisible(node.region,node.button->position,{b.left,b.bottom,b.right-b.left,b.top-b.bottom});}
             buttonRegions[node.button.get()]=node.region;buttonHUDGroups[node.button.get()]=node.hudGroup;
         }
+        if(phoneMenu()&&menu::menuRegion(node.region)&&node.region!=Region::phoneTrade){
+            // The artwork determines where elements sit on a wide surface.
+            // Phone 2.0.1's fitted canvas determines the size of each element.
+            const float ratio=menu::phoneReferenceUIScale(layout.configuration())/presentation(node.region).scale;
+            const auto scaled=[ratio](Vec2 scale){return Vec2{scale.x*ratio,scale.y*ratio};};
+            if constexpr(std::is_same_v<T,ImageNode>)node.image.scale=scaled(node.image.scale);
+            if constexpr(std::is_same_v<T,TextNode>)node.text->scale=scaled(node.text->scale);
+            if constexpr(std::is_same_v<T,NumberNode>){node.font->scale=scaled(node.font->scale);node.font->tick();}
+            if constexpr(std::is_same_v<T,ButtonNode>){
+                const auto id=node.button->key().id;
+                // These tabs are painted into the backdrop. The detail owns its animation.
+                if(id!=9204&&id!=9205&&id!=2112)node.button->scalePresentation(ratio);
+            }
+        }
         if(node.region==Region::top)node.hudGroup=-1;
         nodes.push_back(std::move(node));
     }
@@ -737,7 +751,12 @@ void Screens::Impl::layoutDetail(){
         const float scale=d.phoneScale;
         const Vec2 parent=plus(d.origin,plus(d.descPos,{0,(d.up?93.f:-93.f)*y*scale}));
         const Vec2 animatedScale{1.5f*d.x*scale,1.5f*d.y*scale};
-        if(d.background){d.background->position=parent;d.background->scale=animatedScale;}
+        if(d.background){
+            d.background->position=parent;
+            d.background->scale={1,1};
+            d.background->setBoundWidthHeight(menu::detailHitSize.width*d.x*scale,menu::detailHitSize.height*d.y*scale);
+            d.background->scale=animatedScale;
+        }
         if(d.title){d.title->position=plus(parent,{0,70.5f*y*scale});d.title->scale=animatedScale;d.title->visible=d.vertical;}
         const bool weapon=d.entry.originalType==10;
         if(d.description){d.description->position=plus(parent,{d.large?(weapon?48.f:114.f)*scale:0,-18.f*y*scale});d.description->scale=animatedScale;d.description->visible=d.vertical;}
@@ -762,7 +781,7 @@ void Screens::Impl::phoneTradeAction(){
     }
     RegionScope scope(*this,Region::phoneMenu);
     const auto button=addButton(Panel::root,buy?2102:2103,
-        menu::phoneAsset(buy?"Btn_ShopBuy.png":"Btn_ShopSell.png"),menu::tradeAction,
+        menu::phoneAsset(buy?"Btn_ShopBuy.png":"Btn_ShopSell.png"),menu::shopTradeAction(layout),
         2,1,0,1,menu::tradeActionSize,0,{}, {1,1},true,13,false);
     // The receiver and the two frames of the original button share a rectangle.
     button->pushDepth=0;

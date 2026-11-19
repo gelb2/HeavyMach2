@@ -40,6 +40,10 @@ void Button::setBoundWidthHeight(float width,float height){
     bounds_={(-.5f*width)*scale.x,(-.5f*height)*scale.x,
              (.5f*width)*scale.y,(.5f*height)*scale.y};
 }
+void Button::scalePresentation(float ratio){
+    scale={scale.x*ratio,scale.y*ratio};
+    bounds_={bounds_.left*ratio,bounds_.bottom*ratio,bounds_.right*ratio,bounds_.top*ratio};
+}
 void Button::setDefaultTile(unsigned n){defaultTile_=n;}
 void Button::setReleaseTile(unsigned n){releaseTile_=n;}
 void Button::setDeactiveTile(unsigned n){deactiveTile_=n;}

@@ -15,6 +15,20 @@ inline constexpr Size tradeActionSize{48,85.5f},detailTextureSize{384,192},detai
 inline constexpr float stockPagerY=stockGrid.y-231,inventoryPagerY=inventoryGrid.y-234;
 inline constexpr float categoryY=402,pagerHitHeight=48,categoryHitHeight=60;
 inline constexpr float inventoryOverflow=60,stockOverflow=120;
+inline float phoneReferenceScale(const DisplayConfiguration& c){
+    return std::min(c.canvas.width/480,c.canvas.height/320);
+}
+inline float phoneReferenceUIScale(const DisplayConfiguration& c){
+    return phoneReferenceScale(c)*2.f/3.f;
+}
+inline DisplayTransform phoneReferenceUI(const DisplayConfiguration& c){
+    const float scale=phoneReferenceUIScale(c);
+    return {scale,{c.canvas.width*.5f-360*scale,c.canvas.height*.5f-240*scale}};
+}
+inline Vec2 shopTradeAction(const DisplayLayout& display){
+    const auto original=phoneReferenceUI(display.configuration());
+    return display.ui(DisplayRegion::phoneMenu).inverse(original.map(tradeAction));
+}
 inline float menuScale(const DisplayConfiguration& c){return std::min(std::max(c.canvas.width/480,c.canvas.height/320),c.canvas.height/200);}
 inline float menuHeader(const DisplayConfiguration& c){return 60*menuScale(c);}
 inline float menuFooter(const DisplayConfiguration& c){return 50*menuScale(c);}
@@ -82,27 +96,35 @@ struct ShopDetailLayout {
 };
 inline ShopDetailLayout shopDetail(const DisplayLayout& display,Vec2 preferred,bool stock,const ClipRect* equipmentInventory=nullptr){
     const auto transform=display.ui(DisplayRegion::phoneMenu);
+    preferred=transform.inverse(phoneReferenceUI(display.configuration()).map(preferred));
+    const auto action=shopTradeAction(display);
     const auto area=display.configuration().content();
     const auto low=transform.inverse({area.x,area.y});
     const auto high=transform.inverse({area.x+area.width,area.y+area.height});
-    const float stockPagerTop=display.ui(DisplayRegion::phoneStockHeader).map({0,stockPagerY+pagerHitHeight*.5f}).y;
-    const float inventoryPagerTop=display.ui(DisplayRegion::phoneInventoryPages).map({0,inventoryPagerY+pagerHitHeight*.5f}).y;
-    const float categoryBottom=display.ui(DisplayRegion::phoneCategoryHeader).map({0,categoryY-categoryHitHeight*.5f}).y;
-    const float gap=4;
+    const float reference=phoneReferenceUIScale(display.configuration());
+    const float sizeRatio=reference/transform.scale;
+    const float pagerHalf=pagerHitHeight*reference*.5f;
+    const float stockPagerTop=display.ui(DisplayRegion::phoneStockHeader).map({0,stockPagerY}).y+pagerHalf;
+    const float inventoryPagerTop=display.ui(DisplayRegion::phoneInventoryPages).map({0,inventoryPagerY}).y+pagerHalf;
+    const float categoryBottom=display.ui(DisplayRegion::phoneCategoryHeader).map({0,categoryY}).y-categoryHitHeight*reference*.5f;
+    const float gap=2;
     const float left=equipmentInventory?std::max(low.x,transform.inverse({equipmentInventory->x,0}).x+gap)
-        :stock?low.x:std::max(low.x,tradeAction.x+tradeActionSize.width*.5f+gap);
-    const float right=stock?std::min(high.x,tradeAction.x-tradeActionSize.width*.5f-gap):high.x;
+        :stock?low.x:std::max(low.x,action.x+tradeActionSize.width*sizeRatio*.5f+gap);
+    const float right=stock?std::min(high.x,action.x-tradeActionSize.width*sizeRatio*.5f-gap):high.x;
     const float lowerEdge=equipmentInventory?equipmentInventory->y:std::max(stockPagerTop,inventoryPagerTop);
     const float upperEdge=equipmentInventory?equipmentInventory->y+equipmentInventory->height:categoryBottom;
     const float bottom=std::max(low.y,transform.inverse({0,lowerEdge}).y+gap);
     const float top=std::min(high.y,transform.inverse({0,upperEdge}).y-gap);
     // On an unusually constrained surface, keep the detail off the other
     // column even if the space between fixed controls is too short to draw it.
-    const float scale=std::clamp(std::min((right-left)/detailTextureSize.width,(top-bottom)/detailTextureSize.height),0.f,1.f);
+    const float scale=std::clamp(std::min((right-left)/detailHitSize.width,(top-bottom)/detailHitSize.height),0.f,sizeRatio);
     if(scale==0)return {preferred,0};
     const float halfWidth=detailTextureSize.width*scale*.5f;
     const float halfHeight=detailTextureSize.height*scale*.5f;
-    return {{std::clamp(preferred.x,left+halfWidth,std::max(left+halfWidth,right-halfWidth)),
+    const float hitHalfWidth=detailHitSize.width*scale*.5f;
+    const float minX=std::max(left+hitHalfWidth,low.x+halfWidth);
+    const float maxX=std::min(right-hitHalfWidth,high.x-halfWidth);
+    return {{std::clamp(preferred.x,minX,std::max(minX,maxX)),
              std::clamp(preferred.y,bottom+halfHeight,std::max(bottom+halfHeight,top-halfHeight))},scale};
 }
 inline unsigned visibleRows(const DisplayConfiguration& c){

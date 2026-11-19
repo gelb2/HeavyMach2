@@ -73,6 +73,8 @@ public:
     // positive bounds use scale.y for BOTH axes. Scale changes after this call
     // do not recalculate the stored hit box. Rotation never rotates its hit box.
     void setBoundWidthHeight(float width,float height);
+    // Rescale an already resolved visual and its stored touch offsets together.
+    void scalePresentation(float ratio);
     void setDefaultTile(unsigned);
     void setReleaseTile(unsigned);
     void setDeactiveTile(unsigned);

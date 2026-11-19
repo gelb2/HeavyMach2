@@ -278,20 +278,44 @@ UIImage* image(NSData* rgba,CGSize size){
                 const auto firstVisible=std::any_of(visibleKeys.begin(),visibleKeys.end(),[](const auto& key){return key.id==2200;});
                 if(!firstVisible)XCTAssertTrue(press(2105));
                 XCTAssertEqual(runtime.session().state().shopItems[0].name,std::string("SG-1"));
-                XCTAssertTrue(press(2200));
-                XCTAssertEqual(runtime.session().state().selectedShop,0);
-                for(unsigned n=0;n<30;++n){runtime.tick();runtime.draw(layer);}
                 const auto attach=[&](NSString* name){
                     runtime.captureNextFrame();runtime.draw(layer);
                     auto* item=[XCTAttachment attachmentWithImage:image(runtime.pixels(),runtime.drawableSize())];
                     item.name=name;item.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:item];
                 };
+                attach(@"live-phone-weapon-page");
+                const auto itemCode=runtime.session().state().shopItems[0].dataId;
+                XCTAssertTrue(press(2200));
+                XCTAssertEqual(runtime.session().state().selectedShop,0);
+                for(unsigned n=0;n<30;++n){runtime.tick();runtime.draw(layer);}
                 attach(@"live-phone-sg1-detail");
                 XCTAssertTrue(press(2102));XCTAssertTrue(runtime.session().state().tradeVisible);
                 attach(@"live-phone-sg1-buy-confirm");
                 XCTAssertTrue(press(2107));XCTAssertFalse(runtime.session().state().tradeVisible);
                 XCTAssertEqual(runtime.session().metrics().saveRequests,writes);
 
+                XCTAssertEqual(runtime.session().state().credits,500u);
+                XCTAssertTrue(press(2200));XCTAssertTrue(press(2102));XCTAssertTrue(press(2108));
+                XCTAssertEqual(runtime.session().state().credits,250u);
+                const auto inventory=runtime.session().state().inventory;
+                const auto bought=std::find_if(inventory.begin(),inventory.end(),[&](const auto& item){
+                    return item.dataId==itemCode&&item.enabled&&item.count>0;
+                });
+                XCTAssertTrue(bought!=inventory.end());
+                if(bought!=inventory.end()){
+                    const auto cell=6000u+unsigned((bought-inventory.begin())%25);
+                    const auto visible=runtime.screens().buttons();
+                    if(std::none_of(visible.begin(),visible.end(),[&](const auto& key){return key.id==cell;}))
+                        XCTAssertTrue(press(6091));
+                    XCTAssertTrue(press(cell));
+                    for(unsigned n=0;n<30;++n){runtime.tick();runtime.draw(layer);}
+                    attach(@"live-phone-sg1-sell-detail");
+                    XCTAssertTrue(press(2103));XCTAssertTrue(runtime.session().state().tradeVisible);
+                    XCTAssertFalse(runtime.session().state().buyMode);
+                    attach(@"live-phone-sg1-sell-confirm");
+                    XCTAssertTrue(press(2109));XCTAssertFalse(runtime.session().state().tradeVisible);
+                    XCTAssertEqual(runtime.session().state().credits,375u);
+                }
             }
             NSLog(@"HM2_COLD_SHOP %@ catalog=9 firstUseIcon=Icon10113.png internalPage=%d repeatPagePairs=%u warmFrames=120 warmIO0Upload0=1",phone?@"phone":@"tablet",phone,phone?3u:0u);
         }catch(const std::exception& e){XCTFail(@"Cold shop product resource boundary (%@): %s",phone?@"phone":@"tablet",e.what());}

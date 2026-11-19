@@ -193,7 +193,7 @@ void phoneMenuGrids(Files& files){
  const auto key=[&](unsigned id){for(const auto& k:ui.buttons())if(k.id==id)return k;throw std::runtime_error("Missing phone menu button "+std::to_string(id));};
  const auto tap=[&](unsigned id){auto k=key(id);ui.revealButton(k);const auto p=ui.buttonScreenPosition(k);ui.input(PointerPhase::begin,p,900+id,1);ui.input(PointerPhase::end,p,900+id,1.1f);};
  unsigned inv=0,stock=0;for(auto k:ui.buttons()){inv+=k.id>=6000&&k.id<6025;stock+=k.id>=2200&&k.id<2224;}assert(inv==(menu::phone(config)?menu::visibleRows(config)*5:25)&&stock==(menu::phone(config)?menu::visibleRows(config)*4:24));
- Frame f;ui.append(f,0);unsigned backgrounds=0;bool skin=false;for(const auto& s:f.sprites){backgrounds+=s.image=="PhoneMenu/ShopBG.jpg";assert(s.image!="ShopBG.png"&&s.image!="MaintenanceBG.png"&&s.image!="InvenBG.png"&&s.image!="ItemBox.png");if(s.image=="Icon10011.png"&&s.strip.empty())skin|=near(s.size.width,32*std::max(config.canvas.width/480,config.canvas.height/320));}assert(backgrounds==3&&skin);
+ Frame f;ui.append(f,0);unsigned backgrounds=0;bool skin=false;for(const auto& s:f.sprites){backgrounds+=s.image=="PhoneMenu/ShopBG.jpg";assert(s.image!="ShopBG.png"&&s.image!="MaintenanceBG.png"&&s.image!="InvenBG.png"&&s.image!="ItemBox.png");if(s.image=="Icon10011.png"&&s.strip.empty())skin|=near(s.size.width,32*std::min(config.canvas.width/480,config.canvas.height/320));}assert(backgrounds==3&&skin);
  for(unsigned i=1;i<(24+menu::visibleRows(config)*4-1)/(menu::visibleRows(config)*4);++i)tap(2106);for(unsigned i=1;i<(25+menu::visibleRows(config)*5-1)/(menu::visibleRows(config)*5);++i)tap(6091);const auto lastStock=ui.buttonScreenPosition(key(2223)),lastInventory=ui.buttonScreenPosition(key(6024));const DisplayLayout layout(config);const auto shopClip=layout.clip(DisplayRegion::phoneStock).value(),invClip=layout.clip(DisplayRegion::phoneInventory).value();assert(lastStock.y>=shopClip.y&&lastStock.y<=shopClip.y+shopClip.height&&lastInventory.y>=invClip.y&&lastInventory.y<=invClip.y+invClip.height);
  host.events.clear();const auto begin=ui.buttonScreenPosition(key(6024)),destination=ui.buttonScreenPosition(key(6020));ui.input(PointerPhase::begin,begin,999,2);ui.input(PointerPhase::move,destination,999,2.1f);ui.input(PointerPhase::end,destination,999,2.2f);bool mapped=false;for(const auto& e:host.events)if(e.button.type==ui::ButtonEventType::move&&e.dropCoordinates){assert(near(e.dropCoordinates->inventory.x,408)&&near(e.dropCoordinates->inventory.y,192));mapped=true;}assert(mapped);
  tap(9204);assert(ui.button(key(6100))->visible&&!ui.button(key(2223))->visible);f={};ui.append(f,2);backgrounds=0;for(const auto& s:f.sprites){backgrounds+=s.image=="PhoneMenu/MaintenanceBG.jpg";assert(s.image!="MaintenanceBG.png"&&s.image!="InvenBG.png"&&s.image!="ItemBox.png");}assert(backgrounds==7);
@@ -358,13 +358,21 @@ void phoneLiveMenuSession(Files& files){
   }
   assert(background&&action&&inside(*background,phone.content())&&inside(*action,phone.content()));
   const auto hit=ui.buttonScreenBounds(key(actionID));
+  const auto detailHit=ui.buttonScreenBounds(key(2112));
+  const float reference=menu::phoneReferenceScale(phone);
+  assert(near(background->width,256*reference)&&near(background->height,128*reference));
+  assert(near(detailHit.width,206*reference)&&near(detailHit.height,128*reference));
+  assert(near(action->width,32*reference)&&near(action->height,57*reference));
+  const auto originalAction=menu::phoneReferenceUI(phone).map(menu::tradeAction);
+  assert(near(action->x+action->width*.5f,originalAction.x));
+  assert(near(action->y+action->height*.5f,originalAction.y));
   assert(inside(hit,*action)&&inside(*action,hit));
-  assert(!overlaps(*background,*action));
+  assert(!overlaps(detailHit,*action));
   for(const auto& k:ui.buttons()){
    if(!ui.button(k)->visible)continue;
    const auto bounds=ui.buttonScreenBounds(k);
    if(k.id==2100||k.id==9204||k.id==9205||k.id==2104||k.id==2105||k.id==2106||k.id==6090||k.id==6091)
-    assert(!overlaps(*background,bounds));
+    assert(!overlaps(detailHit,bounds));
    if((k.id>=6000&&k.id<6025)||(k.id>=2200&&k.id<2224))assert(!overlaps(*action,bounds));
   }
  };

@@ -50,9 +50,9 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
     case DisplayRegion::titleBackdrop:{const auto c=configuration_.canvas;return anchored({384,1024},{c.width*.5f,c.height},std::max(c.width/768,c.height/1024));}
     case DisplayRegion::artBanner:{const auto c=configuration_.canvas;return anchored({240,160},{c.width*.5f,c.height*.5f},std::min(c.width/480,c.height/320));}
     case DisplayRegion::phoneEquipmentFooter:case DisplayRegion::phoneStockFooter:case DisplayRegion::phoneFooter:{auto t=ui(DisplayRegion::phoneMenu);t.offset.y=0;return t;}
-    case DisplayRegion::phoneInventoryPages:case DisplayRegion::phoneStockHeader:{auto t=ui(DisplayRegion::phoneMenu);t.offset.y=120-96*t.scale;return t;}
+    case DisplayRegion::phoneInventoryPages:case DisplayRegion::phoneStockHeader:{auto t=ui(DisplayRegion::phoneMenu);t.offset.y=72*menu::phoneReferenceScale(configuration_)-96*t.scale;return t;}
     case DisplayRegion::phoneCategoryHeader:case DisplayRegion::phoneHeader:{auto t=ui(DisplayRegion::phoneMenu);t.offset.y=configuration_.canvas.height-480*t.scale;return t;}
-    case DisplayRegion::phoneTrade:return anchored({360,240},{configuration_.canvas.width*.5f,configuration_.canvas.height*.5f},std::min(menu::menuScale(configuration_)*2.f/3.f,(configuration_.canvas.height-24)/384));
+    case DisplayRegion::phoneTrade:return menu::phoneReferenceUI(configuration_);
     case DisplayRegion::phoneCommandList:case DisplayRegion::phoneCommandInfo:{
         const auto c=configuration_.canvas;const float header=menu::menuHeader(configuration_),footer=menu::menuFooter(configuration_);const float s=std::min(menu::menuScale(configuration_)*2.f/3.f,std::max(1.f,c.height-header-footer-12)/275.f);
         if(region==DisplayRegion::phoneCommandList)return anchored({222,342},{c.width*148.f/480,c.height-header-24},s);
