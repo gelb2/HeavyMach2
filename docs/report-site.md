@@ -1,3 +1,7 @@
+## 원본의 화이트마운틴·미연결 무기·레이저음 — 2026-11-19
+
+원본 6종의 맵·입수 경로·발사음 조사와 판본별 근거 목록을 기존 비공개 사이트에 게시했다. 이전 iPhone 심층진단의 화이트마운틴 조사 항목과 누적 목록에서 연결한다. 조사 커밋 `9fac612`, 사이트 소스 `7359851`, 배포 `appgdep_6afed0b4aee4819185a5984cf214aab6`다. 인증 요청 4건에서 본문과 링크를 확인했고, 다운로드 근거를 풀어 저장소 JSON과 바이트 단위로 대조했다. 페이지와 근거 파일 모두 비인증 요청은 403이었다. [비공개 보고서](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/original-unused-content-20261119.html) · [원본 목록과 근거](evidence/original-unused-content-20261119.json)
+
 ## iPhone 상점 전체 화면 배경 이미지 — 2026-11-19
 
 수정판 `9e5c08a`의 1902×827 격납고 JPEG를 기존 비공개 보고서 본문에 넣고 누적 목록에 연결했다. 사이트 소스 `508499d`, 배포 `appgdep_6afec2ad987c81918e7877deadcaaee1`가 성공했다. 인증 요청으로 보고서·이미지·누적 목록을 확인했고 게시 JPEG는 앱 자원과 바이트가 일치했다. 배포 용량을 맞추기 위해 이전 PNG 3장의 인코딩을 무손실로 바꿨다. 브라우저 창 연결에는 실패했다. [보고서에서 이미지 보기](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-fullscreen-art-20261119) · [게시 근거](evidence/iphone-shop-art-publication-20261119.json)
