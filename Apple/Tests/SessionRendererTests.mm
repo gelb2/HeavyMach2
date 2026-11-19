@@ -322,6 +322,88 @@ UIImage* image(NSData* rgba,CGSize size){
         window.hidden=YES;window.rootViewController=nil;
     }
 }
+- (void)testPhoneWastelandShopCatalog {
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
+    NSURL* directory=[NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:NSUUID.UUID.UUIDString] isDirectory:YES];
+    XCTAssertTrue([NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:nil]);
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];
+    HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,912,420)];surface.contentScaleFactor=1;
+    controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];
+    surface.frame=CGRectMake(0,0,912,420);[surface layoutIfNeeded];
+    CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;
+    layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    try{
+        hm2::SaveData fixture;fixture.initializeSlot(0,"CATALOG","kr",1794268800);
+        hm2::progression::SlotView slot(fixture.slot(0));slot.string(0x2d,16,"Base003");slot.level(22);slot.u32(0x1b5c,22);
+        hm2::DarwinWorldRandom random(1);const auto bytes=fixture.encode(random,1);
+        const auto save=[directory URLByAppendingPathComponent:@"HeavyMach2.sav"];
+        XCTAssertTrue([[NSData dataWithBytes:bytes.data() length:bytes.size()] writeToURL:save atomically:YES]);
+        hm2::apple::GameRuntime runtime(root,save,{});
+        auto display=hm2::DisplayConfiguration::surface({912,420},{68,20,68,0});display.device=hm2::DisplayDevice::phone;runtime.setDisplay(display);
+        XCTAssertTrue(runtime.session().selectSlot(0));runtime.session().enterBase();runtime.synchronize();
+        const auto press=[&](unsigned id,int data=-1){
+            for(const auto& key:runtime.screens().buttons()){
+                if(key.id!=id||(data>=0&&key.intData!=data)||!runtime.screens().button(key)->visible)continue;
+                const auto p=runtime.screens().buttonScreenPosition(key);
+                runtime.input(hm2::PointerPhase::begin,p,991);runtime.input(hm2::PointerPhase::end,p,991);
+                settle(runtime,layer);return true;
+            }
+            return false;
+        };
+        const auto capture=[&](NSString* name){
+            runtime.captureNextFrame();runtime.draw(layer);
+            XCTAssertEqual(runtime.pixels().length,912u*420u*4u);
+            auto* shot=[XCTAttachment attachmentWithImage:image(runtime.pixels(),runtime.drawableSize())];
+            shot.name=name;shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];
+        };
+        XCTAssertTrue(press(2002));XCTAssertTrue(press(2002));
+        XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::shop);
+        XCTAssertEqual(runtime.session().state().baseId,std::string("Base003"));
+        bool capturedMLK3=false;
+        const auto stockIDs=[&]{
+            std::vector<unsigned> visible;
+            for(const auto& key:runtime.screens().buttons())
+                if(key.id>=2200&&key.id<2224&&runtime.screens().button(key)->visible)visible.push_back(key.id);
+            return visible;
+        };
+        for(int category=0;category<5;++category){
+            if(category!=0)XCTAssertTrue(press(2104,category));
+            XCTAssertEqual(runtime.session().state().shopCategory,category);
+            const auto count=runtime.session().state().shopItems.size();
+            std::set<std::size_t> seen;
+            unsigned captures=0;
+            for(;captures<20;++captures){
+                const int page=runtime.session().state().shopPage;
+                const auto buttons=stockIDs();
+                capture([NSString stringWithFormat:@"live-wasteland-category-%d-page-%02u",category,captures+1]);
+                for(const unsigned id:buttons){
+                    const auto index=std::size_t(page)*24+id-2200;
+                    if(index>=count)continue;
+                    seen.insert(index);
+                    if(!capturedMLK3&&runtime.session().state().shopItems[index].name=="ML-K3"){
+                        XCTAssertTrue(press(id));
+                        for(unsigned n=0;n<30;++n){runtime.tick();runtime.draw(layer);}
+                        capture(@"live-wasteland-ML-K3-detail");
+                        XCTAssertTrue(press(2102));XCTAssertTrue(runtime.session().state().tradeVisible);
+                        capture(@"live-wasteland-ML-K3-buy");
+                        XCTAssertTrue(press(2107));capturedMLK3=true;
+                    }
+                }
+                XCTAssertTrue(press(2106));
+                if(runtime.session().state().shopPage==page&&stockIDs()==buttons)break;
+                if(runtime.session().state().shopPage<page)break;
+            }
+            XCTAssertLessThan(captures,20u);XCTAssertEqual(seen.size(),count);
+            NSLog(@"HM2_WASTELAND_SHOP category=%d items=%zu pages=%u",category,count,captures+1);
+        }
+        XCTAssertTrue(capturedMLK3);
+        XCTAssertTrue(press(9204));capture(@"live-wasteland-equipment");
+        XCTAssertTrue(press(9205));XCTAssertTrue(press(2100));
+        XCTAssertEqual(runtime.session().state().screen,hm2::ui::ScreenId::base);
+    }catch(const std::exception& e){XCTFail(@"Wasteland shop: %s",e.what());}
+    window.hidden=YES;window.rootViewController=nil;
+    [NSFileManager.defaultManager removeItemAtURL:directory error:nil];
+}
 - (void)testPhoneEquipmentSurface {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
     UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];

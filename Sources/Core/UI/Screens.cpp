@@ -1298,7 +1298,10 @@ void Screens::Impl::build(){
             const unsigned targetCount=id<6000?unsigned(count>targetPage*capacity?std::min<std::size_t>(capacity,count-targetPage*capacity):0):capacity;
             if((next&&(window+1)*visible<targetCount)||(!next&&window>0)){window=next?window+1:window-1;dispatcher.discardAll();pageRebuild=true;
                 if(state.shopDetailVisible||state.detailInventory>=0){auto close=event;close.type=ButtonEventType::push;close.key={owner(state.screen,state.screen==ScreenId::maintenance?Panel::root:Panel::inventory),2112,0,{}};host.action({state.screen,state.screen==ScreenId::maintenance?Panel::root:Panel::inventory,close});}host.sfx(0);return;}
-            window=!next&&page>0&&targetCount?(targetCount-1)/visible:0;
+            // The session clamps boundary presses. Keep the current strip
+            // when pressing Next on the last page.
+            const bool changesPage=next?std::size_t(page)+1<pages:page>0;
+            if(changesPage)window=!next&&targetCount?(targetCount-1)/visible:0;
             auto advance=event;advance.type=ButtonEventType::push;host.action({screen,panel,advance});return;
         }
         if(phoneMenu()&&screen==ScreenId::shop&&(id==9204||id==9205)){
