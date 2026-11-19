@@ -167,6 +167,10 @@ struct Screens::Impl {
     }
     static constexpr unsigned stockCells(){return menu::phoneShopRows*4;}
     static constexpr unsigned inventoryCells(){return menu::phoneShopRows*5;}
+    std::pair<unsigned,unsigned> phoneInventoryRange()const{
+        const auto begin=std::min(25u,inventoryWindow*inventoryCells());
+        return {begin,std::min(25u,begin+inventoryCells())};
+    }
     bool phoneMenu()const{return menu::phone(layout.configuration())&&(state.screen==ScreenId::shop||state.screen==ScreenId::maintenance);}
     bool phoneNodeVisible(Region r)const{
         if(!phoneMenu())return true;
@@ -780,8 +784,8 @@ void Screens::Impl::phonePageDots(Vec2 center,std::size_t count,std::size_t sele
 void Screens::Impl::inventory(Vec2 origin,bool shopMode,bool phone){
     if(!phone){
     (void)shopMode;
-    for(unsigned i=phone?inventoryWindow*inventoryCells():0;i<std::min(25u,phone?(inventoryWindow+1)*inventoryCells():25u);++i){const auto& entry=itemAt(state.inventory,std::size_t(std::max(0,state.inventoryPage))*25+i);
-        if(!entry.dataId.empty()&&entry.count>0){const auto at=plus(origin,{60.f*float(i%5),-60.f*float(phone?(i%inventoryCells())/5:i/5)});
+    for(unsigned i=0;i<25;++i){const auto& entry=itemAt(state.inventory,std::size_t(std::max(0,state.inventoryPage))*25+i);
+        if(!entry.dataId.empty()&&entry.count>0){const auto at=plus(origin,{60.f*float(i%5),-60.f*float(i/5)});
             image("ItemBox.png",at,1,1,0,{1,1},false,0,1,9);icon(entry,at);}
     }
     // WndInven.draw0x34218 draws these through Tile2D before its child
@@ -791,9 +795,9 @@ void Screens::Impl::inventory(Vec2 origin,bool shopMode,bool phone){
         float x=float(state.inventoryPages)*-.5f;x=float(page)+x;x*=12.f;x=origin.x+x;x+=86.f;
         image("InvenPage.png",{x,origin.y-290.f},2,1,page==state.inventoryPage?1u:0u,{1,1},false,0,1,9);
     }
-    for(unsigned i=phone?inventoryWindow*inventoryCells():0;i<std::min(25u,phone?(inventoryWindow+1)*inventoryCells():25u);++i){
+    for(unsigned i=0;i<25;++i){
         const auto& entry=itemAt(state.inventory,std::size_t(std::max(0,state.inventoryPage))*25+i);
-        const auto at=plus(origin,{60.f*float(i%5),-60.f*float(phone?(i%inventoryCells())/5:i/5)});
+        const auto at=plus(origin,{60.f*float(i%5),-60.f*float(i/5)});
         addButton(Panel::inventory,6000+i,"Inven_BtnItem.png",at,1,1,0,0,Size{60,60},0,entry.dataId);
         if(!entry.dataId.empty()&&(entry.countable||entry.equipped))number("NumSet01b.png",entry.count,plus(at,{11,-11}),6,1,9,entry.equipped);
         if(state.selectedInventory==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.8f,9);
@@ -804,12 +808,13 @@ void Screens::Impl::inventory(Vec2 origin,bool shopMode,bool phone){
 
     return;}
     (void)shopMode;
+    const auto [first,last]=phoneInventoryRange();
     {
-    RegionScope cells(*this,phone?Region::phoneInventory:region);
-    for(unsigned i=phone?inventoryWindow*inventoryCells():0;i<std::min(25u,phone?(inventoryWindow+1)*inventoryCells():25u);++i){const auto& entry=itemAt(state.inventory,std::size_t(std::max(0,state.inventoryPage))*25+i);const auto at=plus(origin,{60.f*float(i%5),-60.f*float(phone?(i%inventoryCells())/5:i/5)});
+    RegionScope cells(*this,Region::phoneInventory);
+    for(unsigned i=first;i<last;++i){const auto& entry=itemAt(state.inventory,std::size_t(std::max(0,state.inventoryPage))*25+i);const auto at=plus(origin,{60.f*float(i%5),-60.f*float((i-first)/5)});
         if(!entry.dataId.empty()&&entry.count>0){if(!phone)image("ItemBox.png",at,1,1,0,{1,1},false,0,1,9);icon(entry,at);}
     }
-    for(unsigned i=phone?inventoryWindow*inventoryCells():0;i<std::min(25u,phone?(inventoryWindow+1)*inventoryCells():25u);++i){const auto& entry=itemAt(state.inventory,std::size_t(std::max(0,state.inventoryPage))*25+i);const auto at=plus(origin,{60.f*float(i%5),-60.f*float(phone?(i%inventoryCells())/5:i/5)});
+    for(unsigned i=first;i<last;++i){const auto& entry=itemAt(state.inventory,std::size_t(std::max(0,state.inventoryPage))*25+i);const auto at=plus(origin,{60.f*float(i%5),-60.f*float((i-first)/5)});
         addButton(Panel::inventory,6000+i,"Inven_BtnItem.png",at,1,1,0,0,Size{60,60},0,entry.dataId);
         if(!entry.dataId.empty()&&(entry.countable||entry.equipped))number("NumSet01b.png",entry.count,plus(at,{11,-11}),6,1,9,entry.equipped);
         if(state.selectedInventory==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.8f,9);
@@ -872,10 +877,28 @@ void Screens::Impl::phoneShop(bool maintenance){
         RegionScope backdrop(*this,Region::surface);
         image(hangar,{canvas.width*.5f,canvas.height*.5f},1,1,0,{scale,scale},false,0,1,0);
     }
-    // These transparent layers preserve the original grid and tab coordinates.
-    {RegionScope art(*this,Region::artBanner);
-        image("PhoneShopPanel.png",{240,160},1,1,0,{1,1},false,0,1,0,"phone.stock.bg");
-        image("PhoneEquipPanel.png",{240,160},1,1,0,{1,1},false,0,1,0,"phone.equip.bg");
+    {
+        RegionScope art(*this,Region::artBanner);
+        const auto [first,last]=phoneInventoryRange();
+        const auto unusedRows=menu::phoneShopRows-(last-first)/5;
+        // The plate has four rows baked in. Clip the unused rows from the
+        // final strip of each 25-cell page using the same range as its buttons.
+        const auto panel=[&](std::string_view asset,std::string_view tag){
+            const auto add=[&]{image(asset,{240,160},1,1,0,{1,1},false,0,1,0,std::string(tag));};
+            if(!unusedRows){add();return;}
+            const auto grid=menu::inventoryWindow;
+            const float left=grid.x/1.5f,right=(grid.x+grid.width)/1.5f;
+            const float bottom=grid.y/1.5f,top=bottom+40.f*float(unusedRows);
+            const ClipRect slices[]={{0,0,left,320},{right,0,480-right,320},
+                                    {left,0,right-left,bottom},{left,top,right-left,320-top}};
+            for(const auto& slice:slices){
+                const auto before=nodes.size();
+                add();
+                if(nodes.size()!=before)cropMenuPanel(slice);
+            }
+        };
+        panel("PhoneShopPanel.png","phone.stock.bg");
+        panel("PhoneEquipPanel.png","phone.equip.bg");
     }
     inventory(menu::inventoryGrid,!maintenance,true);
     {RegionScope equipment(*this,Region::phoneEquipment);equip(menu::equipmentRoot,9,true);bots(menu::botRoot,true);
