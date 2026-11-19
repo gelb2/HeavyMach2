@@ -1,3 +1,7 @@
+## iPhone 상점 원본 좌표와 실기기 설치 — 2026-11-19
+
+원본 슬롯 간격과 SG-1 상세창의 최대 2픽셀 차이, iPad 설치와 잠금 상태, iPhone 연결 상태를 기존 비공개 보고에 갱신했다. 사이트 소스 `b4a76cf`, 배포 `appgdep_6afe9dfdfbec8191b2c01182eeca0ceb`가 성공했다. [상점 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-capture-20261119) · [검사 기록](iphone-shop-reference-coordinates-20261119.md)
+
 ## iPhone 상점 크기·거래·마지막 페이지 재검사 — 2026-11-19
 
 원본과 같은 아이콘·거래 버튼 크기, 판매 취소 뒤의 표시, 웨이스트랜드 다섯 분류의 마지막 묶음과 iPad 여섯 상점의 픽셀 대조를 기존 비공개 보고에 갱신했다. 사이트 소스 `f07e3e9`, 배포 `appgdep_6afe98436c308191b406e095c6af8855`가 성공했다. [상점 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-capture-20261119) · [캡처와 검사](iphone-shop-layout-verification-20261119.md)
