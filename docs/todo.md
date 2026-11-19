@@ -48,7 +48,7 @@
 
 - [x] **전장·입력 수정 후보의 실기기 전환.** 고정 재현·호스트 회귀, iPhone/iPad Source 시뮬레이터, 동시 치트와 iPad 전후 대조 뒤 `f8e82d8`을 두 실기기에 설치했다. 기존 저장의 보존, 경로 지정 후 점프, Skyway 왕복을 확인했다. [실기기 검증](dual-release-installation-20261119.md)
 - [ ] **전장·입력 실기기 확대 검증.** 같은 저장에서 손 입력을 반복해 점프 실패율을 측정하고, 뷰포트와 Skyway 레이어의 연속 프레임을 비교한다. 새 회귀가 있으면 해당 구현 커밋만 되돌릴 수 있도록 근거를 보존한다. [판정 기준](iphone-module-audit-20261118.md#수정-후-검증과-전환-기준)
-- [ ] **iPad 모델별 동작과 HUD 시뮬레이터 검증.** 실기기가 없는 iPad mini, 기본형 iPad(9인치급), iPad Pro 11형을 시뮬레이터에서 iPad Air 13형과 대조한다. 동일 빌드·저장·장면에서 일반 플레이와 화면 전환을 확인한다. HUD 크기·위치·잘림·겹침을 중점 비교하고, 버튼의 표시 위치와 터치 영역이 맞으며 실제 기능이 실행되는지 확인한다. 모델별 캡처와 결과를 남긴다.
+- [x] **iPad 모델별 동작과 기본 HUD.** 같은 일반 빌드·저장·전장에서 Air 13형, mini, 기본형 9세대, Pro 11형의 HUD와 이동·임무·인벤토리·시스템 메뉴를 실제 OS 탭으로 확인했다. 9.7인치 화면은 동일한 논리 크기와 2배 GPU 출력으로 별도 검사했다. [기종별 결과와 범위](campaign-and-ipad-followup-20261120.md#ipad-모델별-hud)
 
 공통 C++의 `compact`는 UIKit size class와 별개다. CPU 검사에서 짧은 변 599pt의 tablet은 `compactFocus`, 600pt의 tablet은 `fixedSurface`였고 둘 다 HD 메뉴였다. iPad 회귀에서 이 두 창과 기존 13인치 기준을 각각 비교한다. [화면 분기 근거](iphone-module-audit-20261118.md#ios-size-class와-실제-분기)
 

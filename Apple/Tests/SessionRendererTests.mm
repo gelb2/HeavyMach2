@@ -1040,9 +1040,17 @@ UIImage* image(NSData* rgba,CGSize size){
     window.hidden=YES;window.rootViewController=nil;XCTAssertTrue([NSFileManager.defaultManager removeItemAtURL:directory error:&error]);
 }
 - (void)testFieldCapturesForDevice {
+    const bool phone=UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPhone;
+    const CGSize extent=phone?CGSizeMake(912,420):CGSizeMake(1024,1366);
+    [self verifyFieldCapturesWithExtent:extent phone:phone drawableScale:1];
+}
+- (void)testFieldCapturesAtNinePointSevenInchGeometry {
+    [self verifyFieldCapturesWithExtent:CGSizeMake(768,1024) phone:NO drawableScale:2];
+}
+- (void)verifyFieldCapturesWithExtent:(CGSize)extent phone:(BOOL)phone drawableScale:(CGFloat)drawableScale {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;
-    const bool phone=UIDevice.currentDevice.userInterfaceIdiom==UIUserInterfaceIdiomPhone;const CGSize extent=phone?CGSizeMake(912,420):CGSizeMake(1024,1366);
-    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,extent.width,extent.height)];surface.contentScaleFactor=1;controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];surface.frame=CGRectMake(0,0,extent.width,extent.height);
+    const CGSize pixelsSize=CGSizeMake(extent.width*drawableScale,extent.height*drawableScale);
+    UIWindow* window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];UIViewController* controller=[UIViewController new];HM2SessionSurface* surface=[[HM2SessionSurface alloc]initWithFrame:CGRectMake(0,0,extent.width,extent.height)];surface.contentScaleFactor=drawableScale;controller.view=surface;window.rootViewController=controller;[window makeKeyAndVisible];surface.frame=CGRectMake(0,0,extent.width,extent.height);
     CAEAGLLayer* layer=(CAEAGLLayer*)surface.layer;layer.opaque=YES;layer.drawableProperties=@{kEAGLDrawablePropertyRetainedBacking:@NO,kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
     NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];[NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:nil];
     try{
@@ -1050,13 +1058,37 @@ UIImage* image(NSData* rgba,CGSize size){
         XCTAssertTrue(runtime.session().createSlot(0,"FIELD","kr"));XCTAssertTrue(runtime.session().enterField("Stage01_01",0));runtime.synchronize();
         if(runtime.session().help()){const hm2::Vec2 p{float(extent.width)*.5f,float(extent.height)*.5f};runtime.input(hm2::PointerPhase::begin,p,9900);runtime.input(hm2::PointerPhase::end,p,9900);}
         NSMutableArray* observations=[NSMutableArray new];
-        const auto capture=[&](NSString* phase,unsigned ticks){for(unsigned i=0;i<ticks;++i){runtime.tick();runtime.draw(layer);}runtime.captureNextFrame();runtime.draw(layer);const auto pixels=runtime.pixels();XCTAssertEqual(pixels.length,std::size_t(extent.width*extent.height)*4);
-            if(pixels.length==std::size_t(extent.width*extent.height)*4){const auto* bytes=static_cast<const unsigned char*>(pixels.bytes);unsigned colored=0;for(unsigned x=0;x<unsigned(extent.width);++x){const auto at=(std::size_t(unsigned(extent.height)-1)*unsigned(extent.width)+x)*4;colored+=bytes[at]+bytes[at+1]+bytes[at+2]>8;}XCTAssertGreaterThan(colored,unsigned(extent.width)*3/4,@"Field top border must contain original terrain, not black filler");}
-            auto* shot=[XCTAttachment attachmentWithImage:image(pixels,extent)];shot.name=[NSString stringWithFormat:@"field-%@-%@",phone?@"iphone":@"ipad",phase];shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];const auto* battle=runtime.session().battle();XCTAssertTrue(battle!=nullptr);if(!battle)return;
+        const auto capture=[&](NSString* phase,unsigned ticks){for(unsigned i=0;i<ticks;++i){runtime.tick();runtime.draw(layer);}runtime.captureNextFrame();runtime.draw(layer);const auto pixels=runtime.pixels();XCTAssertEqual(pixels.length,std::size_t(pixelsSize.width*pixelsSize.height)*4);
+            if(pixels.length==std::size_t(pixelsSize.width*pixelsSize.height)*4){const auto* bytes=static_cast<const unsigned char*>(pixels.bytes);unsigned colored=0;for(unsigned x=0;x<unsigned(pixelsSize.width);++x){const auto at=(std::size_t(unsigned(pixelsSize.height)-1)*unsigned(pixelsSize.width)+x)*4;colored+=bytes[at]+bytes[at+1]+bytes[at+2]>8;}XCTAssertGreaterThan(colored,unsigned(pixelsSize.width)*3/4,@"Field top border must contain original terrain, not black filler");}
+            auto* shot=[XCTAttachment attachmentWithImage:image(pixels,pixelsSize)];shot.name=[NSString stringWithFormat:@"field-%@-%@",phone?@"iphone":@"ipad",phase];shot.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:shot];const auto* battle=runtime.session().battle();XCTAssertTrue(battle!=nullptr);if(!battle)return;
             const auto& c=battle->cameraPresentation();const auto& m=battle->metrics();[observations addObject:@{@"phase":phase,@"canvas":@[@(extent.width),@(extent.height)],@"scale":@(c.worldScale),@"viewport":@[@(c.viewport.width),@(c.viewport.height)],@"worldOffset":@[@(c.worldToCanvas.offset.x),@(c.worldToCanvas.offset.y)],@"position":@[@(battle->player().position.x),@(battle->player().position.y)],@"target":@(battle->selectedEnemy()),@"shots":@(m.playerEmissions),@"enemyShots":@(m.enemyEmissions),@"damage":@(m.damageCalls)}];};
         capture(@"idle",30);auto* battle=runtime.session().battle();if(battle){const auto player=battle->player().position;const auto point=runtime.session().worldCanvasPoint(battle->camera().toScreen({player.x+90,player.y+90}));runtime.input(hm2::PointerPhase::begin,point,9901);runtime.input(hm2::PointerPhase::end,point,9901);capture(@"move",45);
             float best=1e30f;hm2::Vec2 target;bool found=false;for(const auto& e:battle->enemies())if(e.hp>0&&!e.corpse){const auto p=runtime.session().worldCanvasPoint(battle->camera().toScreen(e.position));const auto dx=e.position.x-battle->player().position.x,dy=e.position.y-battle->player().position.y,d=dx*dx+dy*dy;if(p.x>20&&p.x<extent.width-20&&p.y>(phone?150:260)&&p.y<extent.height-20&&d<best){found=true;best=d;target=p;}}
             XCTAssertTrue(found);if(found){runtime.input(hm2::PointerPhase::begin,target,9902);runtime.input(hm2::PointerPhase::end,target,9902);XCTAssertNotEqual(battle->selectedEnemy(),0u);capture(@"lock-on-combat",90);}
+        }
+        if(drawableScale==2){
+            const auto press=[&](unsigned id){
+                for(const auto& key:runtime.screens().buttons())if(key.id==id){
+                    const auto point=runtime.screens().buttonScreenPosition(key);
+                    const auto box=runtime.screens().buttonScreenBounds(key);
+                    XCTAssertGreaterThan(box.width,0.f);
+                    XCTAssertGreaterThan(box.height,0.f);
+                    XCTAssertGreaterThan(point.x,box.x);
+                    XCTAssertLessThan(point.x,box.x+box.width);
+                    XCTAssertGreaterThan(point.y,box.y);
+                    XCTAssertLessThan(point.y,box.y+box.height);
+                    XCTAssertTrue(runtime.input(hm2::PointerPhase::begin,point,9903));
+                    runtime.input(hm2::PointerPhase::end,point,9903);
+                    return true;
+                }
+                return false;
+            };
+            XCTAssertTrue(press(1021));
+            XCTAssertTrue(runtime.session().state().systemVisible);
+            XCTAssertTrue(runtime.session().battle()->isPaused());
+            capture(@"classic-system",0);
+            XCTAssertTrue(press(1030));
+            XCTAssertFalse(runtime.session().battle()->isPaused());
         }
         NSData* data=[NSJSONSerialization dataWithJSONObject:@{@"device":phone?@"iphone":@"ipad",@"observations":observations} options:NSJSONWritingPrettyPrinted error:nil];auto* record=[XCTAttachment attachmentWithData:data uniformTypeIdentifier:@"public.json"];record.name=phone?@"field-observations-iphone":@"field-observations-ipad";record.lifetime=XCTAttachmentLifetimeKeepAlways;[self addAttachment:record];
     }catch(const std::exception& e){XCTFail(@"Field capture failed: %s",e.what());}

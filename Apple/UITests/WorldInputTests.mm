@@ -222,6 +222,58 @@
         NSLog(@"HM2_OS_BACKGROUND_HUB cycle=%u beforeTicks=%@ afterTicks=%@ shopAndReturn=1",cycle+1,before[@"ticks"],after[@"ticks"]);
     }[app terminate];
 }
+- (void)testTabletHUDAndMovementFromTheSameSave {
+    XCTSkipIf(UIDevice.currentDevice.userInterfaceIdiom!=UIUserInterfaceIdiomPad,@"iPad HUD comparison");
+    self.continueAfterFailure=NO;
+    XCUIApplication* app=[[XCUIApplication alloc]initWithBundleIdentifier:@"com.gelb2.heavymach2.restored"];
+    app.launchEnvironment=@{@"HM2_UI_TESTING":@"1",@"HM2_UI_TEST_RUN":NSUUID.UUID.UUIDString,
+                            @"HM2_UI_TEST_FIXTURE":@"recentInput"};
+    [app launch];
+    XCUIElement* world=app.otherElements[@"hm2.world"];
+    XCTAssertTrue([world waitForExistenceWithTimeout:30]);
+    [self titleToSlots:world];
+    [self tapButton:1001 data:0 world:world];
+    [self wait:^BOOL{
+        const auto state=[self state:world];
+        return [state[@"screen"] intValue]==7&&[state[@"doorPhase"] intValue]==8;
+    } description:@"same saved Stage01_01 opens on the tablet" timeout:60];
+    const auto initial=[self state:world];
+    XCTAssertEqualObjects(initial[@"location"],@"Stage01_01");
+    XCTAssertGreaterThan([initial[@"canvasHeight"] doubleValue],[initial[@"canvasWidth"] doubleValue]);
+    for(const auto id:{1021u,1022u,1023u,1025u,1026u,6200u,6201u,6202u,6203u,6204u}){
+        NSString* x=[NSString stringWithFormat:@"b%u_0_x",id];
+        NSString* y=[NSString stringWithFormat:@"b%u_0_y",id];
+        XCTAssertGreaterThan([initial[x] doubleValue],0);
+        XCTAssertGreaterThan([initial[y] doubleValue],0);
+        XCTAssertLessThan([initial[x] doubleValue],[initial[@"canvasWidth"] doubleValue]);
+        XCTAssertLessThan([initial[y] doubleValue],[initial[@"canvasHeight"] doubleValue]);
+    }
+    const auto ground=[self clearGroundPair:initial avoiding:nil];
+    XCTAssertGreaterThan(ground.count,0u);
+    [self tapLogical:ground.firstObject.CGPointValue world:world];
+    [self wait:^BOOL{
+        const auto state=[self state:world];
+        return hypot([state[@"x"] doubleValue]-[initial[@"x"] doubleValue],
+                     [state[@"y"] doubleValue]-[initial[@"y"] doubleValue])>5;
+    } description:@"world tap moves the normal player"];
+    [self capture:@"tablet-hud-field"];
+    [self tapButton:1026 data:0 world:world];
+    [self wait:^BOOL{return [self state:world][@"b5000_0_x"]!=nil;} description:@"mission HUD opens the original mission panel"];
+    [self tapButton:5000 data:0 world:world];
+    [self tapButton:1025 data:0 world:world];
+    [self wait:^BOOL{return [self state:world][@"b6092_0_x"]!=nil;} description:@"inventory HUD opens the original inventory"];
+    [self tapButton:6092 data:0 world:world];
+    [self tapButton:1021 data:0 world:world];
+    [self wait:^BOOL{
+        const auto state=[self state:world];
+        return [state[@"paused"] boolValue]&&[state[@"systemVisible"] boolValue];
+    } description:@"system HUD pauses the actual world"];
+    [self capture:@"tablet-hud-system"];
+    [self tapButton:1030 data:0 world:world];
+    [self wait:^BOOL{return ![[self state:world][@"paused"] boolValue];} description:@"resume returns to normal play"];
+    [self attachPathState:[self state:world] name:@"tablet-hud-resumed"];
+    [app terminate];
+}
 - (void)testRealTouchMovesPlayerOnOriginalTerrain {
     self.continueAfterFailure=NO;XCUIApplication* app=[[XCUIApplication alloc]initWithBundleIdentifier:@"com.gelb2.heavymach2.restored"];
     NSString* run=NSUUID.UUID.UUIDString;app.launchEnvironment=@{@"HM2_UI_TESTING":@"1",@"HM2_UI_TEST_RUN":run};[app launch];
