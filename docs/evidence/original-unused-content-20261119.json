@@ -2552,5 +2552,10 @@
     "use": "Phone 2.0.1 experience reward popup; enemy coin generator is limited to 00001 through 00009 in HD 1.0.3",
     "phone201": "ev_df6c0f6059f3e6d16a6b6c09acdf420135144abdbf26463727227abf90f8fd63",
     "hd103": "ev_3863ea0731e92b9cfec9150a6acb6070ce3a954a1c1c966dc832adb7bb31671c"
+  },
+  "stageArtworkCensusScope": {
+    "initial": "stageArtFiles and stageArtworkWithoutMap cover registered-style StageNN_NN filenames only.",
+    "correction": "HD 1.0.0 also contains 11 unregistered STAGE-space foregrounds (six snow, five orange ravine/industrial). The association with Base004 is unverified.",
+    "followUpEvidence": "white-mountain-feasibility-20261119.json"
   }
 }

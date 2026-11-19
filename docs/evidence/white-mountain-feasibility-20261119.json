@@ -1,0 +1,8290 @@
+{
+  "scope": "Six archived HeavyMach 2 packages, three archived MachDefense packages, and isolated CPU probe using the current common core. No full original campaign or device test.",
+  "heavyMach2": {
+    "packageScans": {
+      "phone100": {
+        "binarySha256": "288d40343c3638ae7e2076f12319eeb4042e936953d237c169a78e3a2d151705",
+        "mapAndPortalReferences": [],
+        "archiveExtensions": {
+          ".png": 1148,
+          ".jpg": 50,
+          ".tble": 133,
+          ".wav": 55,
+          "(none)": 2,
+          ".plist": 1,
+          ".m4v": 1,
+          ".mcb": 3,
+          ".nib": 1
+        },
+        "scanMemberCount": 137,
+        "exactReferences": {},
+        "legacyImages": {},
+        "ipaSha256": "695df77db78b46dd6a42c58c923df4a3737f9637a96433c82650fb66a0e9ff60"
+      },
+      "phone110": {
+        "binarySha256": "75cce15a00443a6e87e33fa3778aa9c65298c59605d2e90d77a36287af3beb24",
+        "mapAndPortalReferences": [],
+        "archiveExtensions": {
+          ".png": 1152,
+          ".jpg": 50,
+          ".tble": 134,
+          ".wav": 55,
+          "(none)": 3,
+          ".plist": 1,
+          ".m4v": 1,
+          ".mcb": 3,
+          ".nib": 1
+        },
+        "scanMemberCount": 138,
+        "exactReferences": {},
+        "legacyImages": {},
+        "ipaSha256": "4223a877fae11da54b8cc7239ecb6ee22fc0bff53743a5e84abba53d18b9d251"
+      },
+      "phone130": {
+        "binarySha256": "183570673665a8a6fc945b343d84f43e1210c4b9c7423b12ef4a187f1fbefa6d",
+        "mapAndPortalReferences": [],
+        "archiveExtensions": {
+          "(none)": 2,
+          ".plist": 1,
+          ".png": 1159,
+          ".jpg": 59,
+          ".tble": 134,
+          ".wav": 54,
+          ".m4v": 1,
+          ".mcb": 3,
+          ".nib": 1,
+          ".mp3": 1
+        },
+        "scanMemberCount": 138,
+        "exactReferences": {},
+        "legacyImages": {},
+        "ipaSha256": "c446bab6bb022abc704ce0bad41e8b18e74cec2cec19861dcc630c53d1b1b56b"
+      },
+      "phone201": {
+        "binarySha256": "0b8873d69d3e99d592855f636f7eacbd56119273f84e9286e027c56d7530d786",
+        "mapAndPortalReferences": [],
+        "archiveExtensions": {
+          "(none)": 2,
+          ".png": 1236,
+          ".jpg": 60,
+          ".tble": 135,
+          ".wav": 56,
+          ".nib": 2,
+          ".plist": 1,
+          ".strings": 1,
+          ".mcb": 3,
+          ".mp3": 1,
+          ".fsh": 1,
+          ".vsh": 1
+        },
+        "scanMemberCount": 140,
+        "exactReferences": {},
+        "legacyImages": {},
+        "ipaSha256": "23ff9c74c7d890cc6f28952b4845f6c616bae4bb7207a393f80ed9ed76062d32"
+      },
+      "hd100": {
+        "binarySha256": "ff9db936a0fd54f58df1b8a5333a08c897efe87772029f17f06df9e45d28de9f",
+        "mapAndPortalReferences": [],
+        "archiveExtensions": {
+          ".nib": 162,
+          ".png": 1493,
+          ".jpg": 57,
+          ".tbl": 6,
+          ".tble": 135,
+          ".wav": 57,
+          "(none)": 2,
+          ".plist": 1,
+          ".mcb": 3,
+          ".inl": 2,
+          ".txt": 1,
+          ".mp3": 1
+        },
+        "scanMemberCount": 146,
+        "exactReferences": {},
+        "legacyImages": {
+          "STAGE 12.png": {
+            "role": "snow-covered ground",
+            "dimensions": [
+              1024,
+              1024
+            ],
+            "format": "CgBI PNG",
+            "colorType": 6,
+            "sha256": "066e2fc0b195a0ead6aedb1b57bcf869101bb7a22ea2dab41610fdb2c18b5aeb",
+            "sameBytesAtOtherPaths": []
+          },
+          "STAGE 12A.png": {
+            "role": "snow-covered ground",
+            "dimensions": [
+              1024,
+              1024
+            ],
+            "format": "CgBI PNG",
+            "colorType": 6,
+            "sha256": "0dffb01ec4e192a039fc6c00c7026ab505b212497358b4dfdfa5c9c17d876dd3",
+            "sameBytesAtOtherPaths": []
+          },
+          "STAGE 13.png": {
+            "role": "snow-covered ground",
+            "dimensions": [
+              1024,
+              1024
+            ],
+            "format": "CgBI PNG",
+            "colorType": 6,
+            "sha256": "e46cba964bbef4a9ad0c96ac0d15a14e96adf3137b31a02b340dfe9affb986a6",
+            "sameBytesAtOtherPaths": []
+          },
+          "STAGE 15.png": {
+            "role": "snow-covered ground",
+            "dimensions": [
+              1024,
+              1024
+            ],
+            "format": "CgBI PNG",
+            "colorType": 6,
+            "sha256": "872ac633e552e8d6d0dd2ff4e3ef86af5473d00c89153fd8f0563ce7c7ee467b",
+            "sameBytesAtOtherPaths": []
+          },
+          "STAGE 15A.png": {
+            "role": "snow-covered ground",
+            "dimensions": [
+              1024,
+              1024
+            ],
+            "format": "CgBI PNG",
+            "colorType": 6,
+            "sha256": "fab04b0672a56e63eb17fac39c23b401b1f5cc3c34b47e3426cb9907a86793d7",
+            "sameBytesAtOtherPaths": []
+          },
+          "STAGE 15B_01.png": {
+            "role": "snow-covered ground",
+            "dimensions": [
+              1024,
+              1024
+            ],
+            "format": "CgBI PNG",
+            "colorType": 6,
+            "sha256": "e6fc0a5aa3dc23c73d4d8f1093a0767af4371118e648b9ac0cb007807da578c6",
+            "sameBytesAtOtherPaths": []
+          },
+          "STAGE 19.png": {
+            "role": "orange ravine/industrial ground",
+            "dimensions": [
+              1024,
+              1024
+            ],
+            "format": "CgBI PNG",
+            "colorType": 6,
+            "sha256": "7050466164d43b268553f4c80c3482471874f836d984de0c155f632ef9bd089f",
+            "sameBytesAtOtherPaths": []
+          },
+          "STAGE 19A_01.png": {
+            "role": "orange ravine/industrial ground",
+            "dimensions": [
+              1024,
+              1024
+            ],
+            "format": "CgBI PNG",
+            "colorType": 6,
+            "sha256": "13cc49e527f9a83f4605982066a7c8e5a4d903ca2d60905a7064390b66c9c065",
+            "sameBytesAtOtherPaths": []
+          },
+          "STAGE 19B_01.png": {
+            "role": "orange ravine/industrial ground",
+            "dimensions": [
+              1024,
+              1024
+            ],
+            "format": "CgBI PNG",
+            "colorType": 6,
+            "sha256": "c7fd568a3cf277d73e831538d6c1fa596d8990276200ac917e012007d37bad2f",
+            "sameBytesAtOtherPaths": []
+          },
+          "STAGE 19C_01.png": {
+            "role": "orange ravine/industrial ground",
+            "dimensions": [
+              1024,
+              1024
+            ],
+            "format": "CgBI PNG",
+            "colorType": 6,
+            "sha256": "712f14f3107e7761c1b5bd482d88fc343e59c6f8114c9577063da7179f49c223",
+            "sameBytesAtOtherPaths": []
+          },
+          "STAGE 19D_01.png": {
+            "role": "orange ravine/industrial ground",
+            "dimensions": [
+              1024,
+              1024
+            ],
+            "format": "CgBI PNG",
+            "colorType": 6,
+            "sha256": "4045632738654511beeee84a37d42f43557544c640bb48871c0c5a5a8f3eab75",
+            "sameBytesAtOtherPaths": []
+          }
+        },
+        "ipaSha256": "31ebed81043fe9a7c5ab25a7adaf13eaa3629f885bce18c3793f5d78f571cc56",
+        "loaderLiterals": {
+          "lookup": {
+            "function": "0xcc04c",
+            "instruction": "0xcc06a",
+            "resolved": "0x14b8c0",
+            "text": "getTile:"
+          },
+          "append": {
+            "function": "0xcc04c",
+            "instruction": "0xcc076",
+            "resolved": "0x14c8f4",
+            "text": "stringByAppendingString:"
+          },
+          "background": {
+            "function": "0xcc04c",
+            "instruction": "0xcc082",
+            "resolved": "0x146198",
+            "text": "BG.jpg"
+          },
+          "split": {
+            "function": "0xcc04c",
+            "instruction": "0xcc09e",
+            "resolved": "0x14b8bc",
+            "text": "tileSplitX:splitY:"
+          },
+          "defaultTerrain": {
+            "function": "0xcc04c",
+            "instruction": "0xcc11c",
+            "resolved": "0x1461a8",
+            "text": ".jpg"
+          },
+          "fallbackTerrain": {
+            "function": "0xcc04c",
+            "instruction": "0xcc13a",
+            "resolved": "0x145098",
+            "text": ".png"
+          }
+        }
+      },
+      "hd103": {
+        "binarySha256": "5feb7ae5f796cdfee5d650037923d338ce7b28de7f600c8548a7a5bbf7ef5090",
+        "mapAndPortalReferences": [],
+        "archiveExtensions": {
+          "(none)": 2,
+          ".png": 1238,
+          ".tbl": 6,
+          ".tble": 135,
+          ".wav": 57,
+          ".plist": 1,
+          ".mcb": 3,
+          ".nib": 2,
+          ".mp3": 1,
+          ".jpg": 38
+        },
+        "scanMemberCount": 145,
+        "exactReferences": {},
+        "legacyImages": {},
+        "ipaSha256": "7eeb36590b3c19a28741e21671379029d9023864ceb241a5b8560eef045112d2"
+      }
+    },
+    "snowInHD100": {
+      "STAGE 12.png": {
+        "sha256": "066e2fc0b195a0ead6aedb1b57bcf869101bb7a22ea2dab41610fdb2c18b5aeb",
+        "bytes": 2665258,
+        "size": [
+          1024,
+          1024
+        ]
+      },
+      "STAGE 12A.png": {
+        "sha256": "0dffb01ec4e192a039fc6c00c7026ab505b212497358b4dfdfa5c9c17d876dd3",
+        "bytes": 2640828,
+        "size": [
+          1024,
+          1024
+        ]
+      },
+      "STAGE 13.png": {
+        "sha256": "e46cba964bbef4a9ad0c96ac0d15a14e96adf3137b31a02b340dfe9affb986a6",
+        "bytes": 2506244,
+        "size": [
+          1024,
+          1024
+        ]
+      },
+      "STAGE 15.png": {
+        "sha256": "872ac633e552e8d6d0dd2ff4e3ef86af5473d00c89153fd8f0563ce7c7ee467b",
+        "bytes": 2400244,
+        "size": [
+          1024,
+          1024
+        ]
+      },
+      "STAGE 15A.png": {
+        "sha256": "fab04b0672a56e63eb17fac39c23b401b1f5cc3c34b47e3426cb9907a86793d7",
+        "bytes": 2442257,
+        "size": [
+          1024,
+          1024
+        ]
+      },
+      "STAGE 15B_01.png": {
+        "sha256": "e6fc0a5aa3dc23c73d4d8f1093a0767af4371118e648b9ac0cb007807da578c6",
+        "bytes": 2794387,
+        "size": [
+          1024,
+          1024
+        ]
+      }
+    },
+    "alphaExtremaEveryLegacyStageImage": [
+      255,
+      255
+    ],
+    "phone201MapInfoREA": "ev_96cac3f2358380d7e682465bc90e76930a5d6224c22353981c27594ac0aef7bd",
+    "hd103OpenMapAddress": "0x14120",
+    "hd103OpenMapInfoAddress": "0x154a4",
+    "mapCollisionGateSpawnerForLegacyImages": "No matching map record."
+  },
+  "machDefense": {
+    "releases": {
+      "wemade1.0.3": {
+        "ipaSha256": "882fe8efa9a0c3d51c23da190ee3d30376a1b6766e16cc6b87daf09b98dc92b1",
+        "mapInfoSha256": "94799572dddde75ed235f297a4e716e9bbbce852f2b15953cc3e85912eb853d0",
+        "stageCount": 80,
+        "backgroundFamilyCount": 27,
+        "snowStages": [
+          {
+            "stage": 2,
+            "background": "BG_04",
+            "collisionPolygonCount": 0
+          },
+          {
+            "stage": 9,
+            "background": "BG_11",
+            "collisionPolygonCount": 0
+          },
+          {
+            "stage": 10,
+            "background": "BG_18",
+            "collisionPolygonCount": 6
+          },
+          {
+            "stage": 31,
+            "background": "BG_18",
+            "collisionPolygonCount": 6
+          },
+          {
+            "stage": 35,
+            "background": "BG_25",
+            "collisionPolygonCount": 2
+          },
+          {
+            "stage": 37,
+            "background": "BG_04",
+            "collisionPolygonCount": 0
+          },
+          {
+            "stage": 44,
+            "background": "BG_11",
+            "collisionPolygonCount": 0
+          },
+          {
+            "stage": 47,
+            "background": "BG_11",
+            "collisionPolygonCount": 0
+          },
+          {
+            "stage": 48,
+            "background": "BG_18",
+            "collisionPolygonCount": 6
+          },
+          {
+            "stage": 57,
+            "background": "BG_18",
+            "collisionPolygonCount": 6
+          },
+          {
+            "stage": 69,
+            "background": "BG_18",
+            "collisionPolygonCount": 6
+          },
+          {
+            "stage": 73,
+            "background": "BG_11",
+            "collisionPolygonCount": 0
+          },
+          {
+            "stage": 74,
+            "background": "BG_25",
+            "collisionPolygonCount": 2
+          },
+          {
+            "stage": 80,
+            "background": "BG_04",
+            "collisionPolygonCount": 0
+          }
+        ],
+        "exactBackgroundMatchesWithHdv100": [
+          [
+            "Airplane.png",
+            [
+              "Airplane.png"
+            ]
+          ],
+          [
+            "Blt_Railgun.png",
+            [
+              "Blt_Railgun01.png"
+            ]
+          ],
+          [
+            "BulletShell.png",
+            [
+              "BulletShell.png"
+            ]
+          ],
+          [
+            "Common_Btn_BACK.png",
+            [
+              "Common_Btn_BACK.png"
+            ]
+          ],
+          [
+            "Common_Btn_CANCEL.png",
+            [
+              "Common_Btn_CANCEL.png"
+            ]
+          ],
+          [
+            "Common_Btn_CLOSE.png",
+            [
+              "Common_Btn_CLOSE.png"
+            ]
+          ],
+          [
+            "Common_Btn_DEL.png",
+            [
+              "Common_Btn_DEL.png"
+            ]
+          ],
+          [
+            "Common_Btn_EXIT.png",
+            [
+              "Common_Btn_EXIT.png"
+            ]
+          ],
+          [
+            "Common_Btn_NEXT.png",
+            [
+              "Common_Btn_NEXT.png"
+            ]
+          ],
+          [
+            "Common_Btn_NO.png",
+            [
+              "Common_Btn_NO.png"
+            ]
+          ],
+          [
+            "Common_Btn_PREV.png",
+            [
+              "Common_Btn_PREV.png"
+            ]
+          ],
+          [
+            "Common_Btn_RANKING.png",
+            [
+              "Common_Btn_RANKING.png"
+            ]
+          ],
+          [
+            "Common_Btn_YES.png",
+            [
+              "Common_Btn_YES.png"
+            ]
+          ],
+          [
+            "DestPos.png",
+            [
+              "DestPos.png"
+            ]
+          ],
+          [
+            "Efx_Damage.png",
+            [
+              "Efx_Damage.png"
+            ]
+          ],
+          [
+            "Efx_Explode02.png",
+            [
+              "Efx_Explode02.png"
+            ]
+          ],
+          [
+            "Efx_ExplodeBoss.png",
+            [
+              "Efx_ExplodeBoss.png"
+            ]
+          ],
+          [
+            "Efx_ExplodeGround.png",
+            [
+              "Efx_ExplodeGround.png"
+            ]
+          ],
+          [
+            "Efx_ExplodeNPC.png",
+            [
+              "Efx_ExplodeNPC.png"
+            ]
+          ],
+          [
+            "Efx_Fire.png",
+            [
+              "Efx_Fire.png"
+            ]
+          ],
+          [
+            "Efx_Flame.png",
+            [
+              "Efx_Flame.png"
+            ]
+          ],
+          [
+            "Efx_Item.png",
+            [
+              "Efx_Item.png"
+            ]
+          ],
+          [
+            "Efx_Item2.png",
+            [
+              "Efx_Item2.png"
+            ]
+          ],
+          [
+            "Efx_LevelUp.jpg",
+            [
+              "Efx_LevelUp.jpg"
+            ]
+          ],
+          [
+            "Efx_Nuclear.png",
+            [
+              "Efx_Nuclear.png"
+            ]
+          ],
+          [
+            "Efx_Rail01.png",
+            [
+              "Efx_Rail01.png"
+            ]
+          ],
+          [
+            "Efx_Railgun.png",
+            [
+              "Efx_Railgun.png"
+            ]
+          ],
+          [
+            "Efx_RailgunEx.png",
+            [
+              "Efx_RailgunEx.png"
+            ]
+          ],
+          [
+            "Efx_Smoke.png",
+            [
+              "Efx_Smoke.png"
+            ]
+          ],
+          [
+            "Efx_Trail01.png",
+            [
+              "Efx_Trail01.png"
+            ]
+          ],
+          [
+            "Efx_Trail02.png",
+            [
+              "Efx_Trail02.png"
+            ]
+          ],
+          [
+            "Efx_Trail03.png",
+            [
+              "Efx_Trail03.png"
+            ]
+          ],
+          [
+            "Efx_Trail04.png",
+            [
+              "Efx_Trail04.png"
+            ]
+          ],
+          [
+            "EnemyBullet.png",
+            [
+              "EnemyBullet.png"
+            ]
+          ],
+          [
+            "HPGauge.png",
+            [
+              "HPGauge.png"
+            ]
+          ],
+          [
+            "HPGaugeBoss.png",
+            [
+              "HPGaugeBoss.png"
+            ]
+          ],
+          [
+            "HPGaugeEnemy.png",
+            [
+              "HPGaugeEnemy.png"
+            ]
+          ],
+          [
+            "InvenPage.png",
+            [
+              "InvenPage.png"
+            ]
+          ],
+          [
+            "Inven_BtnItem.png",
+            [
+              "Inven_BtnItem.png"
+            ]
+          ],
+          [
+            "ItemBox.png",
+            [
+              "ItemBox.png"
+            ]
+          ],
+          [
+            "Loading_Bottom.png",
+            [
+              "Loading_Bottom.png"
+            ]
+          ],
+          [
+            "Loading_Center.png",
+            [
+              "Loading_Center.png"
+            ]
+          ],
+          [
+            "Loading_Left.png",
+            [
+              "Loading_Left.png"
+            ]
+          ],
+          [
+            "Loading_Left2.png",
+            [
+              "Loading_Left2.png"
+            ]
+          ],
+          [
+            "Loading_Right.png",
+            [
+              "Loading_Right.png"
+            ]
+          ],
+          [
+            "Loading_Right2.png",
+            [
+              "Loading_Right2.png"
+            ]
+          ],
+          [
+            "Loading_Top.png",
+            [
+              "Loading_Top.png"
+            ]
+          ],
+          [
+            "Main_Copyright.png",
+            [
+              "Main_Copyright.png"
+            ]
+          ],
+          [
+            "Main_TapToStart.png",
+            [
+              "Main_TapToStart.png"
+            ]
+          ],
+          [
+            "MessageBox.png",
+            [
+              "MessageBox.png"
+            ]
+          ],
+          [
+            "NumSet01.png",
+            [
+              "NumSet01.png"
+            ]
+          ],
+          [
+            "NumSet01b.png",
+            [
+              "NumSet01b.png"
+            ]
+          ],
+          [
+            "NumSet02.png",
+            [
+              "NumSet02.png"
+            ]
+          ],
+          [
+            "NumSet02b.png",
+            [
+              "NumSet02b.png"
+            ]
+          ],
+          [
+            "PickItem.png",
+            [
+              "PickItem.png"
+            ]
+          ],
+          [
+            "PlaceNameBG.png",
+            [
+              "PlaceNameBG.png"
+            ]
+          ],
+          [
+            "SelSlot_Btn.png",
+            [
+              "SelSlot_Btn.png"
+            ]
+          ],
+          [
+            "SelStage_CompleteMark.png",
+            [
+              "CompleteMark.png"
+            ]
+          ],
+          [
+            "SmokeEffect.png",
+            [
+              "SmokeEffect.png"
+            ]
+          ],
+          [
+            "SmokeEffect2.png",
+            [
+              "SmokeEffect2.png"
+            ]
+          ],
+          [
+            "SmokeTrail.png",
+            [
+              "SmokeTrail.png"
+            ]
+          ],
+          [
+            "StageClear02.png",
+            [
+              "StageClearBG.png"
+            ]
+          ],
+          [
+            "SysMenu_Btm.png",
+            [
+              "MissionList_Btm.png"
+            ]
+          ],
+          [
+            "SysMenu_Btn.png",
+            [
+              "Btn_Mission.png"
+            ]
+          ],
+          [
+            "SysMenu_Mid.png",
+            [
+              "MissionList_Mid.png"
+            ]
+          ],
+          [
+            "SysMenu_Sel.png",
+            [
+              "SelMission.png"
+            ]
+          ],
+          [
+            "SysMenu_Top.png",
+            [
+              "SysMenuBG.png"
+            ]
+          ],
+          [
+            "Target.png",
+            [
+              "Target.png"
+            ]
+          ],
+          [
+            "TargetPath.png",
+            [
+              "TargetPath.png"
+            ]
+          ],
+          [
+            "ad.png",
+            [
+              "ad.png"
+            ]
+          ],
+          [
+            "ae.png",
+            [
+              "ae.png"
+            ]
+          ],
+          [
+            "af.png",
+            [
+              "af.png"
+            ]
+          ],
+          [
+            "ag.png",
+            [
+              "ag.png"
+            ]
+          ],
+          [
+            "ai.png",
+            [
+              "ai.png"
+            ]
+          ],
+          [
+            "al.png",
+            [
+              "al.png"
+            ]
+          ],
+          [
+            "am.png",
+            [
+              "am.png"
+            ]
+          ],
+          [
+            "an.png",
+            [
+              "an.png"
+            ]
+          ],
+          [
+            "ao.png",
+            [
+              "ao.png"
+            ]
+          ],
+          [
+            "aq.png",
+            [
+              "aq.png"
+            ]
+          ],
+          [
+            "ar.png",
+            [
+              "ar.png"
+            ]
+          ],
+          [
+            "as.png",
+            [
+              "as.png"
+            ]
+          ],
+          [
+            "at.png",
+            [
+              "at.png"
+            ]
+          ],
+          [
+            "au.png",
+            [
+              "au.png"
+            ]
+          ],
+          [
+            "aw.png",
+            [
+              "aw.png"
+            ]
+          ],
+          [
+            "az.png",
+            [
+              "az.png"
+            ]
+          ],
+          [
+            "ba.png",
+            [
+              "ba.png"
+            ]
+          ],
+          [
+            "bb.png",
+            [
+              "bb.png"
+            ]
+          ],
+          [
+            "bd.png",
+            [
+              "bd.png"
+            ]
+          ],
+          [
+            "be.png",
+            [
+              "be.png"
+            ]
+          ],
+          [
+            "bf.png",
+            [
+              "bf.png"
+            ]
+          ],
+          [
+            "bg.png",
+            [
+              "bg.png"
+            ]
+          ],
+          [
+            "bh.png",
+            [
+              "bh.png"
+            ]
+          ],
+          [
+            "bi.png",
+            [
+              "bi.png"
+            ]
+          ],
+          [
+            "bj.png",
+            [
+              "bj.png"
+            ]
+          ],
+          [
+            "bm.png",
+            [
+              "bm.png"
+            ]
+          ],
+          [
+            "bn.png",
+            [
+              "bn.png"
+            ]
+          ],
+          [
+            "bo.png",
+            [
+              "bo.png"
+            ]
+          ],
+          [
+            "br.png",
+            [
+              "br.png"
+            ]
+          ],
+          [
+            "bs.png",
+            [
+              "bs.png"
+            ]
+          ],
+          [
+            "bt.png",
+            [
+              "bt.png"
+            ]
+          ],
+          [
+            "bw.png",
+            [
+              "bw.png"
+            ]
+          ],
+          [
+            "by.png",
+            [
+              "by.png"
+            ]
+          ],
+          [
+            "bz.png",
+            [
+              "bz.png"
+            ]
+          ],
+          [
+            "ca.png",
+            [
+              "ca.png"
+            ]
+          ],
+          [
+            "cf.png",
+            [
+              "cf.png"
+            ]
+          ],
+          [
+            "ch.png",
+            [
+              "ch.png"
+            ]
+          ],
+          [
+            "ci.png",
+            [
+              "ci.png"
+            ]
+          ],
+          [
+            "ck.png",
+            [
+              "ck.png"
+            ]
+          ],
+          [
+            "cl.png",
+            [
+              "cl.png"
+            ]
+          ],
+          [
+            "cm.png",
+            [
+              "cm.png"
+            ]
+          ],
+          [
+            "cn.png",
+            [
+              "cn.png"
+            ]
+          ],
+          [
+            "co.png",
+            [
+              "co.png"
+            ]
+          ],
+          [
+            "cr.png",
+            [
+              "cr.png"
+            ]
+          ],
+          [
+            "cu.png",
+            [
+              "cu.png"
+            ]
+          ],
+          [
+            "cv.png",
+            [
+              "cv.png"
+            ]
+          ],
+          [
+            "cy.png",
+            [
+              "cy.png"
+            ]
+          ],
+          [
+            "cz.png",
+            [
+              "cz.png"
+            ]
+          ],
+          [
+            "de.png",
+            [
+              "de.png"
+            ]
+          ],
+          [
+            "dj.png",
+            [
+              "dj.png"
+            ]
+          ],
+          [
+            "dk.png",
+            [
+              "dk.png"
+            ]
+          ],
+          [
+            "dm.png",
+            [
+              "dm.png"
+            ]
+          ],
+          [
+            "do.png",
+            [
+              "do.png"
+            ]
+          ],
+          [
+            "dz.png",
+            [
+              "dz.png"
+            ]
+          ],
+          [
+            "ec.png",
+            [
+              "ec.png"
+            ]
+          ],
+          [
+            "ee.png",
+            [
+              "ee.png"
+            ]
+          ],
+          [
+            "eg.png",
+            [
+              "eg.png"
+            ]
+          ],
+          [
+            "eh.png",
+            [
+              "eh.png"
+            ]
+          ],
+          [
+            "er.png",
+            [
+              "er.png"
+            ]
+          ],
+          [
+            "es.png",
+            [
+              "es.png"
+            ]
+          ],
+          [
+            "et.png",
+            [
+              "et.png"
+            ]
+          ],
+          [
+            "fi.png",
+            [
+              "fi.png"
+            ]
+          ],
+          [
+            "fj.png",
+            [
+              "fj.png"
+            ]
+          ],
+          [
+            "fm.png",
+            [
+              "fm.png"
+            ]
+          ],
+          [
+            "fo.png",
+            [
+              "fo.png"
+            ]
+          ],
+          [
+            "fr.png",
+            [
+              "fr.png"
+            ]
+          ],
+          [
+            "ga.png",
+            [
+              "ga.png"
+            ]
+          ],
+          [
+            "gb.png",
+            [
+              "gb.png"
+            ]
+          ],
+          [
+            "gd.png",
+            [
+              "gd.png"
+            ]
+          ],
+          [
+            "ge.png",
+            [
+              "ge.png"
+            ]
+          ],
+          [
+            "gg.png",
+            [
+              "gg.png"
+            ]
+          ],
+          [
+            "gh.png",
+            [
+              "gh.png"
+            ]
+          ],
+          [
+            "gi.png",
+            [
+              "gi.png"
+            ]
+          ],
+          [
+            "gl.png",
+            [
+              "gl.png"
+            ]
+          ],
+          [
+            "gm.png",
+            [
+              "gm.png"
+            ]
+          ],
+          [
+            "gn.png",
+            [
+              "gn.png"
+            ]
+          ],
+          [
+            "gp.png",
+            [
+              "gp.png"
+            ]
+          ],
+          [
+            "gq.png",
+            [
+              "gq.png"
+            ]
+          ],
+          [
+            "gr.png",
+            [
+              "gr.png"
+            ]
+          ],
+          [
+            "gt.png",
+            [
+              "gt.png"
+            ]
+          ],
+          [
+            "gu.png",
+            [
+              "gu.png"
+            ]
+          ],
+          [
+            "gw.png",
+            [
+              "gw.png"
+            ]
+          ],
+          [
+            "gy.png",
+            [
+              "gy.png"
+            ]
+          ],
+          [
+            "hk.png",
+            [
+              "hk.png"
+            ]
+          ],
+          [
+            "hn.png",
+            [
+              "hn.png"
+            ]
+          ],
+          [
+            "hr.png",
+            [
+              "hr.png"
+            ]
+          ],
+          [
+            "ht.png",
+            [
+              "ht.png"
+            ]
+          ],
+          [
+            "hu.png",
+            [
+              "hu.png"
+            ]
+          ],
+          [
+            "id.png",
+            [
+              "id.png",
+              "mc.png"
+            ]
+          ],
+          [
+            "ie.png",
+            [
+              "ie.png"
+            ]
+          ],
+          [
+            "il.png",
+            [
+              "il.png"
+            ]
+          ],
+          [
+            "in.png",
+            [
+              "in.png"
+            ]
+          ],
+          [
+            "iq.png",
+            [
+              "iq.png"
+            ]
+          ],
+          [
+            "ir.png",
+            [
+              "ir.png"
+            ]
+          ],
+          [
+            "is.png",
+            [
+              "is.png"
+            ]
+          ],
+          [
+            "it.png",
+            [
+              "it.png"
+            ]
+          ],
+          [
+            "je.png",
+            [
+              "je.png"
+            ]
+          ],
+          [
+            "jm.png",
+            [
+              "jm.png"
+            ]
+          ],
+          [
+            "jo.png",
+            [
+              "jo.png"
+            ]
+          ],
+          [
+            "jp.png",
+            [
+              "jp.png"
+            ]
+          ],
+          [
+            "ke.png",
+            [
+              "ke.png"
+            ]
+          ],
+          [
+            "kg.png",
+            [
+              "kg.png"
+            ]
+          ],
+          [
+            "kh.png",
+            [
+              "kh.png"
+            ]
+          ],
+          [
+            "ki.png",
+            [
+              "ki.png"
+            ]
+          ],
+          [
+            "km.png",
+            [
+              "km.png"
+            ]
+          ],
+          [
+            "kn.png",
+            [
+              "kn.png"
+            ]
+          ],
+          [
+            "kp.png",
+            [
+              "kp.png"
+            ]
+          ],
+          [
+            "kr.png",
+            [
+              "kr.png"
+            ]
+          ],
+          [
+            "kw.png",
+            [
+              "kw.png"
+            ]
+          ],
+          [
+            "ky.png",
+            [
+              "ky.png"
+            ]
+          ],
+          [
+            "kz.png",
+            [
+              "kz.png"
+            ]
+          ],
+          [
+            "la.png",
+            [
+              "la.png"
+            ]
+          ],
+          [
+            "lb.png",
+            [
+              "lb.png"
+            ]
+          ],
+          [
+            "lc.png",
+            [
+              "lc.png"
+            ]
+          ],
+          [
+            "li.png",
+            [
+              "li.png"
+            ]
+          ],
+          [
+            "lk.png",
+            [
+              "lk.png"
+            ]
+          ],
+          [
+            "lr.png",
+            [
+              "lr.png"
+            ]
+          ],
+          [
+            "ls.png",
+            [
+              "ls.png"
+            ]
+          ],
+          [
+            "lt.png",
+            [
+              "lt.png"
+            ]
+          ],
+          [
+            "lu.png",
+            [
+              "lu.png"
+            ]
+          ],
+          [
+            "lv.png",
+            [
+              "lv.png"
+            ]
+          ],
+          [
+            "ly.png",
+            [
+              "ly.png"
+            ]
+          ],
+          [
+            "ma.png",
+            [
+              "ma.png"
+            ]
+          ],
+          [
+            "mc.png",
+            [
+              "id.png",
+              "mc.png"
+            ]
+          ],
+          [
+            "md.png",
+            [
+              "md.png"
+            ]
+          ],
+          [
+            "me.png",
+            [
+              "me.png"
+            ]
+          ],
+          [
+            "mg.png",
+            [
+              "mg.png"
+            ]
+          ],
+          [
+            "mh.png",
+            [
+              "mh.png"
+            ]
+          ],
+          [
+            "mk.png",
+            [
+              "mk.png"
+            ]
+          ],
+          [
+            "ml.png",
+            [
+              "ml.png"
+            ]
+          ],
+          [
+            "mm.png",
+            [
+              "mm.png"
+            ]
+          ],
+          [
+            "mn.png",
+            [
+              "mn.png"
+            ]
+          ],
+          [
+            "mo.png",
+            [
+              "mo.png"
+            ]
+          ],
+          [
+            "mq.png",
+            [
+              "mq.png"
+            ]
+          ],
+          [
+            "mr.png",
+            [
+              "mr.png"
+            ]
+          ],
+          [
+            "ms.png",
+            [
+              "ms.png"
+            ]
+          ],
+          [
+            "mt.png",
+            [
+              "mt.png"
+            ]
+          ],
+          [
+            "mu.png",
+            [
+              "mu.png"
+            ]
+          ],
+          [
+            "mw.png",
+            [
+              "mw.png"
+            ]
+          ],
+          [
+            "mx.png",
+            [
+              "mx.png"
+            ]
+          ],
+          [
+            "my.png",
+            [
+              "my.png"
+            ]
+          ],
+          [
+            "mz.png",
+            [
+              "mz.png"
+            ]
+          ],
+          [
+            "na.png",
+            [
+              "na.png"
+            ]
+          ],
+          [
+            "nc.png",
+            [
+              "nc.png"
+            ]
+          ],
+          [
+            "ne.png",
+            [
+              "ne.png"
+            ]
+          ],
+          [
+            "ng.png",
+            [
+              "ng.png"
+            ]
+          ],
+          [
+            "ni.png",
+            [
+              "ni.png"
+            ]
+          ],
+          [
+            "nl.png",
+            [
+              "nl.png"
+            ]
+          ],
+          [
+            "no.png",
+            [
+              "no.png"
+            ]
+          ],
+          [
+            "np.png",
+            [
+              "np.png"
+            ]
+          ],
+          [
+            "nr.png",
+            [
+              "nr.png"
+            ]
+          ],
+          [
+            "nz.png",
+            [
+              "nz.png"
+            ]
+          ],
+          [
+            "om.png",
+            [
+              "om.png"
+            ]
+          ],
+          [
+            "pa.png",
+            [
+              "pa.png"
+            ]
+          ],
+          [
+            "pe.png",
+            [
+              "pe.png"
+            ]
+          ],
+          [
+            "pg.png",
+            [
+              "pg.png"
+            ]
+          ],
+          [
+            "ph.png",
+            [
+              "ph.png"
+            ]
+          ],
+          [
+            "pk.png",
+            [
+              "pk.png"
+            ]
+          ],
+          [
+            "pl.png",
+            [
+              "pl.png"
+            ]
+          ],
+          [
+            "pr.png",
+            [
+              "pr.png"
+            ]
+          ],
+          [
+            "ps.png",
+            [
+              "ps.png"
+            ]
+          ],
+          [
+            "pt.png",
+            [
+              "pt.png"
+            ]
+          ],
+          [
+            "pw.png",
+            [
+              "pw.png"
+            ]
+          ],
+          [
+            "py.png",
+            [
+              "py.png"
+            ]
+          ],
+          [
+            "qa.png",
+            [
+              "qa.png"
+            ]
+          ],
+          [
+            "ro.png",
+            [
+              "ro.png"
+            ]
+          ],
+          [
+            "ru.png",
+            [
+              "ru.png"
+            ]
+          ],
+          [
+            "rw.png",
+            [
+              "rw.png"
+            ]
+          ],
+          [
+            "sa.png",
+            [
+              "sa.png"
+            ]
+          ],
+          [
+            "sb.png",
+            [
+              "sb.png"
+            ]
+          ],
+          [
+            "sc.png",
+            [
+              "sc.png"
+            ]
+          ],
+          [
+            "sd.png",
+            [
+              "sd.png"
+            ]
+          ],
+          [
+            "se.png",
+            [
+              "se.png"
+            ]
+          ],
+          [
+            "sg.png",
+            [
+              "sg.png"
+            ]
+          ],
+          [
+            "si.png",
+            [
+              "si.png"
+            ]
+          ],
+          [
+            "sk.png",
+            [
+              "sk.png"
+            ]
+          ],
+          [
+            "sl.png",
+            [
+              "sl.png"
+            ]
+          ],
+          [
+            "sm.png",
+            [
+              "sm.png"
+            ]
+          ],
+          [
+            "sn.png",
+            [
+              "sn.png"
+            ]
+          ],
+          [
+            "so.png",
+            [
+              "so.png"
+            ]
+          ],
+          [
+            "sr.png",
+            [
+              "sr.png"
+            ]
+          ],
+          [
+            "sv.png",
+            [
+              "sv.png"
+            ]
+          ],
+          [
+            "sy.png",
+            [
+              "sy.png"
+            ]
+          ],
+          [
+            "sz.png",
+            [
+              "sz.png"
+            ]
+          ],
+          [
+            "tc.png",
+            [
+              "tc.png"
+            ]
+          ],
+          [
+            "td.png",
+            [
+              "td.png"
+            ]
+          ],
+          [
+            "tg.png",
+            [
+              "tg.png"
+            ]
+          ],
+          [
+            "th.png",
+            [
+              "th.png"
+            ]
+          ],
+          [
+            "tj.png",
+            [
+              "tj.png"
+            ]
+          ],
+          [
+            "tm.png",
+            [
+              "tm.png"
+            ]
+          ],
+          [
+            "tn.png",
+            [
+              "tn.png"
+            ]
+          ],
+          [
+            "to.png",
+            [
+              "to.png"
+            ]
+          ],
+          [
+            "tp.png",
+            [
+              "tp.png"
+            ]
+          ],
+          [
+            "tr.png",
+            [
+              "tr.png"
+            ]
+          ],
+          [
+            "tt.png",
+            [
+              "tt.png"
+            ]
+          ],
+          [
+            "tv.png",
+            [
+              "tv.png"
+            ]
+          ],
+          [
+            "tw.png",
+            [
+              "tw.png"
+            ]
+          ],
+          [
+            "tz.png",
+            [
+              "tz.png"
+            ]
+          ],
+          [
+            "ua.png",
+            [
+              "ua.png"
+            ]
+          ],
+          [
+            "ug.png",
+            [
+              "ug.png"
+            ]
+          ],
+          [
+            "us.png",
+            [
+              "us.png"
+            ]
+          ],
+          [
+            "uy.png",
+            [
+              "uy.png"
+            ]
+          ],
+          [
+            "uz.png",
+            [
+              "uz.png"
+            ]
+          ],
+          [
+            "va.png",
+            [
+              "va.png"
+            ]
+          ],
+          [
+            "vc.png",
+            [
+              "vc.png"
+            ]
+          ],
+          [
+            "ve.png",
+            [
+              "ve.png"
+            ]
+          ],
+          [
+            "vg.png",
+            [
+              "vg.png"
+            ]
+          ],
+          [
+            "vi.png",
+            [
+              "vi.png"
+            ]
+          ],
+          [
+            "vn.png",
+            [
+              "vn.png"
+            ]
+          ],
+          [
+            "vu.png",
+            [
+              "vu.png"
+            ]
+          ],
+          [
+            "ws.png",
+            [
+              "ws.png"
+            ]
+          ],
+          [
+            "ww.png",
+            [
+              "ww.png"
+            ]
+          ],
+          [
+            "ye.png",
+            [
+              "ye.png"
+            ]
+          ],
+          [
+            "za.png",
+            [
+              "za.png"
+            ]
+          ],
+          [
+            "zm.png",
+            [
+              "zm.png"
+            ]
+          ],
+          [
+            "zw.png",
+            [
+              "zw.png"
+            ]
+          ]
+        ]
+      },
+      "indie1.0.3": {
+        "ipaSha256": "c7ee8f88fdf63bc4eb4b6c7ed3e497a9edd092e567a5143862bf8c103c1a78e2",
+        "mapInfoSha256": "eccf35f7fbf853c9e1d51cc2454b895ff2412e5e5e7929415e4921157ef1c661",
+        "stageCount": 70,
+        "backgroundFamilyCount": 25,
+        "snowStages": [
+          {
+            "stage": 2,
+            "background": "BG_04",
+            "collisionPolygonCount": 0
+          },
+          {
+            "stage": 9,
+            "background": "BG_11",
+            "collisionPolygonCount": 0
+          },
+          {
+            "stage": 10,
+            "background": "BG_18",
+            "collisionPolygonCount": 6
+          },
+          {
+            "stage": 31,
+            "background": "BG_18",
+            "collisionPolygonCount": 6
+          },
+          {
+            "stage": 35,
+            "background": "BG_25",
+            "collisionPolygonCount": 2
+          },
+          {
+            "stage": 37,
+            "background": "BG_04",
+            "collisionPolygonCount": 0
+          },
+          {
+            "stage": 44,
+            "background": "BG_11",
+            "collisionPolygonCount": 0
+          },
+          {
+            "stage": 47,
+            "background": "BG_11",
+            "collisionPolygonCount": 0
+          },
+          {
+            "stage": 48,
+            "background": "BG_18",
+            "collisionPolygonCount": 6
+          },
+          {
+            "stage": 57,
+            "background": "BG_18",
+            "collisionPolygonCount": 6
+          },
+          {
+            "stage": 69,
+            "background": "BG_18",
+            "collisionPolygonCount": 6
+          }
+        ],
+        "exactBackgroundMatchesWithHdv100": [
+          [
+            "Airplane.png",
+            [
+              "Airplane.png"
+            ]
+          ],
+          [
+            "Blt_Railgun.png",
+            [
+              "Blt_Railgun01.png"
+            ]
+          ],
+          [
+            "BulletShell.png",
+            [
+              "BulletShell.png"
+            ]
+          ],
+          [
+            "Common_Btn_BACK.png",
+            [
+              "Common_Btn_BACK.png"
+            ]
+          ],
+          [
+            "Common_Btn_CANCEL.png",
+            [
+              "Common_Btn_CANCEL.png"
+            ]
+          ],
+          [
+            "Common_Btn_CLOSE.png",
+            [
+              "Common_Btn_CLOSE.png"
+            ]
+          ],
+          [
+            "Common_Btn_DEL.png",
+            [
+              "Common_Btn_DEL.png"
+            ]
+          ],
+          [
+            "Common_Btn_EXIT.png",
+            [
+              "Common_Btn_EXIT.png"
+            ]
+          ],
+          [
+            "Common_Btn_NEXT.png",
+            [
+              "Common_Btn_NEXT.png"
+            ]
+          ],
+          [
+            "Common_Btn_NO.png",
+            [
+              "Common_Btn_NO.png"
+            ]
+          ],
+          [
+            "Common_Btn_PREV.png",
+            [
+              "Common_Btn_PREV.png"
+            ]
+          ],
+          [
+            "Common_Btn_RANKING.png",
+            [
+              "Common_Btn_RANKING.png"
+            ]
+          ],
+          [
+            "Common_Btn_YES.png",
+            [
+              "Common_Btn_YES.png"
+            ]
+          ],
+          [
+            "DestPos.png",
+            [
+              "DestPos.png"
+            ]
+          ],
+          [
+            "Efx_Damage.png",
+            [
+              "Efx_Damage.png"
+            ]
+          ],
+          [
+            "Efx_Dash.jpg",
+            [
+              "Efx_Dash.jpg"
+            ]
+          ],
+          [
+            "Efx_Explode02.png",
+            [
+              "Efx_Explode02.png"
+            ]
+          ],
+          [
+            "Efx_ExplodeBoss.png",
+            [
+              "Efx_ExplodeBoss.png"
+            ]
+          ],
+          [
+            "Efx_ExplodeGround.png",
+            [
+              "Efx_ExplodeGround.png"
+            ]
+          ],
+          [
+            "Efx_ExplodeNPC.png",
+            [
+              "Efx_ExplodeNPC.png"
+            ]
+          ],
+          [
+            "Efx_Fire.png",
+            [
+              "Efx_Fire.png"
+            ]
+          ],
+          [
+            "Efx_Flame.png",
+            [
+              "Efx_Flame.png"
+            ]
+          ],
+          [
+            "Efx_Item.png",
+            [
+              "Efx_Item.png"
+            ]
+          ],
+          [
+            "Efx_Item2.png",
+            [
+              "Efx_Item2.png"
+            ]
+          ],
+          [
+            "Efx_LevelUp.jpg",
+            [
+              "Efx_LevelUp.jpg"
+            ]
+          ],
+          [
+            "Efx_Nuclear.png",
+            [
+              "Efx_Nuclear.png"
+            ]
+          ],
+          [
+            "Efx_Rail01.png",
+            [
+              "Efx_Rail01.png"
+            ]
+          ],
+          [
+            "Efx_Railgun.png",
+            [
+              "Efx_Railgun.png"
+            ]
+          ],
+          [
+            "Efx_RailgunEx.png",
+            [
+              "Efx_RailgunEx.png"
+            ]
+          ],
+          [
+            "Efx_Smoke.png",
+            [
+              "Efx_Smoke.png"
+            ]
+          ],
+          [
+            "Efx_Trail01.png",
+            [
+              "Efx_Trail01.png"
+            ]
+          ],
+          [
+            "Efx_Trail02.png",
+            [
+              "Efx_Trail02.png"
+            ]
+          ],
+          [
+            "Efx_Trail03.png",
+            [
+              "Efx_Trail03.png"
+            ]
+          ],
+          [
+            "Efx_Trail04.png",
+            [
+              "Efx_Trail04.png"
+            ]
+          ],
+          [
+            "EnemyBullet.png",
+            [
+              "EnemyBullet.png"
+            ]
+          ],
+          [
+            "HPGauge.png",
+            [
+              "HPGauge.png"
+            ]
+          ],
+          [
+            "HPGaugeBoss.png",
+            [
+              "HPGaugeBoss.png"
+            ]
+          ],
+          [
+            "HPGaugeEnemy.png",
+            [
+              "HPGaugeEnemy.png"
+            ]
+          ],
+          [
+            "InvenPage.png",
+            [
+              "InvenPage.png"
+            ]
+          ],
+          [
+            "Inven_BtnItem.png",
+            [
+              "Inven_BtnItem.png"
+            ]
+          ],
+          [
+            "ItemBox.png",
+            [
+              "ItemBox.png"
+            ]
+          ],
+          [
+            "Loading_Bottom.png",
+            [
+              "Loading_Bottom.png"
+            ]
+          ],
+          [
+            "Loading_Center.png",
+            [
+              "Loading_Center.png"
+            ]
+          ],
+          [
+            "Loading_Left.png",
+            [
+              "Loading_Left.png"
+            ]
+          ],
+          [
+            "Loading_Left2.png",
+            [
+              "Loading_Left2.png"
+            ]
+          ],
+          [
+            "Loading_Right.png",
+            [
+              "Loading_Right.png"
+            ]
+          ],
+          [
+            "Loading_Right2.png",
+            [
+              "Loading_Right2.png"
+            ]
+          ],
+          [
+            "Loading_Top.png",
+            [
+              "Loading_Top.png"
+            ]
+          ],
+          [
+            "Main_Copyright.png",
+            [
+              "Main_Copyright.png"
+            ]
+          ],
+          [
+            "Main_TapToStart.png",
+            [
+              "Main_TapToStart.png"
+            ]
+          ],
+          [
+            "MessageBox.png",
+            [
+              "MessageBox.png"
+            ]
+          ],
+          [
+            "NumSet01.png",
+            [
+              "NumSet01.png"
+            ]
+          ],
+          [
+            "NumSet01b.png",
+            [
+              "NumSet01b.png"
+            ]
+          ],
+          [
+            "NumSet02.png",
+            [
+              "NumSet02.png"
+            ]
+          ],
+          [
+            "NumSet02b.png",
+            [
+              "NumSet02b.png"
+            ]
+          ],
+          [
+            "PickItem.png",
+            [
+              "PickItem.png"
+            ]
+          ],
+          [
+            "PlaceNameBG.png",
+            [
+              "PlaceNameBG.png"
+            ]
+          ],
+          [
+            "SelSlot_Btn.png",
+            [
+              "SelSlot_Btn.png"
+            ]
+          ],
+          [
+            "SelStage_CompleteMark.png",
+            [
+              "CompleteMark.png"
+            ]
+          ],
+          [
+            "SmokeEffect.png",
+            [
+              "SmokeEffect.png"
+            ]
+          ],
+          [
+            "SmokeEffect2.png",
+            [
+              "SmokeEffect2.png"
+            ]
+          ],
+          [
+            "SmokeTrail.png",
+            [
+              "SmokeTrail.png"
+            ]
+          ],
+          [
+            "StageClear02.png",
+            [
+              "StageClearBG.png"
+            ]
+          ],
+          [
+            "SysMenu_Btm.png",
+            [
+              "MissionList_Btm.png"
+            ]
+          ],
+          [
+            "SysMenu_Btn.png",
+            [
+              "Btn_Mission.png"
+            ]
+          ],
+          [
+            "SysMenu_Mid.png",
+            [
+              "MissionList_Mid.png"
+            ]
+          ],
+          [
+            "SysMenu_Sel.png",
+            [
+              "SelMission.png"
+            ]
+          ],
+          [
+            "SysMenu_Top.png",
+            [
+              "SysMenuBG.png"
+            ]
+          ],
+          [
+            "Target.png",
+            [
+              "Target.png"
+            ]
+          ],
+          [
+            "TargetPath.png",
+            [
+              "TargetPath.png"
+            ]
+          ],
+          [
+            "ad.png",
+            [
+              "ad.png"
+            ]
+          ],
+          [
+            "ae.png",
+            [
+              "ae.png"
+            ]
+          ],
+          [
+            "af.png",
+            [
+              "af.png"
+            ]
+          ],
+          [
+            "ag.png",
+            [
+              "ag.png"
+            ]
+          ],
+          [
+            "ai.png",
+            [
+              "ai.png"
+            ]
+          ],
+          [
+            "al.png",
+            [
+              "al.png"
+            ]
+          ],
+          [
+            "am.png",
+            [
+              "am.png"
+            ]
+          ],
+          [
+            "an.png",
+            [
+              "an.png"
+            ]
+          ],
+          [
+            "ao.png",
+            [
+              "ao.png"
+            ]
+          ],
+          [
+            "aq.png",
+            [
+              "aq.png"
+            ]
+          ],
+          [
+            "ar.png",
+            [
+              "ar.png"
+            ]
+          ],
+          [
+            "as.png",
+            [
+              "as.png"
+            ]
+          ],
+          [
+            "at.png",
+            [
+              "at.png"
+            ]
+          ],
+          [
+            "au.png",
+            [
+              "au.png"
+            ]
+          ],
+          [
+            "aw.png",
+            [
+              "aw.png"
+            ]
+          ],
+          [
+            "az.png",
+            [
+              "az.png"
+            ]
+          ],
+          [
+            "ba.png",
+            [
+              "ba.png"
+            ]
+          ],
+          [
+            "bb.png",
+            [
+              "bb.png"
+            ]
+          ],
+          [
+            "bd.png",
+            [
+              "bd.png"
+            ]
+          ],
+          [
+            "be.png",
+            [
+              "be.png"
+            ]
+          ],
+          [
+            "bf.png",
+            [
+              "bf.png"
+            ]
+          ],
+          [
+            "bg.png",
+            [
+              "bg.png"
+            ]
+          ],
+          [
+            "bh.png",
+            [
+              "bh.png"
+            ]
+          ],
+          [
+            "bi.png",
+            [
+              "bi.png"
+            ]
+          ],
+          [
+            "bj.png",
+            [
+              "bj.png"
+            ]
+          ],
+          [
+            "bm.png",
+            [
+              "bm.png"
+            ]
+          ],
+          [
+            "bn.png",
+            [
+              "bn.png"
+            ]
+          ],
+          [
+            "bo.png",
+            [
+              "bo.png"
+            ]
+          ],
+          [
+            "br.png",
+            [
+              "br.png"
+            ]
+          ],
+          [
+            "bs.png",
+            [
+              "bs.png"
+            ]
+          ],
+          [
+            "bt.png",
+            [
+              "bt.png"
+            ]
+          ],
+          [
+            "bw.png",
+            [
+              "bw.png"
+            ]
+          ],
+          [
+            "by.png",
+            [
+              "by.png"
+            ]
+          ],
+          [
+            "bz.png",
+            [
+              "bz.png"
+            ]
+          ],
+          [
+            "ca.png",
+            [
+              "ca.png"
+            ]
+          ],
+          [
+            "cf.png",
+            [
+              "cf.png"
+            ]
+          ],
+          [
+            "ch.png",
+            [
+              "ch.png"
+            ]
+          ],
+          [
+            "ci.png",
+            [
+              "ci.png"
+            ]
+          ],
+          [
+            "ck.png",
+            [
+              "ck.png"
+            ]
+          ],
+          [
+            "cl.png",
+            [
+              "cl.png"
+            ]
+          ],
+          [
+            "cm.png",
+            [
+              "cm.png"
+            ]
+          ],
+          [
+            "cn.png",
+            [
+              "cn.png"
+            ]
+          ],
+          [
+            "co.png",
+            [
+              "co.png"
+            ]
+          ],
+          [
+            "cr.png",
+            [
+              "cr.png"
+            ]
+          ],
+          [
+            "cu.png",
+            [
+              "cu.png"
+            ]
+          ],
+          [
+            "cv.png",
+            [
+              "cv.png"
+            ]
+          ],
+          [
+            "cy.png",
+            [
+              "cy.png"
+            ]
+          ],
+          [
+            "cz.png",
+            [
+              "cz.png"
+            ]
+          ],
+          [
+            "de.png",
+            [
+              "de.png"
+            ]
+          ],
+          [
+            "dj.png",
+            [
+              "dj.png"
+            ]
+          ],
+          [
+            "dk.png",
+            [
+              "dk.png"
+            ]
+          ],
+          [
+            "dm.png",
+            [
+              "dm.png"
+            ]
+          ],
+          [
+            "do.png",
+            [
+              "do.png"
+            ]
+          ],
+          [
+            "dz.png",
+            [
+              "dz.png"
+            ]
+          ],
+          [
+            "ec.png",
+            [
+              "ec.png"
+            ]
+          ],
+          [
+            "ee.png",
+            [
+              "ee.png"
+            ]
+          ],
+          [
+            "eg.png",
+            [
+              "eg.png"
+            ]
+          ],
+          [
+            "eh.png",
+            [
+              "eh.png"
+            ]
+          ],
+          [
+            "er.png",
+            [
+              "er.png"
+            ]
+          ],
+          [
+            "es.png",
+            [
+              "es.png"
+            ]
+          ],
+          [
+            "et.png",
+            [
+              "et.png"
+            ]
+          ],
+          [
+            "fi.png",
+            [
+              "fi.png"
+            ]
+          ],
+          [
+            "fj.png",
+            [
+              "fj.png"
+            ]
+          ],
+          [
+            "fm.png",
+            [
+              "fm.png"
+            ]
+          ],
+          [
+            "fo.png",
+            [
+              "fo.png"
+            ]
+          ],
+          [
+            "fr.png",
+            [
+              "fr.png"
+            ]
+          ],
+          [
+            "ga.png",
+            [
+              "ga.png"
+            ]
+          ],
+          [
+            "gb.png",
+            [
+              "gb.png"
+            ]
+          ],
+          [
+            "gd.png",
+            [
+              "gd.png"
+            ]
+          ],
+          [
+            "ge.png",
+            [
+              "ge.png"
+            ]
+          ],
+          [
+            "gg.png",
+            [
+              "gg.png"
+            ]
+          ],
+          [
+            "gh.png",
+            [
+              "gh.png"
+            ]
+          ],
+          [
+            "gi.png",
+            [
+              "gi.png"
+            ]
+          ],
+          [
+            "gl.png",
+            [
+              "gl.png"
+            ]
+          ],
+          [
+            "gm.png",
+            [
+              "gm.png"
+            ]
+          ],
+          [
+            "gn.png",
+            [
+              "gn.png"
+            ]
+          ],
+          [
+            "gp.png",
+            [
+              "gp.png"
+            ]
+          ],
+          [
+            "gq.png",
+            [
+              "gq.png"
+            ]
+          ],
+          [
+            "gr.png",
+            [
+              "gr.png"
+            ]
+          ],
+          [
+            "gt.png",
+            [
+              "gt.png"
+            ]
+          ],
+          [
+            "gu.png",
+            [
+              "gu.png"
+            ]
+          ],
+          [
+            "gw.png",
+            [
+              "gw.png"
+            ]
+          ],
+          [
+            "gy.png",
+            [
+              "gy.png"
+            ]
+          ],
+          [
+            "hk.png",
+            [
+              "hk.png"
+            ]
+          ],
+          [
+            "hn.png",
+            [
+              "hn.png"
+            ]
+          ],
+          [
+            "hr.png",
+            [
+              "hr.png"
+            ]
+          ],
+          [
+            "ht.png",
+            [
+              "ht.png"
+            ]
+          ],
+          [
+            "hu.png",
+            [
+              "hu.png"
+            ]
+          ],
+          [
+            "id.png",
+            [
+              "id.png",
+              "mc.png"
+            ]
+          ],
+          [
+            "ie.png",
+            [
+              "ie.png"
+            ]
+          ],
+          [
+            "il.png",
+            [
+              "il.png"
+            ]
+          ],
+          [
+            "in.png",
+            [
+              "in.png"
+            ]
+          ],
+          [
+            "iq.png",
+            [
+              "iq.png"
+            ]
+          ],
+          [
+            "ir.png",
+            [
+              "ir.png"
+            ]
+          ],
+          [
+            "is.png",
+            [
+              "is.png"
+            ]
+          ],
+          [
+            "it.png",
+            [
+              "it.png"
+            ]
+          ],
+          [
+            "je.png",
+            [
+              "je.png"
+            ]
+          ],
+          [
+            "jm.png",
+            [
+              "jm.png"
+            ]
+          ],
+          [
+            "jo.png",
+            [
+              "jo.png"
+            ]
+          ],
+          [
+            "jp.png",
+            [
+              "jp.png"
+            ]
+          ],
+          [
+            "ke.png",
+            [
+              "ke.png"
+            ]
+          ],
+          [
+            "kg.png",
+            [
+              "kg.png"
+            ]
+          ],
+          [
+            "kh.png",
+            [
+              "kh.png"
+            ]
+          ],
+          [
+            "ki.png",
+            [
+              "ki.png"
+            ]
+          ],
+          [
+            "km.png",
+            [
+              "km.png"
+            ]
+          ],
+          [
+            "kn.png",
+            [
+              "kn.png"
+            ]
+          ],
+          [
+            "kp.png",
+            [
+              "kp.png"
+            ]
+          ],
+          [
+            "kr.png",
+            [
+              "kr.png"
+            ]
+          ],
+          [
+            "kw.png",
+            [
+              "kw.png"
+            ]
+          ],
+          [
+            "ky.png",
+            [
+              "ky.png"
+            ]
+          ],
+          [
+            "kz.png",
+            [
+              "kz.png"
+            ]
+          ],
+          [
+            "la.png",
+            [
+              "la.png"
+            ]
+          ],
+          [
+            "lb.png",
+            [
+              "lb.png"
+            ]
+          ],
+          [
+            "lc.png",
+            [
+              "lc.png"
+            ]
+          ],
+          [
+            "li.png",
+            [
+              "li.png"
+            ]
+          ],
+          [
+            "lk.png",
+            [
+              "lk.png"
+            ]
+          ],
+          [
+            "lr.png",
+            [
+              "lr.png"
+            ]
+          ],
+          [
+            "ls.png",
+            [
+              "ls.png"
+            ]
+          ],
+          [
+            "lt.png",
+            [
+              "lt.png"
+            ]
+          ],
+          [
+            "lu.png",
+            [
+              "lu.png"
+            ]
+          ],
+          [
+            "lv.png",
+            [
+              "lv.png"
+            ]
+          ],
+          [
+            "ly.png",
+            [
+              "ly.png"
+            ]
+          ],
+          [
+            "ma.png",
+            [
+              "ma.png"
+            ]
+          ],
+          [
+            "mc.png",
+            [
+              "id.png",
+              "mc.png"
+            ]
+          ],
+          [
+            "md.png",
+            [
+              "md.png"
+            ]
+          ],
+          [
+            "me.png",
+            [
+              "me.png"
+            ]
+          ],
+          [
+            "mg.png",
+            [
+              "mg.png"
+            ]
+          ],
+          [
+            "mh.png",
+            [
+              "mh.png"
+            ]
+          ],
+          [
+            "mk.png",
+            [
+              "mk.png"
+            ]
+          ],
+          [
+            "ml.png",
+            [
+              "ml.png"
+            ]
+          ],
+          [
+            "mm.png",
+            [
+              "mm.png"
+            ]
+          ],
+          [
+            "mn.png",
+            [
+              "mn.png"
+            ]
+          ],
+          [
+            "mo.png",
+            [
+              "mo.png"
+            ]
+          ],
+          [
+            "mq.png",
+            [
+              "mq.png"
+            ]
+          ],
+          [
+            "mr.png",
+            [
+              "mr.png"
+            ]
+          ],
+          [
+            "ms.png",
+            [
+              "ms.png"
+            ]
+          ],
+          [
+            "mt.png",
+            [
+              "mt.png"
+            ]
+          ],
+          [
+            "mu.png",
+            [
+              "mu.png"
+            ]
+          ],
+          [
+            "mw.png",
+            [
+              "mw.png"
+            ]
+          ],
+          [
+            "mx.png",
+            [
+              "mx.png"
+            ]
+          ],
+          [
+            "my.png",
+            [
+              "my.png"
+            ]
+          ],
+          [
+            "mz.png",
+            [
+              "mz.png"
+            ]
+          ],
+          [
+            "na.png",
+            [
+              "na.png"
+            ]
+          ],
+          [
+            "nc.png",
+            [
+              "nc.png"
+            ]
+          ],
+          [
+            "ne.png",
+            [
+              "ne.png"
+            ]
+          ],
+          [
+            "ng.png",
+            [
+              "ng.png"
+            ]
+          ],
+          [
+            "ni.png",
+            [
+              "ni.png"
+            ]
+          ],
+          [
+            "nl.png",
+            [
+              "nl.png"
+            ]
+          ],
+          [
+            "no.png",
+            [
+              "no.png"
+            ]
+          ],
+          [
+            "np.png",
+            [
+              "np.png"
+            ]
+          ],
+          [
+            "nr.png",
+            [
+              "nr.png"
+            ]
+          ],
+          [
+            "nz.png",
+            [
+              "nz.png"
+            ]
+          ],
+          [
+            "om.png",
+            [
+              "om.png"
+            ]
+          ],
+          [
+            "pa.png",
+            [
+              "pa.png"
+            ]
+          ],
+          [
+            "pe.png",
+            [
+              "pe.png"
+            ]
+          ],
+          [
+            "pg.png",
+            [
+              "pg.png"
+            ]
+          ],
+          [
+            "ph.png",
+            [
+              "ph.png"
+            ]
+          ],
+          [
+            "pk.png",
+            [
+              "pk.png"
+            ]
+          ],
+          [
+            "pl.png",
+            [
+              "pl.png"
+            ]
+          ],
+          [
+            "pr.png",
+            [
+              "pr.png"
+            ]
+          ],
+          [
+            "ps.png",
+            [
+              "ps.png"
+            ]
+          ],
+          [
+            "pt.png",
+            [
+              "pt.png"
+            ]
+          ],
+          [
+            "pw.png",
+            [
+              "pw.png"
+            ]
+          ],
+          [
+            "py.png",
+            [
+              "py.png"
+            ]
+          ],
+          [
+            "qa.png",
+            [
+              "qa.png"
+            ]
+          ],
+          [
+            "ro.png",
+            [
+              "ro.png"
+            ]
+          ],
+          [
+            "ru.png",
+            [
+              "ru.png"
+            ]
+          ],
+          [
+            "rw.png",
+            [
+              "rw.png"
+            ]
+          ],
+          [
+            "sa.png",
+            [
+              "sa.png"
+            ]
+          ],
+          [
+            "sb.png",
+            [
+              "sb.png"
+            ]
+          ],
+          [
+            "sc.png",
+            [
+              "sc.png"
+            ]
+          ],
+          [
+            "sd.png",
+            [
+              "sd.png"
+            ]
+          ],
+          [
+            "se.png",
+            [
+              "se.png"
+            ]
+          ],
+          [
+            "sg.png",
+            [
+              "sg.png"
+            ]
+          ],
+          [
+            "si.png",
+            [
+              "si.png"
+            ]
+          ],
+          [
+            "sk.png",
+            [
+              "sk.png"
+            ]
+          ],
+          [
+            "sl.png",
+            [
+              "sl.png"
+            ]
+          ],
+          [
+            "sm.png",
+            [
+              "sm.png"
+            ]
+          ],
+          [
+            "sn.png",
+            [
+              "sn.png"
+            ]
+          ],
+          [
+            "so.png",
+            [
+              "so.png"
+            ]
+          ],
+          [
+            "sr.png",
+            [
+              "sr.png"
+            ]
+          ],
+          [
+            "sv.png",
+            [
+              "sv.png"
+            ]
+          ],
+          [
+            "sy.png",
+            [
+              "sy.png"
+            ]
+          ],
+          [
+            "sz.png",
+            [
+              "sz.png"
+            ]
+          ],
+          [
+            "tc.png",
+            [
+              "tc.png"
+            ]
+          ],
+          [
+            "td.png",
+            [
+              "td.png"
+            ]
+          ],
+          [
+            "tg.png",
+            [
+              "tg.png"
+            ]
+          ],
+          [
+            "th.png",
+            [
+              "th.png"
+            ]
+          ],
+          [
+            "tj.png",
+            [
+              "tj.png"
+            ]
+          ],
+          [
+            "tm.png",
+            [
+              "tm.png"
+            ]
+          ],
+          [
+            "tn.png",
+            [
+              "tn.png"
+            ]
+          ],
+          [
+            "to.png",
+            [
+              "to.png"
+            ]
+          ],
+          [
+            "tp.png",
+            [
+              "tp.png"
+            ]
+          ],
+          [
+            "tr.png",
+            [
+              "tr.png"
+            ]
+          ],
+          [
+            "tt.png",
+            [
+              "tt.png"
+            ]
+          ],
+          [
+            "tv.png",
+            [
+              "tv.png"
+            ]
+          ],
+          [
+            "tw.png",
+            [
+              "tw.png"
+            ]
+          ],
+          [
+            "tz.png",
+            [
+              "tz.png"
+            ]
+          ],
+          [
+            "ua.png",
+            [
+              "ua.png"
+            ]
+          ],
+          [
+            "ug.png",
+            [
+              "ug.png"
+            ]
+          ],
+          [
+            "us.png",
+            [
+              "us.png"
+            ]
+          ],
+          [
+            "uy.png",
+            [
+              "uy.png"
+            ]
+          ],
+          [
+            "uz.png",
+            [
+              "uz.png"
+            ]
+          ],
+          [
+            "va.png",
+            [
+              "va.png"
+            ]
+          ],
+          [
+            "vc.png",
+            [
+              "vc.png"
+            ]
+          ],
+          [
+            "ve.png",
+            [
+              "ve.png"
+            ]
+          ],
+          [
+            "vg.png",
+            [
+              "vg.png"
+            ]
+          ],
+          [
+            "vi.png",
+            [
+              "vi.png"
+            ]
+          ],
+          [
+            "vn.png",
+            [
+              "vn.png"
+            ]
+          ],
+          [
+            "vu.png",
+            [
+              "vu.png"
+            ]
+          ],
+          [
+            "ws.png",
+            [
+              "ws.png"
+            ]
+          ],
+          [
+            "ww.png",
+            [
+              "ww.png"
+            ]
+          ],
+          [
+            "ye.png",
+            [
+              "ye.png"
+            ]
+          ],
+          [
+            "za.png",
+            [
+              "za.png"
+            ]
+          ],
+          [
+            "zm.png",
+            [
+              "zm.png"
+            ]
+          ],
+          [
+            "zw.png",
+            [
+              "zw.png"
+            ]
+          ]
+        ]
+      },
+      "indie1.0.5": {
+        "ipaSha256": "2c3e9aba0d249827da95c557f905762e3e2df08f79602f5404f93aa8f4c3d052",
+        "mapInfoSha256": "eccf35f7fbf853c9e1d51cc2454b895ff2412e5e5e7929415e4921157ef1c661",
+        "stageCount": 70,
+        "backgroundFamilyCount": 25,
+        "snowStages": [
+          {
+            "stage": 2,
+            "background": "BG_04",
+            "collisionPolygonCount": 0
+          },
+          {
+            "stage": 9,
+            "background": "BG_11",
+            "collisionPolygonCount": 0
+          },
+          {
+            "stage": 10,
+            "background": "BG_18",
+            "collisionPolygonCount": 6
+          },
+          {
+            "stage": 31,
+            "background": "BG_18",
+            "collisionPolygonCount": 6
+          },
+          {
+            "stage": 35,
+            "background": "BG_25",
+            "collisionPolygonCount": 2
+          },
+          {
+            "stage": 37,
+            "background": "BG_04",
+            "collisionPolygonCount": 0
+          },
+          {
+            "stage": 44,
+            "background": "BG_11",
+            "collisionPolygonCount": 0
+          },
+          {
+            "stage": 47,
+            "background": "BG_11",
+            "collisionPolygonCount": 0
+          },
+          {
+            "stage": 48,
+            "background": "BG_18",
+            "collisionPolygonCount": 6
+          },
+          {
+            "stage": 57,
+            "background": "BG_18",
+            "collisionPolygonCount": 6
+          },
+          {
+            "stage": 69,
+            "background": "BG_18",
+            "collisionPolygonCount": 6
+          }
+        ],
+        "exactBackgroundMatchesWithHdv100": [
+          [
+            "Airplane.png",
+            [
+              "Airplane.png"
+            ]
+          ],
+          [
+            "Blt_Railgun.png",
+            [
+              "Blt_Railgun01.png"
+            ]
+          ],
+          [
+            "BulletShell.png",
+            [
+              "BulletShell.png"
+            ]
+          ],
+          [
+            "Common_Btn_BACK.png",
+            [
+              "Common_Btn_BACK.png"
+            ]
+          ],
+          [
+            "Common_Btn_CANCEL.png",
+            [
+              "Common_Btn_CANCEL.png"
+            ]
+          ],
+          [
+            "Common_Btn_CLOSE.png",
+            [
+              "Common_Btn_CLOSE.png"
+            ]
+          ],
+          [
+            "Common_Btn_DEL.png",
+            [
+              "Common_Btn_DEL.png"
+            ]
+          ],
+          [
+            "Common_Btn_EXIT.png",
+            [
+              "Common_Btn_EXIT.png"
+            ]
+          ],
+          [
+            "Common_Btn_NEXT.png",
+            [
+              "Common_Btn_NEXT.png"
+            ]
+          ],
+          [
+            "Common_Btn_NO.png",
+            [
+              "Common_Btn_NO.png"
+            ]
+          ],
+          [
+            "Common_Btn_PREV.png",
+            [
+              "Common_Btn_PREV.png"
+            ]
+          ],
+          [
+            "Common_Btn_RANKING.png",
+            [
+              "Common_Btn_RANKING.png"
+            ]
+          ],
+          [
+            "Common_Btn_YES.png",
+            [
+              "Common_Btn_YES.png"
+            ]
+          ],
+          [
+            "DestPos.png",
+            [
+              "DestPos.png"
+            ]
+          ],
+          [
+            "Efx_Damage.png",
+            [
+              "Efx_Damage.png"
+            ]
+          ],
+          [
+            "Efx_Explode02.png",
+            [
+              "Efx_Explode02.png"
+            ]
+          ],
+          [
+            "Efx_ExplodeBoss.png",
+            [
+              "Efx_ExplodeBoss.png"
+            ]
+          ],
+          [
+            "Efx_ExplodeGround.png",
+            [
+              "Efx_ExplodeGround.png"
+            ]
+          ],
+          [
+            "Efx_ExplodeNPC.png",
+            [
+              "Efx_ExplodeNPC.png"
+            ]
+          ],
+          [
+            "Efx_Fire.png",
+            [
+              "Efx_Fire.png"
+            ]
+          ],
+          [
+            "Efx_Flame.png",
+            [
+              "Efx_Flame.png"
+            ]
+          ],
+          [
+            "Efx_Item.png",
+            [
+              "Efx_Item.png"
+            ]
+          ],
+          [
+            "Efx_Item2.png",
+            [
+              "Efx_Item2.png"
+            ]
+          ],
+          [
+            "Efx_LevelUp.jpg",
+            [
+              "Efx_LevelUp.jpg"
+            ]
+          ],
+          [
+            "Efx_Nuclear.png",
+            [
+              "Efx_Nuclear.png"
+            ]
+          ],
+          [
+            "Efx_Rail01.png",
+            [
+              "Efx_Rail01.png"
+            ]
+          ],
+          [
+            "Efx_Railgun.png",
+            [
+              "Efx_Railgun.png"
+            ]
+          ],
+          [
+            "Efx_RailgunEx.png",
+            [
+              "Efx_RailgunEx.png"
+            ]
+          ],
+          [
+            "Efx_Smoke.png",
+            [
+              "Efx_Smoke.png"
+            ]
+          ],
+          [
+            "Efx_Trail01.png",
+            [
+              "Efx_Trail01.png"
+            ]
+          ],
+          [
+            "Efx_Trail02.png",
+            [
+              "Efx_Trail02.png"
+            ]
+          ],
+          [
+            "Efx_Trail03.png",
+            [
+              "Efx_Trail03.png"
+            ]
+          ],
+          [
+            "Efx_Trail04.png",
+            [
+              "Efx_Trail04.png"
+            ]
+          ],
+          [
+            "EnemyBullet.png",
+            [
+              "EnemyBullet.png"
+            ]
+          ],
+          [
+            "HPGauge.png",
+            [
+              "HPGauge.png"
+            ]
+          ],
+          [
+            "HPGaugeBoss.png",
+            [
+              "HPGaugeBoss.png"
+            ]
+          ],
+          [
+            "HPGaugeEnemy.png",
+            [
+              "HPGaugeEnemy.png"
+            ]
+          ],
+          [
+            "InvenPage.png",
+            [
+              "InvenPage.png"
+            ]
+          ],
+          [
+            "Inven_BtnItem.png",
+            [
+              "Inven_BtnItem.png"
+            ]
+          ],
+          [
+            "ItemBox.png",
+            [
+              "ItemBox.png"
+            ]
+          ],
+          [
+            "Loading_Bottom.png",
+            [
+              "Loading_Bottom.png"
+            ]
+          ],
+          [
+            "Loading_Center.png",
+            [
+              "Loading_Center.png"
+            ]
+          ],
+          [
+            "Loading_Left.png",
+            [
+              "Loading_Left.png"
+            ]
+          ],
+          [
+            "Loading_Left2.png",
+            [
+              "Loading_Left2.png"
+            ]
+          ],
+          [
+            "Loading_Right.png",
+            [
+              "Loading_Right.png"
+            ]
+          ],
+          [
+            "Loading_Right2.png",
+            [
+              "Loading_Right2.png"
+            ]
+          ],
+          [
+            "Loading_Top.png",
+            [
+              "Loading_Top.png"
+            ]
+          ],
+          [
+            "Main_Copyright.png",
+            [
+              "Main_Copyright.png"
+            ]
+          ],
+          [
+            "Main_TapToStart.png",
+            [
+              "Main_TapToStart.png"
+            ]
+          ],
+          [
+            "MessageBox.png",
+            [
+              "MessageBox.png"
+            ]
+          ],
+          [
+            "NumSet01.png",
+            [
+              "NumSet01.png"
+            ]
+          ],
+          [
+            "NumSet01b.png",
+            [
+              "NumSet01b.png"
+            ]
+          ],
+          [
+            "NumSet02.png",
+            [
+              "NumSet02.png"
+            ]
+          ],
+          [
+            "NumSet02b.png",
+            [
+              "NumSet02b.png"
+            ]
+          ],
+          [
+            "PickItem.png",
+            [
+              "PickItem.png"
+            ]
+          ],
+          [
+            "PlaceNameBG.png",
+            [
+              "PlaceNameBG.png"
+            ]
+          ],
+          [
+            "SelSlot_Btn.png",
+            [
+              "SelSlot_Btn.png"
+            ]
+          ],
+          [
+            "SelStage_CompleteMark.png",
+            [
+              "CompleteMark.png"
+            ]
+          ],
+          [
+            "SmokeEffect.png",
+            [
+              "SmokeEffect.png"
+            ]
+          ],
+          [
+            "SmokeEffect2.png",
+            [
+              "SmokeEffect2.png"
+            ]
+          ],
+          [
+            "SmokeTrail.png",
+            [
+              "SmokeTrail.png"
+            ]
+          ],
+          [
+            "StageClear02.png",
+            [
+              "StageClearBG.png"
+            ]
+          ],
+          [
+            "SysMenu_Btm.png",
+            [
+              "MissionList_Btm.png"
+            ]
+          ],
+          [
+            "SysMenu_Btn.png",
+            [
+              "Btn_Mission.png"
+            ]
+          ],
+          [
+            "SysMenu_Mid.png",
+            [
+              "MissionList_Mid.png"
+            ]
+          ],
+          [
+            "SysMenu_Sel.png",
+            [
+              "SelMission.png"
+            ]
+          ],
+          [
+            "SysMenu_Top.png",
+            [
+              "SysMenuBG.png"
+            ]
+          ],
+          [
+            "Target.png",
+            [
+              "Target.png"
+            ]
+          ],
+          [
+            "TargetPath.png",
+            [
+              "TargetPath.png"
+            ]
+          ],
+          [
+            "ad.png",
+            [
+              "ad.png"
+            ]
+          ],
+          [
+            "ae.png",
+            [
+              "ae.png"
+            ]
+          ],
+          [
+            "af.png",
+            [
+              "af.png"
+            ]
+          ],
+          [
+            "ag.png",
+            [
+              "ag.png"
+            ]
+          ],
+          [
+            "ai.png",
+            [
+              "ai.png"
+            ]
+          ],
+          [
+            "al.png",
+            [
+              "al.png"
+            ]
+          ],
+          [
+            "am.png",
+            [
+              "am.png"
+            ]
+          ],
+          [
+            "an.png",
+            [
+              "an.png"
+            ]
+          ],
+          [
+            "ao.png",
+            [
+              "ao.png"
+            ]
+          ],
+          [
+            "aq.png",
+            [
+              "aq.png"
+            ]
+          ],
+          [
+            "ar.png",
+            [
+              "ar.png"
+            ]
+          ],
+          [
+            "as.png",
+            [
+              "as.png"
+            ]
+          ],
+          [
+            "at.png",
+            [
+              "at.png"
+            ]
+          ],
+          [
+            "au.png",
+            [
+              "au.png"
+            ]
+          ],
+          [
+            "aw.png",
+            [
+              "aw.png"
+            ]
+          ],
+          [
+            "az.png",
+            [
+              "az.png"
+            ]
+          ],
+          [
+            "ba.png",
+            [
+              "ba.png"
+            ]
+          ],
+          [
+            "bb.png",
+            [
+              "bb.png"
+            ]
+          ],
+          [
+            "bd.png",
+            [
+              "bd.png"
+            ]
+          ],
+          [
+            "be.png",
+            [
+              "be.png"
+            ]
+          ],
+          [
+            "bf.png",
+            [
+              "bf.png"
+            ]
+          ],
+          [
+            "bg.png",
+            [
+              "bg.png"
+            ]
+          ],
+          [
+            "bh.png",
+            [
+              "bh.png"
+            ]
+          ],
+          [
+            "bi.png",
+            [
+              "bi.png"
+            ]
+          ],
+          [
+            "bj.png",
+            [
+              "bj.png"
+            ]
+          ],
+          [
+            "bm.png",
+            [
+              "bm.png"
+            ]
+          ],
+          [
+            "bn.png",
+            [
+              "bn.png"
+            ]
+          ],
+          [
+            "bo.png",
+            [
+              "bo.png"
+            ]
+          ],
+          [
+            "br.png",
+            [
+              "br.png"
+            ]
+          ],
+          [
+            "bs.png",
+            [
+              "bs.png"
+            ]
+          ],
+          [
+            "bt.png",
+            [
+              "bt.png"
+            ]
+          ],
+          [
+            "bw.png",
+            [
+              "bw.png"
+            ]
+          ],
+          [
+            "by.png",
+            [
+              "by.png"
+            ]
+          ],
+          [
+            "bz.png",
+            [
+              "bz.png"
+            ]
+          ],
+          [
+            "ca.png",
+            [
+              "ca.png"
+            ]
+          ],
+          [
+            "cf.png",
+            [
+              "cf.png"
+            ]
+          ],
+          [
+            "ch.png",
+            [
+              "ch.png"
+            ]
+          ],
+          [
+            "ci.png",
+            [
+              "ci.png"
+            ]
+          ],
+          [
+            "ck.png",
+            [
+              "ck.png"
+            ]
+          ],
+          [
+            "cl.png",
+            [
+              "cl.png"
+            ]
+          ],
+          [
+            "cm.png",
+            [
+              "cm.png"
+            ]
+          ],
+          [
+            "cn.png",
+            [
+              "cn.png"
+            ]
+          ],
+          [
+            "co.png",
+            [
+              "co.png"
+            ]
+          ],
+          [
+            "cr.png",
+            [
+              "cr.png"
+            ]
+          ],
+          [
+            "cu.png",
+            [
+              "cu.png"
+            ]
+          ],
+          [
+            "cv.png",
+            [
+              "cv.png"
+            ]
+          ],
+          [
+            "cy.png",
+            [
+              "cy.png"
+            ]
+          ],
+          [
+            "cz.png",
+            [
+              "cz.png"
+            ]
+          ],
+          [
+            "de.png",
+            [
+              "de.png"
+            ]
+          ],
+          [
+            "dj.png",
+            [
+              "dj.png"
+            ]
+          ],
+          [
+            "dk.png",
+            [
+              "dk.png"
+            ]
+          ],
+          [
+            "dm.png",
+            [
+              "dm.png"
+            ]
+          ],
+          [
+            "do.png",
+            [
+              "do.png"
+            ]
+          ],
+          [
+            "dz.png",
+            [
+              "dz.png"
+            ]
+          ],
+          [
+            "ec.png",
+            [
+              "ec.png"
+            ]
+          ],
+          [
+            "ee.png",
+            [
+              "ee.png"
+            ]
+          ],
+          [
+            "eg.png",
+            [
+              "eg.png"
+            ]
+          ],
+          [
+            "eh.png",
+            [
+              "eh.png"
+            ]
+          ],
+          [
+            "er.png",
+            [
+              "er.png"
+            ]
+          ],
+          [
+            "es.png",
+            [
+              "es.png"
+            ]
+          ],
+          [
+            "et.png",
+            [
+              "et.png"
+            ]
+          ],
+          [
+            "fi.png",
+            [
+              "fi.png"
+            ]
+          ],
+          [
+            "fj.png",
+            [
+              "fj.png"
+            ]
+          ],
+          [
+            "fm.png",
+            [
+              "fm.png"
+            ]
+          ],
+          [
+            "fo.png",
+            [
+              "fo.png"
+            ]
+          ],
+          [
+            "fr.png",
+            [
+              "fr.png"
+            ]
+          ],
+          [
+            "ga.png",
+            [
+              "ga.png"
+            ]
+          ],
+          [
+            "gb.png",
+            [
+              "gb.png"
+            ]
+          ],
+          [
+            "gd.png",
+            [
+              "gd.png"
+            ]
+          ],
+          [
+            "ge.png",
+            [
+              "ge.png"
+            ]
+          ],
+          [
+            "gg.png",
+            [
+              "gg.png"
+            ]
+          ],
+          [
+            "gh.png",
+            [
+              "gh.png"
+            ]
+          ],
+          [
+            "gi.png",
+            [
+              "gi.png"
+            ]
+          ],
+          [
+            "gl.png",
+            [
+              "gl.png"
+            ]
+          ],
+          [
+            "gm.png",
+            [
+              "gm.png"
+            ]
+          ],
+          [
+            "gn.png",
+            [
+              "gn.png"
+            ]
+          ],
+          [
+            "gp.png",
+            [
+              "gp.png"
+            ]
+          ],
+          [
+            "gq.png",
+            [
+              "gq.png"
+            ]
+          ],
+          [
+            "gr.png",
+            [
+              "gr.png"
+            ]
+          ],
+          [
+            "gt.png",
+            [
+              "gt.png"
+            ]
+          ],
+          [
+            "gu.png",
+            [
+              "gu.png"
+            ]
+          ],
+          [
+            "gw.png",
+            [
+              "gw.png"
+            ]
+          ],
+          [
+            "gy.png",
+            [
+              "gy.png"
+            ]
+          ],
+          [
+            "hk.png",
+            [
+              "hk.png"
+            ]
+          ],
+          [
+            "hn.png",
+            [
+              "hn.png"
+            ]
+          ],
+          [
+            "hr.png",
+            [
+              "hr.png"
+            ]
+          ],
+          [
+            "ht.png",
+            [
+              "ht.png"
+            ]
+          ],
+          [
+            "hu.png",
+            [
+              "hu.png"
+            ]
+          ],
+          [
+            "id.png",
+            [
+              "id.png",
+              "mc.png"
+            ]
+          ],
+          [
+            "ie.png",
+            [
+              "ie.png"
+            ]
+          ],
+          [
+            "il.png",
+            [
+              "il.png"
+            ]
+          ],
+          [
+            "in.png",
+            [
+              "in.png"
+            ]
+          ],
+          [
+            "iq.png",
+            [
+              "iq.png"
+            ]
+          ],
+          [
+            "ir.png",
+            [
+              "ir.png"
+            ]
+          ],
+          [
+            "is.png",
+            [
+              "is.png"
+            ]
+          ],
+          [
+            "it.png",
+            [
+              "it.png"
+            ]
+          ],
+          [
+            "je.png",
+            [
+              "je.png"
+            ]
+          ],
+          [
+            "jm.png",
+            [
+              "jm.png"
+            ]
+          ],
+          [
+            "jo.png",
+            [
+              "jo.png"
+            ]
+          ],
+          [
+            "jp.png",
+            [
+              "jp.png"
+            ]
+          ],
+          [
+            "ke.png",
+            [
+              "ke.png"
+            ]
+          ],
+          [
+            "kg.png",
+            [
+              "kg.png"
+            ]
+          ],
+          [
+            "kh.png",
+            [
+              "kh.png"
+            ]
+          ],
+          [
+            "ki.png",
+            [
+              "ki.png"
+            ]
+          ],
+          [
+            "km.png",
+            [
+              "km.png"
+            ]
+          ],
+          [
+            "kn.png",
+            [
+              "kn.png"
+            ]
+          ],
+          [
+            "kp.png",
+            [
+              "kp.png"
+            ]
+          ],
+          [
+            "kr.png",
+            [
+              "kr.png"
+            ]
+          ],
+          [
+            "kw.png",
+            [
+              "kw.png"
+            ]
+          ],
+          [
+            "ky.png",
+            [
+              "ky.png"
+            ]
+          ],
+          [
+            "kz.png",
+            [
+              "kz.png"
+            ]
+          ],
+          [
+            "la.png",
+            [
+              "la.png"
+            ]
+          ],
+          [
+            "lb.png",
+            [
+              "lb.png"
+            ]
+          ],
+          [
+            "lc.png",
+            [
+              "lc.png"
+            ]
+          ],
+          [
+            "li.png",
+            [
+              "li.png"
+            ]
+          ],
+          [
+            "lk.png",
+            [
+              "lk.png"
+            ]
+          ],
+          [
+            "lr.png",
+            [
+              "lr.png"
+            ]
+          ],
+          [
+            "ls.png",
+            [
+              "ls.png"
+            ]
+          ],
+          [
+            "lt.png",
+            [
+              "lt.png"
+            ]
+          ],
+          [
+            "lu.png",
+            [
+              "lu.png"
+            ]
+          ],
+          [
+            "lv.png",
+            [
+              "lv.png"
+            ]
+          ],
+          [
+            "ly.png",
+            [
+              "ly.png"
+            ]
+          ],
+          [
+            "ma.png",
+            [
+              "ma.png"
+            ]
+          ],
+          [
+            "mc.png",
+            [
+              "id.png",
+              "mc.png"
+            ]
+          ],
+          [
+            "md.png",
+            [
+              "md.png"
+            ]
+          ],
+          [
+            "me.png",
+            [
+              "me.png"
+            ]
+          ],
+          [
+            "mg.png",
+            [
+              "mg.png"
+            ]
+          ],
+          [
+            "mh.png",
+            [
+              "mh.png"
+            ]
+          ],
+          [
+            "mk.png",
+            [
+              "mk.png"
+            ]
+          ],
+          [
+            "ml.png",
+            [
+              "ml.png"
+            ]
+          ],
+          [
+            "mm.png",
+            [
+              "mm.png"
+            ]
+          ],
+          [
+            "mn.png",
+            [
+              "mn.png"
+            ]
+          ],
+          [
+            "mo.png",
+            [
+              "mo.png"
+            ]
+          ],
+          [
+            "mq.png",
+            [
+              "mq.png"
+            ]
+          ],
+          [
+            "mr.png",
+            [
+              "mr.png"
+            ]
+          ],
+          [
+            "ms.png",
+            [
+              "ms.png"
+            ]
+          ],
+          [
+            "mt.png",
+            [
+              "mt.png"
+            ]
+          ],
+          [
+            "mu.png",
+            [
+              "mu.png"
+            ]
+          ],
+          [
+            "mw.png",
+            [
+              "mw.png"
+            ]
+          ],
+          [
+            "mx.png",
+            [
+              "mx.png"
+            ]
+          ],
+          [
+            "my.png",
+            [
+              "my.png"
+            ]
+          ],
+          [
+            "mz.png",
+            [
+              "mz.png"
+            ]
+          ],
+          [
+            "na.png",
+            [
+              "na.png"
+            ]
+          ],
+          [
+            "nc.png",
+            [
+              "nc.png"
+            ]
+          ],
+          [
+            "ne.png",
+            [
+              "ne.png"
+            ]
+          ],
+          [
+            "ng.png",
+            [
+              "ng.png"
+            ]
+          ],
+          [
+            "ni.png",
+            [
+              "ni.png"
+            ]
+          ],
+          [
+            "nl.png",
+            [
+              "nl.png"
+            ]
+          ],
+          [
+            "no.png",
+            [
+              "no.png"
+            ]
+          ],
+          [
+            "np.png",
+            [
+              "np.png"
+            ]
+          ],
+          [
+            "nr.png",
+            [
+              "nr.png"
+            ]
+          ],
+          [
+            "nz.png",
+            [
+              "nz.png"
+            ]
+          ],
+          [
+            "om.png",
+            [
+              "om.png"
+            ]
+          ],
+          [
+            "pa.png",
+            [
+              "pa.png"
+            ]
+          ],
+          [
+            "pe.png",
+            [
+              "pe.png"
+            ]
+          ],
+          [
+            "pg.png",
+            [
+              "pg.png"
+            ]
+          ],
+          [
+            "ph.png",
+            [
+              "ph.png"
+            ]
+          ],
+          [
+            "pk.png",
+            [
+              "pk.png"
+            ]
+          ],
+          [
+            "pl.png",
+            [
+              "pl.png"
+            ]
+          ],
+          [
+            "pr.png",
+            [
+              "pr.png"
+            ]
+          ],
+          [
+            "ps.png",
+            [
+              "ps.png"
+            ]
+          ],
+          [
+            "pt.png",
+            [
+              "pt.png"
+            ]
+          ],
+          [
+            "pw.png",
+            [
+              "pw.png"
+            ]
+          ],
+          [
+            "py.png",
+            [
+              "py.png"
+            ]
+          ],
+          [
+            "qa.png",
+            [
+              "qa.png"
+            ]
+          ],
+          [
+            "ro.png",
+            [
+              "ro.png"
+            ]
+          ],
+          [
+            "ru.png",
+            [
+              "ru.png"
+            ]
+          ],
+          [
+            "rw.png",
+            [
+              "rw.png"
+            ]
+          ],
+          [
+            "sa.png",
+            [
+              "sa.png"
+            ]
+          ],
+          [
+            "sb.png",
+            [
+              "sb.png"
+            ]
+          ],
+          [
+            "sc.png",
+            [
+              "sc.png"
+            ]
+          ],
+          [
+            "sd.png",
+            [
+              "sd.png"
+            ]
+          ],
+          [
+            "se.png",
+            [
+              "se.png"
+            ]
+          ],
+          [
+            "sg.png",
+            [
+              "sg.png"
+            ]
+          ],
+          [
+            "si.png",
+            [
+              "si.png"
+            ]
+          ],
+          [
+            "sk.png",
+            [
+              "sk.png"
+            ]
+          ],
+          [
+            "sl.png",
+            [
+              "sl.png"
+            ]
+          ],
+          [
+            "sm.png",
+            [
+              "sm.png"
+            ]
+          ],
+          [
+            "sn.png",
+            [
+              "sn.png"
+            ]
+          ],
+          [
+            "so.png",
+            [
+              "so.png"
+            ]
+          ],
+          [
+            "sr.png",
+            [
+              "sr.png"
+            ]
+          ],
+          [
+            "sv.png",
+            [
+              "sv.png"
+            ]
+          ],
+          [
+            "sy.png",
+            [
+              "sy.png"
+            ]
+          ],
+          [
+            "sz.png",
+            [
+              "sz.png"
+            ]
+          ],
+          [
+            "tc.png",
+            [
+              "tc.png"
+            ]
+          ],
+          [
+            "td.png",
+            [
+              "td.png"
+            ]
+          ],
+          [
+            "tg.png",
+            [
+              "tg.png"
+            ]
+          ],
+          [
+            "th.png",
+            [
+              "th.png"
+            ]
+          ],
+          [
+            "tj.png",
+            [
+              "tj.png"
+            ]
+          ],
+          [
+            "tm.png",
+            [
+              "tm.png"
+            ]
+          ],
+          [
+            "tn.png",
+            [
+              "tn.png"
+            ]
+          ],
+          [
+            "to.png",
+            [
+              "to.png"
+            ]
+          ],
+          [
+            "tp.png",
+            [
+              "tp.png"
+            ]
+          ],
+          [
+            "tr.png",
+            [
+              "tr.png"
+            ]
+          ],
+          [
+            "tt.png",
+            [
+              "tt.png"
+            ]
+          ],
+          [
+            "tv.png",
+            [
+              "tv.png"
+            ]
+          ],
+          [
+            "tw.png",
+            [
+              "tw.png"
+            ]
+          ],
+          [
+            "tz.png",
+            [
+              "tz.png"
+            ]
+          ],
+          [
+            "ua.png",
+            [
+              "ua.png"
+            ]
+          ],
+          [
+            "ug.png",
+            [
+              "ug.png"
+            ]
+          ],
+          [
+            "us.png",
+            [
+              "us.png"
+            ]
+          ],
+          [
+            "uy.png",
+            [
+              "uy.png"
+            ]
+          ],
+          [
+            "uz.png",
+            [
+              "uz.png"
+            ]
+          ],
+          [
+            "va.png",
+            [
+              "va.png"
+            ]
+          ],
+          [
+            "vc.png",
+            [
+              "vc.png"
+            ]
+          ],
+          [
+            "ve.png",
+            [
+              "ve.png"
+            ]
+          ],
+          [
+            "vg.png",
+            [
+              "vg.png"
+            ]
+          ],
+          [
+            "vi.png",
+            [
+              "vi.png"
+            ]
+          ],
+          [
+            "vn.png",
+            [
+              "vn.png"
+            ]
+          ],
+          [
+            "vu.png",
+            [
+              "vu.png"
+            ]
+          ],
+          [
+            "ws.png",
+            [
+              "ws.png"
+            ]
+          ],
+          [
+            "ww.png",
+            [
+              "ww.png"
+            ]
+          ],
+          [
+            "ye.png",
+            [
+              "ye.png"
+            ]
+          ],
+          [
+            "za.png",
+            [
+              "za.png"
+            ]
+          ],
+          [
+            "zm.png",
+            [
+              "zm.png"
+            ]
+          ],
+          [
+            "zw.png",
+            [
+              "zw.png"
+            ]
+          ]
+        ]
+      }
+    },
+    "snowFilesIdenticalAcrossAllThree": {
+      "BG_04_01.jpg": {
+        "size": [
+          512,
+          1024
+        ],
+        "sha256": "ff540069147e05b384498dc1b834d75adde0a93c6613dcf3c8ce99c3e4b01193",
+        "bytes": 211387,
+        "format": "JPEG"
+      },
+      "BG_04_02.jpg": {
+        "size": [
+          512,
+          1024
+        ],
+        "sha256": "db97529bb934af04097b3e14eae6e8555288f199e47aac2d0ea54d738e75b928",
+        "bytes": 150122,
+        "format": "JPEG"
+      },
+      "BG_11_01.jpg": {
+        "size": [
+          512,
+          1024
+        ],
+        "sha256": "99e142e82a49a94089e43c0453c10907196a4360f95427c1d3db0a142b8792d1",
+        "bytes": 218881,
+        "format": "JPEG"
+      },
+      "BG_11_02.jpg": {
+        "size": [
+          512,
+          1024
+        ],
+        "sha256": "e03263a66418f2409edaecd61dad6cda9bd37d907d77928b7ee683111f51ef0b",
+        "bytes": 217599,
+        "format": "JPEG"
+      },
+      "BG_18_01.jpg": {
+        "size": [
+          512,
+          1024
+        ],
+        "sha256": "987adc47604e095812416f63e73641f69d182991244de744ae286915089156a1",
+        "bytes": 178231,
+        "format": "JPEG"
+      },
+      "BG_18_02.jpg": {
+        "size": [
+          512,
+          1024
+        ],
+        "sha256": "e7db67209a8ed48fec7cc48723e62a5091c52e35d06272c0038e5349f7ae0463",
+        "bytes": 146816,
+        "format": "JPEG"
+      },
+      "BG_25_01.jpg": {
+        "size": [
+          512,
+          1024
+        ],
+        "sha256": "8f7d2475aad8cb5995a8a10530e3b885998f7966f07b301164a97eeb1e508217",
+        "bytes": 203055,
+        "format": "JPEG"
+      },
+      "BG_25_02.jpg": {
+        "size": [
+          512,
+          1024
+        ],
+        "sha256": "621ee9da11c6ff91439f4be52e0c905f28f7910d677e391929f5806568ece776",
+        "bytes": 181074,
+        "format": "JPEG"
+      },
+      "iPon_BG_04_01.jpg": {
+        "size": [
+          256,
+          512
+        ],
+        "sha256": "04332b9e11c13c10feef0a6a483dd5a0bae617ff35d23111401a634ae3433ce1",
+        "bytes": 43092,
+        "format": "JPEG"
+      },
+      "iPon_BG_04_02.jpg": {
+        "size": [
+          256,
+          512
+        ],
+        "sha256": "c57d2cdde09955b027c2e048d21d4b87e98ffc67f72be9774800a21d6ea85be4",
+        "bytes": 29337,
+        "format": "JPEG"
+      },
+      "iPon_BG_11_01.jpg": {
+        "size": [
+          256,
+          512
+        ],
+        "sha256": "ae88797abe1baeca60ad0d7bd2aa557c2dff3f080415a21ccf1d9ef1d095494a",
+        "bytes": 50237,
+        "format": "JPEG"
+      },
+      "iPon_BG_11_02.jpg": {
+        "size": [
+          256,
+          512
+        ],
+        "sha256": "fbced5012acc99fe01fb4578a56ea596b3530d26843a74407f47984a27e57ec0",
+        "bytes": 49663,
+        "format": "JPEG"
+      },
+      "iPon_BG_18_01.jpg": {
+        "size": [
+          256,
+          512
+        ],
+        "sha256": "ee9f4d7f74768cef7d4f7fc965c473db17b68410657e431efcde8544a53c6180",
+        "bytes": 38577,
+        "format": "JPEG"
+      },
+      "iPon_BG_18_02.jpg": {
+        "size": [
+          256,
+          512
+        ],
+        "sha256": "50fc1dd0a59821d870e2f73e4f8ec35c93bbaaa7ef576537f9f485652ddad0e6",
+        "bytes": 29755,
+        "format": "JPEG"
+      },
+      "iPon_BG_25_01.jpg": {
+        "size": [
+          256,
+          512
+        ],
+        "sha256": "6b6577bd56de24af71a3435650ac6725bc901aae30fd865fddc6c496f898e717",
+        "bytes": 43790,
+        "format": "JPEG"
+      },
+      "iPon_BG_25_02.jpg": {
+        "size": [
+          256,
+          512
+        ],
+        "sha256": "6eb5544f98c4bd8f4ab2eff7c6680e7de7178e041429f294987ae6934ef0f25a",
+        "bytes": 40491,
+        "format": "JPEG"
+      },
+      "tBG_04_01.png": {
+        "size": [
+          96,
+          48
+        ],
+        "sha256": "e2aa80c3a02caea7dc80f56b09aa55091899ac013ece94f058d605cdad902c14",
+        "bytes": 12212,
+        "format": "CgBI-PNG"
+      },
+      "tBG_04_02.png": {
+        "size": [
+          96,
+          48
+        ],
+        "sha256": "95aba39fa18242165c467383840943aa2f336c7ddcc6bb1f93c70c2ddbf92744",
+        "bytes": 9907,
+        "format": "CgBI-PNG"
+      },
+      "tBG_11_01.png": {
+        "size": [
+          96,
+          48
+        ],
+        "sha256": "16fdeea7ec936516424ef873b77bcff621eb74121138137a4a8cd3b2dd862426",
+        "bytes": 14225,
+        "format": "CgBI-PNG"
+      },
+      "tBG_11_02.png": {
+        "size": [
+          96,
+          48
+        ],
+        "sha256": "5e47fc98efdea4c3c1f2777146f9f1f2474a761b8d5bea79a1a8c5bfa2e5ff5b",
+        "bytes": 14203,
+        "format": "CgBI-PNG"
+      },
+      "tBG_18_01.png": {
+        "size": [
+          96,
+          48
+        ],
+        "sha256": "dc7ffbe2363ba119aa41a1c6a0fdd624b3364e8bd27ba34524e99143c65c9cf1",
+        "bytes": 12159,
+        "format": "CgBI-PNG"
+      },
+      "tBG_18_02.png": {
+        "size": [
+          96,
+          48
+        ],
+        "sha256": "40fde2070002d7d948d12e3bdb5e6a8c2e0bf0f6522ec8bbd67b155e7003c2c5",
+        "bytes": 10289,
+        "format": "CgBI-PNG"
+      },
+      "tBG_25_01.png": {
+        "size": [
+          96,
+          48
+        ],
+        "sha256": "c4ec60094da53eee2dac44c01c3f85d210502694d6b9a629473add80131b6246",
+        "bytes": 12779,
+        "format": "CgBI-PNG"
+      },
+      "tBG_25_02.png": {
+        "size": [
+          96,
+          48
+        ],
+        "sha256": "d2423d5c3ec50cba2dfad17ea0563c828dd6399201db7871f6ff6feb1331a09d",
+        "bytes": 12417,
+        "format": "CgBI-PNG"
+      }
+    },
+    "visualScan": "27 BG pairs through all releases; plus device-size and menu-image counterparts.",
+    "mdFullSizePair": {
+      "width": 512,
+      "height": 2048
+    },
+    "featureComparison": {
+      "candidateFullSizeJpegs": 54,
+      "hm2SnowCandidates": 6,
+      "method": "SIFT matches and RANSAC similarity transforms, with grayscale correlation after alignment.",
+      "sharedBg11Matches": [
+        {
+          "hm2": "STAGE 13.png",
+          "machDefense": "BG_11_01.jpg",
+          "featurePairs": 873,
+          "inliers": 682,
+          "scale": 0.50643,
+          "rotationDegrees": 0.004,
+          "translationPixels": [
+            -0.101,
+            -6.253
+          ],
+          "grayCorrelation": 0.889
+        },
+        {
+          "hm2": "STAGE 13.png",
+          "machDefense": "BG_11_02.jpg",
+          "featurePairs": 826,
+          "inliers": 603,
+          "scale": 0.50642,
+          "rotationDegrees": 0.002,
+          "translationPixels": [
+            -0.105,
+            73.625
+          ],
+          "grayCorrelation": 0.8529
+        },
+        {
+          "hm2": "STAGE 15.png",
+          "machDefense": "BG_11_01.jpg",
+          "featurePairs": 523,
+          "inliers": 478,
+          "scale": 0.51296,
+          "rotationDegrees": -0.001,
+          "translationPixels": [
+            -0.88,
+            500.117
+          ],
+          "grayCorrelation": 0.9379
+        },
+        {
+          "hm2": "STAGE 15.png",
+          "machDefense": "BG_11_02.jpg",
+          "featurePairs": 491,
+          "inliers": 388,
+          "scale": 0.51295,
+          "rotationDegrees": -0.004,
+          "translationPixels": [
+            -0.882,
+            579.992
+          ],
+          "grayCorrelation": 0.9273
+        },
+        {
+          "hm2": "STAGE 12.png",
+          "machDefense": "BG_11_01.jpg",
+          "featurePairs": 350,
+          "inliers": 217,
+          "scale": 0.34754,
+          "rotationDegrees": -89.998,
+          "translationPixels": [
+            -0.171,
+            512.099
+          ],
+          "grayCorrelation": 0.8533
+        },
+        {
+          "hm2": "STAGE 12.png",
+          "machDefense": "BG_11_02.jpg",
+          "featurePairs": 333,
+          "inliers": 178,
+          "scale": 0.34751,
+          "rotationDegrees": -89.984,
+          "translationPixels": [
+            -0.192,
+            591.934
+          ],
+          "grayCorrelation": 0.7917
+        },
+        {
+          "hm2": "STAGE 12A.png",
+          "machDefense": "BG_11_01.jpg",
+          "featurePairs": 319,
+          "inliers": 140,
+          "scale": 0.34747,
+          "rotationDegrees": -89.993,
+          "translationPixels": [
+            -0.131,
+            512.044
+          ],
+          "grayCorrelation": 0.4996
+        },
+        {
+          "hm2": "STAGE 12A.png",
+          "machDefense": "BG_11_02.jpg",
+          "featurePairs": 309,
+          "inliers": 132,
+          "scale": 0.34746,
+          "rotationDegrees": -89.988,
+          "translationPixels": [
+            -0.14,
+            591.906
+          ],
+          "grayCorrelation": 0.4642
+        }
+      ]
+    },
+    "tileAndPartsTables": {
+      "wemade1.0.3": {
+        "TileList.tble": {
+          "sha256": "7a39a357f4cb158ede615872a61252bc34117783046c6c8a51e4e43d69ea0c95",
+          "rows": 1,
+          "keys": [
+            "TileName        ",
+            "X",
+            "Y"
+          ],
+          "snow_matches": [],
+          "tile_slots": [
+            {
+              "TileName        ": "P_Foot_32x16.png",
+              "X": "8",
+              "Y": "4"
+            }
+          ]
+        },
+        "PartsList.tble": {
+          "sha256": "ab65768a541a92a989a8d20a3e3d02b26be4ca48bae0211b07f5176b6f63db32",
+          "rows": 445,
+          "keys": [
+            "PartsName   ",
+            "Type",
+            "No",
+            "TileName"
+          ],
+          "snow_matches": []
+        },
+        "MachList.tble": {
+          "sha256": "e3cb22d2cc534ffe028c32a9b762b7efb2ed996d05ab74ba47152fb36ed46ffd",
+          "rows": 126,
+          "keys": [
+            "MachName",
+            "HP  ",
+            "EXP ",
+            "Spd",
+            "Type",
+            "Refer",
+            "Rad",
+            "Coin%",
+            "Coin",
+            "ItemRegen",
+            "BaseParts"
+          ],
+          "snow_matches": [],
+          "snow_placed_machines": [
+            {
+              "MachName": "Tur_Gun_01",
+              "HP  ": "600",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_Gun_02",
+              "HP  ": "800",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_Gun_03",
+              "HP  ": "1100",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_Gun_04",
+              "HP  ": "1500",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_Gun_05",
+              "HP  ": "2000",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "Tur_Msl_01",
+              "HP  ": "1300",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_Msl_02",
+              "HP  ": "1700",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_Msl_03",
+              "HP  ": "2200",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_Msl_04",
+              "HP  ": "2800",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_Msl_05",
+              "HP  ": "3500",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "Tur_MG_01",
+              "HP  ": "1300",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_MG_02",
+              "HP  ": "1700",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_MG_03",
+              "HP  ": "2200",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_MG_04",
+              "HP  ": "2800",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_MG_05",
+              "HP  ": "3500",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "Tur_Ion_01",
+              "HP  ": "1700",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_Ion_02",
+              "HP  ": "2200",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_Ion_03",
+              "HP  ": "2800",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_Ion_04",
+              "HP  ": "3500",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_Ion_05",
+              "HP  ": "4300",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "Tur_Lsr_01",
+              "HP  ": "1500",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_Lsr_02",
+              "HP  ": "2000",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_Lsr_03",
+              "HP  ": "2500",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_Lsr_04",
+              "HP  ": "3000",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_Lsr_05",
+              "HP  ": "3500",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "Tur_Pla_01",
+              "HP  ": "1700",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_Pla_02",
+              "HP  ": "2200",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_Pla_03",
+              "HP  ": "2800",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_Pla_04",
+              "HP  ": "3500",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_Pla_05",
+              "HP  ": "4300",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "E_Tank_19",
+              "HP  ": "3500",
+              "EXP ": "800",
+              "Spd": "0.6",
+              "Type": "TANK",
+              "Refer": "-   ",
+              "Rad": "31",
+              "Coin%": "100",
+              "Coin": "85",
+              "ItemRegen": "Tank_L19",
+              "BaseParts": "E_Tank_Body_19"
+            },
+            {
+              "MachName": "E_Turret_02",
+              "HP  ": "3000",
+              "EXP ": "25",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100",
+              "Coin": "5",
+              "ItemRegen": "Tank_L04",
+              "BaseParts": "E_Turret_Body_02"
+            },
+            {
+              "MachName": "E_Turret_03",
+              "HP  ": "3500",
+              "EXP ": "30",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100",
+              "Coin": "8",
+              "ItemRegen": "Tank_L06",
+              "BaseParts": "E_Turret_Body_03"
+            },
+            {
+              "MachName": "E_Turret_04",
+              "HP  ": "4000",
+              "EXP ": "35",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100",
+              "Coin": "12",
+              "ItemRegen": "Tank_L08",
+              "BaseParts": "E_Turret_Body_04"
+            },
+            {
+              "MachName": "E_Turret_01",
+              "HP  ": "4500",
+              "EXP ": "20",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100",
+              "Coin": "3",
+              "ItemRegen": "Tank_L02",
+              "BaseParts": "E_Turret_Body_01"
+            },
+            {
+              "MachName": "E_Turret_09",
+              "HP  ": "5000",
+              "EXP ": "100",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100",
+              "Coin": "70",
+              "ItemRegen": "Tank_L18",
+              "BaseParts": "E_Turret_Body_09"
+            },
+            {
+              "MachName": "E_Turret_05",
+              "HP  ": "6000",
+              "EXP ": "40",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100",
+              "Coin": "20",
+              "ItemRegen": "Tank_L10",
+              "BaseParts": "E_Turret_Body_05"
+            },
+            {
+              "MachName": "E_Turret_06",
+              "HP  ": "7000",
+              "EXP ": "50",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100",
+              "Coin": "30",
+              "ItemRegen": "Tank_L12",
+              "BaseParts": "E_Turret_Body_06"
+            },
+            {
+              "MachName": "E_Turret_07",
+              "HP  ": "8000",
+              "EXP ": "70",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100",
+              "Coin": "40",
+              "ItemRegen": "Tank_L14",
+              "BaseParts": "E_Turret_Body_07"
+            },
+            {
+              "MachName": "E_Turret_08",
+              "HP  ": "9000",
+              "EXP ": "90",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100",
+              "Coin": "50",
+              "ItemRegen": "Tank_L16",
+              "BaseParts": "E_Turret_Body_08"
+            },
+            {
+              "MachName": "E_Turret_10",
+              "HP  ": "12000",
+              "EXP ": "150",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100",
+              "Coin": "100",
+              "ItemRegen": "Tank_L20",
+              "BaseParts": "E_Turret_Body_10"
+            },
+            {
+              "MachName": "E_Turret_11",
+              "HP  ": "14400",
+              "EXP ": "200",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100",
+              "Coin": "150",
+              "ItemRegen": "Tank_L22",
+              "BaseParts": "E_Turret_Body_11"
+            },
+            {
+              "MachName": "E_Turret_12",
+              "HP  ": "16800",
+              "EXP ": "250",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100",
+              "Coin": "200",
+              "ItemRegen": "Tank_L23",
+              "BaseParts": "E_Turret_Body_12"
+            },
+            {
+              "MachName": "E_Turret_13",
+              "HP  ": "28800",
+              "EXP ": "8000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100",
+              "Coin": "800",
+              "ItemRegen": "Tank_L24",
+              "BaseParts": "E_Turret13_Body"
+            },
+            {
+              "MachName": "E_Turret_14",
+              "HP  ": "32000",
+              "EXP ": "9500",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100",
+              "Coin": "900",
+              "ItemRegen": "Tank_L25",
+              "BaseParts": "E_Turret14_Body"
+            },
+            {
+              "MachName": "E_Turret_15",
+              "HP  ": "38400",
+              "EXP ": "12400",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100",
+              "Coin": "1000",
+              "ItemRegen": "Tank_L26",
+              "BaseParts": "E_Turret15_Body"
+            },
+            {
+              "MachName": "E_Turret_16",
+              "HP  ": "43000",
+              "EXP ": "15000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100",
+              "Coin": "1100",
+              "ItemRegen": "Tank_L27",
+              "BaseParts": "E_Turret16_Body"
+            },
+            {
+              "MachName": "E_Turret_17",
+              "HP  ": "48000",
+              "EXP ": "20000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100",
+              "Coin": "1200",
+              "ItemRegen": "Tank_L27",
+              "BaseParts": "E_Turret17_Body"
+            },
+            {
+              "MachName": "E_Turret_18",
+              "HP  ": "52000",
+              "EXP ": "32000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100",
+              "Coin": "1300",
+              "ItemRegen": "Tank_L27",
+              "BaseParts": "E_Turret18_Body"
+            },
+            {
+              "MachName": "E_Turret_19",
+              "HP  ": "48000",
+              "EXP ": "45000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100",
+              "Coin": "1400",
+              "ItemRegen": "Tank_L27",
+              "BaseParts": "E_Turret19_Body"
+            },
+            {
+              "MachName": "E_Turret_20",
+              "HP  ": "52000",
+              "EXP ": "58000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100",
+              "Coin": "1500",
+              "ItemRegen": "Tank_L27",
+              "BaseParts": "E_Turret20_Body"
+            },
+            {
+              "MachName": "Boss_01 ",
+              "HP  ": "33000",
+              "EXP ": "30000",
+              "Spd": "0.4",
+              "Type": "TANK",
+              "Refer": "-   ",
+              "Rad": "48",
+              "Coin%": "100",
+              "Coin": "1000",
+              "ItemRegen": "Boss01  ",
+              "BaseParts": "Boss01_Body"
+            }
+          ]
+        }
+      },
+      "indie1.0.3": {
+        "TileList.tble": {
+          "sha256": "7a39a357f4cb158ede615872a61252bc34117783046c6c8a51e4e43d69ea0c95",
+          "rows": 1,
+          "keys": [
+            "TileName        ",
+            "X",
+            "Y"
+          ],
+          "snow_matches": [],
+          "tile_slots": [
+            {
+              "TileName        ": "P_Foot_32x16.png",
+              "X": "8",
+              "Y": "4"
+            }
+          ]
+        },
+        "PartsList.tble": {
+          "sha256": "ab65768a541a92a989a8d20a3e3d02b26be4ca48bae0211b07f5176b6f63db32",
+          "rows": 445,
+          "keys": [
+            "PartsName   ",
+            "Type",
+            "No",
+            "TileName"
+          ],
+          "snow_matches": []
+        },
+        "MachList.tble": {
+          "sha256": "73ebdb87e37240c964a13726b0404ec5e4c3c33b5a9f05feabadef352ecfd3bd",
+          "rows": 126,
+          "keys": [
+            "MachName",
+            "HP  ",
+            "EXP ",
+            "Spd",
+            "Type",
+            "Refer",
+            "Rad",
+            "Coin%",
+            "Coin",
+            "ItemRegen",
+            "BaseParts"
+          ],
+          "snow_matches": [],
+          "snow_placed_machines": [
+            {
+              "MachName": "Tur_Gun_01",
+              "HP  ": "600 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_Gun_02",
+              "HP  ": "800 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_Gun_03",
+              "HP  ": "1100 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_Gun_04",
+              "HP  ": "1500 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_Gun_05",
+              "HP  ": "2000 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "Tur_Msl_01",
+              "HP  ": "1300 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_Msl_02",
+              "HP  ": "1700 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_Msl_03",
+              "HP  ": "2200 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_Msl_04",
+              "HP  ": "2800 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_Msl_05",
+              "HP  ": "3500 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "Tur_MG_01",
+              "HP  ": "1300 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_MG_02",
+              "HP  ": "1700 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_MG_03",
+              "HP  ": "2200 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_MG_04",
+              "HP  ": "2800 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_MG_05",
+              "HP  ": "3500 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "Tur_Ion_01",
+              "HP  ": "1700 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_Ion_02",
+              "HP  ": "2200 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_Ion_03",
+              "HP  ": "2800 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_Ion_04",
+              "HP  ": "3500 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_Ion_05",
+              "HP  ": "4300 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "Tur_Lsr_01",
+              "HP  ": "1500 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_Lsr_02",
+              "HP  ": "2000 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_Lsr_03",
+              "HP  ": "2500 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_Lsr_04",
+              "HP  ": "3000 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_Lsr_05",
+              "HP  ": "3500 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "Tur_Pla_01",
+              "HP  ": "1700 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_Pla_02",
+              "HP  ": "2200 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_Pla_03",
+              "HP  ": "2800 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_Pla_04",
+              "HP  ": "3500 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_Pla_05",
+              "HP  ": "4300 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "E_Tank_19",
+              "HP  ": "3500",
+              "EXP ": "800 ",
+              "Spd": "0.6",
+              "Type": "TANK",
+              "Refer": "-   ",
+              "Rad": "31",
+              "Coin%": "100  ",
+              "Coin": "85  ",
+              "ItemRegen": "Tank_L19",
+              "BaseParts": "E_Tank_Body_19"
+            },
+            {
+              "MachName": "E_Turret_02",
+              "HP  ": "3000 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "Tank_L04",
+              "BaseParts": "E_Turret_Body_02"
+            },
+            {
+              "MachName": "E_Turret_03",
+              "HP  ": "3500 ",
+              "EXP ": "30  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "8   ",
+              "ItemRegen": "Tank_L06",
+              "BaseParts": "E_Turret_Body_03"
+            },
+            {
+              "MachName": "E_Turret_04",
+              "HP  ": "4000 ",
+              "EXP ": "35  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "12   ",
+              "ItemRegen": "Tank_L08",
+              "BaseParts": "E_Turret_Body_04"
+            },
+            {
+              "MachName": "E_Turret_01",
+              "HP  ": "4500 ",
+              "EXP ": "20  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "3   ",
+              "ItemRegen": "Tank_L02",
+              "BaseParts": "E_Turret_Body_01"
+            },
+            {
+              "MachName": "E_Turret_09",
+              "HP  ": "5000",
+              "EXP ": "100 ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "70  ",
+              "ItemRegen": "Tank_L18",
+              "BaseParts": "E_Turret_Body_09"
+            },
+            {
+              "MachName": "E_Turret_05",
+              "HP  ": "6000 ",
+              "EXP ": "40  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "20   ",
+              "ItemRegen": "Tank_L10",
+              "BaseParts": "E_Turret_Body_05"
+            },
+            {
+              "MachName": "E_Turret_06",
+              "HP  ": "7000 ",
+              "EXP ": "50  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100  ",
+              "Coin": "30  ",
+              "ItemRegen": "Tank_L12",
+              "BaseParts": "E_Turret_Body_06"
+            },
+            {
+              "MachName": "E_Turret_07",
+              "HP  ": "8000 ",
+              "EXP ": "70  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100  ",
+              "Coin": "40  ",
+              "ItemRegen": "Tank_L14",
+              "BaseParts": "E_Turret_Body_07"
+            },
+            {
+              "MachName": "E_Turret_08",
+              "HP  ": "9000",
+              "EXP ": "90  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100  ",
+              "Coin": "50  ",
+              "ItemRegen": "Tank_L16",
+              "BaseParts": "E_Turret_Body_08"
+            },
+            {
+              "MachName": "E_Turret_10",
+              "HP  ": "12000",
+              "EXP ": "150 ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100  ",
+              "Coin": "100  ",
+              "ItemRegen": "Tank_L20",
+              "BaseParts": "E_Turret_Body_10"
+            },
+            {
+              "MachName": "E_Turret_11",
+              "HP  ": "14400",
+              "EXP ": "200 ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100  ",
+              "Coin": "150 ",
+              "ItemRegen": "Tank_L22",
+              "BaseParts": "E_Turret_Body_11"
+            },
+            {
+              "MachName": "E_Turret_12",
+              "HP  ": "16800",
+              "EXP ": "250 ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100  ",
+              "Coin": "200 ",
+              "ItemRegen": "Tank_L23",
+              "BaseParts": "E_Turret_Body_12"
+            },
+            {
+              "MachName": "E_Turret_13",
+              "HP  ": "28800",
+              "EXP ": "8000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100  ",
+              "Coin": "800 ",
+              "ItemRegen": "Tank_L24",
+              "BaseParts": "E_Turret13_Body"
+            },
+            {
+              "MachName": "E_Turret_14",
+              "HP  ": "32000",
+              "EXP ": "9500",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100  ",
+              "Coin": "900 ",
+              "ItemRegen": "Tank_L25",
+              "BaseParts": "E_Turret14_Body"
+            },
+            {
+              "MachName": "E_Turret_15",
+              "HP  ": "38400",
+              "EXP ": "12400",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100  ",
+              "Coin": "1000 ",
+              "ItemRegen": "Tank_L26",
+              "BaseParts": "E_Turret15_Body"
+            },
+            {
+              "MachName": "E_Turret_16",
+              "HP  ": "43000",
+              "EXP ": "15000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100  ",
+              "Coin": "1100 ",
+              "ItemRegen": "Tank_L27",
+              "BaseParts": "E_Turret16_Body"
+            },
+            {
+              "MachName": "E_Turret_17",
+              "HP  ": "48000",
+              "EXP ": "20000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100  ",
+              "Coin": "1200 ",
+              "ItemRegen": "Tank_L27",
+              "BaseParts": "E_Turret17_Body"
+            },
+            {
+              "MachName": "E_Turret_18",
+              "HP  ": "52000",
+              "EXP ": "32000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100  ",
+              "Coin": "1300 ",
+              "ItemRegen": "Tank_L27",
+              "BaseParts": "E_Turret18_Body"
+            },
+            {
+              "MachName": "E_Turret_19",
+              "HP  ": "48000",
+              "EXP ": "45000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100  ",
+              "Coin": "1400 ",
+              "ItemRegen": "Tank_L27",
+              "BaseParts": "E_Turret19_Body"
+            },
+            {
+              "MachName": "E_Turret_20",
+              "HP  ": "52000",
+              "EXP ": "58000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100  ",
+              "Coin": "1500 ",
+              "ItemRegen": "Tank_L27",
+              "BaseParts": "E_Turret20_Body"
+            },
+            {
+              "MachName": "Boss_01 ",
+              "HP  ": "25000",
+              "EXP ": "900 ",
+              "Spd": "0",
+              "Type": "TANK",
+              "Refer": "-   ",
+              "Rad": "100",
+              "Coin%": "100  ",
+              "Coin": "1000 ",
+              "ItemRegen": "Boss01  ",
+              "BaseParts": "Boss01_Body"
+            }
+          ]
+        }
+      },
+      "indie1.0.5": {
+        "TileList.tble": {
+          "sha256": "7a39a357f4cb158ede615872a61252bc34117783046c6c8a51e4e43d69ea0c95",
+          "rows": 1,
+          "keys": [
+            "TileName        ",
+            "X",
+            "Y"
+          ],
+          "snow_matches": [],
+          "tile_slots": [
+            {
+              "TileName        ": "P_Foot_32x16.png",
+              "X": "8",
+              "Y": "4"
+            }
+          ]
+        },
+        "PartsList.tble": {
+          "sha256": "ab65768a541a92a989a8d20a3e3d02b26be4ca48bae0211b07f5176b6f63db32",
+          "rows": 445,
+          "keys": [
+            "PartsName   ",
+            "Type",
+            "No",
+            "TileName"
+          ],
+          "snow_matches": []
+        },
+        "MachList.tble": {
+          "sha256": "73ebdb87e37240c964a13726b0404ec5e4c3c33b5a9f05feabadef352ecfd3bd",
+          "rows": 126,
+          "keys": [
+            "MachName",
+            "HP  ",
+            "EXP ",
+            "Spd",
+            "Type",
+            "Refer",
+            "Rad",
+            "Coin%",
+            "Coin",
+            "ItemRegen",
+            "BaseParts"
+          ],
+          "snow_matches": [],
+          "snow_placed_machines": [
+            {
+              "MachName": "Tur_Gun_01",
+              "HP  ": "600 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_Gun_02",
+              "HP  ": "800 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_Gun_03",
+              "HP  ": "1100 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_Gun_04",
+              "HP  ": "1500 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_Gun_05",
+              "HP  ": "2000 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "Tur_Msl_01",
+              "HP  ": "1300 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_Msl_02",
+              "HP  ": "1700 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_Msl_03",
+              "HP  ": "2200 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_Msl_04",
+              "HP  ": "2800 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_Msl_05",
+              "HP  ": "3500 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "Tur_MG_01",
+              "HP  ": "1300 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_MG_02",
+              "HP  ": "1700 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_MG_03",
+              "HP  ": "2200 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_MG_04",
+              "HP  ": "2800 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_MG_05",
+              "HP  ": "3500 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "Tur_Ion_01",
+              "HP  ": "1700 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_Ion_02",
+              "HP  ": "2200 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_Ion_03",
+              "HP  ": "2800 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_Ion_04",
+              "HP  ": "3500 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_Ion_05",
+              "HP  ": "4300 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "Tur_Lsr_01",
+              "HP  ": "1500 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_Lsr_02",
+              "HP  ": "2000 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_Lsr_03",
+              "HP  ": "2500 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_Lsr_04",
+              "HP  ": "3000 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_Lsr_05",
+              "HP  ": "3500 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "Tur_Pla_01",
+              "HP  ": "1700 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_01"
+            },
+            {
+              "MachName": "Tur_Pla_02",
+              "HP  ": "2200 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "22",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_02"
+            },
+            {
+              "MachName": "Tur_Pla_03",
+              "HP  ": "2800 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "24",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_03"
+            },
+            {
+              "MachName": "Tur_Pla_04",
+              "HP  ": "3500 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "26",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_04"
+            },
+            {
+              "MachName": "Tur_Pla_05",
+              "HP  ": "4300 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "28",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "NULL    ",
+              "BaseParts": "Turret_b_05"
+            },
+            {
+              "MachName": "E_Tank_19",
+              "HP  ": "3500",
+              "EXP ": "800 ",
+              "Spd": "0.6",
+              "Type": "TANK",
+              "Refer": "-   ",
+              "Rad": "31",
+              "Coin%": "100  ",
+              "Coin": "85  ",
+              "ItemRegen": "Tank_L19",
+              "BaseParts": "E_Tank_Body_19"
+            },
+            {
+              "MachName": "E_Turret_02",
+              "HP  ": "3000 ",
+              "EXP ": "25  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "5   ",
+              "ItemRegen": "Tank_L04",
+              "BaseParts": "E_Turret_Body_02"
+            },
+            {
+              "MachName": "E_Turret_03",
+              "HP  ": "3500 ",
+              "EXP ": "30  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "8   ",
+              "ItemRegen": "Tank_L06",
+              "BaseParts": "E_Turret_Body_03"
+            },
+            {
+              "MachName": "E_Turret_04",
+              "HP  ": "4000 ",
+              "EXP ": "35  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "12   ",
+              "ItemRegen": "Tank_L08",
+              "BaseParts": "E_Turret_Body_04"
+            },
+            {
+              "MachName": "E_Turret_01",
+              "HP  ": "4500 ",
+              "EXP ": "20  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "3   ",
+              "ItemRegen": "Tank_L02",
+              "BaseParts": "E_Turret_Body_01"
+            },
+            {
+              "MachName": "E_Turret_09",
+              "HP  ": "5000",
+              "EXP ": "100 ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "70  ",
+              "ItemRegen": "Tank_L18",
+              "BaseParts": "E_Turret_Body_09"
+            },
+            {
+              "MachName": "E_Turret_05",
+              "HP  ": "6000 ",
+              "EXP ": "40  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "20",
+              "Coin%": "100  ",
+              "Coin": "20   ",
+              "ItemRegen": "Tank_L10",
+              "BaseParts": "E_Turret_Body_05"
+            },
+            {
+              "MachName": "E_Turret_06",
+              "HP  ": "7000 ",
+              "EXP ": "50  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100  ",
+              "Coin": "30  ",
+              "ItemRegen": "Tank_L12",
+              "BaseParts": "E_Turret_Body_06"
+            },
+            {
+              "MachName": "E_Turret_07",
+              "HP  ": "8000 ",
+              "EXP ": "70  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100  ",
+              "Coin": "40  ",
+              "ItemRegen": "Tank_L14",
+              "BaseParts": "E_Turret_Body_07"
+            },
+            {
+              "MachName": "E_Turret_08",
+              "HP  ": "9000",
+              "EXP ": "90  ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100  ",
+              "Coin": "50  ",
+              "ItemRegen": "Tank_L16",
+              "BaseParts": "E_Turret_Body_08"
+            },
+            {
+              "MachName": "E_Turret_10",
+              "HP  ": "12000",
+              "EXP ": "150 ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100  ",
+              "Coin": "100  ",
+              "ItemRegen": "Tank_L20",
+              "BaseParts": "E_Turret_Body_10"
+            },
+            {
+              "MachName": "E_Turret_11",
+              "HP  ": "14400",
+              "EXP ": "200 ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100  ",
+              "Coin": "150 ",
+              "ItemRegen": "Tank_L22",
+              "BaseParts": "E_Turret_Body_11"
+            },
+            {
+              "MachName": "E_Turret_12",
+              "HP  ": "16800",
+              "EXP ": "250 ",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "25",
+              "Coin%": "100  ",
+              "Coin": "200 ",
+              "ItemRegen": "Tank_L23",
+              "BaseParts": "E_Turret_Body_12"
+            },
+            {
+              "MachName": "E_Turret_13",
+              "HP  ": "28800",
+              "EXP ": "8000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100  ",
+              "Coin": "800 ",
+              "ItemRegen": "Tank_L24",
+              "BaseParts": "E_Turret13_Body"
+            },
+            {
+              "MachName": "E_Turret_14",
+              "HP  ": "32000",
+              "EXP ": "9500",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100  ",
+              "Coin": "900 ",
+              "ItemRegen": "Tank_L25",
+              "BaseParts": "E_Turret14_Body"
+            },
+            {
+              "MachName": "E_Turret_15",
+              "HP  ": "38400",
+              "EXP ": "12400",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100  ",
+              "Coin": "1000 ",
+              "ItemRegen": "Tank_L26",
+              "BaseParts": "E_Turret15_Body"
+            },
+            {
+              "MachName": "E_Turret_16",
+              "HP  ": "43000",
+              "EXP ": "15000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100  ",
+              "Coin": "1100 ",
+              "ItemRegen": "Tank_L27",
+              "BaseParts": "E_Turret16_Body"
+            },
+            {
+              "MachName": "E_Turret_17",
+              "HP  ": "48000",
+              "EXP ": "20000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100  ",
+              "Coin": "1200 ",
+              "ItemRegen": "Tank_L27",
+              "BaseParts": "E_Turret17_Body"
+            },
+            {
+              "MachName": "E_Turret_18",
+              "HP  ": "52000",
+              "EXP ": "32000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100  ",
+              "Coin": "1300 ",
+              "ItemRegen": "Tank_L27",
+              "BaseParts": "E_Turret18_Body"
+            },
+            {
+              "MachName": "E_Turret_19",
+              "HP  ": "48000",
+              "EXP ": "45000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100  ",
+              "Coin": "1400 ",
+              "ItemRegen": "Tank_L27",
+              "BaseParts": "E_Turret19_Body"
+            },
+            {
+              "MachName": "E_Turret_20",
+              "HP  ": "52000",
+              "EXP ": "58000",
+              "Spd": "0",
+              "Type": "TURRET",
+              "Refer": "-   ",
+              "Rad": "64",
+              "Coin%": "100  ",
+              "Coin": "1500 ",
+              "ItemRegen": "Tank_L27",
+              "BaseParts": "E_Turret20_Body"
+            },
+            {
+              "MachName": "Boss_01 ",
+              "HP  ": "25000",
+              "EXP ": "900 ",
+              "Spd": "0",
+              "Type": "TANK",
+              "Refer": "-   ",
+              "Rad": "100",
+              "Coin%": "100  ",
+              "Coin": "1000 ",
+              "ItemRegen": "Boss01  ",
+              "BaseParts": "Boss01_Body"
+            }
+          ]
+        }
+      }
+    },
+    "reaPackages": {
+      "indie1.0.3": "ev_eab0898328f5efc295a30dad466d178015094f56ba3b0a1ad2d0a4262bc1c3a1",
+      "indie1.0.5": "ev_03a94109d4fefbd55bb0bc603df1e19cc7bbb6a5f0cf566cf07234440fb1ece3",
+      "wemade1.0.3": "ev_70891083f8c39fcaf8061098c25063da1cc091da9579ab6f1042f4b01a03baa9"
+    }
+  },
+  "core": {
+    "sourceRevision": "8e4eb82b4e05a3fb7dc06e9f4478859819945db4",
+    "regressionCommand": "ctest --test-dir build/core --output-on-failure -j 6 -R 'Map|Terrain|Gate|Spawn|Enemy|Weapon|QuickItem|AirStrike|Dash|Bot|Projectile'",
+    "regressionPassed": 26,
+    "isolatedMapLog": [
+      "original: loose image readable, stage and base absent from registered maps",
+      "fixture: 912x420 1024px foreground, reciprocal gates, stable world coordinates",
+      "fixture: 1024x768 1024px foreground, reciprocal gates, stable world coordinates",
+      "fixture: authored quad yields four collision edges and contact"
+    ],
+    "isolatedCombatLog": [
+      "ENEMY Boss_05 kind=3 boss=1 HP=100000 parts=7 guns=6 emitted=44 tookXP=500000 moved=0 images=1",
+      "ENEMY Boss_06 kind=2 boss=1 HP=200000 parts=9 guns=8 emitted=132 tookXP=500000 moved=1 images=1",
+      "ENEMY Boss_07 kind=1 boss=1 HP=400000 parts=7 guns=6 emitted=48 tookXP=500000 moved=1 images=1",
+      "ENEMY Boss_08 kind=1 boss=1 HP=1000000 parts=6 guns=5 emitted=52 tookXP=500000 moved=1 images=1",
+      "ENEMY E_Plane_01 kind=2 boss=0 HP=500 parts=1 guns=0 emitted=0 tookXP=50 moved=1 images=1",
+      "ENEMY E_Plane_02 kind=2 boss=0 HP=800 parts=1 guns=0 emitted=0 tookXP=80 moved=1 images=1",
+      "ENEMY E_Plane_05 kind=2 boss=0 HP=800 parts=9 guns=0 emitted=0 tookXP=80 moved=1 images=1",
+      "ENEMY E_Tank_30 kind=1 boss=0 HP=67000 parts=4 guns=3 emitted=63 tookXP=23000 moved=1 images=1",
+      "ENEMY E_Turret_06 kind=3 boss=0 HP=500 parts=2 guns=1 emitted=4 tookXP=50 moved=0 images=1",
+      "WEAPON 10311 part=P_Wpn_Lsr_101 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10314 part=P_Wpn_Lsr_104 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10315 part=P_Wpn_Lsr_105 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10312 part=P_Wpn_Lsr_102 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10313 part=P_Wpn_Lsr_103 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10316 part=P_Wpn_Lsr_106 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10317 part=P_Wpn_Lsr_107 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10318 part=P_Wpn_Lsr_108 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10321 part=P_Wpn_Lsr_111 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10331 part=P_Wpn_Lsr_201 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10332 part=P_Wpn_Lsr_202 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10333 part=P_Wpn_Lsr_203 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10334 part=P_Wpn_Lsr_204 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10335 part=P_Wpn_Lsr_205 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10336 part=P_Wpn_Lsr_206 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10337 part=P_Wpn_Lsr_207 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10338 part=P_Wpn_Lsr_208 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10339 part=P_Wpn_Lsr_209 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10340 part=P_Wpn_Lsr_210 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10319 part=P_Wpn_Lsr_109 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10320 part=P_Wpn_Lsr_110 emitted=1 damaged=1 projectile=1 trailSprite=1 requests=2 frames=1",
+      "WEAPON 10501 part=P_Wpn_Sni_101 emitted=1 damaged=1 projectile=0 trailSprite=1 requests=1 frames=1",
+      "WEAPON 10502 part=P_Wpn_Sni_102 emitted=1 damaged=1 projectile=0 trailSprite=1 requests=1 frames=1",
+      "WEAPON 10503 part=P_Wpn_Sni_103 emitted=1 damaged=1 projectile=0 trailSprite=1 requests=1 frames=1",
+      "WEAPON 10504 part=P_Wpn_Sni_104 emitted=1 damaged=1 projectile=0 trailSprite=1 requests=1 frames=1",
+      "QUICK 02001 countAfter=1 airstrike=0 shots=0 airStrikeHP=0 dash=0 sounds=0",
+      "QUICK 02002 countAfter=1 airstrike=0 shots=0 airStrikeHP=0 dash=0 sounds=0",
+      "QUICK 02003 countAfter=1 airstrike=0 shots=0 airStrikeHP=0 dash=0 sounds=0",
+      "QUICK 02006 countAfter=0 airstrike=1 shots=10 airStrikeHP=500 dash=0 sounds=10",
+      "BOT Bot_D01 HP=200 type=1 ticks=120 wander=5 itemSearch=0 emissions=0",
+      "BOT Bot_D02 HP=200 type=1 ticks=120 wander=5 itemSearch=0 emissions=0",
+      "BOT Bot_P04 HP=2000 type=2 ticks=120 wander=3 itemSearch=3 emissions=0",
+      "BOT Bot_P05 HP=2000 type=2 ticks=120 wander=3 itemSearch=3 emissions=0",
+      "BOT Bot_P06 HP=2000 type=2 ticks=120 wander=3 itemSearch=3 emissions=0"
+    ],
+    "hdQuickAttackREA": "ev_33937b36b4195181945cfc81b1aa0b30401f6ca361a648fb7dc0402b56bbfa09",
+    "hdDefenceBotREA": "ev_b8f67339e9542f1e804e5abfa3e24f2d07c59669a654cfc0712984d9830518db"
+  },
+  "localEvidence": {
+    "whitemt-hm2/check-legacy-stage.py": "b51ddb0e1ff0ccd8c83e8aa321f3135ca0e616188b6c9ca30335d2504d044701",
+    "whitemt-hm2/hd100-stage-unknown.jpg": "1b942903c8f1df2abb8a75e0c281eff58f3284816aa2b3ee75be84764ac7b4b9",
+    "whitemt-md/audit_machdefense_maps.py": "340b240f56d649446a4e86bc906b90c03837a9bc24e34eec3fc5a4a8bf88ffe6",
+    "whitemt-md/compare_terrain.py": "506e9baec73fb3834be51a76cabd889206c1bd3d867ee8d9c40848249c723489",
+    "whitemt-md/terrain-keypoint-comparison.json": "b19a0ce4ea6a0d3d216d480f88f07278a16bcec9cac6d8cd5eee4c827707aeee",
+    "whitemt-integration/map-binding.cpp": "c8ffa68c5559b00e16fdc1819ede7101e178729345964c8513cdcca6432cc7e8",
+    "whitemt-combat/readiness.cpp": "1d59ac906f68bd8775c7225f540204629522d3f94c8c66ae2d494fcbd60b9001",
+    "whitemt-md/shared-snow-art-registration-compact.webp": "061987c295906f4a1480bdb9560e921d29dd379f25a4f42fb2266ca6a66e011e"
+  }
+}
