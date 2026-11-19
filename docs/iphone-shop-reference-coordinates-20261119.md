@@ -14,3 +14,13 @@ iPhone 상점·Equip 그림, 버튼, 터치, 드롭 좌표에 하나의 480×320
 ## 캡처와 검사
 
 원본은 `.local/evidence/iphone-shop-20261119.7atGic/original/07-weapon-detail.png`에 있다. 복원판 레벨 1은 `.local/evidence/iphone-shop-reference-layout-20261119.0sCST9/iphone-reference-final/live-phone-reference-level1-sg1-detail.png`에 있다. 같은 폴더의 `sg1-detail-pixel-rows.json`에 외곽선 비교를 기록했다. [파일과 실행 결과](evidence/iphone-shop-reference-coordinates-20261119.json)
+
+## 원본 와이드 확인
+
+일반판 2.0.1의 `EAGLView`는 기기가 준 화면 크기로 투영과 뷰포트를 설정한다. 상점 쪽 `0x403b0`은 화면 상태에 따라 `ShopBG.jpg` 또는 `MaintenanceBG.jpg`를 고르고, `0x4d4b8`이 타일과 프레임을 지정한다. 그림은 둘 다 960×640이고 상점 슬롯·헤더·탭이 들어 있다.
+
+기본 포팅판은 호환 런타임에서 480×320을 화면 중앙에 비례 배치했다. 복제한 포팅판의 설정에 `--logical-size=320x695`를 넣고 Wasteland Shop까지 들어갔다. 실제 가로 출력 2,736px에서 상점 그림이 왼쪽 약 1,308px에만 나타났다. 원본 포팅판의 저장 파일은 검사 전과 바이트가 일치했다.
+
+`5759f2b`에서 추가한 허브 그림은 배경 결함으로 추적한다. Apple은 게임 메뉴가 다양한 화면 비율에 맞게 배치되고, 안전 영역 안에서 조작이 가능해야 한다고 안내한다. 배경은 화면 전체를 사용한다. [Apple 게임 디자인 지침](https://developer.apple.com/design/human-interface-guidelines/designing-for-games/) · [Apple WWDC 안전 영역과 전체 화면](https://developer.apple.com/videos/play/wwdc2024/10085/?time=549)
+
+와이드 실측과 PNG는 `.local/evidence/iphone-shop-viewport-audit-20261119.TpRaGA/viewport-observations.json`과 같은 폴더의 `wide-wasteland/wide-wasteland-shop.png`에 있다.
