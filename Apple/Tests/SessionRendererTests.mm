@@ -312,7 +312,16 @@ UIImage* image(NSData* rgba,CGSize size){
                     attach(@"live-phone-sg1-sell-detail");
                     XCTAssertTrue(press(2103));XCTAssertTrue(runtime.session().state().tradeVisible);
                     XCTAssertFalse(runtime.session().state().buyMode);
+                    const auto detailVisible=[&]{
+                        const auto keys=runtime.screens().buttons();
+                        return std::any_of(keys.begin(),keys.end(),[](const auto& key){return key.id==2112;});
+                    };
+                    XCTAssertFalse(detailVisible());
                     attach(@"live-phone-sg1-sell-confirm");
+                    XCTAssertTrue(press(2107));XCTAssertFalse(runtime.session().state().tradeVisible);
+                    XCTAssertFalse(detailVisible());
+                    attach(@"live-phone-sg1-sell-cancel");
+                    XCTAssertTrue(press(2103));XCTAssertTrue(runtime.session().state().tradeVisible);
                     XCTAssertTrue(press(2109));XCTAssertFalse(runtime.session().state().tradeVisible);
                     XCTAssertEqual(runtime.session().state().credits,375u);
                 }

@@ -268,7 +268,9 @@ struct Screens::Impl {
     PlaceNamePresentation placeName;
     std::vector<std::pair<std::shared_ptr<Button>,Vec2>> chooserMoves;
     float now=0;
-    std::shared_ptr<DetailPresentation> detail;FieldPresentation fieldPresentation;
+    std::shared_ptr<DetailPresentation> detail;
+    std::optional<std::uint64_t> dismissedSaleDetail;
+    FieldPresentation fieldPresentation;
     CommandPresentation command;
     std::vector<CommandNode> commandNodes;
     float commandSelectedRowY=0;
@@ -772,10 +774,10 @@ void Screens::Impl::layoutDetail(){
     if(d.large){d.large->screenPosition=plus(parent,{weapon?-76.f:-52.f,d.vertical?(shop?-36.f:-10.f)*d.y:0});d.large->scale={1,d.vertical?d.y:1};d.large->show=d.vertical;}
 }
 void Screens::Impl::phoneTradeAction(){
-    if(!detail||phoneEquipment||detail->kind==DetailKind::maintenance)return;
-    const bool buy=detail->kind==DetailKind::shop;
+    if(phoneEquipment)return;
+    const bool buy=detail&&detail->kind==DetailKind::shop;
     if(!buy){
-        if(state.selectedInventory<0)return;
+        if(state.detailInventory<0||state.selectedInventory<0)return;
         const auto position=std::size_t(std::max(0,state.inventoryPage))*25+std::size_t(state.selectedInventory);
         if(!itemAt(state.inventory,position).enabled)return;
     }
@@ -923,7 +925,11 @@ void Screens::Impl::phoneShop(bool maintenance){
         addButton(Panel::root,2100,menu::phoneAsset("Btn_ShopExit.png"),{630,34.5f},2,1,0,1,Size{138,60},0,{}, {1,1},true,9,false);
     }
     if(state.shopDetailVisible&&state.selectedShop>=0&&!maintenance){const auto index=std::size_t(std::max(0,state.shopPage))*24+std::size_t(state.selectedShop);if(index<state.shopItems.size())buildDetail(DetailKind::shop,state.shopItems[index],{360,240},state.selectedShop);}
-    if(state.detailInventory>=0&&!state.detailItem.dataId.empty())buildDetail(maintenance?DetailKind::maintenance:DetailKind::inventory,state.detailItem,{360,240},state.detailInventory);
+    if(state.tradeVisible&&!state.buyMode)dismissedSaleDetail=state.detailRevision;
+    else if(previous&&previous->state.screen==state.screen&&previous->dismissedSaleDetail==state.detailRevision)
+        dismissedSaleDetail=state.detailRevision;
+    if(!dismissedSaleDetail&&state.detailInventory>=0&&!state.detailItem.dataId.empty())
+        buildDetail(maintenance?DetailKind::maintenance:DetailKind::inventory,state.detailItem,{360,240},state.detailInventory);
     if(!maintenance)phoneTradeAction();
     if(state.tradeVisible)trade();setPhoneEquipment(phoneEquipment);
 }
