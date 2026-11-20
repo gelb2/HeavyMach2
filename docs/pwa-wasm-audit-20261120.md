@@ -1,6 +1,6 @@
 # HeavyMach 1 WASM PR부터 HeavyMach 2 PWA까지
 
-HeavyMach 1 PR #24는 게임 규칙과 좌표 계산 소스를 재사용하고 메뉴·HUD는 웹용 C++로 이식했다. HeavyMach 2는 메뉴 배치와 터치 판정도 iPhone·iPad·Android와 공유한다. 이번 PWA 검증 범위는 휴대폰 가로·태블릿 세로·데스크톱이다. Safari 탭에서 관측한 Shop과 Exit 겹침은 같은 크기의 공통 코드 검사에서도 재현했다. 홈 화면에서 연 실제 휴대폰 PWA의 결과는 아직 없다. 태블릿 가로의 관측 결과는 후속 작업 근거로 보존한다.
+HeavyMach 1 PR #24는 게임 규칙과 좌표 계산 소스를 재사용하고 메뉴·HUD는 웹용 C++로 이식했다. HeavyMach 2는 메뉴 배치와 터치 판정도 iPhone·iPad·Android와 공유한다. 이번 PWA 검증 범위는 휴대폰 가로·태블릿 세로·데스크톱이다. Safari 탭에서 관측한 Shop과 Exit 겹침은 같은 크기의 공통 코드 검사에서도 재현했다. 이후 iPhone 17 Pro 시뮬레이터에 설치한 치트판에서는 홈 화면 아이콘으로 실행해 첫 기지의 Shop과 Exit가 각각 동작하는 것을 확인했다. [설치형 실행 기록](pwa-device-validation-20261120.md#iphone-홈-화면에서-실행한-치트판) 태블릿 가로의 관측 결과는 후속 작업 근거로 보존한다.
 
 ## 비교 기준
 

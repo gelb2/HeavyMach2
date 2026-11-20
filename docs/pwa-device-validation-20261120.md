@@ -1,6 +1,21 @@
 # 맥미니에서 PWA 화면과 입력 검증
 
-설치형 PWA 확인은 기기에서 홈 화면·앱 목록·Dock 아이콘으로 게임을 열어 진행한다. 휴대폰은 가로, 태블릿은 세로다. 아래 브라우저 탭과 모바일 모의 결과는 개발 검사 기록이다. iPhone 시뮬레이터의 홈 화면 설치는 Device Hub 입력 오류로 완료하지 못했다. [설치형 확인 순서](../Web/README.md#설치형-pwa-확인)
+설치형 PWA 확인은 기기에서 홈 화면·앱 목록·Dock 아이콘으로 게임을 열어 진행한다. 휴대폰은 가로, 태블릿은 세로다. 아래 브라우저 탭과 모바일 모의 결과는 개발 검사 기록이다. iPhone 17 Pro 시뮬레이터의 홈 화면 설치와 가로 치트판 버튼 확인을 완료했다. [설치형 확인 순서](../Web/README.md#설치형-pwa-확인)
+
+## iPhone 홈 화면에서 실행한 치트판
+
+iPhone 17 Pro 시뮬레이터의 iOS 26.5에서 `HM2 QA`를 **웹 앱으로 열기**로 홈 화면에 추가했다. 홈 화면 아이콘으로 실행한 뒤 가로 화면에서 `Web QA` 슬롯을 열었다. 검증판 빌드 번호는 `313075eb4158c44876c4f8e1`이다. 이전에 좌표 입력이 실패했던 Device Hub의 단독 기기 창에서 내장 기기 화면으로 바꿔 설치와 플레이를 마쳤다.
+
+| 직접 조작한 버튼 | 확인한 화면 | 로컬 캡처 |
+| --- | --- | --- |
+| 홈 화면의 `HM2 QA` | 주소창·탭 없이 **게임 시작**이 표시됐다. | `01-home-icon.png`, `02-standalone-launcher.png` |
+| Ruin Field Base의 **Shop** | Phone 상점에 들어갔다. | `05-base-controls.png`, `07-phone-shop.png` |
+| 상점의 **Exit** | Ruin Field Base로 돌아왔다. | `08-base-after-shop-exit.png` |
+| 기지의 **Exit** | 첫 터치에서 안내를 표시하고 두 번째 터치에서 슬롯 화면으로 돌아왔다. | `09-base-exit-selected.png`, `10-slots-after-base-exit.png` |
+
+이 설치형 치트판의 첫 기지에서 Shop과 Exit 입력은 각각 목표 화면으로 갔다. 캡처는 `.local/evidence/pwa-compat-20261120/iphone-installed`에 있다. 정식판과 iPad·Android 설치형 기기 확인은 남아 있다.
+
+## 이전 개발 검사
 
 기준 커밋은 `a6a798c`다. 맥미니의 로컬 정식판과 치트판을 새 브라우저 프로필에서 연다. 검사용 저장을 만들고 기존 사용자 저장은 건드리지 않는다.
 
