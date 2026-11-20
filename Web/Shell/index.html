@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101b20">
+  <title>%TITLE%</title>
+  <link rel="icon" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body data-validation="%VALIDATION%">
+  <main>
+    <canvas id="game" aria-label="%TITLE% 게임 화면" tabindex="0" hidden></canvas>
+    <section id="launcher" aria-labelledby="title">
+      <h1 id="title">%TITLE%</h1>
+      <p id="status" role="status">게임을 준비하는 중…</p>
+      <div class="actions">
+        <button id="play" type="button" disabled>게임 시작</button>
+        <button id="install" type="button" hidden>설치</button>
+      </div>
+    </section>
+    <output id="warning" role="status" hidden></output>
+  </main>
+  <dialog id="dialog" aria-labelledby="dialog-title">
+    <form id="dialog-form">
+      <h2 id="dialog-title"></h2>
+      <p id="dialog-body"></p>
+      <label id="entry-label" hidden>프로필 이름<input id="entry" autocomplete="off" maxlength="10"></label>
+      <label id="transfer-label" hidden>복구코드<textarea id="code" rows="5" spellcheck="false" autocomplete="off"></textarea></label>
+      <output id="dialog-status" role="status"></output>
+      <div class="actions">
+        <button id="generate" type="button" hidden>코드 만들기</button>
+        <button id="copy" type="button" hidden>복사</button>
+        <button id="cancel" type="button">닫기</button>
+        <button id="confirm" type="submit">확인</button>
+      </div>
+    </form>
+  </dialog>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
