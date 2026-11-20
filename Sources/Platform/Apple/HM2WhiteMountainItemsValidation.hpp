@@ -15,7 +15,8 @@ class WhiteMountainItemsValidation final : public NativeValidationScenario {
     };
     static constexpr std::array<std::string_view,3> pickerCodes_{"04204","04205","04206"};
     static constexpr std::array<std::string_view,3> pickerModels_{"Bot_P04","Bot_P05","Bot_P06"};
-    enum class Step { weaponSetup, weaponTarget, weaponResult, shopOpening, shopBuy,
+    static constexpr int laserPurchaseLevel_ = 22;
+    enum class Step { weaponSetup, weaponTarget, weaponResult, shopOpening, laserStock, shopBuy,
                       quickSetup, quickResult, pickerSetup, pickerResult };
     NSURL* root_;
     NSURL* output_;
@@ -116,7 +117,7 @@ class WhiteMountainItemsValidation final : public NativeValidationScenario {
         slot.string(0x2d,16,"Base004");
         slot.string(0x55,16,"Base004");
         slot.u32(0x1b5c,5);
-        slot.level(index==1?40:99);
+        slot.level(index==2?laserPurchaseLevel_-1:index==1?40:99);
         slot.experience(progression::Experience::bounds(slot.level()).previous);
         slot.hp(3236);slot.maxHP(3236);slot.credit(20000000);
         constexpr std::array<std::string_view,5> gear{"11023","12023","10011","10111","13006"};
@@ -136,7 +137,7 @@ class WhiteMountainItemsValidation final : public NativeValidationScenario {
     void openFixture(std::string_view bot={}) {
         SaveData save;
         seedSlot(save,0,bot);
-        if(bot.empty())seedSlot(save,1);
+        if(bot.empty()){seedSlot(save,1);seedSlot(save,2);}
         DarwinWorldRandom random(731);
         const auto bytes=save.encode(random,731);
         NSString* name=bot.empty()?@"items.sav":[string(bot) stringByAppendingString:@".sav"];
@@ -211,6 +212,15 @@ class WhiteMountainItemsValidation final : public NativeValidationScenario {
         require(stock("10501"),"Native stock did not show the newly enabled Sniper");
         capture(layer,@"sniper-shop.png");
         auto& game=runtime_->session();
+        require(game.selectSlot(2),"Cannot load the level-22 laser shop fixture");
+        game.enterBase();runtime_->synchronize();
+        require(press(2002)&&press(2002),"Could not open the level-22 native shop");
+        advance(Step::laserStock);
+    }
+    void laserStock(CAEAGLLayer* layer) {
+        if(!settled(ui::ScreenId::shop))return;
+        auto& game=runtime_->session();
+        require(game.state().level+1==laserPurchaseLevel_,"Unexpected level for laser stock verification");
         for(unsigned i=0;i<5&&game.state().shopCategory!=3;++i){
             const int desired=button(2104,{},3)?3:(game.state().shopCategory+1)%5;
             // Phone arrow keys change on Push, so their identity changes
@@ -265,7 +275,7 @@ class WhiteMountainItemsValidation final : public NativeValidationScenario {
         if(m.airStrikeProjectiles)sampleOffset_=std::max(sampleOffset_,laserSample().value_or(0));
         if(m.airStrikeProjectiles&&!airstrikeCapture_){capture(layer,@"laser-airstrike-active.png");airstrikeCapture_=true;}
         if(m.airStrikeProjectiles!=10||!m.airStrikeEnemyHPRemoved||!sampleOffset_)return;
-        [results_ addObject:@{@"kind":@"airstrike",@"code":@"02006",@"purchasedPrice":@30,
+        [results_ addObject:@{@"kind":@"airstrike",@"code":@"02006",@"purchasedPrice":@30,@"purchaseLevel":@(laserPurchaseLevel_),
             @"quickCountAfter":@0,@"projectiles":@(m.airStrikeProjectiles),@"enemyHPRemoved":@(m.airStrikeEnemyHPRemoved),
             @"wav":@"Wpn_Laser.wav",@"sampleOffset":@(sampleOffset_)}];
         report(@"running");advance(Step::pickerSetup);
@@ -306,6 +316,7 @@ class WhiteMountainItemsValidation final : public NativeValidationScenario {
         case Step::weaponTarget: weaponTarget(); break;
         case Step::weaponResult: weaponResult(layer); break;
         case Step::shopOpening: shopOpening(layer); break;
+        case Step::laserStock: laserStock(layer); break;
         case Step::shopBuy: shopBuy(layer); break;
         case Step::quickSetup: quickSetup(layer); break;
         case Step::quickResult: quickResult(layer); break;

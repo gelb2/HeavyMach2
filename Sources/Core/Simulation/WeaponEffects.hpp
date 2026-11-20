@@ -21,6 +21,7 @@ struct WeaponEffectInput {
     Vec2 machinePosition,partCenter,playerPosition;
     bool left=false,hostile=false,playerShooter=false;
     int damageBonus=0;
+    int impactDamage=0;
 };
 struct WeaponProjectile {
     // The world's immutable Weapons catalogue must outlive active projectiles.
@@ -31,6 +32,7 @@ struct WeaponProjectile {
     float effectDelay=.04f;
     int layer=5;
     std::shared_ptr<ProjectileVisual> visual{};
+    int impactDamage=0;
 };
 enum class WeaponParticleRole {flash,hitEffect,shell};
 struct WeaponEffectsHost {

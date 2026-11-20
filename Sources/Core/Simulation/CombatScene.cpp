@@ -383,15 +383,15 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
     void sound(unsigned id)override{soundID(id,{});}
     void createBullet(const AirStrikeBullet& shot)override{
         if(!shot.weapon)throw std::logic_error("AirStrike emitted without its original weapon");
-        WeaponEffectInput input;input.worldTime=clock.worldTime();input.renderTime=clock.renderTime();input.playerPosition=playerMotion.state().position;input.hostile=shot.toPlayer;
+        WeaponEffectInput input;input.worldTime=clock.worldTime();input.renderTime=clock.renderTime();input.playerPosition=playerMotion.state().position;input.hostile=shot.toPlayer;input.impactDamage=shot.impactDamage;
         EffectsHost host(*this,input.hostile,0);
         // Synchronous original setFire consumes speed/trail RNG and sound;
         // setDrop(true) follows it, then addChild. No controller flash/bonus.
         effects->createProjectile(*shot.weapon,{shot.source,shot.destination,shot.angle},input,rng(),host,shot.drop);
         ++metrics.airStrikeProjectiles;
     }
-    void startAirStrike(const WeaponInfo* weapon,float delay,Vec2 target){
-        auto actor=std::make_shared<AirStrike>(weapon,delay,target,playerMotion.state().position,clock.worldTime(),clock.renderTime(),*this,rng());
+    void startAirStrike(const WeaponInfo* weapon,float delay,Vec2 target,int impactDamage){
+        auto actor=std::make_shared<AirStrike>(weapon,delay,target,playerMotion.state().position,clock.worldTime(),clock.renderTime(),*this,rng(),impactDamage);
         dynamic.push_back({{},{},{},false,std::move(actor)});++metrics.airStrikeRequests;
     }
     void setDashVelocity(Vec2 value)override{dashMotion.setVelocity(value);++metrics.dashStarts;}
@@ -707,7 +707,7 @@ struct CombatScene::Impl:BotHost,EnemyActorHost,EnemySpawnerHost,AirStrikeHost,D
             else if(projectile){
                 ++metrics.projectileTicks;
                 if(projectile->value.motion.tick(paused)){
-                    ImpactHost host(*this,*projectile);impactProjectile(*projectile->value.info,projectile->value.motion.state().position,projectile->value.motion.state().toPlayer,host);
+                    ImpactHost host(*this,*projectile);impactProjectile(*projectile->value.info,projectile->value.motion.state().position,projectile->value.motion.state().toPlayer,host,projectile->value.impactDamage);
                 }
                 // Parent removeThis suppresses only its own registration. Its
                 // QobBase still ticks visual children on this terminal pass;
@@ -853,7 +853,7 @@ Particle* CombatScene::allocateParticle(){auto* particle=impl_->pool.allocate(im
 const TileImage* CombatScene::preparedTile(std::string_view name)const{return impl_->tiles.lookup(name);}
 const TileImage* CombatScene::prepareRepairEffect(std::string_view name){return impl_->sharedAssets->prepare(impl_->resources,name);}
 bool CombatScene::isPaused()const{return impl_->paused;}
-void CombatScene::startAirStrike(const WeaponInfo* weapon,float delay,Vec2 target){impl_->startAirStrike(weapon,delay,target);}
+void CombatScene::startAirStrike(const WeaponInfo* weapon,float delay,Vec2 target,int impactDamage){impl_->startAirStrike(weapon,delay,target,impactDamage);}
 std::size_t CombatScene::activeAirStrikes()const{std::size_t count=0;for(const auto& node:impl_->dynamic)if(node.airStrike&&!node.airStrike->state().removed)++count;return count;}
 void CombatScene::setPlayerHP(int hp){impl_->hp=hp;}
 void CombatScene::setIsSave(bool value){impl_->saveAllowed=value;}

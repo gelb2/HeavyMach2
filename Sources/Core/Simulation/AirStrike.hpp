@@ -10,6 +10,7 @@ struct AirStrikeBullet {
     float angle=0;
     Vec2 source,destination;
     bool toPlayer=false,drop=true;
+    int impactDamage=0;
 };
 struct AirStrikeHost {
     virtual ~AirStrikeHost()=default;
@@ -41,9 +42,10 @@ class AirStrike {
     AirStrikeState state_;
     VisibilityState visibility_;
     std::uint64_t bulletRequests_=0;
+    int impactDamage_;
 public:
     AirStrike(const WeaponInfo*,float fireDelay,Vec2 target,Vec2 player,
-              double worldTime,float renderTime,AirStrikeHost&,WorldRandom&);
+              double worldTime,float renderTime,AirStrikeHost&,WorldRandom&,int impactDamage=0);
     // World.tick0x110d8 still ticks children while paused (worldTime freezes).
     // Preserve this actor's lack of a local pause gate; movement and an already
     // open firing branch continue. Removed actors are no longer ticked.

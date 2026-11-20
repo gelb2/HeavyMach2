@@ -32,6 +32,10 @@ class MenuCheckTests(unittest.TestCase):
         for path in set(ASSET.INPUTS + SCREEN.INPUTS):
             f = self.root / path; f.parent.mkdir(parents=True, exist_ok=True); f.write_text('test source ' + path)
         for name in ('HeavyMach2Source', 'HeavyMach2Source.debug.dylib'): (self.package / name).write_bytes(name.encode())
+        phone_shop = self.root / 'Resources/PhoneShopArt/PhoneShopHangar.jpg'
+        phone_shop.parent.mkdir(parents=True)
+        phone_shop.write_bytes(b'authored phone shop fixture')
+        (self.package / 'HD' / phone_shop.name).write_bytes(phone_shop.read_bytes())
         bases = ['Base00' + str(i) for i in range(1, 7)]; entries = []; provenance = []; pins = {}
         for device in ('iphone', 'ipad'):
             suffix = '.jpg' if device == 'iphone' else '.png'; prefix = 'PhoneMenu/' if device == 'iphone' else ''
@@ -90,7 +94,12 @@ class MenuCheckTests(unittest.TestCase):
         for device in ('iphone', 'ipad'):
             for base in census['baseIds']:
                 for screen in ('hub', 'shop', 'command'):
-                    image = next(x['background'] for x in census['entries'] if x['profile'] == device and x['base'] == base) if screen == 'hub' else ('PhoneMenu/' if device == 'iphone' else '') + {'shop': 'ShopBG', 'command': 'CmdCenterBG'}[screen] + ('.jpg' if device == 'iphone' else '.png')
+                    if screen == 'hub':
+                        image = next(x['background'] for x in census['entries'] if x['profile'] == device and x['base'] == base)
+                    elif device == 'iphone':
+                        image = {'shop': 'PhoneShopHangar.jpg', 'command': 'PhoneMenu/CmdCenterBG.jpg'}[screen]
+                    else:
+                        image = {'shop': 'ShopBG.png', 'command': 'CmdCenterBG.png'}[screen]
                     rows.append({'device': device, 'base': base, 'screen': screen, 'backgrounds': [{'image': image, 'sha256': ASSET.sha((package / image).read_bytes())}]})
         return {'sources': {p: ASSET.sha((self.root / p).read_bytes()) for p in ASSET.INPUTS}, 'binarySHA256': ASSET.sha((ASSET.PACKAGE / 'HeavyMach2Source').read_bytes()), 'gameSHA256': ASSET.sha((ASSET.PACKAGE / 'HeavyMach2Source.debug.dylib').read_bytes()), 'rows': rows}
 

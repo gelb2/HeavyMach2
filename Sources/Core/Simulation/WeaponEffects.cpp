@@ -61,7 +61,7 @@ void WeaponEffects::createProjectile(const WeaponInfo& info,const WeaponEmission
     auto visual=std::make_shared<ProjectileVisual>(info,image,effectTile,trail,input.hostile);
     host.fireSound(info,{(shot.muzzle.x-input.playerPosition.x)/100.f,(shot.muzzle.y-input.playerPosition.y)/100.f});
     if(drop)visual->setDrop(true);
-    host.attachProjectile({&info,std::move(motion),image,std::move(trail),input.hostile?.06f:.04f,5,std::move(visual)});
+    host.attachProjectile({&info,std::move(motion),image,std::move(trail),input.hostile?.06f:.04f,5,std::move(visual),input.impactDamage});
 }
 void WeaponEffects::emit(const WeaponInfo& info,const WeaponEmission& shot,const WeaponEffectInput& input,WorldRandom& random,WeaponEffectsHost& host){
     const bool sniper=info.kind==WeaponKind::sniper;

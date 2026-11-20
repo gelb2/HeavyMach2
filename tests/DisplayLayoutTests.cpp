@@ -205,7 +205,20 @@ void phoneMenuGrids(Files& files){
  Frame f;ui.append(f,0);unsigned backgrounds=0;bool skin=false;for(const auto& s:f.sprites){backgrounds+=s.image=="PhoneShopPanel.png";assert(s.image!="ShopBG.png"&&s.image!="MaintenanceBG.png"&&s.image!="InvenBG.png"&&s.image!="ItemBox.png");if(s.image=="Icon10011.png"&&s.strip.empty())skin|=near(s.size.width,32*std::min(config.canvas.width/480,config.canvas.height/320));}assert(backgrounds==1&&skin);
  for(unsigned i=1;i<(24+menu::phoneShopRows*4-1)/(menu::phoneShopRows*4);++i)tap(2106);for(unsigned i=1;i<(25+menu::phoneShopRows*5-1)/(menu::phoneShopRows*5);++i)tap(6091);const auto lastStock=ui.buttonScreenPosition(key(2223)),lastInventory=ui.buttonScreenPosition(key(6024));const DisplayLayout layout(config);const auto shopClip=layout.clip(DisplayRegion::phoneStock).value(),invClip=layout.clip(DisplayRegion::phoneInventory).value();assert(lastStock.y>=shopClip.y&&lastStock.y<=shopClip.y+shopClip.height&&lastInventory.y>=invClip.y&&lastInventory.y<=invClip.y+invClip.height);
  host.events.clear();const auto begin=ui.buttonScreenPosition(key(6024)),destination=ui.buttonScreenPosition(key(6020));ui.input(PointerPhase::begin,begin,999,2);ui.input(PointerPhase::move,destination,999,2.1f);ui.input(PointerPhase::end,destination,999,2.2f);bool mapped=false;for(const auto& e:host.events)if(e.button.type==ui::ButtonEventType::move&&e.dropCoordinates){assert(near(e.dropCoordinates->inventory.x,408)&&near(e.dropCoordinates->inventory.y,192));mapped=true;}assert(mapped);
- tap(9204);assert(ui.button(key(6100))->visible&&!ui.button(key(2223))->visible);f={};ui.append(f,2);backgrounds=0;for(const auto& s:f.sprites){backgrounds+=s.image=="PhoneEquipPanel.png";assert(s.image!="MaintenanceBG.png"&&s.image!="InvenBG.png"&&s.image!="ItemBox.png");}assert(backgrounds==1);
+ tap(9204);assert(ui.button(key(6100))->visible&&!ui.button(key(2223))->visible);f={};ui.append(f,2);
+ std::vector<ClipRect> equipSlices;
+ for(const auto& sprite:f.sprites){
+  assert(sprite.image!="PhoneShopPanel.png"&&sprite.image!="MaintenanceBG.png"&&sprite.image!="InvenBG.png"&&sprite.image!="ItemBox.png");
+  if(sprite.image!="PhoneEquipPanel.png")continue;
+  assert(sprite.clip);
+  for(const auto& clip:equipSlices){
+   const auto overlapX=std::min(clip.x+clip.width,sprite.clip->x+sprite.clip->width)-std::max(clip.x,sprite.clip->x);
+   const auto overlapY=std::min(clip.y+clip.height,sprite.clip->y+sprite.clip->height)-std::max(clip.y,sprite.clip->y);
+   assert(overlapX<.002f||overlapY<.002f);
+  }
+  equipSlices.push_back(*sprite.clip);
+ }
+ assert(equipSlices.size()==4);
  for(const auto pair:{std::pair{6100u,Vec2{188,388}},std::pair{6302u,Vec2{326,270}}}){const auto from=ui.buttonScreenPosition(key(6024)),to=ui.buttonScreenPosition(key(pair.first));host.events.clear();ui.input(PointerPhase::begin,from,1001,3);ui.input(PointerPhase::move,to,1001,3.1f);ui.input(PointerPhase::end,to,1001,3.2f);mapped=false;for(const auto& e:host.events)if(e.button.type==ui::ButtonEventType::move&&e.dropCoordinates){assert(near(e.dropCoordinates->inventory.x,pair.second.x)&&near(e.dropCoordinates->inventory.y,pair.second.y));mapped=true;}assert(mapped);}
  tap(9205);assert(ui.button(key(2223))->visible&&!ui.button(key(6100))->visible);
  std::cout<<"PHONE_MENU_GRIDS separatedPanels/HD24and25/noDuplicatePanels/buttonPages/equipmentTab/HDdragInverse PASS\n";
@@ -387,6 +400,28 @@ void phoneLiveMenuSession(Files& files){
   assert(ui.input(PointerPhase::begin,point,20000+id,game.renderTime()));
   ui.input(PointerPhase::end,point,20000+id,game.renderTime());
  };
+ const auto checkPhoneInventoryArt=[&](std::string_view panel,unsigned rows){
+  Frame frame;ui.append(frame,game.renderTime());
+  const auto reference=menu::phoneReferenceUI(phone);
+  for(unsigned row=0;row<menu::phoneShopRows;++row){
+   const auto sample=reference.map({menu::inventoryGrid.x,menu::inventoryGrid.y-60.f*row});
+   const bool visible=std::any_of(frame.sprites.begin(),frame.sprites.end(),[&](const auto& sprite){
+    if(sprite.image!=panel)return false;
+    const auto rect=sprite.clip.value_or(quadBounds(sprite));
+    return rect.x<=sample.x&&sample.x<rect.x+rect.width&&rect.y<=sample.y&&sample.y<rect.y+rect.height;
+   });
+   assert(visible==(row<rows));
+  }
+ };
+ checkPhoneInventoryArt("PhoneShopPanel.png",4);
+ tapVisible(6091);
+ assert(has(6020)&&has(6024)&&!has(6000)&&!has(6019));
+ checkPhoneInventoryArt("PhoneShopPanel.png",1);
+ tapVisible(9204);
+ checkPhoneInventoryArt("PhoneEquipPanel.png",1);
+ tapVisible(9205);
+ tapVisible(6090);
+ checkPhoneInventoryArt("PhoneShopPanel.png",4);
  const auto overlaps=[](ClipRect a,ClipRect b){
   return a.x<b.x+b.width&&b.x<a.x+a.width&&a.y<b.y+b.height&&b.y<a.y+a.height;
  };

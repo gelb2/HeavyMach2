@@ -17,6 +17,7 @@
 #include "Platform/Apple/HM2WhiteMountainValidation.hpp"
 #include "Platform/Apple/HM2WhiteMountainBossValidation.hpp"
 #include "Platform/Apple/HM2WhiteMountainItemsValidation.hpp"
+#include "Platform/Apple/HM2AirStrikeBalanceValidation.hpp"
 @interface HM2PreviewView:UIView
 - (void)setActive:(BOOL)active;
 - (void)setAudioActive:(BOOL)active;
@@ -53,6 +54,7 @@
     if([mode isEqualToString:@"1"])_nativeScenario=std::make_unique<hm2::apple::WhiteMountainValidation>(root,_validationDirectory);
     else if([mode isEqualToString:@"2"])_nativeScenario=std::make_unique<hm2::apple::WhiteMountainBossValidation>(root,_validationDirectory);
     else if([mode isEqualToString:@"3"])_nativeScenario=std::make_unique<hm2::apple::WhiteMountainItemsValidation>(root,_validationDirectory);
+    else if([mode isEqualToString:@"4"])_nativeScenario=std::make_unique<hm2::apple::AirStrikeBalanceValidation>(root,_validationDirectory);
     else _concurrent=std::make_unique<hm2::apple::ConcurrentRuntime>(root,_validationDirectory);
     _uiTesting=[NSProcessInfo.processInfo.environment[@"HM2_UI_TESTING"] isEqualToString:@"1"];
     if(_uiTesting){self.isAccessibilityElement=YES;self.accessibilityIdentifier=@"hm2.world";self.accessibilityLabel=@"HeavyMach2 World";[self updateTestState];}

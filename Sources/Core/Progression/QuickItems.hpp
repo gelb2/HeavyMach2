@@ -20,6 +20,7 @@ struct AirStrikeRequest {
     double worldTime=0;
     float renderTime=0,fireDelay=0;
     unsigned attackCount=0;
+    int impactDamage=0;
 };
 // These are actual world/UI consumers, not optional completion callbacks. The
 // Scene adapter must supply live actor HP, its existing pool and prepared tiles.

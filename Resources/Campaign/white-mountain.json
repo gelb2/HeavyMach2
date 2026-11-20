@@ -1,17 +1,57 @@
 {
   "maps": {
-    "SnowPass": {"name": "Snow Pass", "image": "STAGE 12.png", "enemies": [["E_Tank_24", 120, 180], ["E_Tank_21", 210, -175]]},
-    "SnowBasin": {"name": "Snow Basin", "image": "STAGE 12A.png", "enemies": [["E_Tank_24", -120, 170], ["E_Turret_07", 160, 160], ["E_Tank_24", 200, -210]]},
-    "SnowField": {"name": "Snow Field", "image": "STAGE 13.png", "enemies": [["E_Tank_24", 120, -200], ["E_Tank_25", 150, 165]]},
-    "SnowRidge": {"name": "Snow Ridge", "image": "STAGE 15.png", "enemies": [["E_Tank_25", 130, 120], ["E_Tank_24", 180, -170]]},
+    "SnowPass": {"name": "Snow Pass", "image": "STAGE 12.png", "enemies": [
+        ["E_Tank_17", -245, 208], ["E_Tank_17", -106, 327], ["E_Tank_17", 55, 188],
+        ["E_Tank_17", 190, -184], ["E_Tank_18", -215, -213], ["E_Tank_18", 22, -291],
+        ["E_Tank_21", 290, 205], ["E_Tank_21", 113, -340], ["E_Tank_24", 167, 281],
+        ["E_Turret_05", -285, 288], ["E_Turret_05", -159, -326], ["E_Turret_07", 244, 321],
+        ["E_Turret_07", 289, -271], ["E_Plane_01", -34, 243]
+      ]},
+    "SnowBasin": {"name": "Snow Basin", "image": "STAGE 12A.png", "enemies": [
+        ["E_Tank_18", -247, 225], ["E_Tank_19", -152, -176], ["E_Tank_19", -14, 165],
+        ["E_Tank_21", -107, 292], ["E_Tank_21", 60, 295], ["E_Tank_21", 146, -182],
+        ["E_Tank_21", 248, -187], ["E_Tank_22", -215, -256], ["E_Tank_24", 204, 199],
+        ["E_Tank_24", 137, -333], ["E_Turret_05", -290, 331], ["E_Turret_06", -105, -290],
+        ["E_Turret_07", 84, 221], ["E_Turret_08", 235, 324], ["E_Turret_09", 281, -295]
+      ]},
+    "SnowField": {"name": "Snow Field", "image": "STAGE 13.png", "enemies": [
+        ["E_Tank_20", -234, 216], ["E_Tank_21", -230, -191], ["E_Tank_22", -121, 238],
+        ["E_Tank_22", 67, -180], ["E_Tank_22", 248, -217], ["E_Tank_24", -11, 260],
+        ["E_Tank_24", 296, 229], ["E_Tank_24", 156, -293], ["E_Tank_25", 212, 186],
+        ["E_Tank_25", 30, 338], ["E_Turret_05", -297, 311], ["E_Turret_06", -167, -322],
+        ["E_Turret_07", 93, 219], ["E_Turret_09", 168, 315], ["E_Turret_10", 288, -315]
+      ]},
+    "SnowRidge": {"name": "Snow Ridge", "image": "STAGE 15.png", "enemies": [
+        ["E_Tank_22", -254, 215], ["E_Tank_23", -219, -202], ["E_Tank_23", -131, 209],
+        ["E_Tank_24", -87, -188], ["E_Tank_24", 3, 215], ["E_Tank_24", 157, 177],
+        ["E_Tank_24", 238, -178], ["E_Tank_25", 71, -278], ["E_Tank_25", 200, 276],
+        ["E_Tank_25", 273, 205], ["E_Tank_26", 215, -320], ["E_Turret_06", -289, 318],
+        ["E_Turret_08", -140, -320], ["E_Turret_09", -30, 313], ["E_Turret_10", 282, 324],
+        ["E_Turret_11", 299, -281], ["E_Plane_02", 54, -209]
+      ]},
     "SnowFort": {"name": "Snow Fort", "image": "STAGE 15A.png",
-      "enemies": [["E_Turret_07", -270, -315], ["E_Turret_07", 40, -290], ["E_Tank_25", 270, 240]],
+      "enemies": [
+        ["E_Tank_22", -250, 246], ["E_Tank_23", -289, -206], ["E_Tank_24", -137, 244],
+        ["E_Tank_24", 65, 261], ["E_Tank_24", 230, -201], ["E_Tank_25", 176, 230],
+        ["E_Tank_25", 48, -204], ["E_Tank_25", 280, 251], ["E_Tank_26", 137, -313],
+        ["E_Tank_27", -35, 316], ["E_Turret_06", -290, 339], ["E_Turret_07", -303, -306],
+        ["E_Turret_08", -140, 335], ["E_Turret_08", 39, -295], ["E_Turret_09", 149, 321],
+        ["E_Turret_10", 214, -305], ["E_Turret_11", 287, 336], ["E_Turret_12", 296, -255],
+        ["E_Plane_02", 24, 226], ["E_Plane_05", 108, -227]
+      ],
       "collision": [
         [[-117, 104], [-87, 162], [-14, 207], [66, 188], [124, 145], [143, 53], [79, -22], [-36, -41], [-104, 16]],
         [[-239, -239], [-39, -239], [-39, -471], [-239, -471]]
       ]
     },
-    "SnowValley": {"name": "Snow Valley", "image": "STAGE 15B_01.png", "enemies": [["E_Tank_25", 96, -185], ["E_Tank_24", 118, 175]]},
+    "SnowValley": {"name": "Snow Valley", "image": "STAGE 15B_01.png", "enemies": [
+        ["E_Tank_23", -250, 230], ["E_Tank_24", -246, -181], ["E_Tank_25", -144, 191],
+        ["E_Tank_25", -105, -245], ["E_Tank_26", 30, 208], ["E_Tank_26", 77, -178],
+        ["E_Tank_26", 201, 191], ["E_Tank_26", 252, -202], ["E_Tank_27", 50, 335],
+        ["E_Tank_27", 159, -297], ["E_Tank_28", 287, 225], ["E_Turret_08", -285, 333],
+        ["E_Turret_09", -171, -325], ["E_Turret_10", -49, 304], ["E_Turret_11", 254, 328],
+        ["E_Turret_12", 298, -305], ["E_Plane_01", -77, 240], ["E_Plane_05", 92, -225]
+      ]},
     "Base004": {"name": "White Mt. Base"}
   },
   "links": [
