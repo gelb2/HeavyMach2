@@ -1,6 +1,6 @@
 // Run only against the local HTTP server and disposable browser contexts.
 import assert from 'node:assert/strict';
-import {mkdir, mkdtemp, readFile, rm} from 'node:fs/promises';
+import {mkdir, mkdtemp, readFile, rm, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join, resolve} from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
@@ -25,7 +25,7 @@ const globalSettings = {viewport: rect};
 const settle = ms => new Promise(resolve => setTimeout(resolve, ms));
 await mkdir(evidence, {recursive: true});
 
-async function start(context, edition, captureLauncher=false) {
+async function start(context, edition, captureLauncher=false, touch=false) {
   const page = await context.newPage();
   page.on('pageerror', error => errors.push(error.message));
   await page.goto(editionURL(edition), {waitUntil:'domcontentloaded'});
@@ -34,7 +34,7 @@ async function start(context, edition, captureLauncher=false) {
     await play.click({trial:true, timeout:45000});
     await screenshot(page, 'normal-launcher');
   }
-  await play.click({timeout:45000});
+  await play[touch ? 'tap' : 'click']({timeout:45000});
   await page.locator('#game').waitFor({state:'visible'});
   await page.waitForFunction(() => document.getElementById('launcher').hidden);
   return page;
@@ -67,7 +67,8 @@ async function position(page, id, data=0) {
       ' (' + await page.locator('#warning').textContent() + ')');
   }
   const [,,x,y] = info;
-  assert(x >= 0 && x <= screen.canvas[0] && y >= 0 && y <= screen.canvas[1]);
+  assert(x >= 0 && x <= screen.canvas[0] && y >= 0 && y <= screen.canvas[1],
+    'Screen ' + screen.screen + ' button ' + id + ' at ' + [x,y] + ' lies outside ' + screen.canvas);
   return [x, screen.canvas[1] - y];
 }
 async function clickButton(page, id, data=0) {
@@ -90,11 +91,11 @@ async function waitStatus(page, condition, description) {
 function waitScreen(page, id) {
   return waitStatus(page, state => state.screen === id && state.transition === 8, 'screen ' + id);
 }
-async function dismissHelp(page) {
+async function dismissHelp(page, tap = (...point) => page.mouse.click(...point)) {
   for (let attempt=0; attempt<3; attempt++) {
     const state = await page.evaluate(() => HM2Validation.status());
     if (!state.help) return;
-    await page.mouse.click(state.canvas[0]/2, state.canvas[1]/2);
+    await tap(state.canvas[0]/2, state.canvas[1]/2);
     await settle(150);
   }
   assert.equal((await page.evaluate(() => HM2Validation.status())).help, false);
@@ -172,12 +173,133 @@ async function store(page, edition, key) {
   }, [edition,key]);
 }
 
+async function deviceMatrix(normalManifest, qaManifest) {
+  const cases = [
+    {name:'iphone', device:'iPhone 15 landscape', expected:'phone', resize:{width:393,height:659}},
+    {name:'android-phone', device:'Pixel 7 landscape', expected:'phone', resize:{width:412,height:839}},
+    {name:'ipad', device:'iPad Pro 11', expected:'tablet', resize:{width:1194,height:834}},
+    {name:'ipad-desktop-site', device:'iPad Pro 11', expected:'tablet',
+      userAgent:'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15',
+      resize:{width:504,height:834}},
+    {name:'android-tablet', device:'Galaxy Tab S9', expected:'tablet', resize:{width:1024,height:640}},
+    {name:'desktop', expected:'desktop', resize:{width:820,height:540}},
+    {name:'touch-desktop', expected:'desktop', hasTouch:true, resize:{width:820,height:540},
+      userAgent:'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36'},
+  ];
+  const selected = process.env.HM2_WEB_TEST_DEVICES?.split(',') ?? cases.map(({name}) => name);
+  assert(selected.length && selected.every(name => cases.some(fixture => fixture.name === name)));
+  const report = {browser:browserEngine, browserVersion:browser.version(), normal:normalManifest.version,
+    validation:qaManifest.version, cases:[]};
+  for (const fixture of cases.filter(({name}) => selected.includes(name))) {
+    const {name, expected, resize} = fixture;
+    const {defaultBrowserType, ...device} = playwright.devices[fixture.device] ?? {};
+    const options = {...globalSettings, ...device, screen:device.screen ?? device.viewport ?? rect};
+    if (fixture.userAgent) options.userAgent = fixture.userAgent;
+    if (fixture.hasTouch) options.hasTouch = true;
+    const context = await browser.newContext(options);
+    const results = {name, expected, screens:[]};
+    report.cases.push(results);
+    let page;
+    try {
+      if (name === 'ipad-desktop-site' && browserEngine === 'webkit') {
+        // This Playwright WebKit reports zero even when its touch device is enabled.
+        await context.addInitScript(() => Object.defineProperty(navigator, 'maxTouchPoints', {value:5}));
+      }
+      page = await start(context,'validation',false,options.hasTouch);
+      const tap = (...point) => options.hasTouch ? page.touchscreen.tap(...point) : page.mouse.click(...point);
+      const button = async id => tap(...await position(page,id));
+      const snapshot = () => page.evaluate(async () => {
+        const canvas = document.querySelector('#game');
+        const state = await HM2Validation.status();
+        return {
+          profile:document.documentElement.dataset.profile, runtimeDevice:state.device,
+          compact:state.compact, surface:state.canvas, buffer:[canvas.width,canvas.height],
+          screen:[screen.width,screen.height], touch:navigator.maxTouchPoints,
+          coarse:matchMedia('(pointer: coarse)').matches, userAgent:navigator.userAgent,
+        };
+      });
+      const capture = async screen => {
+        await screenshot(page, name + '-' + screen);
+        results.screens.push(screen);
+      };
+      const verify = (state, viewport) => {
+        assert.equal(state.profile, expected, JSON.stringify(state));
+        assert.equal(state.runtimeDevice, {phone:1, tablet:2, desktop:3}[expected]);
+        assert.deepEqual(state.surface, [viewport.width,viewport.height]);
+        assert.equal(state.compact, expected !== 'desktop' && Math.min(...state.surface) < 600);
+        const ratio = Math.min(options.deviceScaleFactor ?? 1,2,4096/viewport.width,4096/viewport.height);
+        assert.deepEqual(state.buffer, state.surface.map(value => Math.round(value * ratio)));
+      };
+      const enter = async (id, screen, label) => {
+        await button(id);
+        await button(id);
+        await waitScreen(page,screen);
+        await dismissHelp(page,tap);
+        await capture(label);
+      };
+      const back = async () => {
+        await button(2100);
+        await waitScreen(page,3);
+      };
+      results.initial = await snapshot();
+      verify(results.initial, options.viewport);
+      await waitScreen(page,1);
+      await capture('title');
+      for (let attempt=0; attempt<4; attempt++) {
+        if ((await page.evaluate(() => HM2Validation.status())).screen === 2) break;
+        await tap(options.viewport.width/2,options.viewport.height/2);
+        await settle(420);
+      }
+      await waitScreen(page,2);
+      await capture('slots');
+      await button(1009);
+      await button(1001);
+      await waitScreen(page,3);
+      await dismissHelp(page,tap);
+      await capture('base');
+      await enter(2001,4,'command');
+      await back();
+      await enter(2002,6,'shop');
+      await back();
+      await enter(2005,7,'field');
+      const field = await page.evaluate(() => HM2Validation.status());
+      const home = field.portalTargets.find(([, ,leadsToBase]) => leadsToBase);
+      assert(home, 'The return portal must be visible on this field');
+      await tap(home[0],field.canvas[1]-home[1]);
+      await waitScreen(page,3);
+      await capture('portal-return');
+
+      await page.setViewportSize(resize);
+      await waitStatus(page, ({canvas}) => canvas[0] === resize.width && canvas[1] === resize.height, 'resized surface');
+      results.resized = await snapshot();
+      verify(results.resized, resize);
+      await capture('resized-base');
+      await enter(2002,6,'resized-shop');
+      await back();
+    } catch (error) {
+      results.failure = error.message;
+      if (page) await screenshot(page,name + '-failure');
+    } finally { await context.close(); }
+    console.log(JSON.stringify({name, screens:results.screens, failure:results.failure}));
+  }
+  await writeFile(join(evidence, browserEngine + '-devices.json'), JSON.stringify(report,null,2) + '\n');
+  assert.deepEqual(errors, []);
+  assert.deepEqual(report.cases.filter(result => result.failure).map(({name}) => name), []);
+}
+
 try {
   const normalManifest = await fetch(editionURL('normal') + 'asset-manifest.json').then(r => r.json());
   const qaManifest = await fetch(editionURL('validation') + 'asset-manifest.json').then(r => r.json());
   assert.equal(normalManifest.validation, false);
   assert.equal(qaManifest.validation, true);
   assert.notEqual(normalManifest.version, qaManifest.version);
+  if (process.argv.includes('--device-matrix')) await deviceMatrix(normalManifest, qaManifest);
+  else await smoke(normalManifest, qaManifest);
+} finally {
+  await browser.close();
+}
+
+async function smoke(normalManifest, qaManifest) {
   const primary = await browser.newContext(globalSettings);
   const normal = await start(primary, 'normal', true);
   assert.equal(await normal.evaluate(() => typeof window.HM2Validation), 'undefined');
@@ -350,6 +472,4 @@ try {
       ...(browserEngine === 'chromium' ? ['dialog-context-restore-redraw'] : []),
       ...(maintenanceFixture ? ['maintenance-art-and-return'] : [])],
     installability, exactNativeFixture, evidence},null,2));
-} finally {
-  await browser.close();
 }

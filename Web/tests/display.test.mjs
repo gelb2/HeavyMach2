@@ -13,3 +13,15 @@ test('narrow desktop windows stay desktop, including Tauri', () => {
   assert.equal(screenProfile({userAgent: 'Macintosh', maxTouchPoints: 0}, {width: 500, height: 650}, false), 'desktop');
   assert.equal(screenProfile({userAgent: 'iPhone', maxTouchPoints: 5}, {width: 400, height: 900}, true, {}), 'desktop');
 });
+
+test('Android uses the same shortest-edge boundary in either orientation', () => {
+  const android = {userAgent:'Android', maxTouchPoints:5};
+  for (const [edge, expected] of [[599,'phone'], [600,'tablet']]) {
+    assert.equal(screenProfile(android, {width:edge,height:950}, true), expected);
+    assert.equal(screenProfile(android, {width:950,height:edge}, true), expected);
+  }
+});
+test('Windows desktops with a touch-first pointer keep the desktop controls', () => {
+  const windows = {userAgent:'Mozilla/5.0 (Windows NT 10.0; Win64; x64)', maxTouchPoints:10};
+  assert.equal(screenProfile(windows, {width:1366,height:900}, true), 'desktop');
+});

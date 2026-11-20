@@ -7,6 +7,7 @@ export function screenProfile(navigator, screen, coarse, desktopHost) {
   if (/iphone|ipod/i.test(ua)) return 'phone';
   const shortest = Math.min(screen.width, screen.height);
   if (/android/i.test(ua)) return shortest >= 600 ? 'tablet' : 'phone';
+  if (/windows nt/i.test(ua)) return 'desktop';
   if (coarse && navigator.maxTouchPoints > 0) return shortest >= 600 ? 'tablet' : 'phone';
   return 'desktop';
 }

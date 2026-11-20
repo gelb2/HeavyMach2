@@ -316,7 +316,8 @@ public:
         std::ostringstream out;
         out<<"{\"screen\":"<<int(state.screen)<<",\"slot\":"<<state.selectedSlot
            <<",\"ticks\":"<<ticks_<<",\"saves\":"<<metrics.saveCompletions<<",\"credits\":"<<state.credits
-           <<",\"level\":"<<state.level<<",\"compact\":"<<(display_.compact?"true":"false")
+           <<",\"level\":"<<state.level<<",\"device\":"<<int(display_.device)
+           <<",\"compact\":"<<(display_.compact?"true":"false")
            <<",\"transition\":"<<game_->screenTransition().phase
            <<",\"help\":"<<(game_->help()?"true":"false")
            <<",\"canvas\":["<<display_.canvas.width<<','<<display_.canvas.height<<"],\"buttons\":[";

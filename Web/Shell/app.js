@@ -210,7 +210,9 @@ function point(x, y) {
 function sendPointer(phase, x, y, id) {
   return queue(() => {
     if (!live || !metrics || lost || (modal.open && phase < 2)) return;
-    return call('input','number',['number','number','number','number'],[phase,...point(x,y),id]);
+    // Pointer Events can start at zero. The common input code reserves zero
+    // for no active pointer, so shift browser IDs before crossing the boundary.
+    return call('input','number',['number','number','number','number'],[phase,...point(x,y),id + 1]);
   });
 }
 canvas.addEventListener('pointerdown', event => {
