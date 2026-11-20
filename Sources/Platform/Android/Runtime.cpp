@@ -4,6 +4,7 @@
 #include "Core/Simulation/DarwinWorldRandom.hpp"
 #if HM2_CHEAT
 #include "Validation.hpp"
+#include <set>
 #endif
 #ifdef __ANDROID__
 #include <android/log.h>
@@ -380,6 +381,26 @@ std::string Runtime::validate(std::string_view command) {
         return result;
     }
     if (command == "status") return status();
+    if (command == "artwork") {
+        Frame frame;
+        p.screens->append(frame, p.game->renderTime());
+        p.game->appendOverlays(frame);
+        std::set<std::string> artwork;
+        for (const auto& sprite : frame.sprites) {
+            const auto& file = sprite.textureSource.image.empty() ? sprite.image : sprite.textureSource.image;
+            if (!file.empty() && file.front() != '@') artwork.insert(file);
+        }
+        std::ostringstream out;
+        out << "{\"screen\":" << unsigned(p.game->state().screen) << ",\"images\":[";
+        bool first = true;
+        for (const auto& name : artwork) {
+            if (!first) out << ',';
+            first = false;
+            out << jsonString(name);
+        }
+        out << "]}";
+        return out.str();
+    }
     if (p.validation) throw std::invalid_argument("Stop concurrent validation before operating the playable slot");
     if (command == "base" || command.starts_with("field:")) {
         if (p.game->state().selectedSlot < 0 && !p.game->selectSlot(0)) throw std::runtime_error("Missing validation slot");
