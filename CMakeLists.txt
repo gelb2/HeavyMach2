@@ -16,6 +16,7 @@ add_library(HeavyMach2Core STATIC
     Sources/Core/Data/Weapons.cpp
     Sources/Core/Data/Machines.cpp
     Sources/Core/Data/SaveData.cpp
+    Sources/Core/Data/RecoveryCode.cpp
     Sources/Core/Progression/Progression.cpp
     Sources/Core/Progression/Equipment.cpp
     Sources/Core/Progression/QuickItems.cpp

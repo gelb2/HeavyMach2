@@ -11,6 +11,7 @@
 #include <optional>
 
 namespace hm2::ui {
+inline constexpr unsigned recoveryButtonId = 1014;
 enum class ScreenId : unsigned {title=1,slots=2,base=3,command=4,maintenance=5,shop=6,field=7};
 enum class Panel : unsigned {root,inventory,equipment,bot,quick,mission,airlift,system,trade,weaponChoices};
 struct ItemView {
@@ -41,7 +42,7 @@ struct ScreensState {
     std::string locale="us",baseId="Base001";
     int selectedSlot=-1,selectedBaseButton=0;
     std::string baseDescription;
-    bool baseHasCompletedMission=false;
+    bool baseHasCompletedMission=false, recoveryCodeAvailable=false;
     std::array<SlotView,3> slots;
     std::vector<ItemView> inventory,shopItems,availableMissions,acceptedMissions,weaponChoices;
     std::array<ItemView,6> equipment;

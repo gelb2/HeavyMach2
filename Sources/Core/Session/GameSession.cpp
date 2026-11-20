@@ -1,4 +1,6 @@
 #include "Core/Session/GameSession.hpp"
+#include "Core/Data/RecoveryCode.hpp"
+#include "Core/Simulation/DarwinWorldRandom.hpp"
 #include "Core/Progression/Equipment.hpp"
 #include "Core/Data/Descriptions.hpp"
 #include "Core/Progression/QuickItems.hpp"
@@ -21,6 +23,26 @@ using Slot=progression::SlotView;
 constexpr std::array<std::string_view,6> airliftBases{"Base001","Base002","Base003","Base005","Base006","Base004"};
 constexpr std::array<int,6> airliftPrices{50,300,1000,4000,16000,24000};
 constexpr std::size_t visitedBaseOffset(std::size_t index){return 0x1b60+index*4;}
+bool validSavedText(std::string_view text){
+    for(std::size_t i=0;i<text.size();){
+        const auto first=static_cast<unsigned char>(text[i++]);
+        if(first<0x80)continue;
+        unsigned continuation=0,code=0,minimum=0;
+        if(first>=0xc2&&first<=0xdf){continuation=1;code=first&0x1f;minimum=0x80;}
+        else if(first>=0xe0&&first<=0xef){continuation=2;code=first&0xf;minimum=0x800;}
+        else if(first>=0xf0&&first<=0xf4){continuation=3;code=first&7;minimum=0x10000;}
+        else return false;
+        if(continuation>text.size()-i)return false;
+        for(unsigned j=0;j<continuation;++j){
+            const auto next=static_cast<unsigned char>(text[i++]);
+            if((next&0xc0)!=0x80)return false;
+            code=(code<<6)|(next&0x3f);
+        }
+        if(code<minimum||code>0x10ffff||(code>=0xd800&&code<=0xdfff))return false;
+    }
+    return true;
+}
+
 
 // Original OS alert callbacks check object identity. Tokens preserve that
 // identity across delayed callbacks without retaining a raw Scene pointer.
@@ -92,6 +114,44 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
     :resources(r),host(h),random(rng),data(initial?std::move(*initial):SaveData{}),displayLocale(originalDisplayLocale(locale)),itemTable(table(r,"ItemInfo.tble")),descriptions(Descriptions::parse(table(r,"Description_"+displayLocale+".tble"))),
     definitions(progression::Definitions::parse(itemTable,table(r,"ItemRegen.tble"),table(r,"MissionList.tble"),[&r](std::string_view n){return table(r,n);},displayLocale)),
     weapons(Weapons::parse(table(r,"WeaponInfo.tble"))),models(Models::parse(Chunk::parse(r.read("PartsInfo.mcb")),Chunk::parse(r.read("MachInfo.mcb")))),parts(PlayerEquipment::parse(itemTable)),maps(Maps::parse(Chunk::parse(r.read("MapInfo.mcb")))),machines(Machines::parse(table(r,"MachList.tble"))),transition(r){prepareOriginalWeaponAssets(r,globalAssets,weapons);view.locale=displayLocale;view.fieldUIRevision=1;}
+    bool recoveryAvailable() const {
+        return host.supportsRecoveryCode() && view.screen==ui::ScreenId::slots &&
+               transition.state().phase==8 && !mapLoading;
+    }
+    SaveData decodeRecovery(std::string_view code) const {
+        auto decoded=recovery::decode(code);
+        for(unsigned i=0;i<SaveData::slotCount;++i){
+            Slot saved(decoded.slot(i));
+            if(!saved.byte(8)) continue;
+            const auto location=saved.string(0x2d,16);
+            const auto map=maps.all().find(location);
+            if(map==maps.all().end())
+                throw std::invalid_argument("Recovery code contains an unavailable map");
+            if(!location.starts_with("Base")){
+                const auto gate=std::bit_cast<std::int32_t>(saved.u32(0x68));
+                if(std::none_of(map->second.gates.begin(),map->second.gates.end(),
+                    [gate](const auto& entry){return entry.number==gate;}))
+                    throw std::invalid_argument("Recovery code contains an unavailable entry gate");
+            }
+            const auto baseName=saved.string(0x55,16);
+            if(!baseName.empty()&&(!baseName.starts_with("Base")||!maps.all().contains(baseName)))
+                throw std::invalid_argument("Recovery code contains an unavailable base");
+            const auto gauge=saved.experienceGauge();
+            if(saved.level()<0||saved.level()>99||!(gauge>=0&&gauge<=1))
+                throw std::invalid_argument("Recovery code contains an invalid player level or gauge");
+            if(!validSavedText(saved.string(9,32))||!validSavedText(saved.string(0x3d,24)))
+                throw std::invalid_argument("Recovery code contains invalid slot text");
+            const auto country=saved.string(0x29,4);
+            if(!std::all_of(country.begin(),country.end(),[](char c){
+                return (c>='a'&&c<='z')||(c>='A'&&c<='Z');
+            }))throw std::invalid_argument("Recovery code contains an invalid country value");
+
+            progression::Inventory inventory(definitions);
+            inventory.importSlot(saved);
+            (void)parts.mounts(models,previewCodes(inventory));
+        }
+        return decoded;
+    }
     Slot slot(){return Slot(working);}
     std::string base() {return slot().string(0x55,16);}
     void changed(progression::Change change)override{
@@ -330,6 +390,7 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
         }
     }
     void rebuild(){
+        view.recoveryCodeAvailable=host.supportsRecoveryCode();
         for(unsigned i=0;i<3;++i){auto& v=view.slots[i];Slot s(data.slot(i));v.used=s.byte(8)!=0;if(!v.used){v={};slotPreviews[i].reset();continue;}
             v.name=s.string(9,32);v.country=s.string(0x29,4);v.createdAt=localDate(s.u32(0));v.savedAt=localDate(s.u32(4));v.location=s.string(0x3d,24);v.missionPercent=definitions.missions().empty()?0:int(std::uint32_t(int(std::bit_cast<std::int16_t>(s.u16(0x65a)))*100)/definitions.missions().size());v.level=s.level()+1;v.credits=int(s.credit());v.experience=int(s.experience());v.experienceRate=s.experienceGauge();
             progression::Inventory inventory(definitions);inventory.importSlot(s);
@@ -693,6 +754,45 @@ bool GameSession::confirmGameOver(std::uint64_t token){
     return true;
 }
 const SaveData& GameSession::envelope()const{return impl_->data;}
+std::string GameSession::recoveryCode()const{
+    if(!impl_->recoveryAvailable()) throw std::logic_error("Open slot selection to move a save");
+    return recovery::encode(impl_->data);
+}
+void GameSession::validateRecoveryCode(std::string_view code)const{
+    if(!impl_->recoveryAvailable()) throw std::logic_error("Open slot selection to move a save");
+    (void)impl_->decodeRecovery(code);
+}
+bool GameSession::restoreRecoveryCode(std::string_view code){
+    auto& p=*impl_;
+    if(!p.recoveryAvailable()) return false;
+    auto restored=p.decodeRecovery(code);
+
+    // The recovery operation uses its own RNG. Opening this dialog must not
+    // consume the game stream. Keep the live session until both writes succeed.
+    DarwinWorldRandom codecRandom(1);
+    auto previous=p.data;
+    const auto now=p.host.absoluteTimeLow();
+    if(!p.host.backupSaveForRecovery(previous.encode(codecRandom,now))) return false;
+    auto bytes=restored.encode(codecRandom,now);
+    ++p.metrics.saveRequests;
+    if(!p.host.writeSave(bytes,SaveReason::restoreRecovery)) return false;
+    ++p.metrics.saveCompletions;
+
+    p.quickItems.reset();
+    p.releaseScene();
+    p.drops.clear();
+    p.worldTiles=nullptr;
+    p.equipment.reset();
+    p.progress.reset();
+    p.working.fill(0);
+    p.loadedSlot=-1;
+    p.view.selectedSlot=-1;
+    p.view.hasWorkingSlot=false;
+    p.data=std::move(restored);
+    p.dirty=true;
+    return true;
+}
+
 std::string GameSession::originalText(std::string_view key)const{return std::string(impl_->descriptions.lookup(key).value_or(""));}
 std::span<const std::uint8_t> GameSession::workingSlot()const{return impl_->working;}
 CombatScene* GameSession::battle(){return impl_->scene.get();}
@@ -767,6 +867,10 @@ void GameSession::action(const ui::ScreenAction& a){
     const auto id=a.button.key.id;const auto event=a.button.type;
     if(event==ui::ButtonEventType::release)return; // Not an original subscribed action.
     if(a.screen==ui::ScreenId::slots){
+        if(id==ui::recoveryButtonId&&event==ui::ButtonEventType::pop){
+            if(p.recoveryAvailable()) p.host.requestRecoveryCode();
+            return;
+        }
         auto start=[&]{const int selected=p.view.selectedSlot;if(selected>=0&&selected<3){if(p.data.slot(unsigned(selected))[8]){if(selectSlot(unsigned(selected))){auto slot=p.slot();slot.u32(0x1b5c,slot.u32(0x1b5c)+1u);const auto location=slot.string(0x2d,16);p.requestScreen(location.starts_with("Base")?ui::ScreenId::base:ui::ScreenId::field);}}else p.host.requestName(unsigned(selected));}};
         if(id==1009&&event==ui::ButtonEventType::push){const int selected=a.button.key.intData;if(selected<0||selected>=3)return;if(p.view.selectedSlot!=selected){p.view.selectedSlot=selected;p.dirty=true;}else start();return;}
         if(event==ui::ButtonEventType::pop&&id==1001){start();return;}
