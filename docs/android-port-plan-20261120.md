@@ -10,7 +10,7 @@ Android 개발에서는 iOS·iPadOS가 사용하는 파일을 수정하지 않�
 
 Android 코드는 `Android/`와 `Sources/Platform/Android/`에 추가한다. 인게임 규칙은 기존 공통 C++ 라이브러리를 링크해 그대로 사용한다. 공통 API로 표현할 수 없는 동작을 발견하면 재현 조건, 호출 경계, 영향 기기를 기록한다. 공유 파일 수정이 필요한 경우에는 해당 문제를 별도 작업으로 분리한다.
 
-구현 커밋과 병합 후보에서 기준 커밋과 Git 트리를 대조한다. 아래 검사는 새 플랫폼 경로와 이 계획 문서 외의 추적 파일에 추가, 삭제 또는 수정이 있으면 실패한다. APK 패키징 때는 별도로 Android 출력 경로와 에셋 명세를 대조한다.
+구현 커밋과 병합 후보에서 기준 커밋과 Git 트리를 대조한다. 아래 검사는 새 플랫폼 경로와 이 계획 문서 외의 추적 파일에 추가, 삭제 또는 수정이 있으면 실패한다. 빌드 전후에는 작업 트리의 미커밋 변경과 새 파일도 확인한다. Git이 추적하지 않는 Apple 준비본은 파일별 상대 경로·SHA-256으로 전후를 대조한다. Gradle, CMake와 에셋 복사 작업의 출력은 Android 전용 디렉터리에 둔다.
 
 ```sh
 git diff --exit-code 43ae492a56ea58881b84a36f51d385cc092bc981 HEAD -- . \
@@ -42,6 +42,15 @@ flowchart LR
 
 HeavyMach 1과 MachDefense의 Android Gradle·CMake·EGL 구성을 읽어 적용 패턴을 확인했다. HM2의 지도·상점·진행·저장 규칙은 현재 공통 코어에서 가져온다. 원본 IPA와 사용자 저장은 패키징 입력이나 원격 산출물에 포함하지 않는다.
 
+## 구현 전에 확인한 제약과 검증 방법
+
+| 확인한 사실 | 구현과 통과 기준 |
+| --- | --- |
+| 기존 NDK 26.3으로 링크한 두 ABI의 시험용 라이브러리를 `llvm-readelf -lW`로 확인했다. 모든 `LOAD` 세그먼트가 4KB(`0x1000`) 정렬이다. 루트 CMake의 정적 코어에는 동시 치트 검사용 오브젝트도 들어 있다. | 첫 APK부터 Android 프로젝트에 NDK r28 이상과 호환되는 Gradle 플러그인(8.5.1 이상)의 실제 버전을 고정한다. 정식 앱은 코어에서 참조하는 오브젝트만 링크하고, 치트 실행 진입점은 별도 타깃에서 연결한다. 정식 링크 맵에서 검사용 오브젝트 제외를 확인한다. APK 안의 모든 64비트 `.so`에 대해 ELF 정렬을 검사하고 `zipalign -c -P 16 -v 4`로 APK도 확인한다. `adb shell getconf PAGE_SIZE`가 16384인 환경에서 설치·실행을 확인한다. [Android의 16KB 지원 안내](https://developer.android.com/guide/practices/page-sizes) |
+| [에셋 준비 도구](../tools/prepare_campaign_assets.py)의 기본 출력은 Xcode가 읽는 `.local/prepared/Campaign/HD`다. 이 도구는 `.local/prepared/Campaign` 바깥의 출력을 거부한다. 현재 HD 준비본에는 명세를 포함해 파일 1,576개가 있다. | Android 빌드는 준비 도구를 실행하지 않는다. 검증한 준비본을 읽어 게임 자원만 `Android/app/build/generated/assets` 아래에 복사한다. 입력이 없거나 명세가 다르면 경로와 누락 파일을 표시한다. APK에서 실제 항목을 다시 읽어 상대 경로·대소문자·내용 해시를 대조한다. 휴대전화 상점은 `PhoneShopHangar.jpg`, 태블릿은 해당 기기의 기존 상점 배경을 사용하고 첫 진입 화면과 버튼 입력을 확인한다. |
+| [Apple 화면 루프](../Sources/Platform/Apple/HM2SourceView.mm)는 60Hz를 요청하고 호출당 한 번 게임을 갱신한다. [GameClock](../Sources/Core/Simulation/GameClock.hpp)은 한 번 갱신할 때마다 고정량을 더한다. | Android 호스트는 활성 시간에 초당 60회 게임을 갱신한다. 화면을 그리는 횟수와 게임 갱신 횟수를 분리하고, 복귀 시 일시정지 시간을 버린다. 60·90·120Hz의 10초 입력 기록에서 각각 600번 갱신되는지 검사한다. 같은 틱에 이동·점프·사격 입력을 넣고 최종 좌표, 점프 횟수와 SP, 발사 횟수를 비교한다. 실제 기기 또는 에뮬레이터에서는 관측한 주사율과 게임 틱을 함께 기록한다. [Android 프레임 시각](https://developer.android.com/reference/android/view/Choreographer.FrameCallback) |
+| [GameSession](../Sources/Core/Session/GameSession.cpp)은 슬롯 생성 시각을 저장하고 전장 진입 때 호스트 시계로 난수를 다시 초기화한다. 저장 인코딩에도 호스트 시계를 사용한다. | 양쪽 치트 검사의 입력에 시작 저장, 난수 시드, 틱별 입력, `unixTime()`과 `absoluteTimeLow()` 반환 순서를 기록한다. 같은 시나리오에서 세 슬롯의 위치·장비·소지금·임무와 피해량을 대조한다. 실제 시계를 쓴 정식판은 재실행 뒤 디코딩한 진행 상태를 비교한다. |
+
 ## 구현과 통과 기준
 
 1. **첫 실행**
@@ -51,6 +60,6 @@ HeavyMach 1과 MachDefense의 Android Gradle·CMake·EGL 구성을 읽어 적용
 3. **전투·거래·진행**
    Android 치트 앱의 앱 ID와 저장을 일반 앱에서 분리한다. 공습·퀵 슬롯·BOT·장비, 인벤토리 75칸과 마지막 줄, 레이저 공습 구매, 사령부 의뢰와 설원 14방향 이동을 실행한다. 기존 Apple 검증과 시작 저장·입력·난수 조건을 맞추고 발사·피해·아이템·포털·저장 결과를 비교한다. Android 전용 행이나 별도 게임 규칙을 추가하지 않는다.
 4. **일반 APK 후보**
-   ARM64 기기 또는 에뮬레이터와 준비된 에뮬레이터 ABI에서 일반 진행, 재시작, 백그라운드 복귀와 음향 중단을 검증한다. Surface 재생성 후 HUD·텍스처 복구를 확인한다. 패키지에 치트 실행 진입점이 없는지 검사하고 ABI·네이티브 라이브러리와 APK의 16KB 페이지 정렬을 확인한다. Android 후보의 검증과 기기 설치 또는 배포를 구분한다. [Android 16KB 페이지 크기 지원](https://developer.android.com/guide/practices/page-sizes)
+   ARM64 기기 또는 에뮬레이터와 준비된 에뮬레이터 ABI에서 일반 진행, 재시작, 백그라운드 복귀와 음향 중단을 검증한다. 전장에서 EGL 컨텍스트를 잃은 뒤 Android 렌더러의 기존 텍스처 핸들을 폐기하고 현재 월드·메뉴·텍스트를 다시 올린다. 전투 세션과 저장 슬롯을 유지한 채 같은 위치·HP·HUD로 복귀하는지 확인한다. 패키지에 치트 실행 진입점이 없는지 검사하고 ABI·네이티브 라이브러리와 APK의 16KB 페이지 정렬을 확인한다. Android 후보의 검증과 기기 설치 또는 배포를 구분한다. [Android 16KB 페이지 크기 지원](https://developer.android.com/guide/practices/page-sizes)
 
 단계마다 Android 전용 변경을 커밋하고, 기준 커밋·산출물 해시·에뮬레이터 또는 기기·사용한 시작 저장의 종류를 기록한다. iPhone·iPad는 병합 커밋의 기존 검사 결과를 비교 기준으로 쓴다. 화염방사기와 근접 공격은 [후속 투두](todo.md)에 남긴다.
