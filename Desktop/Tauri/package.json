@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "tauri build --bundles app -- --locked",
+    "build:validation": "tauri build --config src-tauri/tauri.validation.conf.json --bundles app -- --locked",
     "test": "node --test tests/*.test.mjs"
   },
   "devDependencies": {

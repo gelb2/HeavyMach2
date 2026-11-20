@@ -46,6 +46,15 @@ class PackagingTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "normal PWA"):
             prepare.copy_verified(self.source, self.output)
 
+    def test_validation_requires_matching_web_build(self):
+        self.save_manifest()
+        with self.assertRaisesRegex(ValueError, "validation PWA"):
+            prepare.copy_verified(self.source, self.output, validation=True)
+        self.manifest["validation"] = True
+        self.save_manifest()
+        prepare.copy_verified(self.source, self.output, validation=True)
+        self.assertEqual(json.loads((self.output / "asset-manifest.json").read_text()), self.manifest)
+
     def test_rejects_changed_payload(self):
         self.save_manifest()
         (self.source / "game.wasm").write_bytes(b"FAIL.wasm")

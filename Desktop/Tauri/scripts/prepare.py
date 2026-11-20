@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Verify and package the normal PWA output without editing its files."""
+"""Verify and package the selected PWA output without editing its files."""
 
+import argparse
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
@@ -13,16 +14,17 @@ DESKTOP = Path(__file__).resolve().parents[1]
 REPO = DESKTOP.parents[1]
 LAUNCHER_ICON = "icon-512.png"
 REQUIRED_FILES = (
-    "index.html", "app.js", "audio.js", "display.js", "storage.js", "style.css",
+    "index.html", "app.js", "audio.js", "display.js", "download.js", "storage.js", "style.css",
     "game.js", "game.wasm", "game.data", LAUNCHER_ICON,
 )
 
 
-def copy_verified(source, target):
+def copy_verified(source, target, *, validation=False):
     manifest_file = source / "asset-manifest.json"
     manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
-    if manifest.get("validation") is not False:
-        raise ValueError("The desktop app requires the normal PWA build")
+    if manifest.get("validation") is not validation:
+        edition = "validation" if validation else "normal"
+        raise ValueError(f"The desktop app requires the {edition} PWA build")
     seen = set()
     for entry in manifest["files"]:
         name = entry["path"]
@@ -47,16 +49,17 @@ def copy_verified(source, target):
     shutil.copyfile(manifest_file, target / manifest_file.name)
 
 
-def prepare():
-    build = DESKTOP / "build"
-    build.mkdir(exist_ok=True)
+def prepare(validation):
+    edition = "validation" if validation else "normal"
+    build = DESKTOP / "build" / "validation" if validation else DESKTOP / "build"
+    build.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=build) as path:
         stage = Path(path)
         frontend = stage / "frontend"
         icons = stage / "icons"
         generated = stage / "generated-icons"
         frontend.mkdir()
-        copy_verified(REPO / "build/web-normal/dist", frontend)
+        copy_verified(REPO / "build" / f"web-{edition}" / "dist", frontend, validation=validation)
         subprocess.run(
             [str(DESKTOP / "node_modules/.bin/tauri"), "icon",
              str(frontend / LAUNCHER_ICON), "--output", str(generated)],
@@ -70,8 +73,10 @@ def prepare():
             if destination.exists():
                 shutil.rmtree(destination)
             directory.rename(destination)
-    print("Verified normal PWA files and staged the Mac bundle inputs")
+    print(f"Verified {edition} PWA files and staged the Mac bundle inputs")
 
 
 if __name__ == "__main__":
-    prepare()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--validation", action="store_true")
+    prepare(parser.parse_args().validation)

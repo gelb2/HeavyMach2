@@ -80,6 +80,11 @@ fn close_after_storage(window: &WebviewWindow) {
 }
 
 fn main() {
+    let window_size = if std::env::args_os().any(|arg| arg == "--portrait-check") {
+        (820.0, 900.0)
+    } else {
+        (1200.0, 800.0)
+    };
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
             if let Some(window) = app.get_webview_window("main") {
@@ -92,11 +97,16 @@ fn main() {
             store_write,
             finish_close
         ])
-        .setup(|app| {
+        .setup(move |app| {
             let window =
                 tauri::WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
-                    .title("HeavyMach 2 Desktop")
-                    .inner_size(1200.0, 800.0)
+                    .title(
+                        app.config()
+                            .product_name
+                            .as_deref()
+                            .unwrap_or("HeavyMach 2 Desktop"),
+                    )
+                    .inner_size(window_size.0, window_size.1)
                     .min_inner_size(800.0, 540.0)
                     .on_navigation(packaged_url)
                     .on_new_window(|_, _| tauri::webview::NewWindowResponse::Deny)
