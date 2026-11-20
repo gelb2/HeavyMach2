@@ -23,12 +23,15 @@ foreach(asset IN LISTS asset_inputs)
 endforeach()
 
 set(BUILD_TESTING OFF CACHE BOOL "Native core tests are built separately" FORCE)
+add_library(HM2WebOpenAL INTERFACE)
+target_link_libraries(HM2WebOpenAL INTERFACE -lopenal)
+set(HM2_OPENAL_LIBRARY HM2WebOpenAL CACHE STRING "Emscripten OpenAL for shared sound effects" FORCE)
 add_subdirectory("${HM2_ROOT}" core EXCLUDE_FROM_ALL)
 target_compile_options(HeavyMach2Core PRIVATE -fexceptions)
 add_executable(hm2web
     "${HM2_ROOT}/Sources/Platform/Web/Runtime.cpp"
     "${HM2_ROOT}/Sources/Platform/Web/Renderer.cpp")
-target_link_libraries(hm2web PRIVATE HeavyMach2Core)
+target_link_libraries(hm2web PRIVATE HeavyMach2Core HeavyMach2Audio)
 target_compile_definitions(hm2web PRIVATE HM2_WEB_VALIDATION=$<BOOL:${HM2_WEB_VALIDATION}>)
 target_compile_options(hm2web PRIVATE -Wall -Wextra -fexceptions)
 target_link_options(hm2web PRIVATE -fexceptions --no-entry

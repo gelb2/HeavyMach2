@@ -41,6 +41,9 @@ class Renderer {
     GLint extent_ = -1;
     std::vector<Vertex> vertices_;
     std::vector<Draw> draws_;
+#if HM2_WEB_VALIDATION
+    unsigned assetReads_ = 0, uploads_ = 0;
+#endif
 
     void upload(std::string_view key, Texture texture, const std::uint8_t* rgba);
     static void cover(std::span<Vertex>, const Frame&);
@@ -57,5 +60,9 @@ public:
     void prepareText(std::string_view key,const ui::TextBitmap&);
     void retain(const Frame& owners);
     void draw(const Frame&, int width, int height, MenuArtwork artwork, HelpUnderlay help);
+#if HM2_WEB_VALIDATION
+    unsigned assetReads() const { return assetReads_; }
+    unsigned uploads() const { return uploads_; }
+#endif
 };
 }

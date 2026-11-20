@@ -44,7 +44,7 @@ async function connect(name, desktopHost) {
       const bytes = await desktopHost.read(key);
       return bytes == null ? null : validate(key, bytes);
     },
-    async write(key, bytes) { await desktopHost.write(key, validate(key, bytes)); }
+    write(key, bytes) { return desktopHost.write(key, validate(key, bytes)); }
   };
   const db = await new Promise((resolve, reject) => {
     const req = indexedDB.open(name, 1);

@@ -7,11 +7,14 @@ HOME=ROOT/'.local/evidence/phone-ui-policy-check'
 INPUTS=('Sources/Core/UI/Screens.cpp','Sources/Core/UI/Screens.hpp','Sources/Core/Presentation/DisplayLayout.cpp','Sources/Core/Presentation/DisplayLayout.hpp','Sources/Core/Presentation/MenuArtwork.hpp','Sources/Core/Presentation/MenuGridLayout.hpp')
 HD_TITLE_SHA='d34b109ac8ccdb73f90a419b60840d350ab7c3d53acad40194f0c8eb3b809a36'
 SCOPE=('Screens.cpp','Screens.hpp','DisplayLayout.cpp','DisplayLayout.hpp','MenuArtwork.hpp','MenuGridLayout.hpp','check_phone_ui_policy.py')
+class StaleEvidence(ValueError):
+    """The capture belongs to another build or set of source files."""
+
 def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
 def verify(data):
-    if data.get('sources')!={p:sha(ROOT/p) for p in INPUTS}: raise ValueError('Stale candidate sources')
+    if data.get('sources')!={p:sha(ROOT/p) for p in INPUTS}: raise StaleEvidence('Stale candidate sources')
     app=ROOT/'build/apple/Build/Products/Debug-iphonesimulator/HeavyMach2Source.app'
-    if data.get('binarySHA256')!=sha(app/'HeavyMach2Source') or data.get('gameSHA256')!=sha(app/'HeavyMach2Source.debug.dylib'): raise ValueError('Stale candidate build')
+    if data.get('binarySHA256')!=sha(app/'HeavyMach2Source') or data.get('gameSHA256')!=sha(app/'HeavyMach2Source.debug.dylib'): raise StaleEvidence('Stale candidate build')
     expected={'hub-Base00'+str(i) for i in range(1,7)}|{'shop','shop-detail','shop-last-page','shop-trade','command','command-detail','command-last-page','title','logo','stage-name'}
     seen=set(); failures=[]
     for row in data['rows']:
@@ -47,13 +50,17 @@ def main():
         payload=json.dumps(event.get('tool_input',{}))
         if not (str(event.get('cwd','')).startswith(str(ROOT)) or str(ROOT) in payload) or not any(x in payload for x in SCOPE): print('{}');return 0
     try: result=verify(json.loads(args.input.read_text())) if args.input.exists() else {'status':'NOT_RUN','reason':'Capture the current simulator menu/title/banner cases and review them'}
+    except StaleEvidence as error: result = {'status': 'STALE', 'reason': str(error)}
     except Exception as error: result={'status':'ERROR','reason':str(error)}
     HOME.mkdir(parents=True,exist_ok=True);prior=sorted(p for p in HOME.glob('*.json') if p.stem.isdigit());old=json.loads(prior[-1].read_text()) if prior else {}
+    fingerprint = sha(args.input) if args.input.exists() else None
+    if args.hook and result['status'] == 'STALE' and old.get('status') == 'STALE' and old.get('inputSHA256') == fingerprint and old.get('reason') == result['reason']:
+        print('{}'); return 0
     result['repeatedFailure']=result['status'] in ('FAIL','ERROR') and all(old.get(k)==result.get(k) for k in ('status','failures','reason'))
     if result['repeatedFailure']:result['nextAction']='Correct the first mismatch; stop repeating the same approach. Editing and recovery remain allowed.'
-    result.update(time_ns=time.time_ns(),hook_event=event.get('hook_event_name'),tool_id=event.get('tool_use_id'))
+    result.update(time_ns=time.time_ns(),inputSHA256=fingerprint,hook_event=event.get('hook_event_name'),tool_id=event.get('tool_use_id'))
     path=HOME/(str(result['time_ns'])+'.json');path.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
-    if args.input.exists():path.with_suffix('.input.json').write_bytes(args.input.read_bytes())
+    if args.input.exists() and result["status"] != "STALE":path.with_suffix('.input.json').write_bytes(args.input.read_bytes())
     if args.hook:print(json.dumps({'hookSpecificOutput':{'hookEventName':event['hook_event_name'],'additionalContext':'Phone menu/title/banner only: '+result['status']+'; '+str(path)+'. No tools/files blocked.'}}));return 0
     print(json.dumps(result,ensure_ascii=False));return 0 if result['status']=='PASS' else 1
 if __name__=='__main__':

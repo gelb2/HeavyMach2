@@ -1,4 +1,5 @@
 #include "Renderer.hpp"
+#include "Core/Audio/OpenALEffects.hpp"
 #include "Core/Audio/SoundIDs.hpp"
 #include "Core/Data/ResourceName.hpp"
 #include "Core/Presentation/PreparedTiles.hpp"
@@ -22,9 +23,6 @@ EM_JS(void, dialog,(int kind,int argument,const char* title,const char* body),{
     Module.hm2Dialog(kind,argument,UTF8ToString(title),UTF8ToString(body));
 });
 EM_JS(void, musicFile,(const char* name),{ Module.hm2Music(UTF8ToString(name)); });
-EM_JS(void, soundFile,(const char* name,int play,float pan),{
-    Module.hm2Sound(UTF8ToString(name),!!play,pan);
-});
 EM_JS(int, load,(const char* key,std::uint8_t* bytes,int capacity),{
     const value=Module.hm2Read(UTF8ToString(key));
     if(!value) return 0;
@@ -89,6 +87,7 @@ struct Touch { Vec2 previous; bool world=false; };
 
 class Runtime final : public SessionHost,public ui::ScreensHost {
     Assets resources_;
+    audio::OpenALEffects effects_;
     Rasterizer raster_;
     Renderer renderer_{resources_};
     DarwinWorldRandom random_{1};
@@ -148,6 +147,7 @@ class Runtime final : public SessionHost,public ui::ScreensHost {
     }
 public:
     Runtime() {
+        if(!effects_.valid()) throw std::runtime_error(effects_.error());
         renderer_.initialize();
         std::optional<SaveData> data;
         if(const auto bytes=stored("save",SaveData::byteCount))
@@ -164,13 +164,17 @@ public:
         synchronize(true);
     }
     void sound(std::string_view name,Vec2 point) override {
-        if(active_&&!name.empty()) soundFile(std::string(name).c_str(),true,std::clamp(point.x/768.f,-1.f,1.f));
+        if(!active_||name.empty()) return;
+        prepareSound(name);
+        if(!effects_.play(name,point.x,point.y)) throw std::runtime_error(effects_.error());
     }
     void soundID(unsigned id,Vec2 point) override { sound(audio::soundFilename(id),point); }
     void sound(std::string_view name) override { sound(name,{}); }
     void sfx(unsigned id) override { soundID(id,{}); }
     void prepareSound(std::string_view name) override {
-        if(!name.empty()) soundFile(std::string(name).c_str(),false,0);
+        if(name.empty()||effects_.contains(name)) return;
+        if(!effects_.prepare(std::string(name),audio::decodeWave(resources_.read(name))))
+            throw std::runtime_error("Cannot prepare original PCM effect "+std::string(name)+": "+effects_.error());
     }
     void bgm(std::string_view name) override { musicFile(std::string(name).c_str()); }
     void alert(std::string_view key) override { alert(key,"HeavyMach 2"); }
@@ -243,7 +247,12 @@ public:
         touches_.clear();
         screens_->discardInputs();
     }
-    void activity(bool active) { if(!active) cancel(); active_=active; game_->setActive(active); }
+    void activity(bool active) {
+        if(!active) cancel();
+        active_=active;
+        effects_.setActive(active);
+        game_->setActive(active);
+    }
     void lost() { cancel(); graphics_=false; renderer_.abandonContext(); }
     void recovered() {
         renderer_.initialize();
@@ -313,6 +322,11 @@ public:
     std::string status() {
         const auto& state=game_->state();
         const auto& metrics=game_->metrics();
+        const auto audioMetrics=effects_.metrics();
+        const auto playback=effects_.playbackSnapshot();
+        const auto playing=std::count_if(playback.begin(),playback.end(),[](const auto& effect){
+            return effect.playing&&effect.sampleOffset>0;
+        });
         std::ostringstream out;
         out<<"{\"screen\":"<<int(state.screen)<<",\"slot\":"<<state.selectedSlot
            <<",\"ticks\":"<<ticks_<<",\"saves\":"<<metrics.saveCompletions<<",\"credits\":"<<state.credits
@@ -321,6 +335,10 @@ public:
            <<",\"transition\":"<<game_->screenTransition().phase
            <<",\"help\":"<<(game_->help()?"true":"false")
            <<",\"active\":"<<(active_?"true":"false")
+           <<",\"effects\":{\"contexts\":"<<audioMetrics.contextsCreated
+           <<",\"sources\":"<<audioMetrics.sourcesCreated<<",\"buffers\":"<<audioMetrics.buffersCreated
+           <<",\"plays\":"<<audioMetrics.playRequests<<",\"sampling\":"<<playing<<'}'
+           <<",\"textures\":{\"reads\":"<<renderer_.assetReads()<<",\"uploads\":"<<renderer_.uploads()<<'}'
            <<",\"canvas\":["<<display_.canvas.width<<','<<display_.canvas.height<<"],\"buttons\":[";
         bool first=true;
         for(const auto& key:screens_->buttons()) {

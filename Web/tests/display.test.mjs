@@ -25,3 +25,9 @@ test('Windows desktops with a touch-first pointer keep the desktop controls', ()
   const windows = {userAgent:'Mozilla/5.0 (Windows NT 10.0; Win64; x64)', maxTouchPoints:10};
   assert.equal(screenProfile(windows, {width:1366,height:900}, true), 'desktop');
 });
+
+test('unknown devices and invalid Android screen dimensions remain unclassified', () => {
+  assert.equal(screenProfile({userAgent:'Unknown', maxTouchPoints:0}, {width:900,height:600}, false), null);
+  assert.equal(screenProfile({userAgent:'Android', maxTouchPoints:5}, {width:0,height:950}, true), null);
+  assert.equal(screenProfile({userAgent:'X11; Linux x86_64', maxTouchPoints:0}, {width:900,height:600}, false), 'desktop');
+});

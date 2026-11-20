@@ -53,7 +53,7 @@ async fn store_write(
     state: State<'_, AppState>,
     key: String,
     bytes: Vec<u8>,
-) -> Result<(), String> {
+) -> Result<Option<String>, String> {
     let dir = storage_dir(&window)?;
     let key = Key::parse(&key).map_err(|error| error.to_string())?;
     let lock = Arc::clone(&state.storage);

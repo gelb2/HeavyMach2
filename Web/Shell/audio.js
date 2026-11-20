@@ -1,13 +1,12 @@
-// Browser output adapter. The C++ session owns sound names and play events.
-export function createAudio(module, warn) {
+// Browser music output. The shared C++ OpenAL owner plays all effects.
+export function createMusic(module, warn) {
   let context, wanted, track, muted = false, musicEpoch = 0;
-  let playing = 0;
   const buffers = new Map();
   function buffer(name) {
     if (!buffers.has(name)) {
       const read = async () => context.decodeAudioData(module.FS.readFile('/campaign/' + name).slice().buffer);
-      if (buffers.size === 96) buffers.delete(buffers.keys().next().value);
       buffers.set(name, read().catch(error => {
+        buffers.delete(name);
         warn('소리를 불러오지 못했습니다. ' + name);
         throw error;
       }));
@@ -49,20 +48,6 @@ export function createAudio(module, warn) {
         context.suspend().catch(() => {});
       }
       if (context && active) context.resume().then(restartMusic).catch(() => {});
-    },
-    sound(name, play, pan) {
-      if (!context || context.state !== 'running' || muted) return;
-      buffer(name).then(decoded => {
-        if (!play || muted || context.state !== 'running' || playing >= 24) return;
-        const effect = context.createBufferSource();
-        effect.buffer = decoded;
-        const balance = context.createStereoPanner();
-        balance.pan.value = pan;
-        effect.connect(balance).connect(context.destination);
-        playing++;
-        effect.onended = () => { playing--; effect.disconnect(); balance.disconnect(); };
-        effect.start();
-      }).catch(() => {});
     },
     music(name) {
       if (name === wanted) return;

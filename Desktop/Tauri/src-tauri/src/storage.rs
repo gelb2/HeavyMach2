@@ -78,21 +78,34 @@ pub fn read(root: &Path, key: Key) -> io::Result<Option<Vec<u8>>> {
     Ok(Some(bytes))
 }
 
-/// Each call commits one record. A restore writes and verifies the separate
-/// backup before requesting replacement of the current save.
-pub fn write(root: &Path, key: Key, bytes: &[u8]) -> io::Result<()> {
+/// A warning means the record was replaced, but syncing its directory failed.
+pub fn write(root: &Path, key: Key, bytes: &[u8]) -> io::Result<Option<String>> {
+    write_with_directory_sync(root, key, bytes, File::sync_all)
+}
+
+fn write_with_directory_sync(
+    root: &Path,
+    key: Key,
+    bytes: &[u8],
+    sync: impl FnOnce(&File) -> io::Result<()>,
+) -> io::Result<Option<String>> {
     key.check(bytes.len())?;
     fs::create_dir_all(root)?;
+    let directory = File::open(root)?;
     read(root, key)?; // Preserve a damaged or non-regular existing record.
     let mut pending = tempfile::NamedTempFile::new_in(root)?;
     pending.write_all(bytes)?;
     pending.as_file().sync_all()?;
     pending.persist(root.join(key.filename()))?;
-    File::open(root)?.sync_all()?;
-    if read(root, key)?.as_deref() != Some(bytes) {
-        return Err(invalid("Could not verify the committed storage record"));
+    match sync(&directory) {
+        Ok(()) => Ok(None),
+        // The primary save can still be left intact when only its backup
+        // was replaced. A restore must stop until that backup is durable.
+        Err(error) if matches!(key, Key::Backup) => Err(error),
+        // The rename has committed. Returning a failed replacement would
+        // make the live session disagree with the save read on next launch.
+        Err(error) => Ok(Some(error.to_string())),
     }
-    Ok(())
 }
 
 #[cfg(test)]
@@ -127,6 +140,36 @@ mod tests {
             Some(initial.as_slice())
         );
         assert_eq!(read(root, Key::Backup).unwrap(), Some(initial));
+    }
+
+    #[test]
+    fn reports_failed_directory_sync_without_rejecting_a_committed_save() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path();
+        let old = vec![5; SAVE_SIZE];
+        let new = vec![6; SAVE_SIZE];
+        assert_eq!(write(root, Key::Save, &old).unwrap(), None);
+        assert_eq!(write(root, Key::Backup, &old).unwrap(), None);
+        let warning = write_with_directory_sync(root, Key::Save, &new, |_| {
+            Err(io::Error::other("simulated directory sync failure"))
+        })
+        .unwrap();
+        assert!(warning.is_some());
+        assert_eq!(read(root, Key::Save).unwrap(), Some(new));
+        assert_eq!(read(root, Key::Backup).unwrap(), Some(old));
+    }
+
+    #[test]
+    fn failed_backup_sync_does_not_acknowledge_safe_replacement() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path();
+        let old = vec![5; SAVE_SIZE];
+        write(root, Key::Save, &old).unwrap();
+        let backup = write_with_directory_sync(root, Key::Backup, &old, |_| {
+            Err(io::Error::other("simulated backup sync failure"))
+        });
+        assert!(backup.is_err());
+        assert_eq!(read(root, Key::Save).unwrap(), Some(old));
     }
 
     #[test]

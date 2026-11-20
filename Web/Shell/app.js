@@ -1,5 +1,5 @@
 import {prepareOffline} from './download.js';
-import {createAudio} from './audio.js';
+import {createMusic} from './audio.js';
 import {screenProfile} from './display.js';
 import {offerInstall} from './install.js';
 import {openStorage, storeKeys} from './storage.js';
@@ -9,17 +9,18 @@ const canvas = $('game');
 const modal = $('dialog');
 const validation = document.body.dataset.validation === 'true';
 const desktop = window.HM2Desktop;
-const profile = screenProfile(navigator, screen, matchMedia('(pointer: coarse)').matches, desktop);
+const detectedProfile = screenProfile(navigator, screen, matchMedia('(pointer: coarse)').matches, desktop);
+const profile = detectedProfile ?? 'desktop';
 const profileId = {phone: 0, tablet: 1, desktop: 2}[profile];
 document.documentElement.dataset.profile = profile;
+document.documentElement.dataset.profileDetected = String(detectedProfile !== null);
 const cache = new Map();
 const held = new Map();
 let wasm, audio, storage, metrics, prompt;
 let live = false, starting = false, lost = false, pending = Promise.resolve();
 let previous, remainder = 59, warningTimeout;
 
-function warning(text) {
-  const node = modal.open ? $('dialog-status') : $('warning');
+function warning(text, node = modal.open ? $('dialog-status') : $('warning')) {
   node.textContent = text;
   if (node.id === 'warning') {
     node.hidden = false;
@@ -152,7 +153,12 @@ $('dialog-form').addEventListener('submit', async event => {
       return;
     }
     const restored = await queue(() => call('restore', 'number', ['string'], [value]));
-    if (restored === 1) { modal.close(); warning('저장 슬롯을 복원했습니다.'); }
+    if (restored === 1) {
+      modal.close();
+      warning(current.syncWarning
+        ? '저장 슬롯을 복원했습니다. 디스크 동기화 확인에 실패했습니다.'
+        : '저장 슬롯을 복원했습니다.');
+    }
     else if (!$('dialog-status').textContent) warning('진행 상황을 저장하지 못했습니다.');
   } catch (error) {
     warning(String(error.message ?? error));
@@ -316,15 +322,19 @@ async function boot() {
     hm2Dialog: showDialog,
     hm2Read: key => cache.get(key),
     async hm2Persist(key, bytes) {
-      await storage.write(key, bytes);
+      const syncWarning = await storage.write(key, bytes);
       cache.set(key, bytes);
+      if (syncWarning) {
+        console.warn(syncWarning);
+        if (modal.open && prompt?.kind === 4 && key === 'save') prompt.syncWarning = true;
+        else warning('저장을 교체했습니다. 디스크 동기화 확인에 실패했습니다.', $('warning'));
+      }
     },
     hm2StoreError: warning,
     hm2Music: name => audio?.music(name),
-    hm2Sound: (name, play, pan) => audio?.sound(name, play, pan),
     hm2Raster: raster
   });
-  audio = createAudio(wasm, warning);
+  audio = createMusic(wasm, warning);
   $('status').textContent = offline ? '오프라인에서 게임을 시작할 수 있습니다.' : '게임을 시작할 수 있습니다.';
   $('play').disabled = false;
   if (validation) window.HM2Validation = Object.freeze({
@@ -353,6 +363,7 @@ $('play').addEventListener('click', async () => {
       await resize();
     });
     $('launcher').hidden = true;
+    if (!detectedProfile) warning('기기 종류를 확인하지 못해 데스크톱 배치를 사용합니다.');
     canvas.focus();
     requestAnimationFrame(frame);
   } catch (error) {

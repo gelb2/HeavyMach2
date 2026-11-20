@@ -462,6 +462,44 @@ async function verifyHostStartup() {
   console.log('WebGL startup failure releases the save lock; hidden startup suspends audio and simulation');
 }
 
+async function verifyAssetUse() {
+  const context = await browser.newContext(globalSettings);
+  try {
+    const page = await start(context, 'validation');
+    const state = () => page.evaluate(() => HM2Validation.status());
+    await titleToSlots(page, true);
+    await clickButton(page, 1009);
+    await clickButton(page, 1001);
+    await waitScreen(page, 3);
+    await dismissHelp(page);
+    const warmed = await state();
+    assert.equal(warmed.effects.contexts, 1);
+    assert(warmed.effects.sources > 0);
+    assert.equal(warmed.effects.sources, warmed.effects.buffers);
+    assert(warmed.textures.reads > 0 && warmed.textures.uploads > 0);
+    await settle(600);
+    assert.deepEqual((await state()).textures, warmed.textures);
+
+    let sampled = false;
+    for (const id of [2002, 2001, 2002, 2001]) {
+      await clickButton(page, id);
+      for (let i = 0; i < 7 && !sampled; i++) {
+        sampled = (await state()).effects.sampling > 0;
+        if (!sampled) await settle(20);
+      }
+    }
+    const reused = await state();
+    assert(reused.effects.plays > warmed.effects.plays, 'Ready OpenAL sources play the real menu effects');
+    assert(sampled, 'Browser OpenAL sample offset advances during the real menu effects');
+    assert.equal(reused.effects.contexts, warmed.effects.contexts);
+    assert.equal(reused.effects.sources, warmed.effects.sources);
+    assert.equal(reused.effects.buffers, warmed.effects.buffers);
+    await writeFile(join(evidence, 'asset-use.json'), JSON.stringify({warmed, reused, sampled}, null, 2) + '\n');
+    await screenshot(page, 'shared-assets-base');
+  } finally { await context.close(); }
+  console.log('OpenAL output sampled; reuses the prepared sources; steady frames do not read or upload textures');
+}
+
 async function deviceMatrix(normalManifest, qaManifest, installed=false) {
   if (installed) assert.equal(browserEngine,'chromium','Use Chrome to install the PWA');
   const gestures = process.argv.includes('--game-gestures');
@@ -636,6 +674,7 @@ try {
   else if (process.argv.includes('--device-matrix')) await deviceMatrix(normalManifest, qaManifest);
   else if (process.argv.includes('--install-ui')) await installInterface();
   else if (process.argv.includes('--host-startup')) await verifyHostStartup();
+  else if (process.argv.includes('--asset-use')) await verifyAssetUse();
   else if (process.argv.includes('--installed')) await launchInstalled(normalManifest, qaManifest);
   else await smoke(normalManifest, qaManifest);
 } finally {

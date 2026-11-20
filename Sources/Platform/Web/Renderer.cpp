@@ -137,6 +137,9 @@ void Renderer::upload(std::string_view key, Texture texture, const std::uint8_t*
         throw std::runtime_error("Texture upload failed: "+std::string(key));
     }
     textures_.emplace(key,std::move(texture));
+#if HM2_WEB_VALIDATION
+    ++uploads_;
+#endif
 }
 
 void Renderer::prepare(const Frame& owners) {
@@ -149,6 +152,9 @@ void Renderer::prepare(const Frame& owners) {
             continue;
         }
         const auto image=decodeImage(resources_.read(source.image));
+#if HM2_WEB_VALIDATION
+        ++assetReads_;
+#endif
         const Texture texture{0,image.width,image.height,std::bit_ceil(image.width),std::bit_ceil(image.height),source};
         if(source.variant==TextureVariant::originalHalfAlpha) {
             const auto rgba=rgbaAlpha(prepareOriginalPartAlpha(image).alpha);
