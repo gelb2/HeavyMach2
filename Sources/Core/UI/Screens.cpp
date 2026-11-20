@@ -414,10 +414,14 @@ struct Screens::Impl {
         addButton(Panel::root,1001,"Common_Btn_OK.png",{544,80},1,2,0,1,Size{80,40});
         if(state.recoveryCodeAvailable){
             const Vec2 position{685,80};
-            addButton(Panel::root,recoveryButtonId,"",position,1,1,0,0,Size{122,44});
+            const auto button=addButton(Panel::root,recoveryButtonId,"BaseTextBG.png",
+                position,1,1,0,0,Size{122,44},0,{}, {.22f,.22f},true,3,false);
+            button->alpha=.78f;
+            button->pressedAlphaMultiplier=1.25f;
+            const bool korean=state.locale=="kr";
             RegionScope footer(*this,Region::bottom);
-            text("GuiSelectSlot.transfer",state.locale=="kr"?"저장 이동":"Transfer",
-                position,{122,40},"Arial",20,TextAlign::center,{.65f,1,.99f,1});
+            text("GuiSelectSlot.transfer",korean?"저장 이동":"TRANSFER",
+                position,{84,20},korean?"Arial-BoldMT":"Copperplate-Bold",14,TextAlign::center);
         }
         for(unsigned i=0;i<3;++i){
 RegionScope card(*this,Region(unsigned(Region::slot0)+i));

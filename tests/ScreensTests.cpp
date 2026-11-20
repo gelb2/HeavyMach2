@@ -501,7 +501,14 @@ int main(int argc,char** argv){
     const auto transfer=ids(ui,recoveryButtonId);
     assert(ui.buttons().size()==7&&transfer.size()==1);
     const auto transferPoint=ui.buttonScreenPosition(transfer[0]);
+    const auto unpressed=draw(ui);
+    assert(sprite(unpressed,"BaseTextBG.png")&&near(sprite(unpressed,"BaseTextBG.png")->color.a,.78f));
+    assert(positionOf(unpressed,"BaseTextBG.png")<positionOf(unpressed,"prepared:GuiSelectSlot.transfer"));
+    assert(request(host,"GuiSelectSlot.transfer").fontName==(state.locale=="kr"?"Arial-BoldMT":"Copperplate-Bold"));
     ui.input(PointerPhase::begin,transferPoint,8,4);
+    Frame pressed;
+    ui.append(pressed,4);
+    assert(near(sprite(pressed,"BaseTextBG.png")->color.a,.975f));
     ui.input(PointerPhase::end,transferPoint,8,4);
     assert(host.actions.back().button.key.id==recoveryButtonId);
 
