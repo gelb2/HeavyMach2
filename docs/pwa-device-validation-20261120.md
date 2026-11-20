@@ -1,6 +1,6 @@
 # 맥미니에서 PWA 화면과 입력 검증
 
-설치형 PWA 확인은 기기에서 홈 화면·앱 목록·Dock 아이콘으로 게임을 열어 진행한다. 휴대폰은 가로, 태블릿은 세로다. 아래 브라우저 탭과 모바일 모의 결과는 개발 검사 기록이다. iPhone 17 Pro 시뮬레이터의 홈 화면 설치와 가로 치트판 버튼 확인을 완료했다. [설치형 확인 순서](../Web/README.md#설치형-pwa-확인)
+설치형 PWA 확인은 기기에서 홈 화면·앱 목록·Dock 아이콘으로 게임을 열어 진행한다. 휴대폰은 가로, 태블릿은 세로다. 아래 브라우저 탭과 모바일 모의 결과는 개발 검사 기록이다. iPhone 17 Pro 시뮬레이터에 정식판과 치트판을 홈 화면에 설치하고 가로 화면에서 실행했다. [설치형 확인 순서](../Web/README.md#설치형-pwa-확인)
 
 ## iPhone 홈 화면에서 실행한 치트판
 
@@ -13,7 +13,19 @@ iPhone 17 Pro 시뮬레이터의 iOS 26.5에서 `HM2 QA`를 **웹 앱으로 열�
 | 상점의 **Exit** | Ruin Field Base로 돌아왔다. | `08-base-after-shop-exit.png` |
 | 기지의 **Exit** | 첫 터치에서 안내를 표시하고 두 번째 터치에서 슬롯 화면으로 돌아왔다. | `09-base-exit-selected.png`, `10-slots-after-base-exit.png` |
 
-이 설치형 치트판의 첫 기지에서 Shop과 Exit 입력은 각각 목표 화면으로 갔다. 캡처는 `.local/evidence/pwa-compat-20261120/iphone-installed`에 있다. 정식판과 iPad·Android 설치형 기기 확인은 남아 있다.
+이 설치형 치트판의 첫 기지에서 Shop과 Exit 입력은 각각 목표 화면으로 갔다. 캡처는 `.local/evidence/pwa-compat-20261120/iphone-installed`에 있다. 실제 iPhone·iPad·Android 기기 검증은 남아 있다.
+
+## iPhone 홈 화면에서 실행한 정식판
+
+iPhone 17 Pro 시뮬레이터의 iOS 26.5에서 정식판 `a8235fe684ab434ad405b0e3`을 **웹 앱으로 열기**로 설치했다. 홈 화면 아이콘으로 실행하고 가로 화면에서 빈 슬롯에 `PWA Test`를 만들었다. Ruin Field Base의 Shop으로 상점에 들어갔고 상점 Exit로 기지에 돌아왔다. 사령부 왕복과 Ruin Field의 전장 진입도 확인했다.
+
+캡처는 `.local/evidence/pwa-compat-20261120/iphone-normal-installed`에 있다. `02-home-icon.png`는 홈 화면, `03-standalone-launcher.png`는 주소창·탭 없는 실행 화면, `06-created-slot.png`는 새 슬롯, `08-shop.png`는 상점, `10-command.png`는 사령부, `12-field-active.png`는 전장이다. 이 정식판에서는 서버를 끈 뒤 재실행하거나 기지 Exit로 슬롯에 돌아오는 경로를 확인하지 않았다.
+
+## Tauri Mac 세로 창
+
+두 판을 별도 앱 ID로 빌드했다. 각각 정식판과 치트판의 웹 파일을 해시 검증 후 묶었고, 두 Mac 번들의 로컬 서명을 검증했다. `--portrait-check`로 두 앱을 실행했으며 macOS 창 목록에서 각각 820×900pt를 확인했다. 정식판 앱 ID는 `com.gelb2.heavymach2.desktop`, 치트판은 `com.gelb2.heavymach2.desktop.validation`이다.
+
+같은 820×900pt를 공통 C++에 전달하여 여섯 기지의 상점·사령부·기지 나가기와 상점·사령부 복귀 버튼 총 30개의 위치와 클릭 수신을 확인했다. Tauri 패키징 6개, JS 저장 연결 3개, Rust 저장 4개 검사도 통과했다. macOS 화면이 잠겨 두 실제 세로 창의 캡처와 직접 조작은 남아 있다. 검사 로그는 `.local/evidence/pwa-compat-20261120/tauri-portrait`에 있다.
 
 ## 이전 개발 검사
 
