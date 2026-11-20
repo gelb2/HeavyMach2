@@ -8,7 +8,16 @@
 
 Android 개발에서는 iOS·iPadOS가 사용하는 파일을 수정하지 않는다. 여기에는 `Apple/`과 `Sources/Platform/Apple/` 외에 `Sources/Core/`, `Sources/Assets/`, `Resources/`, `ThirdParty/`, 루트 `CMakeLists.txt`, Apple 빌드와 에셋 준비에 쓰는 `tools/`가 포함된다. Apple의 로컬 준비본과 빌드도 Android가 덮어쓰지 않는다.
 
-Android 코드는 `Android/`와 `Sources/Platform/Android/`에 추가한다. Android CMake에서 저장소 루트를 `add_subdirectory`로 읽고 JNI 타깃이 `target_link_libraries`로 `HeavyMach2Core`에 의존하게 한다. 공통 소스는 원래 경로에서 Android ABI용으로 컴파일한다. 이동·점프·피해·상점·인벤토리·저장 형식의 구현은 이 한 벌만 유지한다. 공통 API로 표현할 수 없는 동작을 발견하면 재현 조건, 호출 경계, 영향 기기를 기록한다. 공유 파일 수정이 필요한 경우에는 해당 문제를 별도 작업으로 분리한다.
+| 경로 | 파일 배치 |
+| --- | --- |
+| `Android/` | Android 앱 프로젝트, Gradle·CMake 설정, 매니페스트, Kotlin Activity와 Android 전용 테스트 |
+| `Sources/Platform/Android/` | JNI 진입점과 Android용 C++ 입력·그래픽·음향·저장 연결 코드 |
+| `Apple/`, `Sources/Platform/Apple/` | 기존 Xcode 프로젝트·테스트와 Apple 플랫폼 구현 |
+| `Sources/Core/`, `Sources/Assets/`, `Resources/` | 두 플랫폼이 원래 위치에서 사용하는 게임 규칙, 에셋 판독 코드와 공통 자원 |
+
+플랫폼 소스는 자기 플랫폼과 공통 모듈에만 의존한다. Android 빌드의 소스·헤더 검색 경로와 링크 입력에서 Apple 전용 경로가 빠져 있는지 확인한다. Xcode 프로젝트와 Apple 소스에는 Android 참조를 추가하지 않는다.
+
+Android CMake에서 저장소 루트를 `add_subdirectory`로 읽고 JNI 타깃이 `target_link_libraries`로 `HeavyMach2Core`에 의존하게 한다. 공통 소스는 원래 경로에서 Android ABI용으로 컴파일한다. 이동·점프·피해·상점·인벤토리·저장 형식의 구현은 이 한 벌만 유지한다. 공통 API로 표현할 수 없는 동작을 발견하면 재현 조건, 호출 경계, 영향 기기를 기록한다. 공유 파일 수정이 필요한 경우에는 해당 문제를 별도 작업으로 분리한다.
 
 구현 커밋과 병합 후보에서 기준 커밋과 Git 트리를 대조한다. 아래 검사는 새 플랫폼 경로와 이 계획 문서 외의 추적 파일에 추가, 삭제 또는 수정이 있으면 실패한다. 빌드 전후에는 작업 트리의 미커밋 변경과 새 파일도 확인한다. Git이 추적하지 않는 Apple 준비본은 파일별 상대 경로·SHA-256으로 전후를 대조한다. Gradle과 CMake의 중간 산출물과 APK는 Android 전용 디렉터리에 둔다. 첫 빌드에서 CMake 컴파일 명령의 공통 소스 경로가 저장소 원본을 가리키고 JNI 링크 맵에 해당 코어가 포함되는지 확인한다.
 
@@ -35,7 +44,7 @@ flowchart LR
 
 | 영역 | 현재 구현 | Android 작업 |
 | --- | --- | --- |
-| 앱·빌드 | [루트 CMake](../CMakeLists.txt)의 `HeavyMach2Core`와 Xcode의 일반·치트 타깃이 공통 코드를 사용한다. | `Android/`에 Kotlin Activity, JNI, Gradle 및 Android용 CMake 진입점을 둔다. `BUILD_TESTING=OFF`와 PIC를 Android 하위 빌드에서 설정하고 루트 타깃을 참조한다. 원래 C++20 및 부동소수점 옵션을 유지한다. |
+| 앱·빌드 | [루트 CMake](../CMakeLists.txt)의 `HeavyMach2Core`와 Xcode의 일반·치트 타깃이 공통 코드를 사용한다. | `Android/`의 CMake가 `Sources/Platform/Android/`에 있는 JNI 구현을 빌드한다. `BUILD_TESTING=OFF`와 PIC를 Android 하위 빌드에서 설정하고 루트 타깃을 참조한다. 원래 C++20 및 부동소수점 옵션을 유지한다. |
 | 상태·실행 순서 | [GameSession.hpp](../Sources/Core/Session/GameSession.hpp)와 [Screens.hpp](../Sources/Core/UI/Screens.hpp)가 공통 상태와 입력 API를 제공한다. [HM2GameRuntime.mm](../Sources/Platform/Apple/HM2GameRuntime.mm)이 프레임, 입력, 자원 변경 통지를 묶는다. | Android 호스트가 `SessionHost`와 `ScreensHost`를 구현한다. 같은 게임 스레드에서 tick, GUI 갱신, 출력 순서를 유지한다. 터치 소유권과 UI·월드 이벤트 순서는 기존 호출 계약을 따른다. |
 | 화면·터치 | [DisplayLayout](../Sources/Core/Presentation/DisplayLayout.cpp)이 논리 화면과 600 경계를 계산한다. [Apple 렌더러](../Sources/Platform/Apple/HM2Renderer.mm)가 공통 `Frame`을 GLES1로 출력한다. | Surface에 EGL/GLES1 출력을 연결한다. 기기 유형과 창 크기·안전 영역을 별도로 입력한다. 표면 픽셀과 논리 좌표를 같은 변환으로 그리기·터치에 적용한다. 이전 창의 손가락 이벤트는 회전·표면 교체 때 취소한다. Android 포인터 ID 0은 공통 API에 전달할 때 0이 아닌 값으로 대응한다. 인게임 버튼·HUD는 공통 GPU 경로를 쓴다. [Android MotionEvent](https://developer.android.com/reference/android/view/MotionEvent) |
 | 에셋·글꼴 | [ResourceAccess](../Sources/Core/Data/Resources.hpp)가 읽기 경계다. Apple은 준비된 Campaign HD와 CoreText 구현을 사용한다. | Gradle이 기존 준비본을 읽기 전용 에셋 입력으로 사용하고 실행 파일에 필요한 자원을 APK에 담는다. `AAssetManager`로 읽고 기존 테이블·이미지 디코더와 부품 조립을 사용한다. `TextRasterizer`의 Android 구현은 한글, 글꼴 매핑, 글자 경계와 알파 비트맵을 확인한다. Trebuchet 계열 표지와 한국어 폰트의 사용 가능 여부·차이를 실제 이미지로 기록한다. [Android NDK Asset API](https://developer.android.com/ndk/reference/group/asset.html) |
