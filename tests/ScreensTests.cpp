@@ -496,9 +496,26 @@ int main(int argc,char** argv){
     host.callback=[&](const ScreenAction& a){if(a.button.type==ButtonEventType::push){state.selectedSlot=a.button.key.intData;ui.refresh(state,3);}};
     ui.input(PointerPhase::begin,before->position,7,3);assert(ui.button(slot)==before&&before->capturedPointer()==7);
     ui.input(PointerPhase::end,before->position,7,4);assert(!before->capturedPointer());host.callback={};
-    unsigned baseButtons=0;state.screen=ScreenId::base;
-    for(unsigned i=1;i<=6;++i){state.baseId="Base00"+std::to_string(i);ui.refresh(state,5);baseButtons+=unsigned(ui.buttons().size());Frame f;ui.append(f,5);assert(!f.sprites.empty());}
-    assert(baseButtons==27);
+    state.recoveryCodeAvailable=true;
+    ui.refresh(state,4);
+    const auto transfer=ids(ui,recoveryButtonId);
+    assert(ui.buttons().size()==7&&transfer.size()==1);
+    const auto transferPoint=ui.buttonScreenPosition(transfer[0]);
+    ui.input(PointerPhase::begin,transferPoint,8,4);
+    ui.input(PointerPhase::end,transferPoint,8,4);
+    assert(host.actions.back().button.key.id==recoveryButtonId);
+
+    // The prepared campaign adds the two White Mountain routes to Base004.
+    constexpr std::array<unsigned,6> expectedBaseButtons{4,5,5,6,4,5};
+    state.screen=ScreenId::base;
+    for(unsigned i=1;i<=6;++i){
+        state.baseId="Base00"+std::to_string(i);
+        ui.refresh(state,5);
+        assert(ui.buttons().size()==expectedBaseButtons[i-1]);
+        Frame f;
+        ui.append(f,5);
+        assert(!f.sprites.empty());
+    }
     state={};state.screen=ScreenId::field;state.hpBarWidth=100;state.hpBarFilled=80;state.spBarWidth=120;state.spBarFilled=60;state.fieldUIRevision=1;state.hasWorkingSlot=true;state.fieldWorldTime=.25;
     ui.refresh(state,6);assert(ui.buttons().size()==10);const auto stable=ui.button(ids(ui,1021).front());
     const auto reads=files.reads,probes=files.probes,prepares=host.preparations;

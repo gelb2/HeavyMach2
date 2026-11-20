@@ -786,6 +786,9 @@ bool GameSession::restoreRecoveryCode(std::string_view code){
     p.progress.reset();
     p.working.fill(0);
     p.loadedSlot=-1;
+    p.worldTime=0;
+    p.worldSaveAllowed=false;
+    p.interruptionPending=false;
     p.view.selectedSlot=-1;
     p.view.hasWorkingSlot=false;
     p.data=std::move(restored);
