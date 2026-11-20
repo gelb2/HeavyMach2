@@ -19,7 +19,7 @@
 3. [ ] **PWA의 휴대폰·태블릿·데스크톱 화면 기준을 정한다.** iPhone·Android 휴대폰은 가로 화면을 기준으로 검사한다. 태블릿은 기존 iPad와 같은 세로 화면을 기준으로 검사한다. 데스크톱을 큰 화면으로 다루는 안을 검토하고 최소 지원 창 크기와 좁은 창에서의 동작을 정한다. 기기 유형과 현재 뷰포트 크기는 별도로 처리한다. 데스크톱 사이트 모드의 iPad, 분할 화면, 회전, 창 크기 변경에서 배치와 터치·포인터 좌표를 검증한다.
 4. [x] **Tauri macOS 로컬 패키지와 복구 확인.** 검증한 정식 웹 빌드를 묶었다. 맥미니에서 저장 복원·재실행과 창·입력을 확인했고, PWA와 Mac 앱에서 같은 검사용 코드를 다시 만들어 일치하는지 검사했다. [HeavyMach 1 통합 PR](https://github.com/gelb2/HeavyMach/pull/73) · [MachDefense Tauri](https://github.com/gelb2/MachDefense/commit/3861aa4dd8939a3aba1d94b2c708cf480f8fc2ee)
 
-5. [ ] **PWA·Tauri Mac의 앱 아이콘 통일.** PWA 홈 화면·설치 아이콘과 Tauri의 Finder·Dock 아이콘에 iPhone·iPad·갤럭시 정식판과 같은 일러스트를 사용한다. 현재 모바일 빌드의 공통 아이콘 입력에서 플랫폼별 해상도와 형식을 만든 뒤 설치형 PWA와 macOS 앱에서 확인한다.
+5. [x] **PWA·Tauri Mac의 앱 아이콘 통일.** 정식판과 치트판 모두 모바일판과 같은 탭투스타트 일러스트를 사용한다. Chrome에 두 PWA를 설치해 오프라인 재실행까지 확인했다. 두 Mac 번들의 `icon.icns`에서 512px 그림을 꺼내 각 PWA의 이미지와 픽셀이 같음을 확인했고, Finder 아이콘에서 정식판과 치트판을 대조했다. 기존 홈 화면에 설치된 PWA의 아이콘 갱신은 실기기에서 확인한다. [아이콘 연결](app-icons.md#pwa와-tauri-mac)
 6. [ ] **PWA 다운로드 진행 표시를 HeavyMach 1·MachDefense와 맞춘다.** 첫 설치와 업데이트에서 에셋과 WASM·스크립트 등 실행 파일의 다운로드 및 캐시 검증 단계를 표시한다. 받은 용량과 전체 용량, 검증을 마친 비율을 진행 막대에 반영하고, 실제 파일 준비가 끝나면 오프라인 실행 가능을 표시한다. 두 작품의 캐시 재사용·다운로드 실패·재시도 정책을 대조해 정식판과 치트판에 적용하고 새 설치·업데이트·오프라인 실행을 검사한다. [HeavyMach 1 다운로드 표시](https://github.com/gelb2/HeavyMach/blob/main/Distribution/Web/pwa/host.js) · [MachDefense 다운로드 표시](https://github.com/gelb2/MachDefense/blob/a9cc530/Distribution/Web/app.js)
 
 ### 이번 작업에서 구현한 범위

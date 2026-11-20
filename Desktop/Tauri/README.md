@@ -12,7 +12,7 @@ npm ci
 npm run build
 ```
 
-현재 Rust 대상을 기준으로 `src-tauri/target/release/bundle/macos/HeavyMach 2 Desktop.app`을 만든다. macOS 14 이상을 대상으로 로컬 실행에 쓸 임시 서명을 적용한다. 런처 아이콘은 검증용 임시 이미지다.
+현재 Rust 대상을 기준으로 `src-tauri/target/release/bundle/macos/HeavyMach 2 Desktop.app`을 만든다. macOS 14 이상을 대상으로 로컬 실행에 쓸 임시 서명을 적용한다. 해당 PWA 판의 512px 아이콘을 Finder와 Dock에서 사용하는 `icon.icns`로 묶는다.
 
 치트판은 `build/web-validation/dist/` 웹 빌드를 만든 뒤 `npm run build:validation`으로 묶는다. 결과는 같은 번들 디렉터리의 `HeavyMach 2 Desktop QA.app`이다. 앱 ID는 `com.gelb2.heavymach2.desktop.validation`이다.
 

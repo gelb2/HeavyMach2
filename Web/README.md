@@ -4,9 +4,10 @@
 
 ## 빌드와 실행
 
-Emscripten SDK를 활성화한 셸에서 저장소 루트에서 실행한다. 검증에는 Emscripten 6.0.13을 사용했다.
+macOS에서 Emscripten SDK를 활성화한 뒤 저장소 루트에서 실행한다. 검증에는 Emscripten 6.0.13을 사용했다.
 
 ```sh
+python3 tools/prepare_app_icons.py
 export EM_CACHE="$PWD/.local/emscripten-cache-hm2"
 emcmake cmake -S Web -B build/web-normal -DCMAKE_BUILD_TYPE=Release
 cmake --build build/web-normal --parallel 6
@@ -18,7 +19,7 @@ python3 -m http.server 8773 --bind 127.0.0.1 --directory build
 - 정식판은 [로컬 정식 주소](http://127.0.0.1:8773/web-normal/dist/)에서 연다.
 - 검증판은 [로컬 검증 주소](http://127.0.0.1:8773/web-validation/dist/)에서 연다.
 
-기본 에셋 입력은 `.local/prepared/Campaign/HD`다. 다른 준비본은 `-DHM2_WEB_ASSETS=경로`로 지정한다. `dist/asset-manifest.json`에 현재 산출물의 크기와 SHA-256을 기록한다. 앱 설치 아이콘은 웹 검사에 쓰는 임시 아이콘이다.
+기본 에셋 입력은 `.local/prepared/Campaign/HD`다. 다른 준비본은 `-DHM2_WEB_ASSETS=경로`로 지정한다. 설치 아이콘은 [모바일판과 같은 탭투스타트 일러스트](../docs/app-icons.md)를 사용한다. 각 판의 1024px 준비본으로 192px·512px PNG를 만들고, 치트판에는 모바일판의 `TEST` 띠가 들어간다. `dist/asset-manifest.json`에 아이콘을 포함한 산출물의 크기와 SHA-256을 기록한다.
 
 ## 설치하고 실행
 
