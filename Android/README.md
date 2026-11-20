@@ -30,3 +30,5 @@ python3 tools/validate_device.py "$SERIAL" concurrent --output /tmp/hm2-concurre
 ```
 
 `campaign`은 실제 포털·버튼·전투 호출을 사용해 설원 진출입, 보스, 상점의 레이저 공습 구매, 두 전장의 공습 피해를 검사한다. `concurrent`는 기존 C++ 동시 검사를 구동한다. 결과 JSON에서 `done`과 `pass`를 함께 확인한다. 정식판의 새 슬롯 생성·첫 전장 진입·재실행은 게임 화면에서 직접 검사한다.
+
+현재 화면에 선택된 그림 파일은 치트판에서 `python3 tools/validate_device.py "$SERIAL" artwork`로 확인한다. [갤럭시와 iPhone 정식판의 화면·입력 검사](검증-20261120.md)에 같은 상품을 구매한 결과를 기록했다.
