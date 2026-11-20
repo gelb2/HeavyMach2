@@ -34,8 +34,10 @@ canvas {
 }
 #launcher {
   z-index: 1;
+  max-height: 100%;
+  overflow: auto;
   width: min(32rem, calc(100% - var(--safe-left) - var(--safe-right) - 2rem));
-  padding: clamp(1.25rem, 5vw, 2.75rem);
+  padding: clamp(1rem, 5vh, 2.75rem) clamp(1.25rem, 5vw, 2.75rem);
   border: 1px solid var(--frame);
   border-radius: .3rem;
   background: linear-gradient(#21383e, var(--panel));
@@ -49,7 +51,8 @@ h1, h2 {
   text-shadow: 0 2px #071115;
 }
 h1 { font-size: clamp(2rem, 6vw, 3.4rem); }
-#status { margin: 0 0 1.25rem; color: #c3d5d8; }
+#status, #install-help { margin: 0 0 1rem; color: #c3d5d8; }
+#install + #install-help { margin-top: .65rem; }
 .actions { display: flex; flex-wrap: wrap; gap: .65rem; }
 button {
   font: 700 1rem/1.2 var(--heading-font);
@@ -64,7 +67,7 @@ button {
   text-shadow: 0 1px #051012;
   cursor: pointer;
 }
-#play, #confirm { border-color: #78c8ce; background: linear-gradient(#33717a, #1c4048); }
+#install, #install-help[hidden] + #play, #confirm { border-color: #78c8ce; background: linear-gradient(#33717a, #1c4048); }
 button:hover:not(:disabled) { border-color: var(--cyan); box-shadow: inset 0 0 .6rem #8af3ed55; }
 button:active:not(:disabled) { background: #132e35; box-shadow: inset 0 2px 4px #08191d; }
 button:disabled { opacity: .55; cursor: default; }

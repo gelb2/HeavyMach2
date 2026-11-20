@@ -16,10 +16,9 @@
     <section id="launcher" aria-labelledby="title">
       <h1 id="title">%TITLE%</h1>
       <p id="status" role="status">게임을 준비하는 중…</p>
-      <div class="actions">
-        <button id="play" type="button" disabled>게임 시작</button>
-        <button id="install" type="button" hidden>설치</button>
-      </div>
+      <button id="install" type="button" aria-controls="install-help">설치 방법</button>
+      <p id="install-help" tabindex="-1" role="status">설치하면 홈 화면이나 앱 목록에서 게임을 열 수 있습니다.</p>
+      <button id="play" type="button" disabled>브라우저에서 플레이</button>
     </section>
     <output id="warning" role="status" hidden></output>
   </main>

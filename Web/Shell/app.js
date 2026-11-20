@@ -1,6 +1,7 @@
 import createGame from './game.js';
 import {createAudio} from './audio.js';
 import {screenProfile} from './display.js';
+import {offerInstall} from './install.js';
 import {openStorage, storeKeys} from './storage.js';
 
 const $ = id => document.getElementById(id);
@@ -13,7 +14,7 @@ const profileId = {phone: 0, tablet: 1, desktop: 2}[profile];
 document.documentElement.dataset.profile = profile;
 const cache = new Map();
 const held = new Map();
-let wasm, audio, storage, metrics, prompt, install;
+let wasm, audio, storage, metrics, prompt;
 let live = false, lost = false, pending = Promise.resolve();
 let previous, remainder = 59, warningTimeout;
 
@@ -276,27 +277,8 @@ canvas.addEventListener('webglcontextrestored', () => {
   }).catch(fatal);
 });
 
-function offerInstall() {
-  if (desktop || matchMedia('(display-mode: standalone)').matches) return;
-  window.addEventListener('beforeinstallprompt', event => {
-    event.preventDefault();
-    install = event;
-    $('install').hidden = false;
-  });
-  $('install').addEventListener('click', async () => {
-    if (!install) return;
-    await install.prompt();
-    install = null;
-    $('install').hidden = true;
-  });
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(error => {
-    warning('오프라인 실행을 준비하지 못했습니다. ' + (error.message ?? error));
-  });
-}
 
 async function boot() {
-  storage = await openStorage(validation, desktop);
-  for (const key of storeKeys) cache.set(key, await storage.read(key));
   wasm = await createGame({
     canvas,
     hm2Error: warning,
@@ -324,6 +306,9 @@ $('play').addEventListener('click', async () => {
   $('play').disabled = true;
   audio.unlock();
   try {
+    // The installation page can stay open while the installed app plays.
+    storage = await openStorage(validation, desktop);
+    for (const key of storeKeys) cache.set(key, await storage.read(key));
     canvas.hidden = false;
     if (await call('start','number') !== 1) throw Error('게임을 시작하지 못했습니다.');
     live = true;
@@ -333,5 +318,10 @@ $('play').addEventListener('click', async () => {
     requestAnimationFrame(frame);
   } catch (error) { fatal(error); }
 });
-offerInstall();
+offerInstall({button:$('install'), help:$('install-help'), play:$('play'), desktop});
+if (!desktop && 'serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(error => {
+    warning('오프라인 실행을 준비하지 못했습니다. ' + (error.message ?? error));
+  });
+}
 boot().catch(fatal);

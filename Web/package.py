@@ -10,7 +10,7 @@ edition = sys.argv[3]
 if edition not in {"normal", "validation"}:
     raise ValueError("Unknown web edition")
 validation = edition == "validation"
-static = ("index.html", "app.js", "storage.js", "audio.js", "display.js", "style.css", "icon-192.png", "icon-512.png")
+static = ("index.html", "app.js", "storage.js", "audio.js", "display.js", "install.js", "style.css", "icon-192.png", "icon-512.png")
 required = ("game.js", "game.wasm", "game.data")
 if any(not (dist / name).is_file() for name in required):
     raise FileNotFoundError("Missing Emscripten output")

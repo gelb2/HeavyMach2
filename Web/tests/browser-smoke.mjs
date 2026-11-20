@@ -34,9 +34,32 @@ async function start(context, edition, captureLauncher=false, touch=false) {
     await play.click({trial:true, timeout:45000});
     await screenshot(page, 'normal-launcher');
   }
-  await play[touch ? 'tap' : 'click']({timeout:45000});
+  await playGame(page, touch);
+  return page;
+}
+async function playGame(page, touch=false) {
+  await page.locator('#play')[touch ? 'tap' : 'click']({timeout:45000});
   await page.locator('#game').waitFor({state:'visible'});
   await page.waitForFunction(() => document.getElementById('launcher').hidden);
+}
+async function installChromeApp(cdp, url) {
+  const {manifest} = await cdp.send('Page.getAppManifest');
+  assert.equal(manifest?.startUrl,url);
+  assert(manifest?.id);
+  const manifestId = manifest.id;
+  await cdp.send('PWA.install',{manifestId,installUrlOrBundleUrl:url});
+  return manifestId;
+}
+async function openChromeApp(context, cdp, manifestId, url, touch=false) {
+  const opened = context.waitForEvent('page', {timeout:30000});
+  await cdp.send('PWA.launch',{manifestId});
+  const page = await opened;
+  page.on('pageerror', error => errors.push(error.message));
+  await page.waitForURL(url);
+  assert(await page.evaluate(() => matchMedia('(display-mode: standalone)').matches));
+  await page.locator('#play').filter({hasText:'게임 시작'}).waitFor();
+  assert(await page.locator('#install').isHidden());
+  await playGame(page,touch);
   return page;
 }
 async function screenshot(page, name, checkBackdrop=false) {
@@ -173,10 +196,140 @@ async function store(page, edition, key) {
   }, [edition,key]);
 }
 
-async function deviceMatrix(normalManifest, qaManifest) {
+async function launchInstalled(normalManifest, qaManifest) {
+  assert.equal(browserEngine, 'chromium', 'Use Chrome for the installed window check');
+  const profile = await mkdtemp(join(tmpdir(), 'hm2-installed-check-'));
+  let context;
+  const installed = [];
+  const report = [];
+  try {
+    context = await playwright.chromium.launchPersistentContext(profile, {
+      channel:'chrome', headless:false, viewport:rect
+    });
+    const installer = context.pages()[0];
+    const cdp = await context.newCDPSession(installer);
+    for (const [edition, manifest] of [['normal',normalManifest], ['validation',qaManifest]]) {
+      const url = editionURL(edition);
+      await installer.goto(url);
+      await installer.waitForFunction(() => navigator.serviceWorker.controller, null, {timeout:60000});
+      await installer.locator('#install').waitFor();
+      await screenshot(installer, edition + '-install');
+      assert.deepEqual(await cdp.send('Page.getInstallabilityErrors'), {installabilityErrors:[]});
+      const manifestId = await installChromeApp(cdp,url);
+      assert(!installed.includes(manifestId));
+      installed.push(manifestId);
+      await cdp.send('PWA.changeAppUserSettings',{manifestId,displayMode:'standalone'});
+      const launch = () => openChromeApp(context,cdp,manifestId,url);
+      let page = await launch();
+      await titleToSlots(page, edition === 'validation');
+      await screenshot(page, edition + '-installed-slots');
+      if (edition === 'normal') {
+        await page.mouse.click(...normalSlot);
+        if (!(await page.locator('#entry').isVisible())) await page.mouse.click(824,830);
+        await page.locator('#entry').fill('PWA QA');
+        await page.locator('#confirm').click();
+        await settle(500);
+      } else {
+        await clickButton(page,1009);
+        if ((await page.evaluate(() => HM2Validation.status())).screen === 2) await clickButton(page,1001);
+        await waitScreen(page,3);
+        await dismissHelp(page);
+        await clickButton(page,2002);
+        await clickButton(page,2002);
+        await waitScreen(page,6);
+        await dismissHelp(page);
+        await screenshot(page,'validation-installed-shop',true);
+      }
+      const save = await store(page,edition,'save');
+      assert.equal(save?.length,28204);
+      await page.close();
+      await context.setOffline(true);
+      page = await launch();
+      assert.deepEqual(await store(page,edition,'save'),save);
+      await screenshot(page,edition + '-installed-offline');
+      await page.close();
+      await context.setOffline(false);
+      report.push({edition, version:manifest.version, manifestId, standalone:true, offlineRelaunch:true, saveRetained:true});
+    }
+    assert.deepEqual(errors,[]);
+  } finally {
+    if (context) {
+      const cdp = await context.newCDPSession(context.pages()[0]);
+      for (const manifestId of installed) await cdp.send('PWA.uninstall',{manifestId});
+      await context.close();
+    }
+    await rm(profile, {recursive:true, force:true});
+  }
+  await writeFile(join(evidence,'installed.json'), JSON.stringify(report,null,2) + '\n');
+  console.log(JSON.stringify(report,null,2));
+}
+
+async function installInterface() {
   const cases = [
-    {name:'iphone', device:'iPhone 15 landscape', expected:'phone', resize:{width:393,height:659}},
-    {name:'android-phone', device:'Pixel 7 landscape', expected:'phone', resize:{width:412,height:839}},
+    {name:'iphone', userAgent:'Mozilla/5.0 (iPhone) Version/26.5 Safari/605.1.15', help:/홈 화면에 추가.*웹 앱으로 열기/},
+    {name:'ipad', userAgent:'Mozilla/5.0 (Macintosh) Version/26.5 Safari/605.1.15', touch:5, help:/홈 화면에 추가/},
+    {name:'android', userAgent:'Mozilla/5.0 (Linux; Android 15) Chrome/145.0.0.0', help:/홈 화면에 추가 또는 앱 설치/},
+    {name:'mac-safari', userAgent:'Mozilla/5.0 (Macintosh) Version/26.5 Safari/605.1.15', help:/Dock에 추가/},
+    {name:'chrome', userAgent:'Mozilla/5.0 Chrome/145.0.0.0 Safari/537.36', help:/페이지를 앱으로 설치/},
+  ];
+  for (const fixture of cases) {
+    const context = await browser.newContext({viewport:{width:852,height:393},userAgent:fixture.userAgent});
+    try {
+      await context.addInitScript(touch => {
+        if (touch) Object.defineProperty(navigator,'maxTouchPoints',{value:touch});
+        // Exercise manual instructions independently of Chrome's native prompt.
+        window.addEventListener('beforeinstallprompt', event => {
+          if (event.isTrusted) event.stopImmediatePropagation();
+        }, {capture:true});
+      },fixture.touch);
+      const page = await context.newPage();
+      page.on('pageerror', error => errors.push(error.message));
+      await page.goto(editionURL('normal'), {waitUntil:'domcontentloaded'});
+      const install = page.locator('#install');
+      const help = page.locator('#install-help');
+      const play = page.locator('#play');
+      await page.waitForFunction(() => !document.querySelector('#play').disabled);
+      assert.equal(await install.textContent(),'설치 방법');
+      assert.match(await help.textContent(),fixture.help);
+      assert.equal(await play.textContent(),'브라우저에서 플레이');
+      await install.click();
+      assert(await help.evaluate(element => document.activeElement === element));
+      await screenshot(page,fixture.name + '-install-help');
+      if (fixture.name === 'chrome') {
+        for (const outcome of ['dismissed','accepted']) {
+          await page.evaluate(outcome => {
+            const event = new Event('beforeinstallprompt',{cancelable:true});
+            window.promptCalls = 0;
+            event.prompt = async () => { window.promptCalls++; };
+            event.userChoice = Promise.resolve({outcome});
+            dispatchEvent(event);
+          },outcome);
+          assert.equal(await install.textContent(),'게임 설치');
+          await install.click();
+          await page.waitForFunction(() => !document.getElementById('install').disabled);
+          assert.equal(await page.evaluate(() => window.promptCalls),1);
+          if (outcome === 'dismissed') assert.equal(await install.textContent(),'설치 방법');
+          else assert(await install.isHidden());
+        }
+      }
+      if (fixture.name === 'ipad') {
+        await page.addInitScript(() => Object.defineProperty(navigator,'standalone',{value:true}));
+        await page.reload();
+        await play.filter({hasText:'게임 시작'}).waitFor();
+        assert(await install.isHidden());
+        assert(await help.isHidden());
+      }
+    } finally { await context.close(); }
+  }
+  assert.deepEqual(errors,[]);
+  console.log(browserEngine + ' install UI passed in ' + cases.length + ' contexts');
+}
+
+async function deviceMatrix(normalManifest, qaManifest, installed=false) {
+  if (installed) assert.equal(browserEngine,'chromium','Use Chrome to install the PWA');
+  const cases = [
+    {name:'iphone', device:'iPhone 15 landscape', expected:'phone', resize:{width:852,height:393}},
+    {name:'android-phone', device:'Pixel 7 landscape', expected:'phone', resize:{width:915,height:412}},
     {name:'ipad', device:'iPad Pro 11', expected:'tablet', resize:{width:1194,height:834}},
     {name:'ipad-desktop-site', device:'iPad Pro 11', expected:'tablet',
       userAgent:'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15',
@@ -189,14 +342,18 @@ async function deviceMatrix(normalManifest, qaManifest) {
   const selected = process.env.HM2_WEB_TEST_DEVICES?.split(',') ?? cases.map(({name}) => name);
   assert(selected.length && selected.every(name => cases.some(fixture => fixture.name === name)));
   const report = {browser:browserEngine, browserVersion:browser.version(), normal:normalManifest.version,
-    validation:qaManifest.version, cases:[]};
+    validation:qaManifest.version, installed, cases:[]};
   for (const fixture of cases.filter(({name}) => selected.includes(name))) {
     const {name, expected, resize} = fixture;
     const {defaultBrowserType, ...device} = playwright.devices[fixture.device] ?? {};
     const options = {...globalSettings, ...device, screen:device.screen ?? device.viewport ?? rect};
     if (fixture.userAgent) options.userAgent = fixture.userAgent;
     if (fixture.hasTouch) options.hasTouch = true;
-    const context = await browser.newContext(options);
+    const userData = installed ? await mkdtemp(join(tmpdir(), 'hm2-installed-device-')) : null;
+    const context = installed
+      ? await playwright.chromium.launchPersistentContext(userData,{...options,channel:'chrome',headless:false})
+      : await browser.newContext(options);
+    let cdp, manifestId;
     const results = {name, expected, screens:[]};
     report.cases.push(results);
     let page;
@@ -205,7 +362,18 @@ async function deviceMatrix(normalManifest, qaManifest) {
         // This Playwright WebKit reports zero even when its touch device is enabled.
         await context.addInitScript(() => Object.defineProperty(navigator, 'maxTouchPoints', {value:5}));
       }
-      page = await start(context,'validation',false,options.hasTouch);
+      if (installed) {
+        const installer = context.pages()[0];
+        const url = editionURL('validation');
+        await installer.goto(url);
+        await installer.waitForFunction(() => navigator.serviceWorker.controller, null, {timeout:60000});
+        cdp = await context.newCDPSession(installer);
+        manifestId = await installChromeApp(cdp,url);
+        await cdp.send('PWA.changeAppUserSettings',{manifestId,displayMode:'standalone'});
+        page = await openChromeApp(context,cdp,manifestId,url,options.hasTouch);
+      } else {
+        page = await start(context,'validation',false,options.hasTouch);
+      }
       const tap = (...point) => options.hasTouch ? page.touchscreen.tap(...point) : page.mouse.click(...point);
       const button = async id => tap(...await position(page,id));
       const snapshot = () => page.evaluate(async () => {
@@ -279,7 +447,14 @@ async function deviceMatrix(normalManifest, qaManifest) {
     } catch (error) {
       results.failure = error.message;
       if (page) await screenshot(page,name + '-failure');
-    } finally { await context.close(); }
+    } finally {
+      try {
+        if (manifestId) await cdp.send('PWA.uninstall',{manifestId});
+      } finally {
+        await context.close();
+        if (userData) await rm(userData,{recursive:true,force:true});
+      }
+    }
     console.log(JSON.stringify({name, screens:results.screens, failure:results.failure}));
   }
   await writeFile(join(evidence, browserEngine + '-devices.json'), JSON.stringify(report,null,2) + '\n');
@@ -293,7 +468,10 @@ try {
   assert.equal(normalManifest.validation, false);
   assert.equal(qaManifest.validation, true);
   assert.notEqual(normalManifest.version, qaManifest.version);
-  if (process.argv.includes('--device-matrix')) await deviceMatrix(normalManifest, qaManifest);
+  if (process.argv.includes('--installed-device-matrix')) await deviceMatrix(normalManifest, qaManifest,true);
+  else if (process.argv.includes('--device-matrix')) await deviceMatrix(normalManifest, qaManifest);
+  else if (process.argv.includes('--install-ui')) await installInterface();
+  else if (process.argv.includes('--installed')) await launchInstalled(normalManifest, qaManifest);
   else await smoke(normalManifest, qaManifest);
 } finally {
   await browser.close();
@@ -396,7 +574,7 @@ async function smoke(normalManifest, qaManifest) {
   await screenshot(qa,'validation-portal-return',true);
 
   for (const fixture of [
-    {name:'phone', viewport:{width:844,height:390}, userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)', resize:{width:390,height:844}},
+    {name:'phone', viewport:{width:844,height:390}, userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)', resize:{width:780,height:360}},
     {name:'tablet', viewport:{width:820,height:1180}, userAgent:'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X)', resize:{width:1180,height:820}},
   ]) {
     const context = await browser.newContext({viewport:fixture.viewport,userAgent:fixture.userAgent,hasTouch:true});
