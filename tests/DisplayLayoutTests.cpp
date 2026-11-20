@@ -55,6 +55,33 @@ void transforms(){
  const auto a=DisplayLayout(DisplayConfiguration::surface({768,1024})),b=DisplayLayout(DisplayConfiguration::surface({1024,1366}));assert(a.worldAtScale(1).scale==b.worldAtScale(1).scale&&b.worldViewportAtScale(1).width>a.worldViewportAtScale(1).width);
  bool refused=false;try{(void)DisplayConfiguration::surface({100,100},{50,0,50,0});}catch(const std::invalid_argument&){refused=true;}assert(refused);
 }
+void desktopMenuButtons(Files& files){
+    for(Size surface : {Size{1366,900},Size{800,540}}){
+        auto config=DisplayConfiguration::surface(surface);
+        config.device=DisplayDevice::desktop;
+        Host host;
+        PreparedTiles tiles("desktop-menu");
+        ui::Screens screens(files,tiles,host);
+        screens.setDisplay(config);
+        ui::ScreensState state;
+        state.baseId="Base001";
+        for(auto [screen,id] : {std::pair{ui::ScreenId::base,2002u},
+                                std::pair{ui::ScreenId::shop,2100u},
+                                std::pair{ui::ScreenId::command,2100u}}){
+            state.screen=screen;
+            screens.refresh(state,1);
+            const auto keys=screens.buttons();
+            const auto target=std::find_if(keys.begin(),keys.end(),[id](const auto& k){return k.id==id;});
+            assert(target!=keys.end());
+            const auto point=screens.buttonScreenPosition(*target);
+            assert(point.x>=0&&point.x<=surface.width&&point.y>=0&&point.y<=surface.height);
+            host.events.clear();
+            screens.input(PointerPhase::begin,point,3,1);
+            screens.input(PointerPhase::end,point,3,1.1f);
+            assert(!host.events.empty()&&host.events.front().button.key==*target);
+        }
+    }
+}
 void screens(Files& files,DisplayConfiguration config){
  Host host;PreparedTiles tiles("universal-test");ui::Screens screens(files,tiles,host);screens.setDisplay(config);const auto area=config.content();
  ui::ScreensState state;state.locale="kr";state.screen=ui::ScreenId::field;state.hpBarWidth=100;state.hpBarFilled=75;state.spBarWidth=100;state.spBarFilled=50;state.enemyName="E-10";state.enemyNameRevision=1;state.enemyHpRate=.7f;
@@ -569,4 +596,4 @@ void session(Files& files,DisplayConfiguration config){Host host;DarwinWorldRand
  const auto pos=scene->player().position;const auto hp=scene->playerHP();game.setDisplay(DisplayConfiguration::surface({1024,1366}));assert(scene->player().position.x==pos.x&&scene->playerHP()==hp&&host.writes==writes);assert(game.workingSlot().size()==before.size());
 }
 }
-int main(int argc,char** argv){if(argc<2)return 77;fullScreenWorld();transforms();Files files(argv[1]);originalHDWorldParity(files);tabletMenuCoverage(files);entryCamera(files);allMapEdges(files);fullCanvasBanners(files);phoneArtwork(files);phoneMenus(files);phoneMenuGrids(files);phoneButtonPages(files);phoneMenuResize(files);phoneLiveMenuSession(files);phoneDirectMaintenance(files);for(auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({852,393},{59,21,59,0}),DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({1024,1366},{0,20,0,24})}){screens(files,config);help(files,config);session(files,config);}std::cout<<"HM2_DISPLAY PASS 4 canvases / full-screen world / terrain edge coverage / HUD size / six base menus / Phone-original-art/no-menu-scroll/Retina-JPEG / first mission rows / safe-area / inverse-hit / HD25+24+6 / drag / warm100 / help-scroll / common-world / no-display-save\n";}
+int main(int argc,char** argv){if(argc<2)return 77;fullScreenWorld();transforms();Files files(argv[1]);originalHDWorldParity(files);tabletMenuCoverage(files);desktopMenuButtons(files);entryCamera(files);allMapEdges(files);fullCanvasBanners(files);phoneArtwork(files);phoneMenus(files);phoneMenuGrids(files);phoneButtonPages(files);phoneMenuResize(files);phoneLiveMenuSession(files);phoneDirectMaintenance(files);for(auto config:{DisplayConfiguration::surface({667,375}),DisplayConfiguration::surface({852,393},{59,21,59,0}),DisplayConfiguration::surface({912,420},{68,20,68,0}),DisplayConfiguration::surface({1024,1366},{0,20,0,24})}){screens(files,config);help(files,config);session(files,config);}std::cout<<"HM2_DISPLAY PASS 4 canvases / full-screen world / terrain edge coverage / HUD size / six base menus / Phone-original-art/no-menu-scroll/Retina-JPEG / first mission rows / safe-area / inverse-hit / HD25+24+6 / drag / warm100 / help-scroll / common-world / no-display-save\n";}

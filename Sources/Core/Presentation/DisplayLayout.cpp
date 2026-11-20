@@ -46,7 +46,14 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
     // One HD menu projection for artwork, controls, text and inverse input.
     // World projection and movable HUD sizing remain separate consumers of
     // the original HD canvas, not extra per-platform UI implementations.
-    case DisplayRegion::tabletMenu:{const auto c=configuration_.canvas;return anchored({384,512},{c.width*.5f,c.height*.5f},std::max(c.width/768,c.height/1024));}
+    case DisplayRegion::tabletMenu:{
+        const auto c=configuration_.canvas;
+        // A wide desktop window fits the whole panel and its hit areas.
+        // The desktop compositor covers the separate backdrop.
+        if(configuration_.device==DisplayDevice::desktop)
+            return anchored({384,512},center,std::min(a.width/768,a.height/1024));
+        return anchored({384,512},{c.width*.5f,c.height*.5f},std::max(c.width/768,c.height/1024));
+    }
     case DisplayRegion::titleBackdrop:{const auto c=configuration_.canvas;return anchored({384,1024},{c.width*.5f,c.height},std::max(c.width/768,c.height/1024));}
     case DisplayRegion::artBanner:{const auto c=configuration_.canvas;return anchored({240,160},{c.width*.5f,c.height*.5f},std::min(c.width/480,c.height/320));}
     case DisplayRegion::phoneFooter:return anchored({360,0},{configuration_.canvas.width*.5f,0},menu::menuScale(configuration_)*2.f/3.f);
