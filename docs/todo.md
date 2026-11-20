@@ -1,5 +1,10 @@
 # HeavyMach 2 TODO
 
+## 공유 복구코드와 웹·Mac 후속 작업 — 2026-11-20
+
+1. [ ] **공유 복구코드로 전체 저장 복원.** 복구코드 한 줄로 전체 프로필의 스테이지·기지·임무 진행도, 인벤토리·장비·스킬, 레벨·경험치·크레딧을 한 번에 옮기고 복원한다. iPhone·iPad·Android에서 같은 코드를 읽고 내보낸 뒤, 전체 슬롯을 왕복해 대조한다. 손상된 코드나 호환되지 않는 버전이 들어와도 기존 저장을 보존하는지 확인한다. [HeavyMach 1 통합 PR](https://github.com/gelb2/HeavyMach/pull/73) · [MachDefense 저장 복원 구현](https://github.com/gelb2/MachDefense/commit/61291c343d6d19facb74f687f5323bdf5e88db50)
+2. [ ] **Wasm 기반 PWA·Tauri macOS 개발 계획 수립.** 공유 복구코드 구현과 검증을 마친 뒤 시작한다. HeavyMach 1의 Wasm PR과 두 게임에 적용한 PWA·Tauri 기술을 대조한다. HeavyMach 2 공통 코어의 재사용 범위, 입력·렌더링·오디오 연결, PWA의 설치·오프라인 실행, Tauri의 macOS 패키징·로컬 저장, 복구코드 호환과 기기별 검증 순서를 계획에 담는다. [HeavyMach 1 Wasm PR](https://github.com/gelb2/HeavyMach/pull/24) · [HeavyMach 1 PWA·Tauri 통합 PR](https://github.com/gelb2/HeavyMach/pull/73) · [MachDefense PWA](https://github.com/gelb2/MachDefense/commit/6a05e039e441eb9db3a51a199c6ae931ce0fb722) · [MachDefense Tauri](https://github.com/gelb2/MachDefense/commit/3861aa4dd8939a3aba1d94b2c708cf480f8fc2ee)
+
 ## 작업 브랜치의 현재 상태 — 2026-11-19
 
 - **상점.** 전체 화면 격납고 배경은 `9e5c08a`, 페이지 버튼과 점 표시는 `8e4eb82`에 있다. 최신 후보는 시뮬레이터에서 ML-K3의 BUY, Equip 능력치와 세 번째 BOT, iPad 상점 6곳의 전후 픽셀 일치를 확인했다. iPhone 실기기에서 사용자 저장 사본으로 ML-K3 구매·판매, Equip, `Icon10113.png`가 처음 나오는 페이지를 재확인한다. 원본과 수정판의 모든 상품·버튼·정보창 치수 대조도 남아 있다. [상점 확인 범위](iphone-shop-reference-coordinates-20261119.md#수정한-배경을-적용한-상점의-페이지-표시)
