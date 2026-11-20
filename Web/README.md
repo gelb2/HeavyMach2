@@ -34,7 +34,15 @@ python3 -m http.server 8773 --bind 127.0.0.1 --directory build
 
 폰, 태블릿, 데스크톱 프로필은 앱 시작 때 고른다. 뷰포트와 안전 영역은 창 크기가 바뀔 때 다시 계산한다. 데스크톱에서 상점과 사령부는 원본 HD 패널에 조작부를 맞추고, 빈 주변에는 같은 그림의 조작부 없는 영역을 같은 가로세로 비율로 확대한다. 터치 기기에서 창 크기나 방향을 바꿔도 기기 분류는 유지된다.
 
-## 자체 검사
+## 설치형 PWA 확인
+
+정식판과 치트판을 각각 설치하고 홈 화면, 앱 목록 또는 Dock의 아이콘으로 시작한다. 휴대폰은 가로, 태블릿은 세로로 연다. 주소창과 탭이 없는 게임 화면에서 아래 항목을 확인한다.
+
+1. 첫 기지에서 **Shop**을 눌러 상점으로 들어간다. 상점의 **Exit**로 기지에 돌아오고, 기지의 **Exit**를 눌러 슬롯 화면으로 돌아온다.
+2. 사령부와 전장을 왕복한다. 전장에서 이동 경로를 그리고 효과음을 확인한다. 기지·상점·사령부 화면의 여백과 배경 비율을 캡처한다.
+3. 앱을 닫고 네트워크 없이 아이콘으로 다시 연다. 같은 슬롯의 저장을 확인한다. 기기, OS, 빌드 번호와 홈 화면 실행 모습을 기록한다.
+
+## 개발 중 자동 검사
 
 ```sh
 npm --prefix Web ci
@@ -46,4 +54,4 @@ npm --prefix Web run smoke -- --installed
 HM2_WEB_TEST_DEVICES=iphone,android-phone,ipad-desktop-site,desktop npm --prefix Web run smoke -- --installed-device-matrix
 ```
 
-브라우저 검사는 새 Chrome 프로필과 로컬 HTTP 서버에서 시작한다. 복구와 두 빌드의 저장 분리, 기지의 상점·사령부·전장 이동, 폰·태블릿 터치, 오프라인 재실행을 확인한다. 결과 이미지와 JSON은 `.local/evidence/web-smoke-20261120`에 기록한다. `HM2_WEB_TEST_RECOVERY_FIXTURE`에 테스트용 복구코드 파일을 지정하면 가져온 코드를 다시 생성해 파일과 비교한다. `--installed`는 임시 Chrome 프로필에서 정식판과 치트판을 실제 설치한 뒤 앱 창으로 다시 열어 저장과 오프라인 실행을 확인한다. `--installed-device-matrix`는 임시 Chrome 앱 창에서 기기 모의 프로필별 화면과 터치를 확인한다. 실기기의 설치와 저장 동작은 별도 확인이 필요하다.
+자동 검사는 새 Chrome 프로필과 로컬 HTTP 서버에서 시작한다. 결과 이미지와 JSON은 `.local/evidence/web-smoke-20261120`에 기록한다. `HM2_WEB_TEST_RECOVERY_FIXTURE`에 테스트용 복구코드 파일을 지정하면 가져온 코드를 다시 생성해 파일과 비교한다. `--installed`는 Mac에 설치한 Chrome 앱의 저장과 오프라인 재실행을 확인한다. `--installed-device-matrix`의 기기 크기·터치는 Mac에서 모의한 값이다. 브라우저 탭과 Mac의 기기 모의 결과는 휴대폰·태블릿의 홈 화면 설치 확인에 쓰지 않는다.
