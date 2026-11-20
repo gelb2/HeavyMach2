@@ -24,8 +24,9 @@ export function offerInstall({button, help, play, desktop}) {
     help.hidden = Boolean(app);
     button.textContent = request ? '게임 설치' : '설치 방법';
     play.textContent = app ? '게임 시작' : '브라우저에서 플레이';
-    const instructions = request ? '설치하면 홈 화면이나 앱 목록에서 HeavyMach 2를 열 수 있습니다.'
-      : installInstructions();
+    const instructions = '앱으로 설치해 플레이하는 것을 권장합니다. ' + (request
+      ? '설치한 뒤 홈 화면이나 앱 목록에서 HeavyMach 2를 여세요.'
+      : installInstructions());
     help.textContent = installed ? '설치가 끝나면 홈 화면이나 앱 목록에서 HeavyMach 2를 여세요.'
       : offlineReady() ? instructions + ' 오프라인 실행 준비가 끝났습니다.' : instructions;
   }
@@ -54,7 +55,7 @@ export function offerInstall({button, help, play, desktop}) {
     button.disabled = true;
     try {
       await event.prompt();
-      installed ||= (await event.userChoice).outcome === 'accepted';
+      await event.userChoice;
     } catch {
       // A consumed prompt can fail. Keep the platform's manual steps available.
     } finally {

@@ -320,6 +320,7 @@ public:
            <<",\"compact\":"<<(display_.compact?"true":"false")
            <<",\"transition\":"<<game_->screenTransition().phase
            <<",\"help\":"<<(game_->help()?"true":"false")
+           <<",\"active\":"<<(active_?"true":"false")
            <<",\"canvas\":["<<display_.canvas.width<<','<<display_.canvas.height<<"],\"buttons\":[";
         bool first=true;
         for(const auto& key:screens_->buttons()) {
@@ -332,7 +333,8 @@ public:
         }
         out<<"],\"portalTargets\":[";
         first=true;
-        if(const auto* battle=game_->battle()) {
+        const auto* battle=game_->battle();
+        if(battle) {
             const auto player=battle->player().position;
             for(const auto& portal:battle->gates()) {
                 const auto& gate=portal.definition;
@@ -345,7 +347,13 @@ public:
                 out<<'['<<point.x<<','<<point.y<<','<<(gate.linkMap.starts_with("Base")?"true":"false")<<']';
             }
         }
-        out<<"]}";
+        out<<"],\"path\":";
+        if(battle) {
+            const auto path=battle->dashState();
+            out<<"{\"points\":"<<path.pathCount
+               <<",\"held\":"<<(path.movePointer?"true":"false")<<'}';
+        } else out<<"null";
+        out<<'}';
         return out.str();
     }
     bool field(std::string_view map) {

@@ -15,7 +15,7 @@ document.documentElement.dataset.profile = profile;
 const cache = new Map();
 const held = new Map();
 let wasm, audio, storage, metrics, prompt;
-let live = false, lost = false, pending = Promise.resolve();
+let live = false, starting = false, lost = false, pending = Promise.resolve();
 let previous, remainder = 59, warningTimeout;
 
 function warning(text) {
@@ -218,6 +218,8 @@ function sendPointer(phase, x, y, id) {
 }
 canvas.addEventListener('pointerdown', event => {
   if (event.button !== 0 || held.has(event.pointerId)) return;
+  event.preventDefault();
+  if (document.activeElement !== canvas) canvas.focus({preventScroll:true});
   canvas.setPointerCapture(event.pointerId);
   held.set(event.pointerId, [event.clientX, event.clientY]);
   sendPointer(0,event.clientX,event.clientY,event.pointerId);
@@ -236,7 +238,10 @@ for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
     sendPointer(type === 'pointerup' ? 2 : 3,...location,event.pointerId);
   });
 }
-canvas.addEventListener('contextmenu', event => event.preventDefault());
+// Keep native selection and long-press actions off the game surface only.
+for (const type of ['contextmenu', 'selectstart', 'dragstart', 'copy']) {
+  canvas.addEventListener(type, event => event.preventDefault());
+}
 canvas.addEventListener('keydown', event => {
   if (event.repeat || !['Enter',' '].includes(event.key)) return;
   const rect = canvas.getBoundingClientRect();
@@ -248,15 +253,19 @@ canvas.addEventListener('keydown', event => {
 const observer = new ResizeObserver(() => queue(resize));
 observer.observe(document.querySelector('main'));
 window.addEventListener('resize', () => queue(resize));
+async function setRuntimeActive(active) {
+  if (await call('activity', 'number', ['number'], [Number(active)]) !== 1)
+    throw Error('게임을 다시 표시하지 못했습니다.');
+}
 document.addEventListener('visibilitychange', () => {
+  if (!starting && !live) return;
+  const active = !document.hidden;
+  audio?.activity(active);
   if (!live) return;
   held.clear();
   resetClock();
-  const active = !document.hidden;
-  audio.activity(active);
   queue(async () => {
-    if (await call('activity', 'number', ['number'], [Number(active)]) !== 1)
-      throw Error('게임을 다시 표시하지 못했습니다.');
+    await setRuntimeActive(active);
     if (active && !lost) await drawFrame(0);
   }).catch(fatal);
 });
@@ -304,19 +313,28 @@ async function boot() {
 }
 $('play').addEventListener('click', async () => {
   $('play').disabled = true;
-  audio.unlock();
+  starting = true;
   try {
+    audio.unlock();
     // The installation page can stay open while the installed app plays.
     storage = await openStorage(validation, desktop);
     for (const key of storeKeys) cache.set(key, await storage.read(key));
     canvas.hidden = false;
     if (await call('start','number') !== 1) throw Error('게임을 시작하지 못했습니다.');
     live = true;
-    await queue(resize);
+    await queue(async () => {
+      if (document.hidden) await setRuntimeActive(false);
+      await resize();
+    });
     $('launcher').hidden = true;
     canvas.focus();
     requestAnimationFrame(frame);
-  } catch (error) { fatal(error); }
+  } catch (error) {
+    storage?.close();
+    fatal(error);
+  } finally {
+    starting = false;
+  }
 });
 offerInstall({button:$('install'), help:$('install-help'), play:$('play'), desktop});
 if (!desktop && 'serviceWorker' in navigator) {

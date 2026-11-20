@@ -38,9 +38,19 @@ async function start(context, edition, captureLauncher=false, touch=false) {
   return page;
 }
 async function playGame(page, touch=false) {
-  await page.locator('#play')[touch ? 'tap' : 'click']({timeout:45000});
-  await page.locator('#game').waitFor({state:'visible'});
-  await page.waitForFunction(() => document.getElementById('launcher').hidden);
+  try {
+    await page.locator('#play')[touch ? 'tap' : 'click']({timeout:45000});
+    await page.locator('#game').waitFor({state:'visible'});
+    await page.waitForFunction(() => document.getElementById('launcher').hidden);
+  } catch (error) {
+    const state = await page.evaluate(() => ({
+      message:document.getElementById('status')?.textContent,
+      warning:document.getElementById('warning')?.textContent,
+      viewport:[innerWidth,innerHeight],
+      controllingWorker:Boolean(navigator.serviceWorker?.controller)
+    }));
+    throw Error(error.message + '\nLauncher state: ' + JSON.stringify(state),{cause:error});
+  }
 }
 async function installChromeApp(cdp, url) {
   const {manifest} = await cdp.send('Page.getAppManifest');
@@ -264,6 +274,23 @@ async function launchInstalled(normalManifest, qaManifest) {
   console.log(JSON.stringify(report,null,2));
 }
 
+async function assertPanelFits(page, selector) {
+  const layout = await page.locator(selector).evaluate(panel => ({
+    width:panel.clientWidth, height:panel.clientHeight,
+    contentWidth:panel.scrollWidth, contentHeight:panel.scrollHeight,
+    controls:[...panel.querySelectorAll('button:not([hidden]), input, textarea')]
+      .filter(control => control.getClientRects().length !== 0)
+      .map(control => {
+        const {top,bottom,left,right} = control.getBoundingClientRect();
+        const bounds = panel.getBoundingClientRect();
+        return {id:control.id, fits:top >= bounds.top && bottom <= bounds.bottom &&
+          left >= bounds.left && right <= bounds.right};
+      })
+  }));
+  assert(layout.width && layout.height, selector + ' must be visible');
+  assert(layout.contentWidth <= layout.width + 1 && layout.contentHeight <= layout.height + 1 &&
+    layout.controls.every(({fits}) => fits), JSON.stringify(layout));
+}
 async function installInterface() {
   const cases = [
     {name:'iphone', userAgent:'Mozilla/5.0 (iPhone) Version/26.5 Safari/605.1.15', help:/홈 화면에 추가.*웹 앱으로 열기/},
@@ -273,7 +300,7 @@ async function installInterface() {
     {name:'chrome', userAgent:'Mozilla/5.0 Chrome/145.0.0.0 Safari/537.36', help:/페이지를 앱으로 설치/},
   ];
   for (const fixture of cases) {
-    const context = await browser.newContext({viewport:{width:852,height:393},userAgent:fixture.userAgent});
+    const context = await browser.newContext({viewport:{width:874,height:338},userAgent:fixture.userAgent});
     try {
       await context.addInitScript(touch => {
         if (touch) Object.defineProperty(navigator,'maxTouchPoints',{value:touch});
@@ -288,10 +315,11 @@ async function installInterface() {
       const install = page.locator('#install');
       const help = page.locator('#install-help');
       const play = page.locator('#play');
-      await page.waitForFunction(() => !document.querySelector('#play').disabled);
+      await help.filter({hasText:fixture.help}).waitFor();
       assert.equal(await install.textContent(),'설치 방법');
-      assert.match(await help.textContent(),fixture.help);
+      assert.match(await help.textContent(),/앱으로 설치해 플레이하는 것을 권장합니다/);
       assert.equal(await play.textContent(),'브라우저에서 플레이');
+      await assertPanelFits(page,'#launcher');
       await install.click();
       assert(await help.evaluate(element => document.activeElement === element));
       await screenshot(page,fixture.name + '-install-help');
@@ -308,9 +336,11 @@ async function installInterface() {
           await install.click();
           await page.waitForFunction(() => !document.getElementById('install').disabled);
           assert.equal(await page.evaluate(() => window.promptCalls),1);
-          if (outcome === 'dismissed') assert.equal(await install.textContent(),'설치 방법');
-          else assert(await install.isHidden());
+          assert(await install.isVisible());
+          assert.equal(await install.textContent(),'설치 방법');
         }
+        await page.evaluate(() => dispatchEvent(new Event('appinstalled')));
+        assert(await install.isHidden());
       }
       if (fixture.name === 'ipad') {
         await page.addInitScript(() => Object.defineProperty(navigator,'standalone',{value:true}));
@@ -325,12 +355,125 @@ async function installInterface() {
   console.log(browserEngine + ' install UI passed in ' + cases.length + ' contexts');
 }
 
+async function verifySelectionAndRecovery(page, tap) {
+  const blocked = await page.evaluate(() => {
+    const canvas = document.getElementById('game');
+    const style = getComputedStyle(canvas);
+    return {
+      select: style.getPropertyValue('user-select') || style.getPropertyValue('-webkit-user-select'),
+      events: ['contextmenu','selectstart','dragstart','copy'].filter(type =>
+        !canvas.dispatchEvent(new Event(type,{bubbles:true,cancelable:true})))
+    };
+  });
+  assert.deepEqual(blocked, {select:'none',events:['contextmenu','selectstart','dragstart','copy']});
+  await tap(...await position(page,1014));
+  await page.locator('#dialog-title').filter({hasText:'저장 이동'}).waitFor();
+  const code = await createCode(page);
+  // Exercise real selection and the fallback without overwriting the OS clipboard.
+  await page.evaluate(() => {
+    Object.defineProperty(navigator,'clipboard',{value:{async writeText() { throw Error('Clipboard unavailable'); }}});
+  });
+  await page.locator('#copy').click();
+  await page.locator('#dialog-status').filter({hasText:'선택한 코드를'}).waitFor();
+  await assertPanelFits(page,'#dialog');
+  assert.equal(await page.locator('#code').evaluate(field => field.selectionEnd-field.selectionStart),code.length);
+  assert(await page.locator('#code').evaluate(field =>
+    field.dispatchEvent(new Event('copy',{bubbles:true,cancelable:true}))));
+  await restoreCode(page,code);
+}
+
+async function verifyMovementDrag(page, context, touch) {
+  const {canvas:[width,height]} = await page.evaluate(() => HM2Validation.status());
+  const y = Math.round(height*.38);
+  const points = [.52,.56,.60,.64,.68].map(fraction => ({x:Math.round(width*fraction),y}));
+  if (touch && browserEngine === 'chromium') {
+    const cdp = await context.newCDPSession(page);
+    try {
+      await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[points[0]]});
+      for (const point of points.slice(1)) {
+        await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[point]});
+      }
+      await waitStatus(page, ({path}) => path?.held && path.points >= 2, 'a drawn touch path');
+    } finally {
+      await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+      await cdp.detach();
+    }
+  } else {
+    await page.mouse.move(points[0].x,y);
+    await page.mouse.down();
+    try {
+      for (const {x} of points.slice(1)) await page.mouse.move(x,y);
+      await waitStatus(page, ({path}) => path?.held && path.points >= 2, 'a drawn mouse path');
+    } finally { await page.mouse.up(); }
+  }
+  await waitStatus(page, ({path}) => path && !path.held, 'released movement pointer');
+}
+
+async function verifyHostStartup() {
+  assert.equal(browserEngine,'chromium','Requires a browser with Web Locks');
+  const context = await browser.newContext(globalSettings);
+  try {
+    const broken = await context.newPage();
+    await broken.goto(editionURL('validation'));
+    await broken.waitForFunction(() => !document.getElementById('play').disabled);
+    await broken.evaluate(() => {
+      const getContext = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function(type,...args) {
+        return type === 'webgl2' ? null : getContext.call(this,type,...args);
+      };
+    });
+    await broken.locator('#play').click();
+    await broken.locator('#status').filter({hasText:'게임을 실행하지 못했습니다'}).waitFor();
+    const recovered = await start(context,'validation');
+    await waitScreen(recovered,1);
+    await recovered.close();
+    await broken.close();
+
+    const background = await context.newPage();
+    await background.addInitScript(() => {
+      const open = IDBFactory.prototype.open;
+      IDBFactory.prototype.open = function(...args) {
+        if (args[0] === 'HeavyMach2-validation') {
+          Object.defineProperty(document,'hidden',{configurable:true,value:true});
+          document.dispatchEvent(new Event('visibilitychange'));
+        }
+        return open.apply(this,args);
+      };
+      const suspend = AudioContext.prototype.suspend;
+      AudioContext.prototype.suspend = function() {
+        window.hm2Suspended = true;
+        return suspend.call(this);
+      };
+    });
+    await background.goto(editionURL('validation'));
+    await playGame(background);
+    assert(await background.evaluate(() => window.hm2Suspended === true));
+    const suspended = await waitStatus(background, state => !state.active, 'inactive background startup');
+    await settle(350);
+    assert.equal((await background.evaluate(() => HM2Validation.status())).ticks,suspended.ticks);
+    await background.evaluate(() => {
+      delete document.hidden;
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await waitStatus(background, state => state.active && state.ticks > suspended.ticks, 'visible game resumed');
+    await screenshot(background,'startup-resumed');
+  } finally { await context.close(); }
+  console.log('WebGL startup failure releases the save lock; hidden startup suspends audio and simulation');
+}
+
 async function deviceMatrix(normalManifest, qaManifest, installed=false) {
   if (installed) assert.equal(browserEngine,'chromium','Use Chrome to install the PWA');
+  const gestures = process.argv.includes('--game-gestures');
   const cases = [
     {name:'iphone', device:'iPhone 15 landscape', expected:'phone', resize:{width:852,height:393}},
+    {name:'iphone-short', device:'iPhone 15 landscape', expected:'phone',
+      viewport:{width:874,height:338}, screen:{width:874,height:402}, resize:{width:874,height:402}},
+    {name:'iphone-full', device:'iPhone 15 landscape', expected:'phone',
+      viewport:{width:874,height:402}, screen:{width:874,height:402}, resize:{width:874,height:390}},
     {name:'android-phone', device:'Pixel 7 landscape', expected:'phone', resize:{width:915,height:412}},
     {name:'ipad', device:'iPad Pro 11', expected:'tablet', resize:{width:1194,height:834}},
+    {name:'ipad-safari', device:'iPad Pro 11', expected:'tablet',
+      viewport:{width:834,height:1124}, resize:{width:834,height:1194}},
     {name:'ipad-desktop-site', device:'iPad Pro 11', expected:'tablet',
       userAgent:'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15',
       resize:{width:504,height:834}},
@@ -346,7 +489,9 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
   for (const fixture of cases.filter(({name}) => selected.includes(name))) {
     const {name, expected, resize} = fixture;
     const {defaultBrowserType, ...device} = playwright.devices[fixture.device] ?? {};
-    const options = {...globalSettings, ...device, screen:device.screen ?? device.viewport ?? rect};
+    const options = {...globalSettings,...device,
+      viewport:fixture.viewport ?? device.viewport ?? rect,
+      screen:fixture.screen ?? device.screen ?? device.viewport ?? rect};
     if (fixture.userAgent) options.userAgent = fixture.userAgent;
     if (fixture.hasTouch) options.hasTouch = true;
     const userData = installed ? await mkdtemp(join(tmpdir(), 'hm2-installed-device-')) : null;
@@ -420,6 +565,10 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
       }
       await waitScreen(page,2);
       await capture('slots');
+      if (gestures) {
+        await verifySelectionAndRecovery(page,tap);
+        results.recoverySelection = true;
+      }
       await button(1009);
       await button(1001);
       await waitScreen(page,3);
@@ -430,6 +579,10 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
       await enter(2002,6,'shop');
       await back();
       await enter(2005,7,'field');
+      if (gestures) {
+        await verifyMovementDrag(page,context,options.hasTouch);
+        results.movementDrag = true;
+      }
       const field = await page.evaluate(() => HM2Validation.status());
       const home = field.portalTargets.find(([, ,leadsToBase]) => leadsToBase);
       assert(home, 'The return portal must be visible on this field');
@@ -471,6 +624,7 @@ try {
   if (process.argv.includes('--installed-device-matrix')) await deviceMatrix(normalManifest, qaManifest,true);
   else if (process.argv.includes('--device-matrix')) await deviceMatrix(normalManifest, qaManifest);
   else if (process.argv.includes('--install-ui')) await installInterface();
+  else if (process.argv.includes('--host-startup')) await verifyHostStartup();
   else if (process.argv.includes('--installed')) await launchInstalled(normalManifest, qaManifest);
   else await smoke(normalManifest, qaManifest);
 } finally {

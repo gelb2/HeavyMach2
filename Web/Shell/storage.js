@@ -27,7 +27,11 @@ export async function openStorage(validation, desktopHost) {
     });
   }
   try {
-    return await connect(name, desktopHost);
+    const store = await connect(name, desktopHost);
+    return {...store, close() {
+      store.close?.();
+      release?.();
+    }};
   } catch (error) {
     release?.();
     throw error;
@@ -51,6 +55,7 @@ async function connect(name, desktopHost) {
   });
   db.onversionchange = () => db.close();
   return {
+    close() { db.close(); },
     read(key) {
       return new Promise((resolve, reject) => {
         const tx = db.transaction('files', 'readonly');
