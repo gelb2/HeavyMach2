@@ -1,3 +1,9 @@
+## 코드·문서 대조와 정본 점검 — 2026-11-21
+
+작업 브랜치 `fca7406`에서 정본·문서 참조, 빌드·검증 안내, 실행 계약과 코드의 차이 31건을 확인했다. [저장소 원고](code-document-audit-20261121.md) · [비공개 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/code-document-audit-20261121)
+
+누적 보고 사이트 버전 323, 소스 `68750abb941a8201b29fca0db15142bd375844b6`, 배포 `appgdep_6b006d26629081918fee30284801b903`을 확인했다. 인증 HTTP에서 새 본문 31건과 누적 목록 링크를 확인했다. 두 주소의 비인증 요청은 403이었다. 로컬 Chrome 390px·1366px에서 표와 목차·복귀 링크를 확인했다. 검사 근거는 `.local/evidence/code-document-audit-20261121/`에 있다.
+
 ## 화이트마운틴 구현과 치트 검증 — 2026-11-20
 
 설원 6곳과 기지, 보스 의뢰 4건, 일반 적 5종, 무기 25종, 레이저 공습과 수집 BOT 3종의 검증을 이미지 83장과 표 7개에 담았다. iPhone 보스전의 지형 소실 전후 이미지도 함께 게시했다. [비공개 보고서](https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/white-mountain-campaign-results-20261120.html) · [누적 보고](https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log)
