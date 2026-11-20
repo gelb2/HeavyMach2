@@ -16,6 +16,7 @@
 #include <limits>
 #include <map>
 #include <sstream>
+#include <utility>
 
 namespace hm2::android {
 namespace {
@@ -56,6 +57,8 @@ struct Runtime::Impl final : SessionHost, ui::ScreensHost {
     std::unique_ptr<ui::Screens> screens;
     std::map<std::uintptr_t,Touch> touches;
     std::uint64_t revision = 0, resourceRevision = 0, uiGeneration = 0, nextText = 0, ticks = 0;
+    std::uint64_t recoveryRequest = 0;
+    std::string recoveryDraft;
     CombatScene* lastScene = nullptr;
 #ifdef __ANDROID__
     int loggedScreen = -1;
@@ -111,9 +114,40 @@ struct Runtime::Impl final : SessionHost, ui::ScreensHost {
     void requestGameOver(std::uint64_t token) override {
         services.showDialog({DialogKind::gameOver,token,"Destroy Your Mach.",game->originalText("DestroyMach")});
     }
-    bool writeSave(std::span<const std::uint8_t> bytes, SaveReason) override {
+    bool supportsRecoveryCode() const override { return true; }
+    void requestRecoveryCode() override {
+        recoveryDraft.clear();
+        services.showDialog({DialogKind::recoveryMenu,++recoveryRequest,"저장 복구코드",
+                             "저장 슬롯 3개를 함께 옮깁니다."});
+    }
+    bool backupSaveForRecovery(std::span<const std::uint8_t> bytes) override {
+        return writeFile(directory / "HeavyMach2-before-recovery.sav", bytes);
+    }
+    void handleRecovery(DialogKind kind,std::uint64_t token,std::string_view input) {
+        if (token != recoveryRequest) return;
+        try {
+            if (kind == DialogKind::recoveryCopy) {
+                services.showDialog({DialogKind::recoveryCopy,token,{},game->recoveryCode()});
+            } else if (kind == DialogKind::recoveryInput) {
+                recoveryDraft.clear();
+                game->validateRecoveryCode(input);
+                recoveryDraft = input;
+                services.showDialog({DialogKind::recoveryConfirm,token,"저장 복원",
+                                     "현재 저장 슬롯 3개를 교체합니다. 복원 전 저장은 백업합니다."});
+            } else if (kind == DialogKind::recoveryConfirm) {
+                auto code = std::exchange(recoveryDraft, {});
+                if (input != "restore" || code.empty()) return;
+                if (game->restoreRecoveryCode(code)) notice("저장 복원", "저장 슬롯을 복원했습니다.");
+                else notice("저장 복원", "저장을 복원하지 못했습니다.");
+            }
+        } catch (const std::exception&) {
+            // A pasted code can contain personal progress. Report only the error.
+            notice("저장 복원", "복구코드를 처리하지 못했습니다. 코드와 슬롯 화면을 확인하세요.");
+        }
+    }
+    bool writeSave(std::span<const std::uint8_t> bytes, SaveReason reason) override {
         if (writeFile(directory / "HeavyMach2.sav", bytes)) return true;
-        notice("HeavyMach 2", "진행 데이터를 저장하지 못했습니다.");
+        if (reason != SaveReason::restoreRecovery) notice("HeavyMach 2", "진행 데이터를 저장하지 못했습니다.");
         return false;
     }
     std::optional<Bytes> loadHUDLayout(std::string_view profile) override {
@@ -312,6 +346,7 @@ void Runtime::confirm(DialogKind kind,std::uint64_t argument,std::string_view na
     } else if (kind == DialogKind::deleteSlot && argument < SaveData::slotCount)
         p.game->deleteSlot(static_cast<unsigned>(argument));
     else if (kind == DialogKind::gameOver) p.game->confirmGameOver(argument);
+    else p.handleRecovery(kind, argument, name);
     p.synchronize();
 }
 

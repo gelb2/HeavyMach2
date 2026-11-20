@@ -7,7 +7,8 @@
 
 namespace hm2::apple {
 struct NativeRequest {
-    enum class Kind {name,deleteSlot,alert,saveError,gameOver,notice};
+    enum class Kind {name,deleteSlot,alert,saveError,gameOver,notice,
+                     recoveryMenu,recoveryInput,recoveryConfirm};
     Kind kind;unsigned slot=0;std::string text;std::string title{};
     std::uint64_t token=0;
 };
@@ -34,6 +35,9 @@ public:
     bool provideName(unsigned,std::string_view,std::string_view country);
     bool confirmDelete(unsigned);
     bool confirmGameOver(std::uint64_t token);
+    [[nodiscard]] std::string recoveryCode() const;
+    void validateRecoveryCode(std::string_view code) const;
+    bool restoreRecoveryCode(std::string_view code);
     bool logicalPoint(CGPoint,Vec2&)const;
     [[nodiscard]] std::string nativeText(std::string_view)const;
     void setActive(bool);

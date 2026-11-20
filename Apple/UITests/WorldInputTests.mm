@@ -274,6 +274,93 @@
     [self attachPathState:[self state:world] name:@"tablet-hud-resumed"];
     [app terminate];
 }
+- (void)testRecoveryCodeRestoresSlotsAfterRelaunch {
+    self.continueAfterFailure=NO;
+    XCUIApplication* app=[[XCUIApplication alloc]initWithBundleIdentifier:@"com.gelb2.heavymach2.restored"];
+    app.launchEnvironment=@{@"HM2_UI_TESTING":@"1",@"HM2_UI_TEST_RUN":NSUUID.UUID.UUIDString};
+    [app launch];
+    XCUIElement* world=app.otherElements[@"hm2.world"];
+    void (^openSlots)(void)=^{
+        XCTAssertTrue([world waitForExistenceWithTimeout:30]);
+        [self wait:^BOOL{return [[self state:world][@"ticks"] doubleValue]>5;}
+             description:@"real display callbacks started" timeout:30];
+        XCUICoordinate* midpoint=[app coordinateWithNormalizedOffset:CGVectorMake(.5,.5)];
+        for(unsigned attempt=0;attempt<4&&[[self state:world][@"screen"] intValue]==1;++attempt){
+            [midpoint tap];
+            [NSThread sleepForTimeInterval:.4];
+        }
+        [self wait:^BOOL{return [[self state:world][@"screen"] intValue]==2;}
+             description:@"title input opens the slot screen" timeout:30];
+    };
+    openSlots();
+    [self tapButton:1009 data:0 world:world];
+    [self tapButton:1001 data:0 world:world];
+    XCUIElement* name=app.alerts[@"New User"];
+    XCTAssertTrue([name waitForExistenceWithTimeout:10]);
+    [name.textFields.firstMatch typeText:@"Recovery"];
+    [name.buttons[@"OK"] tap];
+    [self wait:^BOOL{return [[self state:world][@"slot0Used"] boolValue];} description:@"the test slot was saved"];
+
+    XCUIElement* menu=app.alerts[@"저장 복구코드"];
+    void (^openMenu)(void)=^{
+        [self tapButton:1014 data:0 world:world];
+        XCTAssertTrue([menu waitForExistenceWithTimeout:10]);
+    };
+    openMenu();
+    [menu.buttons[@"코드 복사"] tap];
+    XCTAssertTrue([menu.staticTexts[@"복구코드를 복사했습니다."] waitForExistenceWithTimeout:10]);
+    [menu.buttons[@"OK"] tap];
+    [self tapButton:1010 data:0 world:world];
+    XCUIElement* remove=app.alerts[@"Delete Slot"];
+    XCTAssertTrue([remove waitForExistenceWithTimeout:10]);
+    [remove.buttons[@"OK"] tap];
+    [self wait:^BOOL{return ![[self state:world][@"slot0Used"] boolValue];} description:@"the test slot was deleted"];
+    const int saves=[[self state:world][@"saves"] intValue];
+
+    XCUIElement* entry=app.alerts[@"복구코드 입력"];
+    XCUIElement* result=app.alerts[@"저장 복원"];
+    void (^openInput)(void)=^{
+        openMenu();
+        [menu.buttons[@"코드 입력"] tap];
+        XCTAssertTrue([entry waitForExistenceWithTimeout:10]);
+    };
+    void (^checkValidCode)(void)=^{
+        openInput();
+        XCUIElement* field=entry.textFields[@"hm2.recoveryCode"];
+        [field tap];
+        [field typeKey:@"v" modifierFlags:XCUIKeyModifierCommand];
+        XCTAssertTrue([(NSString*)field.value hasPrefix:@"HM2-"]);
+        [entry.buttons[@"코드 확인"] tap];
+        XCTAssertTrue([result.buttons[@"슬롯 교체"] waitForExistenceWithTimeout:10]);
+    };
+    openInput();
+    [entry.textFields.firstMatch typeText:@"invalid"];
+    [entry.buttons[@"코드 확인"] tap];
+    XCTAssertTrue([result.staticTexts[@"복구코드를 처리하지 못했습니다. 코드와 슬롯 화면을 확인하세요."] waitForExistenceWithTimeout:10]);
+    [result.buttons[@"OK"] tap];
+    XCTAssertEqual([[self state:world][@"saves"] intValue],saves);
+
+    checkValidCode();
+    [result.buttons[@"취소"] tap];
+    XCTAssertEqual([[self state:world][@"saves"] intValue],saves);
+    XCTAssertFalse([[self state:world][@"slot0Used"] boolValue]);
+
+    checkValidCode();
+    [result.buttons[@"슬롯 교체"] tap];
+    XCTAssertTrue([result.staticTexts[@"저장 슬롯을 복원했습니다."] waitForExistenceWithTimeout:10]);
+    [result.buttons[@"OK"] tap];
+    [self wait:^BOOL{return [[self state:world][@"slot0Name"] isEqualToString:@"Recovery"];} description:@"the imported slot appears immediately"];
+    XCTAssertEqual([[self state:world][@"saves"] intValue],saves+1);
+
+    [app terminate];
+    [app launch];
+    openSlots();
+    NSDictionary* restored=[self state:world];
+    XCTAssertEqualObjects(restored[@"slot0Name"],@"Recovery");
+    XCTAssertFalse([restored[@"slot1Used"] boolValue]);
+    XCTAssertFalse([restored[@"slot2Used"] boolValue]);
+    [app terminate];
+}
 - (void)testRealTouchMovesPlayerOnOriginalTerrain {
     self.continueAfterFailure=NO;XCUIApplication* app=[[XCUIApplication alloc]initWithBundleIdentifier:@"com.gelb2.heavymach2.restored"];
     NSString* run=NSUUID.UUID.UUIDString;app.launchEnvironment=@{@"HM2_UI_TESTING":@"1",@"HM2_UI_TEST_RUN":run};[app launch];

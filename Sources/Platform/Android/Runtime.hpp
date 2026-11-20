@@ -6,7 +6,8 @@
 
 namespace hm2::android {
 
-enum class DialogKind {notice, name, deleteSlot, gameOver, visitWebsite};
+enum class DialogKind {notice, name, deleteSlot, gameOver, visitWebsite,
+                       recoveryMenu, recoveryInput, recoveryConfirm, recoveryCopy};
 struct Dialog {
     DialogKind kind;
     std::uint64_t argument;

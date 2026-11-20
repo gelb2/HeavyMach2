@@ -55,10 +55,17 @@ struct GameRuntime::Impl:SessionHost,ui::ScreensHost {
     void requestName(unsigned slot)override{notify({NativeRequest::Kind::name,slot,{},"New User"});}
     void requestDelete(unsigned slot)override{notify({NativeRequest::Kind::deleteSlot,slot,"DeleteSlot","Delete Slot"});}
     void requestGameOver(std::uint64_t token)override{notify({NativeRequest::Kind::gameOver,0,"DestroyMach","Destroy Your Mach.",token});}
-    bool writeSave(std::span<const std::uint8_t> bytes,SaveReason)override{
+    bool supportsRecoveryCode() const override { return true; }
+    void requestRecoveryCode() override { notify({NativeRequest::Kind::recoveryMenu}); }
+    bool backupSaveForRecovery(std::span<const std::uint8_t> bytes) override {
+        NSURL* backup=[saveURL.URLByDeletingLastPathComponent URLByAppendingPathComponent:@"HeavyMach2-before-recovery.sav"];
+        NSData* contents=[NSData dataWithBytes:bytes.data() length:bytes.size()];
+        return [contents writeToURL:backup options:NSDataWritingAtomic error:nullptr];
+    }
+    bool writeSave(std::span<const std::uint8_t> bytes,SaveReason reason)override{
         NSData* contents=[NSData dataWithBytes:bytes.data() length:bytes.size()];NSError* error=nil;
         const BOOL success=[contents writeToURL:saveURL options:NSDataWritingAtomic error:&error];
-        if(!success)notify({NativeRequest::Kind::saveError,0,std::string(error.localizedDescription.UTF8String)});
+        if(!success&&reason!=SaveReason::restoreRecovery)notify({NativeRequest::Kind::saveError,0,std::string(error.localizedDescription.UTF8String)});
         return success;
     }
     std::uint32_t absoluteTimeLow()override{return absoluteTime?absoluteTime():std::uint32_t(mach_absolute_time());}
@@ -147,6 +154,13 @@ bool GameRuntime::provideName(unsigned slot,std::string_view name,std::string_vi
 }
 bool GameRuntime::confirmDelete(unsigned slot){const bool result=impl_->game->deleteSlot(slot);impl_->synchronize();return result;}
 bool GameRuntime::confirmGameOver(std::uint64_t token){const bool result=impl_->game->confirmGameOver(token);impl_->synchronize();return result;}
+std::string GameRuntime::recoveryCode() const { return impl_->game->recoveryCode(); }
+void GameRuntime::validateRecoveryCode(std::string_view code) const { impl_->game->validateRecoveryCode(code); }
+bool GameRuntime::restoreRecoveryCode(std::string_view code) {
+    const bool restored=impl_->game->restoreRecoveryCode(code);
+    if(restored) impl_->synchronize();
+    return restored;
+}
 bool GameRuntime::logicalPoint(CGPoint point,Vec2& logical)const{return [impl_->renderer logicalPoint:point result:&logical];}
 std::string GameRuntime::nativeText(std::string_view key)const{return impl_->game->originalText(key);}
 void GameRuntime::setActive(bool active){if(!active){impl_->ui->discardInputs();impl_->worldPointers={};}impl_->active=active;impl_->game->setActive(active);[impl_->audio setActive:active&&impl_->audioActive];}
