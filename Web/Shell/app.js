@@ -160,6 +160,10 @@ $('dialog-form').addEventListener('submit', async event => {
   }
 });
 
+async function drawFrame(ticks) {
+  if (await call('step', 'number', ['number'], [ticks]) !== 1) throw Error('게임 화면이 멈췄습니다.');
+}
+
 async function resize() {
   if (!live) return;
   const rect = canvas.getBoundingClientRect();
@@ -182,6 +186,9 @@ async function resize() {
   const result = await call('resize', 'number', ['number','number','number','number','number','number','number'], next);
   if (result !== 1) throw Error('게임 화면의 크기를 조정하지 못했습니다.');
   metrics = next;
+  // Setting the drawing buffer size discards the last image even while a
+  // modal pauses simulation. Draw the same game state at the new size.
+  if (!document.hidden && !lost) await drawFrame(0);
 }
 function frame(now) {
   if (!live) return;
@@ -193,7 +200,7 @@ function frame(now) {
     const elapsedTicks = remainder + 60 * elapsed;
     remainder = elapsedTicks % 1_000_000_000;
     const due = Math.floor(elapsedTicks / 1_000_000_000);
-    if (await call('step','number',['number'],[due]) !== 1) throw Error('게임 화면이 멈췄습니다.');
+    await drawFrame(due);
   }).catch(fatal).finally(() => { if (live) requestAnimationFrame(frame); });
 }
 function point(x, y) {
@@ -244,7 +251,11 @@ document.addEventListener('visibilitychange', () => {
   resetClock();
   const active = !document.hidden;
   audio.activity(active);
-  queue(() => call('activity','number',['number'],[Number(active)]));
+  queue(async () => {
+    if (await call('activity', 'number', ['number'], [Number(active)]) !== 1)
+      throw Error('게임을 다시 표시하지 못했습니다.');
+    if (active && !lost) await drawFrame(0);
+  }).catch(fatal);
 });
 canvas.addEventListener('webglcontextlost', event => {
   event.preventDefault();
@@ -253,11 +264,15 @@ canvas.addEventListener('webglcontextlost', event => {
   held.clear();
   queue(() => call('context','number',['number'],[0]));
 });
-canvas.addEventListener('webglcontextrestored', () => queue(async () => {
-  if (await call('context','number',['number'],[1]) !== 1) throw Error('게임 화면을 복원하지 못했습니다.');
-  lost = false;
-  resetClock();
-}));
+canvas.addEventListener('webglcontextrestored', () => {
+  queue(async () => {
+    if (await call('context', 'number', ['number'], [1]) !== 1)
+      throw Error('게임 화면을 복원하지 못했습니다.');
+    lost = false;
+    resetClock();
+    if (!document.hidden) await drawFrame(0);
+  }).catch(fatal);
+});
 
 function offerInstall() {
   if (desktop || matchMedia('(display-mode: standalone)').matches) return;
