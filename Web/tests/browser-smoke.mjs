@@ -12,7 +12,8 @@ const evidence = resolve(process.env.HM2_WEB_TEST_EVIDENCE ?? fileURLToPath(new 
 const playwright = await import(process.env.HM2_PLAYWRIGHT_MODULE
   ? pathToFileURL(process.env.HM2_PLAYWRIGHT_MODULE)
   : 'playwright-core');
-const browserEngine = process.env.HM2_WEB_ENGINE === 'webkit' ? 'webkit' : 'chromium';
+const browserEngine = process.env.HM2_WEB_ENGINE ?? 'chromium';
+assert(['chromium', 'webkit', 'firefox'].includes(browserEngine), 'Unknown browser engine');
 const browser = await playwright[browserEngine].launch(browserEngine === 'chromium' ? {channel: 'chrome'} : {});
 const errors = [];
 const width = 1366;
@@ -478,6 +479,7 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
       userAgent:'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15',
       resize:{width:504,height:834}},
     {name:'android-tablet', device:'Galaxy Tab S9', expected:'tablet', resize:{width:1024,height:640}},
+    {name:'android-tablet-portrait', device:'Galaxy Tab S9', expected:'tablet', resize:{width:768,height:1024}},
     {name:'desktop', expected:'desktop', resize:{width:820,height:540}},
     {name:'touch-desktop', expected:'desktop', hasTouch:true, resize:{width:820,height:540},
       userAgent:'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36'},
@@ -492,6 +494,7 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
     const options = {...globalSettings,...device,
       viewport:fixture.viewport ?? device.viewport ?? rect,
       screen:fixture.screen ?? device.screen ?? device.viewport ?? rect};
+    if (browserEngine === 'firefox') delete options.isMobile;
     if (fixture.userAgent) options.userAgent = fixture.userAgent;
     if (fixture.hasTouch) options.hasTouch = true;
     const userData = installed ? await mkdtemp(join(tmpdir(), 'hm2-installed-device-')) : null;
@@ -599,7 +602,15 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
       await back();
     } catch (error) {
       results.failure = error.message;
-      if (page) await screenshot(page,name + '-failure');
+      if (page) {
+        await screenshot(page,name + '-failure');
+        results.viewportOnFailure = await page.evaluate(() => ({
+          window:[innerWidth,innerHeight],
+          visual:[visualViewport?.width,visualViewport?.height],
+          main:[document.querySelector('main')?.clientWidth,document.querySelector('main')?.clientHeight],
+          canvas:[document.getElementById('game')?.clientWidth,document.getElementById('game')?.clientHeight]
+        }));
+      }
     } finally {
       try {
         if (manifestId) await cdp.send('PWA.uninstall',{manifestId});

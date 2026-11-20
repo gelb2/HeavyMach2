@@ -1,7 +1,7 @@
 function installInstructions() {
   const ua = navigator.userAgent;
   if (/iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1)) {
-    return 'Safari에서 공유 → 홈 화면에 추가를 선택하세요. 웹 앱으로 열기를 켠 뒤 추가하세요.';
+    return '공유 → 홈 화면에 추가를 선택하세요. 웹 앱으로 열기를 켠 뒤 추가하세요. 메뉴가 없으면 Safari에서 여세요.';
   }
   if (/Android/i.test(ua) || navigator.userAgentData?.platform === 'Android') {
     return '브라우저 메뉴에서 홈 화면에 추가 또는 앱 설치를 선택하세요.';
@@ -16,25 +16,23 @@ export function offerInstall({button, help, play, desktop}) {
   const standalone = matchMedia('(display-mode: standalone)');
   let request;
   let installed = false;
-  const offlineReady = () => Boolean(navigator.serviceWorker?.controller);
 
   function update() {
     const app = desktop || standalone.matches || navigator.standalone === true;
     button.hidden = Boolean(app || installed);
     help.hidden = Boolean(app);
     button.textContent = request ? '게임 설치' : '설치 방법';
-    play.textContent = app ? '게임 시작' : '브라우저에서 플레이';
+    if (!play.dataset.retry) play.textContent = app ? '게임 시작' : '브라우저에서 플레이';
     const instructions = '앱으로 설치해 플레이하는 것을 권장합니다. ' + (request
       ? '설치한 뒤 홈 화면이나 앱 목록에서 HeavyMach 2를 여세요.'
       : installInstructions());
-    help.textContent = installed ? '설치가 끝나면 홈 화면이나 앱 목록에서 HeavyMach 2를 여세요.'
-      : offlineReady() ? instructions + ' 오프라인 실행 준비가 끝났습니다.' : instructions;
+    help.textContent = installed ? '설치가 끝나면 홈 화면이나 앱 목록에서 HeavyMach 2를 여세요.' : instructions;
   }
   update();
   if (desktop) return;
 
-  standalone.addEventListener('change', update);
-  navigator.serviceWorker?.addEventListener('controllerchange', update);
+  if (standalone.addEventListener) standalone.addEventListener('change', update);
+  else standalone.addListener(update);
   window.addEventListener('beforeinstallprompt', event => {
     event.preventDefault();
     request = event;

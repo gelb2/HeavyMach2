@@ -1,4 +1,4 @@
-import createGame from './game.js';
+import {prepareOffline} from './download.js';
 import {createAudio} from './audio.js';
 import {screenProfile} from './display.js';
 import {offerInstall} from './install.js';
@@ -287,7 +287,29 @@ canvas.addEventListener('webglcontextrestored', () => {
 });
 
 
+function showDownload({received, verified, total, phase}) {
+  const progress = $('download-progress');
+  progress.hidden = false;
+  progress.max = total;
+  progress.value = verified;
+  const amount = bytes => (bytes / 1048576).toFixed(1) + ' MiB';
+  const activity = phase === 'checking' ? '파일 검증 중' : '파일 다운로드 중';
+  $('status').textContent = activity + ' · ' + amount(received) + ' / ' + amount(total);
+}
+
 async function boot() {
+  let offline = false;
+  if (!desktop) {
+    try {
+      offline = await prepareOffline(showDownload, error => {
+        warning('오프라인 준비에 실패했습니다. 연결이 필요합니다. ' + error.message);
+      });
+    } finally {
+      $('download-progress').hidden = true;
+    }
+  }
+  $('status').textContent = '게임을 불러오는 중…';
+  const {default:createGame} = await import('./game.js');
   wasm = await createGame({
     canvas,
     hm2Error: warning,
@@ -303,7 +325,7 @@ async function boot() {
     hm2Raster: raster
   });
   audio = createAudio(wasm, warning);
-  $('status').textContent = '게임을 시작할 수 있습니다.';
+  $('status').textContent = offline ? '오프라인에서 게임을 시작할 수 있습니다.' : '게임을 시작할 수 있습니다.';
   $('play').disabled = false;
   if (validation) window.HM2Validation = Object.freeze({
     profile,
@@ -312,6 +334,10 @@ async function boot() {
   });
 }
 $('play').addEventListener('click', async () => {
+  if (!wasm) {
+    location.reload();
+    return;
+  }
   $('play').disabled = true;
   starting = true;
   try {
@@ -337,9 +363,9 @@ $('play').addEventListener('click', async () => {
   }
 });
 offerInstall({button:$('install'), help:$('install-help'), play:$('play'), desktop});
-if (!desktop && 'serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(error => {
-    warning('오프라인 실행을 준비하지 못했습니다. ' + (error.message ?? error));
-  });
-}
-boot().catch(fatal);
+boot().catch(error => {
+  fatal(error);
+  $('play').dataset.retry = 'true';
+  $('play').textContent = '다시 시도';
+  $('play').disabled = false;
+});

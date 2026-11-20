@@ -10,7 +10,7 @@ edition = sys.argv[3]
 if edition not in {"normal", "validation"}:
     raise ValueError("Unknown web edition")
 validation = edition == "validation"
-static = ("index.html", "app.js", "storage.js", "audio.js", "display.js", "install.js", "style.css", "icon-192.png", "icon-512.png")
+static = ("index.html", "app.js", "storage.js", "audio.js", "display.js", "install.js", "download.js", "style.css", "icon-192.png", "icon-512.png")
 required = ("game.js", "game.wasm", "game.data")
 if any(not (dist / name).is_file() for name in required):
     raise FileNotFoundError("Missing Emscripten output")
@@ -37,7 +37,7 @@ description = [describe(dist / name) for name in names]
 worker = (shell / "sw.js").read_text()
 version = hashlib.sha256(json.dumps([edition, description, worker], sort_keys=True).encode()).hexdigest()[:24]
 worker = worker.replace("%EDITION%", edition).replace("%VERSION%", version)
-worker = worker.replace("%FILES%", json.dumps(names))
+worker = worker.replace("%FILES%", json.dumps(description))
 (dist / "sw.js").write_text(worker)
 description.append(describe(dist / "sw.js"))
 (dist / "asset-manifest.json").write_text(json.dumps({"version": version,

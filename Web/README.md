@@ -24,11 +24,13 @@ python3 -m http.server 8773 --bind 127.0.0.1 --directory build
 
 브라우저에서 주소를 열면 설치가 첫 동작으로 표시된다. 설치 대화상자를 제공하는 브라우저에서 **게임 설치**를 누른다. iPhone·iPad는 Safari 공유 메뉴에서 **홈 화면에 추가**를 선택한 뒤 **웹 앱으로 열기**를 켠다. Mac Safari는 파일 메뉴에서 **Dock에 추가**를 선택한다. [iPhone Safari](https://support.apple.com/guide/iphone/open-as-web-app-iphea86e5236/26/ios/26) · [Mac Safari](https://support.apple.com/104996) · [Chrome](https://support.google.com/chrome/answer/9658361)
 
-홈 화면이나 앱 목록의 아이콘으로 연 뒤 **게임 시작**을 누른다. 휴대폰에서는 가로 화면으로 플레이한다. 첫 실행에서는 파일을 캐시에 저장할 수 있도록 연결을 유지한다. **브라우저에서 플레이**도 선택할 수 있다. 설치 안내를 열어 두면 저장 잠금을 차지하지 않는다.
+홈 화면이나 앱 목록의 아이콘으로 연 뒤 **게임 시작**을 누른다. 휴대폰은 가로, 태블릿은 세로가 현재 기준이다. 첫 실행에서는 파일을 받아 검증할 때까지 연결을 유지한다. 진행 막대는 검증까지 끝난 용량을 표시한다. 검증에 실패하면 **다시 시도**로 이어서 받는다. **브라우저에서 플레이**도 선택할 수 있다. 설치 안내를 열어 두면 저장 잠금을 차지하지 않는다.
+
+게임은 WebAssembly, WebGL 2와 IndexedDB를 사용한다. 오프라인 실행은 HTTPS 또는 로컬 테스트 주소의 서비스 워커를 사용한다. 설치 메뉴는 브라우저와 OS가 제공한다. 예를 들어 Firefox의 웹 앱 설치는 지원되는 Windows 판본에서 제공한다. [Firefox 설치 조건](https://support.mozilla.org/en-US/kb/web-apps-firefox-windows) · [플랫폼별 설치 방식](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Making_PWAs_installable)
 
 ## 저장과 화면
 
-브라우저는 정식·검증판에 다른 IndexedDB 저장소를 사용한다. 서비스 워커 캐시도 에디션, 설치 경로, 빌드 버전으로 구분한다. 저장과 복구는 IndexedDB 트랜잭션이 끝난 뒤 공통 세션에 성공을 반환한다. Tauri에서는 같은 웹 빌드를 실행하고, 주입한 `window.HM2Desktop`의 `read(key)`와 `write(key, bytes)`를 기다린다. 키는 `save`, `backup`, `hud/compact`, `hud/regular`다.
+브라우저는 정식·검증판에 다른 IndexedDB 저장소를 사용한다. 서비스 워커 캐시도 에디션, 설치 경로, 빌드 버전으로 구분한다. 서비스 워커가 파일 길이와 SHA-256을 검증해 저장한 뒤 페이지가 Wasm과 에셋을 캐시에서 불러온다. 검증이 끝난 파일은 재시도에 사용한다. 저장과 복구는 IndexedDB 트랜잭션이 끝난 뒤 공통 세션에 성공을 반환한다. Tauri에서는 같은 웹 빌드를 실행하고, 주입한 `window.HM2Desktop`의 `read(key)`와 `write(key, bytes)`를 기다린다. 키는 `save`, `backup`, `hud/compact`, `hud/regular`다.
 
 폰, 태블릿, 데스크톱 프로필은 앱 시작 때 고른다. 뷰포트와 안전 영역은 창 크기가 바뀔 때 다시 계산한다. 데스크톱에서 상점과 사령부는 원본 HD 패널에 조작부를 맞추고, 빈 주변에는 같은 그림의 조작부 없는 영역을 같은 가로세로 비율로 확대한다. 터치 기기에서 창 크기나 방향을 바꿔도 기기 분류는 유지된다.
 
@@ -37,6 +39,7 @@ python3 -m http.server 8773 --bind 127.0.0.1 --directory build
 ```sh
 npm --prefix Web ci
 npm --prefix Web test
+npm --prefix Web run test:download
 npm --prefix Web run smoke
 npm --prefix Web run smoke -- --install-ui
 npm --prefix Web run smoke -- --installed
