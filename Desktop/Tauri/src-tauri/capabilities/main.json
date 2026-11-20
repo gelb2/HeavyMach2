@@ -1,0 +1,6 @@
+{
+  "identifier": "main",
+  "description": "Storage and close commands for the packaged main window",
+  "windows": ["main"],
+  "permissions": ["allow-store-read", "allow-store-write", "allow-finish-close"]
+}

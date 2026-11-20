@@ -1,0 +1,13 @@
+{
+  "name": "hm2-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tauri build --bundles app -- --locked",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.12.4"
+  }
+}
