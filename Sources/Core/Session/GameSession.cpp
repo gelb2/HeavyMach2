@@ -527,7 +527,8 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
 };
 void GameSession::Impl::drag(Vec2 point,Vec2 quickPoint){
     if(view.selectedInventory<0)return;
-    const bool maintenance=view.screen==ui::ScreenId::maintenance;
+    // Desktop maintenance uses the same HD inventory panel as the shop.
+    const bool maintenance=view.screen==ui::ScreenId::maintenance&&display.device!=DisplayDevice::desktop;
     const Vec2 root{384,view.screen==ui::ScreenId::shop?312.f:512.f};
     const Vec2 inv{root.x+(maintenance?27.f:24.f),root.y+(maintenance?63.f:120.f)};
     const float x=(point.x-inv.x+30)/60,y=(point.y-inv.y-30)/-60;

@@ -48,12 +48,15 @@ async function screenshot(page, name, checkBackdrop=false) {
     const canvas = new OffscreenCanvas(image.width,image.height);
     const draw = canvas.getContext('2d');
     draw.drawImage(image,0,0);
-    return [6, image.width-7].map(x => [.20,.35,.50,.65,.80].some(fraction => {
-      const [r,g,b] = draw.getImageData(x, Math.round(image.height*fraction), 1, 1).data;
-      return r+g+b > 20;
-    }));
+    return [6, image.width-7].map(x => [.20,.35,.50,.65,.80].map(fraction =>
+      Array.from(draw.getImageData(x, Math.round(image.height*fraction), 1, 1).data).slice(0,3)
+    ));
   }, capture.toString('base64'));
-  assert(edges.every(Boolean), name + ' artwork should reach both side edges');
+  for (const colors of edges) {
+    assert(colors.some(([r,g,b]) => r+g+b > 20) &&
+      new Set(colors.map(pixel => pixel.join(','))).size >= 3,
+    name + ' artwork should reach both side edges');
+  }
 }
 async function position(page, id, data=0) {
   const screen = await page.evaluate(() => HM2Validation.status());
@@ -111,6 +114,21 @@ async function createCode(page) {
   await page.locator('#generate').click();
   await page.waitForFunction(() => document.getElementById('code').value.startsWith('HM2-1-'));
   return page.locator('#code').inputValue();
+}
+async function restoreGraphicsContext(page) {
+  await page.evaluate(() => {
+    const canvas = document.getElementById('game');
+    const extension = canvas.getContext('webgl2').getExtension('WEBGL_lose_context');
+    if (!extension) throw Error('Cannot exercise a WebGL context loss');
+    window.contextRestored = false;
+    canvas.addEventListener('webglcontextrestored', () => { window.contextRestored = true; }, {once:true});
+    canvas.addEventListener('webglcontextlost', () => {
+      // Allow the production handler to acknowledge the event before retrying.
+      setTimeout(() => extension.restoreContext(), 150);
+    }, {once:true});
+    extension.loseContext();
+  });
+  await page.waitForFunction(() => window.contextRestored);
 }
 async function checkInstallability() {
   if (browserEngine !== 'chromium') return null;
@@ -203,6 +221,19 @@ try {
   await titleToSlots(qa, true);
   await clickButton(qa, 1014);
   assert(await createCode(qa) === normalCode, 'Restored code differs after restarting');
+  const paused = await qa.evaluate(() => HM2Validation.status());
+  await qa.setViewportSize({width:920,height:580});
+  await waitStatus(qa, ({canvas}) => canvas[0] === 920 && canvas[1] === 580, 'resized transfer dialog');
+  await screenshot(qa,'dialog-resized',true);
+  if (browserEngine === 'chromium') {
+    await restoreGraphicsContext(qa);
+    // Wait for the serialized redraw after the browser dispatched restoration.
+    await qa.evaluate(() => HM2Validation.status());
+    await screenshot(qa,'dialog-context-restored',true);
+  }
+  assert.equal((await qa.evaluate(() => HM2Validation.status())).ticks, paused.ticks);
+  await qa.setViewportSize(rect);
+  await waitStatus(qa, ({canvas}) => canvas[0] === width && canvas[1] === height, 'original viewport');
   await qa.locator('#cancel').click();
 
   // Real canvas clicks enter the imported slot, then the base shop and the
@@ -210,6 +241,8 @@ try {
   await clickButton(qa, 1009);
   await clickButton(qa, 1001);
   await waitScreen(qa, 3);
+  assert.equal((await qa.evaluate(() => HM2Validation.status())).help, true);
+  await screenshot(qa,'validation-base-help',true);
   await dismissHelp(qa);
   await screenshot(qa,'validation-base',true);
   await clickButton(qa, 2001);
@@ -281,13 +314,42 @@ try {
       exactNativeFixture = true;
     } finally { await fixture.close(); }
   }
+  const maintenanceFixture = process.env.HM2_WEB_TEST_MAINTENANCE_FIXTURE;
+  if (maintenanceFixture) {
+    const fixture = await browser.newContext(globalSettings);
+    try {
+      const maintenance = await start(fixture,'validation');
+      await titleToSlots(maintenance,true);
+      await clickButton(maintenance,1014);
+      await restoreCode(maintenance,(await readFile(maintenanceFixture,'utf8')).trim());
+      await clickButton(maintenance,1009);
+      await clickButton(maintenance,1001);
+      await waitScreen(maintenance,3);
+      await dismissHelp(maintenance);
+      await clickButton(maintenance,2003);
+      await clickButton(maintenance,2003);
+      await waitScreen(maintenance,5);
+      assert.equal((await maintenance.evaluate(() => HM2Validation.status())).help, true);
+      await screenshot(maintenance,'validation-maintenance-help',true);
+      await dismissHelp(maintenance);
+      await screenshot(maintenance,'validation-maintenance',true);
+      const items = (await maintenance.evaluate(() => HM2Validation.status())).buttons
+        .filter(([id]) => id >= 6000 && id <= 6024);
+      assert.equal(items.length,25);
+      await clickButton(maintenance,2100);
+      await waitScreen(maintenance,3);
+    } finally { await fixture.close(); }
+  }
   assert.deepEqual(errors, []);
   const installability = await checkInstallability();
   if (installability) assert.deepEqual(installability.installabilityErrors, []);
   console.log(JSON.stringify({browser:browserEngine, normal:normalManifest.version, validation:qaManifest.version,
     passed:['normal-save', 'damaged-code', 'recovery-across-editions', 'save-isolation', 'exact-validation-reload',
       'validation-command', 'validation-shop', 'validation-field', 'validation-portal-return', 'phone-touch-resize',
-      'tablet-touch-resize', 'normal-offline-reload'], installability, exactNativeFixture, evidence},null,2));
+      'tablet-touch-resize', 'normal-offline-reload', 'dialog-resize-redraw',
+      ...(browserEngine === 'chromium' ? ['dialog-context-restore-redraw'] : []),
+      ...(maintenanceFixture ? ['maintenance-art-and-return'] : [])],
+    installability, exactNativeFixture, evidence},null,2));
 } finally {
   await browser.close();
 }

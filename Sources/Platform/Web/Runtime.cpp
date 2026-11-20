@@ -281,11 +281,17 @@ public:
             ++ticks_;
         }
         Frame frame=game_->drawWorld();
+        const auto worldEnd=frame.sprites.size();
         screens_->append(frame,game_->renderTime());
+        const bool desktop=display_.device==DisplayDevice::desktop;
+        const HelpUnderlay help{worldEnd,desktop&&game_->help()?frame.sprites.size():0};
         game_->appendOverlays(frame);
         int width=0,height=0;
         emscripten_get_canvas_element_size("#game",&width,&height);
-        renderer_.draw(frame,width,height,display_.device==DisplayDevice::desktop);
+        auto artwork=MenuArtwork::native;
+        if(desktop) artwork=game_->state().screen==ui::ScreenId::maintenance?
+            MenuArtwork::desktopBackdrop:MenuArtwork::desktop;
+        renderer_.draw(frame,width,height,artwork,help);
     }
     void confirm(Dialog kind,int argument,std::string_view value) {
         if(kind==Dialog::name&&argument>=0&&static_cast<unsigned>(argument)<SaveData::slotCount) {

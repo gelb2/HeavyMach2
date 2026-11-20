@@ -52,6 +52,19 @@ void boundaries(Files& files){
     for(int initial:{-2,0,1,2,99})for(float x:{-1000.f,204.f,564.f,2000.f}){const auto reads=files.reads;unsigned closed=0;ui::Help fixed(files,"kr",initial,[&]{++closed;});assert(files.reads==reads+3&&fixed.preparationFrame().sprites.size()==3&&!fixed.state().changePages&&!fixed.state().guidanceVisible&&fixed.state().page==std::clamp(initial,0,2));fixed.setLayer(9);assert(fixed.input(PointerPhase::end,{x,42}));assert(closed==1&&fixed.state().removed);for(unsigned i=0;i<5;++i)assert(fixed.input(PointerPhase::end,{x,42}));assert(closed==1);}
     std::cout<<"HM2_HELP strict204/564+nextafter/pageClamps/endOnly/allEventsConsumed/firstEventGuidanceOnly/fixedPageAnyX/onceClose PASS\n";
 }
+void desktopFit(Files& files){
+    ui::Help help(files,"kr",0);
+    auto display=DisplayConfiguration::surface({1200,768});
+    display.device=DisplayDevice::desktop;
+    help.setDisplay(display);
+    const auto frame=draw(help);
+    assert(frame.sprites.size()==1);
+    const auto& vertices=frame.sprites.front().strip;
+    assert(vertices.size()==4);
+    assert(vertices[0].position.x==312&&vertices[0].position.y==768);
+    assert(vertices[3].position.x==888&&vertices[3].position.y==0);
+    assert(help.input(PointerPhase::end,{600,384},1)&&help.state().removed);
+}
 void lifetimeAndMissing(Files& files){
     ui::Help* borrowed=nullptr;unsigned closes=0;ui::Help reentrant(files,"us",2,[&]{assert(borrowed->state().removed&&draw(*borrowed).sprites.empty());++closes;assert(borrowed->input(PointerPhase::end,{384,512}));});borrowed=&reentrant;assert(reentrant.input(PointerPhase::end,{384,512})&&closes==1);
     std::unique_ptr<ui::Help> destroy;destroy=std::make_unique<ui::Help>(files,"kr",2,[&]{++closes;destroy.reset();});auto* raw=destroy.get();assert(raw->input(PointerPhase::end,{0,0})&&!destroy&&closes==2);
@@ -62,4 +75,4 @@ void lifetimeAndMissing(Files& files){
     std::cout<<"HM2_HELP reentrant/selfDestroyClose/originalNilLocale/noFallback/independentManagerLifetime PASS; actualSession/autoHelp/1029/nativeGPU pending\n";
 }
 }
-int main(int argc,char** argv){if(argc<2)return 77;Files files(argv[1]);localeAndPages(files,"us");localeAndPages(files,"kr");boundaries(files);lifetimeAndMissing(files);}
+int main(int argc,char** argv){if(argc<2)return 77;Files files(argv[1]);localeAndPages(files,"us");localeAndPages(files,"kr");boundaries(files);desktopFit(files);lifetimeAndMissing(files);}

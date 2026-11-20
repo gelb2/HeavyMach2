@@ -186,7 +186,8 @@ void Renderer::retain(const Frame& owners) {
     }
 }
 
-void Renderer::collect(const Sprite& sprite,const Texture& texture,const Frame& frame,bool desktop) {
+void Renderer::collect(const Sprite& sprite,const Texture& texture,const Frame& frame,MenuArtwork artwork,float brightness) {
+    const bool desktop=artwork!=MenuArtwork::native;
     auto first=vertices_.size();
     Blend blend=sprite.blend;
     const float uScale=float(texture.contentWidth)/texture.width;
@@ -227,12 +228,22 @@ void Renderer::collect(const Sprite& sprite,const Texture& texture,const Frame& 
     }
     const auto count=GLsizei(vertices_.size()-first);
     if(!count) return;
+    if(brightness!=1.f) {
+        for(auto& vertex:std::span(vertices_).subspan(first,count)) {
+            vertex.color.r*=brightness;
+            vertex.color.g*=brightness;
+            vertex.color.b*=brightness;
+        }
+    }
     auto clip=sprite.clip;
     const auto panel=desktop?fittedMenuPanel(sprite.image):std::nullopt;
     if(panel) {
+        const bool backdropOnly=artwork==MenuArtwork::desktopBackdrop;
         const auto end=vertices_.size();
-        vertices_.resize(end+count);
-        std::copy_n(vertices_.begin()+first,count,vertices_.begin()+end);
+        if(!backdropOnly) {
+            vertices_.resize(end+count);
+            std::copy_n(vertices_.begin()+first,count,vertices_.begin()+end);
+        }
         auto cropped=std::span(vertices_).subspan(first,count);
         const float keep=1.f-panel->sourceTop;
         for(auto& v:cropped) {
@@ -242,6 +253,7 @@ void Renderer::collect(const Sprite& sprite,const Texture& texture,const Frame& 
         }
         cover(cropped,frame);
         draws_.push_back({texture.id,{},blend,GLint(first),count});
+        if(backdropOnly) return;
         first=end;
         const float fit=std::min(frame.width/768.f,frame.height/1024.f);
         const auto p=panel->fittedPanel;
@@ -279,14 +291,18 @@ void Renderer::cover(std::span<Vertex> vertices,const Frame& frame) {
     }
 }
 
-void Renderer::draw(const Frame& frame,int width,int height,bool desktop) {
+void Renderer::draw(const Frame& frame,int width,int height,MenuArtwork artwork,HelpUnderlay help) {
     if(width<=0||height<=0||!(frame.width>0&&frame.height>0)) return;
     vertices_.clear();
     draws_.clear();
-    for(const auto& sprite:frame.sprites) {
+    for(std::size_t index=0;index<frame.sprites.size();++index) {
+        const auto& sprite=frame.sprites[index];
+        const bool belowHelp=index<help.end;
+        if(belowHelp&&index>=help.worldEnd&&!coversMenu(sprite.image,true)&&!fittedMenuPanel(sprite.image))
+            continue; // Live controls must not duplicate the examples in the help image.
         const auto texture=textures_.find(sprite.image);
         if(texture==textures_.end()) throw std::runtime_error("Unprepared web texture: "+sprite.image);
-        collect(sprite,texture->second,frame,desktop);
+        collect(sprite,texture->second,frame,belowHelp?MenuArtwork::desktopBackdrop:artwork,belowHelp?.30f:1.f);
     }
     glViewport(0,0,width,height);
     glDisable(GL_SCISSOR_TEST);

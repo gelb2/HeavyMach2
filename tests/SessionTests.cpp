@@ -218,6 +218,22 @@ int main(int argc,char** argv){
     action(maintenance,6091,ui::ButtonEventType::push);assert(maintenance.state().inventoryPage==1);
     action(maintenance,6090,ui::ButtonEventType::push);action(maintenance,6093,ui::ButtonEventType::push);assert(maintenance.state().equipment[2].dataId=="10111"&&maintenanceHost.writes.size()==maintenanceWrites);
 
+    {
+        GameSession desktop(maintenanceFiles,maintenanceHost,maintenanceRng,fixture("Base004"));
+        auto display=DisplayConfiguration::surface({1200,768});
+        display.device=DisplayDevice::desktop;
+        desktop.setDisplay(display);
+        assert(desktop.selectSlot(0));desktop.enterBase();
+        action(desktop,2003);action(desktop,2003);
+        assert(desktop.state().screen==ui::ScreenId::maintenance);
+        drag(desktop,8,{648,572});
+        assert(desktop.state().inventory[9].dataId=="10111");
+        drag(desktop,9,{132,579});
+        assert(desktop.state().equipment[2].dataId=="10111");
+        drag(desktop,11,{326,470});
+        assert(desktop.state().bots[2].dataId=="04201");
+    }
+
     // Actual shared Screens inputs replace the field part/controller without a
     // world reset and request exactly one equip sound per original action.
     Files fieldFiles(argv[1]);Host fieldHost;DarwinWorldRandom fieldRng(5);GameSession field(fieldFiles,fieldHost,fieldRng,fixture());

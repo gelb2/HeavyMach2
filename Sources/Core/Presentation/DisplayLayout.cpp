@@ -86,7 +86,10 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
     case DisplayRegion::top:return anchored({384,1024},{center.x,a.y+a.height},ui(DisplayRegion::bottom).scale);
     case DisplayRegion::banner:return anchored({384,512},menu::phone(configuration_)?Vec2{configuration_.canvas.width*.5f,configuration_.canvas.height*.5f}:center,configuration_.compact?ui(DisplayRegion::bottom).scale:nominal);
     case DisplayRegion::panel:return centered(768,560);
-    case DisplayRegion::maintenance:return centered(640,440);
+    case DisplayRegion::maintenance:
+        if(configuration_.device==DisplayDevice::desktop)
+            return anchored({384,512},center,std::min(a.width/768,a.height/580));
+        return centered(640,440);
     case DisplayRegion::list:{if(!configuration_.compact)return centered(768,1024);const float s=std::min(nominal,a.width/768);return anchored({384,1024},{center.x,a.y+a.height+pan},s);}
     case DisplayRegion::chooser:{const auto t=ui(DisplayRegion::bottom);return {t.scale,{t.offset.x,t.offset.y-pan}};}
     case DisplayRegion::shopBackdrop:case DisplayRegion::shopStock:case DisplayRegion::shopInventory:{

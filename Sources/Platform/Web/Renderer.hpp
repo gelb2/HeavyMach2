@@ -10,6 +10,12 @@
 
 namespace hm2::web {
 
+enum class MenuArtwork { native, desktop, desktopBackdrop };
+struct HelpUnderlay {
+    std::size_t worldEnd=0;
+    std::size_t end=0;
+};
+
 // Consumes the same ordered frames as the native renderers. Owns only browser GL state.
 class Renderer {
     struct Texture {
@@ -38,7 +44,7 @@ class Renderer {
 
     void upload(std::string_view key, Texture texture, const std::uint8_t* rgba);
     static void cover(std::span<Vertex>, const Frame&);
-    void collect(const Sprite&, const Texture&, const Frame&, bool desktop);
+    void collect(const Sprite&, const Texture&, const Frame&, MenuArtwork artwork, float brightness);
 public:
     explicit Renderer(ResourceAccess& resources) : resources_(resources) {}
     ~Renderer();
@@ -50,6 +56,6 @@ public:
     void prepare(const Frame& owners);
     void prepareText(std::string_view key,const ui::TextBitmap&);
     void retain(const Frame& owners);
-    void draw(const Frame&, int width, int height, bool desktop);
+    void draw(const Frame&, int width, int height, MenuArtwork artwork, HelpUnderlay help);
 };
 }

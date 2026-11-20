@@ -24,7 +24,12 @@ void Help::close(){
 }
 DisplayTransform Help::presentation()const{
     if(!display_.enabled)return {};
-    const auto a=display_.content();const float scale=std::min(display_.compact?2.f/3.f:1.f,a.width/768);
+    const auto a=display_.content();
+    if(display_.device==DisplayDevice::desktop){
+        const float fit=std::min(a.width/768.f,a.height/1024.f);
+        return {fit,{a.x+a.width*.5f-center_.x*fit,a.y+a.height*.5f-center_.y*fit}};
+    }
+    const float scale=std::min(display_.compact?2.f/3.f:1.f,a.width/768);
     return {scale,{a.x+a.width*.5f-center_.x*scale,a.y+a.height-center_.y*scale-512*scale+scroll_}};
 }
 bool Help::input(PointerPhase phase,Vec2 logical,std::uintptr_t identifier){

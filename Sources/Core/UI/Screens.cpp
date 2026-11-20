@@ -865,7 +865,9 @@ void Screens::Impl::bots(Vec2 origin,bool phone){
     }
 }
 void Screens::Impl::inventoryDialog(Vec2 origin,bool shopMode){
-    RegionScope scope(*this,shopMode?Region::shopInventory:Region::panel);
+    const auto panel=state.screen==ScreenId::maintenance?Region::maintenance:
+        shopMode?Region::shopInventory:Region::panel;
+    RegionScope scope(*this,panel);
     image("InvenBG.png",origin,1,1,0,{1,1},false,0,1,9);
     inventory(plus(origin,{24,120}),shopMode);equip(plus(origin,{-196,76}));bots(plus(origin,{-58,78}));
     if(shopMode){
@@ -957,6 +959,22 @@ Vec2 Screens::Impl::phoneDropPoint(Vec2 canvas)const{
 }
 void Screens::Impl::maintenance(){
     if(phoneMenu()){phoneShop(true);return;}
+    if(layout.configuration().device==DisplayDevice::desktop){
+        const Vec2 root{384,512};
+        {
+            RegionScope backdrop(*this,Region::content);
+            image("ShopBG.png",root,1,1,0,{1,1},false,0,1,0);
+        }
+        RegionScope panel(*this,Region::maintenance);
+        inventoryDialog(root,true);
+        text("GuiMaintenance.title",state.locale=="kr"?"정비소":"MAINTENANCE SHOP",
+            plus(root,{0,230}),{320,32},state.locale=="kr"?"Arial-BoldMT":"Copperplate-Bold",
+            23,TextAlign::center,{.65f,1,1,1},9);
+        addButton(Panel::root,2100,"Common_Btn_EXIT.png",plus(root,{272,-248}),1,2,0,1,Size{100,44});
+        if(state.detailInventory>=0&&!state.detailItem.dataId.empty())
+            buildDetail(DetailKind::maintenance,state.detailItem,root,state.detailInventory);
+        return;
+    }
     if(menu::phone(layout.configuration())){RegionScope backdrop(*this,Region::artBackdrop);image(menu::phoneAsset("MaintenanceBG.jpg"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.menu.backdrop");}
     RegionScope scope(*this,Region::maintenance);
     const Vec2 root{384,512};image("MaintenanceBG.png",root,1,1,0,{1,1},false,0,1,3);
