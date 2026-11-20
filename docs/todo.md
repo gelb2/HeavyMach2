@@ -7,6 +7,8 @@
 3. [ ] **PWA의 휴대폰·태블릿·데스크톱 화면 기준을 정한다.** 휴대폰과 태블릿은 기존 iPhone·iPad 화면 정책을 출발점으로 삼는다. 데스크톱을 큰 화면으로 다루는 안을 검토하고 최소 지원 창 크기와 좁은 창에서의 동작을 정한다. 기기 유형과 현재 뷰포트 크기는 별도로 처리한다. 데스크톱 사이트 모드의 iPad, 분할 화면, 회전, 창 크기 변경에서 배치와 터치·포인터 좌표를 검증한다.
 4. [ ] **Tauri macOS 계획은 PWA 검증 뒤 수립한다.** 검증한 웹 실행부와 복구 모듈을 재사용하는 범위를 정한다. macOS 로컬 파일 저장·백업, 창과 입력, 앱 패키징을 별도로 검증하고 PWA와 Mac 앱 사이의 복구코드 왕복을 검사한다. [HeavyMach 1 통합 PR](https://github.com/gelb2/HeavyMach/pull/73) · [MachDefense Tauri](https://github.com/gelb2/MachDefense/commit/3861aa4dd8939a3aba1d94b2c708cf480f8fc2ee)
 
+5. [ ] **PWA·Tauri Mac의 앱 아이콘 통일.** PWA 홈 화면·설치 아이콘과 Tauri의 Finder·Dock 아이콘에 iPhone·iPad·갤럭시 정식판과 같은 일러스트를 사용한다. 현재 모바일 빌드의 공통 아이콘 입력에서 플랫폼별 해상도와 형식을 만든 뒤 설치형 PWA와 macOS 앱에서 확인한다.
+
 ### 선행 게임의 복구 모듈
 
 - **HeavyMach 1.** `Modules/SaveTransfer`의 C++ 구현을 iPhone·iPad와 Android가 네이티브로 사용한다. PWA와 Tauri는 같은 구현을 별도 `codec.wasm`으로 빌드해 가져간다. PWA는 브라우저 저장소, Tauri는 앱 데이터 폴더에 백업을 남긴다. [모듈과 실행 환경별 연결](https://github.com/gelb2/HeavyMach/blob/ca75b1b66174686503ab0aebccc4577ae9dd866e/Modules/SaveTransfer/README.md)
