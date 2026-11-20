@@ -4,7 +4,7 @@
 
 ## 빌드와 실행
 
-macOS에서 Emscripten SDK를 활성화한 뒤 저장소 루트에서 실행한다. 검증에는 Emscripten 6.0.13을 사용했다.
+macOS에서 Emscripten SDK를 활성화하고 [캠페인 자원](../docs/public/build-and-install.md#원본-자원-준비)을 준비한 뒤 저장소 루트에서 실행한다. 검증에는 Emscripten 6.0.13을 사용했다.
 
 ```sh
 python3 tools/prepare_app_icons.py
@@ -29,11 +29,17 @@ python3 -m http.server 8773 --bind 127.0.0.1 --directory build
 
 게임은 WebAssembly, WebGL 2와 IndexedDB를 사용한다. 오프라인 실행은 HTTPS 또는 로컬 테스트 주소의 서비스 워커를 사용한다. 설치 메뉴는 브라우저와 OS가 제공한다. 예를 들어 Firefox의 웹 앱 설치는 지원되는 Windows 판본에서 제공한다. [Firefox 설치 조건](https://support.mozilla.org/en-US/kb/web-apps-firefox-windows) · [플랫폼별 설치 방식](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Making_PWAs_installable)
 
+## 실기기 설치 주소
+
+위 `127.0.0.1` 주소는 빌드한 맥의 로컬 검사 주소다. 실제 휴대폰·태블릿에는 해당 기기에서 접속할 수 있는 비공개 HTTPS 주소가 필요하다. 현재 확인된 실기기용 설치 주소는 없다. 실기기 주소를 연결할 때 정식판 `dist`만 서비스하고, 설치한 아이콘으로 실행한 결과를 [플랫폼 현황](../docs/canonical.md#플랫폼과-검증-현황)에 기록한다.
+
 ## 저장과 화면
 
-브라우저는 정식·검증판에 다른 IndexedDB 저장소를 사용한다. 서비스 워커 캐시도 에디션, 설치 경로, 빌드 버전으로 구분한다. 서비스 워커가 파일 길이와 SHA-256을 검증해 저장한 뒤 페이지가 Wasm과 에셋을 캐시에서 불러온다. 검증이 끝난 파일은 재시도에 사용한다. 저장과 복구는 IndexedDB 트랜잭션이 끝난 뒤 공통 세션에 성공을 반환한다. Tauri에서는 같은 웹 빌드를 실행하고, 주입한 `window.HM2Desktop`의 `read(key)`와 `write(key, bytes)`를 기다린다. 키는 `save`, `backup`, `hud/compact`, `hud/regular`다.
+브라우저는 같은 오리진 안에서 정식·치트판에 다른 IndexedDB 저장소를 사용한다. 호스트·포트·스킴을 바꾸려면 먼저 기존 설치에서 [복구코드로 슬롯 전체를 백업](../docs/save-transfer.md)한다. 서비스 워커 캐시는 판본·설치 경로·빌드 버전으로 구분한다. 파일 길이와 SHA-256을 검증한 뒤 캐시에서 Wasm·에셋을 읽는다. 검증이 끝난 파일은 재시도에 사용한다. 저장은 IndexedDB 트랜잭션을 기다린다. Tauri에서는 해당 판의 웹 빌드가 `window.HM2Desktop`을 통해 macOS에 저장한다. 키는 `save`, `backup`, `hud/compact`, `hud/regular`다.
 
-폰, 태블릿, 데스크톱 프로필은 앱 시작 때 고른다. 뷰포트와 안전 영역은 창 크기가 바뀔 때 다시 계산한다. 데스크톱에서 상점과 사령부는 원본 HD 패널에 조작부를 맞추고, 빈 주변에는 같은 그림의 조작부 없는 영역을 같은 가로세로 비율로 확대한다. 터치 기기에서 창 크기나 방향을 바꿔도 기기 분류는 유지된다.
+앱을 열 때 [기기 분류](Shell/display.js)를 수행한다. iPhone·iPad는 기기 정보와 터치, Android는 화면의 짧은 변 600 CSS 픽셀을 기준으로 판단한다. Mac 앱은 데스크톱이다. 정보가 부족하면 데스크톱으로 시작하는 이유를 화면에 알린다. 휴대폰 가로와 태블릿 세로는 확인 기준이며 회전을 강제하지 않는다. 뷰포트·안전 영역은 크기가 바뀌면 계산하고 기기 분류는 유지한다. 접이식 기기의 접힘·펼침 후 재분류는 [후속 검증](../docs/todo.md)에 둔다. 데스크톱은 원본 HD 패널에 조작부를 맞춘다.
+
+효과음은 같은 [C++ PCM과 OpenAL 구현](../Sources/Core/Audio)으로 재생한다. 웹은 Emscripten의 OpenAL 장치를 사용하며 사용자의 시작 입력과 앱 활성 상태를 연결한다. MP3 배경음은 브라우저 출력 어댑터가 담당한다.
 
 ## 설치형 PWA 확인
 
@@ -50,9 +56,10 @@ npm --prefix Web ci
 npm --prefix Web test
 npm --prefix Web run test:download
 npm --prefix Web run smoke
+npm --prefix Web run smoke -- --asset-use
 npm --prefix Web run smoke -- --install-ui
 npm --prefix Web run smoke -- --installed
 HM2_WEB_TEST_DEVICES=iphone,android-phone,ipad-desktop-site,desktop npm --prefix Web run smoke -- --installed-device-matrix
 ```
 
-자동 검사는 새 Chrome 프로필과 로컬 HTTP 서버에서 시작한다. 결과 이미지와 JSON은 `.local/evidence/web-smoke-20261120`에 기록한다. `HM2_WEB_TEST_RECOVERY_FIXTURE`에 테스트용 복구코드 파일을 지정하면 가져온 코드를 다시 생성해 파일과 비교한다. `--installed`는 Mac에 설치한 Chrome 앱의 저장과 오프라인 재실행을 확인한다. `--installed-device-matrix`의 기기 크기·터치는 Mac에서 모의한 값이다. 브라우저 탭과 Mac의 기기 모의 결과는 휴대폰·태블릿의 홈 화면 설치 확인에 쓰지 않는다.
+자동 검사는 새 Chrome 프로필과 로컬 HTTP 서버에서 시작한다. 결과 이미지와 JSON은 `.local/evidence/web-smoke-20261120`에 기록한다. `HM2_WEB_TEST_RECOVERY_FIXTURE`에 테스트용 복구코드 파일을 지정하면 가져온 코드를 다시 생성해 파일과 비교한다. `--asset-use`는 기지 화면이 준비된 뒤 텍스처 재읽기·재업로드 여부와 반복 입력에서 OpenAL 소스·버퍼 재사용을 확인한다. 같은 검사를 WebKit과 Firefox에서 실행하려면 `HM2_WEB_ENGINE`에 `webkit`이나 `firefox`를 지정한다. `--installed`는 Mac에 설치한 Chrome 앱의 저장과 오프라인 재실행을 확인한다. `--installed-device-matrix`의 기기 크기·터치는 Mac에서 모의한 값이다. 브라우저 탭과 Mac의 기기 모의 결과는 휴대폰·태블릿의 홈 화면 설치 확인에 쓰지 않는다.

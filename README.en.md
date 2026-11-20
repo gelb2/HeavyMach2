@@ -12,40 +12,24 @@ I have no intention of making money from this restoration. I also want to record
 
 **[Developer's statement: translated excerpts](docs/en/RESTORATION.md)** · [Korean original](docs/RESTORATION.md)
 
-## Project overview
+## About the project
 
-This project restores HeavyMach 2 HD for current iPads. The original executable and game data are analyzed to implement movement, combat, equipment, missions, menus, audio and saves in a shared C++ core. Korean is the game's default language.
+HeavyMach 2 restores the original game's movement, combat, equipment, missions, menus, audio and saves from its executable, data and observed behavior. The shared C++ core runs on iPhone and iPad, Android, the installed PWA, and the Tauri Mac app. [Current project documentation](docs/canonical.md) · [Play and transfer saves](docs/public/quick-play.md)
 
-**The regular iPad build is currently playable.** The user confirmed movement, combat, drawing movement paths, accepting quests and completing quests near the first mission. They reported reaching Wasteland without encountering a crash up to that point. Full feature restoration and the final comparison with the original are still in progress. [Play records](docs/ipad-release-installation-20261111.md) · [Verified scope and remaining issues](docs/public/validation.md)
+## Play and install
 
-[How to play](docs/public/quick-play.md) · [Build and installation](docs/public/build-and-install.md) · [Using the validation app](docs/public/build-and-install.md#치트-앱-실행과-결과) · [TODO](docs/todo.md) — these detailed guides are currently in Korean.
-
-## Playing and installing
-
-Open **HM2 Source** on an iPad in portrait orientation. Tap the title screen and select a save slot. Enter a name for a new slot, or continue an existing one. Accept missions at a base and enter the field. Tap the ground to move or draw a route with your finger. Tap an enemy to select it; equipped weapons attack when their conditions are met.
-
-There is currently no App Store or TestFlight release, public app download, or browser version. To install the game, obtain access to this private repository, prepare the original resources locally, and build and sign it in Xcode with your own development team. **Cloning the repository alone does not provide the game resources.** [Original resources and preparation](docs/public/build-and-install.md#원본-자원-준비)
-
-| Target | Current status |
+| Platform | Installation and verification |
 | --- | --- |
-| Regular iPad app | A Release build was installed and launched on a physical device. User play has been reported through Wasteland. The current layout is portrait. |
-| iPad validation app | A separate app runs 115 scenarios on the same frame clock. A 1,200-frame run and report output were verified in the simulator. |
-| iPhone | A universal target and landscape settings exist. Current HD validation uses iPad; final iPhone presentation and gameplay validation remain. |
-| Android, web/PWA, Mac and Tauri | Planned follow-up targets. This repository does not currently provide their game app build or installation paths. |
+| iPhone and iPad | Landscape on iPhone and portrait on iPad. White Mountain entry and exit were checked in the regular builds on both physical devices. [Build and install](docs/public/build-and-install.md) · [Device record](docs/white-mountain-dual-release-20261120.md) |
+| Android | The regular and test APKs ran on a Galaxy, with shop, gameplay and the iPad save checked. [Build and install](Android/README.md) · [Device record](Android/검증-20261120.md) |
+| PWA | Installed launch was checked on Mac Chrome and in the iPhone simulator. [Build and install](Web/README.md) · [Verification by device](docs/pwa-device-validation-20261120.md) |
+| Tauri Mac | Separate regular and test app bundles. [Build the Mac app](Desktop/Tauri/README.md) |
 
-### Regular, validation and reference apps
-
-| App | Purpose | Xcode scheme |
-| --- | --- | --- |
-| HM2 Source | Regular gameplay with normal progression and the user's save. Build the regular app in Release configuration. | `HeavyMach2Source` |
-| HM2 Validation | A cheat validation app that prepares experience, level, equipment, item and progression conditions and runs multiple game states concurrently. | `HeavyMach2Validation` |
-| HD reference app | Runs the original HD executable through a compatibility runtime. It has a separate app identity and saves. | [Compatibility guide](Compatibility/README.md) |
-
-The regular and validation apps share the game core and use separate app IDs and save storage. The validation app runs automated checks and writes results; it currently has no freely controllable cheat menu. Both app icons use the original tap-to-start illustration, with `TEST` added only to the validation icon. [App icons](docs/app-icons.md)
+Building requires access to this private repository and the local original game packages. See [verification status](docs/public/validation.md) for distribution and device coverage. The regular and test editions use the same core and original title illustration with separate saves. Test controls differ by platform. The [compatibility app](Compatibility/README.md) runs separately for comparison. [Test editions](docs/validation-build.md#플랫폼별-치트-실행) · [App icons](docs/app-icons.md)
 
 ## Preparing from source
 
-Use an Apple Silicon Mac, Xcode, Python 3.11 or later, CMake 3.20 or later, and XcodeGen. Repository access and a local HD 1.0.3 original are required.
+Use an Apple Silicon Mac, Xcode, Python 3.11 or later, CMake 3.20 or later, and XcodeGen. Repository access and local copies of HD 1.0.3, HD 1.0.0, and iPhone 2.0.1 are required.
 
 ```sh
 git clone git@github.com:gelb2/HeavyMach2.git
@@ -65,7 +49,7 @@ xcodegen generate --spec Apple/iOS/project.yml
 open Apple/iOS/HeavyMach2.xcodeproj
 ```
 
-In Xcode, select `HeavyMach2Source` and an iPad simulator to run it. For a physical iPad, prepare OpenAL for `iphoneos` and configure the development team, signing and device connection. Back up the current app's data container before updating. [Simulator commands, device installation and troubleshooting](docs/public/build-and-install.md)
+In Xcode, select `HeavyMach2Source` and an iPad simulator to run it. For a physical iPhone or iPad, prepare OpenAL for `iphoneos` and configure the development team, signing and device connection. Back up the current app's data container before updating. [Simulator commands, device installation and troubleshooting](docs/public/build-and-install.md)
 
 ## Implemented paths and remaining work
 
@@ -87,7 +71,7 @@ Firing does not create a file/database write or a new audio context for each sho
 
 - [Restoration plan](docs/restoration-plan.md) · [Standard and HD edition differences](docs/original-phone-hd-separation.md) · [Six-version audit](docs/ipa-version-audit.md)
 - [Validation app and work order](docs/validation-build.md) · [Full-feature validation plan](docs/full-validation-development-plan-20261110.md) · [HD functions and restoration scope](docs/hd-original-function-audit-20261111.md)
-- [Regular app installation and user play](docs/ipad-release-installation-20261111.md) · [Latest icon and concurrent-run records](docs/evidence/title-illustration-icons-20261112.json)
+- [Regular app installation and user play](docs/ipad-release-installation-20261111.md) · [Apple icons and concurrent run on November 12, 2026](docs/evidence/title-illustration-icons-20261112.json)
 - [Report site and publication list](docs/report-site.md) — uses the existing private report site and requires the owner's account login.
 - [HeavyMach 1 early-history review](docs/heavymach1-history-review.md) · [Reference-app validation plan](docs/reference-port-validation-plan.md) · [Model usage history](docs/model-usage-history.md)
 

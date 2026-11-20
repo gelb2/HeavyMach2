@@ -14,38 +14,22 @@ HeavyMach 1을 복원한 뒤, 개발자 변해준과 일러스트레이터 박�
 
 ## 프로젝트 소개
 
-HeavyMach 2 HD를 현재 iPad에서 다시 플레이할 수 있도록 복원하는 프로젝트다. 원본 실행파일과 게임 데이터를 분석하고, 이동·전투·장비·임무·메뉴·음향·저장을 C++ 공통 코어로 구현하고 있다. 게임은 한국어를 기본으로 사용한다.
-
-**현재 iPad 정식판으로 플레이할 수 있다.** 사용자는 첫 미션의 이동·전투·경로 그리기와 퀘스트 수락·완수를 확인했고, Wasteland까지 진행한 시점에 크래시를 발견하지 않았다고 보고했다. 전체 기능 복원과 최종 원작 대조는 진행 중이다. [플레이 기록](docs/ipad-release-installation-20261111.md) · [확인한 범위와 남은 문제](docs/public/validation.md)
-
-[플레이 방법](docs/public/quick-play.md) · [빌드와 설치](docs/public/build-and-install.md) · [치트 앱 사용](docs/public/build-and-install.md#치트-앱-실행과-결과) · [TODO](docs/todo.md)
+HeavyMach 2의 이동·전투·장비·임무·메뉴·음향·저장을 원본 실행 기록과 데이터에서 복원한다. C++ 공통 코어를 iPhone·iPad, Android, 설치형 PWA와 Tauri Mac에서 사용한다. [현행 기준과 문서 찾기](docs/canonical.md) · [플레이·저장 이동](docs/public/quick-play.md)
 
 ## 플레이와 설치
 
-설치된 **HM2 Source**를 열고 iPad를 세로로 놓는다. 타이틀을 터치한 뒤 저장 슬롯을 선택한다. 새 슬롯에서는 이름을 입력하고, 기존 슬롯에서는 이어서 시작한다. 기지에서 임무를 받고 전장으로 나가 지면 터치로 이동하거나 손가락으로 경로를 그린다. 적을 터치하면 표적으로 선택하고 장착한 무기의 조건에 따라 공격한다.
-
-현재 App Store·TestFlight·공개 설치 파일·브라우저 플레이는 제공하지 않는다. 설치하려면 접근 권한이 있는 이 저장소의 소스와 로컬 원본 자원을 준비하고 Xcode에서 본인의 팀으로 서명한다. **저장소를 clone하는 것만으로는 게임 자원이 준비되지 않는다.** [필요한 원본과 준비 순서](docs/public/build-and-install.md#원본-자원-준비)
-
-| 대상 | 현재 상태 |
+| 플랫폼 | 설치와 현재 확인한 범위 |
 | --- | --- |
-| iPad 정식판 | 실제 기기에 Release 설치·시작을 확인했다. 사용자 플레이는 Wasteland까지 보고됐다. 현재 세로 화면이다. |
-| iPad 치트판 | 별도 앱에서 115조건을 같은 프레임에 실행한다. 시뮬레이터에서 1,200프레임 실행과 결과 저장을 확인했다. |
-| iPhone | 유니버설 타깃과 가로 화면 설정이 있다. 현재 HD 기준 검증은 iPad에서 진행하며, iPhone 최종 표시·플레이 검증은 남아 있다. |
-| Android·웹/PWA·Mac·Tauri | 후속 대상이다. 현재 이 저장소에는 해당 게임 앱의 빌드·설치 경로가 없다. |
+| iPhone·iPad | iPhone 가로·iPad 세로. 두 실제 기기의 정식판에서 화이트마운틴 출입을 확인했다. [빌드와 설치](docs/public/build-and-install.md) · [실기기 기록](docs/white-mountain-dual-release-20261120.md) |
+| Android | 갤럭시에서 정식판과 치트판을 설치해 상점·전장·iPad 저장으로 플레이를 확인했다. [APK 빌드와 설치](Android/README.md) · [검증](Android/검증-20261120.md) |
+| PWA | 맥 Chrome·iPhone 시뮬레이터에서 홈 화면 또는 앱 아이콘 실행을 확인했다. [빌드와 설치](Web/README.md) · [기기별 확인](docs/pwa-device-validation-20261120.md) |
+| Tauri Mac | 정식판과 치트판을 독립 앱으로 빌드한다. [맥 앱 빌드](Desktop/Tauri/README.md) |
 
-### 정식판·치트판·포팅판
-
-| 앱 | 용도 | Xcode scheme |
-| --- | --- | --- |
-| HM2 Source | 정상 진행 규칙과 사용자 저장을 쓰는 일반 플레이 앱. 정식판은 Release 구성으로 빌드한다. | `HeavyMach2Source` |
-| HM2 Validation | 경험치·레벨·장비·아이템·진척도 조건을 준비해 여러 게임 상태를 동시에 실행하는 치트 검증 앱. | `HeavyMach2Validation` |
-| HD 포팅판 | 원본 HD 실행파일을 호환 실행기로 구동하는 비교 앱. 복원판과 별도 앱·저장을 사용한다. | [호환 실행 안내](Compatibility/README.md) |
-
-정식판과 치트판은 같은 게임 코어를 사용하고 앱 ID와 저장 공간을 분리한다. 치트판은 자동 검사 후 결과를 저장하는 앱이며, 현재 자유 조작용 치트 메뉴는 제공하지 않는다. 아이콘은 원본 탭투스타트 일러스트를 사용하고 치트판에만 `TEST`를 표시한다. [아이콘 구성](docs/app-icons.md)
+빌드에는 비공개 저장소 접근과 로컬 원본이 필요하다. 배포 및 실기기 상태는 [검증 현황](docs/public/validation.md)에 있다. 정식판과 치트판은 공통 코어와 원본 탭투스타트 그림을 사용하고 저장은 분리한다. 치트판의 실행 방식은 플랫폼마다 다르다. 원작 비교용 [포팅판](Compatibility/README.md)은 별도로 실행한다. [치트 검사 방식](docs/validation-build.md#플랫폼별-치트-실행) · [아이콘](docs/app-icons.md)
 
 ## 소스에서 준비하기
 
-Apple Silicon Mac, Xcode, Python 3.11 이상, CMake 3.20 이상, XcodeGen을 사용한다. 저장소 접근 권한과 로컬 HD 1.0.3 원본이 필요하다.
+Apple Silicon Mac, Xcode, Python 3.11 이상, CMake 3.20 이상, XcodeGen을 사용한다. 저장소 접근 권한과 로컬 HD 1.0.3·HD 1.0.0·iPhone 일반판 2.0.1 원본이 필요하다.
 
 ```sh
 git clone git@github.com:gelb2/HeavyMach2.git
@@ -65,7 +49,7 @@ xcodegen generate --spec Apple/iOS/project.yml
 open Apple/iOS/HeavyMach2.xcodeproj
 ```
 
-Xcode에서 `HeavyMach2Source`와 iPad 시뮬레이터를 선택해 실행한다. 실제 iPad에 설치할 때는 `iphoneos`용 OpenAL을 준비하고 개발 팀·서명·기기 연결을 설정한다. 갱신 전에는 현재 앱의 데이터 컨테이너를 백업한다. [시뮬레이터 명령·실기기 설치·오류 해결](docs/public/build-and-install.md)
+Xcode에서 `HeavyMach2Source`와 iPad 시뮬레이터를 선택해 실행한다. 실제 iPhone·iPad에 설치할 때는 `iphoneos`용 OpenAL을 준비하고 개발 팀·서명·기기 연결을 설정한다. 갱신 전에는 현재 앱의 데이터 컨테이너를 백업한다. [시뮬레이터 명령·실기기 설치·오류 해결](docs/public/build-and-install.md)
 
 ## 확인한 동작과 남은 과제
 
@@ -87,7 +71,7 @@ C++20 코어에서 원작 데이터 reader, 파츠 조립, 게임 규칙과 UI�
 
 - [복원 계획](docs/restoration-plan.md) · [원본 일반판·HD판의 차이](docs/original-phone-hd-separation.md) · [여섯 판본 조사](docs/ipa-version-audit.md)
 - [치트 앱과 작업 순서](docs/validation-build.md) · [전체 기능 검증 계획](docs/full-validation-development-plan-20261110.md) · [HD 함수와 복원 범위](docs/hd-original-function-audit-20261111.md)
-- [정식판 설치·사용자 플레이](docs/ipad-release-installation-20261111.md) · [최신 아이콘·동시 검사 기록](docs/evidence/title-illustration-icons-20261112.json)
+- [정식판 설치·사용자 플레이](docs/ipad-release-installation-20261111.md) · [2026-11-12 Apple 아이콘·동시 검사 기록](docs/evidence/title-illustration-icons-20261112.json)
 - [보고 사이트와 게시 목록](docs/report-site.md) — 기존 비공개 보고 사이트를 사용하며 본인 계정 로그인이 필요하다.
 - [HeavyMach 1 초기 이력 검토](docs/heavymach1-history-review.md) · [포팅 앱 검증 계획](docs/reference-port-validation-plan.md) · [모델 사용 이력](docs/model-usage-history.md)
 

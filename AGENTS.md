@@ -1,6 +1,6 @@
 # HeavyMach 2 작업 지침
 
-이 저장소는 HeavyMach 2 전용 독립 비공개 저장소다. `.agents/policy.md`, `.agents/project.md`, `docs/restoration-plan.md`, `docs/technology-and-assets.md`, `docs/reference-port-validation-plan.md`, `docs/todo.md`를 읽는다.
+이 저장소는 HeavyMach 2 전용 독립 비공개 저장소다. [정본과 작업 위치](docs/canonical.md)에서 업무별 문서·소비 코드·검사를 고른다. [작업 정책](.agents/policy.md), [사용자 결정 이력](.agents/project.md), [TODO](docs/todo.md)를 함께 읽는다.
 
 1. HeavyMach 2의 모든 새 소스·도구·검사·파생 파일과 빌드 출력은 이 저장소 또는 이 저장소 전용 외부 작업 공간에 둔다.
 2. HeavyMach 1·MachDefense·분리 전 ProjectGameDev의 파일을 수정하지 않는다. 해당 폴더에 HeavyMach 2 코드를 만들지 않는다. 다른 게임의 소스나 출력 디렉터리를 쓰기 대상으로 연결하지 않는다.

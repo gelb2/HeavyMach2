@@ -18,7 +18,7 @@ npm run build
 
 ## 저장
 
-앱은 `~/Library/Application Support/com.gelb2.heavymach2.desktop/progress/`에 진행 기록과 HUD 설정을 저장한다. 복구코드를 적용할 때 웹과 같은 게임 코드가 기존 진행을 `BeforeRecovery.sav`에 보관한 뒤 `HeavyMach2.sav`를 바꾼다. 파일은 같은 폴더에서 임시 파일에 먼저 쓰고 디스크에 기록한 뒤 교체한다. 앱을 닫을 때 진행 중인 저장 요청이 끝날 때까지 기다린다. 브라우저 저장은 각 브라우저 프로필에 남으며, 복구코드로 Mac 앱에 옮길 수 있다.
+앱은 `~/Library/Application Support/com.gelb2.heavymach2.desktop/progress/`에 진행 기록과 HUD 설정을 저장한다. [복구코드](../../docs/save-transfer.md)를 적용할 때 `BeforeRecovery.sav` 백업을 동기화한 뒤 `HeavyMach2.sav`를 바꾼다. 같은 폴더의 임시 파일을 동기화하고 원자적으로 교체한다. 교체 전 오류는 기존 저장을 유지한다. 교체 후 디렉터리 동기화 오류가 나면 세션에 실제 교체를 반영하고 화면에 별도로 알린다. 복원 전 백업 동기화에 실패하면 원래 진행의 교체를 중단한다. 앱을 닫을 때 진행 중인 저장 요청을 기다린다.
 
 치트판은 `~/Library/Application Support/com.gelb2.heavymach2.desktop.validation/progress/`를 사용한다.
 
