@@ -2,8 +2,15 @@
 
 ## 공유 복구코드와 웹·Mac 후속 작업 — 2026-11-20
 
-1. [ ] **공유 복구코드로 전체 저장 복원.** 복구코드 한 줄로 전체 프로필의 스테이지·기지·임무 진행도, 인벤토리·장비·스킬, 레벨·경험치·크레딧을 한 번에 옮기고 복원한다. iPhone·iPad·Android에서 같은 코드를 읽고 내보낸 뒤, 전체 슬롯을 왕복해 대조한다. 손상된 코드나 호환되지 않는 버전이 들어와도 기존 저장을 보존하는지 확인한다. [HeavyMach 1 통합 PR](https://github.com/gelb2/HeavyMach/pull/73) · [MachDefense 저장 복원 구현](https://github.com/gelb2/MachDefense/commit/61291c343d6d19facb74f687f5323bdf5e88db50)
-2. [ ] **Wasm 기반 PWA·Tauri macOS 개발 계획 수립.** 공유 복구코드 구현과 검증을 마친 뒤 시작한다. HeavyMach 1의 Wasm PR과 두 게임에 적용한 PWA·Tauri 기술을 대조한다. HeavyMach 2 공통 코어의 재사용 범위, 입력·렌더링·오디오 연결, PWA의 설치·오프라인 실행, Tauri의 macOS 패키징·로컬 저장, 복구코드 호환과 기기별 검증 순서를 계획에 담는다. [HeavyMach 1 Wasm PR](https://github.com/gelb2/HeavyMach/pull/24) · [HeavyMach 1 PWA·Tauri 통합 PR](https://github.com/gelb2/HeavyMach/pull/73) · [MachDefense PWA](https://github.com/gelb2/MachDefense/commit/6a05e039e441eb9db3a51a199c6ae931ce0fb722) · [MachDefense Tauri](https://github.com/gelb2/MachDefense/commit/3861aa4dd8939a3aba1d94b2c708cf480f8fc2ee)
+1. [ ] **공유 복구코드로 전체 저장 복원.** 기존 `SaveData`를 읽는 공통 모듈에서 코드 생성·검증·해석과 전체 슬롯 복원 범위를 맡는다. 스테이지·기지·임무 진행도, 인벤토리·장비·스킬, 레벨·경험치·크레딧을 복구코드 한 줄로 옮긴다. iPhone·iPad·Android에서 같은 모듈을 연결해 전체 슬롯을 왕복 대조한다. 손상된 코드, 호환되지 않는 버전, 복원 중단에도 기존 저장을 보존하는지 확인한다. PWA와 Tauri도 이 모듈을 사용하며 각 실행 환경에서 입력·클립보드·저장만 연결한다.
+2. [ ] **Wasm 기반 PWA를 먼저 계획하고 검증한다.** 복구코드 구현·검증 뒤, HeavyMach 1의 Wasm PR과 두 게임의 PWA 구현을 참고해 공통 코어와 브라우저 연결 범위를 정한다. 치트판은 저장 사본과 고정한 시작 상태로 전투·포털·상점·복원을 반복 검사한다. 정식판은 슬롯 생성·일반 진행·새로고침 후 재개·설치·오프라인 실행을 검사한다. 두 판은 브라우저 저장소와 서비스 워커 범위를 분리한다. 웹 자동 검사는 기기별 실브라우저 확인과 함께 사용한다. [HeavyMach 1 Wasm PR](https://github.com/gelb2/HeavyMach/pull/24) · [MachDefense PWA](https://github.com/gelb2/MachDefense/commit/6a05e039e441eb9db3a51a199c6ae931ce0fb722)
+3. [ ] **PWA의 휴대폰·태블릿·데스크톱 화면 기준을 정한다.** 휴대폰과 태블릿은 기존 iPhone·iPad 화면 정책을 출발점으로 삼는다. 데스크톱을 큰 화면으로 다루는 안을 검토하고 최소 지원 창 크기와 좁은 창에서의 동작을 정한다. 기기 유형과 현재 뷰포트 크기는 별도로 처리한다. 데스크톱 사이트 모드의 iPad, 분할 화면, 회전, 창 크기 변경에서 배치와 터치·포인터 좌표를 검증한다.
+4. [ ] **Tauri macOS 계획은 PWA 검증 뒤 수립한다.** 검증한 웹 실행부와 복구 모듈을 재사용하는 범위를 정한다. macOS 로컬 파일 저장·백업, 창과 입력, 앱 패키징을 별도로 검증하고 PWA와 Mac 앱 사이의 복구코드 왕복을 검사한다. [HeavyMach 1 통합 PR](https://github.com/gelb2/HeavyMach/pull/73) · [MachDefense Tauri](https://github.com/gelb2/MachDefense/commit/3861aa4dd8939a3aba1d94b2c708cf480f8fc2ee)
+
+### 선행 게임의 복구 모듈
+
+- **HeavyMach 1.** `Modules/SaveTransfer`의 C++ 구현을 iPhone·iPad와 Android가 네이티브로 사용한다. PWA와 Tauri는 같은 구현을 별도 `codec.wasm`으로 빌드해 가져간다. PWA는 브라우저 저장소, Tauri는 앱 데이터 폴더에 백업을 남긴다. [모듈과 실행 환경별 연결](https://github.com/gelb2/HeavyMach/blob/ca75b1b66174686503ab0aebccc4577ae9dd866e/Modules/SaveTransfer/README.md)
+- **MachDefense.** `Modules/SaveTransfer/Codec.hpp`를 공통 C++ 슬롯 메뉴가 호출한다. Apple·Android는 `FileStore.hpp`로 저장하고, PWA는 코덱이 포함된 게임 Wasm과 IndexedDB를 쓴다. Tauri는 그 웹 빌드를 그대로 담아 저장 호출을 macOS 파일 저장에 연결한다. [코덱과 네이티브 저장](https://github.com/gelb2/MachDefense/blob/a9cc530b88004cdd978f3e3d4b9c43fcb0fd7f2f/Modules/SaveTransfer/README.md) · [Tauri 빌드 연결](https://github.com/gelb2/MachDefense/blob/a9cc530b88004cdd978f3e3d4b9c43fcb0fd7f2f/Desktop/Tauri/scripts/prepare.py)
 
 ## 작업 브랜치의 현재 상태 — 2026-11-19
 
