@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Package the pinned original HD artwork into local Apple app icon catalogs.
+"""Package the pinned HD artwork into local Apple app icon catalogs.
 
 Original artwork and generated image bytes stay in .local, like HD resources.
 The native renderer is an offline tool, never a game runtime dependency.
@@ -17,10 +17,7 @@ ART_MEMBER = 'Payload/HM2HD.app/Main_BG.png'
 ART_SHA = 'd34b109ac8ccdb73f90a419b60840d350ab7c3d53acad40194f0c8eb3b809a36'
 
 
-def prepare(output):
-    output = output.resolve()
-    if not output.is_relative_to(ROOT / '.local'):
-        raise ValueError('Generated original artwork must remain in this repo .local')
+def original_artwork():
     provenance = json.loads((ROOT / 'docs/source-provenance.json').read_text())
     candidates = [f for f in provenance['files'] if f['sha256'] == IPA_SHA]
     if len(candidates) != 1:
@@ -30,7 +27,15 @@ def prepare(output):
         if hashlib.file_digest(stream, 'sha256').hexdigest() != IPA_SHA:
             raise ValueError('Original IPA hash mismatch')
     with zipfile.ZipFile(original) as archive:
-        artwork = archive.read(ART_MEMBER)
+        return archive.read(ART_MEMBER)
+
+
+def prepare(output, from_campaign=False):
+    output = output.resolve()
+    if not output.is_relative_to(ROOT / '.local'):
+        raise ValueError('Generated original artwork must remain in this repo .local')
+    artwork = ((ROOT / '.local/prepared/Campaign/HD/Main_BG.png').read_bytes()
+               if from_campaign else original_artwork())
     if hashlib.sha256(artwork).hexdigest() != ART_SHA:
         raise ValueError('Original tap-to-start Main_BG.png hash mismatch')
     local = ROOT / '.local/app-icon-tools'
@@ -72,4 +77,6 @@ def prepare(output):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--output', type=Path, default=ROOT / '.local/prepared/AppIcons.xcassets')
-    prepare(parser.parse_args().output)
+    parser.add_argument('--from-campaign', action='store_true', help='Use the verified public-build campaign artwork')
+    args = parser.parse_args()
+    prepare(args.output, args.from_campaign)

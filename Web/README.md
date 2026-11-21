@@ -6,10 +6,10 @@
 
 ## 빌드와 실행
 
-macOS에서 Emscripten SDK를 활성화하고 [캠페인 자원](../docs/public/build-and-install.md#원본-자원-준비)을 준비한 뒤 저장소 루트에서 실행한다. 검증에는 Emscripten 6.0.13을 사용했다.
+macOS에서 Emscripten SDK를 활성화한 뒤 저장소 루트에서 실행한다. 검증에는 Emscripten 6.0.13을 사용했다. [캠페인과 아이콘 준비](../docs/public/build-and-install.md#공개-빌드에서-자원-준비)
 
 ```sh
-python3 tools/prepare_app_icons.py
+python3 tools/prepare_build_resources.py
 export EM_CACHE="$PWD/.local/emscripten-cache-hm2"
 emcmake cmake -S Web -B build/web-normal -DCMAKE_BUILD_TYPE=Release
 cmake --build build/web-normal --parallel 6

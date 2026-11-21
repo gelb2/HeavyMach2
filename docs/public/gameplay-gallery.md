@@ -6,8 +6,6 @@
 
 Ruin Field에서 이동 경로를 다시 지정하는 장면이다. 초록색 점과 선이 이동 경로를 표시한다. iPhone Air 시뮬레이터에서 실제 OS 입력으로 조작한 Source 앱의 녹화다. 원본 녹화의 36.8~42.9초를 가로 방향으로 돌려 사용했다. [MP4 · 6.1초](media/gameplay-20261121/iphone-route.mp4) · [입력 재현과 수정 기록](../iphone-module-audit-20261118.md)
 
-![iPhone 가로 전장에서 메크 앞에 이동 경로가 표시되고 새 위치를 향해 이동한다.](media/gameplay-20261121/iphone-route.gif)
-
 아래는 Wasteland 상점의 상품 목록·인벤토리·페이지 버튼이 보이는 iPhone 시뮬레이터 캡처다. [상점 원본 좌표 대조](../iphone-shop-reference-coordinates-20261119.md)
 
 ![iPhone Wasteland 상점. 왼쪽에 상품 목록, 오른쪽에 인벤토리와 하단 페이지 버튼이 보인다.](media/gameplay-20261121/iphone-shop.png)
