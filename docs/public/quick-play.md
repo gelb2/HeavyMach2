@@ -1,6 +1,6 @@
 # HeavyMach 2 플레이 방법
 
-[README](../../README.md) · [빌드와 설치](build-and-install.md) · [현재 검증 범위](validation.md)
+[English](../en/public/quick-play.md) · [README](../../README.md) · [빌드와 설치](build-and-install.md) · [현재 검증 범위](validation.md)
 
 정식판을 열어 플레이한다. iPhone·갤럭시 휴대폰은 가로, iPad는 세로를 기준으로 한다. PWA는 홈 화면이나 앱 목록에서 설치한 아이콘을 누른다. [PWA 홈 화면 설치](build-and-install.md#pwa-설치) · [Tauri Mac 앱 받기](build-and-install.md#tauri-mac-앱-받기)
 

@@ -28,8 +28,8 @@ HeavyMach 2는 메크를 조립하고 전장에서 이동 경로를 그어 싸�
 | --- | --- |
 | iPhone·iPad | iPhone 가로·iPad 세로. 두 실기기에 정식판과 기지 방문 저장을 넣었다. 내가 iPhone에서 화이트마운틴 진입을 확인했다. 포털 14방향은 시뮬레이터와 호스트에서 확인했다. [빌드와 설치](docs/public/build-and-install.md) · [실기기 기록](docs/white-mountain-dual-release-20261120.md) |
 | Android | 갤럭시 정식·치트판에 같은 iPad 저장을 적용했다. 상점·사령부·전장과 짧은 실제 플레이를 확인했다. Android 포팅은 `develop`에 병합됐다. [APK 빌드와 설치](docs/public/build-and-install.md#android-빌드와-설치) · [기기 기록](Android/검증-20261120.md) |
-| PWA | Mac Chrome 설치 앱의 오프라인 재실행과 저장 유지, iPhone 시뮬레이터의 홈 화면 실행을 확인했다. 실제 휴대폰·태블릿의 기종별 장시간 검증은 남아 있다. [Wasm 빌드와 로컬 PWA](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [기기별 확인](docs/pwa-device-validation-20261120.md) |
-| Tauri Mac | 정식·치트 번들을 각각 빌드하고 로컬 서명을 확인했다. 이전 빌드의 820×900pt 세로 창 시작과 정식판 저장 왕복을 확인했다. [Mac 앱 빌드](docs/public/build-and-install.md#tauri-mac-빌드) · [세로 창 검사](docs/pwa-device-validation-20261120.md#tauri-mac-세로-창) |
+| PWA | Mac Chrome 설치 앱의 오프라인 재실행과 저장 유지를 확인했다. 갤럭시의 공개 v0.2 설치 앱은 홈 복귀 뒤 가로 화면과 배경음을 이어갔다. [로컬 빌드](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [갤럭시 검사](docs/pwa-lifecycle-audit-20261121.md) |
+| Tauri Mac | 공개 클론에서 정식·치트 번들의 서명을 확인했다. 정식판에서 기지와 전장으로 들어가 이동하고 게임을 다시 열어 같은 슬롯을 확인했다. [Mac 앱 빌드](docs/public/build-and-install.md#tauri-mac-빌드) · [클론 실행 검사](docs/public/validation.md#공개-클론에서-빌드와-실행) |
 
 정식판과 치트판은 공통 코어와 원본 탭투스타트 그림을 사용하고 저장은 분리한다. 치트판은 플랫폼마다 실행 방식이 다르다. 원본 실행을 비교할 때는 별도 포팅판을 쓴다. [검증 현황](docs/todo.md#현재-체크--2026-11-21) · [치트 앱 실행](docs/validation-build.md#플랫폼별-치트-실행) · [원작 비교용 포팅판](Compatibility/README.md)
 
@@ -80,7 +80,7 @@ iPad 세로 화면에서 플레이어가 연못 사이로 메크를 이동시키
 
 ## 확인한 동작과 남은 과제
 
-iPhone·iPad 시뮬레이터의 치트 앱에서 각각 126조건·2,100프레임을 실행했다. 화이트마운틴 포털 14방향·보스 의뢰 4건·장비 29건도 두 시뮬레이터에서 따로 확인했다. 실물 iPad의 설원 출입과 사령부, 실기기 PWA와 최신 Tauri 세로 창, E-10 달성 알림·수집 보상과 원작 HD의 최종 일괄 대조는 남아 있다. [실행 근거](docs/feature-verification.md) · [현재 TODO](docs/todo.md#현재-체크--2026-11-21)
+iPhone·iPad 시뮬레이터의 치트 앱에서 각각 126조건·2,100프레임을 실행했다. 화이트마운틴 포털 14방향·보스 의뢰 4건·장비 29건도 두 시뮬레이터에서 따로 확인했다. 실물 iPad의 설원 출입과 사령부, Safari 설치판 오프라인 재시작, Mac의 사령부와 음향, E-10 달성 알림·수집 보상과 원작 HD의 최종 일괄 대조는 남아 있다. [실행 근거](docs/feature-verification.md) · [현재 TODO](docs/todo.md#현재-체크--2026-11-21)
 
 ## 구현과 복원 기준
 
@@ -96,11 +96,11 @@ C++20 코어에서 원작 데이터 reader, 파츠 조립, 게임 규칙과 UI�
 
 ## 나는 이렇게 일을 시키고 테스트했다
 
-[작업 지시와 테스트](docs/public/development-history.md#내가-일을-시키고-테스트한-방법)
+[내가 일을 시킨 방법](docs/public/development-history.md#내가-일을-시키고-테스트한-방법) · [테스트 방법](docs/public/testing-method.md)
 
 ## 코드 구조와 버전
 
-[코드 구조](docs/public/development-history.md#코드-구조) · [검증](docs/public/validation.md) · [버전과 배포](docs/public/release-policy.md)
+[코드 구조](docs/public/architecture.md) · [검증](docs/public/validation.md) · [변경 이력](CHANGELOG.md) · [버전과 배포](docs/public/release-policy.md) · [기여 안내](CONTRIBUTING.md)
 
 ## 라이선스와 자원
 
