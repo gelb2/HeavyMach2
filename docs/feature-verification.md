@@ -6,7 +6,7 @@
 
 | 기능과 원본 진입점 | 현재 소비자와 검사 | 실행 관측과 남은 대조 |
 | --- | --- | --- |
-| 타이틀·슬롯·기지·포털. GuiSelectSlot·GuiBase와 Base001~006 | [Screens](../Sources/Core/UI/Screens.cpp), [WorldGates](../Sources/Core/Simulation/WorldGates.cpp), [버튼·HUD 검사](../tests/ScreensTests.cpp) | [정식 두 기기 설원 입구·귀환](white-mountain-dual-release-20261120.md). 방향·시설 전수 대조는 TODO. |
+| 타이틀·슬롯·기지·포털. GuiSelectSlot·GuiBase와 Base001~006 | [Screens](../Sources/Core/UI/Screens.cpp), [WorldGates](../Sources/Core/Simulation/WorldGates.cpp), [버튼·HUD 검사](../tests/ScreensTests.cpp) | [정식 두 기기 설치·iPhone 사용자 진입·시뮬레이터 포털 검사](white-mountain-dual-release-20261120.md). 실제 iPad 출입과 방향·시설 전수 대조는 TODO. |
 | 이동 경로·대시·카메라. 원본 지면 탭과 SP100 | [GameSession](../Sources/Core/Session/GameSession.cpp), [대시](../Sources/Core/Simulation/Dash.cpp), [카메라 검사](../tests/CameraPresentationTests.cpp) | [2,100프레임·OS 입력](iphone-module-audit-20261118.md). 진행 중 실기기 장시간 프레임 비교는 남아 있다. |
 | 사격·피해·VFX와 음원. WeaponInfo 213행, PtWpn 110종 | [WeaponController](../Sources/Core/Simulation/WeaponController.cpp), [CombatScene](../Sources/Core/Simulation/CombatScene.cpp), [데이터와 포구](weapon-data-restoration-20261110.md) | [동시 검증](iphone-module-audit-20261118.md), [설원 무장](white-mountain-implementation-20261119.md). 모든 하체·공격 분기와 원작 동등성은 미확인. |
 | 상점·정비·인벤토리. 구매/판매 2102/2103과 75칸 저장 | [Screens](../Sources/Core/UI/Screens.cpp), [Equipment](../Sources/Core/Progression/Equipment.cpp), [장비 검사](../tests/EquipmentTests.cpp) | [iPhone 원본 좌표·패널](iphone-shop-reference-coordinates-20261119.md) · [갤럭시 구매](../Android/검증-20261120.md) · [마지막 페이지](iphone-inventory-last-page-20261120.md). |

@@ -17,4 +17,14 @@ PWA 저장은 브라우저 오리진의 IndexedDB에 있다. 스킴·호스트·
 
 [RecoveryCode.cpp](../Sources/Core/Data/RecoveryCode.cpp)는 저장 전체를 인코딩하고, [GameSession.cpp](../Sources/Core/Session/GameSession.cpp)는 코드 검사 → 기존 기록 백업 → 저장 교체 → 세션 갱신을 담당한다. Apple·Android는 OS 입력과 앱 전용 파일을 연결한다. 웹은 [store](../Web/Shell/storage.js)의 트랜잭션을 기다리고, Mac은 [Tauri 저장 어댑터](../Desktop/Tauri/src-tauri/src/storage.rs)의 교체 결과를 기다린다.
 
-[코덱 검사](../tests/SaveTests.cpp), [세션 검사](../tests/SessionTests.cpp)와 [웹 왕복 기록](pwa-device-validation-20261120.md)을 사용한다. PWA와 Mac의 검사용 코드 왕복은 확인했다. 실제 기기의 최신 복구 UI 왕복과 기존 포트에서 새 주소로 옮기는 실기기 검사는 [TODO](todo.md)에 있다.
+[코덱 검사](../tests/SaveTests.cpp)와 [세션 검사](../tests/SessionTests.cpp)를 사용한다.
+
+## 호스트별 확인 범위
+
+| 호스트 | 확인한 동작 | 남은 확인 |
+| --- | --- | --- |
+| iPhone·iPad | 두 시뮬레이터의 Apple 런타임에서 저장 이동 버튼, 검증·교체·복원 전 백업·새 런타임의 슬롯을 확인했다. | 시스템 대화상자를 통한 복사·붙여넣기·교체 전체 검사. XCTest의 기기 지정 단계에 실패한 기록이 있다. |
+| Android | 정식·치트 에뮬레이터 앱에서 잘못된 코드 거부, 유효 코드 취소 시 저장 보존, 두 시험 슬롯 복원과 재실행을 확인했다. | 갤럭시에서 최신 복구 UI로 코드 이동. 기존 갤럭시 설치 검사는 [iPad 파일 저장 전체 적용](../Android/검증-20261120.md#ipad-사용자-저장과-갤럭시-플레이) 범위다. |
+| PWA·Tauri | 웹과 Mac에서 같은 검사용 코드를 가져온 뒤 다시 생성했다. 브라우저에서는 정식·치트 저장 분리도 검사했다. [웹 왕복 기록](pwa-device-validation-20261120.md) · [최신 웹·Mac 검사](code-document-fixes-20261121.md#실행-근거) | 실기기 PWA 설치 주소를 사용한 복구와 플레이. 최신 Tauri 정식·치트 세로 창에서의 직접 조작. |
+
+네이티브 성공 로그는 `.local/evidence/native-recovery-20261120/`의 `apple-style-iphone-result.txt`·`apple-style-ipad-result.txt`와 `android-release-style.log`·`android-validation-style.log`에 있다. 실제 기기와 PWA 오리진 이동은 [TODO](todo.md#현재-체크--2026-11-21)에 남아 있다.
