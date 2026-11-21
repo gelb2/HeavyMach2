@@ -12,12 +12,18 @@ const desktop = window.HM2Desktop;
 const detectedProfile = screenProfile(navigator, screen, matchMedia('(pointer: coarse)').matches, desktop);
 const profile = detectedProfile ?? 'desktop';
 const profileId = {phone: 0, tablet: 1, desktop: 2}[profile];
+$('install-manifest').href = profile === 'phone' ? './manifest.webmanifest' : './manifest-flexible.webmanifest';
+const landscape = matchMedia('(orientation: landscape)');
+const standalone = matchMedia('(display-mode: standalone)');
+const phoneHeld = () => profile === 'phone' && !landscape.matches;
+const installed = () => standalone.matches || navigator.standalone === true;
 document.documentElement.dataset.profile = profile;
 document.documentElement.dataset.profileDetected = String(detectedProfile !== null);
 const cache = new Map();
 const held = new Map();
 let wasm, audio, storage, metrics, prompt;
-let live = false, starting = false, lost = false, pending = Promise.resolve();
+let live = false, starting = false, lost = false, playRequested = false;
+let pending = Promise.resolve();
 let previous, remainder = 59, warningTimeout;
 
 function warning(text, node = modal.open ? $('dialog-status') : $('warning')) {
@@ -45,6 +51,29 @@ function queue(work) {
   return next;
 }
 function resetClock() { previous = undefined; remainder = 59; }
+function updateOrientation() {
+  const hold = phoneHeld() && (installed() || playRequested);
+  $('rotate').hidden = !hold;
+  document.documentElement.dataset.phoneHold = String(hold);
+  if (phoneHeld()) {
+    for (const [id, point] of held) sendPointer(3, ...point, id);
+    held.clear();
+  }
+  audio?.activity(!document.hidden && !phoneHeld());
+  resetClock();
+  if (live) queue(resize).catch(fatal);
+}
+function lockInstalledPhone() {
+  if (profile !== 'phone' || !installed() || document.hidden) return;
+  screen.orientation?.lock?.('landscape').catch(() => {});
+}
+landscape.addEventListener('change', updateOrientation);
+standalone.addEventListener('change', updateOrientation);
+window.addEventListener('pageshow', () => {
+  lockInstalledPhone();
+  updateOrientation();
+});
+updateOrientation();
 
 const tape = document.createElement('canvas');
 const text = tape.getContext('2d', {willReadFrequently: true});
@@ -172,7 +201,7 @@ async function drawFrame(ticks) {
 }
 
 async function resize() {
-  if (!live) return;
+  if (!live || phoneHeld()) return;
   const rect = canvas.getBoundingClientRect();
   const width = Math.max(1, rect.width), height = Math.max(1, rect.height);
   const main = getComputedStyle(document.querySelector('main'));
@@ -200,7 +229,7 @@ async function resize() {
 function frame(now) {
   if (!live) return;
   queue(async () => {
-    if (document.hidden || lost || modal.open) { resetClock(); return; }
+    if (document.hidden || phoneHeld() || lost || modal.open) { resetClock(); return; }
     const stamp = Math.floor(now * 1e6);
     const elapsed = previous === undefined ? 0 : Math.min(100_000_000, Math.max(0, stamp - previous));
     previous = stamp;
@@ -216,14 +245,15 @@ function point(x, y) {
 }
 function sendPointer(phase, x, y, id) {
   return queue(() => {
-    if (!live || !metrics || lost || (modal.open && phase < 2)) return;
+    if (!live || !metrics || lost || (phase < 2 && (phoneHeld() || modal.open))) return;
     // Pointer Events can start at zero. The common input code reserves zero
     // for no active pointer, so shift browser IDs before crossing the boundary.
     return call('input','number',['number','number','number','number'],[phase,...point(x,y),id + 1]);
   });
 }
 canvas.addEventListener('pointerdown', event => {
-  if (event.button !== 0 || held.has(event.pointerId)) return;
+  if (event.button !== 0 || phoneHeld() || held.has(event.pointerId)) return;
+  audio?.unlock();
   event.preventDefault();
   if (document.activeElement !== canvas) canvas.focus({preventScroll:true});
   canvas.setPointerCapture(event.pointerId);
@@ -264,15 +294,16 @@ async function setRuntimeActive(active) {
     throw Error('게임을 다시 표시하지 못했습니다.');
 }
 document.addEventListener('visibilitychange', () => {
+  lockInstalledPhone();
+  updateOrientation();
   if (!starting && !live) return;
   const active = !document.hidden;
-  audio?.activity(active);
   if (!live) return;
   held.clear();
   resetClock();
   queue(async () => {
     await setRuntimeActive(active);
-    if (active && !lost) await drawFrame(0);
+    if (active && !phoneHeld() && !lost) await drawFrame(0);
   }).catch(fatal);
 });
 canvas.addEventListener('webglcontextlost', event => {
@@ -288,7 +319,7 @@ canvas.addEventListener('webglcontextrestored', () => {
       throw Error('게임 화면을 복원하지 못했습니다.');
     lost = false;
     resetClock();
-    if (!document.hidden) await drawFrame(0);
+    if (!document.hidden && !phoneHeld()) await drawFrame(0);
   }).catch(fatal);
 });
 
@@ -335,6 +366,7 @@ async function boot() {
     hm2Raster: raster
   });
   audio = createMusic(wasm, warning);
+  audio.activity(!document.hidden && !phoneHeld());
   $('status').textContent = offline ? '오프라인에서 게임을 시작할 수 있습니다.' : '게임을 시작할 수 있습니다.';
   $('play').disabled = false;
   if (validation) window.HM2Validation = Object.freeze({
@@ -344,6 +376,9 @@ async function boot() {
   });
 }
 $('play').addEventListener('click', async () => {
+  playRequested = true;
+  lockInstalledPhone();
+  if (phoneHeld()) { updateOrientation(); return; }
   if (!wasm) {
     location.reload();
     return;
