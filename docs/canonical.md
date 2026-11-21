@@ -17,8 +17,8 @@
 | --- | --- | --- |
 | iPhone 가로·iPad 세로 | 두 실기기에 정식판과 기지 방문 저장을 설치했다. 사용자는 iPhone에서 화이트마운틴이 열린다고 확인했다. 포털 14방향은 시뮬레이터·호스트에서 검사했다. 치트 시뮬레이터는 기본 126조건·2,100프레임과 설원·공습 개별 검사를 실행했다. [정식](white-mountain-dual-release-20261120.md) · [치트](iphone-module-audit-20261118.md) · [설치](public/build-and-install.md) | 실제 iPad의 설원 출입과 사령부, 실기기 저장 이동 메뉴의 처음부터 끝까지 확인, 동일 시나리오의 전체 HD 일괄 대조 |
 | Android | 갤럭시에서 정식·치트 APK를 분리해 설치했다. 상점·일반 전투 및 iPad 진행 사본을 확인했다. [빌드](../Android/README.md) · [기기 기록](../Android/검증-20261120.md) | 장시간 플레이와 기종별 추가 대조 |
-| 설치형 PWA | Chrome의 설치 앱과 iPhone 시뮬레이터의 홈 화면 실행을 확인했다. 휴대폰 가로·태블릿 세로·데스크톱이 현재 검증 기준이다. [설치](../Web/README.md) · [관측](pwa-device-validation-20261120.md) | 실물 iPhone·iPad·갤럭시, 접힘·분할 화면, 설치형 Safari의 오프라인 재시작 |
-| Tauri Mac | 두 앱을 별도 번들·저장으로 빌드했다. 정식 앱 저장 왕복, 두 앱의 820×900pt 시작과 Finder 아이콘을 확인했다. [빌드](../Desktop/Tauri/README.md) · [창 검사](pwa-device-validation-20261120.md#tauri-mac-세로-창) | 실제 세로 창의 추가 입력·음향·저장 검사 |
+| 설치형 PWA | 공개 Pages의 정식 Chrome 앱을 설치해 오프라인 재실행과 저장 유지를 확인했다. iPhone 시뮬레이터는 기존 로컬 빌드의 홈 화면에서 실행했다. 휴대폰 가로·태블릿 세로·데스크톱이 현재 검증 기준이다. [설치](../Web/README.md) · [관측](pwa-device-validation-20261120.md) | 실물 iPhone·iPad·갤럭시, 접힘·분할 화면, 설치형 Safari의 오프라인 재시작 |
+| Tauri Mac | 공개 ZIP을 받아 정식 앱의 서명을 검증했다. 실제 세로 창에서 새 슬롯과 저장, 기지에서 상점으로 갔다 돌아오는 동작을 확인했다. 정식·치트 앱은 별도 저장을 쓴다. [빌드](../Desktop/Tauri/README.md) · [창 검사](pwa-device-validation-20261120.md#tauri-mac-세로-창) | 정식판 사령부·음향과 치트판의 세로 창 직접 조작 |
 
 공개 PWA와 앱 다운로드는 [버전과 배포](public/release-policy.md)에 둔다. 비공개 검사 보고는 [게시 기록](report-site.md)에 둔다. 원작 비교용 앱은 일반·치트 앱과 별도다.
 

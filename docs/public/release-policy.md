@@ -16,4 +16,16 @@
 - Mac 앱은 동일한 정식 웹 파일을 번들에 넣는다. `.app`을 macOS의 `ditto --keepParent`로 압축해 GitHub Release에 첨부한다. ZIP을 내려받아 풀고 서명과 실행을 확인한다. [다운로드와 처음 열기](build-and-install.md#tauri-mac-앱-받기)
 - 원본 IPA·ARM 실행파일, 개인 저장과 서명 키는 로컬에 보관한다. PWA·앱 산출물에는 컴파일된 복원 코드와 게임 실행에 사용하는 준비 자원을 담는다. [원본 관리](../source-provenance.json) · [제작자와 외부 코드](../../CREDITS.md)
 
-출시 방식 참고 [HeavyMach 1 Releases](https://github.com/gelb2/HeavyMach/releases) · [MachDefense Releases](https://github.com/gelb2/MachDefense/releases)
+## v0.1 공개 배포 확인
+
+`v0.1`은 [PR #26](https://github.com/gelb2/HeavyMach2/pull/26)으로 `develop`에 반영하고 [PR #27](https://github.com/gelb2/HeavyMach2/pull/27)의 `main` 병합 커밋 `29a4e30`에 붙였다. GitHub 로그아웃 상태에서 저장소, 한·영 README, 개발자의 변, 이전 회고, 문서 목록, 빌드·설치, 개발 과정, 트러블슈팅, 갤러리 등을 포함한 13개 문서의 렌더링을 확인했다. [공개 저장소](https://github.com/gelb2/HeavyMach2) · [문서 목록](../README.md)
+
+| 배포 | 직접 확인한 범위 |
+| --- | --- |
+| PWA | `gh-pages`의 `271e42f` 배포에서 파일 15개의 길이와 SHA-256을 대조했다. 맥미니 Chrome에 정식판을 설치해 독립 창에서 새 슬롯을 만들고, 오프라인으로 다시 열어 저장 28,204바이트가 그대로인지 확인했다. [공개 PWA](https://gelb2.github.io/HeavyMach2/) |
+| Tauri Mac | 공개 ZIP을 다시 받아 SHA-256과 압축을 푼 앱의 서명을 확인했다. 맥미니의 820×900pt 창에서 새 슬롯을 만들고 Ruin Field Base와 상점을 왕복했다. 검증용 홈 폴더에 저장을 생성했다. [Mac ZIP](https://github.com/gelb2/HeavyMach2/releases/download/v0.1/HeavyMach2-Tauri-Mac-v0.1-arm64.zip) |
+| Android | Gradle에서 정식·치트 APK와 일반 앱 단위 검사를 통과했다. GitHub에서 두 APK를 다시 내려받아 로컬 서명 검사본과 대조했다. [정식·치트 APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1) |
+
+공개 주소로 설치한 실제 휴대폰·태블릿 검증, 이번 Android 패키지의 갤럭시 재설치, Mac 앱의 음향과 사령부는 후속 확인 범위다. [현재 TODO](../todo.md#현재-체크--2026-11-21)
+
+레퍼런스 프로젝트의 버전 기록. [HeavyMach 1 Releases](https://github.com/gelb2/HeavyMach/releases) · [MachDefense Releases](https://github.com/gelb2/MachDefense/releases)
