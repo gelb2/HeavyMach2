@@ -412,6 +412,17 @@ struct Screens::Impl {
         addButton(Panel::root,1010,"Common_Btn_DEL.png",{224,80},1,2,0,1,Size{80,40});
         addButton(Panel::root,1004,"Common_Btn_BACK.png",{384,80},1,2,0,1,Size{80,40});
         addButton(Panel::root,1001,"Common_Btn_OK.png",{544,80},1,2,0,1,Size{80,40});
+        if(state.recoveryCodeAvailable){
+            const Vec2 position{685,80};
+            const auto button=addButton(Panel::root,recoveryButtonId,"BaseTextBG.png",
+                position,1,1,0,0,Size{122,44},0,{}, {.22f,.22f},true,3,false);
+            button->alpha=.78f;
+            button->pressedAlphaMultiplier=1.25f;
+            const bool korean=state.locale=="kr";
+            RegionScope footer(*this,Region::bottom);
+            text("GuiSelectSlot.transfer",korean?"저장 이동":"TRANSFER",
+                position,{84,20},korean?"Arial-BoldMT":"Copperplate-Bold",14,TextAlign::center);
+        }
         for(unsigned i=0;i<3;++i){
 RegionScope card(*this,Region(unsigned(Region::slot0)+i));
             const auto& slot=state.slots[i];const Vec2 origin{384,760-float(i)*240};
@@ -854,7 +865,9 @@ void Screens::Impl::bots(Vec2 origin,bool phone){
     }
 }
 void Screens::Impl::inventoryDialog(Vec2 origin,bool shopMode){
-    RegionScope scope(*this,shopMode?Region::shopInventory:Region::panel);
+    const auto panel=state.screen==ScreenId::maintenance?Region::maintenance:
+        shopMode?Region::shopInventory:Region::panel;
+    RegionScope scope(*this,panel);
     image("InvenBG.png",origin,1,1,0,{1,1},false,0,1,9);
     inventory(plus(origin,{24,120}),shopMode);equip(plus(origin,{-196,76}));bots(plus(origin,{-58,78}));
     if(shopMode){
@@ -946,6 +959,22 @@ Vec2 Screens::Impl::phoneDropPoint(Vec2 canvas)const{
 }
 void Screens::Impl::maintenance(){
     if(phoneMenu()){phoneShop(true);return;}
+    if(layout.configuration().device==DisplayDevice::desktop){
+        const Vec2 root{384,512};
+        {
+            RegionScope backdrop(*this,Region::content);
+            image("ShopBG.png",root,1,1,0,{1,1},false,0,1,0);
+        }
+        RegionScope panel(*this,Region::maintenance);
+        inventoryDialog(root,true);
+        text("GuiMaintenance.title",state.locale=="kr"?"정비소":"MAINTENANCE SHOP",
+            plus(root,{0,230}),{320,32},state.locale=="kr"?"Arial-BoldMT":"Copperplate-Bold",
+            23,TextAlign::center,{.65f,1,1,1},9);
+        addButton(Panel::root,2100,"Common_Btn_EXIT.png",plus(root,{272,-248}),1,2,0,1,Size{100,44});
+        if(state.detailInventory>=0&&!state.detailItem.dataId.empty())
+            buildDetail(DetailKind::maintenance,state.detailItem,root,state.detailInventory);
+        return;
+    }
     if(menu::phone(layout.configuration())){RegionScope backdrop(*this,Region::artBackdrop);image(menu::phoneAsset("MaintenanceBG.jpg"),{240,160},1,1,0,{1,1},false,0,1,0,"phone.menu.backdrop");}
     RegionScope scope(*this,Region::maintenance);
     const Vec2 root{384,512};image("MaintenanceBG.png",root,1,1,0,{1,1},false,0,1,3);

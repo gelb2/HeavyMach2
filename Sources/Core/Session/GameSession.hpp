@@ -8,7 +8,7 @@
 #include <memory>
 
 namespace hm2 {
-enum class SaveReason {selectSlot,enterBase,stageTransition,saveAndExit,deleteSlot};
+enum class SaveReason {selectSlot,enterBase,stageTransition,saveAndExit,deleteSlot,restoreRecovery};
 struct SessionHost {
     virtual ~SessionHost()=default;
     virtual void sound(std::string_view,Vec2)=0;
@@ -19,6 +19,9 @@ struct SessionHost {
     virtual void notice(std::string_view title,std::string_view message){alert(message,title);}
     virtual void requestName(unsigned slot)=0;
     virtual void requestDelete(unsigned slot)=0;
+    virtual bool supportsRecoveryCode() const {return false;}
+    virtual void requestRecoveryCode() {}
+    virtual bool backupSaveForRecovery(std::span<const std::uint8_t>) {return false;}
     virtual void requestGameOver(std::uint64_t){alert("DestroyMach","Destroy Your Mach.");}
     // Called only at confirmed original save events. The platform adapter owns
     // atomic replacement and must report failure instead of claiming a save.
@@ -68,6 +71,9 @@ public:
     [[nodiscard]] const ui::ScreensState& state();
     [[nodiscard]] const SessionMetrics& metrics()const;
     [[nodiscard]] const SaveData& envelope()const;
+    [[nodiscard]] std::string recoveryCode()const;
+    void validateRecoveryCode(std::string_view code)const;
+    bool restoreRecoveryCode(std::string_view code);
     [[nodiscard]] std::string originalText(std::string_view key)const;
     [[nodiscard]] std::span<const std::uint8_t> workingSlot()const;
     [[nodiscard]] CombatScene* battle();

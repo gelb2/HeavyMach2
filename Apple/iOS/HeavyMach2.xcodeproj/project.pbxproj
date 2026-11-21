@@ -105,6 +105,7 @@
 		87E36D97DBE0C16AB3E344FC /* DataTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FE78763925867176049A3A8 /* DataTable.cpp */; };
 		89E2F3DF9D984CD1B7278ACE /* ProjectileMotion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9EF17D3A2B9091F70DD14C46 /* ProjectileMotion.cpp */; };
 		8B73514E5D191BF463BB1565 /* Equipment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F541CD73F7283BBB71906CE0 /* Equipment.cpp */; };
+		8D6D4B296A850BD91131DB7A /* RecoveryCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F764B4822DA1C062EE25CD3E /* RecoveryCode.cpp */; };
 		8E46962CAF530D818CC38862 /* HM2ConcurrentRuntime.mm in Sources */ = {isa = PBXBuildFile; fileRef = F140813C1815FA9B07E0F84D /* HM2ConcurrentRuntime.mm */; };
 		913298AE711CA9F62874C913 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBDDC303F0216E7A0DD6EC8E /* CoreGraphics.framework */; };
 		92A36F4478D9831F1CB24EF9 /* WeaponController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DBD0C33C8ED85FD493AF2BE9 /* WeaponController.cpp */; };
@@ -145,6 +146,7 @@
 		DA5DE08EABB37EB1E6EA00BF /* HM2TextRasterizer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4C8284C6796F6A4F01CE879 /* HM2TextRasterizer.mm */; };
 		DBAAC4C753D58A698A24A022 /* PlayerMapPreview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE355BDD1BADB44070C02205 /* PlayerMapPreview.cpp */; };
 		DBD47470D35DCB2A632B199A /* SharedAssetPreparation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CD6E1709AD010ACDFCEA276 /* SharedAssetPreparation.cpp */; };
+		DD3B835C76736DE094F6D38D /* RecoveryCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F764B4822DA1C062EE25CD3E /* RecoveryCode.cpp */; };
 		E167FFDEFA6F32398B92CAFF /* ProjectileImpact.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDF2A274205C68B542F02369 /* ProjectileImpact.cpp */; };
 		E230B0A0B359B869241F532D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 166C5DAA03A5A25AB8F316FB /* OpenGLES.framework */; };
 		E25C857BECF785E182748698 /* PreparedTiles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAC82761A678F6C913ED94C8 /* PreparedTiles.cpp */; };
@@ -200,6 +202,7 @@
 		10775E341619B8B622F8D5EF /* AVFAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFAudio.framework; path = System/Library/Frameworks/AVFAudio.framework; sourceTree = SDKROOT; };
 		1124C71EDFD2EB2281DC160D /* HM2GameRuntime.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HM2GameRuntime.hpp; sourceTree = "<group>"; };
 		13F2346C339F63643FB7B0C7 /* HM2HUDStorage.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HM2HUDStorage.hpp; sourceTree = "<group>"; };
+		145CE8D11FE0DDB75360032D /* HM2AirStrikeBalanceValidation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HM2AirStrikeBalanceValidation.hpp; sourceTree = "<group>"; };
 		1513B2C669AEC2A9D67D68B0 /* AudioTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AudioTests.mm; sourceTree = "<group>"; };
 		166C5DAA03A5A25AB8F316FB /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		178929D99CCF1A53F011DD11 /* ProjectileVisual.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ProjectileVisual.cpp; sourceTree = "<group>"; };
@@ -354,8 +357,10 @@
 		F25E088ABE6949017001368D /* HM2Audio.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = HM2Audio.mm; sourceTree = "<group>"; };
 		F541CD73F7283BBB71906CE0 /* Equipment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Equipment.cpp; sourceTree = "<group>"; };
 		F710A918137748B8FAA0EA65 /* CameraPresentation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CameraPresentation.cpp; sourceTree = "<group>"; };
+		F764B4822DA1C062EE25CD3E /* RecoveryCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RecoveryCode.cpp; sourceTree = "<group>"; };
 		F7A96A234DEF1323121DF9DD /* MenuArtwork.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MenuArtwork.hpp; sourceTree = "<group>"; };
 		F7F50A2A20F66D0A8B046783 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		FD470763107486FB7E573F6F /* RecoveryCode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RecoveryCode.hpp; sourceTree = "<group>"; };
 		FDC2C3484F60AA6ACF7FDAFB /* AssemblyRendererTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AssemblyRendererTests.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -453,6 +458,8 @@
 				78D24A69AF7B3BB23FC0E7CD /* Models.hpp */,
 				4B10E038B5329E8FCF91F5F1 /* PlayerEquipment.cpp */,
 				D756CCC0C471868117741AC8 /* PlayerEquipment.hpp */,
+				F764B4822DA1C062EE25CD3E /* RecoveryCode.cpp */,
+				FD470763107486FB7E573F6F /* RecoveryCode.hpp */,
 				B8B7CAA8BBBB189D722C3250 /* ResourceName.hpp */,
 				E55A40FF267F407934E8B2C5 /* Resources.hpp */,
 				41FE054D095EED8F45207257 /* SaveData.cpp */,
@@ -495,6 +502,7 @@
 		2AC4E320B3BBA6E65C27A882 /* Apple */ = {
 			isa = PBXGroup;
 			children = (
+				145CE8D11FE0DDB75360032D /* HM2AirStrikeBalanceValidation.hpp */,
 				91A0D30A250D4AE32CA30332 /* HM2Application.mm */,
 				9FBCCBA7CF322FBAC39511D5 /* HM2Audio.h */,
 				F25E088ABE6949017001368D /* HM2Audio.mm */,
@@ -925,6 +933,7 @@
 				89E2F3DF9D984CD1B7278ACE /* ProjectileMotion.cpp in Sources */,
 				197CFCB86B163A1A52F174A6 /* ProjectileVisual.cpp in Sources */,
 				11A985DC61C755C3298C0C2B /* QuickItems.cpp in Sources */,
+				DD3B835C76736DE094F6D38D /* RecoveryCode.cpp in Sources */,
 				358FCC7660FFE2C0F37C644B /* SaveData.cpp in Sources */,
 				F381815D0C73B8B861BDA729 /* ScreenTransition.cpp in Sources */,
 				0766EDE5469E68F0A94467F1 /* Screens.cpp in Sources */,
@@ -1000,6 +1009,7 @@
 				585909B22740E49F75105131 /* ProjectileMotion.cpp in Sources */,
 				2968C592533C4052CC64A532 /* ProjectileVisual.cpp in Sources */,
 				FBDB445ABA0D715C6BDC3D56 /* QuickItems.cpp in Sources */,
+				8D6D4B296A850BD91131DB7A /* RecoveryCode.cpp in Sources */,
 				33728F73BFCAF4E06F1A9AC5 /* SaveData.cpp in Sources */,
 				83E0F96694142DBED7D3AA43 /* ScreenTransition.cpp in Sources */,
 				6FCECE1B484A5F02EA2B3B5D /* Screens.cpp in Sources */,

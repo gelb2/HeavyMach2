@@ -6,12 +6,15 @@ ROOT = Path(__file__).resolve().parents[1]
 HOME = ROOT / '.local/evidence/menu-screen-check'
 SCOPE = ('HM2SourceView.mm', 'HM2Application.mm', 'Screens.cpp', 'DisplayLayout.cpp', 'DisplayLayout.hpp', 'HM2Renderer.mm', 'check_menu_screen_evidence.py')
 INPUTS = ('Sources/Core/UI/Screens.cpp', 'Sources/Core/Presentation/DisplayLayout.cpp', 'Sources/Core/Presentation/DisplayLayout.hpp', 'Sources/Platform/Apple/HM2Renderer.mm')
+class StaleEvidence(ValueError):
+    """The capture belongs to another build or set of source files."""
+
 def sha(data): return hashlib.sha256(data).hexdigest()
 def verify(data):
-    if data.get('sources') != {p: sha((ROOT / p).read_bytes()) for p in INPUTS}: raise ValueError('Captured source candidate is stale')
+    if data.get('sources') != {p: sha((ROOT / p).read_bytes()) for p in INPUTS}: raise StaleEvidence('Captured source candidate is stale')
     binary = ROOT / 'build/apple/Build/Products/Debug-iphonesimulator/HeavyMach2Source.app/HeavyMach2Source'
-    if data.get('binarySHA256') != sha(binary.read_bytes()): raise ValueError('Captured executable is stale')
-    if data.get('gameSHA256') != sha(binary.with_name('HeavyMach2Source.debug.dylib').read_bytes()): raise ValueError('Captured game library is stale')
+    if data.get('binarySHA256') != sha(binary.read_bytes()): raise StaleEvidence('Captured executable is stale')
+    if data.get('gameSHA256') != sha(binary.with_name('HeavyMach2Source.debug.dylib').read_bytes()): raise StaleEvidence('Captured game library is stale')
     expected = {(d, 'Base00' + str(b), s) for d in ('iphone', 'ipad') for b in range(1, 7) for s in ('hub', 'shop', 'command')}
     seen, failures = set(), []
     for row in data['rows']:
@@ -35,15 +38,18 @@ def main():
         payload = json.dumps(event.get('tool_input', {})); cwd = str(event.get('cwd', ''))
         if not (cwd.startswith(str(ROOT)) or str(ROOT) in payload) or not any(x in payload for x in SCOPE): print('{}'); return 0
     try: result = verify(json.loads(args.input.read_text())) if args.input.exists() else {'status': 'NOT_RUN', 'reason': 'Run simulator captures and review black filler/edge stretching'}
+    except StaleEvidence as error: result = {'status': 'STALE', 'reason': str(error)}
     except Exception as error: result = {'status': 'ERROR', 'reason': str(error)}
     fingerprint = sha(args.input.read_bytes()) if args.input.exists() else None
     old = sorted(p for p in HOME.glob('*.json') if p.stem.isdigit())[-1:] if HOME.exists() else []
     previous = json.loads(old[0].read_text()) if old else {}
+    if args.hook and result['status'] == 'STALE' and previous.get('status') == 'STALE' and previous.get('inputSHA256') == fingerprint and previous.get('reason') == result['reason']:
+        print('{}'); return 0
     result['repeatedFailure'] = result['status'] in ('FAIL', 'ERROR') and previous.get('status') == result['status'] and previous.get('failures') == result.get('failures') and previous.get('reason') == result.get('reason')
     if result['repeatedFailure']: result['nextAction'] = 'Stop this failed approach; inspect original-sized pictures and correct the cause before rerunning.'
     result.update(time_ns=time.time_ns(), input=str(args.input), inputSHA256=fingerprint, hook_event=event.get('hook_event_name'), tool_id=event.get('tool_use_id'))
     HOME.mkdir(parents=True, exist_ok=True); output = HOME / (str(result['time_ns']) + '.json'); output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
-    if args.input.exists(): output.with_suffix('.input.json').write_bytes(args.input.read_bytes())
+    if args.input.exists() and result["status"] != "STALE": output.with_suffix('.input.json').write_bytes(args.input.read_bytes())
     if args.hook:
         print(json.dumps({'hookSpecificOutput': {'hookEventName': event['hook_event_name'], 'additionalContext': 'HM2 screen pictures only: no black filler, no edge stretching. ' + result['status'] + '; ' + str(output) + '. Repair tools remain allowed.'}})); return 0
     print(json.dumps(result, ensure_ascii=False)); return 0 if result['status'] == 'PASS' else 1

@@ -167,9 +167,14 @@ int main(int argc,char** argv){assert(argc==3);Files files;files.root=argv[1];co
         unsigned images=0,pngs=0;
         for(const auto& entry:std::filesystem::directory_iterator(files.root)){
             const auto ext=entry.path().extension();if(ext!=".png"&&ext!=".jpg")continue;
-            const auto encoded=files.read(entry.path().filename().string());const auto image=decodeImage(encoded);
+            const auto name=entry.path().filename().string();
+            const auto encoded=files.read(name);const auto image=decodeImage(encoded);
             assert(image.width>0&&image.height>0&&image.rgba.size()==std::size_t(image.width)*image.height*4);
-            if(ext==".png"){const auto size=AssemblyPreview::pngSize(encoded);same(float(image.width),size.width);same(float(image.height),size.height);++pngs;}
+            if(ext==".png"){const auto size=AssemblyPreview::pngSize(encoded);same(float(image.width),size.width);same(float(image.height),size.height);}
+            // The HD preparation tool also installs the approved Phone shop
+            // art. Decode it above while keeping the HD original count exact.
+            if(name=="PhoneShopHangar.jpg"||name=="PhoneShopPanel.png"||name=="PhoneEquipPanel.png")continue;
+            if(ext==".png")++pngs;
             ++images;
         }
         assert(images==1276&&pngs==1238);

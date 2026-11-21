@@ -2,6 +2,8 @@
 
 [한국어](README.md) | [English](README.en.md)
 
+[플레이 방법](docs/public/quick-play.md) · [플랫폼별 설치](#플레이와-설치) · [기능과 추가 작업](docs/public/features.md) · [개발자의 변](docs/RESTORATION.md) · [전체 문서](docs/README.md)
+
 ## HeavyMach 2를 다시 만드는 이유
 
 HeavyMach는 내가 개발자로 직업을 바꾸는 데 영향을 준 게임이다. 대학생 시절 아이팟터치에서 이 게임을 만났고, 나중에는 미국 앱스토어 계정을 만들어 구매했다. 한때 내게 방향을 보여준 게임을, 개발자가 된 내가 다시 작동하게 만들고 싶었다.
@@ -10,46 +12,35 @@ HeavyMach 1을 복원한 뒤, 개발자 변해준과 일러스트레이터 박�
 
 나는 이 복원판으로 돈을 벌 생각이 없다. 이 게임을 어떻게 복원했고 무엇을 고쳤는지도 기록으로 남기려 한다.
 
-**[개발자의 변 전문](docs/RESTORATION.md)**
+**[개발자의 변](docs/RESTORATION.md)** · [이전 시리즈 복원 회고](docs/series-restoration-background.md)
 
 ## 프로젝트 소개
 
-HeavyMach 2 HD를 현재 iPad에서 다시 플레이할 수 있도록 복원하는 프로젝트다. 원본 실행파일과 게임 데이터를 분석하고, 이동·전투·장비·임무·메뉴·음향·저장을 C++ 공통 코어로 구현하고 있다. 게임은 한국어를 기본으로 사용한다.
-
-**현재 iPad 정식판으로 플레이할 수 있다.** 사용자는 첫 미션의 이동·전투·경로 그리기와 퀘스트 수락·완수를 확인했고, Wasteland까지 진행한 시점에 크래시를 발견하지 않았다고 보고했다. 전체 기능 복원과 최종 원작 대조는 진행 중이다. [플레이 기록](docs/ipad-release-installation-20261111.md) · [확인한 범위와 남은 문제](docs/public/validation.md)
-
-[플레이 방법](docs/public/quick-play.md) · [빌드와 설치](docs/public/build-and-install.md) · [치트 앱 사용](docs/public/build-and-install.md#치트-앱-실행과-결과) · [TODO](docs/todo.md)
+HeavyMach 2는 메크를 조립하고 전장에서 이동 경로를 그어 싸우는 게임이다. 기지의 사령부에서 임무를 받고 전리품과 보상으로 장비를 바꾼다. 원본 실행 기록과 데이터에서 이 동작을 복원했다. C++ 공통 코어를 iPhone·iPad, Android, 설치형 PWA와 Tauri Mac에서 사용한다. [플레이와 조작](docs/public/quick-play.md) · [현행 정본](docs/canonical.md)
 
 ## 플레이와 설치
 
-설치된 **HM2 Source**를 열고 iPad를 세로로 놓는다. 타이틀을 터치한 뒤 저장 슬롯을 선택한다. 새 슬롯에서는 이름을 입력하고, 기존 슬롯에서는 이어서 시작한다. 기지에서 임무를 받고 전장으로 나가 지면 터치로 이동하거나 손가락으로 경로를 그린다. 적을 터치하면 표적으로 선택하고 장착한 무기의 조건에 따라 공격한다.
+**[PWA 실행·설치](https://gelb2.github.io/HeavyMach2/)** · **[Tauri Mac과 Android 다운로드](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)** · [플랫폼별 빌드 명령](docs/public/build-and-install.md)
 
-현재 App Store·TestFlight·공개 설치 파일·브라우저 플레이는 제공하지 않는다. 설치하려면 접근 권한이 있는 이 저장소의 소스와 로컬 원본 자원을 준비하고 Xcode에서 본인의 팀으로 서명한다. **저장소를 clone하는 것만으로는 게임 자원이 준비되지 않는다.** [필요한 원본과 준비 순서](docs/public/build-and-install.md#원본-자원-준비)
+휴대폰과 iPad에서는 [홈 화면에 PWA를 설치](docs/public/build-and-install.md#pwa-설치)한다. Mac ZIP을 받은 뒤 [응용 프로그램 폴더로 옮겨 실행](docs/public/build-and-install.md#tauri-mac-앱-받기)한다. [버전과 배포 기준](docs/public/release-policy.md)
 
-| 대상 | 현재 상태 |
+| 플랫폼 | 설치와 현재 확인한 범위 |
 | --- | --- |
-| iPad 정식판 | 실제 기기에 Release 설치·시작을 확인했다. 사용자 플레이는 Wasteland까지 보고됐다. 현재 세로 화면이다. |
-| iPad 치트판 | 별도 앱에서 115조건을 같은 프레임에 실행한다. 시뮬레이터에서 1,200프레임 실행과 결과 저장을 확인했다. |
-| iPhone | 유니버설 타깃과 가로 화면 설정이 있다. 현재 HD 기준 검증은 iPad에서 진행하며, iPhone 최종 표시·플레이 검증은 남아 있다. |
-| Android·웹/PWA·Mac·Tauri | 후속 대상이다. 현재 이 저장소에는 해당 게임 앱의 빌드·설치 경로가 없다. |
+| iPhone·iPad | iPhone 가로·iPad 세로. 두 실기기에 정식판과 기지 방문 저장을 넣었다. 내가 iPhone에서 화이트마운틴 진입을 확인했다. 포털 14방향은 시뮬레이터와 호스트에서 확인했다. [빌드와 설치](docs/public/build-and-install.md) · [실기기 기록](docs/white-mountain-dual-release-20261120.md) |
+| Android | 갤럭시 정식·치트판에 같은 iPad 저장을 적용했다. 상점·사령부·전장과 짧은 실제 플레이를 확인했다. Android 포팅은 `develop`에 병합됐다. [APK 빌드와 설치](docs/public/build-and-install.md#android-빌드와-설치) · [기기 기록](Android/검증-20261120.md) |
+| PWA | Mac Chrome 설치 앱의 오프라인 재실행과 저장 유지, iPhone 시뮬레이터의 홈 화면 실행을 확인했다. 실제 휴대폰·태블릿의 기종별 장시간 검증은 남아 있다. [Wasm 빌드와 로컬 PWA](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [기기별 확인](docs/pwa-device-validation-20261120.md) |
+| Tauri Mac | 정식·치트 번들을 각각 빌드하고 로컬 서명을 확인했다. 이전 빌드의 820×900pt 세로 창 시작과 정식판 저장 왕복을 확인했다. [Mac 앱 빌드](docs/public/build-and-install.md#tauri-mac-빌드) · [세로 창 검사](docs/pwa-device-validation-20261120.md#tauri-mac-세로-창) |
 
-### 정식판·치트판·포팅판
-
-| 앱 | 용도 | Xcode scheme |
-| --- | --- | --- |
-| HM2 Source | 정상 진행 규칙과 사용자 저장을 쓰는 일반 플레이 앱. 정식판은 Release 구성으로 빌드한다. | `HeavyMach2Source` |
-| HM2 Validation | 경험치·레벨·장비·아이템·진척도 조건을 준비해 여러 게임 상태를 동시에 실행하는 치트 검증 앱. | `HeavyMach2Validation` |
-| HD 포팅판 | 원본 HD 실행파일을 호환 실행기로 구동하는 비교 앱. 복원판과 별도 앱·저장을 사용한다. | [호환 실행 안내](Compatibility/README.md) |
-
-정식판과 치트판은 같은 게임 코어를 사용하고 앱 ID와 저장 공간을 분리한다. 치트판은 자동 검사 후 결과를 저장하는 앱이며, 현재 자유 조작용 치트 메뉴는 제공하지 않는다. 아이콘은 원본 탭투스타트 일러스트를 사용하고 치트판에만 `TEST`를 표시한다. [아이콘 구성](docs/app-icons.md)
+소스 빌드에는 로컬 원본이 필요하다. `v0.1`에는 복구코드·PWA·Tauri 구현이 들어 있다. 정식판과 치트판은 공통 코어와 원본 탭투스타트 그림을 사용하고 저장은 분리한다. 치트판은 플랫폼마다 실행 방식이 다르다. 원본 실행을 비교할 때는 별도 포팅판을 쓴다. [검증 현황](docs/todo.md#현재-체크--2026-11-21) · [치트 앱 실행](docs/validation-build.md#플랫폼별-치트-실행) · [원작 비교용 포팅판](Compatibility/README.md)
 
 ## 소스에서 준비하기
 
-Apple Silicon Mac, Xcode, Python 3.11 이상, CMake 3.20 이상, XcodeGen을 사용한다. 저장소 접근 권한과 로컬 HD 1.0.3 원본이 필요하다.
+Apple Silicon Mac, Xcode, Python 3.11 이상, CMake 3.20 이상, XcodeGen을 사용한다. 로컬 HD 1.0.3·HD 1.0.0·iPhone 일반판 2.0.1 원본이 필요하다.
 
 ```sh
-git clone git@github.com:gelb2/HeavyMach2.git
+git clone https://github.com/gelb2/HeavyMach2.git
 cd HeavyMach2
+git lfs install --local
 git config core.hooksPath .githooks
 ```
 
@@ -65,15 +56,37 @@ xcodegen generate --spec Apple/iOS/project.yml
 open Apple/iOS/HeavyMach2.xcodeproj
 ```
 
-Xcode에서 `HeavyMach2Source`와 iPad 시뮬레이터를 선택해 실행한다. 실제 iPad에 설치할 때는 `iphoneos`용 OpenAL을 준비하고 개발 팀·서명·기기 연결을 설정한다. 갱신 전에는 현재 앱의 데이터 컨테이너를 백업한다. [시뮬레이터 명령·실기기 설치·오류 해결](docs/public/build-and-install.md)
+Xcode에서 `HeavyMach2Source`와 iPad 시뮬레이터를 선택해 실행한다. 실제 iPhone·iPad에 설치할 때는 `iphoneos`용 OpenAL을 준비하고 개발 팀·서명·기기 연결을 설정한다. 갱신 전에는 현재 앱의 데이터 컨테이너를 백업한다. [시뮬레이터 명령·실기기 설치·오류 해결](docs/public/build-and-install.md)
+
+## 원작에서 복원한 것
+
+땅을 눌러 이동하고 경로를 그으며 두 번 탭해 부스터로 급속 이동한다. 몸통·하체·무기는 원작 데이터의 기준점에 조립한다. 무기 발사와 피해, BOT, 상점과 정비, 임무 수락·보상·저장에는 HD판의 규칙을 사용한다. iPhone 메뉴 그림과 좌표는 일반판도 대조했다. [원작 기능과 근거](docs/public/features.md#원작에서-복원한-것)
+
+기지·전장·장비 그림과 효과음은 확인한 원본을 사용한다. 파츠 그림과 그림자는 준비한 텍스처를 재사용하고, WAV 효과음은 원작 샘플을 OpenAL로 재생한다. [그래픽·음향 복원](docs/graphics-audio-fidelity-20261110.md)
+
+## 내가 한 일
+
+**화이트마운틴.** 원작에 남은 설원 그림 여섯 장과 기지 그림으로 새 전장과 포털을 만들도록 했다. 보스는 포털에서 떨어뜨리고 전장별 적 구성을 늘렸다. 의뢰·보상과 기존 무기 25종의 입수 경로, 레이저 공습과 수집형 BOT을 연결하도록 했다. [화이트마운틴과 미등장 콘텐츠](docs/public/features.md#화이트마운틴에-실제로-들어갈-수-있게-만들었다)
+
+**상점과 iPhone 이동.** 원본 상점의 버튼·슬롯·상세창 크기를 다시 대조하게 했다. 경로를 다시 그린 뒤 점프가 실패하는 경우, Skyway 레이어가 떨리는 경우, 인벤토리의 빈칸처럼 보이는 칸과 iPad 특수공격 탭의 레이저 공습 누락도 보고했다. [상점·이동 수정과 검사](docs/public/features.md#iphone에서-본-화면과-입력-문제를-고쳤다)
+
+**Android·PWA·Mac.** Android는 Apple 앱이 쓰는 파일을 수정하지 않고 공통 모듈을 가져다 쓰도록 했다. 터치·음향 장치 같은 연결은 해당 플랫폼에 뒀다. 복구코드를 추가해 세 슬롯의 진행과 장비를 함께 옮길 수 있게 했다. 나는 작업 범위와 결함을 정리했고, Codex와 구현과 자동 검사를 만들었다. [플랫폼 확장](docs/public/development-history.md#android웹mac과-저장-이동) · [복구코드 사용법](docs/save-transfer.md)
+
+## 플레이 화면과 영상
+
+Ruin Field에서 이동 경로를 다시 지정하는 iPhone Air 시뮬레이터 녹화다. [MP4 · 6.1초](docs/public/media/gameplay-20261121/iphone-route.mp4)
+
+![iPhone 가로 전장의 이동 경로와 HUD](docs/public/media/gameplay-20261121/iphone-route.gif)
+
+SnowBasin의 Boss 05가 사격하는 장면이다. iPhone 시뮬레이터의 치트 앱으로 보스 의뢰를 검사하는 동안 찍었다.
+
+![화이트마운틴 Boss 05 교전과 Snow Pass 포털](docs/public/media/gameplay-20261121/snow-boss.png)
+
+[iPad 세로 전장 영상, iPhone 상점, 갤럭시 정식판, 설치형 PWA 캡처](docs/public/gameplay-gallery.md)
 
 ## 확인한 동작과 남은 과제
 
-타이틀·슬롯·기지·상점·정비·인벤토리·임무·도움말·전장 이동·공격·아이템·BOT·게임오버·저장을 공통 코드에 연결했다. 완료한 개별 검사와 전체 게임의 검증 범위는 구분한다.
-
-2026년 11월 12일 아이콘 적용 후 iPad 시뮬레이터의 치트 앱에서 115조건·1,200프레임, 무기 110종 발사, 효과음 동시 진행 최대 26개, 효과음 컨텍스트 1개를 확인했다. 예열 뒤 자원 재읽기와 이미지 재업로드는 0이었다. 이 수치는 해당 실행의 관측이며 전체 게임의 합격률이 아니다. [검사 명세](docs/evidence/title-illustration-icons-20261112.json)
-
-E-10 격파 과제의 달성 효과음·토스트 누락, 수집 퀘스트의 아이템 지급 의심은 후속 점검 대상이다. 전체 임무·캠페인, 하체 장비 23종의 동작, 전체 BOT 결과, OS 음향 중단·경로 전환과 HD 포팅판 최종 일괄 대조도 남아 있다. [검증 범위](docs/public/validation.md) · [상세 TODO](docs/todo.md)
+iPhone·iPad 시뮬레이터의 치트 앱에서 각각 126조건·2,100프레임을 실행했다. 화이트마운틴 포털 14방향·보스 의뢰 4건·장비 29건도 두 시뮬레이터에서 따로 확인했다. 실물 iPad의 설원 출입과 사령부, 실기기 PWA와 최신 Tauri 세로 창, E-10 달성 알림·수집 보상과 원작 HD의 최종 일괄 대조는 남아 있다. [실행 근거](docs/feature-verification.md) · [현재 TODO](docs/todo.md#현재-체크--2026-11-21)
 
 ## 구현과 복원 기준
 
@@ -85,16 +98,18 @@ C++20 코어에서 원작 데이터 reader, 파츠 조립, 게임 규칙과 UI�
 
 ## 개발 기록
 
+- [개발 과정](docs/public/development-history.md) · [트러블슈팅](docs/public/troubleshooting.md) · [원작 복원과 추가 작업](docs/public/features.md) · [개발자의 변과 글감](docs/developer-background.md)
+- [내가 일을 시키고 테스트한 방법](docs/public/development-history.md#내가-일을-시키고-테스트한-방법) · [코드 구조](docs/public/development-history.md#코드-구조)
 - [복원 계획](docs/restoration-plan.md) · [원본 일반판·HD판의 차이](docs/original-phone-hd-separation.md) · [여섯 판본 조사](docs/ipa-version-audit.md)
 - [치트 앱과 작업 순서](docs/validation-build.md) · [전체 기능 검증 계획](docs/full-validation-development-plan-20261110.md) · [HD 함수와 복원 범위](docs/hd-original-function-audit-20261111.md)
-- [정식판 설치·사용자 플레이](docs/ipad-release-installation-20261111.md) · [최신 아이콘·동시 검사 기록](docs/evidence/title-illustration-icons-20261112.json)
+- [정식판 설치·사용자 플레이](docs/ipad-release-installation-20261111.md) · [2026-11-12 Apple 아이콘·동시 검사 기록](docs/evidence/title-illustration-icons-20261112.json)
 - [보고 사이트와 게시 목록](docs/report-site.md) — 기존 비공개 보고 사이트를 사용하며 본인 계정 로그인이 필요하다.
 - [HeavyMach 1 초기 이력 검토](docs/heavymach1-history-review.md) · [포팅 앱 검증 계획](docs/reference-port-validation-plan.md) · [모델 사용 이력](docs/model-usage-history.md)
 
 ## 저장소와 자원
 
-이 저장소는 비공개로 유지한다. HeavyMach 1·MachDefense는 절차와 근거를 읽는 참고 대상이며, 이 프로젝트의 소스·출력·저장을 두 저장소에 쓰지 않는다. 작업 브랜치는 `develop`을 거쳐 `main`에 병합한다.
+HeavyMach 1·MachDefense의 복원과 배포 절차를 참고했다. HeavyMach 2의 개발 브랜치는 `develop`을 거쳐 `main`에 병합하고 릴리스 태그를 붙인다. [버전과 배포](docs/public/release-policy.md) · [제작자와 외부 코드](CREDITS.md)
 
-원본 IPA·실행파일·사용자 저장·서명 자료는 커밋하거나 외부로 보내지 않는다. 준비된 원작 자원과 빌드는 Git에서 제외한 로컬 공간에 둔다. 코드의 이용 조건이 원작 그림·음원·게임 데이터의 이용 허락을 포함하지는 않는다. 외부 코드의 허가문은 [재사용 고지](docs/source-reuse.md)와 각 `ThirdParty` 소스에서 확인한다. 사운드 출처·권리 조사는 [TODO](docs/todo.md)에 남아 있다.
+원본 IPA·실행파일·사용자 저장·서명 자료는 커밋하거나 외부로 보내지 않는다. 빌드에 쓰는 준비 자원은 로컬 공간에 둔다. 배포하는 앱은 실행에 필요한 자원을 포함한다. 코드의 이용 조건이 원작 그림·음원·게임 데이터의 이용 허락을 포함하지는 않는다. 외부 코드의 허가문은 [재사용 고지](docs/source-reuse.md)와 각 `ThirdParty` 소스에서 확인한다. 사운드 출처·권리 조사는 [TODO](docs/todo.md)에 남아 있다.
 
 [작업 지침](AGENTS.md)

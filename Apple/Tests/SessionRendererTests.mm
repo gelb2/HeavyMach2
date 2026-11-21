@@ -1,6 +1,7 @@
 #import <XCTest/XCTest.h>
 #import <UIKit/UIKit.h>
 #import <CommonCrypto/CommonDigest.h>
+#include "Core/Data/RecoveryCode.hpp"
 #include "Core/Presentation/MenuArtwork.hpp"
 #include "Core/Presentation/MenuGridLayout.hpp"
 #include "Platform/Apple/HM2GameRuntime.hpp"
@@ -1114,6 +1115,72 @@ UIImage* image(NSData* rgba,CGSize size){
         NSLog(@"HM2_NAME_RULES UTF16space1/fiveEmoji10accepted sixEmoji12/empty/invalidUTF8rejected countryZZpreserved noExtraSave=1");runtime.reset();
     }catch(const std::exception& e){XCTFail(@"Original native name rules failed: %s",e.what());}
     XCTAssertTrue([NSFileManager.defaultManager removeItemAtURL:directory error:&error]);
+}
+- (void)testRecoveryCodeWritesBackupAndRestartsAppleRuntime {
+    using namespace hm2;
+    NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];
+    XCTAssertNotNil(root);
+    if(!root)return;
+    NSFileManager* manager=NSFileManager.defaultManager;
+    NSURL* directory=[[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:NSUUID.UUID.UUIDString isDirectory:YES];
+    XCTAssertTrue([manager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:nil]);
+    NSURL* save=[directory URLByAppendingPathComponent:@"HeavyMach2.sav"];
+    NSURL* backup=[directory URLByAppendingPathComponent:@"HeavyMach2-before-recovery.sav"];
+    const auto openSlots=[](apple::GameRuntime& runtime){
+        for(std::uintptr_t pointer=1;pointer<=2;++pointer){
+            runtime.input(PointerPhase::begin,{384,512},pointer);
+            runtime.input(PointerPhase::end,{384,512},pointer);
+            runtime.tick();
+        }
+        settle(runtime);
+    };
+    try{
+        SaveData incoming;
+        incoming.initializeSlot(0,"RestoreA","kr",1794268800);
+        incoming.initializeSlot(2,"RestoreC","us",1794268800);
+        progression::SlotView(incoming.slot(0)).credit(43210);
+        const auto code=recovery::encode(incoming);
+        std::vector<apple::NativeRequest> requests;
+        {
+            apple::GameRuntime runtime(root,save,[&](const auto& request){requests.push_back(request);},[]{return 1u;});
+            openSlots(runtime);
+            XCTAssertEqual(runtime.session().state().screen,ui::ScreenId::slots);
+            XCTAssertTrue(runtime.provideName(1,"Previous","kr"));
+            const auto previousCode=runtime.recoveryCode();
+            NSData* previous=[NSData dataWithContentsOfURL:save];
+
+            XCTAssertTrue(tap(runtime,ui::recoveryButtonId));
+            XCTAssertEqual(requests.size(),1u);
+            if(!requests.empty())XCTAssertEqual(requests.back().kind,apple::NativeRequest::Kind::recoveryMenu);
+            bool rejected=false;
+            try{runtime.validateRecoveryCode("invalid");}catch(const std::exception&){rejected=true;}
+            XCTAssertTrue(rejected);
+            runtime.validateRecoveryCode(code);
+            XCTAssertEqualObjects([NSData dataWithContentsOfURL:save],previous);
+            XCTAssertFalse([manager fileExistsAtPath:backup.path]);
+
+            XCTAssertTrue(runtime.restoreRecoveryCode(code));
+            XCTAssertEqual(runtime.recoveryCode(),code);
+            XCTAssertEqual(runtime.session().state().slots[0].name,std::string("RestoreA"));
+            XCTAssertFalse(runtime.session().state().slots[1].used);
+            XCTAssertEqual(runtime.session().state().slots[2].name,std::string("RestoreC"));
+            NSData* preserved=[NSData dataWithContentsOfURL:backup];
+            XCTAssertEqual(preserved.length,SaveData::byteCount);
+            DarwinWorldRandom random(1);
+            const auto before=SaveData::decode({static_cast<const std::uint8_t*>(preserved.bytes),preserved.length},random,false);
+            XCTAssertEqual(recovery::encode(before),previousCode);
+        }
+
+        apple::GameRuntime restarted(root,save,{});
+        openSlots(restarted);
+        XCTAssertEqual(restarted.session().state().screen,ui::ScreenId::slots);
+        for(unsigned index=0;index<SaveData::slotCount;++index){
+            const auto actual=restarted.session().envelope().slot(index);
+            const auto expected=incoming.slot(index);
+            XCTAssertTrue(std::equal(actual.begin(),actual.end(),expected.begin(),expected.end()));
+        }
+    }catch(const std::exception& error){XCTFail(@"Apple recovery adapter failed: %s",error.what());}
+    XCTAssertTrue([manager removeItemAtURL:directory error:nil]);
 }
 - (void)testGPUMenuBattleAndAtomicSaveRestart {
     NSURL* root=[NSBundle.mainBundle URLForResource:@"HD" withExtension:nil];XCTAssertNotNil(root);if(!root)return;

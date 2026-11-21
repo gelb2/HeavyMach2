@@ -12,4 +12,4 @@
 
 `Models`·`DataTable`은 HM2 HD 실행파일과 원본 데이터에서 확인한 계약으로 작성했다. MD의 소켓 정수화·TileList 매핑·조립 보정·엄격한 TSV 열 수 검사는 복사하지 않았다. 근거 주소와 검사 연결은 [첫 구현 기록](initial-source-restoration-20261110.md)에 있다.
 
-Apple 호스트·일반/검증 타깃·GPU 출력은 기존 두 작품의 구성을 참고했다. 새 렌더러는 기존 OpenGL ES1 스택과 원작 Texture2D의 POT padding·content UV·linear 필터·RGBA blend를 사용한다. 현재는 개별 Tile2D 이미지 fallback의 첫 조립 출력이다. 원작 atlas 생성·그림자·다른 pixel format·실제 게임 표시와의 전체 동등성은 아직 검증하지 않았다.
+Apple 호스트·일반/검증 타깃·GPU 출력은 기존 두 작품의 구성을 참고했다. [초기 정적 조립](initial-source-restoration-20261110.md)은 개별 Tile2D를 출력했다. 현재 공통 전장 프레임은 [atlas 배치](../Sources/Core/Presentation/VisualLayer.hpp)와 [그림자 준비](../Sources/Core/Presentation/PreparedTiles.cpp)를 쓴다. Apple·Android의 OpenGL ES와 웹·Tauri의 WebGL2가 같은 프레임을 소비한다. [후속 그래픽·음향 대조](graphics-audio-fidelity-20261110.md)에 직접 출력과 배치, 그림자와 원작 동등성의 확인 범위를 구분했다.

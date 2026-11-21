@@ -55,7 +55,7 @@ public:
     // logical coordinates as GPU sprites. Parent/camera transforms are supplied
     // by the scene; drawing and hit-testing do not use different camera paths.
     Vec2 position,scale{1,1};
-    float angle=0,alpha=1;
+    float angle=0,alpha=1,pressedAlphaMultiplier=1;
     bool visible=true,active=true;
     PositionSnap positionSnap=PositionSnap::none;
     float pushDepth=0,pushDelay=0,releaseHeight=0,releaseDelay=0;

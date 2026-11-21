@@ -98,6 +98,6 @@
 
 ## 참고한 기존 두 게임의 기록
 
-HeavyMach의 `docs/validation-mode.md`에서 시작 조건과 실제 결과, 무기/보스/맵 수와 실제 클리어 수, 조건 재주입 없는 재실행을 나누는 방법을 확인했다. MachDefense의 `docs/evidence/source-cheat-campaign-20261104.md`에서는 GPU TEST 패널·별도 저장·생산/특수공격 전수·저장 실패/재시도를 참고했다. 과거 두 게임의 통과 수나 원작 상수를 HM2 결과로 가져오지 않았다. MachDefense의 강제 기지 파괴에 의한 진행 검사는 실제 교전 검사와 분리되어 있었다. HM2도 임무 결과 강제 설정을 실제 임무 달성의 근거로 쓰지 않는다.
+[HeavyMach 1 검증 모드](https://github.com/gelb2/HeavyMach/blob/bd0aa73ad0bf765f3e54c1800c89b8d550a5e1e9/docs/validation-mode.md)에서 시작 조건과 실제 결과, 무기/보스/맵 수와 실제 클리어 수, 조건 재주입 없는 재실행을 나누는 방법을 확인했다. [MachDefense 2026-11-04 치트 캠페인 기록](https://github.com/gelb2/MachDefense/blob/bca4a5ec7b77d2a20f3e43d247619b951676311e/docs/evidence/source-cheat-campaign-20261104.md)에서는 GPU TEST 패널·별도 저장·생산/특수공격 전수·저장 실패/재시도를 참고했다. 과거 두 게임의 통과 수나 원작 상수를 HM2 결과로 가져오지 않았다. MachDefense의 강제 기지 파괴에 의한 진행 검사는 실제 교전 검사와 분리되어 있었다. HM2도 임무 결과 강제 설정을 실제 임무 달성의 근거로 쓰지 않는다.
 
-현행 연결: [치트 앱 기준](validation-build.md) · [실행 계약](runtime-contract.md) · [전투 구현 순서](combat-restoration-plan-20261110.md) · [보행 검증](locomotion-restoration-20261110.md) · [무기 데이터](weapon-data-restoration-20261110.md).
+현행 근거는 [기능별 완료 근거](feature-verification.md)에 둔다. 관련 문서 [치트 앱 기준](validation-build.md) · [실행 계약](runtime-contract.md) · [전투 구현 순서](combat-restoration-plan-20261110.md) · [보행 검증](locomotion-restoration-20261110.md) · [무기 데이터](weapon-data-restoration-20261110.md).

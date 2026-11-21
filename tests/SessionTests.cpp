@@ -1,5 +1,6 @@
 #include "PreparedTextStub.hpp"
 #include "ResourceBoundaryLedger.hpp"
+#include "Core/Data/RecoveryCode.hpp"
 #include "Core/Session/GameSession.hpp"
 #include "Core/Progression/Progression.hpp"
 #include "Core/Simulation/DarwinWorldRandom.hpp"
@@ -29,6 +30,16 @@ struct Host:SessionHost {
     void requestName(unsigned)override{++names;}
     void requestDelete(unsigned)override{++deletes;}
     bool writeSave(std::span<const std::uint8_t> bytes,SaveReason reason)override{writes.push_back(reason);if(fail)return false;stored.assign(bytes.begin(),bytes.end());return true;}
+    bool canRecover=false, failBackup=false;
+    unsigned recoveryRequests=0;
+    Bytes backup;
+    bool supportsRecoveryCode() const override {return canRecover;}
+    void requestRecoveryCode() override {++recoveryRequests;}
+    bool backupSaveForRecovery(std::span<const std::uint8_t> bytes) override {
+        if(failBackup)return false;
+        backup.assign(bytes.begin(),bytes.end());
+        return true;
+    }
     std::uint32_t absoluteTimeLow()override{return 1;}
     std::uint32_t unixTime()override{return 1794268800;}
 };
@@ -48,6 +59,62 @@ SaveData fixture(std::string_view base="Base001"){
     constexpr std::string_view extras[]={"10111","11001","12001","04201","01001"};
     for(unsigned i=0;i<std::size(extras);++i){slot.string(0x8c+(8+i)*6,6,extras[i]);slot.byte(0x53c+8+i,1);}return data;
 }
+void verifyRecovery(ResourceAccess& files){
+    Host host;
+    host.canRecover=true;
+    DarwinWorldRandom gameRandom(31);
+    const auto previous=fixture();
+    GameSession game(files,host,gameRandom,previous);
+    auto future=fixture("Base004");
+    progression::SlotView slot(future.slot(0));
+    slot.level(21);
+    slot.credit(38417);
+    slot.experience(366785);
+    future.initializeSlot(2,"PILOT3","kr",1794268800);
+    future.slot(1)[400]=0xfa; // Even unused slots retain uninterpreted bytes.
+
+    const auto code=recovery::encode(future);
+    assert(!game.restoreRecoveryCode(code));
+    titleToSlots(game);
+    assert(game.state().recoveryCodeAvailable);
+    button(game,ui::ScreenId::slots,ui::recoveryButtonId);
+    assert(host.recoveryRequests==1);
+    auto current=game.recoveryCode();
+    assert(current==recovery::encode(previous));
+    const auto rejected=[&](auto corrupt){
+        auto invalid=future;
+        corrupt(progression::SlotView(invalid.slot(0)));
+        bool failed=false;
+        try { (void)game.restoreRecoveryCode(recovery::encode(invalid)); }
+        catch(const std::exception&) { failed=true; }
+        assert(failed&&host.writes.empty()&&host.backup.empty());
+    };
+    rejected([](auto saved){saved.string(0x2d,16,"MissingMap");});
+    rejected([](auto saved){saved.string(0x2d,16,"Stage01_01");saved.u32(0x68,999);});
+    rejected([](auto saved){saved.experienceGauge(2.f);});
+    rejected([](auto saved){saved.byte(9,0xff);});
+    rejected([](auto saved){saved.u32(0x604,0xffffffffu);});
+
+    const auto rngCalls=gameRandom.calls();
+    host.failBackup=true;
+    assert(!game.restoreRecoveryCode(code));
+    assert(game.recoveryCode()==current&&host.writes.empty());
+    host.failBackup=false;
+    host.fail=true;
+    assert(!game.restoreRecoveryCode(code));
+    assert(game.recoveryCode()==current&&host.stored.empty()&&!host.backup.empty());
+    host.fail=false;
+    assert(game.restoreRecoveryCode(code));
+    assert(game.recoveryCode()==code&&gameRandom.calls()==rngCalls);
+    assert(host.writes.back()==SaveReason::restoreRecovery);
+    assert(game.state().selectedSlot==-1&&!game.state().hasWorkingSlot);
+    assert(game.state().slots[0].level==22&&game.state().slots[0].credits==38417);
+    assert(!game.state().slots[1].used&&game.state().slots[2].name=="PILOT3");
+
+    DarwinWorldRandom codecRandom(1);
+    assert(recovery::encode(SaveData::decode(host.backup,codecRandom,false))==current);
+    assert(recovery::encode(SaveData::decode(host.stored,codecRandom,false))==code);
+}
 struct UIHost:ui::ScreensHost {
     GameSession& game;Host& host;ui::Screens* ui=nullptr;std::uint64_t revision=0;
     explicit UIHost(GameSession& g,Host& h):game(g),host(h){}
@@ -61,7 +128,8 @@ ui::ButtonKey key(ui::Screens& screens,unsigned id,int data=0){for(const auto& k
 
 }
 int main(int argc,char** argv){
-    if(argc<2)return 77;Files files(argv[1]);Host host;DarwinWorldRandom rng(77);GameSession session(files,host,rng);
+    if(argc<2)return 77;Files files(argv[1]);
+    { Files recoveryFiles(argv[1]); verifyRecovery(recoveryFiles); }Host host;DarwinWorldRandom rng(77);GameSession session(files,host,rng);
     titleToSlots(session);const auto initialUnsupported=session.metrics().unsupportedActions;action(session,1001,ui::ButtonEventType::push);assert(session.metrics().unsupportedActions==initialUnsupported);action(session,99999);assert(session.metrics().unsupportedActions==initialUnsupported+1);button(session,ui::ScreenId::slots,1009,ui::ButtonEventType::push,0);button(session,ui::ScreenId::slots,1001);
     assert(host.names==1&&host.writes.empty());assert(!session.createSlot(3,"MACH","us"));assert(session.createSlot(0,"MACH","us"));assert((host.writes==std::vector<SaveReason>{SaveReason::selectSlot}));
     button(session,ui::ScreenId::slots,1001);assert(session.state().screen==ui::ScreenId::base);
@@ -149,6 +217,22 @@ int main(int argc,char** argv){
     action(maintenance,6091,ui::ButtonEventType::pop);assert(maintenance.state().inventoryPage==0);
     action(maintenance,6091,ui::ButtonEventType::push);assert(maintenance.state().inventoryPage==1);
     action(maintenance,6090,ui::ButtonEventType::push);action(maintenance,6093,ui::ButtonEventType::push);assert(maintenance.state().equipment[2].dataId=="10111"&&maintenanceHost.writes.size()==maintenanceWrites);
+
+    {
+        GameSession desktop(maintenanceFiles,maintenanceHost,maintenanceRng,fixture("Base004"));
+        auto display=DisplayConfiguration::surface({1200,768});
+        display.device=DisplayDevice::desktop;
+        desktop.setDisplay(display);
+        assert(desktop.selectSlot(0));desktop.enterBase();
+        action(desktop,2003);action(desktop,2003);
+        assert(desktop.state().screen==ui::ScreenId::maintenance);
+        drag(desktop,8,{648,572});
+        assert(desktop.state().inventory[9].dataId=="10111");
+        drag(desktop,9,{132,579});
+        assert(desktop.state().equipment[2].dataId=="10111");
+        drag(desktop,11,{326,470});
+        assert(desktop.state().bots[2].dataId=="04201");
+    }
 
     // Actual shared Screens inputs replace the field part/controller without a
     // world reset and request exactly one equip sound per original action.

@@ -46,7 +46,14 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
     // One HD menu projection for artwork, controls, text and inverse input.
     // World projection and movable HUD sizing remain separate consumers of
     // the original HD canvas, not extra per-platform UI implementations.
-    case DisplayRegion::tabletMenu:{const auto c=configuration_.canvas;return anchored({384,512},{c.width*.5f,c.height*.5f},std::max(c.width/768,c.height/1024));}
+    case DisplayRegion::tabletMenu:{
+        const auto c=configuration_.canvas;
+        // A wide desktop window fits the whole panel and its hit areas.
+        // The desktop compositor covers the separate backdrop.
+        if(configuration_.device==DisplayDevice::desktop)
+            return anchored({384,512},center,std::min(a.width/768,a.height/1024));
+        return anchored({384,512},{c.width*.5f,c.height*.5f},std::max(c.width/768,c.height/1024));
+    }
     case DisplayRegion::titleBackdrop:{const auto c=configuration_.canvas;return anchored({384,1024},{c.width*.5f,c.height},std::max(c.width/768,c.height/1024));}
     case DisplayRegion::artBanner:{const auto c=configuration_.canvas;return anchored({240,160},{c.width*.5f,c.height*.5f},std::min(c.width/480,c.height/320));}
     case DisplayRegion::phoneFooter:return anchored({360,0},{configuration_.canvas.width*.5f,0},menu::menuScale(configuration_)*2.f/3.f);
@@ -79,7 +86,10 @@ DisplayTransform DisplayLayout::ui(DisplayRegion region,float pan)const{
     case DisplayRegion::top:return anchored({384,1024},{center.x,a.y+a.height},ui(DisplayRegion::bottom).scale);
     case DisplayRegion::banner:return anchored({384,512},menu::phone(configuration_)?Vec2{configuration_.canvas.width*.5f,configuration_.canvas.height*.5f}:center,configuration_.compact?ui(DisplayRegion::bottom).scale:nominal);
     case DisplayRegion::panel:return centered(768,560);
-    case DisplayRegion::maintenance:return centered(640,440);
+    case DisplayRegion::maintenance:
+        if(configuration_.device==DisplayDevice::desktop)
+            return anchored({384,512},center,std::min(a.width/768,a.height/580));
+        return centered(640,440);
     case DisplayRegion::list:{if(!configuration_.compact)return centered(768,1024);const float s=std::min(nominal,a.width/768);return anchored({384,1024},{center.x,a.y+a.height+pan},s);}
     case DisplayRegion::chooser:{const auto t=ui(DisplayRegion::bottom);return {t.scale,{t.offset.x,t.offset.y-pan}};}
     case DisplayRegion::shopBackdrop:case DisplayRegion::shopStock:case DisplayRegion::shopInventory:{

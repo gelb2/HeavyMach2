@@ -9,16 +9,24 @@
 #include "Platform/Apple/HM2Resources.hpp"
 #endif
 
+namespace {
+std::string_view recoveryInput(NSString* value) {
+    const char* bytes=value.UTF8String;
+    return bytes?std::string_view(bytes,[value lengthOfBytesUsingEncoding:NSUTF8StringEncoding]):std::string_view{};
+}
+}
+
 @interface HM2SourceDisplayTarget:NSObject
 @property(nonatomic,weak) HM2SourceView* view;
 - (void)display:(CADisplayLink*)link;
 @end
-@interface HM2SourceView ()
+@interface HM2SourceView () <UITextFieldDelegate>
 - (void)display:(CADisplayLink*)link;
 - (void)enqueueRequest:(const hm2::apple::NativeRequest&)request;
 - (void)startRuntime;
 - (void)updateDisplay;
 - (void)completeNativeRequest;
+- (void)presentRecoveryRequest:(hm2::apple::NativeRequest::Kind)kind;
 - (void)updateTestState;
 - (void)updateTestInputHistory;
 - (void)failRuntime:(NSString*)message;
@@ -33,6 +41,7 @@
     NSString* _startupError;
     NSURL* _resourceRoot;
     NSURL* _saveFile;
+    NSString* _pendingRecoveryCode;
     BOOL _active,_audioActive,_requestInFlight,_uiTesting,_startupErrorShown;
     std::uint64_t _frames,_selectionTouches,_selectedByTouch,_gameOverConfirmTick;
     NSInteger _lastProfileThermalState;CFTimeInterval _lastProfileThermalSample;
@@ -115,7 +124,80 @@
 }
 - (void)enqueueRequest:(const hm2::apple::NativeRequest&)request{_requests.push_back(request);}
 - (void)completeNativeRequest{_requestInFlight=NO;}
-- (void)failRuntime:(NSString*)message{_startupError=message;_startupErrorShown=NO;_requestInFlight=NO;_requests.clear();if(_runtime)_runtime->setActive(false);_runtime.reset();}
+- (void)failRuntime:(NSString*)message{_startupError=message;_startupErrorShown=NO;_requestInFlight=NO;_pendingRecoveryCode=nil;_requests.clear();if(_runtime)_runtime->setActive(false);_runtime.reset();}
+- (BOOL)textField:(UITextField*)field shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)value {
+    return range.length<=field.text.length && field.text.length-range.length+value.length<=65536;
+}
+- (void)presentRecoveryRequest:(hm2::apple::NativeRequest::Kind)kind {
+    using Request=hm2::apple::NativeRequest;
+    using Kind=Request::Kind;
+    __weak HM2SourceView* weakSelf=self;
+    UIAlertController* alert;
+    if(kind==Kind::recoveryMenu){
+        _pendingRecoveryCode=nil;
+        alert=[UIAlertController alertControllerWithTitle:@"저장 복구코드" message:@"저장 슬롯 3개를 함께 옮깁니다." preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"코드 복사" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){
+            HM2SourceView* view=weakSelf;
+            if(!view||!view->_runtime)return;
+            try{
+                const auto code=view->_runtime->recoveryCode();
+                UIPasteboard.generalPasteboard.string=[NSString stringWithUTF8String:code.c_str()];
+                [view enqueueRequest:Request{Kind::notice,0,"복구코드를 복사했습니다.","저장 복구코드"}];
+            }catch(const std::exception&){
+                [view enqueueRequest:Request{Kind::notice,0,"슬롯 화면에서 복구코드를 다시 요청하세요.","저장 복구코드"}];
+            }
+            [view completeNativeRequest];
+        }]];
+        [alert addAction:[UIAlertAction actionWithTitle:@"코드 입력" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){
+            [weakSelf enqueueRequest:Request{Kind::recoveryInput}];
+            [weakSelf completeNativeRequest];
+        }]];
+    }else if(kind==Kind::recoveryInput){
+        alert=[UIAlertController alertControllerWithTitle:@"복구코드 입력" message:nil preferredStyle:UIAlertControllerStyleAlert];
+        [alert addTextFieldWithConfigurationHandler:^(UITextField* field){
+            field.accessibilityIdentifier=@"hm2.recoveryCode";
+            field.placeholder=@"복구코드를 붙여넣으세요";
+            field.autocorrectionType=UITextAutocorrectionTypeNo;
+            field.autocapitalizationType=UITextAutocapitalizationTypeNone;
+            field.smartDashesType=UITextSmartDashesTypeNo;
+            field.delegate=weakSelf;
+        }];
+        __weak UIAlertController* weakAlert=alert;
+        [alert addAction:[UIAlertAction actionWithTitle:@"코드 확인" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){
+            HM2SourceView* view=weakSelf;
+            if(!view||!view->_runtime)return;
+            NSString* code=weakAlert.textFields.firstObject.text?:@"";
+            try{
+                view->_runtime->validateRecoveryCode(recoveryInput(code));
+                view->_pendingRecoveryCode=[code copy];
+                [view enqueueRequest:Request{Kind::recoveryConfirm}];
+            }catch(const std::exception&){
+                [view enqueueRequest:Request{Kind::notice,0,"복구코드를 처리하지 못했습니다. 코드와 슬롯 화면을 확인하세요.","저장 복원"}];
+            }
+            [view completeNativeRequest];
+        }]];
+    }else{
+        alert=[UIAlertController alertControllerWithTitle:@"저장 복원" message:@"현재 저장 슬롯 3개를 교체합니다. 복원 전 저장은 백업합니다." preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"슬롯 교체" style:UIAlertActionStyleDestructive handler:^(UIAlertAction* action){
+            HM2SourceView* view=weakSelf;
+            if(!view||!view->_runtime)return;
+            NSString* code=view->_pendingRecoveryCode;
+            view->_pendingRecoveryCode=nil;
+            bool restored=false;
+            try{if(code)restored=view->_runtime->restoreRecoveryCode(recoveryInput(code));}
+            catch(const std::exception&){}
+            [view enqueueRequest:Request{Kind::notice,0,restored?"저장 슬롯을 복원했습니다.":"저장을 복원하지 못했습니다.","저장 복원"}];
+            [view completeNativeRequest];
+            [view updateTestState];
+        }]];
+    }
+    [alert addAction:[UIAlertAction actionWithTitle:@"취소" style:UIAlertActionStyleCancel handler:^(UIAlertAction* action){
+        HM2SourceView* view=weakSelf;
+        if(view)view->_pendingRecoveryCode=nil;
+        [view completeNativeRequest];
+    }]];
+    [self.controller presentViewController:alert animated:YES completion:nil];
+}
 - (void)presentPendingRequests {
     if(!self.window||!self.controller||self.controller.presentedViewController||_requestInFlight)return;
     __weak HM2SourceView* weakSelf=self;
@@ -130,6 +212,10 @@
     while(!_requests.empty()&&_requests.front().kind==hm2::apple::NativeRequest::Kind::gameOver&&_requests.front().token!=_runtime->session().pendingGameOver())_requests.pop_front();
     if(_requests.empty())return;
     const auto request=_requests.front();_requests.pop_front();_requestInFlight=YES;
+    using Kind=hm2::apple::NativeRequest::Kind;
+    if(request.kind==Kind::recoveryMenu||request.kind==Kind::recoveryInput||request.kind==Kind::recoveryConfirm){
+        [self presentRecoveryRequest:request.kind];return;
+    }
     NSString* key=[NSString stringWithUTF8String:request.text.c_str()];
     NSString* message=(request.kind==hm2::apple::NativeRequest::Kind::saveError||request.kind==hm2::apple::NativeRequest::Kind::notice)?key:[NSString stringWithUTF8String:_runtime->nativeText(request.text).c_str()];
     NSString* title=request.title.empty()?@"HeavyMach 2":[NSString stringWithUTF8String:request.title.c_str()];

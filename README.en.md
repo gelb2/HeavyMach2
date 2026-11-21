@@ -2,6 +2,8 @@
 
 [한국어](README.md) | [English](README.en.md)
 
+[Play](docs/public/quick-play.md) · [Installation](#play-and-install) · [Features](#restored-from-the-original) · [Developer's statement](docs/RESTORATION.md) · [Documentation](docs/README.md)
+
 ## Why I am restoring HeavyMach 2
 
 HeavyMach influenced my decision to become a developer. I encountered it on an iPod touch in college and later created a US App Store account to buy it. Now that I am a developer, I wanted to make the game that once showed me a direction work again.
@@ -10,46 +12,35 @@ After restoring HeavyMach 1, I am continuing with HeavyMach 2, another work in t
 
 I have no intention of making money from this restoration. I also want to record how the game was restored and what was fixed.
 
-**[Developer's statement: translated excerpts](docs/en/RESTORATION.md)** · [Korean original](docs/RESTORATION.md)
+**[HeavyMach 2 developer's statement in Korean](docs/RESTORATION.md)** · [Earlier series statement in Korean](docs/series-restoration-background.md) · [English excerpts on the earlier restorations](docs/en/RESTORATION.md)
 
-## Project overview
+## About the project
 
-This project restores HeavyMach 2 HD for current iPads. The original executable and game data are analyzed to implement movement, combat, equipment, missions, menus, audio and saves in a shared C++ core. Korean is the game's default language.
+In HeavyMach 2, you assemble a mech, draw a route across the battlefield and fight along it. You can take missions at the command center and change equipment using loot and rewards. The restoration follows the original data and observed behavior. A shared C++ core runs on iPhone and iPad, Android, the installed PWA, and the Tauri Mac app. [How to play](docs/public/quick-play.md) · [Project documentation](docs/canonical.md)
 
-**The regular iPad build is currently playable.** The user confirmed movement, combat, drawing movement paths, accepting quests and completing quests near the first mission. They reported reaching Wasteland without encountering a crash up to that point. Full feature restoration and the final comparison with the original are still in progress. [Play records](docs/ipad-release-installation-20261111.md) · [Verified scope and remaining issues](docs/public/validation.md)
+## Play and install
 
-[How to play](docs/public/quick-play.md) · [Build and installation](docs/public/build-and-install.md) · [Using the validation app](docs/public/build-and-install.md#치트-앱-실행과-결과) · [TODO](docs/todo.md) — these detailed guides are currently in Korean.
+**[Open the PWA](https://gelb2.github.io/HeavyMach2/)** · **[Download the Mac app or Android APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)** · [Build and installation instructions](docs/public/build-and-install.md)
 
-## Playing and installing
+[Install the PWA from the Home Screen](docs/public/build-and-install.md#pwa-설치) or [extract and open the Tauri Mac app](docs/public/build-and-install.md#tauri-mac-앱-받기). [Version and release policy](docs/public/release-policy.md)
 
-Open **HM2 Source** on an iPad in portrait orientation. Tap the title screen and select a save slot. Enter a name for a new slot, or continue an existing one. Accept missions at a base and enter the field. Tap the ground to move or draw a route with your finger. Tap an enemy to select it; equipped weapons attack when their conditions are met.
-
-There is currently no App Store or TestFlight release, public app download, or browser version. To install the game, obtain access to this private repository, prepare the original resources locally, and build and sign it in Xcode with your own development team. **Cloning the repository alone does not provide the game resources.** [Original resources and preparation](docs/public/build-and-install.md#원본-자원-준비)
-
-| Target | Current status |
+| Platform | Installation and verification |
 | --- | --- |
-| Regular iPad app | A Release build was installed and launched on a physical device. User play has been reported through Wasteland. The current layout is portrait. |
-| iPad validation app | A separate app runs 115 scenarios on the same frame clock. A 1,200-frame run and report output were verified in the simulator. |
-| iPhone | A universal target and landscape settings exist. Current HD validation uses iPad; final iPhone presentation and gameplay validation remain. |
-| Android, web/PWA, Mac and Tauri | Planned follow-up targets. This repository does not currently provide their game app build or installation paths. |
+| iPhone and iPad | Landscape on iPhone and portrait on iPad. Both physical devices received the regular app and the save recording base visits. I entered White Mountain on the iPhone. All 14 portal directions were checked in simulators and host tests. [Build and install](docs/public/build-and-install.md) · [Device record](docs/white-mountain-dual-release-20261120.md) |
+| Android | Both Galaxy editions used the same iPad save. The shop, command, battle and a short play session were checked. The Android port is in `develop`. [Build and install](docs/public/build-and-install.md#android-빌드와-설치) · [Device record](Android/검증-20261120.md) |
+| PWA | Both Mac Chrome editions reopened offline and retained their saves. The iPhone simulator launched the installed editions from the Home Screen. Extended checks across physical mobile devices are pending. [Build and run the PWA locally](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [Device checks](docs/pwa-device-validation-20261120.md) |
+| Tauri Mac | Separate regular and test bundles passed local signature verification. Earlier builds launched in an 820 × 900 pt portrait window, and the regular edition passed a save round trip. [Build the Mac app](docs/public/build-and-install.md#tauri-mac-빌드) · [Portrait window check](docs/pwa-device-validation-20261120.md#tauri-mac-세로-창) |
 
-### Regular, validation and reference apps
-
-| App | Purpose | Xcode scheme |
-| --- | --- | --- |
-| HM2 Source | Regular gameplay with normal progression and the user's save. Build the regular app in Release configuration. | `HeavyMach2Source` |
-| HM2 Validation | A cheat validation app that prepares experience, level, equipment, item and progression conditions and runs multiple game states concurrently. | `HeavyMach2Validation` |
-| HD reference app | Runs the original HD executable through a compatibility runtime. It has a separate app identity and saves. | [Compatibility guide](Compatibility/README.md) |
-
-The regular and validation apps share the game core and use separate app IDs and save storage. The validation app runs automated checks and writes results; it currently has no freely controllable cheat menu. Both app icons use the original tap-to-start illustration, with `TEST` added only to the validation icon. [App icons](docs/app-icons.md)
+Building from source requires local copies of the original game packages. Recovery codes, the PWA and Tauri Mac are included in `v0.1`. The regular and test editions share the core and original title artwork and keep separate saves. Test controls differ by platform. [Verification status](docs/todo.md#현재-체크--2026-11-21) · [Test editions](docs/validation-build.md#플랫폼별-치트-실행) · [Reference app](Compatibility/README.md)
 
 ## Preparing from source
 
-Use an Apple Silicon Mac, Xcode, Python 3.11 or later, CMake 3.20 or later, and XcodeGen. Repository access and a local HD 1.0.3 original are required.
+Use an Apple Silicon Mac, Xcode, Python 3.11 or later, CMake 3.20 or later, and XcodeGen. Local copies of HD 1.0.3, HD 1.0.0, and iPhone 2.0.1 are required.
 
 ```sh
-git clone git@github.com:gelb2/HeavyMach2.git
+git clone https://github.com/gelb2/HeavyMach2.git
 cd HeavyMach2
+git lfs install --local
 git config core.hooksPath .githooks
 ```
 
@@ -65,15 +56,37 @@ xcodegen generate --spec Apple/iOS/project.yml
 open Apple/iOS/HeavyMach2.xcodeproj
 ```
 
-In Xcode, select `HeavyMach2Source` and an iPad simulator to run it. For a physical iPad, prepare OpenAL for `iphoneos` and configure the development team, signing and device connection. Back up the current app's data container before updating. [Simulator commands, device installation and troubleshooting](docs/public/build-and-install.md)
+In Xcode, select `HeavyMach2Source` and an iPad simulator to run it. For a physical iPhone or iPad, prepare OpenAL for `iphoneos` and configure the development team, signing and device connection. Back up the current app's data container before updating. [Simulator commands, device installation and troubleshooting](docs/public/build-and-install.md)
 
-## Implemented paths and remaining work
+## Restored from the original
 
-The shared code connects the title screen, save slots, bases, shops, maintenance, inventory, missions, help, field movement, attacks, items, BOTs, game over and saves. Individual checks and full-game validation have different scopes.
+Tap the ground to move, draw a path, or double-tap to dash using booster power. The original data supplies the attachment points for the body, lower body and weapons. Combat, BOTs, equipment, purchases, missions and rewards follow the HD rules. The standard iPhone edition is also a reference for phone menu coordinates and artwork. [Original features and evidence](docs/public/features.md#원작에서-복원한-것)
 
-After the icon update on November 12, 2026, the iPad simulator validation app completed 115 scenarios over 1,200 frames, emitted shots from 110 weapon definitions, and observed up to 26 simultaneously progressing effects with one effect context. There were no resource rereads or image reuploads after warm-up. These are measurements from that run, not a full-game pass rate. [Run manifest](docs/evidence/title-illustration-icons-20261112.json)
+The game uses the original base, battlefield and equipment art and reuses prepared textures for the parts and their shadows. The original WAV samples play through OpenAL. [Graphics and audio restoration](docs/graphics-audio-fidelity-20261110.md)
 
-Missing completion sounds and toasts for an E-10 destruction mission, and suspected item grants missing from collection quests, need follow-up. All missions and the full campaign, movement for 23 lower-body equipment types, all BOT outcomes, OS audio interruptions and route changes, and the final comparison with the HD reference app also remain. [Validation scope](docs/public/validation.md) · [Detailed TODO](docs/todo.md)
+## My contributions
+
+**White Mountain.** I asked for a campaign that uses the six unused snow illustrations and the existing base artwork. I specified that bosses should be away from portals and asked for more varied enemy groups. I also directed the work to give 25 existing weapons an acquisition path and to make the laser air strike and collector BOTs usable in normal play. [White Mountain and unused content](docs/public/features.md#화이트마운틴에-실제로-들어갈-수-있게-만들었다)
+
+**Shop and iPhone movement.** I asked to measure the original shop's controls, slots and item details again. I reported failed jumps after drawing a new route, Skyway layer jitter, apparent empty inventory slots, and a missing laser air strike in the iPad shop. [Fixes and tests](docs/public/features.md#iphone에서-본-화면과-입력-문제를-고쳤다)
+
+**Android, PWA and Mac.** I asked the Android app to import the shared modules while preserving the files used by Apple apps. Each platform handles its system connections. The new recovery code transfers progress and equipment across all three save slots. I set the scope and reported defects, and worked with Codex on implementation and automated checks. [Platform development](docs/public/development-history.md#android웹mac과-저장-이동) · [Transfer saves](docs/save-transfer.md)
+
+## Gameplay screenshots and clips
+
+Changing a route in Ruin Field in an iPhone Air simulator recording. [MP4 · 6.1 seconds](docs/public/media/gameplay-20261121/iphone-route.mp4)
+
+![Landscape gameplay on iPhone showing the route and HUD](docs/public/media/gameplay-20261121/iphone-route.gif)
+
+Boss 05 fires in SnowBasin during a mission check in the iPhone simulator's test app.
+
+![White Mountain Boss 05 in combat beside the Snow Pass portal](docs/public/media/gameplay-20261121/snow-boss.png)
+
+[iPad portrait footage, iPhone shop, Galaxy play and installed PWA captures](docs/public/gameplay-gallery.md)
+
+## Verified behavior and remaining work
+
+Each iPhone and iPad simulator test run covered 126 scenarios over 2,100 frames. Both simulators also checked 14 White Mountain portal directions, four boss missions and 29 equipment scenarios. White Mountain routes and command on a physical iPad, installed PWA on mobile devices, direct interaction in the latest Tauri portrait builds, E-10 completion notifications, collection rewards and the final HD comparison remain open. [Evidence by feature](docs/feature-verification.md) · [Current TODO](docs/todo.md#현재-체크--2026-11-21)
 
 ## Implementation and restoration rules
 
@@ -85,9 +98,11 @@ Firing does not create a file/database write or a new audio context for each sho
 
 ## Development records
 
+- [Development history](docs/public/development-history.md) · [Troubleshooting in Korean](docs/public/troubleshooting.md) · [Original and added features](docs/public/features.md) · [Writing source index](docs/developer-background.md)
+- [How the work was directed and tested](docs/public/development-history.md#내가-일을-시키고-테스트한-방법) · [Code structure](docs/public/development-history.md#코드-구조)
 - [Restoration plan](docs/restoration-plan.md) · [Standard and HD edition differences](docs/original-phone-hd-separation.md) · [Six-version audit](docs/ipa-version-audit.md)
 - [Validation app and work order](docs/validation-build.md) · [Full-feature validation plan](docs/full-validation-development-plan-20261110.md) · [HD functions and restoration scope](docs/hd-original-function-audit-20261111.md)
-- [Regular app installation and user play](docs/ipad-release-installation-20261111.md) · [Latest icon and concurrent-run records](docs/evidence/title-illustration-icons-20261112.json)
+- [Regular app installation and user play](docs/ipad-release-installation-20261111.md) · [Apple icons and concurrent run on November 12, 2026](docs/evidence/title-illustration-icons-20261112.json)
 - [Report site and publication list](docs/report-site.md) — uses the existing private report site and requires the owner's account login.
 - [HeavyMach 1 early-history review](docs/heavymach1-history-review.md) · [Reference-app validation plan](docs/reference-port-validation-plan.md) · [Model usage history](docs/model-usage-history.md)
 
