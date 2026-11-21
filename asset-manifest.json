@@ -1,16 +1,16 @@
 {
-  "version": "6a31332af24c77baf5feab8a",
+  "version": "60bb924ef3667cfc5eb13075",
   "validation": false,
   "files": [
     {
       "path": "app.js",
-      "bytes": 15457,
-      "sha256": "009b8f3e6cb0291462e4591597ab1142bb6874d76ff8f6ec5c844a56553afd23"
+      "bytes": 16943,
+      "sha256": "64ae73e8d84250167806ee2f4928c73ea74a60b947ce4b7a8499e4802f72c635"
     },
     {
       "path": "audio.js",
-      "bytes": 1990,
-      "sha256": "662345cd28ad868820d899d8f47d7a7956d9c58c721a5e35cce44cea3d68fbc8"
+      "bytes": 2254,
+      "sha256": "d3567cc12fcd84708f628f9e5d82cf6493b13cf3e4a4577465f4fa72430bced9"
     },
     {
       "path": "display.js",
@@ -49,8 +49,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 2100,
-      "sha256": "ad797e8a6ab6c20b3950706631a191f6d7d386bf06b468c1d4fccbe0f1e32eff"
+      "bytes": 2177,
+      "sha256": "1cc25834348d96012a9d5c7b0b3abb61e67d3f983ad0df412f4c4fd0dba0f2fd"
     },
     {
       "path": "install.js",
@@ -58,9 +58,14 @@
       "sha256": "d29830abc8b3057c7e09189758c7006df637c3fd0b31048c8e5256d1047e96d7"
     },
     {
-      "path": "manifest.webmanifest",
+      "path": "manifest-flexible.webmanifest",
       "bytes": 410,
       "sha256": "0538cf45f706ec2eb1dd94295496b3c0482fa8787ebbb720075d338db261fb49"
+    },
+    {
+      "path": "manifest.webmanifest",
+      "bytes": 440,
+      "sha256": "9aee8a080f696eb6f5c73144256a31e603cf9bb9901df2971074039a5cbc74b4"
     },
     {
       "path": "storage.js",
@@ -69,13 +74,13 @@
     },
     {
       "path": "style.css",
-      "bytes": 4091,
-      "sha256": "d2eb1814df2a97dfaa7a8f9dbe429a872b94370cb232781957c6d89aedfe88a1"
+      "bytes": 4429,
+      "sha256": "cd375a244404ce404111e1487f9ae4ba62f32ceef7aaea4223c0bace5de773fc"
     },
     {
       "path": "sw.js",
-      "bytes": 6504,
-      "sha256": "652390147bac3c8acbce05112d0c60fdff66d05cb606286ef7c17bdd0965071b"
+      "bytes": 6639,
+      "sha256": "3d7d6f9e63d7b88895047c45b889384975abb98c39c15d64696a859acb4c1f9c"
     }
   ]
 }
