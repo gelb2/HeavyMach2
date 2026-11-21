@@ -5,6 +5,7 @@
 ## 사용자 원문과 기존 회고
 
 - HeavyMach 2의 2026-11-20 사용자 원문과 네 차례 추가 글감은 이 작업 사본의 `.local/writing/heavymach2-developer-note-20261120.md`에 있다. 첫 메모와 Threads 글감, 즉자·대자, 창작과 경고에 관한 가정, 원작 기능에 관한 괄호 보충이 들어 있다.
+- 2026-11-15에 GitHub에 넣도록 지정한 글은 [약식 하네스 도입 경위](harness-adoption-note-20261115.md)에 원문이 있다.
 - 개발자의 변을 마무리하는 두 문단은 사용자가 지정한 글이다. 한글 초안의 마지막에 원문을 넣었다. [마지막 두 문단의 기록](todo.md#개발자의-변-마지막-시--사용자-원문)
 - 대학생 때의 경험과 개발자로 전업한 계기는 앞선 두 작품의 회고에도 있다. [HeavyMach 1의 개발자의 변](https://github.com/gelb2/HeavyMach/blob/bd0aa73ad0bf765f3e54c1800c89b8d550a5e1e9/docs/RESTORATION.md) · [MachDefense의 개발자의 변](https://github.com/gelb2/MachDefense/blob/387e554a504acce44230fc007bd95253ea425862/docs/RESTORATION.md)
 

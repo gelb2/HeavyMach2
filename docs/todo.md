@@ -334,7 +334,7 @@
 ## 약식 하네스 도입 경위 — 사용자 기록 2026-11-15
 
 - [x] [향후 GitHub 문서용 원고](harness-adoption-note-20261115.md)에 사용자 지정 문장을 원문으로 기록했다.
-- [ ] 향후 GitHub 소개/개발 기록을 정리할 때 위 원고를 포함한다. 저장소는 현재 비공개로 유지하고 작업 브랜치→develop→main 절차를 따른다.
+- [x] 위 원문을 [GitHub 개발 과정](public/development-history.md#내가-일을-시키고-테스트한-방법)과 [글감 목록](developer-background.md)에 연결했다.
 
 ## 디자인·에셋 정본과 기존 로컬 하네스 기록 — 2026-11-15
 
