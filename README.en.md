@@ -52,8 +52,6 @@ open Apple/iOS/HeavyMach2.xcodeproj
 
 In Xcode, select `HeavyMach2Source` and an iPhone or iPad simulator. [iOS build and signing](docs/en/public/build-and-install.md#iphone-and-ipad) · [Android](docs/en/public/build-and-install.md#android) · [PWA](docs/en/public/build-and-install.md#build-and-run-the-pwa) · [Mac](docs/en/public/build-and-install.md#build-the-mac-app)
 
-The MIT License covers new code written for the restoration. Original assets and third-party code have separate terms. [MIT License](LICENSE) · [License scope](LICENSE-SCOPE.en.md)
-
 ## Restored from the original
 
 Tap the ground to move, draw a path, or double-tap to dash using booster power. The original data supplies the attachment points for the body, lower body and weapons. Combat, BOTs, equipment, purchases, missions and rewards follow the HD rules. The standard iPhone edition is also a reference for phone menu coordinates and artwork. [Original features and evidence](docs/public/features.md#원작에서-복원한-것)
@@ -71,8 +69,6 @@ The game uses the original base, battlefield and equipment art and reuses prepar
 ## Gameplay screenshots and clips
 
 Changing a route in Ruin Field in an iPhone Air simulator recording. [MP4 · 6.1 seconds](docs/public/media/gameplay-20261121/iphone-route.mp4)
-
-![Landscape gameplay on iPhone showing the route and HUD](docs/public/media/gameplay-20261121/iphone-route.gif)
 
 Boss 05 fires in SnowBasin during a mission check in the iPhone simulator's test app.
 
@@ -92,22 +88,22 @@ Firing does not create a file/database write or a new audio context for each sho
 
 [Technology and asset procedures](docs/technology-and-assets.md) · [Runtime, saves and audio](docs/runtime-contract.md) · [Reused code sources](docs/source-reuse.md)
 
-## Development records
+## Problems fixed during development
 
-- [Development history](docs/public/development-history.md) · [Troubleshooting in Korean](docs/public/troubleshooting.md) · [Original and added features](docs/public/features.md) · [Writing source index](docs/developer-background.md)
-- [How the work was directed and tested](docs/public/development-history.md#내가-일을-시키고-테스트한-방법) · [Code structure](docs/public/development-history.md#코드-구조)
-- [Restoration plan](docs/restoration-plan.md) · [Standard and HD edition differences](docs/original-phone-hd-separation.md) · [Six-version audit](docs/ipa-version-audit.md)
-- [Validation app and work order](docs/validation-build.md) · [Full-feature validation plan](docs/full-validation-development-plan-20261110.md) · [HD functions and restoration scope](docs/hd-original-function-audit-20261111.md)
-- [Regular app installation and user play](docs/ipad-release-installation-20261111.md) · [Apple icons and concurrent run on November 12, 2026](docs/evidence/title-illustration-icons-20261112.json)
-- [Report site and publication list](docs/report-site.md) — uses the existing private report site and requires the owner's account login.
-- [HeavyMach 1 early-history review](docs/heavymach1-history-review.md) · [Reference-app validation plan](docs/reference-port-validation-plan.md) · [Model usage history](docs/model-usage-history.md)
+[Troubleshooting in Korean](docs/public/troubleshooting.md) · [Development history in Korean](docs/public/development-history.md)
 
-These detailed records are currently in Korean.
+## How I directed and tested the work
 
-## Repository and resources
+[Work and testing in Korean](docs/public/development-history.md#내가-일을-시키고-테스트한-방법)
 
-This repository is public. HeavyMach 1 and MachDefense are read-only references for procedures and evidence. Work branches merge through `develop` into `main`.
+## Code structure and versions
 
-Original IPAs, executables, user saves and signing material are neither committed nor sent to external services. Prepared original resources and builds stay in ignored local storage. Code licensing does not grant rights to the original artwork, audio or game data. See the [reuse notices](docs/source-reuse.md) and the individual `ThirdParty` sources for external-code terms. Sound provenance and rights research remain in the [TODO](docs/todo.md).
+[Code structure](docs/public/development-history.md#코드-구조) · [Validation](docs/public/validation.md) · [Release policy](docs/public/release-policy.md)
 
-[Working instructions](AGENTS.md)
+## Licenses and resources
+
+Byun Hae-jun developed the original game, and Park Jae-cheol created its artwork. New restoration code uses the [MIT License](LICENSE). Original artwork, audio and data, and third-party code have separate terms. [License scope](LICENSE-SCOPE.en.md) · [Credits and third-party notices](CREDITS.md)
+
+## An additional statement clarifying the purpose of this project
+
+I have no intention of making money from this restoration. After HeavyMach 1 and MachDefense, I restored HeavyMach 2 so the original creators’ work could be played again on today’s devices. [Developer’s statement in Korean](docs/RESTORATION.md#내가-이-복원으로-남기려는-것)

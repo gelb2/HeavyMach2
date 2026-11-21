@@ -22,29 +22,6 @@
       }
     }
   },
-  "iphone-route.gif": {
-    "source": ".local/evidence/iphone-module-audit-20261118/phone-attachments/4880F0D6-42CD-4D06-AE47-F4982E8EEBD5.mp4",
-    "source_sha256": "0ba78b2892256ebf2a5b01a5cc39c3b662e17a4fcc24f4701c38b6e28e54fc34",
-    "sha256": "1bcbdf4f0ccac61699ac0168aac4eaa623b1fd81c64e489941fdfa3535df6de5",
-    "bytes": 2748738,
-    "environment": "iPhone Air simulator, Source Debug app OS-input regression",
-    "processing": "36.8–42.9 s; same view and time as the MP4; 600 px wide; 10 fps; 96-color preview palette",
-    "format": {
-      "programs": [],
-      "stream_groups": [],
-      "streams": [
-        {
-          "codec_name": "gif",
-          "codec_type": "video",
-          "width": 600,
-          "height": 276
-        }
-      ],
-      "format": {
-        "duration": "6.100000"
-      }
-    }
-  },
   "ipad-field.mp4": {
     "source": ".local/evidence/campaign-ipad-followup-20261120/ipad/pro11-shots/86CD5D1C-7F44-4880-905F-95573282F82C.mp4",
     "source_sha256": "ce0398db81cc7b5d090ffc7da92412351cdc66c3fb39e0a75aa003e231888af4",
