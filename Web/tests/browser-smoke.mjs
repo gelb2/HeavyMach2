@@ -503,9 +503,22 @@ async function verifyPhoneLifecycle() {
     const after = await music();
     assert(after.time > before.time);
     assert.equal((await page.evaluate(() => HM2Validation.status())).effects.contexts,1);
+    const cdp = await context.newCDPSession(page);
+    for (const [type, angle] of [['landscapePrimary',90], ['landscapeSecondary',270]]) {
+      const {width,height} = phone.viewport;
+      await cdp.send('Emulation.setDeviceMetricsOverride',{
+        width, height, deviceScaleFactor:phone.deviceScaleFactor, mobile:true,
+        screenOrientation:{type,angle}
+      });
+      await page.waitForFunction(angle => screen.orientation.angle === angle,angle);
+      const ticks = (await page.evaluate(() => HM2Validation.status())).ticks;
+      await waitStatus(page,state => state.ticks > ticks && state.canvas[0] > state.canvas[1], type);
+      assert(await page.locator('#rotate').isHidden());
+    }
+    await cdp.detach();
     await screenshot(page,'phone-landscape-resumed');
     assert.deepEqual(errors,[]);
-    console.log(JSON.stringify({manifest:'landscape', portraitTicksStopped:true, resumeCycles:2,
+    console.log(JSON.stringify({manifest:'landscape', landscapeAngles:[90,270], portraitTicksStopped:true, resumeCycles:2,
       musicStartsBefore:before.starts, musicStartsAfter:after.starts, sameLoopResumed:true}));
   } finally { await context.close(); }
 }
