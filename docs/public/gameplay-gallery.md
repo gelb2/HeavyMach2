@@ -32,4 +32,4 @@ Mac Chrome에 설치한 치트 PWA에서도 같은 Ruin Field에서 전투를 �
 
 ![Mac Chrome 설치 앱의 Ruin Field에서 메크와 적 전차가 교전한다.](media/gameplay-20261121/pwa-combat.png)
 
-두 MP4는 무음 시뮬레이터 녹화에서 발췌했다. GIF는 iPhone MP4의 같은 구간이다. [원본 경로·시점·해시](media/gameplay-20261121/sources.json)
+두 MP4는 무음 시뮬레이터 녹화에서 발췌했다. [원본 경로·시점·해시](media/gameplay-20261121/sources.json)

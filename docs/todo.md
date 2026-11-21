@@ -28,7 +28,7 @@
 ## GitHub 문서와 개발자의 변 — 2026-11-20
 
 - [x] **GitHub 문서 정리.** HeavyMach 1 문서 구성을 참고해 한·영 README와 [문서 목록](README.md)을 정리했다. [원작에서 복원한 것과 내가 한 일](public/features.md), [개발 과정](public/development-history.md), 설치와 검증 안내를 연결했다.
-- [x] **HeavyMach 1 문서와 재대조.** [비교표](github-documentation-review-20261121.md)를 작성했다. [실제 플레이 PNG 5장·MP4 2편·GIF 1개](public/gameplay-gallery.md)와 HUD 편집·작업 지시·검증 방법을 연결했다.
+- [x] **HeavyMach 1 문서와 재대조.** [비교표](github-documentation-review-20261121.md)를 작성했다. [실제 플레이 PNG 5장·MP4 2편](public/gameplay-gallery.md)와 HUD 편집·작업 지시·검증 방법을 연결했다.
 - [x] **개발자의 변 초안과 GitHub·Sass 자료.** HeavyMach 1·MachDefense의 글과 2026-11-20 사용자 원문을 대조해 [한글 초안](RESTORATION.md)과 [글감·근거 목록](developer-background.md)을 작성했다. 원문은 로컬 `.local/writing/heavymach2-developer-note-20261120.md`에 있다.
 - [x] **GitHub 회고 글감 기록.** 같은 로컬 원문에 작업 당시 상황, 세 작품과 원작자 두 사람에 대한 글, Threads 글과 자산가치 비유, 즉자·대자, 모델과 창작에 관한 사용자 글, 근접 공격·화염방사기와 아머드코어에 관한 마지막 괄호 추가를 보존했다.
 - [x] **iPhone 이동 GIF 제거.** 사용자가 오작동처럼 보인다고 한 GIF를 한·영 README와 플레이 갤러리에서 뺐다.
