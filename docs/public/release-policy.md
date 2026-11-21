@@ -18,7 +18,7 @@
 
 ## v0.1 공개 배포 확인
 
-`v0.1`은 [PR #26](https://github.com/gelb2/HeavyMach2/pull/26)으로 `develop`에 반영하고 [PR #27](https://github.com/gelb2/HeavyMach2/pull/27)의 `main` 병합 커밋 `29a4e30`에 붙였다. GitHub 로그아웃 상태에서 저장소, 한·영 README, 개발자의 변, 이전 회고, 문서 목록, 빌드·설치, 개발 과정, 트러블슈팅, 갤러리 등을 포함한 13개 문서의 렌더링을 확인했다. [공개 저장소](https://github.com/gelb2/HeavyMach2) · [문서 목록](../README.md)
+`v0.1`은 [PR #26](https://github.com/gelb2/HeavyMach2/pull/26)으로 `develop`에 반영하고 [PR #27](https://github.com/gelb2/HeavyMach2/pull/27)의 `main` 병합 커밋 `29a4e30`에 붙였다. GitHub 로그아웃 상태에서 저장소, 한·영 README, 개발자의 변, 이전 회고, 문서 목록, 빌드·설치, 개발 과정, 트러블슈팅, 갤러리 등을 포함한 20개 문서의 렌더링을 확인했다. 갤러리의 PNG·GIF·MP4 8개를 공개 주소에서 받아 Git의 파일과 해시를 대조했다. [공개 저장소](https://github.com/gelb2/HeavyMach2) · [문서 목록](../README.md)
 
 | 배포 | 직접 확인한 범위 |
 | --- | --- |
