@@ -28,6 +28,6 @@
 | Tauri Mac | 공개 ZIP을 다시 받아 SHA-256과 압축을 푼 앱의 서명을 확인했다. 맥미니의 820×900pt 창에서 새 슬롯을 만들고 Ruin Field Base와 상점을 왕복했다. 검증용 홈 폴더에 저장을 생성했다. [Mac ZIP](https://github.com/gelb2/HeavyMach2/releases/download/v0.1/HeavyMach2-Tauri-Mac-v0.1-arm64.zip) |
 | Android | Gradle에서 정식·치트 APK와 일반 앱 단위 검사를 통과했다. GitHub에서 두 APK를 다시 내려받아 로컬 서명 검사본과 대조했다. [정식·치트 APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1) |
 
-공개 주소로 설치한 실제 휴대폰·태블릿 검증, 이번 Android 패키지의 갤럭시 재설치, Mac 앱의 음향과 사령부는 후속 확인 범위다. [현재 TODO](../todo.md#현재-체크--2026-11-21)
+위 표는 v0.1 배포 당시의 결과다. 이후 갤럭시에서 공개 v0.2 설치 앱의 홈 복귀와 음악을 확인했다. Android 공개 APK 재설치, Mac 앱의 음향과 사령부는 후속 확인 범위다. [갤럭시 v0.2](../pwa-lifecycle-audit-20261121.md) · [현재 TODO](../todo.md#현재-체크--2026-11-21) · [변경 이력](../../CHANGELOG.md)
 
 레퍼런스 프로젝트의 버전 기록. [HeavyMach 1 Releases](https://github.com/gelb2/HeavyMach/releases) · [MachDefense Releases](https://github.com/gelb2/MachDefense/releases)

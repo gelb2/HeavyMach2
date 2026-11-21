@@ -2,7 +2,7 @@
 
 현재 기기별 확인 범위는 [플랫폼 현황](../canonical.md#플랫폼과-검증-현황)에 둔다.
 
-[README](../../README.md) · [플레이 방법](quick-play.md) · [설치](build-and-install.md) · [상세 TODO](../todo.md)
+[English](../en/public/validation.md) · [README](../../README.md) · [플레이 방법](quick-play.md) · [설치](build-and-install.md) · [상세 TODO](../todo.md)
 
 ## 공개 클론에서 빌드와 실행
 
