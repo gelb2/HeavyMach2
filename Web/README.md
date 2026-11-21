@@ -1,5 +1,7 @@
 # HeavyMach 2 웹 빌드
 
+[공개 PWA](https://gelb2.github.io/HeavyMach2/) · [홈 화면 설치](../docs/public/build-and-install.md#pwa-설치) · [GitHub Pages 배포 기준](../docs/public/release-policy.md#pwa와-mac-산출물)
+
 브라우저 호스트는 Emscripten으로 공통 C++ 세션, 화면, 복구코드 구현을 빌드한다. WebGL 2는 공통 프레임에 포함된 스프라이트, 아틀라스와 궤적을 그린다. DOM은 실행과 설치, 이름·복구코드 입력을 제공한다. 에셋은 로컬에서 준비한 캠페인 디렉터리만 읽는다.
 
 ## 빌드와 실행
@@ -41,7 +43,7 @@ python3 -m http.server 8773 --bind 127.0.0.1 --directory Desktop/Tauri/build
 
 ## 실기기 설치 주소
 
-위 `127.0.0.1` 주소는 빌드한 맥의 로컬 검사 주소다. 실제 휴대폰·태블릿에는 해당 기기에서 접속할 수 있는 비공개 HTTPS 주소가 필요하다. 현재 확인된 실기기용 설치 주소는 없다. 실제 기기에서 설치할 때는 접근이 허용된 HTTPS 호스트에 정식판 `dist/` 전체를 같은 경로로 제공한다. `index.html`, `manifest.webmanifest`, `sw.js`, `game.wasm`, `game.data`와 나머지 파일을 함께 둔다. 기기의 Safari 또는 Chrome에서 HTTPS 주소를 열어 [설치 절차](../docs/public/build-and-install.md#pwa-설치)를 따른다. 설치한 아이콘으로 실행한 결과를 [플랫폼 현황](../docs/canonical.md#플랫폼과-검증-현황)에 기록한다.
+휴대폰·태블릿의 Safari 또는 Chrome에서 공개 HTTPS 주소를 열어 [설치 절차](../docs/public/build-and-install.md#pwa-설치)를 따른다. 위 `127.0.0.1` 주소는 빌드한 맥의 로컬 검사 주소다. [공개 HTTPS 설치 주소](https://gelb2.github.io/HeavyMach2/) · [플랫폼별 확인 범위](../docs/canonical.md#플랫폼과-검증-현황)
 
 ## 저장과 화면
 

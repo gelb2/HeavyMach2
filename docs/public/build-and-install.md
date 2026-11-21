@@ -11,7 +11,7 @@
 
 ## PWA 설치
 
-실제 iPhone·iPad·갤럭시에서는 기기에서 열 수 있는 비공개 HTTPS 주소가 필요하다. 현재 설치용으로 제공된 주소가 없다. 빌드한 맥에서는 `127.0.0.1`을 사용한다. 이 주소는 페이지를 여는 기기 자신을 가리킨다. [이 맥의 기존 웹 빌드 열기](../../Web/README.md#이-맥의-기존-웹-빌드-열기) · [실기기용 주소 준비](../../Web/README.md#실기기-설치-주소)
+iPhone·iPad·갤럭시·Mac에서 공개 HTTPS 설치 주소를 연다. 빌드한 맥은 로컬 `127.0.0.1` 주소도 쓸 수 있다. [HeavyMach 2 PWA](https://gelb2.github.io/HeavyMach2/) · [이 맥의 기존 웹 빌드 열기](../../Web/README.md#이-맥의-기존-웹-빌드-열기)
 
 1. 설치 주소를 연다. 게임 화면에서 **게임 설치**가 보이면 눌러 브라우저 안내를 따른다. **설치 방법**이 보이면 다음 메뉴를 사용한다.
 
@@ -29,7 +29,9 @@
 
 ## Tauri Mac 앱 받기
 
-Apple Silicon Mac과 macOS 14 이상용이다. 현재 HeavyMach 2의 GitHub Releases에는 다운로드 파일이 없다. 이 맥에서 이미 빌드한 앱을 쓰거나, [소스에서 Tauri 앱을 빌드](#tauri-mac-빌드)한다. [HeavyMach 2 Releases](https://github.com/gelb2/HeavyMach2/releases)
+Apple Silicon Mac과 macOS 14 이상용이다. GitHub Release에서 `HeavyMach2-Tauri-Mac-v0.1-arm64.zip`을 받는다. `SHA256SUMS.txt`로 파일을 확인하고 ZIP을 푼 뒤 **HeavyMach 2 Desktop.app**을 응용 프로그램 폴더로 옮긴다. [Mac 앱 ZIP 다운로드](https://github.com/gelb2/HeavyMach2/releases/download/v0.1/HeavyMach2-Tauri-Mac-v0.1-arm64.zip) · [릴리스와 SHA-256 목록](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)
+
+[소스에서 Tauri 앱을 빌드](#tauri-mac-빌드)한 경우 아래 경로에서 앱을 찾는다.
 
 1. 빌드한 맥에서 아래 명령으로 Finder의 앱 폴더를 연다. 저장소 루트에서 실행한다.
 
@@ -42,7 +44,7 @@ Apple Silicon Mac과 macOS 14 이상용이다. 현재 HeavyMach 2의 GitHub Rele
 
 ## 준비물
 
-- 저장소를 읽을 수 있는 GitHub 계정과 Git 인증 설정.
+- Git과 Git LFS.
 - 공통 자원 준비에는 Python 3.11 이상과 C++ 컴파일러가 필요하다. 공통 코어와 웹을 빌드할 때는 CMake 3.20 이상을 사용한다.
 - iPhone·iPad는 Apple Silicon Mac, iOS SDK와 시뮬레이터 런타임을 설치한 Xcode, XcodeGen이 필요하다. Android·PWA·Tauri의 도구는 아래 플랫폼별 빌드 절에 적었다.
 - [원본 명세](../source-provenance.json)에 등록된 HD 1.0.3, HD 1.0.0, 일반판 2.0.1 원본을 로컬에 보유한 환경.
@@ -53,13 +55,13 @@ Apple Silicon Mac과 macOS 14 이상용이다. 현재 HeavyMach 2의 GitHub Rele
 ## 소스 받기
 
 ```sh
-git clone --branch develop git@github.com:gelb2/HeavyMach2.git
+git clone https://github.com/gelb2/HeavyMach2.git
 cd HeavyMach2
 git lfs install --local
 git config core.hooksPath .githooks
 ```
 
-위 SSH 주소는 계정의 저장소 접근 권한과 SSH 인증을 사용한다. HTTPS 인증을 사용하는 환경에서는 `https://github.com/gelb2/HeavyMach2.git`을 사용한다. 두 방식 모두 비공개 저장소 접근 권한이 필요하다. 현재 원격 `develop`에는 iPhone·iPad와 Android 소스가 있다. 복구코드·PWA·Tauri 소스는 이 맥의 작업 브랜치 `feat/recovery-pwa-tauri-20261120`에 있다. 이 세 기능을 빌드할 때는 그 작업 사본을 사용한다.
+현재 배포와 같은 소스로 빌드하려면 저장소 루트에서 `git switch --detach v0.1`을 실행한다. 기본 브랜치 `main`의 최신 변경도 clone으로 가져올 수 있다. [버전과 배포 기준](release-policy.md)
 
 ## 원본 자원 준비
 
@@ -158,6 +160,8 @@ xcrun simctl get_app_container "$HM2_SIM_ID" com.gelb2.heavymach2.validation dat
 현재 치트 앱에는 자유 조작용 조건 선택 화면이 없다. 재실행은 새 UUID 아래 새 검사 결과를 만든다. 일반 앱의 사용자 저장은 사용하지 않는다. 전체 게임 검사 완료 여부와 남은 조건은 [검증 범위](validation.md), 검사 구조는 [치트 앱 문서](../validation-build.md)를 따른다.
 
 ## Android 빌드와 설치
+
+직접 빌드하기 전에 기존 패키지가 필요하면 [정식·치트 APK와 SHA-256 목록](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)을 받는다.
 
 JDK 17, Android SDK 36, NDK 28.2.13676358, CMake 3.22.1과 호스트의 C++ 컴파일러가 필요하다. Android Studio의 SDK Manager나 아래 명령으로 SDK를 준비한 뒤 `ANDROID_HOME`을 SDK 디렉터리로 설정한다. 앱은 Android 8.0(API 26) 이상과 ARM64·x86-64를 대상으로 한다. [Gradle 구성과 검증](../../Android/README.md) · [AGP 8.13 도구 버전](https://developer.android.com/build/releases/agp-8-13-0-release-notes)
 
@@ -261,7 +265,7 @@ ctest --test-dir build/core-original --output-on-failure \
 
 | 증상 | 확인할 항목 |
 | --- | --- |
-| clone에서 `Repository not found` 또는 인증 오류 | 비공개 저장소 접근 권한과 선택한 SSH/HTTPS 인증을 확인한다. |
+| clone에서 `Repository not found` | 저장소 주소가 `https://github.com/gelb2/HeavyMach2.git`인지 확인한다. |
 | 원본 파일을 찾을 수 없음 | `source-provenance.json`의 로컬 기준 경로와 상대 경로를 확인한다. |
 | `HD source IPA SHA-256 mismatch` | 명세에 등록된 HD 1.0.3 원본인지 확인한다. 검사 해시를 바꿔 통과시키지 않는다. |
 | XcodeGen이 `.local/prepared` 경로를 찾지 못함 | 자원과 아이콘 준비를 먼저 실행한 뒤 프로젝트를 생성한다. |

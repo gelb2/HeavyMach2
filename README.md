@@ -12,7 +12,7 @@ HeavyMach 1을 복원한 뒤, 개발자 변해준과 일러스트레이터 박�
 
 나는 이 복원판으로 돈을 벌 생각이 없다. 이 게임을 어떻게 복원했고 무엇을 고쳤는지도 기록으로 남기려 한다.
 
-**[개발자의 변 초안](docs/RESTORATION.md)**
+**[개발자의 변](docs/RESTORATION.md)** · [이전 시리즈 복원 회고](docs/series-restoration-background.md)
 
 ## 프로젝트 소개
 
@@ -20,25 +20,25 @@ HeavyMach 2는 메크를 조립하고 전장에서 이동 경로를 그어 싸�
 
 ## 플레이와 설치
 
-**[PWA를 홈 화면에 설치](docs/public/build-and-install.md#pwa-설치)** · **[Tauri Mac 앱 받기와 첫 실행](docs/public/build-and-install.md#tauri-mac-앱-받기)** · **[플랫폼별 빌드 명령](docs/public/build-and-install.md)**
+**[PWA 실행·설치](https://gelb2.github.io/HeavyMach2/)** · **[Tauri Mac과 Android 다운로드](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)** · [플랫폼별 빌드 명령](docs/public/build-and-install.md)
 
-이 맥에서는 로컬 PWA를 설치하거나 이미 빌드한 Tauri 앱을 열 수 있다. 실제 휴대폰·태블릿용 HTTPS 설치 주소와 GitHub의 Mac 다운로드 파일은 아직 없다.
+휴대폰과 iPad에서는 [홈 화면에 PWA를 설치](docs/public/build-and-install.md#pwa-설치)한다. Mac ZIP을 받은 뒤 [응용 프로그램 폴더로 옮겨 실행](docs/public/build-and-install.md#tauri-mac-앱-받기)한다. [버전과 배포 기준](docs/public/release-policy.md)
 
 | 플랫폼 | 설치와 현재 확인한 범위 |
 | --- | --- |
 | iPhone·iPad | iPhone 가로·iPad 세로. 두 실기기에 정식판과 기지 방문 저장을 넣었다. 내가 iPhone에서 화이트마운틴 진입을 확인했다. 포털 14방향은 시뮬레이터와 호스트에서 확인했다. [빌드와 설치](docs/public/build-and-install.md) · [실기기 기록](docs/white-mountain-dual-release-20261120.md) |
 | Android | 갤럭시 정식·치트판에 같은 iPad 저장을 적용했다. 상점·사령부·전장과 짧은 실제 플레이를 확인했다. Android 포팅은 `develop`에 병합됐다. [APK 빌드와 설치](docs/public/build-and-install.md#android-빌드와-설치) · [기기 기록](Android/검증-20261120.md) |
-| PWA | Mac Chrome 설치 앱의 오프라인 재실행과 저장 유지, iPhone 시뮬레이터의 홈 화면 실행을 확인했다. 실제 휴대폰·태블릿용 설치 주소와 검사는 남아 있다. [Wasm 빌드와 로컬 PWA](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [기기별 확인](docs/pwa-device-validation-20261120.md) |
+| PWA | Mac Chrome 설치 앱의 오프라인 재실행과 저장 유지, iPhone 시뮬레이터의 홈 화면 실행을 확인했다. 실제 휴대폰·태블릿의 기종별 장시간 검증은 남아 있다. [Wasm 빌드와 로컬 PWA](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [기기별 확인](docs/pwa-device-validation-20261120.md) |
 | Tauri Mac | 정식·치트 번들을 각각 빌드하고 로컬 서명을 확인했다. 이전 빌드의 820×900pt 세로 창 시작과 정식판 저장 왕복을 확인했다. [Mac 앱 빌드](docs/public/build-and-install.md#tauri-mac-빌드) · [세로 창 검사](docs/pwa-device-validation-20261120.md#tauri-mac-세로-창) |
 
-빌드에는 비공개 저장소 접근과 로컬 원본이 필요하다. 복구코드·PWA·Tauri 구현은 현재 작업 브랜치에 있다. 정식판과 치트판은 공통 코어와 원본 탭투스타트 그림을 사용하고 저장은 분리한다. 치트판은 플랫폼마다 실행 방식이 다르다. 원본 실행을 비교할 때는 별도 포팅판을 쓴다. [검증 현황](docs/todo.md#현재-체크--2026-11-21) · [치트 앱 실행](docs/validation-build.md#플랫폼별-치트-실행) · [원작 비교용 포팅판](Compatibility/README.md)
+소스 빌드에는 로컬 원본이 필요하다. `v0.1`에는 복구코드·PWA·Tauri 구현이 들어 있다. 정식판과 치트판은 공통 코어와 원본 탭투스타트 그림을 사용하고 저장은 분리한다. 치트판은 플랫폼마다 실행 방식이 다르다. 원본 실행을 비교할 때는 별도 포팅판을 쓴다. [검증 현황](docs/todo.md#현재-체크--2026-11-21) · [치트 앱 실행](docs/validation-build.md#플랫폼별-치트-실행) · [원작 비교용 포팅판](Compatibility/README.md)
 
 ## 소스에서 준비하기
 
-Apple Silicon Mac, Xcode, Python 3.11 이상, CMake 3.20 이상, XcodeGen을 사용한다. 저장소 접근 권한과 로컬 HD 1.0.3·HD 1.0.0·iPhone 일반판 2.0.1 원본이 필요하다.
+Apple Silicon Mac, Xcode, Python 3.11 이상, CMake 3.20 이상, XcodeGen을 사용한다. 로컬 HD 1.0.3·HD 1.0.0·iPhone 일반판 2.0.1 원본이 필요하다.
 
 ```sh
-git clone --branch develop git@github.com:gelb2/HeavyMach2.git
+git clone https://github.com/gelb2/HeavyMach2.git
 cd HeavyMach2
 git lfs install --local
 git config core.hooksPath .githooks
@@ -108,8 +108,8 @@ C++20 코어에서 원작 데이터 reader, 파츠 조립, 게임 규칙과 UI�
 
 ## 저장소와 자원
 
-이 저장소는 비공개로 유지한다. HeavyMach 1·MachDefense는 절차와 근거를 읽는 참고 대상이며, 이 프로젝트의 소스·출력·저장을 두 저장소에 쓰지 않는다. 작업 브랜치는 `develop`을 거쳐 `main`에 병합한다.
+HeavyMach 1·MachDefense의 복원과 배포 절차를 참고했다. HeavyMach 2의 개발 브랜치는 `develop`을 거쳐 `main`에 병합하고 릴리스 태그를 붙인다. [버전과 배포](docs/public/release-policy.md) · [제작자와 외부 코드](CREDITS.md)
 
-원본 IPA·실행파일·사용자 저장·서명 자료는 커밋하거나 외부로 보내지 않는다. 준비된 원작 자원과 빌드는 Git에서 제외한 로컬 공간에 둔다. 코드의 이용 조건이 원작 그림·음원·게임 데이터의 이용 허락을 포함하지는 않는다. 외부 코드의 허가문은 [재사용 고지](docs/source-reuse.md)와 각 `ThirdParty` 소스에서 확인한다. 사운드 출처·권리 조사는 [TODO](docs/todo.md)에 남아 있다.
+원본 IPA·실행파일·사용자 저장·서명 자료는 커밋하거나 외부로 보내지 않는다. 빌드에 쓰는 준비 자원은 로컬 공간에 둔다. 배포하는 앱은 실행에 필요한 자원을 포함한다. 코드의 이용 조건이 원작 그림·음원·게임 데이터의 이용 허락을 포함하지는 않는다. 외부 코드의 허가문은 [재사용 고지](docs/source-reuse.md)와 각 `ThirdParty` 소스에서 확인한다. 사운드 출처·권리 조사는 [TODO](docs/todo.md)에 남아 있다.
 
 [작업 지침](AGENTS.md)

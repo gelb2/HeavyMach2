@@ -12,7 +12,7 @@ After restoring HeavyMach 1, I am continuing with HeavyMach 2, another work in t
 
 I have no intention of making money from this restoration. I also want to record how the game was restored and what was fixed.
 
-**[HeavyMach 2 developer's statement draft in Korean](docs/RESTORATION.md)** · [English excerpts on the earlier restorations](docs/en/RESTORATION.md)
+**[HeavyMach 2 developer's statement in Korean](docs/RESTORATION.md)** · [Earlier series statement in Korean](docs/series-restoration-background.md) · [English excerpts on the earlier restorations](docs/en/RESTORATION.md)
 
 ## About the project
 
@@ -20,25 +20,25 @@ In HeavyMach 2, you assemble a mech, draw a route across the battlefield and fig
 
 ## Play and install
 
-**[Install the PWA](docs/public/build-and-install.md#pwa-설치)** · **[Get the Tauri Mac app](docs/public/build-and-install.md#tauri-mac-앱-받기)** · **[Build commands by platform](docs/public/build-and-install.md)**
+**[Open the PWA](https://gelb2.github.io/HeavyMach2/)** · **[Download the Mac app or Android APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)** · [Build and installation instructions](docs/public/build-and-install.md)
 
-On the build Mac, you can install the local PWA or open the existing Tauri app. A mobile HTTPS install address and a downloadable Mac release are pending.
+[Install the PWA from the Home Screen](docs/public/build-and-install.md#pwa-설치) or [extract and open the Tauri Mac app](docs/public/build-and-install.md#tauri-mac-앱-받기). [Version and release policy](docs/public/release-policy.md)
 
 | Platform | Installation and verification |
 | --- | --- |
 | iPhone and iPad | Landscape on iPhone and portrait on iPad. Both physical devices received the regular app and the save recording base visits. I entered White Mountain on the iPhone. All 14 portal directions were checked in simulators and host tests. [Build and install](docs/public/build-and-install.md) · [Device record](docs/white-mountain-dual-release-20261120.md) |
 | Android | Both Galaxy editions used the same iPad save. The shop, command, battle and a short play session were checked. The Android port is in `develop`. [Build and install](docs/public/build-and-install.md#android-빌드와-설치) · [Device record](Android/검증-20261120.md) |
-| PWA | Both Mac Chrome editions reopened offline and retained their saves. The iPhone simulator launched the installed editions from the Home Screen. A device-accessible install address and physical mobile checks are pending. [Build and run the PWA locally](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [Device checks](docs/pwa-device-validation-20261120.md) |
+| PWA | Both Mac Chrome editions reopened offline and retained their saves. The iPhone simulator launched the installed editions from the Home Screen. Extended checks across physical mobile devices are pending. [Build and run the PWA locally](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [Device checks](docs/pwa-device-validation-20261120.md) |
 | Tauri Mac | Separate regular and test bundles passed local signature verification. Earlier builds launched in an 820 × 900 pt portrait window, and the regular edition passed a save round trip. [Build the Mac app](docs/public/build-and-install.md#tauri-mac-빌드) · [Portrait window check](docs/pwa-device-validation-20261120.md#tauri-mac-세로-창) |
 
-Building requires access to this private repository and local copies of the original game packages. The recovery code, PWA and Tauri implementations are on the working branch. The regular and test editions share the core and original title artwork and keep separate saves. Test controls differ by platform. [Verification status](docs/todo.md#현재-체크--2026-11-21) · [Test editions](docs/validation-build.md#플랫폼별-치트-실행) · [Reference app](Compatibility/README.md)
+Building from source requires local copies of the original game packages. Recovery codes, the PWA and Tauri Mac are included in `v0.1`. The regular and test editions share the core and original title artwork and keep separate saves. Test controls differ by platform. [Verification status](docs/todo.md#현재-체크--2026-11-21) · [Test editions](docs/validation-build.md#플랫폼별-치트-실행) · [Reference app](Compatibility/README.md)
 
 ## Preparing from source
 
-Use an Apple Silicon Mac, Xcode, Python 3.11 or later, CMake 3.20 or later, and XcodeGen. Repository access and local copies of HD 1.0.3, HD 1.0.0, and iPhone 2.0.1 are required.
+Use an Apple Silicon Mac, Xcode, Python 3.11 or later, CMake 3.20 or later, and XcodeGen. Local copies of HD 1.0.3, HD 1.0.0, and iPhone 2.0.1 are required.
 
 ```sh
-git clone --branch develop git@github.com:gelb2/HeavyMach2.git
+git clone https://github.com/gelb2/HeavyMach2.git
 cd HeavyMach2
 git lfs install --local
 git config core.hooksPath .githooks

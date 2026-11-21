@@ -20,7 +20,7 @@
 | 설치형 PWA | Chrome의 설치 앱과 iPhone 시뮬레이터의 홈 화면 실행을 확인했다. 휴대폰 가로·태블릿 세로·데스크톱이 현재 검증 기준이다. [설치](../Web/README.md) · [관측](pwa-device-validation-20261120.md) | 실물 iPhone·iPad·갤럭시, 접힘·분할 화면, 설치형 Safari의 오프라인 재시작 |
 | Tauri Mac | 두 앱을 별도 번들·저장으로 빌드했다. 정식 앱 저장 왕복, 두 앱의 820×900pt 시작과 Finder 아이콘을 확인했다. [빌드](../Desktop/Tauri/README.md) · [창 검사](pwa-device-validation-20261120.md#tauri-mac-세로-창) | 실제 세로 창의 추가 입력·음향·저장 검사 |
 
-배포 확인은 [게시 기록](report-site.md)에 둔다. PWA의 실제 모바일 설치 주소와 개발용 루프백 주소는 [웹 안내](../Web/README.md#실기기-설치-주소)에서 구분한다. 원작 비교용 앱은 일반·치트 앱과 별도다.
+공개 PWA와 앱 다운로드는 [버전과 배포](public/release-policy.md)에 둔다. 비공개 검사 보고는 [게시 기록](report-site.md)에 둔다. 원작 비교용 앱은 일반·치트 앱과 별도다.
 
 ## 기록을 갱신하는 위치
 
