@@ -10,7 +10,7 @@ import {fileURLToPath} from 'node:url';
 import {chromium, firefox, webkit} from 'playwright-core';
 
 const engine = process.env.HM2_WEB_ENGINE ?? 'chromium';
-const dist = fileURLToPath(new URL('../../build/web-validation/dist/', import.meta.url));
+const dist = process.env.HM2_WEB_TEST_DIST ?? fileURLToPath(new URL('../../build/web-validation/dist/', import.meta.url));
 const manifest = JSON.parse(await readFile(join(dist, 'asset-manifest.json'), 'utf8'));
 const files = new Map(manifest.files.map(file => [file.path, file]));
 const types = new Map([

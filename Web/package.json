@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/display.test.mjs",
+    "test": "node --test tests/*.test.mjs",
     "test:download": "node tests/download.mjs",
     "smoke": "node tests/browser-smoke.mjs"
   },

@@ -61,13 +61,18 @@ async function installChromeApp(cdp, url) {
   await cdp.send('PWA.install',{manifestId,installUrlOrBundleUrl:url});
   return manifestId;
 }
-async function openChromeApp(context, cdp, manifestId, url, touch=false) {
+async function openChromeApp(context, cdp, manifestId, url, touch=false, viewport) {
   const opened = context.waitForEvent('page', {timeout:30000});
   await cdp.send('PWA.launch',{manifestId});
   const page = await opened;
   page.on('pageerror', error => errors.push(error.message));
   await page.waitForURL(url);
   assert(await page.evaluate(() => matchMedia('(display-mode: standalone)').matches));
+  if (viewport) {
+    // The newly launched window can begin navigation before Playwright attaches device settings.
+    await page.setViewportSize(viewport);
+    await page.reload({waitUntil:'domcontentloaded'});
+  }
   await page.locator('#play').filter({hasText:'게임 시작'}).waitFor();
   assert(await page.locator('#install').isHidden());
   await playGame(page,touch);
@@ -410,6 +415,101 @@ async function verifyMovementDrag(page, context, touch) {
   await waitStatus(page, ({path}) => path && !path.held, 'released movement pointer');
 }
 
+async function verifyCampaign() {
+  const mapList = JSON.parse(await readFile(process.env.HM2_WEB_TEST_MAP_LIST,'utf8'));
+  assert(mapList.length > 0 && new Set(mapList).size === mapList.length);
+  const context = await browser.newContext(globalSettings);
+  const results = [];
+  try {
+    const page = await start(context,'validation');
+    await titleToSlots(page,true);
+    await clickButton(page,1009);
+    await clickButton(page,1001);
+    await waitScreen(page,3);
+    await dismissHelp(page);
+    for (const name of mapList) {
+      const result = {name};
+      results.push(result);
+      try {
+        const before = await page.evaluate(() => HM2Validation.status());
+        assert.equal(await page.evaluate(name => HM2Validation.field(name),name),1);
+        const after = await waitStatus(page,state => state.screen === 7 && state.ticks > before.ticks,name);
+        assert(after.textures.uploads > 0);
+        result.ticks = after.ticks - before.ticks;
+        result.visiblePortals = after.portalTargets.length;
+        if (name.startsWith('Snow')) await screenshot(page,'campaign-' + name);
+      } catch (error) {
+        result.failure = String(error.message);
+        result.warning = await page.locator('#warning').textContent();
+      }
+    }
+    await writeFile(join(evidence,browserEngine + '-campaign.json'),JSON.stringify(results,null,2) + '\n');
+    assert.deepEqual(errors,[]);
+    const failures = results.filter(result => result.failure);
+    assert.deepEqual(failures,[]);
+    console.log(JSON.stringify({engine:browserEngine,loadedFields:results.length}));
+  } finally { await context.close(); }
+}
+
+async function verifyPhoneLifecycle() {
+  const {defaultBrowserType, ...phone} = playwright.devices['Pixel 7 landscape'];
+  const context = await browser.newContext(phone);
+  try {
+    const page = await context.newPage();
+    await page.addInitScript(() => {
+      const decode = AudioContext.prototype.decodeAudioData;
+      AudioContext.prototype.decodeAudioData = function(...args) {
+        window.musicContext = this;
+        return decode.apply(this,args);
+      };
+      const start = AudioBufferSourceNode.prototype.start;
+      AudioBufferSourceNode.prototype.start = function(...args) {
+        if (this.loop && this.context === window.musicContext) window.musicStarts = (window.musicStarts ?? 0) + 1;
+        return start.apply(this,args);
+      };
+    });
+    await page.goto(editionURL('validation'));
+    await page.waitForFunction(() => document.querySelector('link[rel=manifest]').hasAttribute('href'));
+    const manifest = await page.locator('link[rel=manifest]').getAttribute('href');
+    assert.equal(manifest,'./manifest.webmanifest');
+    assert.equal(await page.evaluate(async href => (await fetch(href).then(r => r.json())).orientation,manifest),'landscape');
+    await playGame(page);
+    await waitScreen(page,1);
+    await page.waitForFunction(() => window.musicStarts > 0);
+    const music = () => page.evaluate(() => ({starts:window.musicStarts, state:window.musicContext.state, time:window.musicContext.currentTime}));
+    const before = await music();
+    await page.setViewportSize({width:phone.viewport.height,height:phone.viewport.width});
+    await page.locator('#rotate').waitFor();
+    const held = await page.evaluate(() => HM2Validation.status());
+    await settle(350);
+    assert.equal((await page.evaluate(() => HM2Validation.status())).ticks,held.ticks);
+    assert.equal((await music()).state,'suspended');
+    assert.equal((await music()).starts,before.starts);
+    await screenshot(page,'phone-portrait-hold');
+    await page.setViewportSize(phone.viewport);
+    await page.locator('#rotate').waitFor({state:'hidden'});
+    await waitStatus(page, state => state.ticks > held.ticks, 'landscape resumes');
+    assert.equal((await music()).state,'running');
+
+    for (const hidden of [true,false,true,false]) {
+      await page.evaluate(hidden => {
+        Object.defineProperty(document,'hidden',{configurable:true,value:hidden});
+        document.dispatchEvent(new Event('visibilitychange'));
+      },hidden);
+      await waitStatus(page, state => state.active !== hidden, 'foreground or background');
+      await page.waitForFunction(hidden => window.musicContext.state === (hidden ? 'suspended' : 'running'),hidden);
+      assert.equal((await music()).starts,before.starts);
+    }
+    const after = await music();
+    assert(after.time > before.time);
+    assert.equal((await page.evaluate(() => HM2Validation.status())).effects.contexts,1);
+    await screenshot(page,'phone-landscape-resumed');
+    assert.deepEqual(errors,[]);
+    console.log(JSON.stringify({manifest:'landscape', portraitTicksStopped:true, resumeCycles:2,
+      musicStartsBefore:before.starts, musicStartsAfter:after.starts, sameLoopResumed:true}));
+  } finally { await context.close(); }
+}
+
 async function verifyHostStartup() {
   assert.equal(browserEngine,'chromium','Requires a browser with Web Locks');
   const context = await browser.newContext(globalSettings);
@@ -556,7 +656,7 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
         cdp = await context.newCDPSession(installer);
         manifestId = await installChromeApp(cdp,url);
         await cdp.send('PWA.changeAppUserSettings',{manifestId,displayMode:'standalone'});
-        page = await openChromeApp(context,cdp,manifestId,url,options.hasTouch);
+        page = await openChromeApp(context,cdp,manifestId,url,options.hasTouch,options.viewport);
       } else {
         page = await start(context,'validation',false,options.hasTouch);
       }
@@ -674,6 +774,8 @@ try {
   else if (process.argv.includes('--device-matrix')) await deviceMatrix(normalManifest, qaManifest);
   else if (process.argv.includes('--install-ui')) await installInterface();
   else if (process.argv.includes('--host-startup')) await verifyHostStartup();
+  else if (process.argv.includes('--phone-lifecycle')) await verifyPhoneLifecycle();
+  else if (process.argv.includes('--campaign')) await verifyCampaign();
   else if (process.argv.includes('--asset-use')) await verifyAssetUse();
   else if (process.argv.includes('--installed')) await launchInstalled(normalManifest, qaManifest);
   else await smoke(normalManifest, qaManifest);
