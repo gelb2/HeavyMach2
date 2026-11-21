@@ -2,13 +2,49 @@
 
 [README](../../README.md) · [플레이 방법](quick-play.md) · [확인한 범위](validation.md)
 
-iPhone·iPad용 소스 복원판과 검증 앱을 빌드하고 설치하는 방법이다. [Android](../../Android/README.md) · [PWA](../../Web/README.md) · [Tauri Mac](../../Desktop/Tauri/README.md) 일반 앱은 `HeavyMach2Source`, 동시 치트 앱은 `HeavyMach2Validation`이다. 정식판은 일반 앱을 **Release** 구성으로 빌드한다. 저장소는 비공개이며 App Store·TestFlight·공개 앱 다운로드는 제공하지 않는다.
+| 플랫폼 | 설치·실행 | 소스에서 빌드 |
+| --- | --- | --- |
+| iPhone·iPad | [Xcode에서 실제 기기에 설치](#실제-iphoneipad에-설치) | [정식판·치트판과 시뮬레이터](#iphoneipad-시뮬레이터-빌드) |
+| Android | [갤럭시에 APK 설치](#android-빌드와-설치) | [SDK·Gradle·APK 경로](#android-빌드와-설치) |
+| PWA | [홈 화면·앱 목록에 설치](#pwa-설치) | [Wasm 빌드와 로컬 실행](#pwa-빌드와-로컬-실행) |
+| Tauri Mac | [기존 맥 앱 가져와 실행](#tauri-mac-앱-받기) | [웹 파일로 Mac 앱 빌드](#tauri-mac-빌드) |
+
+## PWA 설치
+
+실제 iPhone·iPad·갤럭시에서는 기기에서 열 수 있는 비공개 HTTPS 주소가 필요하다. 현재 설치용으로 제공된 주소가 없다. 빌드한 맥에서는 `127.0.0.1`을 사용한다. 이 주소는 페이지를 여는 기기 자신을 가리킨다. [이 맥의 기존 웹 빌드 열기](../../Web/README.md#이-맥의-기존-웹-빌드-열기) · [실기기용 주소 준비](../../Web/README.md#실기기-설치-주소)
+
+1. 설치 주소를 연다. 게임 화면에서 **게임 설치**가 보이면 눌러 브라우저 안내를 따른다. **설치 방법**이 보이면 다음 메뉴를 사용한다.
+
+   | 기기·브라우저 | 설치 메뉴 |
+   | --- | --- |
+   | iPhone·iPad Safari | **공유 → 홈 화면에 추가**. **웹 앱으로 열기**가 보이면 켜고 **추가**를 누른다. |
+   | 갤럭시 Chrome | **⋮ → 홈 화면에 추가 또는 앱 설치 → 설치**. 설치 확인이 나오면 승인한다. |
+   | Mac Chrome·Edge | 주소창의 설치 아이콘이나 브라우저 메뉴의 웹 앱 설치를 선택한다. |
+   | Mac Safari | **파일 → Dock에 추가**를 선택한다. |
+
+2. 홈 화면, 앱 목록이나 Dock에 생긴 **HeavyMach 2** 아이콘을 열고 **게임 시작**을 누른다. 휴대폰은 가로, 태블릿은 세로로 연다.
+3. 첫 실행에는 네트워크를 유지하고 에셋 다운로드와 검증이 끝날 때까지 기다린다. 진행 막대는 검증을 마친 용량을 표시한다. 실패하면 **다시 시도**를 누른다. 오프라인 실행과 저장 유지는 Mac Chrome 설치판에서 확인했다. [iPhone Safari](https://support.apple.com/guide/iphone/open-as-web-app-iphea86e5236/ios) · [Android Chrome](https://support.google.com/chrome/answer/9658361?co=GENIE.Platform%3DAndroid) · [Mac Safari](https://support.apple.com/104996) · [설치 확인 기록](../pwa-device-validation-20261120.md)
+
+진행을 옮기려면 슬롯 화면의 **저장 이동**에서 원래 앱의 복구코드를 만들고 설치한 앱에 붙여넣는다. 복원하면 받을 앱의 슬롯 세 개가 교체된다. [복구코드와 백업 방법](../save-transfer.md)
+
+## Tauri Mac 앱 받기
+
+Apple Silicon Mac과 macOS 14 이상용이다. 현재 HeavyMach 2의 GitHub Releases에는 다운로드 파일이 없다. 이 맥에서 이미 빌드한 앱을 쓰거나, [소스에서 Tauri 앱을 빌드](#tauri-mac-빌드)한다. [HeavyMach 2 Releases](https://github.com/gelb2/HeavyMach2/releases)
+
+1. 빌드한 맥에서 아래 명령으로 Finder의 앱 폴더를 연다. 저장소 루트에서 실행한다.
+
+   ```sh
+   open Desktop/Tauri/src-tauri/target/release/bundle/macos
+   ```
+
+2. **HeavyMach 2 Desktop.app**을 응용 프로그램 폴더에 복사하고 연다. 치트판용 **HeavyMach 2 Desktop QA.app**은 별도 앱과 저장 공간을 쓴다.
+3. 다른 맥으로 옮길 때는 Finder에서 해당 `.app`을 압축해 ZIP을 전달한다. 받는 맥에서 ZIP을 풀어 앱을 응용 프로그램 폴더로 옮긴다. 현재 번들은 임시 서명본이다. 자신이 빌드했거나 출처를 확인한 앱의 첫 실행이 차단되면 **시스템 설정 → 개인정보 보호 및 보안 → 확인 없이 열기**를 사용한다. [Apple 첫 실행 안내](https://support.apple.com/102445)
 
 ## 준비물
 
 - 저장소를 읽을 수 있는 GitHub 계정과 Git 인증 설정.
-- Apple Silicon Mac, iOS SDK와 iPad 시뮬레이터 런타임을 설치한 Xcode.
-- Python 3.11 이상, CMake 3.20 이상, XcodeGen. Git 훅은 LFS를 연결한다. IPA와 Python 검사는 CI의 저장소 검사에서 실행한다.
+- 공통 자원 준비에는 Python 3.11 이상과 C++ 컴파일러가 필요하다. 공통 코어와 웹을 빌드할 때는 CMake 3.20 이상을 사용한다.
+- iPhone·iPad는 Apple Silicon Mac, iOS SDK와 시뮬레이터 런타임을 설치한 Xcode, XcodeGen이 필요하다. Android·PWA·Tauri의 도구는 아래 플랫폼별 빌드 절에 적었다.
 - [원본 명세](../source-provenance.json)에 등록된 HD 1.0.3, HD 1.0.0, 일반판 2.0.1 원본을 로컬에 보유한 환경.
 - 실기기 설치에는 본인의 Apple 개발 팀, 연결된 iPhone 또는 iPad와 개발자 모드.
 
@@ -17,12 +53,13 @@ iPhone·iPad용 소스 복원판과 검증 앱을 빌드하고 설치하는 방�
 ## 소스 받기
 
 ```sh
-git clone git@github.com:gelb2/HeavyMach2.git
+git clone --branch develop git@github.com:gelb2/HeavyMach2.git
 cd HeavyMach2
+git lfs install --local
 git config core.hooksPath .githooks
 ```
 
-위 SSH 주소는 계정의 저장소 접근 권한과 SSH 인증을 사용한다. HTTPS 인증을 사용하는 환경에서는 `https://github.com/gelb2/HeavyMach2.git`을 사용한다. 두 방식 모두 비공개 저장소 접근 권한이 필요하다.
+위 SSH 주소는 계정의 저장소 접근 권한과 SSH 인증을 사용한다. HTTPS 인증을 사용하는 환경에서는 `https://github.com/gelb2/HeavyMach2.git`을 사용한다. 두 방식 모두 비공개 저장소 접근 권한이 필요하다. 현재 원격 `develop`에는 iPhone·iPad와 Android 소스가 있다. 복구코드·PWA·Tauri 소스는 이 맥의 작업 브랜치 `feat/recovery-pwa-tauri-20261120`에 있다. 이 세 기능을 빌드할 때는 그 작업 사본을 사용한다.
 
 ## 원본 자원 준비
 
@@ -49,7 +86,7 @@ python3 tools/prepare_app_icons.py
 
 마지막 명령은 탭투스타트의 `Main_BG.png`로 `.local/prepared/AppIcons.xcassets/`를 만든다. 일반 아이콘은 원본 일러스트의 중앙 정사각형 영역을 사용하고 치트 아이콘에는 `TEST`를 표시한다. [아이콘 생성 방식](../app-icons.md)
 
-두 디렉터리는 Git 추적에서 제외한다. 원본 IPA와 원작 포함 앱은 로컬에 보관한다. 준비 도구가 `Existing prepared resource differs`로 중단하면 기존 파일과 해시 차이의 원인을 확인하고, 보존한 자원을 임의로 덮어쓰지 않는다.
+준비 자원과 아이콘은 Git 추적에서 제외한 `.local/` 아래에 둔다. 원본 IPA와 원작 포함 앱은 로컬에 보관한다. 준비 도구가 `Existing prepared resource differs`로 중단하면 기존 파일과 해시 차이의 원인을 확인하고, 보존한 자원을 임의로 덮어쓰지 않는다.
 
 ## iPhone·iPad 시뮬레이터 빌드
 
@@ -86,7 +123,7 @@ xcrun simctl launch "$HM2_SIM_ID" com.gelb2.heavymach2.restored
 ## 실제 iPhone·iPad에 설치
 
 1. 기존 앱이 있으면 Xcode **Window → Devices and Simulators**에서 기기와 HM2 Source를 선택해 **Download Container**로 데이터를 백업한다. 사용자 저장은 `Library/Application Support/HeavyMach2/HeavyMach2.sav`다.
-2. 저장소 루트에서 `python3 tools/build_openal.py --sdk iphoneos`를 실행한다. 시뮬레이터 라이브러리를 실기기 빌드에 사용하지 않는다.
+2. [자원과 아이콘](#원본-자원-준비)을 준비한 뒤 저장소 루트에서 `python3 tools/build_openal.py --sdk iphoneos`와 `xcodegen generate --spec Apple/iOS/project.yml`을 차례로 실행한다.
 3. `open Apple/iOS/HeavyMach2.xcodeproj`로 프로젝트를 연다.
 4. 앱 타깃의 **Signing & Capabilities**에서 본인의 개발 팀을 지정한다. 앱 ID 등록이 충돌하면 본인 팀에서 쓸 고유 ID를 정한다. ID가 달라지면 별도 앱과 저장 공간이 된다.
 5. `HeavyMach2Source` scheme의 **Edit Scheme → Run → Build Configuration**을 `Release`로 선택한다. 실행 대상을 연결한 기기로 설정한다.
@@ -119,6 +156,74 @@ xcrun simctl get_app_container "$HM2_SIM_ID" com.gelb2.heavymach2.validation dat
 ```
 
 현재 치트 앱에는 자유 조작용 조건 선택 화면이 없다. 재실행은 새 UUID 아래 새 검사 결과를 만든다. 일반 앱의 사용자 저장은 사용하지 않는다. 전체 게임 검사 완료 여부와 남은 조건은 [검증 범위](validation.md), 검사 구조는 [치트 앱 문서](../validation-build.md)를 따른다.
+
+## Android 빌드와 설치
+
+JDK 17, Android SDK 36, NDK 28.2.13676358, CMake 3.22.1과 호스트의 C++ 컴파일러가 필요하다. Android Studio의 SDK Manager나 아래 명령으로 SDK를 준비한 뒤 `ANDROID_HOME`을 SDK 디렉터리로 설정한다. 앱은 Android 8.0(API 26) 이상과 ARM64·x86-64를 대상으로 한다. [Gradle 구성과 검증](../../Android/README.md) · [AGP 8.13 도구 버전](https://developer.android.com/build/releases/agp-8-13-0-release-notes)
+
+```sh
+sdkmanager "platform-tools" "platforms;android-36" "build-tools;35.0.0" \
+  "ndk;28.2.13676358" "cmake;3.22.1"
+sdkmanager --licenses
+```
+
+[공통 자원](#원본-자원-준비)을 준비하고 저장소 루트에서 다음 명령을 실행한다. 정식판 Release를 설치하려면 먼저 [로컬 서명 키를 설정](../../Android/README.md#정식판-서명)한다. 개인 개발용으로 일반 앱을 실행할 때는 `assembleNormalDebug`를 선택할 수 있다.
+
+```sh
+cd Android
+./gradlew :app:assembleNormalRelease :app:assembleCheatDebug
+adb devices -l
+```
+
+| 앱 | APK 경로 — `Android/` 기준 |
+| --- | --- |
+| 정식판 Release | `app/build/outputs/apk/normal/release/app-normal-release.apk` |
+| 일반 개발판 Debug | `app/build/outputs/apk/normal/debug/app-normal-debug.apk` |
+| 치트판 Debug | `app/build/outputs/apk/cheat/debug/app-cheat-debug.apk` |
+
+갤럭시의 USB 디버깅을 켜고 컴퓨터의 연결 요청을 허용한다. `ANDROID_SERIAL`을 `adb devices -l`에 표시된 기기 ID로 바꿔 설치한다. 기존 정식 앱을 갱신하려면 같은 서명이 필요하다. 적용 전 기존 진행은 복구코드로 백업할 수 있다.
+
+```sh
+HM2_ANDROID_SERIAL='ANDROID_SERIAL'
+adb -s "$HM2_ANDROID_SERIAL" install -r app/build/outputs/apk/normal/release/app-normal-release.apk
+adb -s "$HM2_ANDROID_SERIAL" install -r app/build/outputs/apk/cheat/debug/app-cheat-debug.apk
+```
+
+앱 목록에서 **HeavyMach 2** 또는 **HeavyMach 2 Test**를 연다. 두 앱의 저장 공간은 분리돼 있다. [갤럭시 실행과 검증](../../Android/검증-20261120.md)
+
+## PWA 빌드와 로컬 실행
+
+Emscripten SDK를 활성화하고 [공통 자원과 아이콘](#원본-자원-준비)을 준비한다. 기존 검증에는 Emscripten 6.0.13을 사용했다. 저장소 루트에서 빌드한다. [Emscripten 설치 안내](https://emscripten.org/docs/getting_started/downloads.html) · [웹 빌드 세부 사항](../../Web/README.md)
+
+```sh
+export EM_CACHE="$PWD/.local/emscripten-cache-hm2"
+emcmake cmake -S Web -B build/web-normal -DCMAKE_BUILD_TYPE=Release
+cmake --build build/web-normal --parallel 6
+emcmake cmake -S Web -B build/web-validation -DCMAKE_BUILD_TYPE=Release -DHM2_WEB_VALIDATION=ON
+cmake --build build/web-validation --parallel 6
+```
+
+PWA를 이 맥에서 설치해 실행할 때는 서버를 시작한다.
+
+```sh
+python3 -m http.server 8773 --bind 127.0.0.1 --directory build
+```
+
+브라우저에서 [정식판](http://127.0.0.1:8773/web-normal/dist/) 또는 [치트판](http://127.0.0.1:8773/web-validation/dist/)을 연다. 산출물은 각 빌드 폴더의 `dist/` 전체다. [이 맥의 기존 웹 빌드 열기](../../Web/README.md#이-맥의-기존-웹-빌드-열기) · [실기기용 HTTPS 주소 준비](../../Web/README.md#실기기-설치-주소)
+
+## Tauri Mac 빌드
+
+Apple Silicon Mac에 Node.js, Rust의 Cargo, Xcode 명령줄 도구를 준비한다. 먼저 [Wasm 빌드](#pwa-빌드와-로컬-실행)에서 정식판을 `build/web-normal/dist/`에 만든다. 치트판도 만들려면 `build/web-validation/dist/`를 준비한다. Mac 번들 생성에는 로컬 HTTP 서버를 띄울 필요가 없다.
+
+```sh
+cd Desktop/Tauri
+npm ci
+npm run build
+npm run build:validation
+open src-tauri/target/release/bundle/macos
+```
+
+결과는 `Desktop/Tauri/src-tauri/target/release/bundle/macos/`의 **HeavyMach 2 Desktop.app**과 **HeavyMach 2 Desktop QA.app**이다. 정식판만 필요하면 `npm run build`까지만 실행한다. 패키징 도구는 각 웹 빌드 파일의 길이와 SHA-256을 확인한 뒤 앱에 묶는다. [Tauri 빌드·저장 문서](../../Desktop/Tauri/README.md)
 
 ## 코드·저장소 검사
 
@@ -169,6 +274,6 @@ ctest --test-dir build/core-original --output-on-failure \
 
 ## 다른 플랫폼과 포팅판
 
-iPhone·iPad 유니버설 앱이 목표이며 현재 설정은 iPhone 가로·iPad 세로다. 현재 HD의 정상동작 판정은 iPad에서 진행한다. [Android APK](../../Android/README.md), [설치형 PWA](../../Web/README.md), [Tauri Mac 앱](../../Desktop/Tauri/README.md)은 각각 빌드 경로가 있다. 실기기 설치와 로컬 실행의 확인 범위는 [검증 현황](validation.md)에 있다.
+현재 정식판의 기준 방향은 iPhone·갤럭시 가로, iPad 세로다. 실기기 설치와 로컬 실행의 확인 범위는 [검증 현황](validation.md)에 있다. [플랫폼별 증상과 해결 기록](troubleshooting.md)
 
 원본을 실행하는 비교 앱은 [Compatibility 안내](../../Compatibility/README.md)를 따른다. 위 일반/치트 앱 빌드에는 원본 ARM 실행파일을 넣지 않는다. 원본 IPA·원작 포함 비교 앱·서명 비밀·사용자 저장은 GitHub·보고 사이트·클라우드로 보내지 않는다.

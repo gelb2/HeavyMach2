@@ -5,7 +5,8 @@
 | 찾는 내용 | 문서 |
 | --- | --- |
 | 조작·기지·장비·저장 이동 | [플레이 방법](public/quick-play.md) · [복구코드 사용법](save-transfer.md) |
-| 정식판·치트판 빌드와 설치 | [iPhone·iPad](public/build-and-install.md) · [Android](../Android/README.md) · [PWA](../Web/README.md) · [Tauri Mac](../Desktop/Tauri/README.md) |
+| 정식판·치트판 빌드와 설치 | [iPhone·iPad](public/build-and-install.md#iphoneipad-시뮬레이터-빌드) · [Android](public/build-and-install.md#android-빌드와-설치) · [PWA 빌드](public/build-and-install.md#pwa-빌드와-로컬-실행) · [Mac 앱 빌드](public/build-and-install.md#tauri-mac-빌드) |
+| PWA 설치와 Mac 앱 받기 | [홈 화면에 PWA 설치](public/build-and-install.md#pwa-설치) · [Tauri Mac 앱 받기와 첫 실행](public/build-and-install.md#tauri-mac-앱-받기) |
 | 원작에서 복원한 기능과 사용자가 주도한 작업 | [기능과 추가 작업](public/features.md) · [개발 과정](public/development-history.md) |
 | 사용자 제보, 재현, 원인, 수정과 검증 | [트러블슈팅](public/troubleshooting.md) |
 | 실제 플레이 화면과 영상 | [iPhone·iPad·갤럭시·설치형 PWA 갤러리](public/gameplay-gallery.md) |

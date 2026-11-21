@@ -2,6 +2,10 @@
 
 macOS의 Tauri 앱은 선택한 PWA 판본을 그대로 묶어 실행한다. PWA 빌드의 `asset-manifest.json`에서 판본과 파일별 길이·SHA-256을 확인한다. Mac 앱은 번들에서 파일을 읽고 서비스 워커 등록을 생략한다. 이 앱의 창은 기본 1,200 × 800pt이며, 최소 크기는 800 × 540pt다.
 
+## 빌드한 앱 받기
+
+이 맥의 기존 정식판은 `src-tauri/target/release/bundle/macos/HeavyMach 2 Desktop.app`, 치트판은 같은 폴더의 `HeavyMach 2 Desktop QA.app`이다. 응용 프로그램 폴더에 복사해 실행한다. Apple Silicon·macOS 14 이상에서 사용한다. ZIP 전달과 첫 실행은 [설치 안내](../../docs/public/build-and-install.md#tauri-mac-앱-받기)를 따른다.
+
 ## 빌드
 
 1. [웹 빌드 안내](../../Web/README.md)를 따라 저장소의 `build/web-normal/dist/`에 정식판을 만든다.

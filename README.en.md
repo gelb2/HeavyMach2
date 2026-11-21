@@ -20,12 +20,16 @@ In HeavyMach 2, you assemble a mech, draw a route across the battlefield and fig
 
 ## Play and install
 
+**[Install the PWA](docs/public/build-and-install.md#pwa-설치)** · **[Get the Tauri Mac app](docs/public/build-and-install.md#tauri-mac-앱-받기)** · **[Build commands by platform](docs/public/build-and-install.md)**
+
+On the build Mac, you can install the local PWA or open the existing Tauri app. A mobile HTTPS install address and a downloadable Mac release are pending.
+
 | Platform | Installation and verification |
 | --- | --- |
 | iPhone and iPad | Landscape on iPhone and portrait on iPad. Both physical devices received the regular app and the save recording base visits. I entered White Mountain on the iPhone. All 14 portal directions were checked in simulators and host tests. [Build and install](docs/public/build-and-install.md) · [Device record](docs/white-mountain-dual-release-20261120.md) |
-| Android | Both Galaxy editions used the same iPad save. The shop, command, battle and a short play session were checked. The Android port is in `develop`. [Build and install](Android/README.md) · [Device record](Android/검증-20261120.md) |
-| PWA | Both Mac Chrome editions reopened offline and retained their saves. The iPhone simulator launched the installed editions from the Home Screen. A device-accessible install address and physical mobile checks are pending. [Build and install](Web/README.md) · [Device checks](docs/pwa-device-validation-20261120.md) |
-| Tauri Mac | Separate regular and test bundles passed local signature verification. Earlier builds launched in an 820 × 900 pt portrait window, and the regular edition passed a save round trip. [Build the Mac app](Desktop/Tauri/README.md) · [Portrait window check](docs/pwa-device-validation-20261120.md#tauri-mac-세로-창) |
+| Android | Both Galaxy editions used the same iPad save. The shop, command, battle and a short play session were checked. The Android port is in `develop`. [Build and install](docs/public/build-and-install.md#android-빌드와-설치) · [Device record](Android/검증-20261120.md) |
+| PWA | Both Mac Chrome editions reopened offline and retained their saves. The iPhone simulator launched the installed editions from the Home Screen. A device-accessible install address and physical mobile checks are pending. [Build and run the PWA locally](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [Device checks](docs/pwa-device-validation-20261120.md) |
+| Tauri Mac | Separate regular and test bundles passed local signature verification. Earlier builds launched in an 820 × 900 pt portrait window, and the regular edition passed a save round trip. [Build the Mac app](docs/public/build-and-install.md#tauri-mac-빌드) · [Portrait window check](docs/pwa-device-validation-20261120.md#tauri-mac-세로-창) |
 
 Building requires access to this private repository and local copies of the original game packages. The recovery code, PWA and Tauri implementations are on the working branch. The regular and test editions share the core and original title artwork and keep separate saves. Test controls differ by platform. [Verification status](docs/todo.md#현재-체크--2026-11-21) · [Test editions](docs/validation-build.md#플랫폼별-치트-실행) · [Reference app](Compatibility/README.md)
 
@@ -34,8 +38,9 @@ Building requires access to this private repository and local copies of the orig
 Use an Apple Silicon Mac, Xcode, Python 3.11 or later, CMake 3.20 or later, and XcodeGen. Repository access and local copies of HD 1.0.3, HD 1.0.0, and iPhone 2.0.1 are required.
 
 ```sh
-git clone git@github.com:gelb2/HeavyMach2.git
+git clone --branch develop git@github.com:gelb2/HeavyMach2.git
 cd HeavyMach2
+git lfs install --local
 git config core.hooksPath .githooks
 ```
 

@@ -15,7 +15,20 @@ JDK 17, Android SDK 36, NDK 28.2.13676358, CMake 3.22.1을 사용한다. 앱의 
 ./gradlew :app:assembleNormalRelease :app:assembleCheatDebug :app:testNormalDebugUnitTest
 ```
 
-정식판 서명은 저장소 밖으로 공유하지 않는 로컬 설정 `.local/android-signing/release.properties`의 `keyAlias`·`storePassword`와 같은 디렉터리의 `release.p12`를 사용한다. 기존 설치를 업데이트할 때는 같은 키를 사용한다. 기본 APK에는 ARM64와 x86-64가 들어 있다.
+기본 APK에는 ARM64와 x86-64가 들어 있다. 출력 경로와 기기 설치는 [플랫폼별 설치 안내](../docs/public/build-and-install.md#android-빌드와-설치)에 있다.
+
+### 정식판 서명
+
+기존 정식 앱을 갱신하려면 설치 때 쓴 서명 키를 사용한다. 새 키가 필요한 첫 설치에는 저장소 루트에서 PKCS#12 키 저장소를 만든다. 이미 사용하는 키가 있으면 파일을 그대로 보관한다.
+
+```sh
+mkdir -p .local/android-signing
+keytool -genkeypair -storetype PKCS12 \
+  -keystore .local/android-signing/release.p12 -alias hm2-release \
+  -keyalg RSA -keysize 2048 -validity 10000
+```
+
+같은 디렉터리에 `release.properties`를 로컬 파일로 저장한다. `keyAlias`에 키를 만들 때 지정한 이름, `storePassword`에 암호를 넣는다. Gradle은 파일과 키 저장소를 읽어 `assembleNormalRelease`에 서명한다. 개인 개발용은 `assembleNormalDebug`로 빌드하면 Android의 기본 디버그 키로 서명된다.
 
 ## 단말 검증
 

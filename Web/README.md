@@ -21,6 +21,16 @@ python3 -m http.server 8773 --bind 127.0.0.1 --directory build
 
 기본 에셋 입력은 `.local/prepared/Campaign/HD`다. 다른 준비본은 `-DHM2_WEB_ASSETS=경로`로 지정한다. 설치 아이콘은 [모바일판과 같은 탭투스타트 일러스트](../docs/app-icons.md)를 사용한다. 각 판의 1024px 준비본으로 192px·512px PNG를 만들고, 치트판에는 모바일판의 `TEST` 띠가 들어간다. `dist/asset-manifest.json`에 아이콘을 포함한 산출물의 크기와 SHA-256을 기록한다.
 
+## 이 맥의 기존 웹 빌드 열기
+
+Tauri 패키징 도구가 검증한 정식·치트 웹 파일이 각각 `Desktop/Tauri/build/frontend/`, `Desktop/Tauri/build/validation/frontend/`에 있으면 다시 컴파일하지 않고도 로컬 PWA를 열 수 있다. 아래 명령은 저장소 루트에서 실행한다. 앞의 새 빌드 서버가 8773번 포트를 쓰고 있다면 먼저 종료한다.
+
+```sh
+python3 -m http.server 8773 --bind 127.0.0.1 --directory Desktop/Tauri/build
+```
+
+이 명령의 주소는 [로컬 정식판](http://127.0.0.1:8773/frontend/)과 [로컬 치트판](http://127.0.0.1:8773/validation/frontend/)이다. 열린 페이지에서 [PWA 설치](../docs/public/build-and-install.md#pwa-설치)를 따른다.
+
 ## 설치하고 실행
 
 브라우저에서 주소를 열면 설치가 첫 동작으로 표시된다. 설치 대화상자를 제공하는 브라우저에서 **게임 설치**를 누른다. iPhone·iPad는 Safari 공유 메뉴에서 **홈 화면에 추가**를 선택한 뒤 **웹 앱으로 열기**를 켠다. Mac Safari는 파일 메뉴에서 **Dock에 추가**를 선택한다. [iPhone Safari](https://support.apple.com/guide/iphone/open-as-web-app-iphea86e5236/26/ios/26) · [Mac Safari](https://support.apple.com/104996) · [Chrome](https://support.google.com/chrome/answer/9658361)
@@ -31,7 +41,7 @@ python3 -m http.server 8773 --bind 127.0.0.1 --directory build
 
 ## 실기기 설치 주소
 
-위 `127.0.0.1` 주소는 빌드한 맥의 로컬 검사 주소다. 실제 휴대폰·태블릿에는 해당 기기에서 접속할 수 있는 비공개 HTTPS 주소가 필요하다. 현재 확인된 실기기용 설치 주소는 없다. 실기기 주소를 연결할 때 정식판 `dist`만 서비스하고, 설치한 아이콘으로 실행한 결과를 [플랫폼 현황](../docs/canonical.md#플랫폼과-검증-현황)에 기록한다.
+위 `127.0.0.1` 주소는 빌드한 맥의 로컬 검사 주소다. 실제 휴대폰·태블릿에는 해당 기기에서 접속할 수 있는 비공개 HTTPS 주소가 필요하다. 현재 확인된 실기기용 설치 주소는 없다. 실제 기기에서 설치할 때는 접근이 허용된 HTTPS 호스트에 정식판 `dist/` 전체를 같은 경로로 제공한다. `index.html`, `manifest.webmanifest`, `sw.js`, `game.wasm`, `game.data`와 나머지 파일을 함께 둔다. 기기의 Safari 또는 Chrome에서 HTTPS 주소를 열어 [설치 절차](../docs/public/build-and-install.md#pwa-설치)를 따른다. 설치한 아이콘으로 실행한 결과를 [플랫폼 현황](../docs/canonical.md#플랫폼과-검증-현황)에 기록한다.
 
 ## 저장과 화면
 
