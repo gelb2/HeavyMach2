@@ -2,7 +2,7 @@
 
 [한국어](README.md) | [English](README.en.md)
 
-[Play](docs/public/quick-play.md) · [Build and install](docs/en/public/build-and-install.md) · [Features](#restored-from-the-original) · [Developer's statement](docs/RESTORATION.md) · [Documentation](docs/README.md)
+[Quick Play](docs/en/public/quick-play.md) · [Build and install](docs/en/public/build-and-install.md) · [Features](#restored-from-the-original) · [Developer's statement](docs/RESTORATION.md) · [Documentation](docs/en/public/index.md)
 
 ## Why I am restoring HeavyMach 2
 
@@ -16,11 +16,11 @@ I have no intention of making money from this restoration. I also want to record
 
 ## About the project
 
-In HeavyMach 2, you assemble a mech, draw a route across the battlefield and fight along it. You can take missions at the command center and change equipment using loot and rewards. The restoration follows the original data and observed behavior. A shared C++ core runs on iPhone and iPad, Android, the installed PWA, and the Tauri Mac app. [How to play](docs/public/quick-play.md) · [Project documentation](docs/canonical.md)
+In HeavyMach 2, you assemble a mech, draw a route across the battlefield and fight along it. You can take missions at the command center and change equipment using loot and rewards. The restoration follows the original data and observed behavior. A shared C++ core runs on iPhone and iPad, Android, the installed PWA, and the Tauri Mac app. [How to play](docs/en/public/quick-play.md) · [Project documentation](docs/en/public/index.md)
 
 ## Play and install
 
-**[Open the PWA](https://gelb2.github.io/HeavyMach2/)** · **[Download the Mac app or Android APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)** · [Build and installation instructions](docs/public/build-and-install.md)
+**[Open the PWA](https://gelb2.github.io/HeavyMach2/)** · **[Download the Mac app or Android APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)** · [Build and installation instructions](docs/en/public/build-and-install.md)
 
 [Install the PWA from the Home Screen](docs/public/build-and-install.md#pwa-설치) or [extract and open the Tauri Mac app](docs/public/build-and-install.md#tauri-mac-앱-받기). [Version and release policy](docs/public/release-policy.md)
 
@@ -28,8 +28,8 @@ In HeavyMach 2, you assemble a mech, draw a route across the battlefield and fig
 | --- | --- |
 | iPhone and iPad | Landscape on iPhone and portrait on iPad. Both physical devices received the regular app and the save recording base visits. I entered White Mountain on the iPhone. All 14 portal directions were checked in simulators and host tests. [Build and install](docs/public/build-and-install.md) · [Device record](docs/white-mountain-dual-release-20261120.md) |
 | Android | Both Galaxy editions used the same iPad save. The shop, command, battle and a short play session were checked. The Android port is in `develop`. [Build and install](docs/public/build-and-install.md#android-빌드와-설치) · [Device record](Android/검증-20261120.md) |
-| PWA | Both Mac Chrome editions reopened offline and retained their saves. The iPhone simulator launched the installed editions from the Home Screen. Extended checks across physical mobile devices are pending. [Build and run the PWA locally](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [Device checks](docs/pwa-device-validation-20261120.md) |
-| Tauri Mac | Separate regular and test bundles passed local signature verification. Earlier builds launched in an 820 × 900 pt portrait window, and the regular edition passed a save round trip. [Build the Mac app](docs/public/build-and-install.md#tauri-mac-빌드) · [Portrait window check](docs/pwa-device-validation-20261120.md#tauri-mac-세로-창) |
+| PWA | Mac Chrome reopened both installed editions offline with saves intact. On a Galaxy, the public v0.2 installed app returned from the Home Screen in landscape and resumed background music. [Build the PWA](docs/en/public/build-and-install.md#build-and-run-the-pwa) · [Galaxy checks](docs/pwa-lifecycle-audit-20261121.md) |
+| Tauri Mac | Both bundles from a fresh clone passed signature verification. The regular app entered the base and field, moved the mech, and retained its slot after relaunch. [Build the Mac app](docs/en/public/build-and-install.md#build-the-mac-app) · [Clean-clone checks](docs/en/public/validation.md#public-source-build) |
 
 The regular and test editions share the core and original title artwork and keep separate saves. Test controls differ by platform. [Verification status](docs/todo.md#현재-체크--2026-11-21) · [Test editions](docs/validation-build.md#플랫폼별-치트-실행) · [Reference app](Compatibility/README.md)
 
@@ -80,7 +80,7 @@ The iPhone screenshot shows a waypoint on the road near the Skyway Base portal, 
 
 ## Verified behavior and remaining work
 
-Each iPhone and iPad simulator test run covered 126 scenarios over 2,100 frames. Both simulators also checked 14 White Mountain portal directions, four boss missions and 29 equipment scenarios. White Mountain routes and command on a physical iPad, installed PWA on mobile devices, direct interaction in the latest Tauri portrait builds, E-10 completion notifications, collection rewards and the final HD comparison remain open. [Evidence by feature](docs/feature-verification.md) · [Current TODO](docs/todo.md#현재-체크--2026-11-21)
+Each iPhone and iPad simulator test run covered 126 scenarios over 2,100 frames. Both simulators also checked 14 White Mountain portal directions, four boss missions and 29 equipment scenarios. White Mountain routes and command on a physical iPad, installed Safari offline restart, Mac command and audio, E-10 completion notifications, collection rewards and the final HD comparison remain open. [Evidence by feature](docs/feature-verification.md) · [Current TODO](docs/todo.md#현재-체크--2026-11-21)
 
 ## Implementation and restoration rules
 
@@ -96,11 +96,11 @@ Firing does not create a file/database write or a new audio context for each sho
 
 ## How I directed and tested the work
 
-[Work and testing in Korean](docs/public/development-history.md#내가-일을-시키고-테스트한-방법)
+[How I directed the work](docs/public/development-history.md#내가-일을-시키고-테스트한-방법) · [Testing method in Korean](docs/public/testing-method.md)
 
 ## Code structure and versions
 
-[Code structure](docs/public/development-history.md#코드-구조) · [Validation](docs/public/validation.md) · [Release policy](docs/public/release-policy.md)
+[Code structure in Korean](docs/public/architecture.md) · [Validation](docs/en/public/validation.md) · [Changelog](CHANGELOG.md) · [Release policy](docs/public/release-policy.md)
 
 ## Licenses and resources
 
