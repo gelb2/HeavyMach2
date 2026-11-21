@@ -31,7 +31,7 @@
 - [x] **HeavyMach 1 문서와 재대조.** [비교표](github-documentation-review-20261121.md)를 작성했다. [실제 플레이 PNG 5장·MP4 2편·GIF 1개](public/gameplay-gallery.md)와 HUD 편집·작업 지시·검증 방법을 연결했다.
 - [x] **개발자의 변 초안과 GitHub·Sass 자료.** HeavyMach 1·MachDefense의 글과 2026-11-20 사용자 원문을 대조해 [한글 초안](RESTORATION.md)과 [글감·근거 목록](developer-background.md)을 작성했다. 원문은 로컬 `.local/writing/heavymach2-developer-note-20261120.md`에 있다.
 - [x] **GitHub 회고 글감 기록.** 같은 로컬 원문에 작업 당시 상황, 세 작품과 원작자 두 사람에 대한 글, Threads 글과 자산가치 비유, 즉자·대자, 모델과 창작에 관한 사용자 글, 근접 공격·화염방사기와 아머드코어에 관한 마지막 괄호 추가를 보존했다.
-- [x] **글감 일곱 건 본문 반영.** 약식 하네스 도입, 11월 20일 글감 다섯 건, 지정한 마지막 두 문단을 [개발자의 변](RESTORATION.md)에 반영하고 조사와 오탈자·띄어쓰기를 고쳤다.
+- [x] **글감 일곱 건 원고 반영.** 개인 경험과 지정한 마지막 두 문단은 [개발자의 변](RESTORATION.md)에 반영했다. 약식 하네스와 안드로이드 지시, 미완성 기능에 관한 괄호 메모는 [개발 과정](public/development-history.md)에 두었다. 타우리 화면 문제 등 7건은 [트러블슈팅](public/troubleshooting.md)에 증상·원인·수정·확인 범위를 적었다.
 - [x] **코드와 문서, 문서 간 정본·참조 대조.** 31건을 기록하고 29건을 반영했다. 남은 두 건은 아래의 iPad 세로 PWA 기지 제목 잘림과 Phone 메뉴 미사용 분기다. [발견 목록](code-document-audit-20261121.md) · [수정 결과](code-document-fixes-20261121.md#수정-결과)
 
 ## 공유 복구코드와 웹·Mac 후속 작업 — 2026-11-20

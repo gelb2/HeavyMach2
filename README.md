@@ -93,7 +93,7 @@ C++20 코어에서 원작 데이터 reader, 파츠 조립, 게임 규칙과 UI�
 
 ## 개발 기록
 
-- [개발 과정](docs/public/development-history.md) · [원작 복원과 추가 작업](docs/public/features.md) · [개발자의 변과 글감](docs/developer-background.md)
+- [개발 과정](docs/public/development-history.md) · [트러블슈팅](docs/public/troubleshooting.md) · [원작 복원과 추가 작업](docs/public/features.md) · [개발자의 변과 글감](docs/developer-background.md)
 - [내가 일을 시키고 테스트한 방법](docs/public/development-history.md#내가-일을-시키고-테스트한-방법) · [코드 구조](docs/public/development-history.md#코드-구조)
 - [복원 계획](docs/restoration-plan.md) · [원본 일반판·HD판의 차이](docs/original-phone-hd-separation.md) · [여섯 판본 조사](docs/ipa-version-audit.md)
 - [치트 앱과 작업 순서](docs/validation-build.md) · [전체 기능 검증 계획](docs/full-validation-development-plan-20261110.md) · [HD 함수와 복원 범위](docs/hd-original-function-audit-20261111.md)

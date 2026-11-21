@@ -93,7 +93,7 @@ Firing does not create a file/database write or a new audio context for each sho
 
 ## Development records
 
-- [Development history](docs/public/development-history.md) · [Original and added features](docs/public/features.md) · [Writing source index](docs/developer-background.md)
+- [Development history](docs/public/development-history.md) · [Troubleshooting in Korean](docs/public/troubleshooting.md) · [Original and added features](docs/public/features.md) · [Writing source index](docs/developer-background.md)
 - [How the work was directed and tested](docs/public/development-history.md#내가-일을-시키고-테스트한-방법) · [Code structure](docs/public/development-history.md#코드-구조)
 - [Restoration plan](docs/restoration-plan.md) · [Standard and HD edition differences](docs/original-phone-hd-separation.md) · [Six-version audit](docs/ipa-version-audit.md)
 - [Validation app and work order](docs/validation-build.md) · [Full-feature validation plan](docs/full-validation-development-plan-20261110.md) · [HD functions and restoration scope](docs/hd-original-function-audit-20261111.md)
