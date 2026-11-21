@@ -7,6 +7,7 @@
 #include "Core/Data/Machines.hpp"
 #include "Core/Data/Resources.hpp"
 #include "Core/Simulation/WorldGates.hpp"
+#include "Core/Presentation/CameraPresentation.hpp"
 #include "Core/UI/Screens.hpp"
 #include <memory>
 #include <map>
@@ -17,7 +18,7 @@ class VisualLayer;
 struct WeaponInfo;
 class Particle;
 struct TileImage;
-struct CombatEnemySnapshot {std::uint64_t id=0;std::string name;Vec2 position;int hp=0;bool targetingPlayer=false,corpse=false;std::size_t activeParts=0;MachineKind kind=MachineKind::bipod;bool boss=false,moveToTarget=false;};
+struct CombatEnemySnapshot {std::uint64_t id=0;std::string name;Vec2 position;int hp=0;bool targetingPlayer=false,corpse=false;std::size_t activeParts=0;MachineKind kind=MachineKind::bipod;bool boss=false,moveToTarget=false;float crashTime=0;};
 struct CombatBotSetup {std::string machine;int savedHP=0;};
 struct MissionFieldObject {
     enum class Kind {item,enemy};
@@ -94,12 +95,14 @@ struct CombatSetup {
     bool openEventGate=false;
     // GobWorld.addMissionObjects consumes live accepted actions in order.
     std::vector<MissionFieldObject> missionObjects;
+    std::vector<MapSpawner> missionSpawners;
     std::array<CombatBotSetup,3> botSlots{};
     EquipmentCodes equipment=PlayerEquipment::startingCodes;
     std::uint32_t randomSeed=1;
     float initialRenderTime=0;
     double initialWorldTime=0; // World.gameTime survives map/base hide and setStage.
     WorldRandom* random=nullptr; // If supplied, must outlive this scene.
+    PreparedTiles* sharedAssets=nullptr; // Session/global owner; must outlive this scene.
 };
 // Restored HD battle consumer. Platform display adaptation, menus, persistence
 // and cheat setup remain separate consumers of this same game state.
@@ -110,6 +113,8 @@ public:
     ~CombatScene();
     CombatScene(const CombatScene&)=delete;
     CombatScene& operator=(const CombatScene&)=delete;
+    void setDisplay(DisplayConfiguration);
+    [[nodiscard]] const CameraPresentationState& cameraPresentation()const;
     void tick();
     bool input(PointerPhase,Vec2 logical,std::uintptr_t identifier);
     bool selectEnemy(std::uint64_t,bool append=false);
@@ -126,8 +131,10 @@ public:
     void botPickedItem(std::uint64_t bot,std::uint64_t item);
     Particle* allocateParticle(); // Existing world pool/reset/RNG only.
     [[nodiscard]] const TileImage* preparedTile(std::string_view)const;
+    // Explicit repair-item use boundary, never a draw/shot cache fallback.
+    [[nodiscard]] const TileImage* prepareRepairEffect(std::string_view originalIcon);
     [[nodiscard]] bool isPaused()const;
-    void startAirStrike(const WeaponInfo*,float fireDelay,Vec2 target);
+    void startAirStrike(const WeaponInfo*,float fireDelay,Vec2 target,int impactDamage=0);
     [[nodiscard]] std::size_t activeAirStrikes()const;
     void setPlayerHP(int); // Original setHp: field writer; no damage/death event.
     void setIsSave(bool); // Original0xfea0 field writer, independent of HP.
@@ -154,6 +161,8 @@ public:
     [[nodiscard]] std::size_t activeProjectiles()const;
     [[nodiscard]] std::size_t visibleParticles()const;
     [[nodiscard]] Frame preparationFrame()const;
+    [[nodiscard]] Frame globalPreparationFrame()const;
+    [[nodiscard]] std::uint64_t resourceRevision()const;
     // Draw-time trail/effect emission is intentional. Call once per rendered
     // scene, not as a getter from telemetry or tests that merely inspect state.
     Frame drawFrame();

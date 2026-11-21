@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(HeavyMach2Core STATIC
+    Sources/Core/Presentation/CameraPresentation.cpp
+    Sources/Core/Presentation/DisplayLayout.cpp
     Sources/Assets/Image.cpp
     Sources/Core/Data/Chunk.cpp
     Sources/Core/Data/DataTable.cpp
@@ -14,6 +16,7 @@ add_library(HeavyMach2Core STATIC
     Sources/Core/Data/Weapons.cpp
     Sources/Core/Data/Machines.cpp
     Sources/Core/Data/SaveData.cpp
+    Sources/Core/Data/RecoveryCode.cpp
     Sources/Core/Progression/Progression.cpp
     Sources/Core/Progression/Equipment.cpp
     Sources/Core/Progression/QuickItems.cpp
@@ -50,6 +53,7 @@ add_library(HeavyMach2Core STATIC
     Sources/Core/Presentation/MapLoading.cpp
     Sources/Core/Presentation/VisualLayer.cpp
     Sources/Core/Presentation/PreparedTiles.cpp
+    Sources/Core/Presentation/SharedAssetPreparation.cpp
     Sources/Core/Presentation/PlayerMapPreview.cpp
     Sources/Core/Presentation/AssemblyPreview.cpp
     Sources/Core/Presentation/MapPreview.cpp)
@@ -58,6 +62,10 @@ target_compile_options(HeavyMach2Core PRIVATE -Wall -Wextra -Wpedantic -ffp-cont
 
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(CameraPresentationTests tests/CameraPresentationTests.cpp)
+    target_link_libraries(CameraPresentationTests PRIVATE HeavyMach2Core)
+    target_compile_options(CameraPresentationTests PRIVATE -UNDEBUG)
+    add_test(NAME SharedCameraPolicyAndIsolation COMMAND CameraPresentationTests)
     add_executable(DataReaderTests tests/DataReaderTests.cpp)
     target_link_libraries(DataReaderTests PRIVATE HeavyMach2Core)
     target_compile_options(DataReaderTests PRIVATE -UNDEBUG)
@@ -116,6 +124,10 @@ if(BUILD_TESTING)
     target_link_libraries(TextTests PRIVATE HeavyMach2Core)
     target_compile_options(TextTests PRIVATE -UNDEBUG)
     add_test(NAME OriginalGPUText COMMAND TextTests)
+    add_executable(SharedAssetPreparationTests tests/SharedAssetPreparationTests.cpp)
+    target_link_libraries(SharedAssetPreparationTests PRIVATE HeavyMach2Core)
+    target_compile_options(SharedAssetPreparationTests PRIVATE -UNDEBUG)
+    add_test(NAME OriginalSharedAssetPreparation COMMAND SharedAssetPreparationTests)
     add_executable(ImpactTests tests/ImpactTests.cpp)
     target_link_libraries(ImpactTests PRIVATE HeavyMach2Core)
     target_compile_options(ImpactTests PRIVATE -UNDEBUG)
@@ -178,6 +190,10 @@ if(BUILD_TESTING)
         target_link_libraries(DashSessionTests PRIVATE HeavyMach2Core)
         target_compile_options(DashSessionTests PRIVATE -UNDEBUG)
         add_test(NAME OriginalDashSession COMMAND DashSessionTests "${HM2_HD_RESOURCES}")
+        add_executable(LifecycleSessionTests tests/LifecycleSessionTests.cpp)
+        target_link_libraries(LifecycleSessionTests PRIVATE HeavyMach2Core)
+        target_compile_options(LifecycleSessionTests PRIVATE -UNDEBUG)
+        add_test(NAME LifecyclePauseAndMenu COMMAND LifecycleSessionTests "${HM2_HD_RESOURCES}")
         add_executable(EnemyActorSceneTests tests/EnemyActorSceneTests.cpp)
         target_link_libraries(EnemyActorSceneTests PRIVATE HeavyMach2Core)
         target_compile_options(EnemyActorSceneTests PRIVATE -UNDEBUG)
@@ -207,6 +223,10 @@ if(BUILD_TESTING)
         target_link_libraries(CompletedMissionSessionTests PRIVATE HeavyMach2Core)
         target_compile_options(CompletedMissionSessionTests PRIVATE -UNDEBUG)
         add_test(NAME OriginalCompletedMissionSession COMMAND CompletedMissionSessionTests "${HM2_HD_RESOURCES}")
+        add_executable(WorldHUDProbe tools/probe_world_hud_rules.cpp)
+        target_link_libraries(WorldHUDProbe PRIVATE HeavyMach2Core)
+        target_compile_options(WorldHUDProbe PRIVATE -UNDEBUG)
+        add_test(NAME PhonePortalRoutesAndHUDInput COMMAND WorldHUDProbe "${HM2_HD_RESOURCES}" --verify-phone)
         add_executable(GateSessionTests tests/GateSessionTests.cpp)
         target_link_libraries(GateSessionTests PRIVATE HeavyMach2Core)
         target_compile_options(GateSessionTests PRIVATE -UNDEBUG)
@@ -261,6 +281,10 @@ if(BUILD_TESTING)
         target_link_libraries(EquipmentTests PRIVATE HeavyMach2Core)
         target_compile_options(EquipmentTests PRIVATE -UNDEBUG)
         add_test(NAME OriginalEquipmentTradeAndBots COMMAND EquipmentTests "${HM2_HD_RESOURCES}")
+        add_executable(DisplayLayoutTests tests/DisplayLayoutTests.cpp)
+        target_link_libraries(DisplayLayoutTests PRIVATE HeavyMach2Core)
+        target_compile_options(DisplayLayoutTests PRIVATE -UNDEBUG)
+        add_test(NAME UniversalDisplayAndInput COMMAND DisplayLayoutTests "${HM2_HD_RESOURCES}")
         add_executable(ScreensTests tests/ScreensTests.cpp)
         target_link_libraries(ScreensTests PRIVATE HeavyMach2Core)
         target_compile_options(ScreensTests PRIVATE -UNDEBUG)
@@ -270,6 +294,9 @@ if(BUILD_TESTING)
         target_compile_options(ConcurrentValidationTests PRIVATE -UNDEBUG)
         add_test(NAME ConcurrentOriginalGameScenarios COMMAND ConcurrentValidationTests "${HM2_HD_RESOURCES}")
         add_test(NAME ConcurrentOriginalGameWithUI COMMAND ConcurrentValidationTests "${HM2_HD_RESOURCES}" --native-ui 1200)
+        add_test(NAME ConcurrentPhoneDisplay COMMAND ConcurrentValidationTests "${HM2_HD_RESOURCES}" --display-phone)
+        add_test(NAME ConcurrentPhoneAirDisplay COMMAND ConcurrentValidationTests "${HM2_HD_RESOURCES}" --display-phone-air-actual)
+        add_test(NAME ConcurrentTabletDisplay COMMAND ConcurrentValidationTests "${HM2_HD_RESOURCES}" --display-tablet)
     endif()
     if(HM2_HD_RESOURCES)
         add_test(NAME OriginalStageVehicleEncounters COMMAND EnemyVehicleTests "${HM2_HD_RESOURCES}")

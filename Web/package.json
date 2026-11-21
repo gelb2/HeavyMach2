@@ -1,0 +1,13 @@
+{
+  "name": "heavymach2-web-validation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/display.test.mjs",
+    "test:download": "node tests/download.mjs",
+    "smoke": "node tests/browser-smoke.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "1.58.2"
+  }
+}

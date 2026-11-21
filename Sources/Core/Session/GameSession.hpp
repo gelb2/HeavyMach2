@@ -8,7 +8,7 @@
 #include <memory>
 
 namespace hm2 {
-enum class SaveReason {selectSlot,enterBase,stageTransition,saveAndExit,deleteSlot};
+enum class SaveReason {selectSlot,enterBase,stageTransition,saveAndExit,deleteSlot,restoreRecovery};
 struct SessionHost {
     virtual ~SessionHost()=default;
     virtual void sound(std::string_view,Vec2)=0;
@@ -19,6 +19,9 @@ struct SessionHost {
     virtual void notice(std::string_view title,std::string_view message){alert(message,title);}
     virtual void requestName(unsigned slot)=0;
     virtual void requestDelete(unsigned slot)=0;
+    virtual bool supportsRecoveryCode() const {return false;}
+    virtual void requestRecoveryCode() {}
+    virtual bool backupSaveForRecovery(std::span<const std::uint8_t>) {return false;}
     virtual void requestGameOver(std::uint64_t){alert("DestroyMach","Destroy Your Mach.");}
     // Called only at confirmed original save events. The platform adapter owns
     // atomic replacement and must report failure instead of claiming a save.
@@ -43,6 +46,9 @@ public:
     // GameMain children tick World, GuiGame, then late GuiMapLoading.
     void tick(const std::function<void()>& tickGameUI={});
     void setActive(bool);
+    void setDisplay(DisplayConfiguration);
+    [[nodiscard]] const DisplayConfiguration& display()const;
+    [[nodiscard]] Vec2 worldCanvasPoint(Vec2 logical)const;
     void action(const ui::ScreenAction&);
     // Original GuiGame child receivers run before its HUD/world receivers.
     bool inputOverlay(PointerPhase,Vec2,std::uintptr_t);
@@ -65,11 +71,18 @@ public:
     [[nodiscard]] const ui::ScreensState& state();
     [[nodiscard]] const SessionMetrics& metrics()const;
     [[nodiscard]] const SaveData& envelope()const;
+    [[nodiscard]] std::string recoveryCode()const;
+    void validateRecoveryCode(std::string_view code)const;
+    bool restoreRecoveryCode(std::string_view code);
     [[nodiscard]] std::string originalText(std::string_view key)const;
     [[nodiscard]] std::span<const std::uint8_t> workingSlot()const;
     [[nodiscard]] CombatScene* battle();
     [[nodiscard]] float renderTime()const;
     [[nodiscard]] std::uint64_t presentationRevision()const;
+    // Advances at original resource preparation/owner-release boundaries.
+    [[nodiscard]] std::uint64_t resourceRevision()const;
+    [[nodiscard]] Frame globalPreparationFrame()const;
+    [[nodiscard]] std::vector<std::string> orderedStartupSounds()const;
     [[nodiscard]] Frame preparationFrame()const;
     [[nodiscard]] std::vector<FieldItemSnapshot> fieldItems()const;
     Frame drawWorld();

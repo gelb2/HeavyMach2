@@ -1,0 +1,212 @@
+{
+  "baseline": "f555584ae01097c2779acb36c1047e5b85cbbd9b",
+  "verifiedSourceAndTestsCommit": "f8e82d85b0f4893fe7b56fa448e4db6955b05a82",
+  "fixCommits": {
+    "input": "20ccf0d",
+    "skyway": "5b07e44",
+    "camera": "e57a623",
+    "menu": "ab41cda"
+  },
+  "productionFiles": 10,
+  "iOSSimulatorRuntime": "26.5",
+  "coreTestsPassed": 76,
+  "gateProbe": {
+    "checkedPortals": 82,
+    "failed": 0
+  },
+  "portalMotion": {
+    "before": {
+      "phone": {
+        "scenes": 78,
+        "frames": 37440,
+        "accepted_taps": 567,
+        "scale_steps_over_0.01": 19,
+        "max_step_over_0.01": 0.0929188728,
+        "max_layer_residual_step": 0.965637207,
+        "max_step": 0.0929188728,
+        "hud_covered_player_frames": 3531,
+        "outside_world_frames": 0
+      },
+      "tablet": {
+        "scenes": 78,
+        "frames": 37440,
+        "accepted_taps": 562,
+        "scale_steps_over_0.01": 0,
+        "max_step_over_0.01": 0,
+        "max_layer_residual_step": 1.31619263,
+        "max_step": 0,
+        "hud_covered_player_frames": 154,
+        "outside_world_frames": 18023
+      }
+    },
+    "after": {
+      "phone": {
+        "scenes": 78,
+        "frames": 37440,
+        "accepted_taps": 567,
+        "scale_steps_over_0.01": 0,
+        "max_step_over_0.01": 0,
+        "max_layer_residual_step": 0.965637207,
+        "max_step": 0.00800001621,
+        "hud_covered_player_frames": 3523,
+        "outside_world_frames": 0
+      },
+      "tablet": {
+        "scenes": 78,
+        "frames": 37440,
+        "accepted_taps": 562,
+        "scale_steps_over_0.01": 0,
+        "max_step_over_0.01": 0,
+        "max_layer_residual_step": 1.31619263,
+        "max_step": 0,
+        "hud_covered_player_frames": 154,
+        "outside_world_frames": 18023
+      }
+    },
+    "scope": "Frames with a player center inside the default HUD bounding rectangles count as covered. World extent comparisons use the phone finite map boundary; tablet retains its HD framing."
+  },
+  "tabletCameraExact": {
+    "samples": 6000,
+    "rectangles": [
+      [
+        599,
+        820
+      ],
+      [
+        600,
+        820
+      ],
+      [
+        820,
+        599
+      ],
+      [
+        900,
+        500
+      ],
+      [
+        1024,
+        1366
+      ]
+    ],
+    "sha256": "c195226ad46afb6773742b3e13ce83f17c730e286d7e7bf000f8fe1adfa50a99"
+  },
+  "tabletSkywayRawRGBExact": {
+    "frames": [
+      0,
+      170
+    ],
+    "rawSHA256": [
+      "111a495a95a11af30981cf087d71154bdad14dc18436819417bfe10aa44a8053",
+      "8a52afe3b386bef22228eae0bccdae303e65b6072103f681ee4354e60dc81a02"
+    ]
+  },
+  "localEvidence": ".local/evidence/iphone-runtime-regressions-20261118.CsB3TQ",
+  "profiles": {
+    "phone": {
+      "nativePasses": 5,
+      "os": {
+        "single": {
+          "passed": 5,
+          "sameCanvasMoves": [
+            1,
+            1,
+            2,
+            1,
+            1
+          ]
+        },
+        "many": {
+          "passed": 5,
+          "sameCanvasMoves": [
+            4,
+            4,
+            4,
+            3,
+            3
+          ]
+        }
+      },
+      "skyway": {
+        "frames": 300,
+        "acceptedMovementInputs": 3,
+        "travelWorld": 291.484,
+        "maxBackgroundStepPt": 3.1e-05
+      },
+      "cheat": {
+        "scenarios": 126,
+        "frames": 2100,
+        "presented": 2100,
+        "buttonFailures": 0,
+        "doubleTapPathScenarios": 2,
+        "targetZoomRange": 0.0491025447845459
+      },
+      "sourceRelease": {
+        "startup": true,
+        "saveAndHUDManifestEqual": true,
+        "preexistingFilesInManifest": 0
+      },
+      "sha256": {
+        "verified-native-phone.log": "d214f4de0eb079af8c8ff7fc603ab7117a1a2af968e761b267136e676ca2d627",
+        "verified-os-phone.log": "ba9801df320ad047da4dcd371fe96e1ec7a6deddda7013234937a019289aef33",
+        "cheat-phone-report.json": "41d6a500aa51c48096fa55605f4cbc2bbe7b25e246d671b71fcf68f1c8bd9085",
+        "release-phone.log": "2c56f82891e1c2e69915d2bb49f845e1fdb01dc4f92600e87352634d238d2519"
+      }
+    },
+    "ipad": {
+      "nativePasses": 4,
+      "os": {
+        "single": {
+          "passed": 5,
+          "sameCanvasMoves": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "many": {
+          "passed": 5,
+          "sameCanvasMoves": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "skyway": {
+        "frames": 300,
+        "acceptedMovementInputs": 3,
+        "travelWorld": 292.392,
+        "maxBackgroundStepPt": 0.153687
+      },
+      "cheat": {
+        "scenarios": 126,
+        "frames": 2100,
+        "presented": 2100,
+        "buttonFailures": 0,
+        "doubleTapPathScenarios": 2,
+        "targetZoomRange": 0.0
+      },
+      "sourceRelease": {
+        "startup": true,
+        "saveAndHUDManifestEqual": true,
+        "preexistingFilesInManifest": 0
+      },
+      "sha256": {
+        "verified-native-ipad.log": "f16ec3bdbf10fa7390daeabfcce68c46ad768e9dc46051ca5e0826290f4c1236",
+        "verified-os-ipad.log": "7e15628800c4578ea90ba0b0f055e9325bc4a2f6e94e3b3b87347e8f754a3c87",
+        "cheat-ipad-report.json": "1082f761cf8dc0c4e51a1384f214f2c293ab1b8f05c6fd8110c54cc30c0a4c8d",
+        "release-ipad.log": "68d6d5197f03321069c3ab296480e60032abb8520449d158221fb9a60fe92319"
+      }
+    }
+  },
+  "retainedFailures": [
+    "First camera candidate pinned lock-on camera scale at 1 in two Phone concurrent tests. Its core-final.log includes both failures.",
+    "First tablet Skyway test used a Button position without screen transform. See native-ipad.log.",
+    "The source-modified real-device behavior is not verified."
+  ]
+}

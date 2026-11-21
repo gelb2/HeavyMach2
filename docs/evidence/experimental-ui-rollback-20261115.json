@@ -1,0 +1,301 @@
+{
+  "date": "2026-11-15",
+  "restoredCodeBaseline": "094b4c9c522df518e8b09dac89bc64bb52be9f67",
+  "withdrawnTip": "5c601ee73dd2ff1e654a25b75e2de9d8fddfe148",
+  "chronologicalCommits": [
+    "c1a394ec783c1291bec29a978261a1aa24dc9867 2026-11-15T00:56:58+09:00 feat: add movable experimental HUD and phone menu layouts",
+    "f3dc8a8360a50bfeffb18efa55c3d9072040f48b 2026-11-15T01:34:18+09:00 fix: preserve HUD placement and clip visible terrain without stretching",
+    "5c601ee73dd2ff1e654a25b75e2de9d8fddfe148 2026-11-15T01:45:14+09:00 docs: publish HUD and menu validation report with original captures"
+  ],
+  "restoredPaths": [
+    "Apple/Tests/ConcurrentValidationTests.mm",
+    "HANDOVER-IPHONE-UNIVERSAL.md",
+    "Sources/Core/Presentation/DisplayLayout.cpp",
+    "Sources/Core/Presentation/DisplayLayout.hpp",
+    "Sources/Core/Presentation/HUDLayout.hpp",
+    "Sources/Core/Presentation/MapPreview.cpp",
+    "Sources/Core/Presentation/MenuGridLayout.hpp",
+    "Sources/Core/UI/Screens.cpp",
+    "Sources/Platform/Apple/HM2ConcurrentRuntime.hpp",
+    "Sources/Platform/Apple/HM2ConcurrentRuntime.mm",
+    "docs/evidence/experimental-hud-implementation-20261115.json",
+    "docs/evidence/experimental-hud-publication-20261115.json",
+    "docs/experimental-hud-implementation-20261114.md",
+    "docs/report-site.md",
+    "docs/todo.md",
+    "tests/DisplayLayoutTests.cpp",
+    "tests/EquipmentTests.cpp",
+    "tests/ScreensTests.cpp"
+  ],
+  "codeAndTestsExactBaselineSHA256": {
+    "Apple/Tests/ConcurrentValidationTests.mm": "c87837324dffeb70deb2dca8918cf12758c0aa1b96baea3b79ca0314a8cc0715",
+    "Sources/Core/Presentation/DisplayLayout.cpp": "b23a32b6e53952e85393de3bc8d91a475ea6e4fa0d89d7c55e69564611be0947",
+    "Sources/Core/Presentation/DisplayLayout.hpp": "ace7790cc573bb7886b956c5618a2cc8228cc68d2ae8fde53754fe521ada0117",
+    "Sources/Core/Presentation/HUDLayout.hpp": "5c8af4bbe669962f55492c25e5b619d396012a9521105d89f240a5a53d4474de",
+    "Sources/Core/Presentation/MapPreview.cpp": "01e40dc7d4a1e4027d4a86463e8f5f8f315d9a0022d9351f5f4473901dd60b11",
+    "Sources/Core/Presentation/MenuGridLayout.hpp": "a85a837e67b6d2b90ca47348ea3f525e54348a18ab8bd2e388bd85dab033692b",
+    "Sources/Core/UI/Screens.cpp": "f0deb5cccd498a55ab7844b9c335c3f673e53e7cef06cf99a07e1c1a0846693f",
+    "Sources/Platform/Apple/HM2ConcurrentRuntime.hpp": "43538146a3c05cb3aff7bc626ccc5e9e5bbcd05daf4dcaf518cea2667a4ffc1d",
+    "Sources/Platform/Apple/HM2ConcurrentRuntime.mm": "5dad45e1e03a746ed4f87cda7262aa80236a267707252817b0e39d427db0ae5d",
+    "tests/DisplayLayoutTests.cpp": "fcf9f6eb27792a97410dbcb80b4adc96c16a4d48fb182305516e0c64ca387c16",
+    "tests/EquipmentTests.cpp": "6bf8e8240f29ae1c2f36beb2a336623a4297a283644ad6b872e69b6d3e39050f",
+    "tests/ScreensTests.cpp": "943a2c6643177c043b89e782279bc00d0ce5598b3d64064f6faf26d66e18056d"
+  },
+  "oldCommitsPreserved": true,
+  "resetOrForcePush": false,
+  "originalAssetsAndUserSavesChanged": false,
+  "sites": {
+    "hud": {
+      "project_id": "appgprj_6af8664612288191b813654dfb95323f",
+      "restoredSavedVersion": 2,
+      "restoredContentCommit": "6c84f87e23626cb885b48da038061800a79e8ace",
+      "sourceRollbackCommit": "06bab75209139392d31d892fb4d1441daf536cbc",
+      "deployment": {
+        "id": "appgdep_6af8d9a48334819183456abe7805559d",
+        "project_id": "appgprj_6af8664612288191b813654dfb95323f",
+        "title": "HeavyMach2 HUD 검토 보고",
+        "version_id": "appgprj_6af8664612288191b813654dfb95323f~appgver_353e34c2059481918569dd5e14953b52",
+        "type": "publish",
+        "status": "succeeded",
+        "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site",
+        "has_mcp": false,
+        "screenshot_asset_pointer": "sediment://file_000000007fb08212b50d441ab85b3d52",
+        "provider_deployment_id": "release---6af8674615408191b823dbb07bf7e55b",
+        "failure_message": null,
+        "env_set_revision": 0,
+        "updated_at": "2026-11-14T21:59:12.202699+00:00"
+      }
+    },
+    "primary": {
+      "project_id": "appgprj_6addbf55aea081918d3d182d7e496e88",
+      "restoredSavedVersion": 302,
+      "restoredContentCommit": "19c17356f959bde310faf012711b186f0106f855",
+      "sourceRollbackCommit": "e319ba605607ce9ccc26f9327d307c5bb647e177",
+      "deployment": {
+        "id": "appgdep_6af8d9b577f88191aef3add7477e1c39",
+        "project_id": "appgprj_6addbf55aea081918d3d182d7e496e88",
+        "title": "HeavyMach 개발 보고",
+        "version_id": "appgprj_6addbf55aea081918d3d182d7e496e88~appgver_64f103ea6aa08191b7fe2d05758661fa",
+        "type": "publish",
+        "status": "succeeded",
+        "url": "https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site",
+        "has_mcp": false,
+        "screenshot_asset_pointer": "sediment://file_0000000007fc81f7ae02a340964d5b1a",
+        "provider_deployment_id": "site---6addbf55aea081918d3d182d7e496e88",
+        "failure_message": null,
+        "env_set_revision": 0,
+        "updated_at": "2026-11-14T21:59:43.044539+00:00"
+      }
+    }
+  },
+  "withdrawnBuilds": [
+    {
+      "previousPath": "build/apple/Build/Products/Debug-iphonesimulator",
+      "preservedAt": ".local/evidence/experimental-ui-rollback-20261115/withdrawn-builds/build__apple__Build__Products__Debug-iphonesimulator",
+      "reason": "Withdrawn experimental implementation; keep as failure evidence, not as current build"
+    },
+    {
+      "previousPath": "build/apple/Build/Products/Release-iphonesimulator",
+      "preservedAt": ".local/evidence/experimental-ui-rollback-20261115/withdrawn-builds/build__apple__Build__Products__Release-iphonesimulator",
+      "reason": "Withdrawn experimental implementation; keep as failure evidence, not as current build"
+    },
+    {
+      "previousPath": "build/apple/Build/Products/HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
+      "preservedAt": ".local/evidence/experimental-ui-rollback-20261115/withdrawn-builds/build__apple__Build__Products__HeavyMach2Source_iphonesimulator27.1-arm64.xctestrun",
+      "reason": "Withdrawn experimental implementation; keep as failure evidence, not as current build"
+    },
+    {
+      "previousPath": "build/core",
+      "preservedAt": ".local/evidence/experimental-ui-rollback-20261115/withdrawn-builds/build__core",
+      "reason": "Withdrawn experimental implementation; keep as failure evidence, not as current build"
+    },
+    {
+      "previousPath": "build/hud-menu-sanitize",
+      "preservedAt": ".local/evidence/experimental-ui-rollback-20261115/withdrawn-builds/build__hud-menu-sanitize",
+      "reason": "Withdrawn experimental implementation; keep as failure evidence, not as current build"
+    }
+  ],
+  "evidenceDirectory": ".local/evidence/experimental-ui-rollback-20261115",
+  "newGameBuildOrPlayTest": false,
+  "siteHTTPVerification": {
+    "hudPublishedVersion": 2,
+    "primaryPublishedVersion": 302,
+    "ownerAuthenticatedHTTP": true,
+    "files": [
+      {
+        "site": "hud",
+        "path": "index.html",
+        "status": 200,
+        "sha256": "efa886c081685472bc01c8b122cfb8b080ad0cbc943a22bc6d9714b94a9e80ba",
+        "exactLocalMatch": false,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "report.css",
+        "status": 200,
+        "sha256": "29aa00bbe58be0f36c38a3e18fa9f80af6354e2e0d0d6f8c300e3df48d1ff6ff",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "experimental-hud-assets/decoded-GameUI_BG.png",
+        "status": 200,
+        "sha256": "f889c33a13949153498b0eec35c125ff46f7cb0df4a481ed1417da19cd906d04",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "experimental-hud-assets/decoded-GameUI_GaugeBack.png",
+        "status": 200,
+        "sha256": "30599aed475fab1551d922ac0ccba0d078e9973f6dd1895ddc2cce35d33c7e7d",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "experimental-hud-assets/decoded-GameUI_GaugeBooster.png",
+        "status": 200,
+        "sha256": "708e50150635839b97dc39f8b370737551821fe7b00d43e9611677161594f6f3",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "experimental-hud-assets/decoded-GameUI_GaugeEXP.png",
+        "status": 200,
+        "sha256": "c0f1ad8ca877dcc0a4f3f5be7e810c1319e4ee2ec85f57925881cb5b6c06dc98",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "experimental-hud-assets/decoded-GameUI_GaugeHP.png",
+        "status": 200,
+        "sha256": "9a311433bfd80dcab11cb292e768af8c9008e41129e21f96570b00927a887bcb",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "experimental-hud-assets/decoded-NumSet01b.png",
+        "status": 200,
+        "sha256": "78140c0e92982096fca83e18a8490264a0c744fb7578f4c0953a04ea0624bc27",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "experimental-hud-assets/decoded-NumTile05.png",
+        "status": 200,
+        "sha256": "2e9918eef0f96ecc1968de295340347581eb198d10e95afe43bcdec1416960cb",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "experimental-hud-assets/decoded-RaderMark.png",
+        "status": 200,
+        "sha256": "c8fa7aeba107df45292a035f4a8873031d72d8db39593d886f94609d15aa4798",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "experimental-hud-assets/decoded-WpnBtnBG.png",
+        "status": 200,
+        "sha256": "6e1c5e0531f5b91a23c4a4cc7dd970547420f2a1a515964b8d37b8d408dd37a5",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "experimental-hud-assets/ipad-classic-default.png",
+        "status": 200,
+        "sha256": "45d28a458813caaf0cf1a546f95746cbbf7230a15990da67f1ec2f7522c06c07",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "experimental-hud-assets/ipad-classic-left-weapons.png",
+        "status": 200,
+        "sha256": "0200b0ffb84cb8a2f11fe2845dfac352bc705bbe04827132e43a112d00cfc612",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "experimental-hud-assets/ipad-classic-right-weapons.png",
+        "status": 200,
+        "sha256": "88655cfbf8abf6d2a03f449080b7f117acf1cf0b1d8119bd6148f43c166770fb",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "experimental-hud-assets/phone-classic-default.png",
+        "status": 200,
+        "sha256": "e41c7d687759f9d1a7b94e99c9636048e5ac00f8983d1cbedbac8b0fae1e7b66",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "experimental-hud-assets/phone-classic-left-weapons.png",
+        "status": 200,
+        "sha256": "b6e857c4bae52617c786add84289b300b87c972d402de5d25d2dfc00ccb464a3",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "experimental-hud-assets/phone-classic-right-weapons.png",
+        "status": 200,
+        "sha256": "d6a5f26d1ab7607e3adf9ba4cb235b49a66a25003d60776b3ac149df2c089f34",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "experimental-hud-assets/phone-portal-classic-1.png",
+        "status": 200,
+        "sha256": "e3ffd039ae30cc3d4c8a33195e6c7e12859618a49c16bb4eca91d0092bbe4d81",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "experimental-hud-assets/phone-portal-classic-2.png",
+        "status": 200,
+        "sha256": "8bfbb33ef58bb1ce5247c8d3586a3d0b28a6ecf34d86a91efe66da204756ad3e",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "primary",
+        "path": "report-index-content.bin",
+        "status": 200,
+        "sha256": "f66567fdbe4380b59df0c7f94357ad9313ad19604257008c2dde98f0d7e0f7ad",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      },
+      {
+        "site": "primary",
+        "path": "heavymach2-restoration-20261110/report-index-content.bin",
+        "status": 200,
+        "sha256": "599e8e5518ac00e8c44eb5107c05703be961e42b7167ab6d7375c270a07018a7",
+        "exactLocalMatch": true,
+        "priorContentVerified": true
+      }
+    ],
+    "browserVisualCheck": false
+  },
+  "verification": {
+    "all12CodeAndTestFilesMatchBaseline": true,
+    "priorSiteFilesVerified": 21,
+    "newGameBuildOrPlayTest": false
+  }
+}

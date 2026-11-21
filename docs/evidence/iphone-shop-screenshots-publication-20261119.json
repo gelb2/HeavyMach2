@@ -1,0 +1,132 @@
+{
+  "report": {
+    "url": "https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/iphone-code-asset-diagnosis-20261116.html#shop-screenshots-attachment",
+    "sourceCommit": "bcb318574d238fe2cf3956de405ef2684de26410",
+    "deployment": "appgdep_6afea94b3dbc8191812ad637eaa01c50",
+    "status": "succeeded"
+  },
+  "appendix": {
+    "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/iphone-shop-screenshots-20261119.html",
+    "sourceCommit": "3285efd6d52103cf09698e2bc21296d986c41d0c",
+    "deployment": "appgdep_6afea8c2a134819188993a9b16270f4e",
+    "status": "succeeded"
+  },
+  "captureSources": {
+    "original-sg1-detail.png": ".local/evidence/iphone-shop-20261119.7atGic/original/07-weapon-detail.png",
+    "restored-sg1-detail.png": ".local/evidence/iphone-shop-report-appendix-20261119.t5c5xu/phone-sg1/AD6E2376-67AD-4333-8D61-D89C6583CCE6.png",
+    "original-sg1-buy.png": ".local/evidence/iphone-shop-20261119.7atGic/original/08-buy-confirm.png",
+    "restored-sg1-buy.png": ".local/evidence/iphone-shop-report-appendix-20261119.t5c5xu/phone/C2C93761-AB3E-4383-AE61-DA06CB58E321.png",
+    "original-sg1-sell.png": ".local/evidence/iphone-shop-20261119.7atGic/original/12-sell-confirm-candidate.png",
+    "restored-sg1-sell.png": ".local/evidence/iphone-shop-report-appendix-20261119.t5c5xu/phone/2E28DDA8-3B16-4724-8E64-664902B530FE.png",
+    "restored-sg1-sell-cancel.png": ".local/evidence/iphone-shop-report-appendix-20261119.t5c5xu/phone/72CA269B-BDC2-411F-92C6-97BE99133D16.png",
+    "physical-before-ml-k3-detail.png": ".local/evidence/dual-release-install-f8e82d8.RFJjX3/iphone-shop-next-detail.png",
+    "restored-ml-k3-detail.png": ".local/evidence/iphone-shop-report-appendix-20261119.t5c5xu/phone/24137977-F4A8-4FB7-95B6-F61E7AC2A984.png",
+    "restored-ml-k3-buy.png": ".local/evidence/iphone-shop-report-appendix-20261119.t5c5xu/phone/D33ACD09-20F3-40F4-BD79-E2E16030BA15.png",
+    "physical-before-equipment.png": ".local/evidence/dual-release-install-f8e82d8.RFJjX3/iphone-shop-equipment-overlap.png",
+    "restored-wasteland-equipment.png": ".local/evidence/iphone-shop-report-appendix-20261119.t5c5xu/phone/B33953D4-547E-4173-8B77-B1B90995A3D5.png",
+    "original-third-bot-disarm.png": ".local/evidence/iphone-equipment-20261119.90kAZo/original-bots-verified/original-third-bot-selected.png",
+    "restored-third-bot-disarm.png": ".local/evidence/iphone-shop-report-appendix-20261119.t5c5xu/phone/C54DC0BD-EC81-486E-9CCB-C292719C5CE3.png",
+    "ipad-wasteland-shop.png": ".local/evidence/iphone-shop-report-appendix-20261119.t5c5xu/ipad/6DE91B79-0BE0-4943-A94F-F16BF87A2DE9.png"
+  },
+  "httpVerification": {
+    "reportStatus": 200,
+    "appendixStatus": 200,
+    "imageCount": 15,
+    "images": [
+      {
+        "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/assets/iphone-shop-screenshots-20261119/original-sg1-detail.png",
+        "status": 200,
+        "sha256": "c6574fde850370ee95f5e3aa55c0f5c4e69c4d228ed345f583de4a17410a249f",
+        "bytes": 1195213
+      },
+      {
+        "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/assets/iphone-shop-screenshots-20261119/restored-sg1-detail.png",
+        "status": 200,
+        "sha256": "ddee1985be3453f2ef56e07892c5a28c3774581fb314fc3b630550247b30dea4",
+        "bytes": 633193
+      },
+      {
+        "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/assets/iphone-shop-screenshots-20261119/original-sg1-buy.png",
+        "status": 200,
+        "sha256": "f5a279581e86f3aea9eb370484e28eddf3e1ece977663769ac6b06e6182943c0",
+        "bytes": 1084106
+      },
+      {
+        "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/assets/iphone-shop-screenshots-20261119/restored-sg1-buy.png",
+        "status": 200,
+        "sha256": "18e9cc6bf44baf9fd02b1fe4b5b67161ca89aa6c678ceee16b4733794422f0ad",
+        "bytes": 597955
+      },
+      {
+        "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/assets/iphone-shop-screenshots-20261119/original-sg1-sell.png",
+        "status": 200,
+        "sha256": "8afbc2a2b3c7b21f948181b3a1472f53292297bda3d11bfe60bc8888542cd5d6",
+        "bytes": 1089686
+      },
+      {
+        "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/assets/iphone-shop-screenshots-20261119/restored-sg1-sell.png",
+        "status": 200,
+        "sha256": "a79c40c372eeea551377a4b82853521c6daaceebe6b01ca1877352285db54b82",
+        "bytes": 599692
+      },
+      {
+        "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/assets/iphone-shop-screenshots-20261119/restored-sg1-sell-cancel.png",
+        "status": 200,
+        "sha256": "3591ce9f09e7e17023d8ba728ce77f92f730cf891cdb6d93f1875c20cae6d7c7",
+        "bytes": 629382
+      },
+      {
+        "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/assets/iphone-shop-screenshots-20261119/physical-before-ml-k3-detail.png",
+        "status": 200,
+        "sha256": "0ddfdedfd01d6bf3b510a2fe0b3b4a1256bf5c46248a25d996e4e72e3af21a2c",
+        "bytes": 3078561
+      },
+      {
+        "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/assets/iphone-shop-screenshots-20261119/restored-ml-k3-detail.png",
+        "status": 200,
+        "sha256": "4e6637991a4a90a14ed8154fec51c699b819b64a520be7b622ffe410e49ef814",
+        "bytes": 602218
+      },
+      {
+        "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/assets/iphone-shop-screenshots-20261119/restored-ml-k3-buy.png",
+        "status": 200,
+        "sha256": "cb4405eaf0d89a13f29c39d957a670ca9de061967c724ca65eaf47f7c07655ea",
+        "bytes": 570079
+      },
+      {
+        "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/assets/iphone-shop-screenshots-20261119/physical-before-equipment.png",
+        "status": 200,
+        "sha256": "3e965a5cbe7a3519bbe4c5b58b0e7b32c55c45e6283fb3679d96ca3e751b9700",
+        "bytes": 3130939
+      },
+      {
+        "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/assets/iphone-shop-screenshots-20261119/restored-wasteland-equipment.png",
+        "status": 200,
+        "sha256": "76772780b0bf9d15ebe825fdbaa21fbddfc901ebe4212f30ee3ebe2439d2a9fa",
+        "bytes": 599944
+      },
+      {
+        "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/assets/iphone-shop-screenshots-20261119/original-third-bot-disarm.png",
+        "status": 200,
+        "sha256": "f3fea5f43d31b98dece8a42334d30e03931304ae96670d1d41900f0de3fd3014",
+        "bytes": 1281685
+      },
+      {
+        "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/assets/iphone-shop-screenshots-20261119/restored-third-bot-disarm.png",
+        "status": 200,
+        "sha256": "0c3b6774a78c73bdde05b3f13f25b9bd6280ba30d4af6c11f7c4db3aa1913c52",
+        "bytes": 617449
+      },
+      {
+        "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/assets/iphone-shop-screenshots-20261119/ipad-wasteland-shop.png",
+        "status": 200,
+        "sha256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+        "bytes": 1504137
+      }
+    ],
+    "unauthenticatedStatus": {
+      "main": 403,
+      "appendix": 403
+    }
+  }
+}

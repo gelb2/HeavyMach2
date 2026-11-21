@@ -1,0 +1,177 @@
+{
+  "scope": "documentation publication only",
+  "documentsCommit": "9a220524df65eeabd83b83567a964abd8562cb0a",
+  "productRollbackCommit": "d7d201c7fd21eb381d38e97b69462bfa4448c022",
+  "ruleCount": 50,
+  "coverage": {
+    "bases": 6,
+    "originalTablesRead": 12,
+    "deviceClasses": 2,
+    "minimumHubCommandShopContextsPlanned": 36,
+    "allStateVariantsRequired": true,
+    "runtimeExecuted": false,
+    "rejectedExampleImages": 3,
+    "rejectedExamplesAreNotCoverage": true
+  },
+  "harnessImplemented": false,
+  "hooksModified": false,
+  "gameSourceModified": false,
+  "newAppBuildOrInstall": false,
+  "developMainMerged": false,
+  "sites": [
+    {
+      "projectId": "appgprj_6af8664612288191b813654dfb95323f",
+      "version": 5,
+      "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site",
+      "sourceCommit": "55b0bae0359c0918b83b5a4b66915a1c8ab13bc1",
+      "deploymentId": "appgdep_6af8e2c8e5bc8191811a326d5a0b8eed",
+      "versionId": "appgprj_6af8664612288191b813654dfb95323f~appgver_8fe91e3dde18819191b85775b04097b8",
+      "deploymentStatus": "succeeded",
+      "access": {
+        "mode": "custom",
+        "users": 1,
+        "groups": 0,
+        "externalVisitors": 0
+      }
+    },
+    {
+      "projectId": "appgprj_6addbf55aea081918d3d182d7e496e88",
+      "version": 304,
+      "url": "https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site",
+      "sourceCommit": "8c9bc66fde81a783798dbdfa768a0ccd962b5b88",
+      "deploymentId": "appgdep_6af8e0983ec08191a2e5abdf49f8bf88",
+      "versionId": "appgprj_6addbf55aea081918d3d182d7e496e88~appgver_391e2f97bba88191af08424bf994b917",
+      "deploymentStatus": "succeeded",
+      "access": {
+        "mode": "custom",
+        "users": 1,
+        "groups": 0,
+        "externalVisitors": 0
+      }
+    }
+  ],
+  "links": {
+    "harness": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/presentation-harness.html",
+    "rules": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/design-asset-rules.html",
+    "cumulative": "https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log"
+  },
+  "verification": {
+    "authenticatedHTTP": true,
+    "verifiedFiles": 11,
+    "all3OriginalRejectedPNGsExact": true,
+    "sixBasesAnd36ContextPlanVerified": true,
+    "harnessImplemented": false,
+    "browserVisualCheck": false,
+    "files": [
+      {
+        "site": "hud",
+        "path": "index.html",
+        "status": 200,
+        "bytes": 46840,
+        "sha256": "2e3877c009e0051c6efe7056c533f11499f74cfa5d7cbd9a21e0a1e839ce2bc1",
+        "exactLocalMatch": false,
+        "HTMLContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "presentation-harness.html",
+        "status": 200,
+        "bytes": 32158,
+        "sha256": "7bb21d28b1dbb779884bf36eb5968fe9e7350dbbe791ade7f388a1dc16381f61",
+        "exactLocalMatch": false,
+        "HTMLContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "design-asset-rules.html",
+        "status": 200,
+        "bytes": 29027,
+        "sha256": "007eb4bb9dfd6c72709a97c709cc85f3e74abe23e504c572e9ddee5fb14114d2",
+        "exactLocalMatch": false,
+        "HTMLContentVerified": true
+      },
+      {
+        "site": "hud",
+        "path": "report.css",
+        "status": 200,
+        "bytes": 1705,
+        "sha256": "29aa00bbe58be0f36c38a3e18fa9f80af6354e2e0d0d6f8c300e3df48d1ff6ff",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "hud",
+        "path": "harness-plan-evidence.json",
+        "status": 200,
+        "bytes": 2372,
+        "sha256": "b04923ed2195739a71c3f1278a846def7c85e4e343fa835c84e13ea98dd80327",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "hud",
+        "path": "hub-artwork-census.json",
+        "status": 200,
+        "bytes": 29300,
+        "sha256": "fa0a3f1c64daf4455fd024cd130c6db221298c771cd60dc14fcff62a0b41f17a",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "hud",
+        "path": "harness-plan-assets/rejected-menu-1.png",
+        "status": 200,
+        "bytes": 400451,
+        "sha256": "ec19e2ec4fe925208446bd1efc9d573549a9cdc4c88837faac2eac95de3a7f78",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "hud",
+        "path": "harness-plan-assets/rejected-menu-2.png",
+        "status": 200,
+        "bytes": 328186,
+        "sha256": "8307af83cd43823b10769376755c090e2d7fd1f62bf68b56780030a70f064712",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "hud",
+        "path": "harness-plan-assets/rejected-menu-3.png",
+        "status": 200,
+        "bytes": 2818199,
+        "sha256": "003c849091e87247921bc797a76730ef868c532166bd71619561daf5e4b84730",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "primary",
+        "path": "report-index-content.bin",
+        "status": 200,
+        "bytes": 25830,
+        "sha256": "001e8f5edbdfc6863f000fe897242f7ba5359510e918b140d611ab93ddc6047d",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      },
+      {
+        "site": "primary",
+        "path": "heavymach2-restoration-20261110/report-index-content.bin",
+        "status": 200,
+        "bytes": 6576,
+        "sha256": "7dd8fd612f16d9696617e971e229a440e86673e5f15f81288111b7155bf46212",
+        "exactLocalMatch": true,
+        "HTMLContentVerified": false
+      }
+    ]
+  },
+  "localDocumentChecks": {
+    "rules": 50,
+    "baseTablesRead": 12,
+    "bases": 6,
+    "fullPlanContextsMinimum": 36,
+    "runtimeExecuted": false,
+    "negativeExamples": 3,
+    "localHTMLLinksValid": true,
+    "gameAndHooksUnchanged": true
+  }
+}

@@ -16,13 +16,16 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 
 def test_interval(text):
-    values = []
-    for label in ['started', 'passed']:
-        match = re.search(r"Test Suite '(?:All tests|Selected tests)' " + label + r" at ([0-9 :.-]+)\.", text)
-        if not match:
-            return None
-        values.append(datetime.strptime(match[1], '%Y-%m-%d %H:%M:%S.%f').timestamp())
-    return values
+    # Unit and UI test bundles write separate suite intervals. Keep the full
+    # observed span, including failed runs; a failed suite still executed.
+    events = [(state, datetime.strptime(stamp, '%Y-%m-%d %H:%M:%S.%f').timestamp())
+              for state, stamp in re.findall(
+                  r"Test Suite '(?:All tests|Selected tests)' (started|passed|failed) at ([0-9 :.-]+)\.", text)]
+    starts = [stamp for state, stamp in events if state == 'started']
+    ends = [stamp for state, stamp in events if state != 'started']
+    if not starts or not ends or ends[-1] < starts[0]:
+        return None
+    return [starts[0], ends[-1]]
 
 def main():
     parser = argparse.ArgumentParser()
@@ -52,7 +55,8 @@ def main():
         directory.mkdir()
         command = ['xcodebuild', 'test-without-building', '-xctestrun', str(run),
                    '-destination', 'platform=iOS Simulator,id=' + identifier,
-                   '-parallel-testing-enabled', 'NO', '-resultBundlePath', str(directory / 'tests.xcresult')]
+                   '-parallel-testing-enabled', 'NO',
+                   '-collect-test-diagnostics', 'never', '-resultBundlePath', str(directory / 'tests.xcresult')]
         command.extend('-only-testing:' + item for item in args.only_testing)
         start = time.time()
         with (directory / 'tests.log').open('w') as log:

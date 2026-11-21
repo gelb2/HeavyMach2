@@ -2,6 +2,7 @@
 #include "Core/Data/Resources.hpp"
 #include "Core/Data/Weapons.hpp"
 #include "Core/Presentation/PreparedTiles.hpp"
+#include "Core/Presentation/HUDLayout.hpp"
 #include "Core/Simulation/WorldRandom.hpp"
 #include "Core/UI/Button.hpp"
 #include "Core/UI/Text.hpp"
@@ -10,6 +11,7 @@
 #include <optional>
 
 namespace hm2::ui {
+inline constexpr unsigned recoveryButtonId = 1014;
 enum class ScreenId : unsigned {title=1,slots=2,base=3,command=4,maintenance=5,shop=6,field=7};
 enum class Panel : unsigned {root,inventory,equipment,bot,quick,mission,airlift,system,trade,weaponChoices};
 struct ItemView {
@@ -40,7 +42,7 @@ struct ScreensState {
     std::string locale="us",baseId="Base001";
     int selectedSlot=-1,selectedBaseButton=0;
     std::string baseDescription;
-    bool baseHasCompletedMission=false;
+    bool baseHasCompletedMission=false, recoveryCodeAvailable=false;
     std::array<SlotView,3> slots;
     std::vector<ItemView> inventory,shopItems,availableMissions,acceptedMissions,weaponChoices;
     std::array<ItemView,6> equipment;
@@ -91,6 +93,7 @@ struct ScreensState {
     int inventoryPages=3; // Actual Inventory.pages(), not vector capacity/item count.
 };
 struct PreparedScreenText {std::string image;std::shared_ptr<const TextBitmap> bitmap;};
+struct DropCoordinates {Vec2 inventory,quick;};
 struct ScreenAction {
     ScreenId screen;
     Panel panel;
@@ -98,6 +101,7 @@ struct ScreenAction {
     // Title is an original full-screen receiver, with no QobButton ID.
     bool titleTap=false;
     bool titleReady=false;
+    std::optional<DropCoordinates> dropCoordinates={};
 };
 struct ScreensHost {
     virtual ~ScreensHost()=default;
@@ -108,7 +112,11 @@ struct ScreensHost {
     virtual void bgm(std::string_view originalFile)=0;
     virtual void sound(std::string_view originalFile)=0;
     virtual void sfx(unsigned originalGlobalSfxId)=0;
+    // Original screen-construction getSound request; preparation does not play.
+    virtual void prepareSound(std::string_view /*originalFile*/){}
     virtual void quake(float /*strength*/,unsigned /*count*/,float /*delay*/){}
+    virtual std::optional<Bytes> loadHUDLayout(std::string_view /*profile*/){return {};}
+    virtual bool saveHUDLayout(std::string_view /*profile*/,std::span<const std::uint8_t> /*bytes*/){return false;}
 };
 struct ScreenCoverage {
     ScreenId screen;
@@ -127,11 +135,17 @@ struct ItemDescriptionValues {
 };
 struct MissionRequirementText {int type=0;std::string name;int did=0,total=0;};
 class Screens {
-    struct Impl;
+    struct Impl;struct HUDState;
+    std::shared_ptr<HUDState> hud_;
     ResourceAccess& resources_;
     PreparedTiles& tiles_;
     ScreensHost& host_;
     std::shared_ptr<Impl> impl_;
+    DisplayConfiguration display_;
+    std::shared_ptr<PreparedTiles> activeTiles_,fieldTiles_;
+    ScreenId tileScreen_=ScreenId::title;
+    std::uint64_t tileOwnerRevision_=0,fieldTileRevision_=0;
+    std::shared_ptr<std::uint64_t> resourceGeneration_=std::make_shared<std::uint64_t>(0);
 public:
     Screens(ResourceAccess&,PreparedTiles&,ScreensHost&);
     void refresh(const ScreensState&,float renderTime=0);
@@ -144,7 +158,29 @@ public:
     bool updateHUD(const ScreensState&);
     bool input(PointerPhase,Vec2,std::uintptr_t,float renderTime);
     void discardInputs();
+    void setDisplay(DisplayConfiguration);
+    [[nodiscard]] Vec2 buttonScreenPosition(ButtonKey)const;
+    [[nodiscard]] ClipRect buttonScreenBounds(ButtonKey)const;
+    [[nodiscard]] std::array<float,2> menuScrollOffsets()const;
+    void setHorizontalPan(float);
+    [[nodiscard]] float horizontalPanLimit()const;
+    void revealButton(ButtonKey);
+    [[nodiscard]] bool hudEditing()const;
+    [[nodiscard]] const hud::Configuration& hudConfiguration()const;
+    [[nodiscard]] std::string hudEditorError()const;
+    bool beginHUDEdit();
+    bool applyHUDEdit();
+    void cancelHUDEdit();
+    void resetHUDEdit();
     void append(Frame&,float renderTime)const;
+    // Resource owners, including hidden persistent GuiGame, not just the
+    // currently drawn sprites. Preparation/retention only; never a draw path.
+    void appendPreparation(Frame&)const;
+    // Changes only on resource-owner creation/replacement/destruction. A final
+    // old-Impl release after a nested input callback is observable separately.
+    [[nodiscard]] std::uint64_t resourceGeneration()const{return *resourceGeneration_;}
+    [[nodiscard]] std::uint64_t preparedResourceRevision()const{return tileOwnerRevision_+(activeTiles_?activeTiles_->revision():0)+(fieldTiles_&&fieldTiles_!=activeTiles_?fieldTiles_->revision():0);}
+    [[nodiscard]] const TileImage* preparedTile(std::string_view)const;
     [[nodiscard]] std::vector<ButtonKey> buttons()const;
     [[nodiscard]] std::shared_ptr<Button> button(ButtonKey)const;
     [[nodiscard]] static std::vector<ScreenCoverage> coverage();

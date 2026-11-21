@@ -1,4 +1,6 @@
 #include "Core/Progression/QuickItems.hpp"
+#include <algorithm>
+#include <array>
 #include <bit>
 #include <cmath>
 #include <cstdio>
@@ -15,6 +17,28 @@ int integer(float value){
 }
 int add(int a,int b){return std::bit_cast<std::int32_t>(std::uint32_t(a)+std::uint32_t(b));}
 int multiply(int a,int b){return std::bit_cast<std::int32_t>(std::uint32_t(a)*std::uint32_t(b));}
+int airStrikeDamage(const WeaponInfo* weapon,int level){
+    if(!weapon)return 0;
+    struct Benchmark {int level,tankHP;};
+    constexpr std::array<Benchmark,14> benchmarks{{
+        {1,200},{6,350},{12,1000},{17,2500},{22,5000},{28,8000},{35,16000},
+        {42,18000},{46,20000},{49,24400},{55,32000},{70,54000},{85,80000},{100,95000}
+    }};
+    const int displayed=std::clamp(level,0,99)+1;
+    const auto end=std::lower_bound(benchmarks.begin(),benchmarks.end(),displayed,[](const auto& point,int value){
+        return point.level<value;
+    });
+    int targetHP=end->tankHP;
+    if(end!=benchmarks.begin()){
+        const auto& start=*(end-1);
+        targetHP=start.tankHP+(end->tankHP-start.tankHP)*(displayed-start.level)/(end->level-start.level);
+    }
+    // A centered cascade of ten drops spends a fraction of its damage on
+    // scatter. Laser has the narrowest original impact range.
+    const int reference=weapon->kind==WeaponKind::laser?800:1000;
+    const auto scaled=(std::int64_t(weapon->damage)*targetHP+reference-1)/reference;
+    return int(std::max(std::int64_t(weapon->damage),scaled));
+}
 }
 QuickItems::QuickItems(Inventory& inventory,SlotView slot,const Weapons& weapons,QuickItemsHost& host)
     :inventory_(inventory),slot_(slot),weapons_(weapons),host_(host){}
@@ -43,7 +67,7 @@ void QuickItems::repair(const Item& item,const RepairTarget& target,float render
     // GobHvMach.useRepairItem runs before Player/BOT HP writes. A full pool
     // skips this visual only, and therefore skips the pool reset RNG too.
     if(auto* particle=host_.allocateParticle(renderTime)){
-        auto& p=particle->state();p.life=1;p.tile=host_.preparedTile(item.iconImage());p.tileNumber=0;
+        auto& p=particle->state();p.life=1;p.tile=host_.prepareRepairEffect(item.iconImage());p.tileNumber=0;
         p.scale={.5f,.5f};p.scaleVelocity=.01f;p.position=target.position;particle->start(renderTime);
     }
     int amount=integer(item.param1);
@@ -84,7 +108,7 @@ bool QuickItems::input(PointerPhase phase,Vec2 screen,const MapCamera& camera,bo
             std::array<char,128> key{};const int count=std::snprintf(key.data(),key.size(),"%s_%02d",item->stringParameter.c_str(),integer(item->param1));
             if(count<0||count>=int(key.size()))throw std::runtime_error("Original airstrike key exceeds its field");
             const auto weapon=weapons_.all().find(key.data());const auto* info=weapon==weapons_.all().end()?nullptr:&weapon->second;
-            host_.startAirStrike({item,info,key.data(),world,worldTime,renderTime,item->param2,info?unsigned(info->shotCount):0});
+            host_.startAirStrike({item,info,key.data(),world,worldTime,renderTime,item->param2,info?unsigned(info->shotCount):0,airStrikeDamage(info,slot_.level())});
             inventory_.subtract(*item,1);host_.refreshQuickItem(*item,inventory_.count(*item));
         }
         clearAfterTap();return true;

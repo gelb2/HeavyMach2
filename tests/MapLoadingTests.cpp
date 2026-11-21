@@ -72,5 +72,22 @@ void boundaries(Files& files){
     MapLoading nil(missing);assert(missing.probes==1&&missing.reads==0&&draw(nil).sprites.empty()&&nil.preparationFrame().sprites.empty());
     std::cout<<"MAP_LOADING strictFloatThresholds/callbackExceptionPreservesStep/noExtraStages/originalNil-noFallback PASS\n";
 }
+void sharedLifetime(Files& files){
+    PreparedTiles shared("global-shared");const auto reads=files.reads,probes=files.probes;
+    const TileImage* original=nullptr;
+    {
+        MapLoading first(files,&shared);original=shared.lookup("StageClearBG.png");
+        assert(original&&files.reads==reads+1&&files.probes==probes+1);
+        geometry(first);
+    }
+    const auto revision=shared.revision();
+    {
+        MapLoading next(files,&shared);geometry(next);
+        assert(shared.lookup("StageClearBG.png")==original&&shared.revision()==revision);
+        assert(next.preparationFrame().sprites.size()==1);
+    }
+    assert(shared.lookup("StageClearBG.png")==original&&files.reads==reads+1&&files.probes==probes+1);
+    std::cout<<"MAP_LOADING originalSharedOwner/firstRead1/repeatedFadeRead0/nodeReleaseKeepsTile PASS\n";
 }
-int main(int argc,char** argv){if(argc<2)return 77;Files files(argv[1]);fullPath(files);boundaries(files);}
+}
+int main(int argc,char** argv){if(argc<2)return 77;Files files(argv[1]);fullPath(files);boundaries(files);sharedLifetime(files);}

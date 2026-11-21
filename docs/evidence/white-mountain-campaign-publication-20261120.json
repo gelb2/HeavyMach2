@@ -1,0 +1,407 @@
+{
+  "report": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/white-mountain-campaign-results-20261120.html",
+  "cumulativeReport": "https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/#report-log",
+  "sites": {
+    "gallery": {
+      "projectId": "appgprj_6af8664612288191b813654dfb95323f",
+      "deploymentId": "appgdep_6aff16398e3c8191a12c5ffca3d68e97",
+      "versionId": "appgprj_6af8664612288191b813654dfb95323f~appgver_3e0548d20c588191bf29d6bd5769b84e",
+      "versionNumber": 17,
+      "status": "succeeded",
+      "sourceCommit": "c77110ed6d3f7bee88468d3642d0ed9d69d06022",
+      "url": "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site",
+      "ownerOnly": {
+        "allowedUsers": 1,
+        "allowedGroups": 0,
+        "externalVisitors": 0
+      },
+      "archiveExpandedBytes": 207839232
+    },
+    "primary": {
+      "projectId": "appgprj_6addbf55aea081918d3d182d7e496e88",
+      "deploymentId": "appgdep_6aff16bd29688191af0a6387979e8b95",
+      "versionId": "appgprj_6addbf55aea081918d3d182d7e496e88~appgver_6ed60dd2092481919ae2fee406d700a7",
+      "versionNumber": 321,
+      "status": "succeeded",
+      "sourceCommit": "a9e6e6f87f893d82729685acb4ad75ac8d2e4457",
+      "url": "https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site",
+      "ownerOnly": {
+        "allowedUsers": 1,
+        "allowedGroups": 0,
+        "externalVisitors": 0
+      },
+      "archiveExpandedBytes": 268432384
+    }
+  },
+  "httpChecks": {
+    "authenticatedImageCount": 83,
+    "tableCount": 7,
+    "authenticatedImageSha256": {
+      "phase1/phone/arrival-Stage04_09.webp": "760ba7654dfcaae1874a5f7b765d4d2603d0b11e85ea29c630dfd1095e6c69af",
+      "phase1/ipad/arrival-Stage04_09.webp": "92c893b5a08135db168ca04e7bab7a3d72f5b4b5fde97845ce29a3247cb22578",
+      "phase1/phone/arrival-SnowPass.webp": "6c26856ef0075cc46ba3a68c84dd606b8de77f5c2cc67d959ba731900c2f8e09",
+      "phase1/ipad/arrival-SnowPass.webp": "616687006621427c1bba5b260f97f44668453181e4fc48fabd8ca80873015566",
+      "phase1/phone/arrival-Base004.webp": "486a9fe5e71480db5ec5053a5e2c83be59d37cc20bbd0a1ea29b5e7482744ac5",
+      "phase1/ipad/arrival-Base004.webp": "06ff2550a55973c336c32274436ee11a02d91038c49344f8e91267334cfc6351",
+      "phase1/phone/arrival-SnowBasin.webp": "4341aa20cf88fb857920f8a3383a805b191f57f6d3317e64a6d3592d412724ef",
+      "phase1/ipad/arrival-SnowBasin.webp": "bd4ab1d26f1df9813c442da7d9952a5e0ce8336cb717a62177176ffd127cc26e",
+      "phase1/phone/arrival-SnowField.webp": "d083098873239847462be752029f2862ce8a38138002e4b7aaba36ad82f19dbc",
+      "phase1/ipad/arrival-SnowField.webp": "3934768548a2912f8c9056b6de948744fa05b247ff18bce994dd1f54c4b7d5db",
+      "phase1/phone/arrival-SnowRidge.webp": "9cf143f37d759e0cd7c6b1d54a8eb0529316732cbba64aefe026c2c71da83262",
+      "phase1/ipad/arrival-SnowRidge.webp": "9195bf424b7024db88709c04f41cd480628c2eef4955fbafd3fe3c10a221d3cf",
+      "phase1/phone/arrival-SnowFort.webp": "a119e16ea6c0b78e0f6c7b15bcddbf072efe50cf5d8c6b928575d5f0d3115ff7",
+      "phase1/ipad/arrival-SnowFort.webp": "be47f6eb5d10e07a1b8182165036d6e57e176a686899c664f7b3650ebd38c28a",
+      "phase1/phone/arrival-SnowValley.webp": "1c3a0c8734b3a8865a56546b36a9a05f57503c375503eba0299aa18e9bb0cc7b",
+      "phase1/ipad/arrival-SnowValley.webp": "2d99e6a47a4ccff9a24b742621a8c5a54ab5c2d87295c8bf570b8691531b741d",
+      "phase1/phone/snow-fort-collision.webp": "86d5d08eca844a680b2d5275f2b1cd6c0e2a2ee5fa29bb8fa1a5f4958ba97f0c",
+      "phase1/ipad/snow-fort-collision.webp": "010c281e56d8557a290d68bd50ed76c454710bd113e6eb01a2fbff966e7a2910",
+      "phase2/phone/Boss_05-mission.webp": "1131beb0201bafc6876560030cee1847cbf65e29a8fed09489b0a479e13c3624",
+      "phase2/ipad/Boss_05-mission.webp": "8afbdc3c373a6273641252ec8020580b6dcd0f8f5874dc5c5eb94295e7a7f2d9",
+      "phase2/phone/Boss_05-combat.webp": "38dab5608fac2bee284dff990e25f92f2a8e6e6467d7e266a15b1e37d9f3eeec",
+      "phase2/ipad/Boss_05-combat.webp": "64d56516fb0a12fe2d0d6779482782b00e46bbe79dfb1681de04b1cd669818a4",
+      "phase2/phone/Boss_05-defeated.webp": "e8f296aec2c4e65e3d044f467b387d0b977565b37536a579c03a167c83c0e697",
+      "phase2/ipad/Boss_05-defeated.webp": "3117cc9226ae23fe6f11cd051d4c03ee063ab93c661f87a337454dc3bb41f44e",
+      "phase2/phone/Boss_05-reward.webp": "9df1d10dde312b7ee3828d8a42e8d6977c3ab770cbd5874298cf4028735717af",
+      "phase2/ipad/Boss_05-reward.webp": "f5c46d42c3a54227c645ef46020336eace71cb401e652ffb8d113e3bd90024a7",
+      "phase2/phone/Boss_06-mission.webp": "9de12ab52a24f093941b91c33c0373a9dbc3e446e1ea86caf684caa1f4a9b81a",
+      "phase2/ipad/Boss_06-mission.webp": "9362efbaf0838ab93fcbc4d0b85a3b825732e02b4416a1b8fb13b89858335baa",
+      "phase2/phone/Boss_06-combat.webp": "c3360b903fb5d347200ef938f4f3949a8aface75baa323ea21ef9fa562e27d25",
+      "phase2/ipad/Boss_06-combat.webp": "c73119b6a16bdd14c7b1fdd4c9de3bf4afa72f7dbac62fecd70e1e93645051b4",
+      "phase2/phone/Boss_06-defeated.webp": "a48152fa419f8db430d01d6b3bf0c750c9a3649a684859d0ff55c82869114c1d",
+      "phase2/ipad/Boss_06-defeated.webp": "a6720e071474c674f868bec328aef226a961383b42ad34a06ddf45b91b22a1a2",
+      "phase2/phone/Boss_06-reward.webp": "2f403c2b2fcb581b6a9d757ecfafdc442e449fe5c6efcabdb2f2a81303b3ff1c",
+      "phase2/ipad/Boss_06-reward.webp": "73fe9b3076629e7cda1536c8a5b0fdbd1311c1e71ae15bb0e87c3e15ef6a13f7",
+      "phase2/phone/Boss_07-mission.webp": "7128cf85d3d719f9b84eac10b69a528f15703723a9f09fed4821edc04daf518a",
+      "phase2/ipad/Boss_07-mission.webp": "0763aa870338e3905b16bf6c999ba9cdd60a6025b0b79cd93acba0a36c39c825",
+      "phase2/phone/Boss_07-combat.webp": "8f1794cdcd5e109564c3a3ffe9592a901fae8f2a42bd9ece0ad86404ca60e495",
+      "phase2/ipad/Boss_07-combat.webp": "876d37fc0852d90bf9897604785818685e5761f644594d97258073727d1cc8db",
+      "phase2/phone/Boss_07-defeated.webp": "7ca27a85584f4d08b24618df25fcd6dd8afe8c9f63a383c197def76e1e318ee9",
+      "phase2/ipad/Boss_07-defeated.webp": "51340b1f8330bec659d117c5292e23b52f2356330015e1de22ba7d84a83ee614",
+      "phase2/phone/Boss_07-reward.webp": "581362dba68eea67f7118fc9279ed988f34f9ebe53f77773f93813fc840b3441",
+      "phase2/ipad/Boss_07-reward.webp": "388a6855629ab2ddf6c969c0681d5c5b9abb8be58b168f4dc75ed20c27fa2e21",
+      "phase2/phone/Boss_08-mission.webp": "321031b20a17f14d5dd0d2da5cbba03803a2fa4416b9a3078810cb56368a46b8",
+      "phase2/ipad/Boss_08-mission.webp": "07aa1b1f433512a8107b432a4e8baeacf812ee9b82c3c60590308d5b0e84ab87",
+      "phase2/phone/Boss_08-combat.webp": "cc5fa1a0fb44efaa85424696f9fc59e7fed52e2ef4c60a8d21bc827345135e3c",
+      "phase2/ipad/Boss_08-combat.webp": "5245cf67c95bc3bd1de512f751ddbc16907cff5ee7facac325373498827ab334",
+      "phase2/phone/Boss_08-defeated.webp": "7e6af71cf5e49c2fb42f3abb2a0c5f465543fc727664e62c7a5d640f90d17449",
+      "phase2/ipad/Boss_08-defeated.webp": "49f207f33f427bb775f5ba858dcc29d46ff2442d9b9cfbf21ec539644e232059",
+      "phase2/phone/Boss_08-reward.webp": "d677111140b77cd468130056dace17291cb0d43c7174d6acaa9f28d51403637b",
+      "phase2/ipad/Boss_08-reward.webp": "80d9f751fd6d1e5a62ccd936d1ce771f04d7d0cc2da6c196486ffbb1005c5f1d",
+      "phase2/models/E_Plane_01.png": "0939bcfdb6a9fa6411f317070f920fed8057cca09512c6e4aea4beeb5b5ecb8a",
+      "phase2/models/E_Plane_02.png": "b6a15b4f33af7ba1269279eb07dc2eac25f191df2c0b0abbef636727897ab701",
+      "phase2/models/E_Plane_05.png": "cd736c62288ce212aadc6653ef0300fe59cc00a1ca2794bbcd9becf030de2d59",
+      "phase2/models/E_Turret_06.png": "d49f718a0bdc4e43cd0c64e85d67fdab86efee1df171dea856e2257e9df3a81f",
+      "phase2/models/E_Tank_30.png": "b43358aa9c0ea9fa6abf71842fd260e268f76a4f36c05962486ee96610356109",
+      "phase3/phone/sniper-shop.jpg": "670961ed5591a06d41733dbcd6ce1160fd37fe36969abe0514b036f5fd852ab3",
+      "phase3/ipad/sniper-shop.jpg": "6ae253431fca87cf92565c0356f0c3bbe13d4afa3bf3709d1437bfee00140d4b",
+      "phase3/phone/10311-combat.jpg": "ba6caa804b7b027dc5d5f713c3fb2ab45362ea85e641ddca1f773de1eac1c24a",
+      "phase3/ipad/10311-combat.jpg": "0c54b4ade3b2c4a12fcccccb0e0e4c6aa9e6bcccb1ec27e935bbaac4e6904a46",
+      "phase3/phone/10340-combat.jpg": "90a2ba17b7ba1ccdf275ae9f58013aad10d2da2ee0581942f4f325ac0ddd6ff1",
+      "phase3/ipad/10340-combat.jpg": "b6dc016bcbec684715a763dd73acba025248e01de802afc83256a4e891d3b5a0",
+      "phase3/phone/10501-combat.jpg": "588163c92ccae185238af90a108df468fbef09f40deebc299f3fc0e0e4c2f7ca",
+      "phase3/ipad/10501-combat.jpg": "dbe0e613cd93163d42c32660861c570bde12005ced70a08191329ebfb006d378",
+      "phase3/phone/10504-combat.jpg": "5a0b5e0409335c1617feeffbe6538fcdf99ab2f046c857766ef9ac58248233e9",
+      "phase3/ipad/10504-combat.jpg": "85f7eb1ebef7222a3983a98ae13bec98d44b3483c51a2bbbd220987e13746e03",
+      "phase3/phone/laser-airstrike-shop.jpg": "be3a24670023b052e4904babd348d885b075f65c12c27053dd67b3128c4b1bbc",
+      "phase3/ipad/laser-airstrike-shop.jpg": "149cfdea7fc0f7698fe01adc945e7afcf56aa64e894b5bd21008f3637786f98b",
+      "phase3/phone/laser-airstrike-buy.jpg": "d50b20f285c02f2502fefca4e50d32e599332c8920ad326b3045a49a445efb55",
+      "phase3/ipad/laser-airstrike-buy.jpg": "87d1ffa2a35fb17cadfd339c7ed94ace9735edc586c83b05864eda1f1aa6254b",
+      "phase3/phone/laser-airstrike-quick-slot.jpg": "1d6b22df4413a784ce77cd4132e5baf8210fa4dd4109be23dfd7f5eb6370e429",
+      "phase3/ipad/laser-airstrike-quick-slot.jpg": "e6aa2b4fdd714a81f4f9506b7d47ebc94273c6d0f28650dcff9da7951f6c1e33",
+      "phase3/phone/laser-airstrike-active.jpg": "fde4432c8258d4db865ddfba37eac3d5d343e30aefb5fcb34ffac660705aae47",
+      "phase3/ipad/laser-airstrike-active.jpg": "70f465cbb9ef533705d55fa97436967778e5324d1f42c1814c8e6cf503626ce4",
+      "phase3/phone/04204-collected.jpg": "a62ee75eb3d857273932dbe0f9c722a6dc91166d612c909930f12c3deebc7a22",
+      "phase3/ipad/04204-collected.jpg": "05606cb76d21c22f186c2d7101903f32e97409ac0a1764a53a25281bedf0d74b",
+      "phase3/phone/04205-collected.jpg": "06c1f57e40f8d2419b4e9c797ee82a33fe06ef76a0cc655f9a91bbc8a76dd729",
+      "phase3/ipad/04205-collected.jpg": "0bef72e937b6486a5d1fff7d6bca46e9ab3c6cd05d9f5c7496a255994b14cedd",
+      "phase3/phone/04206-collected.jpg": "7bc172c069d54d8f6e6b3bf60c364e133e9c60553d409fb654f6a205be62120a",
+      "phase3/ipad/04206-collected.jpg": "66f9172b4d948549ab15b378f067eceea186e41e45f34bc82c6315f36019dde8",
+      "render/Boss_07-before.webp": "b30f461a1739417e4d3c793b3d4def19240758dc76ae453aa22e265f829727be",
+      "render/Boss_07-after.webp": "608840ab28cf2b9dba04dfc8aace291aa43f8c4500582347cca4a81f18d1bdb6",
+      "render/Boss_08-before.webp": "ed89580e1b012ec2c26589a8135d3cdc34bc23eefe2e3c04804bc6f8aa3d27ed",
+      "render/Boss_08-after.webp": "84dff9b8d65f0d07532afe1d01c821d59af435ef158b5243eecf32f78bc8b048"
+    },
+    "galleryIndexLinkVerified": true,
+    "primaryIndexLinkVerified": true,
+    "primaryArticleLinkVerified": true,
+    "unauthenticatedStatus": {
+      "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/white-mountain-campaign-results-20261120.html": 403,
+      "https://heavymach2-hud-review-20261114.hiphopxy.chatgpt.site/assets/white-mountain-campaign-results-20261120/render/Boss_07-before.webp": 403,
+      "https://heavymach-dev-report-20261025.hiphopxy.chatgpt.site/heavymach2-restoration-20261110/white-mountain-feasibility-20261119.html": 403
+    }
+  },
+  "fixedApp": {
+    "phone": {
+      "routes": {
+        "passed": 14,
+        "run": "CFB1940E-837D-47AC-8A13-F70EE9F32F36",
+        "resultSHA256": "9deaa7ef4e9f40c5f8e6506328732361cb9bb6cea1c78406386603a4b2e7e626",
+        "mapSHA256": "b38cdfbb23479da25d5b9276f29e2b54224d1cdf75c3647fe87da5716af54b49",
+        "snowFortCollision": {
+          "contactTicks": 12,
+          "image": "snow-fort-collision.png",
+          "inputTarget": [
+            11,
+            80
+          ],
+          "position": [
+            -125.97840881347656,
+            55.29380798339844
+          ],
+          "terrainEdge": 8,
+          "traveled": 303.1076965332031
+        }
+      },
+      "boss": {
+        "passed": 4,
+        "run": "CA422E0A-CF67-4D44-ADC2-38E268B44816",
+        "resultSHA256": "67b082bf0514a381ccbacde07b757013570f87197a0d704439fa339e47d83aa3",
+        "mapSHA256": "b38cdfbb23479da25d5b9276f29e2b54224d1cdf75c3647fe87da5716af54b49",
+        "defeatFrames": {
+          "Boss_07-defeated.png": {
+            "blackPixels": 750,
+            "totalPixels": 3162132,
+            "sha256": "865a2fe0c1a3753a6695c1216c637a48f6c50a7cce1c9f79f09242a8045cbe23"
+          },
+          "Boss_08-defeated.png": {
+            "blackPixels": 648,
+            "totalPixels": 3162132,
+            "sha256": "154899999d25d7c9d5d027d48449450b790c8d18c1859879290afffeb9abe9b6"
+          }
+        }
+      },
+      "items": {
+        "passed": 29,
+        "run": "18AB74AC-3369-4B3E-A14F-77119ADD2E8A",
+        "resultSHA256": "183df2d369e76a4d09e57959aecafd1407f2d5328fea90303790732963ef9162",
+        "appSHA256": "ac80f363a06df69bc9dc675b7c015f203106e9fecd06e91cb427abf02b2ddc78",
+        "mapSHA256": "b38cdfbb23479da25d5b9276f29e2b54224d1cdf75c3647fe87da5716af54b49"
+      }
+    },
+    "ipad": {
+      "routes": {
+        "passed": 14,
+        "run": "90D13D4C-2F1F-48D1-B9F0-BA5835981759",
+        "resultSHA256": "f851ca46b15c4d56a06767cd69d43bf5c8166198cfe08bd799377f6b2ed0ac51",
+        "mapSHA256": "b38cdfbb23479da25d5b9276f29e2b54224d1cdf75c3647fe87da5716af54b49",
+        "snowFortCollision": {
+          "contactTicks": 12,
+          "image": "snow-fort-collision.png",
+          "inputTarget": [
+            11,
+            80
+          ],
+          "position": [
+            -125.97840881347656,
+            55.29380798339844
+          ],
+          "terrainEdge": 8,
+          "traveled": 303.1076965332031
+        }
+      },
+      "boss": {
+        "passed": 4,
+        "run": "D181CD34-7838-417A-9FA9-3A0F57F0E80C",
+        "resultSHA256": "5388ee68d9a5099d71524cdc3bcb0fe2ad2972a22933b2ffb0e9743c0029f0ab",
+        "mapSHA256": "b38cdfbb23479da25d5b9276f29e2b54224d1cdf75c3647fe87da5716af54b49",
+        "defeatFrames": {
+          "Boss_07-defeated.png": {
+            "blackPixels": 984,
+            "totalPixels": 5680128,
+            "sha256": "3bbfcfede72099562a3c67afd327bcc207e242c90430e40f95bb562bfeb6254c"
+          },
+          "Boss_08-defeated.png": {
+            "blackPixels": 927,
+            "totalPixels": 5680128,
+            "sha256": "504d15cb561faaa10c258f89ab0a6f17f446f8e27a1fb415dc6f6673f435415d"
+          }
+        }
+      },
+      "items": {
+        "passed": 29,
+        "run": "34BD73E5-D2CC-42C7-820C-559E0EFB81EA",
+        "resultSHA256": "b0d87735c3b5eba86827daf801c36a8e8e55f8a44f2fb9bb4913463cb864892e",
+        "appSHA256": "ac80f363a06df69bc9dc675b7c015f203106e9fecd06e91cb427abf02b2ddc78",
+        "mapSHA256": "b38cdfbb23479da25d5b9276f29e2b54224d1cdf75c3647fe87da5716af54b49"
+      }
+    }
+  },
+  "controlledRenderComparison": {
+    "defeatFrames": [
+      {
+        "device": "phone",
+        "boss": "Boss_07",
+        "previousRun": "phone/0727D377-CD84-40E3-9524-052EDB577056",
+        "fixedRun": "phone/22965480-90BD-4AB2-BFDA-536685499961",
+        "before": {
+          "width": 2622,
+          "height": 1206,
+          "black": 1240095,
+          "fraction": 0.39217053557536496,
+          "pixelAt91PercentWidth65PercentHeight": [
+            0,
+            0,
+            0
+          ],
+          "captureSha256": "5bbeba58bad2db6b3941f502347e5b994022bf34560acb9448e20df7d30d3724"
+        },
+        "after": {
+          "width": 2622,
+          "height": 1206,
+          "black": 750,
+          "fraction": 0.00023718174952848267,
+          "pixelAt91PercentWidth65PercentHeight": [
+            220,
+            214,
+            208
+          ],
+          "captureSha256": "efd0b1575bb9749f9f317c597b3f3990da31c716ddf103fcabe657af7f6f9d11"
+        }
+      },
+      {
+        "device": "phone",
+        "boss": "Boss_08",
+        "previousRun": "phone/0727D377-CD84-40E3-9524-052EDB577056",
+        "fixedRun": "phone/22965480-90BD-4AB2-BFDA-536685499961",
+        "before": {
+          "width": 2622,
+          "height": 1206,
+          "black": 1247731,
+          "fraction": 0.3945853620278976,
+          "pixelAt91PercentWidth65PercentHeight": [
+            0,
+            0,
+            0
+          ],
+          "captureSha256": "eeb93fb99425e172aa165d83c42a3f1dc958f10f4907cd18142d231c8b2602b9"
+        },
+        "after": {
+          "width": 2622,
+          "height": 1206,
+          "black": 648,
+          "fraction": 0.00020492503159260904,
+          "pixelAt91PercentWidth65PercentHeight": [
+            216,
+            217,
+            218
+          ],
+          "captureSha256": "f97a9c1f527a1efa57695198ffdeb04d6c152b7dd76653e9cacbe67d8bbfd9af"
+        }
+      },
+      {
+        "device": "ipad",
+        "boss": "Boss_07",
+        "previousRun": "ipad/0C8662EA-E392-4C02-A629-CEBAB01F8C77",
+        "fixedRun": "ipad/08854F4E-A92A-46BB-84F7-8451A02EE0C9",
+        "before": {
+          "width": 2064,
+          "height": 2752,
+          "black": 984,
+          "fraction": 0.0001732355327203894,
+          "pixelAt91PercentWidth65PercentHeight": [
+            110,
+            110,
+            104
+          ],
+          "captureSha256": "31a0d1302c6d0effa8628a14ce5dbcc17885cbf97916055c012576a8946919b2"
+        },
+        "after": {
+          "width": 2064,
+          "height": 2752,
+          "black": 984,
+          "fraction": 0.0001732355327203894,
+          "pixelAt91PercentWidth65PercentHeight": [
+            110,
+            110,
+            104
+          ],
+          "captureSha256": "31a0d1302c6d0effa8628a14ce5dbcc17885cbf97916055c012576a8946919b2"
+        }
+      },
+      {
+        "device": "ipad",
+        "boss": "Boss_08",
+        "previousRun": "ipad/0C8662EA-E392-4C02-A629-CEBAB01F8C77",
+        "fixedRun": "ipad/08854F4E-A92A-46BB-84F7-8451A02EE0C9",
+        "before": {
+          "width": 2064,
+          "height": 2752,
+          "black": 927,
+          "fraction": 0.00016320054759329366,
+          "pixelAt91PercentWidth65PercentHeight": [
+            162,
+            124,
+            74
+          ],
+          "captureSha256": "c5198e2e9d6829041dbcb011064e67b6fa16b8aae6344ba5e51a91ed0ba30fc5"
+        },
+        "after": {
+          "width": 2064,
+          "height": 2752,
+          "black": 927,
+          "fraction": 0.00016320054759329366,
+          "pixelAt91PercentWidth65PercentHeight": [
+            162,
+            124,
+            74
+          ],
+          "captureSha256": "c5198e2e9d6829041dbcb011064e67b6fa16b8aae6344ba5e51a91ed0ba30fc5"
+        }
+      }
+    ],
+    "ipadExactPNGCount": 16,
+    "ipadExactPNGFiles": [
+      "Boss_05-combat.png",
+      "Boss_05-defeated.png",
+      "Boss_05-mission.png",
+      "Boss_05-reward.png",
+      "Boss_06-combat.png",
+      "Boss_06-defeated.png",
+      "Boss_06-mission.png",
+      "Boss_06-reward.png",
+      "Boss_07-combat.png",
+      "Boss_07-defeated.png",
+      "Boss_07-mission.png",
+      "Boss_07-reward.png",
+      "Boss_08-combat.png",
+      "Boss_08-defeated.png",
+      "Boss_08-mission.png",
+      "Boss_08-reward.png"
+    ]
+  },
+  "localChrome390px": {
+    "top": {
+      "width": 390,
+      "scrollWidth": 390,
+      "images": 83,
+      "tables": 7,
+      "scrollY": 0,
+      "headingTop": 37,
+      "loaded": 16
+    },
+    "review": {
+      "width": 390,
+      "scrollWidth": 390,
+      "images": 83,
+      "tables": 7,
+      "scrollY": 22003,
+      "headingTop": 0,
+      "loaded": 34
+    }
+  },
+  "hostCTest": {
+    "passed": 77,
+    "total": 78,
+    "mixedFixtureFailure": "OriginalImages",
+    "extraFixtureFiles": [
+      "PhoneEquipPanel.png",
+      "PhoneShopHangar.jpg",
+      "PhoneShopPanel.png"
+    ],
+    "originalOnlyRetest": {
+      "passed": true,
+      "decodedImages": 1276,
+      "verifiedPngSizes": 1238
+    }
+  }
+}

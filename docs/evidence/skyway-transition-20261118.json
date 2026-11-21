@@ -1,0 +1,282 @@
+{
+  "productCommit": "3140e0ed45ba0eb093b8865b6a69cd5f4667eb3a",
+  "auditCheckout": "caa5f1e3b582597b79a09e89db3b9b34beb8650a",
+  "route": {
+    "base": "Base003",
+    "button": 2005,
+    "field": "Stage02_04",
+    "gate": 1
+  },
+  "scope": "Same production GameRuntime route and rendering, observation hook in detached test worktree. A/B was rendered with test-only commands.",
+  "capture": {
+    "scheme": "HeavyMach2Source",
+    "test": "HeavyMach2AppleTests/SessionRendererTests/testWastelandExitToSkywayLiveLayerSequence",
+    "simulatorOS": "iOS 26.5",
+    "localEvidence": ".local/evidence/skyway-transition-20261118.PRpv9i/",
+    "localTestSource": "sequence-method.mm",
+    "localControlledTraces": "controlled/{phone,ipad}/trace.json",
+    "localComparison": "skyway-frame27-background-comparison.png"
+  },
+  "assets": {
+    "MapInfo.mcb": "ab697612198efce5f9d9e9d8a085fc9f0a51cca683489c57b7edc3ade6b74bc8",
+    "Stage02_04BG.jpg": "375260182a5d4461d60e6bb76673f97b0fb8ca16710c401c9a11999d4515fce1",
+    "Stage02_04.png": "af3c0619352d23b071ad735f36546e3fd794c7951537e91e703a5b79dd468ab6"
+  },
+  "devices": {
+    "phone": {
+      "canvas": [
+        912,
+        420
+      ],
+      "drawable": [
+        2736,
+        1260
+      ],
+      "spawn": [
+        403,
+        419
+      ],
+      "inputs": [
+        {
+          "world": [
+            -167,
+            327
+          ],
+          "worldAccepted": true,
+          "uiConsumed": false,
+          "canvas": [
+            234,
+            236
+          ],
+          "pathAfter": 1,
+          "tick": 24
+        },
+        {
+          "world": [
+            125.1990966796875,
+            272.0156555175781
+          ],
+          "worldAccepted": true,
+          "uiConsumed": false,
+          "canvas": [
+            557.1387939453125,
+            200.18121337890625
+          ],
+          "pathAfter": 1,
+          "tick": 160
+        },
+        {
+          "world": [
+            416.07025146484375,
+            337.664794921875
+          ],
+          "worldAccepted": true,
+          "uiConsumed": false,
+          "canvas": [
+            824,
+            259.31793212890625
+          ],
+          "pathAfter": 1,
+          "tick": 240
+        }
+      ],
+      "frames": 300,
+      "movingPairs": 275,
+      "travelWorld": 291.484,
+      "backgroundStepsOver1": 60,
+      "backgroundStableCenterStepsOver1": 0,
+      "backgroundMaxStep": 3.16998291015625,
+      "backgroundCoverSkippedSmallNegativeGap": 50,
+      "backgroundPixelsRgbDeltaOver2Control": 1630926,
+      "backgroundPeakDifferenceFrame": 27,
+      "backgroundChangedFrameCount": 50,
+      "groundRoundDeltaCanvas": [
+        0.90557861328125,
+        0.8599090576171875
+      ],
+      "groundAB": {
+        "observations": 101,
+        "changedOver2Frames": 93,
+        "peakPixelsOver2": 1990462,
+        "peakMeanRGB": 18.16063799545159,
+        "peakCenterCropLumaPixelsOver2": 2451
+      },
+      "zoomStepsOver001": 0,
+      "heldPixelsOver2": 0,
+      "heldMaxRGB": 0,
+      "traceSha256": "b7ceea73e22769b1714e98b0c70b6edffa428f1a4073e969b9288ba8338f110e",
+      "testLogSha256": "967a2a595417d4cb47aae8d2dbb257308d722f67fa011347263f3e549592e9e4",
+      "logs": ".local/evidence/skyway-transition-20261118.PRpv9i/phone-control.log",
+      "frames26to28": [
+        {
+          "tick": 26,
+          "scale": 0.9968032240867615,
+          "background": [
+            456,
+            192.0380096435547
+          ],
+          "backgroundBeforeClamp": [
+            452.7980041503906,
+            192.0380096435547
+          ],
+          "backgroundSafeX": 456,
+          "ground": [
+            402.70849609375,
+            -89.71228790283203
+          ],
+          "logicalWidthDelta": 0
+        },
+        {
+          "tick": 27,
+          "scale": 0.9957588911056519,
+          "background": [
+            452.83001708984375,
+            192.0700225830078
+          ],
+          "backgroundBeforeClamp": [
+            452.83001708984375,
+            192.0700225830078
+          ],
+          "backgroundSafeX": 456,
+          "ground": [
+            403.2823486328125,
+            -88.62254333496094
+          ],
+          "logicalWidthDelta": -6.103515625e-05
+        },
+        {
+          "tick": 28,
+          "scale": 0.9947249889373779,
+          "background": [
+            456,
+            192.1017303466797
+          ],
+          "backgroundBeforeClamp": [
+            452.8617248535156,
+            192.1017303466797
+          ],
+          "backgroundSafeX": 456,
+          "ground": [
+            403.85833740234375,
+            -88.53052520751953
+          ],
+          "logicalWidthDelta": 0
+        }
+      ]
+    },
+    "ipad": {
+      "canvas": [
+        820,
+        1180
+      ],
+      "drawable": [
+        1640,
+        2360
+      ],
+      "spawn": [
+        403,
+        419
+      ],
+      "inputs": [
+        {
+          "world": [
+            -123.22709655761719,
+            327
+          ],
+          "worldAccepted": true,
+          "uiConsumed": false,
+          "canvas": [
+            88,
+            966.81640625
+          ],
+          "pathAfter": 1,
+          "tick": 24
+        },
+        {
+          "world": [
+            125.11663818359375,
+            270.4161376953125
+          ],
+          "worldAccepted": true,
+          "uiConsumed": false,
+          "canvas": [
+            428.5726318359375,
+            901.6123657226562
+          ],
+          "pathAfter": 1,
+          "tick": 160
+        },
+        {
+          "world": [
+            435.6339111328125,
+            336.16522216796875
+          ],
+          "worldAccepted": true,
+          "uiConsumed": false,
+          "canvas": [
+            732,
+            977.3778686523438
+          ],
+          "pathAfter": 1,
+          "tick": 240
+        }
+      ],
+      "frames": 300,
+      "movingPairs": 275,
+      "travelWorld": 292.392,
+      "backgroundStepsOver1": 0,
+      "backgroundStableCenterStepsOver1": 0,
+      "backgroundMaxStep": 0.1536865234375,
+      "backgroundCoverSkippedSmallNegativeGap": 0,
+      "backgroundPixelsRgbDeltaOver2Control": 0,
+      "backgroundPeakDifferenceFrame": 0,
+      "backgroundChangedFrameCount": 0,
+      "groundRoundDeltaCanvas": [
+        0.944061279296875,
+        0
+      ],
+      "groundAB": {
+        "observations": 101,
+        "changedOver2Frames": 99,
+        "peakPixelsOver2": 1779687,
+        "peakMeanRGB": 4.718785569105691,
+        "peakCenterCropLumaPixelsOver2": 30158
+      },
+      "zoomStepsOver001": 0,
+      "heldPixelsOver2": 0,
+      "heldMaxRGB": 0,
+      "traceSha256": "6c98807f7350b84efbab3711001d0cec3b091aff09468d557793cdaf8a893327",
+      "testLogSha256": "7b1acc8c073a968b7a3e4cccc5c659fddd19107622d50f15fd0e3ba4030957bf",
+      "logs": ".local/evidence/skyway-transition-20261118.PRpv9i/ipad-control.log"
+    }
+  },
+  "compactProjectionProbe": {
+    "scope": "CPU only. Same 300 recorded phone scales, forced fill and finite map constraint with a fixed synthetic camera and focus, then projection to each sample canvas. No UIKit window was resized.",
+    "thresholdPt": 0.001,
+    "samples": [
+      {"canvas": [912, 420], "adjustedFrames": 50, "maxAdjustmentPt": 3.16997},
+      {"canvas": [599, 820], "adjustedFrames": 0, "maxAdjustmentPt": 0},
+      {"canvas": [820, 599], "adjustedFrames": 56, "maxAdjustmentPt": 5.89826},
+      {"canvas": [900, 500], "adjustedFrames": 56, "maxAdjustmentPt": 3.11391}
+    ]
+  },
+  "sourceFilesEstimate": {
+    "total": 9,
+    "each": [
+      "HM2SourceView.mm",
+      "HM2GameRuntime.hpp",
+      "HM2GameRuntime.mm",
+      "CameraPresentation.cpp",
+      "MenuGridLayout.hpp",
+      "Screens.cpp",
+      "MapPreview.cpp",
+      "MapPreview.hpp",
+      "CombatScene.cpp"
+    ]
+  },
+  "limitations": [
+    "iOS 26.5 simulators, runtime input with respective view geometry, three world destinations differ after clipping. No physical hand input.",
+    "Earlier exploratory capture failed exact equality on cold render. Repeated control after drawable warmup was byte-identical in both simulators.",
+    "Product rendering and camera logic were not modified. A/B changes are confined to copied frame commands."
+  ]
+}

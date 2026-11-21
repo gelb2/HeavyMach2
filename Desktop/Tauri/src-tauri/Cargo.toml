@@ -1,0 +1,22 @@
+[package]
+name = "hm2-desktop"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[features]
+default = ["desktop"]
+desktop = ["dep:tauri", "dep:tauri-build", "dep:tauri-plugin-single-instance"]
+
+[[bin]]
+name = "hm2-desktop"
+path = "src/main.rs"
+required-features = ["desktop"]
+
+[dependencies]
+tauri = { version = "=2.12.5", optional = true , features = [] }
+tauri-plugin-single-instance = { version = "=2.5.5", optional = true }
+tempfile = "=3.27.0"
+
+[build-dependencies]
+tauri-build = { version = "=2.7.4", optional = true , features = [] }

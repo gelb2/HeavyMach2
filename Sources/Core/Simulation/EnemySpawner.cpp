@@ -14,6 +14,8 @@ void EnemySpawner::tick(double time,Vec2 player,EnemySpawnerHost& host){
     state_.checkTime=float(time);
     if(double(float(state_.spawnTime+state_.regenTime))>=time)return;
     if(std::abs(definition_.position.x-player.x)>=1024.f||std::abs(definition_.position.y-player.y)>=1024.f)return;
+    const auto radius=definition_.activationRadius;
+    if(radius>0&&std::hypot(definition_.position.x-player.x,definition_.position.y-player.y)>radius)return;
     if(state_.regenTime!=0&&host.inCamera(definition_.position))return;
     (void)host.spawn(definition_,boss_);
     ++state_.regenCount; // Original count also advances after a nil result.

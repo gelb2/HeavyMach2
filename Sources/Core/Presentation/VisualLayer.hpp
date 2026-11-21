@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/Types.hpp"
+#include "Core/Presentation/DisplayLayout.hpp"
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -42,6 +43,7 @@ struct AtlasBatch {
     std::vector<AtlasQuad> quads;
     std::vector<std::uint16_t> indices; // Six indices per live quad.
     TextureSource textureSource={};
+    std::optional<ClipRect> clip;
 };
 struct VisualLayerFrame {
     std::vector<Sprite> nonAtlas;
@@ -56,6 +58,7 @@ struct VisualLayerFrame {
     void appendBatches(Frame&)const &;
     void appendBatches(Frame&)&&;
 };
+[[nodiscard]] Sprite originalTileSprite(const VisualImage&);
 [[nodiscard]] Blend originalTileBlend(unsigned type,unsigned pixelFormat);
 [[nodiscard]] Blend originalAtlasBlend(unsigned type,unsigned pixelFormat);
 [[nodiscard]] std::uint8_t originalAtlasColorByte(float);
@@ -66,13 +69,18 @@ struct VisualLayerFrame {
 // Scene/camera resolves screen positions and the previous-tick isInScreen gate.
 // No renderer, OS views, game logic, or camera policy is introduced here.
 class VisualLayer {
-    struct Group {VisualTile tile;unsigned blendType=0,capacity=32;std::vector<AtlasQuad> quads;};
+    struct Group {VisualTile tile;unsigned blendType=0,capacity=32;std::vector<AtlasQuad> quads;std::vector<std::optional<ClipRect>> clips;};
     std::vector<Sprite> nonAtlas_;
     std::vector<Group> groups_;
     unsigned unitSize_,visualCapacity_;
+    DisplayTransform presentation_;
+    std::optional<ClipRect> presentationClip_;
     std::size_t group(const VisualTile&,unsigned);
 public:
     explicit VisualLayer(unsigned unitSize=100);
+    // Output adaptation follows original geometry/rounding; it does not alter
+    // the original parent-position, Tile2D, atlas identity or game state.
+    void setPresentation(DisplayTransform t={},std::optional<ClipRect> clip={}){presentation_=t;presentationClip_=clip;}
     // Equivalent to makeCleanAtlas: (which does not clear an existing atlas).
     void prepareAtlas(const VisualTile&);
     // Existing non-atlas consumers may provide their fully resolved commands.

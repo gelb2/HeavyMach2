@@ -1,3 +1,4 @@
+#include "Core/Data/RecoveryCode.hpp"
 #include "Core/Data/SaveData.hpp"
 #include "Core/Simulation/DarwinWorldRandom.hpp"
 #include "Core/Audio/SoundIDs.hpp"
@@ -10,6 +11,24 @@
 #include <iostream>
 using namespace hm2;
 int main(int argc,char** argv){
+    {
+        SaveData worstCase;
+        for(std::size_t i=4;i<SaveData::byteCount-4;++i)worstCase.bytes()[i]=std::uint8_t(i*17);
+        const auto code=recovery::encode(worstCase);
+        assert(recovery::decode(code).bytes()==worstCase.bytes());
+        assert(recovery::decode(code.substr(0,13)+" \n"+code.substr(13)).bytes()==worstCase.bytes());
+        for(auto invalid:{std::string("HM2-2-")+code.substr(6),code.substr(0,code.size()-3),code+"=",std::string(100000,'x')}){
+            bool rejected=false;
+            try { (void)recovery::decode(invalid); } catch(const std::invalid_argument&) { rejected=true; }
+            assert(rejected);
+        }
+        auto damaged=code;
+        damaged[6]=damaged[6]=='A'?'B':'A';
+        bool rejected=false;
+        try { (void)recovery::decode(damaged); } catch(const std::invalid_argument&) { rejected=true; }
+        assert(rejected);
+    }
+
     SaveData save;save.bytes()[0x100]=123;save.initializeSlot(0,"Player","kr",1700000000);save.initializeSlot(2,"GimmeCr","us",1700000001);
     auto slot=save.slot(0);assert(slot.size()==9056&&slot[8]==1&&std::strcmp(reinterpret_cast<const char*>(slot.data()+0x2d),"Base001")==0);
     assert(slot[0x6c]==0&&slot[0x7c]==0&&slot[0x7d]==1&&slot[0x78]==0xf4&&slot[0x79]==1&&slot[0x88]==3);

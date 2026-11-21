@@ -25,6 +25,7 @@ struct ButtonEvent {
     ButtonKey key;
     std::uintptr_t pointer=0;
     Vec2 position;
+    std::optional<Vec2> canvasPosition={};
 };
 using ButtonHandler=std::function<void(const ButtonEvent&)>;
 struct ButtonTile {
@@ -54,7 +55,7 @@ public:
     // logical coordinates as GPU sprites. Parent/camera transforms are supplied
     // by the scene; drawing and hit-testing do not use different camera paths.
     Vec2 position,scale{1,1};
-    float angle=0,alpha=1;
+    float angle=0,alpha=1,pressedAlphaMultiplier=1;
     bool visible=true,active=true;
     PositionSnap positionSnap=PositionSnap::none;
     float pushDepth=0,pushDelay=0,releaseHeight=0,releaseDelay=0;
@@ -103,7 +104,8 @@ public:
     [[nodiscard]] std::size_t size()const{return buttons_.size();}
     std::uint64_t subscribe(std::optional<Owner>,ButtonHandler);
     bool unsubscribe(std::uint64_t);
-    bool input(PointerPhase,Vec2,std::uintptr_t,float now);
+    bool input(PointerPhase,Vec2,std::uintptr_t,float now,
+               const std::function<Vec2(const Button&,Vec2)>& pointMap={});
     void cancelAll(float now);
     void discardAll();
     void append(Frame&,float now);

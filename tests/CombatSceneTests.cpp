@@ -1,7 +1,9 @@
 #include "PreparedTextStub.hpp"
+#include "ResourceBoundaryLedger.hpp"
 #include "Core/Simulation/CombatScene.hpp"
 #include "Core/Simulation/DarwinWorldRandom.hpp"
 #include "Core/Presentation/VisualLayer.hpp"
+#include "Core/Presentation/SharedAssetPreparation.hpp"
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -12,10 +14,11 @@
 #include <string>
 using namespace hm2;
 struct Files:ResourceAccess {
-    std::filesystem::path root;unsigned reads=0;mutable unsigned probes=0;
+    std::filesystem::path root;unsigned reads=0;mutable unsigned probes=0;std::map<std::string,unsigned,std::less<>> readsByName;
+    std::vector<std::string> readRequests;mutable std::vector<std::pair<std::string,bool>> probeRequests;
     explicit Files(std::filesystem::path p):root(std::move(p)){}
-    Bytes read(std::string_view name)override{++reads;std::ifstream in(root/std::string(name),std::ios::binary);if(!in)throw std::runtime_error("Missing test asset "+std::string(name));return Bytes(std::istreambuf_iterator<char>(in),{});}
-    bool exists(std::string_view name)const override{++probes;return std::filesystem::exists(root/std::string(name));}
+    Bytes read(std::string_view name)override{++reads;++readsByName[std::string(name)];readRequests.emplace_back(name);std::ifstream in(root/std::string(name),std::ios::binary);if(!in)throw std::runtime_error("Missing test asset "+std::string(name));return Bytes(std::istreambuf_iterator<char>(in),{});}
+    bool exists(std::string_view name)const override{++probes;const bool present=std::filesystem::exists(root/std::string(name));probeRequests.emplace_back(name,present);return present;}
 };
 struct Hooks:CombatSceneHooks {
     ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest& r)override{return test::preparedTextStub(r);}
@@ -50,11 +53,13 @@ int main(int argc,char** argv){
     assert(scene.playerHP()==256);assert(scene.player().position.x==-275&&scene.player().position.y==-462);
     assert(scene.spawnerCount()==16);assert(scene.enemies().empty());assert(scene.selectedEnemyHpRate()==0);assert(scene.metrics().randomCalls==64&&shared.calls()==64);
     const auto preparation=scene.preparationFrame();assert(preparation.width==768&&preparation.height==1024&&!preparation.sprites.empty());
-    const auto reads=files.reads,probes=files.probes;
-    scene.tick();assert(!scene.enemies().empty());assert(scene.metrics().enemyTicks==0); // spawned behind listEnemy's slot
+    const auto creationReads=files.reads;
+    test::ResourceBoundaryLedger resources(scene,files);
+    resources.run([&]{scene.tick();});assert(!scene.enemies().empty());assert(scene.metrics().enemyTicks==0); // spawned behind listEnemy's slot
+    assert(files.reads>creationReads); // Original first spawn attaches its own parts.
     const auto spawned=scene.enemies().size();assert(spawned==16);assert(scene.metrics().randomCalls==64+spawned*3);
-    scene.tick();assert(scene.metrics().enemyTicks==spawned);
-    const auto callsBeforeBodyDraw=scene.metrics().randomCalls;const auto partFrame=scene.drawFrame();bool directPlayer=false;
+    resources.run([&]{scene.tick();});assert(scene.metrics().enemyTicks==spawned);
+    const auto callsBeforeBodyDraw=scene.metrics().randomCalls;const auto partFrame=resources.draw([&]{return scene.drawFrame();});bool directPlayer=false;
     for(const auto& sprite:partFrame.sprites)if(sprite.image=="P_Body_01.png"){
         assert(!sprite.atlasBatch&&sprite.strip.size()==4);directPlayer=true;
         assert(sprite.strip[0].uv.x==0&&sprite.strip[0].uv.y==0&&sprite.strip[3].uv.x==1&&sprite.strip[3].uv.y==1);
@@ -71,14 +76,14 @@ int main(int argc,char** argv){
     const auto before=scene.metrics();
     for(unsigned i=0;i<1800;++i){
         if(!scene.selectedEnemy())if(const auto next=firstLiving(scene))scene.selectEnemy(next);
-        scene.tick();const auto frame=scene.drawFrame();assert(frame.width==768&&frame.height==1024);
+        resources.run([&]{scene.tick();});const auto frame=resources.draw([&]{return scene.drawFrame();});assert(frame.width==768&&frame.height==1024);
     }
     std::cout<<"spawns="<<scene.enemies().size()<<" initial="<<spawned<<" playerShots="<<scene.metrics().playerEmissions<<" enemyShots="<<scene.metrics().enemyEmissions<<" kills="<<scene.metrics().kills<<" hits="<<hooks.playerHits<<"\n";
     assert(scene.metrics().playerEmissions>before.playerEmissions);
     assert(scene.metrics().projectilesCreated>0);assert(scene.metrics().damageCalls>0);assert(scene.metrics().particleAllocations>0);
     assert(hooks.drops>0&&hooks.rewards==hooks.drops&&scene.metrics().kills==hooks.rewards);
     assert(hooks.playerHits>0&&scene.metrics().enemyEmissions>0);
-    assert(files.reads==reads&&files.probes==probes);assert(scene.metrics().randomCalls==shared.calls());
+    assert(resources.steadyActions>1700&&resources.draws==1801);resources.report("CombatScene battle");assert(scene.metrics().randomCalls==shared.calls());
     assert(std::find(hooks.events.begin(),hooks.events.end(),"Wpn_Gun01.wav")!=hooks.events.end());
     assert(std::find(hooks.events.begin(),hooks.events.end(),"Wpn_Missile01.wav")!=hooks.events.end());
     const auto t=scene.clock().worldTime();const auto r=scene.clock().renderTime();const auto tick=scene.clock().ticks();
@@ -138,14 +143,14 @@ int main(int argc,char** argv){
     Files swapFiles(argv[1]);Hooks swapHooks;swapHooks.reduction=10000;Fixed swapRandom;
     CombatSetup swapSetup;swapSetup.random=&swapRandom;CombatScene swapped(swapFiles,swapHooks,swapSetup);
     const auto preparedSwap=swapped.preparationFrame();
-    assert(std::any_of(preparedSwap.sprites.begin(),preparedSwap.sprites.end(),[](const auto& sprite){return sprite.image=="P_Wpn_Gun_201.png";}));
-    const auto swapReads=swapFiles.reads,swapProbes=swapFiles.probes;
+    assert(std::none_of(preparedSwap.sprites.begin(),preparedSwap.sprites.end(),[](const auto& sprite){return sprite.image=="P_Wpn_Gun_201.png";}));
     swapped.tick();assert(swapped.selectEnemy(firstLiving(swapped)));assert(swapped.selectedEnemyHpRate()==1);
     const auto weaponAt=[](const CombatScene& scene,unsigned slot){
         const auto weapons=scene.playerWeapons();const auto found=std::find_if(weapons.begin(),weapons.end(),[&](const auto& weapon){return weapon.inventoryEquipSlot==slot;});
         assert(found!=weapons.end());return *found;
     };
     while(swapped.metrics().playerEmissions==0){swapped.tick();swapped.drawFrame();assert(swapped.clock().frames()<200);}
+    const auto swapReads=swapFiles.reads,swapProbes=swapFiles.probes;
     const auto rightBefore=weaponAt(swapped,3);assert(rightBefore.fireLeft==1&&rightBefore.fireBound==-4.5f&&rightBefore.addPosition.x==-4.5f);
     EquipmentCodes replacements=PlayerEquipment::startingCodes;replacements[2]="10111";
     // Only the specified slot is consumed, rather than rebuilding unrelated
@@ -191,35 +196,86 @@ int main(int argc,char** argv){
     bool invalidSlot=false;try{swapped.equipWeapon(replacements,0);}catch(const std::invalid_argument&){invalidSlot=true;}assert(invalidSlot);
     replacements[3]="";const auto beforeNil=weaponAt(swapped,3);swapped.equipWeapon(replacements,3);assert(weaponAt(swapped,3).fireTime==beforeNil.fireTime);
     assert(swapFiles.reads==swapReads&&swapFiles.probes==swapProbes&&swapped.metrics().randomCalls==swapRandom.calls);
+    // A never-attached weapon is prepared once at setParts, then reused.
+    // This is a first-use boundary, separate from steady draw/shot IO.
+    Files deferredFiles(argv[1]);Hooks deferredHooks;CombatScene deferred(deferredFiles,deferredHooks);
+    deferred.tick();deferred.setPaused(true);
+    const auto itemInfo=PlayerEquipment::parse(DataTable::parse(deferredFiles.read("ItemInfo.tble")));
+    const auto deferredImage=itemInfo.item("10012").part+".png";
+    const auto beforeDeferred=deferred.preparationFrame();
+    assert(std::none_of(beforeDeferred.sprites.begin(),beforeDeferred.sprites.end(),[&](const auto& s){return s.image==deferredImage;}));
+    const auto deferredReads=deferredFiles.reads,deferredProbes=deferredFiles.probes;
+    const auto deferredRevision=deferred.resourceRevision(),deferredRNG=deferred.metrics().randomCalls;
+    auto newCodes=PlayerEquipment::startingCodes;newCodes[2]="10012";deferred.equipWeapon(newCodes,2);
+    assert(deferredFiles.reads==deferredReads+1&&deferredFiles.probes==deferredProbes+1);
+    assert(deferred.resourceRevision()>deferredRevision&&deferred.metrics().randomCalls==deferredRNG);
+    const auto afterDeferred=deferred.preparationFrame();
+    for(const auto name:{deferredImage,deferredImage+"~shd"})assert(std::any_of(afterDeferred.sprites.begin(),afterDeferred.sprites.end(),[&](const auto& s){return s.image==name;}));
+    const auto warmDeferred=deferred.resourceRevision();deferred.equipWeapon(newCodes,2);
+    deferred.tick();deferred.drawFrame();
+    assert(deferredFiles.reads==deferredReads+1&&deferredFiles.probes==deferredProbes+1&&deferred.resourceRevision()==warmDeferred);
+    // The same GlobalInfo-owned weapon tile survives two distinct Worlds.
+    Files sharedFiles(argv[1]);PreparedTiles globalAssets("test-global");
+    const auto globalWeapons=Weapons::parse(DataTable::parse(sharedFiles.read("WeaponInfo.tble")));
+    prepareOriginalWeaponAssets(sharedFiles,globalAssets,globalWeapons);
+    std::string sharedBullet;for(const auto& [name,weapon]:globalWeapons.all()){(void)name;if(!weapon.bulletImage.empty()&&globalAssets.lookup(weapon.bulletImage)){sharedBullet=weapon.bulletImage;break;}}
+    assert(!sharedBullet.empty()&&sharedFiles.readsByName[sharedBullet]==1);
+    const auto* sharedTile=globalAssets.lookup(sharedBullet);std::uint64_t sharedEpoch=0;
+    const char* fixedEffects[]={"Efx_Explode02.png","Efx_ExplodeGround.png","Efx_ExplodeBoss.png","Efx_ExplodeNPC.png","Efx_Fire.png","Efx_Damage.png","Efx_Smoke.png","Efx_RailgunEx.png"};
+    std::array<const TileImage*,8> effectTiles{};
+    for(unsigned world=0;world<2;++world){Hooks sharedHooks;CombatSetup sharedSetup;sharedSetup.sharedAssets=&globalAssets;CombatScene another(sharedFiles,sharedHooks,sharedSetup);
+        if(world==0)sharedEpoch=globalAssets.revision();
+        for(unsigned i=0;i<effectTiles.size();++i){const auto* tile=globalAssets.lookup(fixedEffects[i]);assert(tile&&another.preparedTile(fixedEffects[i])==tile);if(world==0)effectTiles[i]=tile;else assert(effectTiles[i]==tile);assert(sharedFiles.readsByName[fixedEffects[i]]==1);}
+        assert(another.preparedTile(sharedBullet)==sharedTile);another.tick();another.drawFrame();
+        assert(sharedFiles.readsByName[sharedBullet]==1&&globalAssets.revision()==sharedEpoch);
+    }
+    Frame stillOwned;globalAssets.appendPreparation(stillOwned);assert(std::any_of(stillOwned.sprites.begin(),stillOwned.sprites.end(),[&](const auto& s){return s.image==sharedBullet;}));
+    for(const auto* name:fixedEffects)assert(std::any_of(stillOwned.sprites.begin(),stillOwned.sprites.end(),[&](const auto& s){return s.image==name;}));
+    // AirStrike uses a shared Target distinct from GobHvMach's World Target.
+    // Its plane is requested at actor creation and marker only after pool success.
+    {
+        Hooks airHooks;CombatSetup airSetup;airSetup.sharedAssets=&globalAssets;CombatScene airScene(sharedFiles,airHooks,airSetup);
+        const auto beforeAir=airScene.globalPreparationFrame();
+        for(const auto* name:{"Airplane.png","Target.png","Efx_Dash.png","Efx_LevelUp.png","Efx_Nuclear.png","BulletShell.png","Efx_Trail02.png"})assert(std::none_of(beforeAir.sprites.begin(),beforeAir.sprites.end(),[&](const auto& s){return s.image==name;}));
+        const auto* worldTarget=airScene.preparedTile("Target.png");test::ResourceBoundaryLedger airResources(airScene,sharedFiles);
+        const auto beforeRandom=airScene.metrics().randomCalls;
+        airResources.run([&]{airScene.startAirStrike(&globalWeapons.weapon("AS_BOMB_01"),1.5f,{100,0});});
+        assert(airResources.firstUseReads==2&&airScene.metrics().randomCalls==beforeRandom+1);
+        const auto* globalTarget=globalAssets.lookup("Target.png");assert(globalTarget&&globalTarget!=worldTarget&&globalTarget->columns==2&&worldTarget->columns==2);
+        const auto warmAir=airScene.resourceRevision();airResources.run([&]{airScene.startAirStrike(&globalWeapons.weapon("AS_BOMB_01"),1.5f,{100,0});});
+        assert(airResources.firstUseReads==2&&airScene.resourceRevision()==warmAir&&airScene.metrics().randomCalls==beforeRandom+2);
+        airResources.report("Actual AirStrike shared plane/marker");
+    }
     // Adding a previously empty left slot shifts the canonical right index,
     // while the right part's original insertion/controller state survives.
     Files emptyFiles(argv[1]);Hooks emptyHooks;CombatSetup emptySetup;emptySetup.equipment[2]="";
-    CombatScene emptyLeft(emptyFiles,emptyHooks,emptySetup);const auto emptyReads=emptyFiles.reads,emptyProbes=emptyFiles.probes;
+    CombatScene emptyLeft(emptyFiles,emptyHooks,emptySetup);
     const auto rightOnly=weaponAt(emptyLeft,3);replacements=PlayerEquipment::startingCodes;replacements[2]="10111";
     emptyLeft.equipWeapon(replacements,2);assert(weaponAt(emptyLeft,3).insertionIndex==rightOnly.insertionIndex&&weaponAt(emptyLeft,2).insertionIndex>rightOnly.insertionIndex);
-    emptyLeft.tick();emptyLeft.drawFrame();assert(emptyFiles.reads==emptyReads&&emptyFiles.probes==emptyProbes);
+    test::ResourceBoundaryLedger emptyResources(emptyLeft,emptyFiles);
+    emptyResources.run([&]{emptyLeft.tick();});emptyResources.draw([&]{return emptyLeft.drawFrame();});
     assert(!emptyLeft.isSave());emptyLeft.setIsSave(true);emptyLeft.setPlayerHP(0);assert(emptyLeft.isSave());
     emptyLeft.setIsSave(false);emptyLeft.setPlayerHP(256);assert(!emptyLeft.isSave());
     const auto noticeStart=emptyLeft.clock().worldTime();
     emptyLeft.beginPickupNotice();
     emptyLeft.setPickupNoticeText("15 cr",noticeStart);
-    emptyLeft.tick();
+    emptyResources.run([&]{emptyLeft.tick();});
     const auto noticeSprite=[&]{
-        const auto frame=emptyLeft.drawFrame();
+        const auto frame=emptyResources.draw([&]{return emptyLeft.drawFrame();});
         const auto found=std::find_if(frame.sprites.begin(),frame.sprites.end(),[](const Sprite& sprite){return sprite.image=="PickItem.png";});
         return found==frame.sprites.end()?std::optional<Sprite>{}:std::optional<Sprite>(*found);
     };
     const auto bounced=noticeSprite();assert(bounced);
     const auto height=[&](const Sprite& sprite){return sprite.center.y-emptyLeft.camera().toScreen(emptyLeft.player().position).y;};
     assert(height(*bounced)>50.f);
-    emptyLeft.setPaused(true);for(unsigned i=0;i<10;++i)emptyLeft.tick();
+    emptyLeft.setPaused(true);for(unsigned i=0;i<10;++i)emptyResources.run([&]{emptyLeft.tick();});
     const auto frozen=noticeSprite();assert(frozen&&std::abs(height(*frozen)-height(*bounced))<.001f);
     emptyLeft.setPaused(false);
-    while(emptyLeft.clock().worldTime()-noticeStart<=2.51)emptyLeft.tick();
+    while(emptyLeft.clock().worldTime()-noticeStart<=2.51)emptyResources.run([&]{emptyLeft.tick();});
     const auto shrinking=noticeSprite();assert(shrinking&&shrinking->strip.size()==4);
     assert(shrinking->strip[1].position.y-shrinking->strip[0].position.y<32.f);
-    for(unsigned i=0;i<11;++i)emptyLeft.tick();
-    assert(!noticeSprite()&&emptyFiles.reads==emptyReads&&emptyFiles.probes==emptyProbes);
+    for(unsigned i=0;i<11;++i)emptyResources.run([&]{emptyLeft.tick();});
+    assert(!noticeSprite());emptyResources.report("CombatScene pickup notice");
     std::cout<<"Field swap: spare10111 left, append order, preserved right controller/recoil, both emissions and warm IO passed\n";
     // A real untreated player can take damage. This separate shared stream
     // avoids contaminating the long battle's deterministic comparison.

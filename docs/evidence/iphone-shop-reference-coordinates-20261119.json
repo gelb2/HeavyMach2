@@ -1,0 +1,224 @@
+{
+  "sourceCommit": "5759f2b9270d2448e52566be3b1d3c3abb56b567",
+  "referenceCanvas": [
+    480,
+    320
+  ],
+  "grid": {
+    "stock": [
+      4,
+      4
+    ],
+    "inventory": [
+      5,
+      4
+    ],
+    "pitch": [
+      40,
+      40
+    ],
+    "pitchAt912x420": 52.5
+  },
+  "ruinFieldLevelOneSG1": {
+    "original": {
+      "file": ".local/evidence/iphone-shop-20261119.7atGic/original/07-weapon-detail.png",
+      "sha256": "c6574fde850370ee95f5e3aa55c0f5c4e69c4d228ed345f583de4a17410a249f"
+    },
+    "restored": {
+      "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/iphone-reference-final/live-phone-reference-level1-sg1-detail.png",
+      "sha256": "ddee1985be3453f2ef56e07892c5a28c3774581fb314fc3b630550247b30dea4"
+    },
+    "detailEdges": {
+      "original": [
+        157,
+        158,
+        159,
+        317,
+        318,
+        319
+      ],
+      "restored": [
+        159,
+        318,
+        319
+      ],
+      "maxOuterEdgeDifference": 2
+    }
+  },
+  "wasteland": {
+    "live-wasteland-ML-K3-detail": {
+      "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/iphone-release-tests/live-wasteland-ML-K3-detail.png",
+      "sha256": "4e6637991a4a90a14ed8154fec51c699b819b64a520be7b622ffe410e49ef814"
+    },
+    "live-wasteland-ML-K3-buy": {
+      "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/iphone-release-tests/live-wasteland-ML-K3-buy.png",
+      "sha256": "cb4405eaf0d89a13f29c39d957a670ca9de061967c724ca65eaf47f7c07655ea"
+    },
+    "live-wasteland-equipment": {
+      "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/iphone-release-tests/live-wasteland-equipment.png",
+      "sha256": "76772780b0bf9d15ebe825fdbaa21fbddfc901ebe4212f30ee3ebe2439d2a9fa"
+    }
+  },
+  "equipment": {
+    "phone-equipment-667x375": {
+      "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/iphone-release-tests/phone-equipment-667x375.png",
+      "sha256": "15f55586ce54b6e3a6ffdab43a82d9a73025895191cd4b05a766debdf06d9a0f"
+    },
+    "phone-equipment-852x393": {
+      "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/iphone-release-tests/phone-equipment-852x393.png",
+      "sha256": "db9ae379e7d5df613c17860b9b66667713e3b8f5bde879eae268c7b4c5eaadfe"
+    },
+    "phone-equipment-912x420": {
+      "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/iphone-release-tests/phone-equipment-912x420.png",
+      "sha256": "cd7a4a828084dde8bb321ebdd82a514e2a1ff59623b8d197409a09b6501ce3da"
+    },
+    "phone-equipment-912x550": {
+      "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/iphone-release-tests/phone-equipment-912x550.png",
+      "sha256": "6cdb89605347e56ebdd388aa6f02ade3fea1a7ce91e53fe7cbb4a56eb9fe7373"
+    },
+    "phone-equipment-third-bot-disarm": {
+      "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/iphone-release-tests/phone-equipment-third-bot-disarm.png",
+      "sha256": "0c3b6774a78c73bdde05b3f13f25b9bd6280ba30d4af6c11f7c4db3aa1913c52"
+    }
+  },
+  "core": {
+    "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/core-final-check.log",
+    "sha256": "5605ba23cd3b3d93c40eaa94945ba562d3dca8877334cf87e592ed4150eddebe"
+  },
+  "native": {
+    "iphone-reference-final": {
+      "result": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/iphone-reference-final.xcresult",
+      "passed": 1,
+      "failed": 0
+    },
+    "iphone-release-tests": {
+      "result": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/iphone-release-tests.xcresult",
+      "passed": 3,
+      "failed": 0
+    },
+    "ipad-certified": {
+      "result": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/ipad-certified.xcresult",
+      "passed": 1,
+      "failed": 0
+    },
+    "phone-base-menus": {
+      "result": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/phone-base-menus.xcresult",
+      "passed": 1,
+      "failed": 0
+    }
+  },
+  "ipadShopPixelComparison": {
+    "menu-ipad-Base001-shop": {
+      "baseline": ".local/evidence/iphone-equipment-20261119.90kAZo/ipad-tab-final/3F5CF26A-FEDF-4394-B5D5-3DA71CDC079A.png",
+      "current": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/ipad-certified/7492EBC1-EB2C-445D-9F32-7448C7D28E95.png",
+      "sha256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "differentPixels": 0
+    },
+    "menu-ipad-Base002-shop": {
+      "baseline": ".local/evidence/iphone-equipment-20261119.90kAZo/ipad-tab-final/DA4619B7-18C8-4AF1-90E0-CA34DE6236B1.png",
+      "current": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/ipad-certified/B8EBFFA4-EE68-4E0D-BA72-86FC76791763.png",
+      "sha256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "differentPixels": 0
+    },
+    "menu-ipad-Base003-shop": {
+      "baseline": ".local/evidence/iphone-equipment-20261119.90kAZo/ipad-tab-final/5BAD862D-F6DD-442A-8552-361C238064A5.png",
+      "current": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/ipad-certified/807AF7C2-0489-4EA1-81B9-D66477849D5F.png",
+      "sha256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "differentPixels": 0
+    },
+    "menu-ipad-Base004-shop": {
+      "baseline": ".local/evidence/iphone-equipment-20261119.90kAZo/ipad-tab-final/51FB4948-9CF7-4E4C-BBF7-2055EB8433F7.png",
+      "current": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/ipad-certified/0E7E5EF5-4965-4DED-9DE1-0A649FF35EFB.png",
+      "sha256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "differentPixels": 0
+    },
+    "menu-ipad-Base005-shop": {
+      "baseline": ".local/evidence/iphone-equipment-20261119.90kAZo/ipad-tab-final/666597F6-6A70-492C-91E8-0CD6528CF4E2.png",
+      "current": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/ipad-certified/BF7D7A3B-9174-4479-9812-76A386897E23.png",
+      "sha256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "differentPixels": 0
+    },
+    "menu-ipad-Base006-shop": {
+      "baseline": ".local/evidence/iphone-equipment-20261119.90kAZo/ipad-tab-final/11F3ADFB-71F8-4851-81B7-4165ACB179CA.png",
+      "current": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/ipad-certified/B2342F9C-DD67-4336-BA88-E02EA877F51C.png",
+      "sha256": "6f52017312a8195870eaa10d6c7647491871d1fd9abe25bb121981c55bf36142",
+      "differentPixels": 0
+    }
+  },
+  "validation": {
+    "phone": {
+      "result": {
+        "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/final-validation/cheat-phone-report.json",
+        "sha256": "4a019efa13d0ac9251e9713e430190283958fccf17e034902ca29302681ede63"
+      },
+      "screenshot": {
+        "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/final-validation/cheat-phone-final.png",
+        "sha256": "263b8a59a1df8752cf76bc6a2b04ada8dc75266c66bbbc790d792d5c35f3f274"
+      },
+      "scenarios": 126,
+      "frames": 2100,
+      "presented": 2100,
+      "buttonFailures": 0
+    },
+    "ipad": {
+      "result": {
+        "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/final-validation/cheat-ipad-report.json",
+        "sha256": "bc445bbc51ace5331abad5e61cda4029014e7f8a5670deef2220ede566811fc7"
+      },
+      "screenshot": {
+        "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/final-validation/cheat-ipad-final.png",
+        "sha256": "e6bcd63aca90eb1e930da2ee0d3c79601872c1a720818634631685d310b5dde6"
+      },
+      "scenarios": 126,
+      "frames": 2100,
+      "presented": 2100,
+      "buttonFailures": 0
+    }
+  },
+  "physical": {
+    "releaseBinarySHA256": "59ff0daf3037047fbb541d2acdeed6e664b2299a319dbda5a00ca1469137a391",
+    "ipad": {
+      "installed": true,
+      "bytesOfIdenticalSave": 28204,
+      "launchStatus": "FBSOpenApplicationErrorDomain Locked",
+      "installLog": {
+        "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/ipad-install.log",
+        "sha256": "5eaeb7702c50b0875d466d25246a02b255957a5da8ad35bf77e285b0022ac6ec"
+      }
+    },
+    "iphone": {
+      "installed": false,
+      "tunnelState": "unavailable",
+      "connectionError": {
+        "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/iphone-lock.log",
+        "sha256": "2725655f86b5364fce0e1742bf28274cff505fd6ff1227d0bca06ac89ae65ec8"
+      }
+    }
+  },
+  "phoneShopByBase": {
+    "menu-iphone-Base006-shop": {
+      "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/phone-base-menus/C36332A8-8032-4F18-98F2-A263EC789016.png",
+      "sha256": "4aab93dd5cd6711359a78f251e624a9ed1b37478ae7d397cde9b0ecf304c6bb1"
+    },
+    "menu-iphone-Base005-shop": {
+      "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/phone-base-menus/D0EAF698-B1EA-409A-9DAE-B6DC93DE9EE6.png",
+      "sha256": "cb72269e5abf670f488320f4422a012a952ee359bf3ea3ca7c5bbf7456a979cb"
+    },
+    "menu-iphone-Base004-shop": {
+      "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/phone-base-menus/B3A626B9-3C11-4177-9098-B410BB50A06B.png",
+      "sha256": "b4a3c081278a463c42fd49a6f309e99d29523912ac7f6196bc00717bb4cb2cc3"
+    },
+    "menu-iphone-Base003-shop": {
+      "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/phone-base-menus/A0B062E5-9C86-4010-B266-588D30CADBB1.png",
+      "sha256": "6d8b2d08a37283da063bb0244b05d78825ccc6deb7f3dec5f9dae12c518190f6"
+    },
+    "menu-iphone-Base002-shop": {
+      "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/phone-base-menus/D224CFE3-0508-4B79-A395-B8CA961E0502.png",
+      "sha256": "02f931f9dbcd9db3d0cabe2e4f4cb88138134a9d6e5e49c9eef33449f961594d"
+    },
+    "menu-iphone-Base001-shop": {
+      "file": ".local/evidence/iphone-shop-reference-layout-20261119.0sCST9/phone-base-menus/8CA8A50B-3E26-4453-A782-B1FE02AA70D0.png",
+      "sha256": "46ab9ee5a0f27518dd9a8ae6d2d99e707a3d3a0e6363d89d242ed059e0f464e2"
+    }
+  }
+}

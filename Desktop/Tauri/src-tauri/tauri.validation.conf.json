@@ -1,0 +1,11 @@
+{
+  "productName": "HeavyMach 2 Desktop QA",
+  "identifier": "com.gelb2.heavymach2.desktop.validation",
+  "build": {
+    "frontendDist": "../build/validation/frontend",
+    "beforeBuildCommand": "python3 scripts/prepare.py --validation"
+  },
+  "bundle": {
+    "icon": ["../build/validation/icons/32x32.png", "../build/validation/icons/icon.icns"]
+  }
+}

@@ -1,4 +1,5 @@
 #include "PreparedTextStub.hpp"
+#include "ResourceBoundaryLedger.hpp"
 #include "Core/Session/GameSession.hpp"
 #include "Core/Progression/Progression.hpp"
 #include "Core/Simulation/DarwinWorldRandom.hpp"
@@ -14,9 +15,10 @@ using namespace hm2;
 namespace {
 struct Files:ResourceAccess {
     std::filesystem::path root;unsigned reads=0;mutable unsigned probes=0;
+    std::vector<std::string> readRequests;mutable std::vector<std::pair<std::string,bool>> probeRequests;
     explicit Files(const char* p):root(p){}
-    Bytes read(std::string_view name)override{++reads;std::ifstream f(root/std::string(name),std::ios::binary);if(!f)throw std::runtime_error("Missing BOT Scene asset "+std::string(name));return {std::istreambuf_iterator<char>(f),{}};}
-    bool exists(std::string_view n)const override{++probes;return std::filesystem::exists(root/std::string(n));}
+    Bytes read(std::string_view name)override{++reads;readRequests.emplace_back(name);std::ifstream f(root/std::string(name),std::ios::binary);if(!f)throw std::runtime_error("Missing BOT Scene asset "+std::string(name));return {std::istreambuf_iterator<char>(f),{}};}
+    bool exists(std::string_view n)const override{++probes;const bool present=std::filesystem::exists(root/std::string(n));probeRequests.emplace_back(n,present);return present;}
 };
 struct Host:SessionHost {
     ui::PreparedScreenText prepareWorldText(const ui::TextRasterRequest& r)override{return test::preparedTextStub(r);}
@@ -46,13 +48,26 @@ void stageEntryAndRepair(Files& files){
     for(unsigned i=0;i<240;++i){const auto player=game.battle()->player().position;const float dx=bots[0].position.x-player.x,dy=bots[0].position.y-player.y;if(dx*dx+dy*dy>=1600)break;game.tick();bots=game.battle()->bots();}
     const auto player=game.battle()->player().position;const float dx=bots[0].position.x-player.x,dy=bots[0].position.y-player.y;assert(dx*dx+dy*dy>=900);
     (void)game.state(); // Prepare the initial Source UI preview before warm gate.
+    const auto beforeIcon=game.globalPreparationFrame();
+    assert(std::none_of(beforeIcon.sprites.begin(),beforeIcon.sprites.end(),[](const auto& s){return s.image=="Icon01001.png";}));
+    const auto iconEpoch=game.resourceRevision();
     const auto reads=files.reads,probes=files.probes,saves=host.saves;const auto allocations=game.battle()->metrics().particleAllocations;
     quick(game);assert(game.state().selectedQuick==0);const auto sfx13=std::count(host.sounds.begin(),host.sounds.end(),13);
     assert(game.inputWorld(PointerPhase::begin,screenAt(game.battle()->camera(),bots[0].position),91));
     bots=game.battle()->bots();assert(bots[0].hp==170&&slot(game).u32(0x64c)==170&&game.battle()->playerHP()==256&&game.state().quick[0].count==4&&game.state().selectedQuick==-1);
     assert(std::abs(bots[0].gauge.scaleX-.425f)<.00001f&&std::count(host.sounds.begin(),host.sounds.end(),13)==sfx13+1&&game.battle()->metrics().particleAllocations==allocations+1);
+    assert(files.reads==reads+1&&files.probes==probes+1&&game.resourceRevision()>iconEpoch);
+    const auto afterIcon=game.globalPreparationFrame();
+    assert(std::count_if(afterIcon.sprites.begin(),afterIcon.sprites.end(),[](const auto& s){return s.image=="Icon01001.png";})==1);
+    const auto* repairIcon=game.battle()->preparedTile("Icon01001.png");assert(repairIcon);
     for(unsigned i=0;i<60;++i){game.tick();game.drawWorld();}
-    assert(files.reads==reads&&files.probes==probes&&host.saves==saves);
+    assert(files.reads==reads+1&&files.probes==probes+1&&host.saves==saves);
+    // A second actual repair reuses the first icon and keeps the same epoch.
+    const auto reuseEpoch=game.resourceRevision();
+    quick(game);assert(game.inputWorld(PointerPhase::begin,screenAt(game.battle()->camera(),game.battle()->player().position),92));
+    assert(game.state().quick[0].count==3&&game.battle()->playerHP()==256);
+    assert(game.battle()->preparedTile("Icon01001.png")==repairIcon&&game.resourceRevision()==reuseEpoch);
+    assert(files.reads==reads+1&&files.probes==probes+1&&host.saves==saves);
     // Explicit save/restart retains a live BOT's slotHP. Leaving for Base
     // retires the actor without SFX21/refund and resets only saved BOT HP.
     assert(game.save(SaveReason::saveAndExit));const auto expected=game.battle()->bots()[0].hp;DarwinWorldRandom decodeRng(3);auto saved=SaveData::decode(host.saved,decodeRng,false);
@@ -97,17 +112,17 @@ void samePassAndGauge(Files& files){
     auto read=[&](std::string_view n){return DataTable::parse(files.read(n));};const auto defs=progression::Definitions::parse(read("ItemInfo.tble"),read("ItemRegen.tble"),read("MissionList.tble"),read,"us");
     unsigned fresh=0,gauges=0;std::uint64_t totalBotEmissions=0;
     for(unsigned seed=1;seed<=12&&(!fresh||!gauges);++seed){WorldHooks hooks(defs);CombatSetup setup;setup.randomSeed=seed;setup.offsetInsideGate=true;setup.equipment[2]=setup.equipment[3]="";setup.botSlots[0]={"Bot_A03",50};setup.botSlots[1]={"Bot_P01",50};CombatScene scene(files,hooks,setup);hooks.scene=&scene;
-        const auto reads=files.reads,probes=files.probes;unsigned seenLevel=0;
+        test::ResourceBoundaryLedger resources(scene,files);unsigned seenLevel=0;
         for(unsigned frame=1;frame<=2400;++frame){
             if(!scene.selectedEnemy())for(const auto& e:scene.enemies())if(e.hp>0){scene.selectEnemy(e.id);break;}
-            scene.tick();const auto actors=scene.bots();const auto draw=scene.drawFrame();
+            resources.run([&]{scene.tick();});const auto actors=scene.bots();const auto draw=resources.draw([&]{return scene.drawFrame();});
             if(actors.size()>1)for(const auto& d:hooks.drops)if(d.created==scene.clock().worldTime()&&actors[1].pickItem==d.id)++fresh;
             if(hooks.levelUps!=seenLevel){seenLevel=hooks.levelUps;assert(!actors.empty()&&actors[0].hp==actors[0].maximumHP);bool checked=false;
                 for(const auto& image:draw.sprites)if(image.image=="HPGauge.png"&&image.atlasBatch&&image.atlasBatch->quads.size()>=2){const auto& q=image.atlasBatch->quads[1];const float width=std::abs(q.vertices[2].position.x-q.vertices[0].position.x);const auto* tile=scene.preparedTile("HPGauge.png");const float expected=float(tile->pixels.width)*(float(hooks.hpBeforeLevel)/float(actors[0].maximumHP))*.5f;assert(std::abs(width-expected)<.0001f);checked=true;break;}
                 assert(checked);++gauges;
             }
         }
-        assert(scene.metrics().playerEmissions==0&&files.reads==reads&&files.probes==probes);totalBotEmissions+=scene.metrics().botEmissions;
+        assert(scene.metrics().playerEmissions==0&&resources.steadyActions>2000&&resources.draws==2400);resources.report("BOT samePassAndGauge");totalBotEmissions+=scene.metrics().botEmissions;
     }
     std::cout<<"HM2_BOT_SCENE samePass fresh="<<fresh<<" levelGauge="<<gauges<<" botOnlyEmissions="<<totalBotEmissions<<"\n";
     assert(fresh>0&&gauges>0&&totalBotEmissions>0);
@@ -122,7 +137,7 @@ void actualBattle(Files& files,std::string_view code,unsigned hostSeed=1,bool se
     auto data=fixture(naturalExperience?"MACH":"GimmeCr",code,naturalExperience?50:1);
     if(naturalExperience){progression::SlotView initial(data.slot(0));initial.experience(299);assert(initial.level()==0);}
     GameSession game(files,host,rng,std::move(data));assert(game.selectSlot(0)&&game.enterField("Stage01_01",0));
-    const auto reads=files.reads,probes=files.probes,saves=host.saves;
+    const auto saves=host.saves;test::ResourceBoundaryLedger resources(game,files);
     const auto randomStart=rng.calls(),sceneRandomStart=game.battle()->metrics().randomCalls;
     const auto initialLevel=slot(game).level();const auto initialExperience=slot(game).experience();
     unsigned arrived=0,levelNotifications=0,botHealObservations=0,slotHealObservations=0,levelEffectDrawFrames=0,botHPDecreaseFrames=0;std::uint64_t selected=0;
@@ -141,14 +156,14 @@ void actualBattle(Files& files,std::string_view code,unsigned hostSeed=1,bool se
         assert(rng.calls()-beforeTickRandom==metrics.randomCalls-beforeTickSceneRandom);
     };
     for(unsigned frame=1;frame<=3600;++frame){
-        if(!game.battle()->selectedEnemy())for(const auto& e:game.battle()->enemies())if(e.hp>0){game.battle()->selectEnemy(e.id);selected=e.id;break;}
+        resources.run([&]{if(!game.battle()->selectedEnemy())for(const auto& e:game.battle()->enemies())if(e.hp>0){game.battle()->selectEnemy(e.id);selected=e.id;break;}
         // Real ground input brings Player near battle without forced position.
-        if(frame%121==1)for(const auto& e:game.battle()->enemies())if(e.hp>0){const auto p=screenAt(game.battle()->camera(),e.position);game.inputWorld(PointerPhase::begin,p,frame+100);game.inputWorld(PointerPhase::end,p,frame+100);break;}
+        if(frame%121==1)for(const auto& e:game.battle()->enemies())if(e.hp>0){const auto p=screenAt(game.battle()->camera(),e.position);game.inputWorld(PointerPhase::begin,p,frame+100);game.inputWorld(PointerPhase::end,p,frame+100);break;}});
         beforeTickRandom=rng.calls();beforeTickSceneRandom=game.battle()->metrics().randomCalls;
         if(!game.battle()->bots().empty())previousBotHP=game.battle()->bots().at(0).hp;
-        game.tick();if(!game.battle()->bots().empty()&&game.battle()->bots().at(0).hp<previousBotHP)++botHPDecreaseFrames;const auto worldFrame=game.drawWorld();if(std::any_of(worldFrame.sprites.begin(),worldFrame.sprites.end(),[](const auto& image){return image.image=="Efx_LevelUp.png";}))++levelEffectDrawFrames;for(const auto& item:game.fieldItems())if(item.removed)++arrived;
+        resources.run([&]{game.tick();});if(!game.battle()->bots().empty()&&game.battle()->bots().at(0).hp<previousBotHP)++botHPDecreaseFrames;const auto worldFrame=resources.draw([&]{return game.drawWorld();});if(std::any_of(worldFrame.sprites.begin(),worldFrame.sprites.end(),[](const auto& image){return image.image=="Efx_LevelUp.png";}))++levelEffectDrawFrames;for(const auto& item:game.fieldItems())if(item.removed)++arrived;
     }
-    const auto& m=game.battle()->metrics();assert(files.reads==reads&&files.probes==probes&&host.saves==saves);
+    const auto& m=game.battle()->metrics();assert(host.saves==saves&&resources.firstUseReads>0&&resources.steadyActions>3500&&resources.draws==3600);resources.report("BOT actualBattle");
     assert(rng.calls()-randomStart==m.randomCalls-sceneRandomStart);
     assert(m.levelUpEffectRequests>0&&m.levelUpEffectsCreated==m.levelUpEffectRequests&&levelNotifications==m.levelUpEffectsCreated&&levelEffectDrawFrames>0);
     assert(slotHealObservations==levelNotifications&&botHealObservations>0&&damagedBeforeHealing>0);
@@ -175,11 +190,11 @@ void realRetirement(Files& files){
     auto saved=fixture("GimmeCr","04201",1);progression::SlotView initial(saved.slot(0));for(unsigned i=1;i<3;++i){initial.string(0x63a+i*6,6,"04201");initial.u32(0x64c+i*4,1);}
     initial.string(0x8c+5*6,6,"01006");initial.byte(0x53c+5,100);initial.string(0x61c,6,"01006");
     Host host;DarwinWorldRandom rng(1);GameSession game(files,host,rng,std::move(saved));assert(game.selectSlot(0)&&game.enterField("Stage01_01",0));(void)game.state();
-    const auto reads=files.reads,probes=files.probes,saves=host.saves;unsigned hpChanges=0;std::uint64_t previousDamage=0;int deadSlot=-1;bool sawTerminal=false;
+    const auto saves=host.saves;test::ResourceBoundaryLedger resources(game,files);unsigned hpChanges=0;std::uint64_t previousDamage=0;int deadSlot=-1;bool sawTerminal=false;
     for(unsigned frame=1;frame<=18000&&!game.battle()->metrics().botRemovals;++frame){
-        if(frame%121==1)for(const auto& e:game.battle()->enemies())if(e.hp>0&&e.name=="E_Tank_02"){const auto p=screenAt(game.battle()->camera(),{e.position.x+80,e.position.y});game.inputWorld(PointerPhase::begin,p,frame+400);game.inputWorld(PointerPhase::end,p,frame+400);break;}
-        if(game.battle()->playerHP()>0&&game.battle()->playerHP()<600&&game.state().quick[0].count>0){game.action({ui::ScreenId::field,ui::Panel::root,{ui::ButtonEventType::push,{0,6200,0,"01006"},1,{}}});game.inputWorld(PointerPhase::begin,screenAt(game.battle()->camera(),game.battle()->player().position),99);}
-        game.tick();game.drawWorld();const auto now=game.battle()->metrics().botDamageCalls;if(now>previousDamage){++hpChanges;previousDamage=now;}
+        resources.run([&]{if(frame%121==1)for(const auto& e:game.battle()->enemies())if(e.hp>0&&e.name=="E_Tank_02"){const auto p=screenAt(game.battle()->camera(),{e.position.x+80,e.position.y});game.inputWorld(PointerPhase::begin,p,frame+400);game.inputWorld(PointerPhase::end,p,frame+400);break;}
+        if(game.battle()->playerHP()>0&&game.battle()->playerHP()<600&&game.state().quick[0].count>0){game.action({ui::ScreenId::field,ui::Panel::root,{ui::ButtonEventType::push,{0,6200,0,"01006"},1,{}}});game.inputWorld(PointerPhase::begin,screenAt(game.battle()->camera(),game.battle()->player().position),99);}});
+        resources.run([&]{game.tick();});resources.draw([&]{return game.drawWorld();});const auto now=game.battle()->metrics().botDamageCalls;if(now>previousDamage){++hpChanges;previousDamage=now;}
         for(const auto& b:game.battle()->bots())if(b.removed){sawTerminal=true;deadSlot=int(b.slot);assert(b.hp==0&&slot(game).u32(0x64c+b.slot*4)==0&&slot(game).string(0x63a+b.slot*6,6).empty()&&slot(game).byte(0x63a+b.slot*6+1)=='4');
             // Boundary regression for Player.levelUp's live listBot traversal.
             // The actual XP-triggered consumer is tested above. Here call that
@@ -191,7 +206,7 @@ void realRetirement(Files& files){
     }
     const auto& m=game.battle()->metrics();std::cout<<"HM2_BOT_SCENE retirement damage="<<m.botDamageCalls<<" deaths="<<m.botDeaths<<" removed="<<m.botRemovals<<" terminal="<<sawTerminal<<" slot="<<deadSlot<<" hp="<<game.battle()->playerHP()<<" pendingRemovedLevelUp=1 hits="<<hpChanges<<"\n";
     assert(m.botDeaths>0&&m.botRemovals>0&&sawTerminal&&m.kills==0&&m.botEmissions==0&&m.playerEmissions==0);
-    assert(files.reads==reads&&files.probes==probes&&host.saves==saves);
+    assert(host.saves==saves&&resources.firstUseReads>0&&resources.steadyActions>0);resources.report("BOT realRetirement");
 }
 
 }

@@ -1,6 +1,10 @@
 # 기술스택과 에셋 절차
 
-상태: 사용자 요구와 [세 작품 기술스택 대조](technology-stack-review-20261110.md)를 반영한 구현 기준이다. [첫 reader·정적 파츠 조립·Apple GPU 출력](initial-source-restoration-20261110.md)을 구현·시뮬레이터 검사했다. 전체 게임·원작 atlas/그림자·에셋 제작/패키징 절차의 복원 완료는 아니다. 기존 포팅 앱 관측과 새 소스 검사를 구분하며 HeavyMach 1·MachDefense와 같은 스택을 유지한다.
+기기별 화면과 자원 선택은 [디자인·에셋 정본](design-and-asset-rules.md)을 따른다. 제목과 로딩에는 HD 그림을 쓴다. Phone 허브·사령부는 일반판 원본을 사용하고, 상점·정비는 2026-11-19에 승인한 격납고와 별도 패널을 사용한다. 태블릿은 HD 원본을 사용한다.
+
+[세 작품 기술스택 대조](technology-stack-review-20261110.md)는 첫 reader·정적 파츠 조립 시점의 근거다. 현재 게임·플랫폼 검사는 [현행 정본](canonical.md)과 [기능별 근거](feature-verification.md)에서 확인한다.
+
+[2026-11-21 세 작품의 에셋 소비 대조](code-document-fixes-20261121.md#사운드와-그림의-생산소비)에 웹의 OpenAL 전환, 그림·음원 패키지 바이트 대조, 브라우저의 실제 재생·텍스처 재사용 검사를 기록했다.
 
 ## 기술스택
 
@@ -9,7 +13,7 @@
 | 영역 | HeavyMach 2에 사용할 구성 | 기존 두 작품의 근거 |
 |---|---|---|
 | 공통 게임 코어 | C++20·CMake. reader·부품·전투·진행·저장과 메뉴·HUD를 공통 코어에 둔다 | 양쪽 `CMakeLists.txt`; MachDefense `Sources/Core/Presentation`·`Session` |
-| iPhone·iPad | Objective-C++·Xcode 유니버설 앱. UIKit은 OS 연결, 인게임 표시는 공통 GPU 경로 | HM1 `Sources/iOS/HMGLRenderer.mm`; MD `Sources/Platform/Apple/MDRenderer.mm`, 양쪽 Xcode 구성 |
+| iPhone·iPad | Objective-C++·Xcode 유니버설 앱. UIKit은 OS 연결, 인게임 표시는 공통 GPU 경로 | [HeavyMach 1 렌더러](https://github.com/gelb2/HeavyMach/blob/bd0aa73ad0bf765f3e54c1800c89b8d550a5e1e9/Sources/iOS/HMGLRenderer.mm) · [MachDefense 렌더러](https://github.com/gelb2/MachDefense/blob/387e554a504acce44230fc007bd95253ea425862/Sources/Platform/Apple/MDRenderer.mm) |
 | 그래픽·음향 | OpenGL 계열 스프라이트와 OpenAL Soft1.22.2 효과음. Apple BGM은 HD 원본 AudioQueue 경로 | 양쪽 renderer·OpenAL 소비 코드. MD `MDAudio.mm`·`MDAudioQueueMusic.hpp`; HM2 원본 함수는 대조 보고서에 기록 |
 | Android | 기존 Kotlin Activity/JNI 호스트·NDK C++20·EGL/GLES·OpenAL. Kotlin으로 게임·HUD를 별도 구현하지 않음 | 양쪽 `Android/app/build.gradle.kts`, `Android/cmake/CMakeLists.txt`, GameActivity |
 | 웹·PWA | 같은 C++ 코어를 Emscripten/WebAssembly로 빌드. WebGL2·OpenAL API·JS 호스트. Three.js 추가 없음 | 양쪽 `Web/CMakeLists.txt`·웹 렌더/음향 코드 |
@@ -59,3 +63,11 @@ HM1의 현행 `prepare_unit_data.md`는 원본 보존, 공통 reader가 읽는 �
 | R6 독립 빌드 | 원본 IPA·ARM 실행파일·비교 실행기·타 게임 checkout 접근 없이 빌드/실행. 자원 명세와 실제 패키지 일치 |
 
 현재 reader·raw MCB 왕복·정적 파츠 조립·개별 이미지 fallback GPU 출력의 첫 범위를 검사했다. 전체 형식·변환/제작 도구·atlas·공통 게임 소비 코드·전체 패키지·실기기 비교는 [TODO](todo.md)에 미완료로 관리한다. 구체적인 장면과 통과 조건은 [원본 포팅 앱 검증 계획](reference-port-validation-plan.md)과 [동시 검증](validation-build.md)을 따른다.
+
+## 2026-11-14 사용자 지정: Phone 메뉴 원본 그림
+
+전장·유닛·부품·무기·HUD·상품과 게임 데이터는 공통 HD 자원을 사용한다. Phone 슬롯·기지·사령부 원본은 `PhoneMenu/`에 이름·확장자·인코딩·바이트를 보존한다. Phone 상점·정비의 활성 경로는 `Screens::phoneShop`이 읽는 `PhoneShopHangar.jpg`와 `PhoneShopPanel.png`·`PhoneEquipPanel.png`다. Phone 프로필이 이 선택을 결정하고 창 크기는 표시와 입력 크기를 결정한다. iPad는 HD 그림을 사용한다.
+
+`prepare_hd_assets.py` 다음에 `prepare_phone_menu_assets.py`를 실행한다. 두 번째 도구는 승인한 원본 IPA SHA256과 52개 파일의 해시를 검사하고 원본 바이트만 복사한다. 이후 HD 준비 도구도 이 하위 명세와 원본을 대조한다. 이미지 재생성·재압축·확장자 변경은 없다. 기존 공통 JPEG decoder를 쓰고 원본 Retina wrapper 여부를 메뉴별로 구분한다. PNG 자원 준비 절차는 유지한다.
+
+기지 그림·강조·버튼은 Phone 원본 tble의 같은 좌표·배율과 하나의 장면 변환을 사용한다. HD에 없는 기능 ID를 추가하지 않는다. 상점24개/페이지·인벤토리25칸을 보존하기 위해 HD UI 패널 부분은 기존 GPU quad와 clip으로 남긴다. 해당 UI 패널은 원본 Phone 전체 배경 위에 놓으며 그림 파일을 잘라 다시 만들지 않는다. 자세한 적용·검사는 [화면 수정](iphone-surface-art-fix-20261114.md)에 기록한다.

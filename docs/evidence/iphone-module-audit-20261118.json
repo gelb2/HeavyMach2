@@ -1,0 +1,973 @@
+{
+  "date": "2026-11-18",
+  "branch": "audit/iphone-original-logic-20261116",
+  "head": "3140e0ed45ba0eb093b8865b6a69cd5f4667eb3a",
+  "sourceBeforePhone": "0fa7928ab557c7e44bf4e0d8a9a625b567e154d3",
+  "shopFix": "1420cc1a03fd2ae7478fac76b0d4b73987a76896",
+  "changedSourceInventory": [
+    {
+      "path": "Sources/Assets/Image.cpp",
+      "change": "M",
+      "sha256": "965c4cf3c0cb95691fbea8d96d47418b7cbeaf7358c8b04d8e098ab0dc262e9d",
+      "area": "texture decoding"
+    },
+    {
+      "path": "Sources/Assets/Image.hpp",
+      "change": "M",
+      "sha256": "10fd71e8bd82d4dc7ccc8649edb0e6fdd910e73bada87002cd2b6f64ff4e5c35",
+      "area": "texture decoding"
+    },
+    {
+      "path": "Sources/Core/Data/ResourceName.hpp",
+      "change": "A",
+      "sha256": "45b9ff22cce792a53f1d56f869ebd812e782395b0cbb88efda52459309dbed32",
+      "area": "texture/resource naming"
+    },
+    {
+      "path": "Sources/Core/Presentation/CameraPresentation.cpp",
+      "change": "A",
+      "sha256": "0a4d1d59021eb43a56e54255c6247982897ee1b751a645d34b458404f26c5b8c",
+      "area": "camera projection"
+    },
+    {
+      "path": "Sources/Core/Presentation/CameraPresentation.hpp",
+      "change": "A",
+      "sha256": "94d6e7fa2a657bef108f752372b6bf5374e976278decae308ca623492dcb173f",
+      "area": "camera projection"
+    },
+    {
+      "path": "Sources/Core/Presentation/DisplayLayout.cpp",
+      "change": "A",
+      "sha256": "31319cac06002ab37e386f0cd03e48ec942bc7513485e80bf2eb4eecd0dd8de3",
+      "area": "canvas and inverse input"
+    },
+    {
+      "path": "Sources/Core/Presentation/DisplayLayout.hpp",
+      "change": "A",
+      "sha256": "71be13fe05fb50251d03891e00519ef58375a86b0b68fc1e35f0979c21ef5e39",
+      "area": "canvas and inverse input"
+    },
+    {
+      "path": "Sources/Core/Presentation/HUDLayout.hpp",
+      "change": "A",
+      "sha256": "5c8af4bbe669962f55492c25e5b619d396012a9521105d89f240a5a53d4474de",
+      "area": "HUD view and input geometry"
+    },
+    {
+      "path": "Sources/Core/Presentation/MapLoading.cpp",
+      "change": "M",
+      "sha256": "5504d3c358db914fa5e865bc22698b637171458b01880b41563bce27f656afd6",
+      "area": "transition art and texture lifetime"
+    },
+    {
+      "path": "Sources/Core/Presentation/MapLoading.hpp",
+      "change": "M",
+      "sha256": "8ee4f5128dfb22551589fd2cf1d2c535564971525bbe25fe28a3c61cc6fbeb6e",
+      "area": "transition art and texture lifetime"
+    },
+    {
+      "path": "Sources/Core/Presentation/MapPreview.cpp",
+      "change": "M",
+      "sha256": "01e40dc7d4a1e4027d4a86463e8f5f8f315d9a0022d9351f5f4473901dd60b11",
+      "area": "map assets and projection"
+    },
+    {
+      "path": "Sources/Core/Presentation/MapPreview.hpp",
+      "change": "M",
+      "sha256": "dde00f5a08ed2bac19729e613642cd36d8234c6e562b737f8bf91d0f43886e6b",
+      "area": "map assets and projection"
+    },
+    {
+      "path": "Sources/Core/Presentation/MenuArtwork.hpp",
+      "change": "A",
+      "sha256": "415a770828e1dc402aed830625c8915d7bc326bbf569588bb1293df80788834e",
+      "area": "menu art and title timing"
+    },
+    {
+      "path": "Sources/Core/Presentation/MenuGridLayout.hpp",
+      "change": "A",
+      "sha256": "cabf3df681d55fd974c27f328429d2d0ecf50d5f8bdce536022783b801da465a",
+      "area": "menu paging and input"
+    },
+    {
+      "path": "Sources/Core/Presentation/MovementPathVisual.hpp",
+      "change": "M",
+      "sha256": "0c4e545dc95f935b8ee749533ce3801725c1df9bd332c71025d05b03f72de2ec",
+      "area": "path visualization"
+    },
+    {
+      "path": "Sources/Core/Presentation/PreparedTiles.cpp",
+      "change": "M",
+      "sha256": "2b3de866ddbf66d085ce805b1d61cdf17adf2e3962de0161e9e842a14dbe234f",
+      "area": "texture cache"
+    },
+    {
+      "path": "Sources/Core/Presentation/PreparedTiles.hpp",
+      "change": "M",
+      "sha256": "c526b5ba9f84c4c9b609ebeff7e8ae0e4df62582d5512682553c3fe7307807d2",
+      "area": "texture cache"
+    },
+    {
+      "path": "Sources/Core/Presentation/SharedAssetPreparation.cpp",
+      "change": "A",
+      "sha256": "c26a036b07ae36a52a1d921386f6af56056f169a928b8aad692926020bd323f8",
+      "area": "weapon assets and initial SFX"
+    },
+    {
+      "path": "Sources/Core/Presentation/SharedAssetPreparation.hpp",
+      "change": "A",
+      "sha256": "8dfc0bf3bca87305c43989a9df52d50625c1632a8683f1e4940b4265c00559f0",
+      "area": "weapon assets and initial SFX"
+    },
+    {
+      "path": "Sources/Core/Presentation/VisualLayer.cpp",
+      "change": "M",
+      "sha256": "b2f8e70bf7da9ed515b06dd491c6a53f4ed9e9cb6f557728832ac49abe9b814d",
+      "area": "sprite, atlas and clipping"
+    },
+    {
+      "path": "Sources/Core/Presentation/VisualLayer.hpp",
+      "change": "M",
+      "sha256": "49bf07063a15b28dddfb9ff7e23c63b74cb5166de6f69e54ccdf4a20f3bcb7de",
+      "area": "sprite, atlas and clipping"
+    },
+    {
+      "path": "Sources/Core/Progression/QuickItems.cpp",
+      "change": "M",
+      "sha256": "9c8d2d0b8cf68b715968e5e5cb2e50243b762647a2d15db1cbccb0649e27f9dd",
+      "area": "position/unit item input"
+    },
+    {
+      "path": "Sources/Core/Progression/QuickItems.hpp",
+      "change": "M",
+      "sha256": "697d7c05cb5de4599580277d1f813633dc1af5ac8a5c6263483d36ab10a6c87d",
+      "area": "position/unit item input"
+    },
+    {
+      "path": "Sources/Core/Session/GameSession.cpp",
+      "change": "M",
+      "sha256": "2e7900ec608ebb2c920ec91586242ce80fd3a6801ac763aed608b56993745fae",
+      "area": "runtime state and save boundary"
+    },
+    {
+      "path": "Sources/Core/Session/GameSession.hpp",
+      "change": "M",
+      "sha256": "5d96c87273f484c71bd9a0a8755d87f0575e98ee26cb23ca4810ec9d5cf018a5",
+      "area": "runtime state and save boundary"
+    },
+    {
+      "path": "Sources/Core/Simulation/AirStrike.cpp",
+      "change": "M",
+      "sha256": "4282be7aec1d59241deb886b0d32062eaaa3739069223fc7f8cfa9eb4aecf172",
+      "area": "Simulation"
+    },
+    {
+      "path": "Sources/Core/Simulation/AirStrike.hpp",
+      "change": "M",
+      "sha256": "50004ec313785ca5dce7604eb8abb009e5c5d401d77cf572d28926c5d7a20621",
+      "area": "Simulation"
+    },
+    {
+      "path": "Sources/Core/Simulation/CombatScene.cpp",
+      "change": "M",
+      "sha256": "c828388b67e989be694dea88a9f34eb52c78ced9b2bba5dd0b24a634d6f24f41",
+      "area": "fight, camera, culling and input"
+    },
+    {
+      "path": "Sources/Core/Simulation/CombatScene.hpp",
+      "change": "M",
+      "sha256": "34f2525f5901767c550810bfb1b47ad45ff2f620e18772036a0137e26c5fdf4f",
+      "area": "fight, camera, culling and input"
+    },
+    {
+      "path": "Sources/Core/Simulation/Dash.cpp",
+      "change": "M",
+      "sha256": "6a27a25a097c61ba1af956cb01c7c37021ea3acd7857fe1c0c49d369ffd43db0",
+      "area": "jump input and motion"
+    },
+    {
+      "path": "Sources/Core/Simulation/Dash.hpp",
+      "change": "M",
+      "sha256": "d17f8265df5386f2f280f1bdc39bfe8fd37625c9ee65f797f683158fc4e9b974",
+      "area": "jump input and motion"
+    },
+    {
+      "path": "Sources/Core/Simulation/WeaponEffects.cpp",
+      "change": "M",
+      "sha256": "8db53ba303dac6dee10154b089321754a857774ba68067d722f0f234fb5d371d",
+      "area": "Simulation"
+    },
+    {
+      "path": "Sources/Core/Simulation/WeaponEffects.hpp",
+      "change": "M",
+      "sha256": "ee31873d262d9dac315b789ba582e52b0f0ff6ae425c72b205a1c90c2cdcf440",
+      "area": "Simulation"
+    },
+    {
+      "path": "Sources/Core/Simulation/WorldNavigation.cpp",
+      "change": "M",
+      "sha256": "378543c6517723436165d55e4b85d25b4abc7a670b7d330a02e02819f3aad247",
+      "area": "path input, camera bounds"
+    },
+    {
+      "path": "Sources/Core/Simulation/WorldNavigation.hpp",
+      "change": "M",
+      "sha256": "423a5282e11e0eed3809bc24f3da30480605fa599f7d060d0e59c112a4189491",
+      "area": "path input, camera bounds"
+    },
+    {
+      "path": "Sources/Core/UI/Button.cpp",
+      "change": "M",
+      "sha256": "f31258d3047f8118cc0c4fa316281de1223477df40a70d7cbf9e13e800df1c01",
+      "area": "UI"
+    },
+    {
+      "path": "Sources/Core/UI/Button.hpp",
+      "change": "M",
+      "sha256": "7523f7946760eae9dbe464a955c40c0b3e2295338e1a0f94ddc05a48faca7b6b",
+      "area": "UI"
+    },
+    {
+      "path": "Sources/Core/UI/Help.cpp",
+      "change": "M",
+      "sha256": "2d28d54c357ec3d0d7744bf371a72edf446ffa3e738de5ab138c347acc309b70",
+      "area": "UI"
+    },
+    {
+      "path": "Sources/Core/UI/Help.hpp",
+      "change": "M",
+      "sha256": "288cc75914b3862899122d93e70ad94e3a65e89ecbddc7964756f22ba8d730d6",
+      "area": "UI"
+    },
+    {
+      "path": "Sources/Core/UI/Screens.cpp",
+      "change": "M",
+      "sha256": "13b75e8a1577babb0b140bd151f3b762a623f867dbaa7921f6aab6270bf240e1",
+      "area": "UI"
+    },
+    {
+      "path": "Sources/Core/UI/Screens.hpp",
+      "change": "M",
+      "sha256": "fe8009deeef527a176c3384c1a91ea59220b7b4e67cace3b506cf4361f6811a2",
+      "area": "UI"
+    },
+    {
+      "path": "Sources/Core/UI/Text.cpp",
+      "change": "M",
+      "sha256": "65abf5c714538e61f6393246a426eb4fb0c638258ec32b4db0c2ac69ec089c9d",
+      "area": "UI"
+    },
+    {
+      "path": "Sources/Core/UI/Text.hpp",
+      "change": "M",
+      "sha256": "ebc9bdededca11eb48bed1e4708bcb0033ecb0b33a91ff7993780563d84066ba",
+      "area": "UI"
+    },
+    {
+      "path": "Sources/Core/Validation/ConcurrentValidation.cpp",
+      "change": "M",
+      "sha256": "7d3258e8a38b0f9af73ba5cff9e2b2bffe14ebdf7e753c7f014c1d573f4796c5",
+      "area": "Validation"
+    },
+    {
+      "path": "Sources/Core/Validation/ConcurrentValidation.hpp",
+      "change": "M",
+      "sha256": "02619da908514f72cd0366a799d34afc39e796cffbafa60911278cd779e96e96",
+      "area": "Validation"
+    },
+    {
+      "path": "Sources/Core/Validation/HUDLayoutExercise.hpp",
+      "change": "A",
+      "sha256": "f0ac6aa66e6b0b5151afed548230dea06197a92eba80ad6bd63d17d862b34fa5",
+      "area": "Validation"
+    },
+    {
+      "path": "Sources/Core/Validation/SessionFixtures.hpp",
+      "change": "M",
+      "sha256": "0203d1b314834672442c7bb4a0f8c53906d915863acbe4debd1e6f866befd044",
+      "area": "Validation"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2Application.mm",
+      "change": "M",
+      "sha256": "c0994bcbd32420662e005407668c4ffeb9d630631cc76d0ac779d9fd1fa885f5",
+      "area": "Apple runtime selection"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2Audio.h",
+      "change": "M",
+      "sha256": "3250c94cd125bfde99b246156898be1b6edf5b3116125c333f7dcd6fabee8628",
+      "area": "audio preparation and interruption"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2Audio.mm",
+      "change": "M",
+      "sha256": "9e9910f52cf827674c41142bdd37ef91302a67c8b3c63c48f5ba73402af5bfb9",
+      "area": "audio preparation and interruption"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2ConcurrentRuntime.hpp",
+      "change": "M",
+      "sha256": "43538146a3c05cb3aff7bc626ccc5e9e5bbcd05daf4dcaf518cea2667a4ffc1d",
+      "area": "validation Apple runtime"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2ConcurrentRuntime.mm",
+      "change": "M",
+      "sha256": "ce8c0d3151aca8f83d3bbf2663a7a904e7dbb8b9b4fee0165d17b4fe3d1b2764",
+      "area": "validation Apple runtime"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2GameRuntime.hpp",
+      "change": "M",
+      "sha256": "3fa43c9d8c8fdc60aaa989d260716f336923d29cfa00a62e09ab0b6ff5e5f7ed",
+      "area": "normal Apple runtime"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2GameRuntime.mm",
+      "change": "M",
+      "sha256": "edb0ae9cd078a2786e245ae38a2832310d37be84a61b27b4b4be2b9f0eb3dec6",
+      "area": "normal Apple runtime"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2HUDStorage.hpp",
+      "change": "A",
+      "sha256": "a59128634db266bcdb893016ddb9b04f04cfde5c6167117b8eb9b881b2ca5653",
+      "area": "HUD preference storage"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2Profiling.hpp",
+      "change": "A",
+      "sha256": "682c9bdaebdf9281a7a684316f0c8d1d9cfb41958d429662a853b9093bad0d21",
+      "area": "frame instrumentation"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2Renderer.h",
+      "change": "M",
+      "sha256": "fc58adc2cd705390551980d3b9b6c500ff95f0d2bd84da4dc941e0855f649878",
+      "area": "GPU preparation and draw"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2Renderer.mm",
+      "change": "M",
+      "sha256": "74eca8fcdd1ca00997546cd4a243b33fda232fa5cac635f7a7c5585df8ca35c2",
+      "area": "GPU preparation and draw"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2Resources.hpp",
+      "change": "M",
+      "sha256": "978b9d51197025310c1373c6e845d4368b1e7aa077214aee9eea903351e5adbd",
+      "area": "package resource reads"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2SourceView.h",
+      "change": "M",
+      "sha256": "96b29f23eadd2ec2ae4be0a155cb5072c58fa0cc8b0ee36ea652f072c6a7dbaf",
+      "area": "UIKit input and display"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2SourceView.mm",
+      "change": "M",
+      "sha256": "3e0059a469ea566bcb3f3df1917d122322d7884dedd63f8b7ca5d9cec4e38f98",
+      "area": "UIKit input and display"
+    }
+  ],
+  "mapSweep": {
+    "displayProfiles": {
+      "phone": [
+        912,
+        420
+      ],
+      "tablet": [
+        1024,
+        1366
+      ]
+    },
+    "standard": {
+      "phone": {
+        "scenes": 78,
+        "frames": 37440,
+        "accepted_taps": 567,
+        "scale_steps_over_0.01": 19,
+        "max_step_over_0.01": 0.0929188728,
+        "max_layer_residual_step": 0.965637207
+      },
+      "tablet": {
+        "scenes": 78,
+        "frames": 37440,
+        "accepted_taps": 562,
+        "scale_steps_over_0.01": 0,
+        "max_step_over_0.01": 0,
+        "max_layer_residual_step": 1.31619263
+      }
+    },
+    "controlWithoutImmediateMinimum": {
+      "phone": {
+        "scenes": 78,
+        "frames": 37440,
+        "accepted_taps": 567,
+        "scale_steps_over_0.01": 0,
+        "max_step_over_0.01": 0,
+        "max_layer_residual_step": 0.965637207
+      },
+      "tablet": {
+        "scenes": 78,
+        "frames": 37440,
+        "accepted_taps": 562,
+        "scale_steps_over_0.01": 0,
+        "max_step_over_0.01": 0,
+        "max_layer_residual_step": 1.31619263
+      }
+    },
+    "compareThresholdAbsoluteScale": 0.01,
+    "seed": 1,
+    "framesPerSpawn": 480,
+    "largestStandardStep": {
+      "map": "Stage02_04",
+      "gate": 0,
+      "frameZeroBased": 228,
+      "scale": [
+        0.907081127,
+        1
+      ],
+      "canvas": [
+        912,
+        420
+      ]
+    },
+    "limitation": "CPU draw commands. The screen clips input by profile. Standard and control may diverge after a scale change."
+  },
+  "dashReplay": [
+    {
+      "profile": "phone",
+      "replacement": "single",
+      "nonzero_move": "0",
+      "first_points": "3",
+      "replacement_points": "1",
+      "tap": "-151.538055,-280.210236",
+      "elapsed": "0.165999932",
+      "sp": "180->80",
+      "stamp": "3.27020001->3.27020001->3.27020001",
+      "path_during_move": "1->1",
+      "dash": "1"
+    },
+    {
+      "profile": "phone",
+      "replacement": "single",
+      "nonzero_move": "1",
+      "first_points": "3",
+      "replacement_points": "1",
+      "tap": "-151.538055,-280.210236",
+      "elapsed": "0.165999932",
+      "sp": "180->180",
+      "stamp": "3.27020001->0->3.4361999",
+      "path_during_move": "1->1",
+      "dash": "0"
+    },
+    {
+      "profile": "phone",
+      "replacement": "many",
+      "nonzero_move": "0",
+      "first_points": "3",
+      "replacement_points": "3",
+      "tap": "-151.538055,-280.210236",
+      "elapsed": "0.165999932",
+      "sp": "180->80",
+      "stamp": "3.27020001->3.27020001->3.27020001",
+      "path_during_move": "1->1",
+      "dash": "1"
+    },
+    {
+      "profile": "phone",
+      "replacement": "many",
+      "nonzero_move": "1",
+      "first_points": "3",
+      "replacement_points": "3",
+      "tap": "-151.538055,-280.210236",
+      "elapsed": "0.165999932",
+      "sp": "180->180",
+      "stamp": "3.27020001->0->3.4361999",
+      "path_during_move": "1->1",
+      "dash": "0"
+    },
+    {
+      "profile": "tablet",
+      "replacement": "single",
+      "nonzero_move": "0",
+      "first_points": "3",
+      "replacement_points": "1",
+      "tap": "-431.538055,-280.210236",
+      "elapsed": "0.165999932",
+      "sp": "180->80",
+      "stamp": "3.27020001->3.27020001->3.27020001",
+      "path_during_move": "1->1",
+      "dash": "1"
+    },
+    {
+      "profile": "tablet",
+      "replacement": "single",
+      "nonzero_move": "1",
+      "first_points": "3",
+      "replacement_points": "1",
+      "tap": "-431.538055,-280.210236",
+      "elapsed": "0.165999932",
+      "sp": "180->180",
+      "stamp": "3.27020001->0->3.4361999",
+      "path_during_move": "1->1",
+      "dash": "0"
+    },
+    {
+      "profile": "tablet",
+      "replacement": "many",
+      "nonzero_move": "0",
+      "first_points": "3",
+      "replacement_points": "3",
+      "tap": "-431.538055,-280.210236",
+      "elapsed": "0.165999932",
+      "sp": "180->80",
+      "stamp": "3.27020001->3.27020001->3.27020001",
+      "path_during_move": "2->2",
+      "dash": "1"
+    },
+    {
+      "profile": "tablet",
+      "replacement": "many",
+      "nonzero_move": "1",
+      "first_points": "3",
+      "replacement_points": "3",
+      "tap": "-431.538055,-280.210236",
+      "elapsed": "0.165999932",
+      "sp": "180->180",
+      "stamp": "3.27020001->0->3.4361999",
+      "path_during_move": "2->2",
+      "dash": "0"
+    }
+  ],
+  "nativeDash": {
+    "environment": "iOS Simulator 26.5, iPhone Air and iPad Air 11-inch (M4)",
+    "unmodified": {
+      "phoneMany": {
+        "passed": 1,
+        "failed": 1
+      },
+      "phoneSingle": {
+        "passed": 2,
+        "failed": 1
+      },
+      "tabletMany": {
+        "passed": 2,
+        "failed": 0
+      },
+      "tabletSingle": {
+        "passed": 2,
+        "failed": 0
+      }
+    },
+    "rawLoggingOnly": {
+      "phoneSingle": "fail",
+      "checkout": ".local/evidence/iphone-module-audit-20261118/trace-source"
+    },
+    "failedEventSequences": {
+      "unmodifiedPhoneSingle": {
+        "attachmentSha256": "2274754410b3e17a2524bbca176531603bc8de8611b429d667fc16f6aed470e0",
+        "rows": [
+          {
+            "phase": 0,
+            "canvasX": 339.6666564941406,
+            "canvasY": 191.3333282470703,
+            "worldX": -165.49322509765625,
+            "worldY": -316.376953125,
+            "worldTimeBefore": 3.4361999463289976,
+            "pathAfter": 1,
+            "tapBefore": 0,
+            "tapAfter": 3.436199903488159,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          },
+          {
+            "phase": 1,
+            "canvasX": 339.6666564941406,
+            "canvasY": 191.3333282470703,
+            "worldX": -165.49322509765625,
+            "worldY": -316.376953125,
+            "worldTimeBefore": 3.4361999463289976,
+            "pathAfter": 1,
+            "tapBefore": 3.436199903488159,
+            "tapAfter": 0,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          },
+          {
+            "phase": 2,
+            "canvasX": 339.6666564941406,
+            "canvasY": 191.3333282470703,
+            "worldX": -165.5526123046875,
+            "worldY": -316.410400390625,
+            "worldTimeBefore": 3.4527999460697174,
+            "pathAfter": 1,
+            "tapBefore": 0,
+            "tapAfter": 0,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          },
+          {
+            "phase": 0,
+            "canvasX": 339.6666564941406,
+            "canvasY": 191.3333282470703,
+            "worldX": -165.5526123046875,
+            "worldY": -316.410400390625,
+            "worldTimeBefore": 3.4527999460697174,
+            "pathAfter": 1,
+            "tapBefore": 0,
+            "tapAfter": 3.4528000354766846,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          },
+          {
+            "phase": 1,
+            "canvasX": 339.6666564941406,
+            "canvasY": 191.3333282470703,
+            "worldX": -165.5526123046875,
+            "worldY": -316.410400390625,
+            "worldTimeBefore": 3.4527999460697174,
+            "pathAfter": 1,
+            "tapBefore": 3.4528000354766846,
+            "tapAfter": 0,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          },
+          {
+            "phase": 2,
+            "canvasX": 339.6666564941406,
+            "canvasY": 191.3333282470703,
+            "worldX": -165.61141967773438,
+            "worldY": -316.44354248046875,
+            "worldTimeBefore": 3.469399945810437,
+            "pathAfter": 1,
+            "tapBefore": 0,
+            "tapAfter": 0,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          }
+        ]
+      },
+      "unmodifiedPhoneMany": {
+        "attachmentSha256": "1fa4eb5fc8df3f7b28decefefb9be9149c3310381659c55730e981788f5e17e8",
+        "rows": [
+          {
+            "phase": 0,
+            "canvasX": 148.6666717529297,
+            "canvasY": 184.3333282470703,
+            "worldX": -350.8067932128906,
+            "worldY": -278.18896484375,
+            "worldTimeBefore": 4.249599933624268,
+            "pathAfter": 1,
+            "tapBefore": 0,
+            "tapAfter": 4.249599933624268,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          },
+          {
+            "phase": 1,
+            "canvasX": 148.6666717529297,
+            "canvasY": 184.3333282470703,
+            "worldX": -350.8067932128906,
+            "worldY": -278.18896484375,
+            "worldTimeBefore": 4.249599933624268,
+            "pathAfter": 1,
+            "tapBefore": 4.249599933624268,
+            "tapAfter": 0,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          },
+          {
+            "phase": 2,
+            "canvasX": 148.6666717529297,
+            "canvasY": 184.3333282470703,
+            "worldX": -350.930908203125,
+            "worldY": -279.2337951660156,
+            "worldTimeBefore": 4.266199933364987,
+            "pathAfter": 1,
+            "tapBefore": 0,
+            "tapAfter": 0,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          },
+          {
+            "phase": 0,
+            "canvasX": 148.6666717529297,
+            "canvasY": 184.3333282470703,
+            "worldX": -350.930908203125,
+            "worldY": -279.2337951660156,
+            "worldTimeBefore": 4.266199933364987,
+            "pathAfter": 1,
+            "tapBefore": 0,
+            "tapAfter": 4.266200065612793,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          },
+          {
+            "phase": 1,
+            "canvasX": 148.6666717529297,
+            "canvasY": 184.3333282470703,
+            "worldX": -350.930908203125,
+            "worldY": -279.2337951660156,
+            "worldTimeBefore": 4.266199933364987,
+            "pathAfter": 1,
+            "tapBefore": 4.266200065612793,
+            "tapAfter": 0,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          },
+          {
+            "phase": 2,
+            "canvasX": 148.6666717529297,
+            "canvasY": 184.3333282470703,
+            "worldX": -351.0535888671875,
+            "worldY": -280.25897216796875,
+            "worldTimeBefore": 4.282799933105707,
+            "pathAfter": 1,
+            "tapBefore": 0,
+            "tapAfter": 0,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          }
+        ]
+      },
+      "rawLoggingOnlyPhoneSingle": {
+        "attachmentSha256": "6f8d37a49074825b503a8ffa4d8841958b0d0909d86afd50eebd62f9a71aa5dd",
+        "rows": [
+          {
+            "phase": 0,
+            "canvasX": 339.6666564941406,
+            "canvasY": 191.3333282470703,
+            "worldX": -165.66827392578125,
+            "worldY": -316.47552490234375,
+            "worldTimeBefore": 3.4527999460697174,
+            "pathAfter": 1,
+            "tapBefore": 0,
+            "tapAfter": 3.4528000354766846,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          },
+          {
+            "phase": 1,
+            "canvasX": 339.6666564941406,
+            "canvasY": 191.3333282470703,
+            "worldX": -165.66827392578125,
+            "worldY": -316.47552490234375,
+            "worldTimeBefore": 3.4527999460697174,
+            "pathAfter": 1,
+            "tapBefore": 3.4528000354766846,
+            "tapAfter": 0,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          },
+          {
+            "phase": 2,
+            "canvasX": 339.6666564941406,
+            "canvasY": 191.3333282470703,
+            "worldX": -165.725830078125,
+            "worldY": -316.50799560546875,
+            "worldTimeBefore": 3.469399945810437,
+            "pathAfter": 1,
+            "tapBefore": 0,
+            "tapAfter": 0,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          },
+          {
+            "phase": 0,
+            "canvasX": 339.6666564941406,
+            "canvasY": 191.3333282470703,
+            "worldX": -165.725830078125,
+            "worldY": -316.50799560546875,
+            "worldTimeBefore": 3.469399945810437,
+            "pathAfter": 1,
+            "tapBefore": 0,
+            "tapAfter": 3.469399929046631,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          },
+          {
+            "phase": 1,
+            "canvasX": 339.6666564941406,
+            "canvasY": 191.3333282470703,
+            "worldX": -165.725830078125,
+            "worldY": -316.50799560546875,
+            "worldTimeBefore": 3.469399945810437,
+            "pathAfter": 1,
+            "tapBefore": 3.469399929046631,
+            "tapAfter": 0,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          },
+          {
+            "phase": 2,
+            "canvasX": 339.6666564941406,
+            "canvasY": 191.3333282470703,
+            "worldX": -165.7828369140625,
+            "worldY": -316.54010009765625,
+            "worldTimeBefore": 3.485999945551157,
+            "pathAfter": 1,
+            "tapBefore": 0,
+            "tapAfter": 0,
+            "spBefore": 180,
+            "spAfter": 180,
+            "dashBefore": 0,
+            "dashAfter": 0,
+            "ui": false,
+            "overlay": false
+          }
+        ]
+      }
+    },
+    "rawMove": {
+      "deltaX": -5.684341886080802e-14,
+      "deltaY": 0,
+      "sameMappedCanvasPoint": true,
+      "duplicateMoveFilter": false,
+      "logSha256": "75e512b13838c9e437e7b4899c1951d5d33e911a87db92c641ac6edb0aee2bcf"
+    },
+    "logs": {
+      "world-input-phone-ready.log": "76a8a8b2e8a5293cb46888bff1cee3a46c12b46508250f73fc7d8380b28a85e8",
+      "world-input-phone-repeat.log": "51993f56dc8ff3f7c9a0408d90182e69c9b60ed833c157666ddae30f7bc0c088",
+      "world-input-tablet-ready.log": "82d38bf285123552699dbe719e50cb94b55fd410efedcea29c0df65a3fda8a69",
+      "world-input-raw-trace.log": "5380b052ecc95e6ff5451212f7e3ea081b3df1c57d643dd987db8f1420a36bcb",
+      "world-input.log": "3f644b65fcb11ce49336c1612e0deeff5859cc2fb3e5f05c691858abf893d499"
+    }
+  },
+  "shopInventoryResize": {
+    "commit": "ca424ab",
+    "canvas": [
+      [
+        912,
+        420
+      ],
+      [
+        912,
+        550
+      ]
+    ],
+    "rows": [
+      2,
+      3
+    ],
+    "visible": [
+      [
+        8,
+        5
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "previousPageVisible": [
+      12,
+      10
+    ],
+    "sessionActions": 0
+  },
+  "originalPhone": {
+    "version": "2.0.1",
+    "armv7Sha256": "0fffcfc09cb797c04c70aa0a7b6d748adf7888d7b6583954b9a71fe1f448512a",
+    "freshDossiers": {
+      "0x59cf0": "ev_b7737d0e40df9f8a4bd56b5698b9b694587057b5a74784b18476f37084a6ab00",
+      "0x5a418": "ev_f9203150d001cef3b7e9788a02cfe22cb60aa0abca919ad478b078fcb3c176ec",
+      "0x59720": "ev_208f15288c674fc26714d1670aeed7ea46b8475670d3617d17efefefe3a5d126",
+      "0x59994": "ev_99322b247912b9db13bcec630c56b602f4989c2f63a9232abe89e846ec533a79",
+      "0x58ce4": "ev_d4a3669b82af145a65e99f75218312b05a872d84470a839a3ce62ea862074732"
+    },
+    "evidenceBundleSha256": "a0660761eb3f00b1f2803049eecf29eb4a990a1666d56eec08b2b3dd2aa2a800",
+    "snapshotSha256": "da90d806223e6a04245ef9bbd3bb08aecadd8829f527ac685a48593e2ebf71b8"
+  },
+  "coreCTest": {
+    "passed": 78,
+    "total": 78
+  },
+  "localEvidence": {
+    ".local/evidence/iphone-module-audit-20261118/scene-probe.cpp": "b9eefff4c357ceaf5878e2ee32ed379d2a0998ad17ac2f147b8913f4baf24b9f",
+    ".local/evidence/iphone-module-audit-20261118/scene-probe.log": "39f78351667bc3df62a5d3020b2ab0e949a6ed915c9f2f0dfb404ebfc81d2ef8",
+    ".local/evidence/iphone-module-audit-20261118/camera-only-ease.cpp": "1ff6a038ae679f0fc6871364adda228be652d67c89d7ffa17105de735ed953d9",
+    ".local/evidence/iphone-module-audit-20261118/control-probe.log": "6399578d53afdffdafaa59d65ac462e45ea3d9b798cbb649a21516124affbcd1",
+    ".local/evidence/iphone-module-audit-20261118/jump-probe.cpp": "a9b577169d476a9dee53c3845f42b0eb112f7c2832ee61a82fc3d827673b69c7",
+    ".local/evidence/iphone-module-audit-20261118/jump-probe.log": "8f957922801734677a6cda267e5d7576cc0185729729c7d6502f1d66f982f12d",
+    ".local/evidence/iphone-module-audit-20261118/ctest.log": "0434372251d7bdcd851cfe038e00f704a260a84510634cd2c9a308f614670863",
+    ".local/prepared/HD/MapInfo.mcb": "ab697612198efce5f9d9e9d8a085fc9f0a51cca683489c57b7edc3ade6b74bc8",
+    ".local/prepared/HD/Stage02_04.png": "af3c0619352d23b071ad735f36546e3fd794c7951537e91e703a5b79dd468ab6",
+    ".local/prepared/HD/Stage02_04BG.jpg": "375260182a5d4461d60e6bb76673f97b0fb8ca16710c401c9a11999d4515fce1"
+  },
+  "limits": [
+    "No physical iPhone/iPad input recording, Skyway GPU frame comparison or new original IPA runtime replay.",
+    "Changed-file inventory does not imply complete original semantics or runtime coverage."
+  ]
+}

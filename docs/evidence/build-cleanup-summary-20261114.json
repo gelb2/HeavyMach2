@@ -1,0 +1,124 @@
+{
+  "recorded": "2026-11-14T13:30:48.074958+09:00",
+  "removed_paths": 15,
+  "removed_files": 11792,
+  "removed_logical_bytes": 3295729199,
+  "free_bytes_before": 2647130112,
+  "free_bytes_after": 5908283392,
+  "retained_latest_artifacts_unchanged": 8,
+  "preserved": [
+    "all source and original IPA",
+    "all saves and backups",
+    "xcresult/trace/log/screenshots/manifests",
+    "latest normal device Release and symbols",
+    "latest Source simulator and UITest runner",
+    "latest cheat Release",
+    "latest portable core and sanitized core library",
+    "current deployed Site288 delivery archive",
+    "reference source and runtime build outputs"
+  ],
+  "scope": "HeavyMach2 only; no HM1/MachDefense/simulator data or installed app removal",
+  "removed_categories": [
+    {
+      "path": "build/enemy-actor-scene-host",
+      "file_count": 232,
+      "bytes": 97349506,
+      "open_handles": 0
+    },
+    {
+      "path": ".local/runtime-test-target",
+      "file_count": 4197,
+      "bytes": 1101521588,
+      "open_handles": 0
+    },
+    {
+      "path": "build/part-shadow-host/full-sanitized/CMakeFiles",
+      "file_count": 928,
+      "bytes": 170988442,
+      "open_handles": 0
+    },
+    {
+      "path": ".local/evidence/ipad-ui-feedback-20261110/old-simulator-build-cleanup/Build",
+      "file_count": 3,
+      "bytes": 292582,
+      "open_handles": 0
+    },
+    {
+      "path": "build/apple/Build/Products/Debug-iphonesimulator/HeavyMach2Validation.app",
+      "file_count": 1487,
+      "bytes": 81759349,
+      "open_handles": 0
+    },
+    {
+      "path": ".local/evidence/iphone-fixes-20261114/baseline-release/HeavyMach2Source.app",
+      "file_count": 1487,
+      "bytes": 75599050,
+      "open_handles": 0
+    },
+    {
+      "path": ".local/evidence/iphone-fixes-20261114/baseline-release/HeavyMach2Source.app.dSYM",
+      "file_count": 3,
+      "bytes": 13560800,
+      "open_handles": 0
+    },
+    {
+      "path": ".local/evidence/camera-baseline-20261114/report-site.tar.gz",
+      "file_count": 1,
+      "bytes": 257186453,
+      "open_handles": 0
+    },
+    {
+      "path": ".local/evidence/source-entry-20261110/site-source-entry.tar.gz",
+      "file_count": 1,
+      "bytes": 256070191,
+      "open_handles": 0
+    },
+    {
+      "path": ".local/evidence/universal-report-20261113/site-audit.tar.gz",
+      "file_count": 1,
+      "bytes": 257090103,
+      "open_handles": 0
+    },
+    {
+      "path": ".local/evidence/iphone-implementation-20261113/revalidation-03/site-revalidation.tar.gz",
+      "file_count": 1,
+      "bytes": 257139162,
+      "open_handles": 0
+    },
+    {
+      "path": ".local/report-site/hm2-iphone-release-check-20261114.tar.gz",
+      "file_count": 1,
+      "bytes": 257144869,
+      "open_handles": 0
+    },
+    {
+      "path": ".local/report-site/hm2-command-panel-20261111.tar.gz",
+      "file_count": 1,
+      "bytes": 257057363,
+      "open_handles": 0
+    },
+    {
+      "path": "HM2 old DerivedData/Build",
+      "file_count": 3344,
+      "bytes": 205977296,
+      "open_handles": 0
+    },
+    {
+      "path": "HM2 old DerivedData/Index.noindex/Build",
+      "file_count": 105,
+      "bytes": 6992445,
+      "open_handles": 0
+    }
+  ],
+  "local_full_record": ".local/evidence/build-cleanup-20261114/",
+  "post_publication_cleanup": {
+    "path": "report-site-clarity.tar.gz",
+    "bytes": 257186610,
+    "sha256": "dba0939c4e23a83351d2184441819b4ef4949803b94348fab188445470358985",
+    "reason": "Site288 superseded by confirmed successful shared-camera-plan deployment; latest archive retained",
+    "retained": "report-site-common-plan-final.tar.gz",
+    "saved_source": "93542f069b151ca3b093f3895a408e51712de7cf",
+    "new_saved_source": "fb77277af7fefdf475944ec88f028e213e7775c3"
+  },
+  "old_artifact_bytes_including_post_publication": 3552915809
+}

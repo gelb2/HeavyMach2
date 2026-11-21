@@ -99,7 +99,7 @@ bool Button::input(PointerPhase phase,Vec2 p,std::uintptr_t pointer,float now,co
 }
 void Button::append(Frame& frame,float now){
     validTime(now);if(!visible||!tile_)return;
-    finite(scale.x);finite(scale.y);finite(angle);finite(alpha);
+    finite(scale.x);finite(scale.y);finite(angle);finite(alpha);finite(pressedAlphaMultiplier);
     finite(pushDepth);finite(pushDelay);finite(releaseHeight);finite(releaseDelay);
     if(pushDelay<0||releaseDelay<0)throw std::runtime_error("Negative button animation delay");
     float shift=0;
@@ -126,7 +126,7 @@ void Button::append(Frame& frame,float now){
     sprite.size={tile_->textureSize.width/float(tile_->columns)*retina*scale.x,
                  tile_->textureSize.height/float(tile_->rows)*retina*scale.y};
     sprite.angle=angle;sprite.tile=tile;sprite.columns=tile_->columns;sprite.rows=tile_->rows;
-    sprite.color={1,1,1,alpha};sprite.blend=tile_->blend;
+    sprite.color={1,1,1,alpha*(active&&pressed_?pressedAlphaMultiplier:1.f)};sprite.blend=tile_->blend;
     frame.sprites.push_back(std::move(sprite));
 }
 void ButtonDispatcher::add(std::shared_ptr<Button> button){
@@ -162,10 +162,10 @@ void ButtonDispatcher::emit(const ButtonEvent& event){
         listener.handler(event);
     }
 }
-bool ButtonDispatcher::input(PointerPhase phase,Vec2 p,std::uintptr_t pointer,float now){
+bool ButtonDispatcher::input(PointerPhase phase,Vec2 p,std::uintptr_t pointer,float now,const std::function<Vec2(const Button&,Vec2)>& pointMap){
     const auto snapshot=buttons_;
     for(auto i=snapshot.rbegin();i!=snapshot.rend();++i)
-        if((*i)->input(phase,p,pointer,now,[this](const auto& e){emit(e);}))return true;
+        if((*i)->input(phase,pointMap?pointMap(**i,p):p,pointer,now,[this,&pointMap,p](const auto& e){auto mapped=e;if(pointMap)mapped.canvasPosition=p;emit(mapped);}))return true;
     return false;
 }
 void ButtonDispatcher::cancelAll(float now){

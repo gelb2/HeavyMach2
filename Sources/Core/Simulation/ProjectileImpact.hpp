@@ -25,5 +25,5 @@ struct ProjectileImpactHost {
 // Callback order is observable: a damage call can synchronously kill/drop/level
 // up before the next target. Never precompute a batch of successful hits.
 void impactProjectile(const WeaponInfo&,Vec2 position,bool toPlayer,
-                      ProjectileImpactHost&);
+                      ProjectileImpactHost&,int impactDamage=0);
 }

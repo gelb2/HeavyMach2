@@ -12,8 +12,8 @@ Vec2 normalized(Vec2 v){
 }
 float unit(WorldRandom& random){return float(random.random())*0x1p-31f;}
 }
-AirStrike::AirStrike(const WeaponInfo* weapon,float delay,Vec2 target,Vec2 player,double worldTime,float renderTime,AirStrikeHost& host,WorldRandom& random)
-:weapon_(weapon),plane_(host.preparedTile("Airplane.png")),host_(host),random_(random){
+AirStrike::AirStrike(const WeaponInfo* weapon,float delay,Vec2 target,Vec2 player,double worldTime,float renderTime,AirStrikeHost& host,WorldRandom& random,int impactDamage)
+:weapon_(weapon),plane_(host.prepareOriginalTile("Airplane.png")),host_(host),random_(random),impactDamage_(impactDamage){
     state_.target=target;state_.fireDelay=delay;state_.attackCount=weapon?weapon->shotCount:0;
     auto direction=normalized({target.x-player.x,target.y-player.y});
     state_.position={direction.x*-1200.f+target.x,direction.y*-1200.f+target.y};
@@ -23,7 +23,7 @@ AirStrike::AirStrike(const WeaponInfo* weapon,float delay,Vec2 target,Vec2 playe
     if(plane_)visibility_.bounds={-plane_->pixels.width*.5f,-plane_->pixels.height*.5f,plane_->pixels.width*.5f,plane_->pixels.height*.5f};
     else visibility_.bounds={0,0,0,0};
     if(auto* marker=host_.allocateParticle(renderTime)){
-        auto* targetTile=host_.preparedTile("Target.png");if(targetTile){targetTile->columns=2;targetTile->rows=1;}
+        auto* targetTile=host_.prepareOriginalTile("Target.png");if(targetTile){targetTile->columns=2;targetTile->rows=1;}
         auto& p=marker->state();p.blendType=2;p.life=3;p.tile=targetTile;p.tileNumber=0;p.position=target;
         p.scale={15,15};p.easyOutScale=1.5f;p.easyOutValue=6;p.rotationVelocity=.1f;marker->start(renderTime);
     }
@@ -44,7 +44,7 @@ void AirStrike::tick(double worldTime,const MapCamera* camera){
             const Vec2 scatter{std::cos(angle)*radius,std::sin(angle)*radius};
             const Vec2 source{scatter.x*.3f+state_.position.x,scatter.y*.3f+state_.position.y};
             const Vec2 destination{scatter.x+state_.target.x,scatter.y+state_.target.y};
-            host_.createBullet({weapon_,state_.angle,source,destination,false,true});
+            host_.createBullet({weapon_,state_.angle,source,destination,false,true,impactDamage_});
             ++bulletRequests_;--state_.attackCount;
         }
     }else if(double(float(state_.startTime+4.f))<worldTime)state_.removed=true;

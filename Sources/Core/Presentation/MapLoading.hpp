@@ -9,10 +9,16 @@ struct MapLoadingCallbacks {
 };
 // GuiMapLoading0x2da14/0x2d730, separate from GameMain's loading doors.
 class MapLoading {
-    PreparedTiles tiles_{"GuiMapLoading"};
+    PreparedTiles standaloneTiles_{"global-shared"};
+    PreparedTiles* tiles_;
     MapLoadingState state_;
+    bool phoneArtwork_=false;
+    std::string imageName_="StageClearBG.png";
 public:
-    explicit MapLoading(ResourceAccess&);
+    explicit MapLoading(ResourceAccess&,PreparedTiles* shared=nullptr,bool phoneArtwork=false);
+    [[nodiscard]] Size artworkViewport()const{return phoneArtwork_?Size{480,320}:Size{768,1024};}
+    MapLoading(const MapLoading&)=delete;
+    MapLoading& operator=(const MapLoading&)=delete;
     void tick(const MapLoadingCallbacks&);
     void append(Frame&)const;
     [[nodiscard]] Frame preparationFrame()const;

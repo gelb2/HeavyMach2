@@ -60,6 +60,10 @@ class TextPreparationCache {
 public:
     std::shared_ptr<const TextBitmap> prepare(TextRasterizer&,const TextRasterRequest&);
     void clear(){entries_.clear();}
+    // The cache is not the owner of a finished original Text node. Drop
+    // entries after their last UI/world owner has released its bitmap.
+    std::vector<const TextBitmap*> discardUnused();
+    [[nodiscard]] std::shared_ptr<const TextBitmap> retain(const TextBitmap*)const;
     [[nodiscard]] std::size_t size()const{return entries_.size();}
 };
 class Text {

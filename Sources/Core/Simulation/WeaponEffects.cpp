@@ -61,7 +61,7 @@ void WeaponEffects::createProjectile(const WeaponInfo& info,const WeaponEmission
     auto visual=std::make_shared<ProjectileVisual>(info,image,effectTile,trail,input.hostile);
     host.fireSound(info,{(shot.muzzle.x-input.playerPosition.x)/100.f,(shot.muzzle.y-input.playerPosition.y)/100.f});
     if(drop)visual->setDrop(true);
-    host.attachProjectile({&info,std::move(motion),image,std::move(trail),input.hostile?.06f:.04f,5,std::move(visual)});
+    host.attachProjectile({&info,std::move(motion),image,std::move(trail),input.hostile?.06f:.04f,5,std::move(visual),input.impactDamage});
 }
 void WeaponEffects::emit(const WeaponInfo& info,const WeaponEmission& shot,const WeaponEffectInput& input,WorldRandom& random,WeaponEffectsHost& host){
     const bool sniper=info.kind==WeaponKind::sniper;
@@ -77,7 +77,8 @@ void WeaponEffects::emit(const WeaponInfo& info,const WeaponEmission& shot,const
     if(auto* hit=particles_.allocate(input.renderTime,random)){
         auto& s=hit->state();s.blendType=2;s.life=.3f;s.tile=resources_.damage;s.tileNumber=0;s.position=shot.destination;
         hit->animate(6);hit->start(input.renderTime);host.particleStarted(WeaponParticleRole::hitEffect,*hit);
-        attachTrail(sniper?resources_.sniperTrail:resources_.gunTrail,shot.muzzle,
+        auto* trailTile=host.prepareOriginalTile(sniper?"Efx_Trail02.png":"Efx_Trail04.png",sniper?resources_.sniperTrail:resources_.gunTrail);
+        attachTrail(trailTile,shot.muzzle,
                     {sniper?4.f:1.f,64,16,0,sniper?1.f:.2f},0,sniper?.02f:0,
                     input.worldTime,random,host,true,shot.destination);
         if(auto* shell=particles_.allocate(input.renderTime,random)){
@@ -86,9 +87,10 @@ void WeaponEffects::emit(const WeaponInfo& info,const WeaponEmission& shot,const
             const double side=input.left?std::numbers::pi/2:-std::numbers::pi/2;
             const float angle=float(double(shot.angle)+side+double(jitter));
             const float speedUnit=randomUnit(random);const float speed=(speedUnit+speedUnit)+1.5f;
-            if(resources_.shell){resources_.shell->columns=2;resources_.shell->rows=1;}
+            auto* shellTile=host.prepareOriginalTile("BulletShell.png",resources_.shell);
+            if(shellTile){shellTile->columns=2;shellTile->rows=1;}
             const float lifeUnit=randomUnit(random);const float factor=sniper?.7f:.5f;
-            auto& c=shell->state();c.life=lifeUnit*factor+factor;c.tile=resources_.shell;c.tileNumber=0;
+            auto& c=shell->state();c.life=lifeUnit*factor+factor;c.tile=shellTile;c.tileNumber=0;
             c.position={input.machinePosition.x+input.partCenter.x,input.machinePosition.y+input.partCenter.y};
             c.scale={sniper?.7f:.6f,sniper?.7f:.6f};c.scaleVelocity=-.004f;c.rotationVelocity=.4f;
             c.velocity={std::cos(angle)*speed,std::sin(angle)*speed};c.velocityAdd=-.05f;

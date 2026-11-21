@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-16",
+  "sourceCommit": "ffec6546d4a2f3673f94676fad7cd8a3b936ffee",
+  "configuration": "Release",
+  "scheme": "HeavyMach2Source",
+  "executableSHA256": "8c5e264a8701369c0a1ae4da33338b684f3244ec31cd5f26c7cfb0e7708f2b59",
+  "signedForBothDevices": true,
+  "resourcesVerified": 1550,
+  "sameSourceAsSimulatorCandidate": true,
+  "devices": {
+    "iphone": {
+      "launchSucceeded": true,
+      "processPresentAfterLaunch": true,
+      "saveBytesPreserved": 28204,
+      "hudSettingsPreserved": true,
+      "fullContainerBackedUp": true
+    },
+    "ipad": {
+      "launchSucceeded": true,
+      "processPresentAfterLaunch": true,
+      "saveBytesPreserved": 28204,
+      "hudSettingsPreserved": "no-existing-HUD-file",
+      "fullContainerBackedUp": true
+    }
+  },
+  "uninstalledApps": false,
+  "syncedSavesBetweenDevices": false,
+  "fullPhysicalGameplayChecked": false,
+  "developOrMainMerged": false
+}

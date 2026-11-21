@@ -36,6 +36,7 @@ struct DashMotionHost {
     virtual Vec2 position()const=0; // Position AFTER the ordinary machine move.
     virtual Particle* allocateParticle(float renderTime)=0; // Existing pool/RNG.
     virtual TileImage* preparedTile(std::string_view originalName)=0;
+    virtual TileImage* prepareOriginalTile(std::string_view name){return preparedTile(name);}
     virtual void addPosition(Vec2)=0; // Original addPos, BEFORE terrain correction.
 };
 class DashMotion {

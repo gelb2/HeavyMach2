@@ -1,13 +1,13 @@
 # HeavyMach 2 작업 지침
 
-이 저장소는 HeavyMach 2 전용 독립 비공개 저장소다. `.agents/policy.md`, `.agents/project.md`, `docs/restoration-plan.md`, `docs/technology-and-assets.md`, `docs/reference-port-validation-plan.md`, `docs/todo.md`를 읽는다.
+이 저장소는 HeavyMach 2 전용 공개 저장소다. [정본과 작업 위치](docs/canonical.md)에서 업무별 문서·소비 코드·검사를 고른다. [작업 정책](.agents/policy.md), [사용자 결정 이력](.agents/project.md), [TODO](docs/todo.md)를 함께 읽는다.
 
 1. HeavyMach 2의 모든 새 소스·도구·검사·파생 파일과 빌드 출력은 이 저장소 또는 이 저장소 전용 외부 작업 공간에 둔다.
 2. HeavyMach 1·MachDefense·분리 전 ProjectGameDev의 파일을 수정하지 않는다. 해당 폴더에 HeavyMach 2 코드를 만들지 않는다. 다른 게임의 소스나 출력 디렉터리를 쓰기 대상으로 연결하지 않는다.
 3. 원본 IPA는 절대로 커밋하지 않는다. `.ipa` 확장자 변경, 압축, 분할, LFS 저장, 릴리스/CI artifact 첨부, 사이트/외부 서비스 전송도 금지한다. 원본은 저장소 밖에서 로컬 읽기만 한다.
-4. private 상태를 유지한다. 사용자 승인 없이 공개 설정을 바꾸거나 원본·내부 자료를 게시하지 않는다.
+4. 공개 배포와 릴리스는 [버전과 배포](docs/public/release-policy.md)를 따른다. 기존 비공개 보고와 사용자 저장은 접근 범위를 유지한다.
 5. 작업 브랜치는 develop에서 분기하고 develop을 거쳐 main에 병합한다. 공유 이력 reset/force-push와 기존 태그 재지정은 하지 않는다.
-6. 로컬 훅을 활성화한다: `git config core.hooksPath .githooks`. 커밋·푸시 전 IPA 및 비밀정보 검사를 우회하지 않는다.
+6. `.githooks`에는 Git LFS 동기화 훅만 둔다.
 7. 일반판과 HD판을 각각 자기 원작에 대조한다. 에셋 픽셀 크기와 게임 표시 크기를 구분하며 원작 좌표·부품 조립·데이터 소비 절차를 따른다. 유닛마다 임의 C++ 이미지·조립 경로를 추가하지 않는다.
 8. 같은 데이터 파일만으로 전체 게임 로직 동일성을 주장하지 않는다. 정적 분석·추정·실행 결과·사용자 관측을 구분한다. 디컴파일 결과를 원본 소스라고 부르지 않는다.
 9. 광고를 표시하거나 요청하지 않는다. 원본·저장·실패 증거를 보존한다. 실패 기준을 낮춰 통과시키지 않는다.
@@ -18,4 +18,10 @@
 
 허브 등록·공통 지침 수정은 허브 작업 브랜치에서 한다. 이것이 다른 게임 저장소를 수정할 권한을 부여하지 않는다.
 
-14. 사용자 지시(2026-11-10): 보고서는 HeavyMach·MachDefense처럼 기존 비공개 보고 사이트에 HTML로 게시하고 실제 링크를 제공한다. [보고 사이트](docs/report-site.md)의 Site ID·접근 범위·소스 위치와 현행 Sites 스킬을 따른다. 로컬 파일/Markdown 전달만으로 사이트 게시 완료로 보고하지 않는다.
+14. 사용자 지시(2026-11-10): 보고서는 HeavyMach·MachDefense처럼 기존 비공개 보고 사이트에 HTML로 게시하고 실제 링크를 제공한다. [보고 사이트](docs/report-site.md)의 Site ID·접근 범위·소스 위치와 현행 Sites 스킬을 따른다. 로컬 파일/Markdown 전달만으로 사이트 게시 완료로 보고하지 않는다. HeavyMach2 새 보고는 기존 `heavymach2-restoration-20261110/#report-log` 고정 목록에 누적 연결하고 새 보고서에도 같은 목록으로 돌아가는 링크를 둔다.
+
+15. iPhone·유니버설 작업을 시작하거나 이어받을 때 [현행 iPhone 인계](HANDOVER-IPHONE-UNIVERSAL.md), [개발 기준·계획·금지사항](docs/iphone-development-contract.md), [추가 조사와 미확정](docs/iphone-followup-investigation-20261113.md)을 실제로 읽는다. 사용자의 2026-11-13 지시에 따라 근거·계획·금지사항을 대화 기억에만 두지 않는다. 이전 조사·현재 iPad 동작·저장을 보존하고, 함수 export를 전체 의미 검증이나 iPhone 개발 완료로 보고하지 않는다.
+
+16. 사용자 지시(2026-11-13): iPhone 검은색 레터박스를 금지한다. 전장과 메뉴·전환을 화면 전체에 표시한다. 안전 영역을 검은 테두리로 만들지 않는다. 공격/줌 중 출력 영역의 크기 변화·맵 밖 노출과 작은 HUD를 함께 수정·검증한다. [iPhone 개발 기준](docs/iphone-development-contract.md)을 따른다.
+
+17. 디자인·화면 배치·HUD·기기별 그림·에셋 생성/로드/패키징 작업은 [디자인·에셋 규칙 정본](docs/design-and-asset-rules.md)을 먼저 읽는다. 최신 사용자 수정과 화면별 예외를 이 문서에 반영하며 옛 계획을 우선하지 않는다. 기존 Codex 하네스와 Git 검사 훅은 제거했다. 시각 검증은 실제 화면에서 확인한다.

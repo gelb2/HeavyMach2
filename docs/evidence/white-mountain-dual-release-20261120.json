@@ -1,0 +1,113 @@
+{
+  "package": {
+    "resources": 1576,
+    "expiry": "2026-11-20T11:15:54",
+    "binarySHA256": "b740ca4056cef65fdf66c65cfc4d6c070d12f276eade5d61ef686e796e83b8b2",
+    "mapSHA256": "7eac130f0d95970723a7453e169147abe74374f31d5157df7158489c1b10784c",
+    "profileBothDevices": true,
+    "cheatEntryAbsent": true
+  },
+  "simulators": {
+    "phone": {
+      "routesPassed": 14,
+      "routeRun": "33C1C465-AE72-4150-A5BD-2383E7A0592F",
+      "bossRun": "84E4E391-2CB4-499F-8227-C1CD5457EAF0",
+      "bosses": [
+        {
+          "mission": "M041010",
+          "distanceAtArrival": 429.73944091796875,
+          "enemyShots": 13,
+          "reward": 300000
+        },
+        {
+          "mission": "M041020",
+          "distanceAtArrival": 429.73944091796875,
+          "enemyShots": 64,
+          "reward": 600000
+        },
+        {
+          "mission": "M041030",
+          "distanceAtArrival": 429.73944091796875,
+          "enemyShots": 37,
+          "reward": 1200000
+        },
+        {
+          "mission": "M041040",
+          "distanceAtArrival": 429.73944091796875,
+          "enemyShots": 79,
+          "reward": 3000000
+        }
+      ]
+    },
+    "ipad": {
+      "routesPassed": 14,
+      "routeRun": "43E925EE-F7DC-4C01-BF4B-E65F3CCA85E0",
+      "bossRun": "75F5BF86-2EB1-4FA5-B1FF-55C043E8BA10",
+      "bosses": [
+        {
+          "mission": "M041010",
+          "distanceAtArrival": 429.73944091796875,
+          "enemyShots": 13,
+          "reward": 300000
+        },
+        {
+          "mission": "M041020",
+          "distanceAtArrival": 429.73944091796875,
+          "enemyShots": 64,
+          "reward": 600000
+        },
+        {
+          "mission": "M041030",
+          "distanceAtArrival": 429.73944091796875,
+          "enemyShots": 37,
+          "reward": 1200000
+        },
+        {
+          "mission": "M041040",
+          "distanceAtArrival": 429.73944091796875,
+          "enemyShots": 79,
+          "reward": 3000000
+        }
+      ]
+    }
+  },
+  "devices": {
+    "ipad": {
+      "appInstalled": true,
+      "launched": true,
+      "readbackMatched": true,
+      "backupPreserved": true,
+      "afterLaunchFileMatches": true,
+      "initialScreenSha256": "10fcb3ef06f6fa04f161d87443abe590ec41518a5e59aaf4ab650cab97f86f3e",
+      "followupScreenSha256": "4a75c681ee85d417670140e7a657b0775d930eac2e8ef5e70ff0b12649c56983"
+    },
+    "iphone": {
+      "appInstalled": true,
+      "launched": true,
+      "readbackMatched": true,
+      "backupPreserved": true,
+      "afterLaunchFileMatches": false,
+      "initialScreenSha256": "2bc97c534f66a0fe8ae2aa5f8a14d83e7dd49e179fa1936c9e39d19ab9f6aa8e",
+      "followupScreenSha256": "f9380c5af22ec4668244403386abe9c63001e3c642950d656eda08a53ca6131d",
+      "sixVisitFlagsPreservedAfterLaunch": true
+    }
+  },
+  "progressSource": {
+    "device": "iPad Air 13-inch (M2)",
+    "slot": 0,
+    "playerLevel": 22,
+    "samePayloadAtInjection": true,
+    "preservedSlotsAndProgress": true,
+    "addedVisitFlags": [
+      "Base005",
+      "Base006",
+      "Base004"
+    ],
+    "preparedFileSha256": "8497add50933df1085f9e81a2c312654218afd2aeb9ac0a3922d3840381351c2"
+  },
+  "hostChecks": {
+    "sourceProfileCommandBases": 6,
+    "routeRoundTrips": 3,
+    "regressionsPassed": 5
+  }
+}

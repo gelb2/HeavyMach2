@@ -1,5 +1,6 @@
 #import "HM2Renderer.h"
 #import <OpenGLES/ES1/gl.h>
+#include "Core/Data/ResourceName.hpp"
 #import <OpenGLES/ES1/glext.h>
 #import <OpenGLES/EAGL.h>
 #include "Assets/Image.hpp"
@@ -7,12 +8,13 @@
 #include <algorithm>
 #include <cmath>
 #include <map>
+#include <set>
 #include <stdexcept>
 #include <type_traits>
 #include <vector>
 
 namespace {
-struct Texture{GLuint id=0;GLsizei width=0,height=0,storageWidth=1,storageHeight=1;hm2::TextureSource source;};
+struct Texture{GLuint id=0;GLsizei width=0,height=0,storageWidth=1,storageHeight=1;unsigned bytesPerPixel=4;hm2::TextureSource source;};
 GLenum factor(hm2::BlendFactor value){
     switch(value){
         case hm2::BlendFactor::zero:return GL_ZERO;
@@ -29,6 +31,7 @@ GLenum factor(hm2::BlendFactor value){
     GLuint _framebuffer,_colorbuffer;
     std::map<std::string,Texture> _textures;
     NSUInteger _textureUploads,_imageTextureUploads,_textTextureUploads,_alphaTextureUploads,_imageResourceReads,_imageDecodeCalls,_presentedFrames,_drawCalls,_atlasDrawCalls;
+    NSUInteger _textureDeletes;
     GLsizei _width,_height;
     CGFloat _surfaceWidth,_surfaceHeight;
     CGFloat _pointWidth,_pointHeight;
@@ -65,7 +68,7 @@ GLenum factor(hm2::BlendFactor value){
             continue;
         }
         NSString* name=[NSString stringWithUTF8String:sourceName.c_str()];
-        if(![name.lastPathComponent isEqualToString:name])throw std::runtime_error("Invalid image resource path");
+        if(!hm2::validResourceName(sourceName))throw std::runtime_error("Invalid image resource path");
         NSURL* url=[_root URLByAppendingPathComponent:name];
         ++_imageResourceReads;NSData* encoded=[NSData dataWithContentsOfURL:url];
         if(!encoded)throw std::runtime_error("Cannot read original image: "+sprite.image);
@@ -79,6 +82,7 @@ GLenum factor(hm2::BlendFactor value){
         // original top-row-first bytes, and content-only UV coordinates.
         std::vector<std::uint8_t> pixels;GLenum format=GL_RGBA;
         if(alpha){
+            texture.bytesPerPixel=1;
             auto prepared=hm2::prepareOriginalPartAlpha(image);
             if(prepared.storageWidth!=unsigned(texture.storageWidth)||prepared.storageHeight!=unsigned(texture.storageHeight))
                 throw std::runtime_error("Original A8 storage differs from prepared tile");
@@ -107,7 +111,7 @@ GLenum factor(hm2::BlendFactor value){
     try {
         GLint maximum=0;glGetIntegerv(GL_MAX_TEXTURE_SIZE,&maximum);
         if(layout.width>unsigned(maximum)||layout.height>unsigned(maximum))throw std::runtime_error("Text exceeds GPU texture limit");
-        Texture texture;texture.source={identifier,hm2::TextureVariant::rgba};texture.width=texture.storageWidth=GLsizei(layout.width);texture.height=texture.storageHeight=GLsizei(layout.height);
+        Texture texture;texture.bytesPerPixel=1;texture.source={identifier,hm2::TextureVariant::rgba};texture.width=texture.storageWidth=GLsizei(layout.width);texture.height=texture.storageHeight=GLsizei(layout.height);
         const auto old=_textures.find(identifier);
         if(old==_textures.end())glGenTextures(1,&texture.id);else texture.id=old->second.id;
         glBindTexture(GL_TEXTURE_2D,texture.id);
@@ -120,6 +124,19 @@ GLenum factor(hm2::BlendFactor value){
         _textures.insert_or_assign(identifier,texture);++_textureUploads;++_textTextureUploads;
     }catch(...){[EAGLContext setCurrentContext:previous];throw;}
     [EAGLContext setCurrentContext:previous];
+}
+- (void)retainPreparedTextures:(const hm2::Frame&)owners {
+    // Called only after an original GUI/world owner changes, never per sprite
+    // or per draw. The frame lists prepared resources, not just visible ones.
+    std::set<std::string,std::less<>> retained;for(const auto& sprite:owners.sprites)retained.insert(sprite.image);
+    EAGLContext* previous=EAGLContext.currentContext;
+    if(![EAGLContext setCurrentContext:_context])throw std::runtime_error("Cannot activate HM2 resource release");
+    for(auto i=_textures.begin();i!=_textures.end();){
+        if(retained.contains(i->first)){++i;continue;}
+        glDeleteTextures(1,&i->second.id);++_textureDeletes;i=_textures.erase(i);
+    }
+    const auto error=glGetError();[EAGLContext setCurrentContext:previous];
+    if(error!=GL_NO_ERROR)throw std::runtime_error("Cannot release original owner textures");
 }
 - (void)allocate:(CAEAGLLayer*)layer {
     _pointWidth=layer.bounds.size.width;_pointHeight=layer.bounds.size.height;
@@ -156,7 +173,7 @@ GLenum factor(hm2::BlendFactor value){
                     glEnable(GL_SCISSOR_TEST);glScissor(left,bottom,std::max(0,right-left),std::max(0,top-bottom));
                 }else glDisable(GL_SCISSOR_TEST);
             }
-            const auto found=_textures.find(s.image);if(found==_textures.end())throw std::runtime_error("Frame uses unprepared original texture");
+            const auto found=_textures.find(s.image);if(found==_textures.end())throw std::runtime_error("Frame uses unprepared original texture: "+s.image);
             glBlendFunc(factor(s.blend.source),factor(s.blend.destination));
             glColor4f(s.color.r,s.color.g,s.color.b,s.color.a);
             const auto& texture=found->second;
@@ -217,6 +234,9 @@ GLenum factor(hm2::BlendFactor value){
 }
 - (void)captureNextFrame{_captureNext=YES;}
 - (NSUInteger)textureUploads{return _textureUploads;}
+- (NSUInteger)residentTextures{return _textures.size();}
+- (NSUInteger)textureDeletes{return _textureDeletes;}
+- (NSUInteger)residentTextureBytes{NSUInteger total=0;for(const auto& [name,texture]:_textures){(void)name;total+=NSUInteger(texture.storageWidth)*NSUInteger(texture.storageHeight)*texture.bytesPerPixel;}return total;}
 - (NSUInteger)imageTextureUploads{return _imageTextureUploads;}
 - (NSUInteger)textTextureUploads{return _textTextureUploads;}
 - (NSUInteger)alphaTextureUploads{return _alphaTextureUploads;}

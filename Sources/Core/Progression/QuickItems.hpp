@@ -20,6 +20,7 @@ struct AirStrikeRequest {
     double worldTime=0;
     float renderTime=0,fireDelay=0;
     unsigned attackCount=0;
+    int impactDamage=0;
 };
 // These are actual world/UI consumers, not optional completion callbacks. The
 // Scene adapter must supply live actor HP, its existing pool and prepared tiles.
@@ -36,6 +37,10 @@ struct QuickItemsHost {
     // Must call the existing world pool.allocate/reset, including its RNG.
     virtual Particle* allocateParticle(float renderTime)=0;
     virtual const TileImage* preparedTile(std::string_view originalName)=0;
+    // GobHvMach.useRepairItem0xc7e4 requests this one icon from the shared
+    // manager after obtaining a particle. Existing prepared-only fixtures can
+    // keep their explicit cache; the live Scene adapter prepares the request.
+    virtual const TileImage* prepareRepairEffect(std::string_view originalName){return preparedTile(originalName);}
     virtual void selectQuick(int)=0;
     virtual void message(std::string_view originalDescriptionKey,int background,bool autoHide)=0;
     virtual void hideMessage()=0;

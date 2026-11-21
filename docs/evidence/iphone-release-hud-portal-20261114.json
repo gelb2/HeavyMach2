@@ -1,0 +1,58 @@
+{
+  "product_commit": "3666fc7",
+  "physical_device": "iPhone Air PaleMirror",
+  "installed": true,
+  "launched": true,
+  "process_confirmed": true,
+  "pid": 9901,
+  "save": {
+    "bytes": 28204,
+    "sha256": "d6aee96f161a5f5ce4f5ed95bbee29e0d864aee3aa2c582f25aa6d391291b45f",
+    "identical": true
+  },
+  "backup": {
+    "files": 8,
+    "bytes": 7312181
+  },
+  "scope": "Release update installation and basic process launch; no new full physical-device campaign or thermal verification.",
+  "verification": {
+    "product_commit": "3666fc7",
+    "configuration": "Release",
+    "platform": "iphoneos",
+    "bundle_identifier": "com.gelb2.heavymach2.restored",
+    "binary_sha256": "89d097a5be31f6fa1836e3324d0188501662e6cd31ba35a56d307638b68cf209",
+    "binary_uuid": "96CC20A4-E046-3801-A6C9-E7678AFEB21D",
+    "dsym_uuid": "96CC20A4-E046-3801-A6C9-E7678AFEB21D",
+    "codesign_verified": true,
+    "concurrent_symbols_absent": true,
+    "verified_resource_files": 1532,
+    "project_and_scheme_restored": true,
+    "GUI_build_succeeded": "2026-11-14 20:44,9.6seconds"
+  },
+  "evidence_files": [
+    {
+      "name": "install.json",
+      "sha256": "08d04a11c5a63156535da0902d5829aeaf25cd7ec388c3b2c581698dc64a59be"
+    },
+    {
+      "name": "launch.json",
+      "sha256": "4a0fc503c3ac6cfe93fc2f8b9c98136ba654e628e85df2c2a869456c9ac92fb0"
+    },
+    {
+      "name": "processes.json",
+      "sha256": "2934950ee56c906637ac8a5dea886ed019a9bcfe6245c4b1dd98f0462d1ff696"
+    },
+    {
+      "name": "save-preservation.json",
+      "sha256": "448fbf75f4cc3311a65eeaf5c97b015480b717e7b77a9469b9e60df5b166db8d"
+    },
+    {
+      "name": "signed-release-verification.json",
+      "sha256": "39db0110a584776827394418b0efb8483dd2dfb61bb8d561f811b9885fe2622e"
+    },
+    {
+      "name": "backup-manifest.json",
+      "sha256": "4f2d40d64522cdb3c6d42989eb5fe9d3e0bfa22a034b5d46d6a8e84864d82e05"
+    }
+  ]
+}

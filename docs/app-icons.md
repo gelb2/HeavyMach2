@@ -21,6 +21,14 @@ xcodegen generate --spec Apple/iOS/project.yml
 
 검사는 실제 빌드의 `CFBundleIconName`·아이콘 PNG·asset catalog와 iPad 시뮬레이터의 홈 화면을 확인한다. 치트 실행은 기존 공통 게임 코드의 동시 시나리오 결과와 GPU·OpenAL 검사를 사용한다. 해당 조건 검사의 통과를 전체 게임 기능 검증으로 확대하지 않는다.
 
+## PWA와 Tauri Mac
+
+[웹 빌드](../Web/README.md)는 이 1024px 준비본을 읽어 정식판과 치트판의 192px·512px 아이콘을 각각 만든다. Safari 홈 화면은 192px 아이콘을 링크하고, 웹 앱 매니페스트는 두 크기를 모두 제공한다. [Tauri Mac](../Desktop/Tauri/README.md)은 해당 판의 웹 패키지에서 해시를 확인한 512px PNG를 가져와 macOS `icon.icns`를 만든다. 치트판은 두 플랫폼에서 같은 `TEST` 띠를 표시한다.
+
+## Android
+
+[Gradle](../Android/app/build.gradle.kts)은 공통 캠페인에서 같은 원본 `Main_BG.png`를 읽는다. [공통 디코더를 사용하는 준비 도구](../Android/tools/launcher.cpp)로 중앙 768×768 영역을 읽어 192px PNG로 만든다. 치트판에는 `TEST` 띠를 그린다. [AndroidManifest](../Android/app/src/main/AndroidManifest.xml)의 `@drawable/launcher`가 이 출력에 연결된다. 플랫폼별 변환 결과의 PNG 해시는 달라질 수 있다.
+
 ## 과거 iTunesArtwork 패키징 — 2026-11-11
 
 아래는 이전 512×512 `iTunesArtwork` 기반 빌드의 기록이다. 2026-11-12 지정한 탭투스타트 일러스트 적용 결과와 구분한다.

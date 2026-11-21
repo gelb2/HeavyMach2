@@ -1,0 +1,4995 @@
+{
+  "schema": "hm2-iphone-menu-visual-qa-20261114",
+  "date": "2026-11-14",
+  "game_behavior_commit": "3666fc7",
+  "native_host": "Source XCTest host of the same ConcurrentRuntime used by Validation; not a newly installed standalone Release cheat app",
+  "simulator": "iPhone Air iOS26.5 /97CA5646-36BB-47A9-919A-D78DD632A439",
+  "canvas": [
+    912,
+    420
+  ],
+  "native_audit": {
+    "tests_passed": 1,
+    "tests_failed": 0,
+    "frames": 360,
+    "live_scenarios": 126,
+    "menu_frames_with_combat_activity": 27,
+    "full_size_menu_captures": 18,
+    "visual_pass": false,
+    "capture_changes_game_input_or_reveals_buttons": false,
+    "existing_scheduled_actions_use_revealButton": true
+  },
+  "menu_observations": [
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2002,
+          "visible": true,
+          "x": 798,
+          "y": 331.6000061035156
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2001,
+          "visible": true,
+          "x": 528.2000122070312,
+          "y": 331.6000061035156
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 2005,
+          "visible": true,
+          "x": 167.1999969482422,
+          "y": -40.79999923706055
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 2004,
+          "visible": true,
+          "x": 828.3999633789062,
+          "y": 476
+        }
+      ],
+      "credits": 10,
+      "extraSimulationTick": false,
+      "frame": 1,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 55,
+      "screen": 3,
+      "visualPassAsserted": false,
+      "width": 912
+    },
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2002,
+          "visible": true,
+          "x": 798,
+          "y": 331.6000061035156
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2001,
+          "visible": true,
+          "x": 528.2000122070312,
+          "y": 331.6000061035156
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 2005,
+          "visible": true,
+          "x": 167.1999969482422,
+          "y": -40.79999923706055
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 2004,
+          "visible": true,
+          "x": 828.3999633789062,
+          "y": 476
+        }
+      ],
+      "credits": 500,
+      "extraSimulationTick": false,
+      "frame": 1,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 56,
+      "screen": 3,
+      "visualPassAsserted": false,
+      "width": 912
+    },
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2002,
+          "visible": true,
+          "x": 798,
+          "y": 331.6000061035156
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2001,
+          "visible": true,
+          "x": 528.2000122070312,
+          "y": 331.6000061035156
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 2005,
+          "visible": true,
+          "x": 167.1999969482422,
+          "y": -40.79999923706055
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 2004,
+          "visible": true,
+          "x": 828.3999633789062,
+          "y": 476
+        }
+      ],
+      "credits": 10,
+      "extraSimulationTick": false,
+      "frame": 180,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 55,
+      "screen": 3,
+      "visualPassAsserted": false,
+      "width": 912
+    },
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2002,
+          "visible": true,
+          "x": 798,
+          "y": 331.6000061035156
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2001,
+          "visible": true,
+          "x": 528.2000122070312,
+          "y": 331.6000061035156
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 2005,
+          "visible": true,
+          "x": 167.1999969482422,
+          "y": -40.79999923706055
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 2004,
+          "visible": true,
+          "x": 828.3999633789062,
+          "y": 476
+        }
+      ],
+      "credits": 500,
+      "extraSimulationTick": false,
+      "frame": 180,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 56,
+      "screen": 3,
+      "visualPassAsserted": false,
+      "width": 912
+    },
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "11001",
+          "id": 6000,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 324
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "12001",
+          "id": 6001,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 324
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10011",
+          "id": 6002,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 324
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10111",
+          "id": 6003,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 324
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "04201",
+          "id": 6004,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 324
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 6005,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 248
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02004",
+          "id": 6006,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 248
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02005",
+          "id": 6007,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 248
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6008,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 248
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6009,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 248
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6010,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 172
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6011,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 172
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6012,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 172
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6013,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 172
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6014,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 172
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6015,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 96
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6016,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 96
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6017,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 96
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6018,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 96
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6019,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 96
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6020,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 20
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6021,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 20
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6022,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 20
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6023,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 20
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6024,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 20
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6090,
+          "visible": true,
+          "x": 503.5,
+          "y": 27.599998474121094
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6091,
+          "visible": true,
+          "x": 815.0999755859375,
+          "y": 27.599998474121094
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "11001",
+          "id": 6100,
+          "visible": false,
+          "x": 176.6999969482422,
+          "y": 306.8999938964844
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "12001",
+          "id": 6101,
+          "visible": false,
+          "x": 176.6999969482422,
+          "y": 200.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10011",
+          "id": 6102,
+          "visible": false,
+          "x": 106.4000015258789,
+          "y": 297.3999938964844
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10111",
+          "id": 6103,
+          "visible": false,
+          "x": 247,
+          "y": 297.3999938964844
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6104,
+          "visible": false,
+          "x": 247,
+          "y": 200.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6105,
+          "visible": false,
+          "x": 106.4000015258789,
+          "y": 200.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6300,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 308.79998779296875
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6301,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 236.60000610351562
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6302,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 164.39999389648438
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 9205,
+          "visible": false,
+          "x": 123.5,
+          "y": -50.29999923706055
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 4,
+          "dataId": "",
+          "id": 2104,
+          "visible": true,
+          "x": 95,
+          "y": 415.1999816894531
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 1,
+          "dataId": "",
+          "id": 2104,
+          "visible": true,
+          "x": 342,
+          "y": 415.1999816894531
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 9204,
+          "visible": true,
+          "x": 317.29998779296875,
+          "y": -50.29999923706055
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2105,
+          "visible": true,
+          "x": 95,
+          "y": 31.400001525878906
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2106,
+          "visible": true,
+          "x": 340.1000061035156,
+          "y": 31.400001525878906
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10211",
+          "id": 2200,
+          "visible": true,
+          "x": 104.5,
+          "y": 324
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10021",
+          "id": 2201,
+          "visible": true,
+          "x": 180.5,
+          "y": 324
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10132",
+          "id": 2202,
+          "visible": true,
+          "x": 256.5,
+          "y": 324
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10212",
+          "id": 2203,
+          "visible": true,
+          "x": 332.5,
+          "y": 324
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10031",
+          "id": 2204,
+          "visible": true,
+          "x": 104.5,
+          "y": 248
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6093,
+          "visible": true,
+          "x": 779,
+          "y": 419
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 2100,
+          "visible": true,
+          "x": 798,
+          "y": -50.29999923706055
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9200,
+          "visible": true,
+          "x": 408.5,
+          "y": 324
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9201,
+          "visible": true,
+          "x": 408.5,
+          "y": 96
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9202,
+          "visible": true,
+          "x": 513,
+          "y": 381
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9203,
+          "visible": true,
+          "x": 817,
+          "y": 381
+        }
+      ],
+      "credits": 10,
+      "extraSimulationTick": false,
+      "frame": 347,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 55,
+      "screen": 6,
+      "visualPassAsserted": false,
+      "width": 912
+    },
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 5009,
+          "visible": true,
+          "x": 531,
+          "y": 39
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2100,
+          "visible": true,
+          "x": 648,
+          "y": 39
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "M001010",
+          "id": 5100,
+          "visible": true,
+          "x": 456,
+          "y": 348
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "M002010",
+          "id": 5101,
+          "visible": true,
+          "x": 456,
+          "y": 318.6666564941406
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "M003010",
+          "id": 5102,
+          "visible": true,
+          "x": 456,
+          "y": 289.33331298828125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "M004010",
+          "id": 5103,
+          "visible": true,
+          "x": 456,
+          "y": 260
+        }
+      ],
+      "credits": 500,
+      "extraSimulationTick": false,
+      "frame": 347,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 56,
+      "screen": 4,
+      "visualPassAsserted": false,
+      "width": 912
+    },
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "11001",
+          "id": 6000,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "12001",
+          "id": 6001,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10011",
+          "id": 6002,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10111",
+          "id": 6003,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "04201",
+          "id": 6004,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 6005,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02004",
+          "id": 6006,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02005",
+          "id": 6007,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6008,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6009,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6010,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6011,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6012,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6013,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6014,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6015,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6016,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6017,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6018,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6019,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6020,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6021,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6022,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6023,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6024,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6090,
+          "visible": true,
+          "x": 503.5,
+          "y": 2.9000167846679688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6091,
+          "visible": true,
+          "x": 815.0999755859375,
+          "y": 2.9000167846679688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "11001",
+          "id": 6100,
+          "visible": false,
+          "x": 176.6999969482422,
+          "y": 282.20001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "12001",
+          "id": 6101,
+          "visible": false,
+          "x": 176.6999969482422,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10011",
+          "id": 6102,
+          "visible": false,
+          "x": 106.4000015258789,
+          "y": 272.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10111",
+          "id": 6103,
+          "visible": false,
+          "x": 247,
+          "y": 272.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6104,
+          "visible": false,
+          "x": 247,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6105,
+          "visible": false,
+          "x": 106.4000015258789,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6300,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 284.1000061035156
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6301,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 211.9000244140625
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6302,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 139.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 9205,
+          "visible": false,
+          "x": 123.5,
+          "y": -74.99998474121094
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 3,
+          "dataId": "",
+          "id": 2104,
+          "visible": true,
+          "x": 95,
+          "y": 390.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2104,
+          "visible": true,
+          "x": 342,
+          "y": 390.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 9204,
+          "visible": true,
+          "x": 317.29998779296875,
+          "y": -74.99998474121094
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2105,
+          "visible": true,
+          "x": 95,
+          "y": 6.700019836425781
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2106,
+          "visible": true,
+          "x": 340.1000061035156,
+          "y": 6.700019836425781
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 2200,
+          "visible": true,
+          "x": 104.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01002",
+          "id": 2201,
+          "visible": true,
+          "x": 180.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01003",
+          "id": 2202,
+          "visible": true,
+          "x": 256.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01004",
+          "id": 2203,
+          "visible": true,
+          "x": 332.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01005",
+          "id": 2204,
+          "visible": true,
+          "x": 104.5,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01006",
+          "id": 2205,
+          "visible": true,
+          "x": 180.5,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6093,
+          "visible": true,
+          "x": 779,
+          "y": 394.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 2100,
+          "visible": true,
+          "x": 798,
+          "y": -74.99998474121094
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9200,
+          "visible": true,
+          "x": 408.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9201,
+          "visible": true,
+          "x": 408.5,
+          "y": 71.30001831054688
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9202,
+          "visible": true,
+          "x": 513,
+          "y": 356.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9203,
+          "visible": true,
+          "x": 817,
+          "y": 356.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2112,
+          "visible": true,
+          "x": 311.20001220703125,
+          "y": 259.4000244140625
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2102,
+          "visible": true,
+          "x": 683.5999755859375,
+          "y": 181.5
+        }
+      ],
+      "credits": 10,
+      "extraSimulationTick": false,
+      "frame": 349,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 55,
+      "screen": 6,
+      "visualPassAsserted": false,
+      "width": 912
+    },
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 5009,
+          "visible": true,
+          "x": 531,
+          "y": 39
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2100,
+          "visible": true,
+          "x": 648,
+          "y": 39
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "M002010",
+          "id": 5100,
+          "visible": true,
+          "x": 456,
+          "y": 348
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "M003010",
+          "id": 5101,
+          "visible": true,
+          "x": 456,
+          "y": 318.66668701171875
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "M004010",
+          "id": 5102,
+          "visible": true,
+          "x": 456,
+          "y": 289.33331298828125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "M001010",
+          "id": 5200,
+          "visible": true,
+          "x": 456,
+          "y": 217.3333282470703
+        }
+      ],
+      "credits": 500,
+      "extraSimulationTick": false,
+      "frame": 349,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 56,
+      "screen": 4,
+      "visualPassAsserted": false,
+      "width": 912
+    },
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "11001",
+          "id": 6000,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "12001",
+          "id": 6001,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10011",
+          "id": 6002,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10111",
+          "id": 6003,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "04201",
+          "id": 6004,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 6005,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02004",
+          "id": 6006,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02005",
+          "id": 6007,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6008,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6009,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6010,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6011,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6012,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6013,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6014,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6015,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6016,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6017,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6018,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6019,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6020,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6021,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6022,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6023,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6024,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6090,
+          "visible": true,
+          "x": 503.5,
+          "y": 2.9000167846679688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6091,
+          "visible": true,
+          "x": 815.0999755859375,
+          "y": 2.9000167846679688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "11001",
+          "id": 6100,
+          "visible": false,
+          "x": 176.6999969482422,
+          "y": 282.20001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "12001",
+          "id": 6101,
+          "visible": false,
+          "x": 176.6999969482422,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10011",
+          "id": 6102,
+          "visible": false,
+          "x": 106.4000015258789,
+          "y": 272.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10111",
+          "id": 6103,
+          "visible": false,
+          "x": 247,
+          "y": 272.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6104,
+          "visible": false,
+          "x": 247,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6105,
+          "visible": false,
+          "x": 106.4000015258789,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6300,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 284.1000061035156
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6301,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 211.9000244140625
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6302,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 139.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 9205,
+          "visible": false,
+          "x": 123.5,
+          "y": -74.99998474121094
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 3,
+          "dataId": "",
+          "id": 2104,
+          "visible": true,
+          "x": 95,
+          "y": 390.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2104,
+          "visible": true,
+          "x": 342,
+          "y": 390.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 9204,
+          "visible": true,
+          "x": 317.29998779296875,
+          "y": -74.99998474121094
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2105,
+          "visible": true,
+          "x": 95,
+          "y": 6.700019836425781
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2106,
+          "visible": true,
+          "x": 340.1000061035156,
+          "y": 6.700019836425781
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 2200,
+          "visible": true,
+          "x": 104.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01002",
+          "id": 2201,
+          "visible": true,
+          "x": 180.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01003",
+          "id": 2202,
+          "visible": true,
+          "x": 256.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01004",
+          "id": 2203,
+          "visible": true,
+          "x": 332.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01005",
+          "id": 2204,
+          "visible": true,
+          "x": 104.5,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01006",
+          "id": 2205,
+          "visible": true,
+          "x": 180.5,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6093,
+          "visible": true,
+          "x": 779,
+          "y": 394.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 2100,
+          "visible": true,
+          "x": 798,
+          "y": -74.99998474121094
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9200,
+          "visible": true,
+          "x": 408.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9201,
+          "visible": true,
+          "x": 408.5,
+          "y": 71.30001831054688
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9202,
+          "visible": true,
+          "x": 513,
+          "y": 356.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9203,
+          "visible": true,
+          "x": 817,
+          "y": 356.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 0,
+          "visible": true,
+          "x": 456,
+          "y": 220
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 2110,
+          "visible": true,
+          "x": 461.3333435058594,
+          "y": 232.66665649414062
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 2111,
+          "visible": true,
+          "x": 495.3333435058594,
+          "y": 232.66665649414062
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 2107,
+          "visible": true,
+          "x": 414,
+          "y": 178.66665649414062
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 2108,
+          "visible": true,
+          "x": 498,
+          "y": 178.66665649414062
+        }
+      ],
+      "credits": 10,
+      "extraSimulationTick": false,
+      "frame": 350,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 55,
+      "screen": 6,
+      "visualPassAsserted": false,
+      "width": 912
+    },
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1022,
+          "visible": true,
+          "x": 418.5,
+          "y": 67.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1023,
+          "visible": true,
+          "x": 528,
+          "y": 67.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1021,
+          "visible": true,
+          "x": 633.75,
+          "y": 69
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1026,
+          "visible": true,
+          "x": 678,
+          "y": 69
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1025,
+          "visible": true,
+          "x": 722.25,
+          "y": 69
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 6200,
+          "visible": true,
+          "x": 551.25,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02004",
+          "id": 6201,
+          "visible": true,
+          "x": 594,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02005",
+          "id": 6202,
+          "visible": true,
+          "x": 636.75,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6203,
+          "visible": true,
+          "x": 679.5,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6204,
+          "visible": true,
+          "x": 722.25,
+          "y": 21.75
+        }
+      ],
+      "credits": 500,
+      "extraSimulationTick": false,
+      "frame": 350,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 56,
+      "screen": 7,
+      "visualPassAsserted": false,
+      "width": 912
+    },
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "11001",
+          "id": 6000,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "12001",
+          "id": 6001,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10011",
+          "id": 6002,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10111",
+          "id": 6003,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "04201",
+          "id": 6004,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 6005,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02004",
+          "id": 6006,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02005",
+          "id": 6007,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6008,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6009,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6010,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6011,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6012,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6013,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6014,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6015,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6016,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6017,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6018,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6019,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6020,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6021,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6022,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6023,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6024,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6090,
+          "visible": true,
+          "x": 503.5,
+          "y": 2.9000167846679688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6091,
+          "visible": true,
+          "x": 815.0999755859375,
+          "y": 2.9000167846679688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "11001",
+          "id": 6100,
+          "visible": false,
+          "x": 176.6999969482422,
+          "y": 282.20001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "12001",
+          "id": 6101,
+          "visible": false,
+          "x": 176.6999969482422,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10011",
+          "id": 6102,
+          "visible": false,
+          "x": 106.4000015258789,
+          "y": 272.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10111",
+          "id": 6103,
+          "visible": false,
+          "x": 247,
+          "y": 272.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6104,
+          "visible": false,
+          "x": 247,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6105,
+          "visible": false,
+          "x": 106.4000015258789,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6300,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 284.1000061035156
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6301,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 211.9000244140625
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6302,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 139.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 9205,
+          "visible": false,
+          "x": 123.5,
+          "y": -74.99998474121094
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 3,
+          "dataId": "",
+          "id": 2104,
+          "visible": true,
+          "x": 95,
+          "y": 390.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2104,
+          "visible": true,
+          "x": 342,
+          "y": 390.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 9204,
+          "visible": true,
+          "x": 317.29998779296875,
+          "y": -74.99998474121094
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2105,
+          "visible": true,
+          "x": 95,
+          "y": 6.700019836425781
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2106,
+          "visible": true,
+          "x": 340.1000061035156,
+          "y": 6.700019836425781
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 2200,
+          "visible": true,
+          "x": 104.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01002",
+          "id": 2201,
+          "visible": true,
+          "x": 180.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01003",
+          "id": 2202,
+          "visible": true,
+          "x": 256.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01004",
+          "id": 2203,
+          "visible": true,
+          "x": 332.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01005",
+          "id": 2204,
+          "visible": true,
+          "x": 104.5,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01006",
+          "id": 2205,
+          "visible": true,
+          "x": 180.5,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6093,
+          "visible": true,
+          "x": 779,
+          "y": 394.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 2100,
+          "visible": true,
+          "x": 798,
+          "y": -74.99998474121094
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9200,
+          "visible": true,
+          "x": 408.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9201,
+          "visible": true,
+          "x": 408.5,
+          "y": 71.30001831054688
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9202,
+          "visible": true,
+          "x": 513,
+          "y": 356.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9203,
+          "visible": true,
+          "x": 817,
+          "y": 356.3000183105469
+        }
+      ],
+      "credits": 0,
+      "extraSimulationTick": false,
+      "frame": 351,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 55,
+      "screen": 6,
+      "visualPassAsserted": false,
+      "width": 912
+    },
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1022,
+          "visible": true,
+          "x": 418.5,
+          "y": 67.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1023,
+          "visible": true,
+          "x": 528,
+          "y": 67.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1021,
+          "visible": true,
+          "x": 633.75,
+          "y": 69
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1026,
+          "visible": true,
+          "x": 678,
+          "y": 69
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1025,
+          "visible": true,
+          "x": 722.25,
+          "y": 69
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 6200,
+          "visible": true,
+          "x": 551.25,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02004",
+          "id": 6201,
+          "visible": true,
+          "x": 594,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02005",
+          "id": 6202,
+          "visible": true,
+          "x": 636.75,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6203,
+          "visible": true,
+          "x": 679.5,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6204,
+          "visible": true,
+          "x": 722.25,
+          "y": 21.75
+        }
+      ],
+      "credits": 500,
+      "extraSimulationTick": false,
+      "frame": 351,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 56,
+      "screen": 7,
+      "visualPassAsserted": false,
+      "width": 912
+    },
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "11001",
+          "id": 6000,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "12001",
+          "id": 6001,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10011",
+          "id": 6002,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10111",
+          "id": 6003,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "04201",
+          "id": 6004,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 6005,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02004",
+          "id": 6006,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02005",
+          "id": 6007,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6008,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6009,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6010,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6011,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6012,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6013,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6014,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6015,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6016,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6017,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6018,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6019,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6020,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6021,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6022,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6023,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6024,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6090,
+          "visible": true,
+          "x": 503.5,
+          "y": 2.9000167846679688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6091,
+          "visible": true,
+          "x": 815.0999755859375,
+          "y": 2.9000167846679688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "11001",
+          "id": 6100,
+          "visible": false,
+          "x": 176.6999969482422,
+          "y": 282.20001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "12001",
+          "id": 6101,
+          "visible": false,
+          "x": 176.6999969482422,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10011",
+          "id": 6102,
+          "visible": false,
+          "x": 106.4000015258789,
+          "y": 272.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10111",
+          "id": 6103,
+          "visible": false,
+          "x": 247,
+          "y": 272.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6104,
+          "visible": false,
+          "x": 247,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6105,
+          "visible": false,
+          "x": 106.4000015258789,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6300,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 284.1000061035156
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6301,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 211.9000244140625
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6302,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 139.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 9205,
+          "visible": false,
+          "x": 123.5,
+          "y": -74.99998474121094
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 3,
+          "dataId": "",
+          "id": 2104,
+          "visible": true,
+          "x": 95,
+          "y": 390.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2104,
+          "visible": true,
+          "x": 342,
+          "y": 390.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 9204,
+          "visible": true,
+          "x": 317.29998779296875,
+          "y": -74.99998474121094
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2105,
+          "visible": true,
+          "x": 95,
+          "y": 6.700019836425781
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2106,
+          "visible": true,
+          "x": 340.1000061035156,
+          "y": 6.700019836425781
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 2200,
+          "visible": true,
+          "x": 104.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01002",
+          "id": 2201,
+          "visible": true,
+          "x": 180.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01003",
+          "id": 2202,
+          "visible": true,
+          "x": 256.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01004",
+          "id": 2203,
+          "visible": true,
+          "x": 332.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01005",
+          "id": 2204,
+          "visible": true,
+          "x": 104.5,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01006",
+          "id": 2205,
+          "visible": true,
+          "x": 180.5,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6093,
+          "visible": true,
+          "x": 779,
+          "y": 394.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 2100,
+          "visible": true,
+          "x": 798,
+          "y": -74.99998474121094
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9200,
+          "visible": true,
+          "x": 408.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9201,
+          "visible": true,
+          "x": 408.5,
+          "y": 71.30001831054688
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9202,
+          "visible": true,
+          "x": 513,
+          "y": 356.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9203,
+          "visible": true,
+          "x": 817,
+          "y": 356.3000183105469
+        }
+      ],
+      "credits": 0,
+      "extraSimulationTick": false,
+      "frame": 354,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 55,
+      "screen": 6,
+      "visualPassAsserted": false,
+      "width": 912
+    },
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1022,
+          "visible": true,
+          "x": 418.5,
+          "y": 67.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1023,
+          "visible": true,
+          "x": 528,
+          "y": 67.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1021,
+          "visible": true,
+          "x": 633.75,
+          "y": 69
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1026,
+          "visible": true,
+          "x": 678,
+          "y": 69
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1025,
+          "visible": true,
+          "x": 722.25,
+          "y": 69
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 6200,
+          "visible": true,
+          "x": 551.25,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02004",
+          "id": 6201,
+          "visible": true,
+          "x": 594,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02005",
+          "id": 6202,
+          "visible": true,
+          "x": 636.75,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6203,
+          "visible": true,
+          "x": 679.5,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6204,
+          "visible": true,
+          "x": 722.25,
+          "y": 21.75
+        }
+      ],
+      "credits": 500,
+      "extraSimulationTick": false,
+      "frame": 354,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 56,
+      "screen": 7,
+      "visualPassAsserted": false,
+      "width": 912
+    },
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "11001",
+          "id": 6000,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "12001",
+          "id": 6001,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10011",
+          "id": 6002,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10111",
+          "id": 6003,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "04201",
+          "id": 6004,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 6005,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02004",
+          "id": 6006,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02005",
+          "id": 6007,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6008,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6009,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6010,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6011,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6012,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6013,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6014,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6015,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6016,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6017,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6018,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6019,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6020,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6021,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6022,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6023,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6024,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6090,
+          "visible": true,
+          "x": 503.5,
+          "y": 2.9000167846679688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6091,
+          "visible": true,
+          "x": 815.0999755859375,
+          "y": 2.9000167846679688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "11001",
+          "id": 6100,
+          "visible": false,
+          "x": 176.6999969482422,
+          "y": 282.20001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "12001",
+          "id": 6101,
+          "visible": false,
+          "x": 176.6999969482422,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10011",
+          "id": 6102,
+          "visible": false,
+          "x": 106.4000015258789,
+          "y": 272.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10111",
+          "id": 6103,
+          "visible": false,
+          "x": 247,
+          "y": 272.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6104,
+          "visible": false,
+          "x": 247,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6105,
+          "visible": false,
+          "x": 106.4000015258789,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6300,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 284.1000061035156
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6301,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 211.9000244140625
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6302,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 139.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 9205,
+          "visible": false,
+          "x": 123.5,
+          "y": -74.99998474121094
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 3,
+          "dataId": "",
+          "id": 2104,
+          "visible": true,
+          "x": 95,
+          "y": 390.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2104,
+          "visible": true,
+          "x": 342,
+          "y": 390.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 9204,
+          "visible": true,
+          "x": 317.29998779296875,
+          "y": -74.99998474121094
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2105,
+          "visible": true,
+          "x": 95,
+          "y": 6.700019836425781
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2106,
+          "visible": true,
+          "x": 340.1000061035156,
+          "y": 6.700019836425781
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 2200,
+          "visible": true,
+          "x": 104.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01002",
+          "id": 2201,
+          "visible": true,
+          "x": 180.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01003",
+          "id": 2202,
+          "visible": true,
+          "x": 256.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01004",
+          "id": 2203,
+          "visible": true,
+          "x": 332.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01005",
+          "id": 2204,
+          "visible": true,
+          "x": 104.5,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01006",
+          "id": 2205,
+          "visible": true,
+          "x": 180.5,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6093,
+          "visible": true,
+          "x": 779,
+          "y": 394.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 2100,
+          "visible": true,
+          "x": 798,
+          "y": -74.99998474121094
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9200,
+          "visible": true,
+          "x": 408.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9201,
+          "visible": true,
+          "x": 408.5,
+          "y": 71.30001831054688
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9202,
+          "visible": true,
+          "x": 513,
+          "y": 356.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9203,
+          "visible": true,
+          "x": 817,
+          "y": 356.3000183105469
+        }
+      ],
+      "credits": 0,
+      "extraSimulationTick": false,
+      "frame": 355,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 55,
+      "screen": 6,
+      "visualPassAsserted": false,
+      "width": 912
+    },
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1022,
+          "visible": true,
+          "x": 418.5,
+          "y": 67.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1023,
+          "visible": true,
+          "x": 528,
+          "y": 67.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1021,
+          "visible": true,
+          "x": 633.75,
+          "y": 69
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1026,
+          "visible": true,
+          "x": 678,
+          "y": 69
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1025,
+          "visible": true,
+          "x": 722.25,
+          "y": 69
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 6200,
+          "visible": true,
+          "x": 551.25,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02004",
+          "id": 6201,
+          "visible": true,
+          "x": 594,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02005",
+          "id": 6202,
+          "visible": true,
+          "x": 636.75,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6203,
+          "visible": true,
+          "x": 679.5,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6204,
+          "visible": true,
+          "x": 722.25,
+          "y": 21.75
+        }
+      ],
+      "credits": 500,
+      "extraSimulationTick": false,
+      "frame": 355,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 56,
+      "screen": 7,
+      "visualPassAsserted": false,
+      "width": 912
+    },
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "11001",
+          "id": 6000,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "12001",
+          "id": 6001,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10011",
+          "id": 6002,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10111",
+          "id": 6003,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "04201",
+          "id": 6004,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 6005,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02004",
+          "id": 6006,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02005",
+          "id": 6007,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6008,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6009,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6010,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6011,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6012,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6013,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6014,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 147.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6015,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6016,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6017,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6018,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6019,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": 71.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6020,
+          "visible": true,
+          "x": 507.29998779296875,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6021,
+          "visible": true,
+          "x": 583.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6022,
+          "visible": true,
+          "x": 659.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6023,
+          "visible": true,
+          "x": 735.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 6024,
+          "visible": true,
+          "x": 811.2999877929688,
+          "y": -4.699981689453125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6090,
+          "visible": true,
+          "x": 503.5,
+          "y": 2.9000167846679688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6091,
+          "visible": true,
+          "x": 815.0999755859375,
+          "y": 2.9000167846679688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "11001",
+          "id": 6100,
+          "visible": false,
+          "x": 176.6999969482422,
+          "y": 282.20001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "12001",
+          "id": 6101,
+          "visible": false,
+          "x": 176.6999969482422,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10011",
+          "id": 6102,
+          "visible": false,
+          "x": 106.4000015258789,
+          "y": 272.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "10111",
+          "id": 6103,
+          "visible": false,
+          "x": 247,
+          "y": 272.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6104,
+          "visible": false,
+          "x": 247,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6105,
+          "visible": false,
+          "x": 106.4000015258789,
+          "y": 175.80001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6300,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 284.1000061035156
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6301,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 211.9000244140625
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6302,
+          "visible": false,
+          "x": 368.6000061035156,
+          "y": 139.70001220703125
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 9205,
+          "visible": false,
+          "x": 123.5,
+          "y": -74.99998474121094
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 3,
+          "dataId": "",
+          "id": 2104,
+          "visible": true,
+          "x": 95,
+          "y": 390.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2104,
+          "visible": true,
+          "x": 342,
+          "y": 390.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 9204,
+          "visible": true,
+          "x": 317.29998779296875,
+          "y": -74.99998474121094
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2105,
+          "visible": true,
+          "x": 95,
+          "y": 6.700019836425781
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 2106,
+          "visible": true,
+          "x": 340.1000061035156,
+          "y": 6.700019836425781
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 2200,
+          "visible": true,
+          "x": 104.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01002",
+          "id": 2201,
+          "visible": true,
+          "x": 180.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01003",
+          "id": 2202,
+          "visible": true,
+          "x": 256.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01004",
+          "id": 2203,
+          "visible": true,
+          "x": 332.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01005",
+          "id": 2204,
+          "visible": true,
+          "x": 104.5,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01006",
+          "id": 2205,
+          "visible": true,
+          "x": 180.5,
+          "y": 223.30001831054688
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6093,
+          "visible": true,
+          "x": 779,
+          "y": 394.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": false,
+          "data": 0,
+          "dataId": "",
+          "id": 2100,
+          "visible": true,
+          "x": 798,
+          "y": -74.99998474121094
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9200,
+          "visible": true,
+          "x": 408.5,
+          "y": 299.3000183105469
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9201,
+          "visible": true,
+          "x": 408.5,
+          "y": 71.30001831054688
+        },
+        {
+          "active": false,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9202,
+          "visible": true,
+          "x": 513,
+          "y": 356.3000183105469
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 9203,
+          "visible": true,
+          "x": 817,
+          "y": 356.3000183105469
+        }
+      ],
+      "credits": 0,
+      "extraSimulationTick": false,
+      "frame": 360,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 55,
+      "screen": 6,
+      "visualPassAsserted": false,
+      "width": 912
+    },
+    {
+      "buttons": [
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1022,
+          "visible": true,
+          "x": 418.5,
+          "y": 67.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1023,
+          "visible": true,
+          "x": 528,
+          "y": 67.5
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1021,
+          "visible": true,
+          "x": 633.75,
+          "y": 69
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1026,
+          "visible": true,
+          "x": 678,
+          "y": 69
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 1025,
+          "visible": true,
+          "x": 722.25,
+          "y": 69
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "01001",
+          "id": 6200,
+          "visible": true,
+          "x": 551.25,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02004",
+          "id": 6201,
+          "visible": true,
+          "x": 594,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "02005",
+          "id": 6202,
+          "visible": true,
+          "x": 636.75,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6203,
+          "visible": true,
+          "x": 679.5,
+          "y": 21.75
+        },
+        {
+          "active": true,
+          "centerInsideCanvas": true,
+          "data": 0,
+          "dataId": "",
+          "id": 6204,
+          "visible": true,
+          "x": 722.25,
+          "y": 21.75
+        }
+      ],
+      "credits": 500,
+      "extraSimulationTick": false,
+      "frame": 360,
+      "height": 420,
+      "revealButtonDuringCapture": false,
+      "scenario": 56,
+      "screen": 7,
+      "visualPassAsserted": false,
+      "width": 912
+    }
+  ],
+  "reference_host_before": {
+    "profile": "phone",
+    "target": "aarch64-apple-ios-sim",
+    "ipa_sha256": "23ff9c74c7d890cc6f28952b4845f6c616bae4bb7207a393f80ed9ed76062d32",
+    "runtime_sha256": "6f9b39883fdfbb25268f55422b2e77635de55d1854dd895d2211476aba8b4d86",
+    "bundle_id": "com.gelb2.heavymach2.reference.phone",
+    "options": [
+      "--landscape-right",
+      "--device-family=iphone"
+    ],
+    "local_only": true
+  },
+  "reference_host_current": {
+    "profile": "phone",
+    "target": "aarch64-apple-ios-sim",
+    "ipa_sha256": "23ff9c74c7d890cc6f28952b4845f6c616bae4bb7207a393f80ed9ed76062d32",
+    "runtime_sha256": "194459698a4e4e1fdc8e20ba0a05328a0ed0d0e11b593c5e5eda06835f85c855",
+    "bundle_id": "com.gelb2.heavymach2.reference.phone",
+    "options": [
+      "--landscape-right",
+      "--device-family=iphone"
+    ],
+    "local_only": true,
+    "signed_host_sha256": "567e22cf01ce31a65ddab5742965c6a5eba80dc3cf1353369845fd34cd7c69a0"
+  },
+  "reference_observed": [
+    "Hub full original artwork and facility/field/exit controls in480x320",
+    "Shop16stock/20inventory; SG-1 detail,250Cr confirmation and actual500to250Cr plus inventory addition",
+    "Command original left mission list/right detail/ACCEPT; Metal bolt/nut mission becomes Accepted"
+  ],
+  "reference_compatibility_failure": "Installed Nov9 Phone host panicked at printf.rs321 prepend_sign while opening SG-1. Preserved log. Repackaged the same IPA using the already built Nov10 common runtime194459... used by HD; no source or IPA change. SG-1 detail and purchase then succeeded.",
+  "save_preservation": {
+    "originalSaveBytes": 26344,
+    "before": "90f5ae0655f3daa69c5d390d656f936063535665176ffe59a20648abfc079064",
+    "afterQA": "9c3ed812079924a82223535d43e46dc6af70650b21c3a510bd2f9f2c86b5b7aa",
+    "restored": "90f5ae0655f3daa69c5d390d656f936063535665176ffe59a20648abfc079064",
+    "restoredExactly": true,
+    "physicalDevicesAccessed": false,
+    "rawSaveLocalOnly": true
+  },
+  "failures": [
+    "Hub button2005 centerY-40.8 and2004 centerY476 outside420-high canvas atframe1",
+    "Shop frame349/360 has7 visible active button centers outside canvas; EXIT2100 centerY-75, inventory6020..6024 centerY-4.7",
+    "Shop footer/currency/EXIT absent in captured screen; original Phone fits them",
+    "Command Phone illustration with commonHD list/panel/action composition differs from originalPhone left-list/right-detail layout"
+  ],
+  "limits": [
+    "Center outside is not a full transformed hit-bound proof; captures corroborate clipping.",
+    "Phone original and restoredHD-rule fixtures have different mission/progress/items; raw counts do not establish missing missions.",
+    "Repair purchase by scheduled revealButton passed; user weapon-purchase failure is unresolved.",
+    "No exhaustive numeric overflow/SELL/equipment/allhub/allqueststate visual completion; corresponding TODOs remain open.",
+    "No production menu layout fix, physical install or develop/main merge in this audit."
+  ],
+  "sources": [
+    {
+      "path": "Sources/Platform/Apple/HM2ConcurrentRuntime.hpp",
+      "sha256": "1306a020920e47468ccfbb41a0c9c3b939cf653e3d05ec6c1f7fba47652167f3"
+    },
+    {
+      "path": "Sources/Platform/Apple/HM2ConcurrentRuntime.mm",
+      "sha256": "372a2e305ab9212b26a9e9dcc3c17dbc9316f3af5278a5a72f89cfc8050ec291"
+    },
+    {
+      "path": "Apple/Tests/ConcurrentValidationTests.mm",
+      "sha256": "1f75042980a5de21044d2f8b875e296cfb10d6fb127514b7b20e5683bdf1e8d9"
+    }
+  ],
+  "local_evidence": [
+    {
+      "file": "reference-base.png",
+      "sha256": "51a5648f1ea71414604a3368bb8453e8991ab4e27a7783ad6c07457ec7e824d8"
+    },
+    {
+      "file": "reference-shop.png",
+      "sha256": "10558da1860560bc5f808d6b2a3f000dc75740ba3f8159e33efd159aea576b12"
+    },
+    {
+      "file": "reference-detail-printf-failure.log",
+      "sha256": "994c0e2021c6cbb75649d7f473fe9560d8712c0ad3f68dd7d7bbebaae6a66f3b"
+    },
+    {
+      "file": "reference-shop-detail-current.png",
+      "sha256": "b9d69999d211406e1edda01bf0ceb5cb198dce7e4ec04eb6712bd7eee94383e5"
+    },
+    {
+      "file": "reference-shop-buy.png",
+      "sha256": "567144b7a15865c11d0fce50ac9d46696dddb29843858d4de10d30ab11579c9e"
+    },
+    {
+      "file": "reference-shop-after-buy.png",
+      "sha256": "2554d01ffdc17e2a2ba9841afda139945dcc013b8f2e048c094273cacce75ff0"
+    },
+    {
+      "file": "reference-command.png",
+      "sha256": "cfa6984d6588795a81446b775cf4506fdb52e22ccdd95ea05e86581babd5b637"
+    },
+    {
+      "file": "reference-command-detail.png",
+      "sha256": "a599c8cde86cea52e6279df72f78402cd754cbddde8d246e7f4c1b64e2e5d1de"
+    },
+    {
+      "file": "reference-command-accepted.png",
+      "sha256": "f8fb35feb8f9be059e62e5349a7813f8bb1e486153ca9733c2d8b9b307993f0c"
+    },
+    {
+      "file": "menu-qa-summary.json",
+      "sha256": "355f44a68845e550c7dd28beaeae58bc3f61aec499e55aa8a4e8f4f3b5dba17b"
+    },
+    {
+      "file": "cheat-captures/report.json",
+      "sha256": "dbae472778117e1f6c3c51440613798bba0c8afee390b5e13928de6d3b9bd7dc"
+    },
+    {
+      "file": "save-preservation.json",
+      "sha256": "a4fccb636193db065e15c2f8047b01ca1c57cdfbcd994e5a9b593d556dc00404"
+    }
+  ]
+}

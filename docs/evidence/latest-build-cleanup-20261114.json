@@ -1,0 +1,22 @@
+{
+  "removed_entries": 281,
+  "removed_bytes": 1970885331,
+  "kept_binaries": 9,
+  "kept_binary_hashes_unchanged": true,
+  "master_IPAs_verified": 6,
+  "source_saves_logs_captures_xcresults_traces_preserved": true,
+  "removed_manifest_sha256": "4a43f617b30ff4eec896171df6ee85236d6b0381488b91dc383bf2ba08899183",
+  "kept_binary_manifest_sha256": "18df2e4abf177bc374bd9e1b33936aeece1181334abb239e3c4b6c0eb8697e84",
+  "preserved_latest_roles": [
+    "Signed Source Release device",
+    "Source/Validation Release simulator",
+    "Latest XCTest host",
+    "Phone201/HD103 simulator references and HD103 device reference",
+    "Latest simulator/device/runtime executables"
+  ],
+  "obsolete_reference_apps_removed": [
+    "HD1.0.0",
+    "Phone1.1.0",
+    "HD-in-Phone probe"
+  ]
+}

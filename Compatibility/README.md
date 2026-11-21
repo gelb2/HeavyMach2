@@ -2,7 +2,7 @@
 
 일반판 2.0.1·비교용 1.1.0과 HD 1.0.3의 원본 ARMv7 코드를 Rust CPU 인터프리터로 실행하는 내부 비교 앱이다. 각 앱은 서로 다른 원본·기기 설정·bundle ID·저장을 사용한다. 현재 C++ 소스 복원과 최종 일괄 대조 순서는 [작업 순서](../docs/validation-build.md#작업-순서)를 따른다.
 
-일반판 1.1.0은 시뮬레이터에서 이름 입력·저장 생성·기지·전장 진입까지 확인했다. 2.0.1은 초기화 중복 호출 수정 후 타이틀 렌더링을 확인했으며 회전 처리를 검증 중이다. HD 1.0.3은 저장 생성·임무 수락·전장·이동을 확인했다. 전투·저장 복구·음향 검증은 진행 중이다. 빌드 성공을 게임 정상 동작으로 취급하지 않는다.
+초기 비교 기록에서 일반판 1.1.0은 시뮬레이터에서 이름 입력·저장 생성·기지·전장 진입까지 확인했다. 2.0.1은 초기화 중복 호출 수정 후 타이틀 렌더링을 확인했으며 회전 처리를 검증 중이다. HD 1.0.3은 저장 생성·임무 수락·전장·이동을 확인했다. 전투·저장 복구·음향 검증은 진행 중이다. 빌드 성공을 게임 정상 동작으로 취급하지 않는다.
 
 ## 준비와 빌드
 
@@ -18,7 +18,7 @@ python3 Compatibility/package_reference.py phone110 --target aarch64-apple-ios-s
 xcodegen generate --spec Compatibility/ios/project.yml
 ```
 
-현행 작업은 HD의 iPad 기준을 사용한다. 사용자가 요청한 실제 iPad의 HD 포팅판 설치와 스테이지 이동·전투 관측은 [확인 기록](../docs/hd-original-function-audit-20261111.md)에 보존한다. 아래의 판본별 실행 상태는 초기 조사 기록이다. Xcode의 DerivedData 출력은 반드시 저장소 밖 `~/Documents/Codex/HeavyMach2/ReferenceBuilds/` 아래로 지정한다. 패키징 도구는 이 범위 밖의 원본 포함 출력을 거부한다. 서명 팀은 해당 Mac의 기존 개발팀을 명령 또는 Xcode 설정으로 지정한다.
+현행 작업은 HD의 iPad 기준을 사용한다. 사용자가 요청한 실제 iPad의 HD 포팅판 설치와 스테이지 이동·전투 관측은 [확인 기록](../docs/hd-original-function-audit-20261111.md)에 보존한다. 일반판 2.0.1의 후속 실행·상점 자원·좌표 비교는 [iPhone 상점 기록](../docs/iphone-shop-reference-coordinates-20261119.md)에 있다. [호환 코드 제3자 고지](THIRD-PARTY-NOTICES.md)를 따른다. Xcode의 DerivedData 출력은 반드시 저장소 밖 `~/Documents/Codex/HeavyMach2/ReferenceBuilds/` 아래로 지정한다. 패키징 도구는 이 범위 밖의 원본 포함 출력을 거부한다. 서명 팀은 해당 Mac의 기존 개발팀을 명령 또는 Xcode 설정으로 지정한다.
 
 원본 IPA는 읽기 전후 해시를 검사하며 수정하지 않는다. 원본을 포함한 호스트 앱은 로컬 기기에만 설치한다. Git/LFS/CI artifact/릴리스/보고 사이트에 올리지 않는다. 보고서에는 검사 결과와 허용된 화면 캡처만 사용한다.
 

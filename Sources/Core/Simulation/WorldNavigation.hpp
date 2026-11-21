@@ -34,6 +34,7 @@ public:
     void cancel(){pointer_=0;}
 };
 // HD processCamera: movement path/target midpoint, axis ease50/snap.5,
-// fixed HD limits. Expanded display/other devices do not change game limits.
+// fixed HD limits by default. Configured display limits change framing only.
+void constrainCamera(MapCamera&,Vec2 player);
 void processCamera(MapCamera&,Vec2 player,const WorldNavigation&,std::optional<Vec2> target=std::nullopt);
 }

@@ -1,0 +1,60 @@
+{
+  "originalBackgrounds": {
+    "status": "PASS",
+    "contexts": 36
+  },
+  "phoneUI": {
+    "status": "PASS",
+    "cases": 16,
+    "frames": 720,
+    "concurrentStates": 126,
+    "lastCellIDs": [
+      2223,
+      6024
+    ],
+    "sourceHashes": {
+      "Sources/Core/UI/Screens.cpp": "e9aecdf4c6ec11cbdee22bde6b980144d2f528f48b8dee0ab588cc67b12620df",
+      "Sources/Core/UI/Screens.hpp": "fe8009deeef527a176c3384c1a91ea59220b7b4e67cace3b506cf4361f6811a2",
+      "Sources/Core/Presentation/DisplayLayout.cpp": "a11de873386e50503d763be231c315b1ad22bebe3743f7cfcdae162c952675fd",
+      "Sources/Core/Presentation/DisplayLayout.hpp": "19506ace0c11a3337faa4a3db0e6b2cf3b4052efb67c7e5baac4593145139370",
+      "Sources/Core/Presentation/MenuArtwork.hpp": "415a770828e1dc402aed830625c8915d7bc326bbf569588bb1293df80788834e",
+      "Sources/Core/Presentation/MenuGridLayout.hpp": "cabf3df681d55fd974c27f328429d2d0ecf50d5f8bdce536022783b801da465a"
+    },
+    "binarySHA256": "959658cb6c90b2944fbe453b0e3ee7ec71be2bd614c127062131abf6396f1052",
+    "gameSHA256": "41c82430aa8a0154516525033c0497e3f91093cd8a24c12c3ddff314ccd2ec17"
+  },
+  "ipadBaseline": {
+    "samePNGBytes": 18,
+    "total": 18
+  },
+  "screenHarness": {
+    "status": "FAIL",
+    "preExistingIpadMarginFailures": 18
+  },
+  "independentCheat": {
+    "frames": 2100,
+    "scenarios": 126,
+    "buttonFailures": 0,
+    "steadyReadRequests": 0,
+    "completeGameCoverage": false,
+    "reportSHA256": "70c95cbf18f53afc076036b68bc687ac3d9dd27a89939cfc5f46c0304ad43084",
+    "sourceRevision": "ca424ab",
+    "latestDataContainerRefreshedAfterInstall": true,
+    "sourceHashes": {
+      "Sources/Core/UI/Screens.cpp": "e9aecdf4c6ec11cbdee22bde6b980144d2f528f48b8dee0ab588cc67b12620df",
+      "Sources/Core/Presentation/DisplayLayout.cpp": "a11de873386e50503d763be231c315b1ad22bebe3743f7cfcdae162c952675fd",
+      "Sources/Core/Presentation/MenuArtwork.hpp": "415a770828e1dc402aed830625c8915d7bc326bbf569588bb1293df80788834e",
+      "Sources/Core/Presentation/MenuGridLayout.hpp": "cabf3df681d55fd974c27f328429d2d0ecf50d5f8bdce536022783b801da465a"
+    },
+    "validationBinarySHA256": "fc02016b9418608665935f71214271bb4978fea0e1574c487333390bf41efb25",
+    "validationGameSHA256": "15d315074954f1d9988a212495d9d19c202f8306199eec485af732b098f5ecad"
+  },
+  "regressions": {
+    "finalRelatedCore": 2,
+    "python": 36,
+    "earlierBroadCore": 78,
+    "exact24TrailingPage": "RED then GREEN"
+  },
+  "nativeHookReceipts": 0,
+  "followupShopPixelAndDivMatch": "TODO, not completed"
+}

@@ -10,12 +10,14 @@ struct AirStrikeBullet {
     float angle=0;
     Vec2 source,destination;
     bool toPlayer=false,drop=true;
+    int impactDamage=0;
 };
 struct AirStrikeHost {
     virtual ~AirStrikeHost()=default;
-    // Already-prepared common tiles only. Target's original2x1 split is set by
-    // this actor when its pooled marker actually exists; no file IO here.
+    // Prepared-only fixture lookup; live creation uses the explicit original
+    // shared-manager request below, never a draw-time fallback.
     virtual TileImage* preparedTile(std::string_view)=0;
+    virtual TileImage* prepareOriginalTile(std::string_view name){return preparedTile(name);}
     // Existing world pool allocate/reset, including its shared-world RNG.
     virtual Particle* allocateParticle(float renderTime)=0;
     virtual void sound(unsigned originalSfx)=0;
@@ -40,9 +42,10 @@ class AirStrike {
     AirStrikeState state_;
     VisibilityState visibility_;
     std::uint64_t bulletRequests_=0;
+    int impactDamage_;
 public:
     AirStrike(const WeaponInfo*,float fireDelay,Vec2 target,Vec2 player,
-              double worldTime,float renderTime,AirStrikeHost&,WorldRandom&);
+              double worldTime,float renderTime,AirStrikeHost&,WorldRandom&,int impactDamage=0);
     // World.tick0x110d8 still ticks children while paused (worldTime freezes).
     // Preserve this actor's lack of a local pause gate; movement and an already
     // open firing branch continue. Removed actors are no longer ticked.
