@@ -2,6 +2,24 @@
 
 [플레이 방법](quick-play.md) · [원작 복원과 추가 작업](features.md)
 
+## iPad 플레이 녹화
+
+첫 GIF는 연못 사이에서 이동 목표를 정하고 주변 전차와 교전하는 장면이다. 두 번째 GIF는 해안가에서 이동 경로를 그리며 적과 포탄을 주고받는 장면이다. 2026년 11월 12일 사용자 녹화에서 각각 연속 8초를 발췌했다. [영상 구간과 해시](media/player-captures-20261121/sources.json)
+
+<img src="media/player-captures-20261121/ipad-field-combat.gif" alt="iPad 세로 화면에서 메크가 연못 사이를 이동하며 전차와 교전한다." width="378">
+
+<img src="media/player-captures-20261121/ipad-combat-route.gif" alt="iPad 해안 전장에서 메크의 초록색 이동 경로와 적의 사격이 보인다." width="378">
+
+## iPhone 사령부와 전장
+
+2026년 11월 14일 사용자가 iPhone 가로 화면에서 찍었다. 사령부의 임무 목록, Skyway Base 포털 주변의 전장, 전장 위에 연 시스템 메뉴 순이다.
+
+![iPhone 사령부의 신규 임무 안내와 진행 중인 임무 세 건](media/player-captures-20261121/iphone-command.png)
+
+![iPhone 전장의 Skyway Base 포털, 이동 목표와 하단 HUD](media/player-captures-20261121/iphone-skyway-base.png)
+
+![iPhone 시스템 메뉴에 기지 귀환과 저장 후 종료가 표시된다.](media/player-captures-20261121/iphone-system-menu.png)
+
 ## iPhone의 이동 경로와 상점
 
 Ruin Field에서 이동 경로를 다시 지정하는 장면이다. 초록색 점과 선이 이동 경로를 표시한다. iPhone Air 시뮬레이터에서 실제 OS 입력으로 조작한 Source 앱의 녹화다. 원본 녹화의 36.8~42.9초를 가로 방향으로 돌려 사용했다. [MP4 · 6.1초](media/gameplay-20261121/iphone-route.mp4) · [입력 재현과 수정 기록](../iphone-module-audit-20261118.md)
