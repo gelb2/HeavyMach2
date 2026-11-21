@@ -67,6 +67,18 @@ Xcode에서 `HeavyMach2Source`와 iPad 시뮬레이터를 선택해 실행한다
 
 **Android·PWA·Mac.** Android는 Apple 앱이 쓰는 파일을 수정하지 않고 공통 모듈을 가져다 쓰도록 했다. 터치·음향 장치 같은 연결은 해당 플랫폼에 뒀다. 복구코드를 추가해 세 슬롯의 진행과 장비를 함께 옮길 수 있게 했다. 나는 작업 범위와 결함을 정리했고, Codex와 구현과 자동 검사를 만들었다. [플랫폼 확장](docs/public/development-history.md#android웹mac과-저장-이동) · [복구코드 사용법](docs/save-transfer.md)
 
+## 플레이 화면과 영상
+
+Ruin Field에서 이동 경로를 다시 지정하는 iPhone Air 시뮬레이터 녹화다. [MP4 · 6.1초](docs/public/media/gameplay-20261121/iphone-route.mp4)
+
+![iPhone 가로 전장의 이동 경로와 HUD](docs/public/media/gameplay-20261121/iphone-route.gif)
+
+SnowBasin의 Boss 05가 사격하는 장면이다. iPhone 시뮬레이터의 치트 앱으로 보스 의뢰를 검사하는 동안 찍었다.
+
+![화이트마운틴 Boss 05 교전과 Snow Pass 포털](docs/public/media/gameplay-20261121/snow-boss.png)
+
+[iPad 세로 전장 영상, iPhone 상점, 갤럭시 정식판, 설치형 PWA 캡처](docs/public/gameplay-gallery.md)
+
 ## 확인한 동작과 남은 과제
 
 iPhone·iPad 시뮬레이터의 치트 앱에서 각각 126조건·2,100프레임을 실행했다. 화이트마운틴 포털 14방향·보스 의뢰 4건·장비 29건도 두 시뮬레이터에서 따로 확인했다. 실물 iPad의 설원 출입과 사령부, 실기기 PWA와 최신 Tauri 세로 창, E-10 달성 알림·수집 보상과 원작 HD의 최종 일괄 대조는 남아 있다. [실행 근거](docs/feature-verification.md) · [현재 TODO](docs/todo.md#현재-체크--2026-11-21)
@@ -82,6 +94,7 @@ C++20 코어에서 원작 데이터 reader, 파츠 조립, 게임 규칙과 UI�
 ## 개발 기록
 
 - [개발 과정](docs/public/development-history.md) · [원작 복원과 추가 작업](docs/public/features.md) · [개발자의 변과 글감](docs/developer-background.md)
+- [내가 일을 시키고 테스트한 방법](docs/public/development-history.md#내가-일을-시키고-테스트한-방법) · [코드 구조](docs/public/development-history.md#코드-구조)
 - [복원 계획](docs/restoration-plan.md) · [원본 일반판·HD판의 차이](docs/original-phone-hd-separation.md) · [여섯 판본 조사](docs/ipa-version-audit.md)
 - [치트 앱과 작업 순서](docs/validation-build.md) · [전체 기능 검증 계획](docs/full-validation-development-plan-20261110.md) · [HD 함수와 복원 범위](docs/hd-original-function-audit-20261111.md)
 - [정식판 설치·사용자 플레이](docs/ipad-release-installation-20261111.md) · [2026-11-12 Apple 아이콘·동시 검사 기록](docs/evidence/title-illustration-icons-20261112.json)

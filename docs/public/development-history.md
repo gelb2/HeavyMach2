@@ -25,3 +25,22 @@ Android는 게임 규칙과 화면을 공통 C++ 타깃에서 읽는다. 갤럭�
 ## 에셋과 현재 확인 범위
 
 HeavyMach 1·MachDefense와 그림 및 효과음이 실제로 소비되는 경로를 비교했다. HeavyMach 2 웹과 Tauri의 효과음도 공통 OpenAL을 사용하게 했다. 정식·치트 웹에서 그림 1,359개와 음원 58개를 추출해 Apple·Android 패키지와 비교했고, 설치형 Chrome의 전투에서 원본 기관총·미사일과 피격·폭발음을 출력 버퍼로 확인했다. 세로 태블릿의 기지 제목 잘림과 모바일 공통 화면에 남은 미사용 분기는 TODO에 있다. [에셋 사용 대조](../code-document-fixes-20261121.md) · [현재 체크](../todo.md#현재-체크--2026-11-21)
+
+## 내가 일을 시키고 테스트한 방법
+
+나는 실제 iPhone에서 여러 점으로 경로를 그린 뒤 다른 곳을 찍고 두 번 탭해도 점프가 안 되는 경우를 보고했다. Codex는 어느 좌표가 입력에서 사라지는지 기록하며 재현했다. 화면에서 같은 위치로 환산되는 작은 이동 이벤트를 월드에 넘기지 않도록 바꿨고, iPhone과 iPad 시뮬레이터에서 새 경로를 한 점과 여러 점으로 지정하는 경우를 각각 반복했다. 두 시뮬레이터에서 조건별 다섯 번을 통과했다. 실물에서 길게 반복했을 때의 성공률은 TODO에 남겼다. [입력과 SP 소비 검사](../iphone-module-audit-20261118.md) · [실제 녹화의 발췌](gameplay-gallery.md#iphone의-이동-경로와-상점)
+
+화이트마운틴에서는 새 그림부터 그리기 전에 기존 그림과 배치 데이터를 조사하도록 했다. 나중에 포털 근처에 보스가 바로 나타나는 점을 보고 전장 안으로 옮기도록 했다. 치트판으로 포털 이동과 도착, 보스 접근·격파, 사령부 보고와 저장을 확인했다. 두 실기기에는 같은 정식판과 iPad 진행을 넣었고, 내 iPhone에서 화이트마운틴이 열리는 걸 확인했다. [치트 실행과 두 기기 정식 설치](../white-mountain-dual-release-20261120.md)
+
+PWA는 앱 아이콘으로 실행한 창에서 검증하도록 했다. Safari 탭의 짧은 화면에서는 Shop과 Exit가 겹쳤고, iPhone 시뮬레이터 홈 화면에서 실행한 앱에서는 두 버튼을 각각 확인했다. 기기와 앱의 실행 형태가 다른 결과를 각각 기록했다. [PWA 재현과 설치 앱 실행](../pwa-device-validation-20261120.md)
+
+## 코드 구조
+
+HD와 일반판에서 읽은 자원은 준비 도구를 거쳐 같은 캠페인 폴더에 모인다. C++ 코어는 원작 표와 맵을 읽고 메크를 조립하며 전투·임무·버튼·저장을 처리한다. 각 호스트는 화면·입력·소리·저장을 자기 플랫폼에 연결한다. [자원 준비](build-and-install.md#원본-자원-준비) · [기술스택과 원작 에셋](../technology-and-assets.md)
+
+| 호스트 | 화면·입력·저장 |
+| --- | --- |
+| [Apple](../../Sources/Platform/Apple) | Objective-C++ 호스트가 터치와 OpenGL ES 출력을 연결한다. 원작 WAV 효과음은 OpenAL, 배경음은 AudioQueue로 출력한다. |
+| [Android](../../Sources/Platform/Android) | Kotlin Activity와 JNI가 NDK 공통 코어에 입력을 전달한다. EGL·GLES, OpenAL, 앱 전용 저장소를 사용한다. |
+| [웹/PWA](../../Sources/Platform/Web) | Emscripten이 코어를 Wasm으로 빌드한다. WebGL 2와 OpenAL을 쓰고, 설치 캐시와 IndexedDB는 웹 호스트가 관리한다. |
+| [Tauri Mac](../../Desktop/Tauri/README.md) | 검증한 동일 웹 파일을 번들에 담는다. Rust 호스트가 진행·복원 전 백업과 HUD 배치를 Mac 앱 데이터 폴더에 저장한다. |

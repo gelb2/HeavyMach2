@@ -67,6 +67,18 @@ The game uses the original base, battlefield and equipment art and reuses prepar
 
 **Android, PWA and Mac.** I asked the Android app to import the shared modules while preserving the files used by Apple apps. Each platform handles its system connections. The new recovery code transfers progress and equipment across all three save slots. I set the scope and reported defects, and worked with Codex on implementation and automated checks. [Platform development](docs/public/development-history.md#android웹mac과-저장-이동) · [Transfer saves](docs/save-transfer.md)
 
+## Gameplay screenshots and clips
+
+Changing a route in Ruin Field in an iPhone Air simulator recording. [MP4 · 6.1 seconds](docs/public/media/gameplay-20261121/iphone-route.mp4)
+
+![Landscape gameplay on iPhone showing the route and HUD](docs/public/media/gameplay-20261121/iphone-route.gif)
+
+Boss 05 fires in SnowBasin during a mission check in the iPhone simulator's test app.
+
+![White Mountain Boss 05 in combat beside the Snow Pass portal](docs/public/media/gameplay-20261121/snow-boss.png)
+
+[iPad portrait footage, iPhone shop, Galaxy play and installed PWA captures](docs/public/gameplay-gallery.md)
+
 ## Verified behavior and remaining work
 
 Each iPhone and iPad simulator test run covered 126 scenarios over 2,100 frames. Both simulators also checked 14 White Mountain portal directions, four boss missions and 29 equipment scenarios. White Mountain routes and command on a physical iPad, installed PWA on mobile devices, direct interaction in the latest Tauri portrait builds, E-10 completion notifications, collection rewards and the final HD comparison remain open. [Evidence by feature](docs/feature-verification.md) · [Current TODO](docs/todo.md#현재-체크--2026-11-21)
@@ -82,6 +94,7 @@ Firing does not create a file/database write or a new audio context for each sho
 ## Development records
 
 - [Development history](docs/public/development-history.md) · [Original and added features](docs/public/features.md) · [Writing source index](docs/developer-background.md)
+- [How the work was directed and tested](docs/public/development-history.md#내가-일을-시키고-테스트한-방법) · [Code structure](docs/public/development-history.md#코드-구조)
 - [Restoration plan](docs/restoration-plan.md) · [Standard and HD edition differences](docs/original-phone-hd-separation.md) · [Six-version audit](docs/ipa-version-audit.md)
 - [Validation app and work order](docs/validation-build.md) · [Full-feature validation plan](docs/full-validation-development-plan-20261110.md) · [HD functions and restoration scope](docs/hd-original-function-audit-20261111.md)
 - [Regular app installation and user play](docs/ipad-release-installation-20261111.md) · [Apple icons and concurrent run on November 12, 2026](docs/evidence/title-illustration-icons-20261112.json)
