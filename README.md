@@ -31,32 +31,26 @@ HeavyMach 2는 메크를 조립하고 전장에서 이동 경로를 그어 싸�
 | PWA | Mac Chrome 설치 앱의 오프라인 재실행과 저장 유지, iPhone 시뮬레이터의 홈 화면 실행을 확인했다. 실제 휴대폰·태블릿의 기종별 장시간 검증은 남아 있다. [Wasm 빌드와 로컬 PWA](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [기기별 확인](docs/pwa-device-validation-20261120.md) |
 | Tauri Mac | 정식·치트 번들을 각각 빌드하고 로컬 서명을 확인했다. 이전 빌드의 820×900pt 세로 창 시작과 정식판 저장 왕복을 확인했다. [Mac 앱 빌드](docs/public/build-and-install.md#tauri-mac-빌드) · [세로 창 검사](docs/pwa-device-validation-20261120.md#tauri-mac-세로-창) |
 
-소스 빌드에는 로컬 원본이 필요하다. `v0.1`에는 복구코드·PWA·Tauri 구현이 들어 있다. 정식판과 치트판은 공통 코어와 원본 탭투스타트 그림을 사용하고 저장은 분리한다. 치트판은 플랫폼마다 실행 방식이 다르다. 원본 실행을 비교할 때는 별도 포팅판을 쓴다. [검증 현황](docs/todo.md#현재-체크--2026-11-21) · [치트 앱 실행](docs/validation-build.md#플랫폼별-치트-실행) · [원작 비교용 포팅판](Compatibility/README.md)
+정식판과 치트판은 공통 코어와 원본 탭투스타트 그림을 사용하고 저장은 분리한다. 치트판은 플랫폼마다 실행 방식이 다르다. 원본 실행을 비교할 때는 별도 포팅판을 쓴다. [검증 현황](docs/todo.md#현재-체크--2026-11-21) · [치트 앱 실행](docs/validation-build.md#플랫폼별-치트-실행) · [원작 비교용 포팅판](Compatibility/README.md)
 
 ## 소스에서 준비하기
 
-Apple Silicon Mac, Xcode, Python 3.11 이상, CMake 3.20 이상, XcodeGen을 사용한다. 로컬 HD 1.0.3·HD 1.0.0·iPhone 일반판 2.0.1 원본이 필요하다.
+Apple Silicon Mac에서 Xcode와 Python 3.11 이상을 설치한 뒤 소스와 캠페인 자원을 받는다.
 
 ```sh
 git clone https://github.com/gelb2/HeavyMach2.git
 cd HeavyMach2
-git lfs install --local
-git config core.hooksPath .githooks
+python3 tools/prepare_build_resources.py
 ```
 
-[원본 명세](docs/source-provenance.json)의 경로와 SHA-256을 확인한 뒤 자원·아이콘·선택한 SDK의 OpenAL을 준비한다.
+준비 명령은 공개 PWA의 고정 버전에서 게임 자원을 받아 검증한다. iPhone·iPad 시뮬레이터는 CMake로 OpenAL을 빌드한 뒤 Xcode 프로젝트를 연다.
 
 ```sh
-python3 tools/prepare_hd_assets.py
-python3 tools/prepare_phone_menu_assets.py
-python3 tools/prepare_campaign_assets.py
-python3 tools/prepare_app_icons.py
 python3 tools/build_openal.py --sdk iphonesimulator
-xcodegen generate --spec Apple/iOS/project.yml
 open Apple/iOS/HeavyMach2.xcodeproj
 ```
 
-Xcode에서 `HeavyMach2Source`와 iPad 시뮬레이터를 선택해 실행한다. 실제 iPhone·iPad에 설치할 때는 `iphoneos`용 OpenAL을 준비하고 개발 팀·서명·기기 연결을 설정한다. 갱신 전에는 현재 앱의 데이터 컨테이너를 백업한다. [시뮬레이터 명령·실기기 설치·오류 해결](docs/public/build-and-install.md)
+Xcode에서 `HeavyMach2Source`와 iPhone 또는 iPad 시뮬레이터를 선택해 실행한다. [iOS 빌드와 기기 서명](docs/public/build-and-install.md#iphoneipad-시뮬레이터-빌드) · [Android](docs/public/build-and-install.md#android-빌드와-설치) · [PWA](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [Mac](docs/public/build-and-install.md#tauri-mac-빌드)
 
 ## 원작에서 복원한 것
 
@@ -76,8 +70,6 @@ Xcode에서 `HeavyMach2Source`와 iPad 시뮬레이터를 선택해 실행한다
 
 Ruin Field에서 이동 경로를 다시 지정하는 iPhone Air 시뮬레이터 녹화다. [MP4 · 6.1초](docs/public/media/gameplay-20261121/iphone-route.mp4)
 
-![iPhone 가로 전장의 이동 경로와 HUD](docs/public/media/gameplay-20261121/iphone-route.gif)
-
 SnowBasin의 Boss 05가 사격하는 장면이다. iPhone 시뮬레이터의 치트 앱으로 보스 의뢰를 검사하는 동안 찍었다.
 
 ![화이트마운틴 Boss 05 교전과 Snow Pass 포털](docs/public/media/gameplay-20261121/snow-boss.png)
@@ -96,20 +88,22 @@ C++20 코어에서 원작 데이터 reader, 파츠 조립, 게임 규칙과 UI�
 
 [기술스택·에셋 절차](docs/technology-and-assets.md) · [실행·저장·음향 계약](docs/runtime-contract.md) · [기존 복원 코드의 출처](docs/source-reuse.md)
 
-## 개발 기록
+## 개발 중 고친 문제
 
-- [개발 과정](docs/public/development-history.md) · [트러블슈팅](docs/public/troubleshooting.md) · [원작 복원과 추가 작업](docs/public/features.md) · [개발자의 변과 글감](docs/developer-background.md)
-- [내가 일을 시키고 테스트한 방법](docs/public/development-history.md#내가-일을-시키고-테스트한-방법) · [코드 구조](docs/public/development-history.md#코드-구조)
-- [복원 계획](docs/restoration-plan.md) · [원본 일반판·HD판의 차이](docs/original-phone-hd-separation.md) · [여섯 판본 조사](docs/ipa-version-audit.md)
-- [치트 앱과 작업 순서](docs/validation-build.md) · [전체 기능 검증 계획](docs/full-validation-development-plan-20261110.md) · [HD 함수와 복원 범위](docs/hd-original-function-audit-20261111.md)
-- [정식판 설치·사용자 플레이](docs/ipad-release-installation-20261111.md) · [2026-11-12 Apple 아이콘·동시 검사 기록](docs/evidence/title-illustration-icons-20261112.json)
-- [보고 사이트와 게시 목록](docs/report-site.md) — 기존 비공개 보고 사이트를 사용하며 본인 계정 로그인이 필요하다.
-- [HeavyMach 1 초기 이력 검토](docs/heavymach1-history-review.md) · [포팅 앱 검증 계획](docs/reference-port-validation-plan.md) · [모델 사용 이력](docs/model-usage-history.md)
+[트러블슈팅](docs/public/troubleshooting.md) · [분석·구현·검증 과정](docs/public/development-history.md)
 
-## 저장소와 자원
+## 나는 이렇게 일을 시키고 테스트했다
 
-HeavyMach 1·MachDefense의 복원과 배포 절차를 참고했다. HeavyMach 2의 개발 브랜치는 `develop`을 거쳐 `main`에 병합하고 릴리스 태그를 붙인다. [버전과 배포](docs/public/release-policy.md) · [제작자와 외부 코드](CREDITS.md)
+[작업 지시와 테스트](docs/public/development-history.md#내가-일을-시키고-테스트한-방법)
 
-원본 IPA·실행파일·사용자 저장·서명 자료는 커밋하거나 외부로 보내지 않는다. 빌드에 쓰는 준비 자원은 로컬 공간에 둔다. 배포하는 앱은 실행에 필요한 자원을 포함한다. 코드의 이용 조건이 원작 그림·음원·게임 데이터의 이용 허락을 포함하지는 않는다. 외부 코드의 허가문은 [재사용 고지](docs/source-reuse.md)와 각 `ThirdParty` 소스에서 확인한다. 사운드 출처·권리 조사는 [TODO](docs/todo.md)에 남아 있다.
+## 코드 구조와 버전
 
-[작업 지침](AGENTS.md)
+[코드 구조](docs/public/development-history.md#코드-구조) · [검증](docs/public/validation.md) · [버전과 배포](docs/public/release-policy.md)
+
+## 라이선스와 자원
+
+원작은 변해준이 개발하고 박재철이 그림을 맡았다. 복원을 위해 새로 작성한 코드는 [MIT](LICENSE)를 적용한다. 원작 그림·음원·데이터와 외부 코드의 적용 조건은 별도로 확인할 수 있다. [코드 라이선스 범위](LICENSE-SCOPE.md) · [제작자와 외부 코드](CREDITS.md)
+
+## 이 프로젝트의 존재 목적을 확실히 하기 위한 추가 문건
+
+나는 이걸로 돈을 벌 생각이 없다. 헤비멕 1과 맥디펜스에 이어, 헤비멕 2도 원작자의 작품을 지금 기기에서 다시 플레이할 수 있게 하려고 복원했다. [개발자의 변](docs/RESTORATION.md#내가-이-복원으로-남기려는-것)

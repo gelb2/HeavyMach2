@@ -1,6 +1,6 @@
 # HeavyMach 2 Android
 
-Android 앱은 저장소 루트의 `HeavyMach2Core`와 `HeavyMach2Audio`를 링크한다. 창·터치·키보드·GL·음향 장치·파일 입출력 연결 코드는 `Sources/Platform/Android/`에 있다. Gradle은 기존 `.local/prepared/Campaign/HD`를 읽는다. 게임 파일과 저장 포맷은 두 앱에서 같다.
+Android 앱은 저장소 루트의 `HeavyMach2Core`와 `HeavyMach2Audio`를 링크한다. 창·터치·키보드·GL·음향 장치·파일 입출력 연결 코드는 `Sources/Platform/Android/`에 있다. 새 클론에서는 저장소 루트에서 `python3 tools/prepare_build_resources.py --campaign-only`를 실행한다. Gradle은 준비된 `.local/prepared/Campaign/HD`를 읽는다. 게임 파일과 저장 포맷은 두 앱에서 같다. [클론에서 빌드와 설치](../docs/public/build-and-install.md#android-빌드와-설치)
 
 | 앱 | Android 패키지 | 실행 |
 | --- | --- | --- |
@@ -9,7 +9,7 @@ Android 앱은 저장소 루트의 `HeavyMach2Core`와 `HeavyMach2Audio`를 링�
 
 ## 빌드
 
-JDK 17, Android SDK 36, NDK 28.2.13676358, CMake 3.22.1을 사용한다. 앱의 minSdk는 26이다. `ANDROID_HOME`은 설치한 SDK를 가리켜야 한다. [공통 캠페인 자원](../docs/public/build-and-install.md#원본-자원-준비)을 준비한 상태에서 이 디렉터리에서 실행한다.
+JDK 17, Android SDK 36, NDK 28.2.13676358, CMake 3.22.1을 사용한다. 앱의 minSdk는 26이다. `ANDROID_HOME`은 설치한 SDK를 가리켜야 한다. [공통 캠페인 자원](../docs/public/build-and-install.md#공개-빌드에서-자원-준비)을 준비한 상태에서 이 디렉터리에서 실행한다.
 
 ```sh
 ./gradlew :app:assembleNormalRelease :app:assembleCheatDebug :app:testNormalDebugUnitTest
