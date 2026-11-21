@@ -68,13 +68,15 @@ The game uses the original base, battlefield and equipment art and reuses prepar
 
 ## Gameplay screenshots and clips
 
-Changing a route in Ruin Field in an iPhone Air simulator recording. [MP4 · 6.1 seconds](docs/public/media/gameplay-20261121/iphone-route.mp4)
+Eight continuous seconds from the iPad recording show the player moving a mech between ponds while fighting nearby tanks.
 
-Boss 05 fires in SnowBasin during a mission check in the iPhone simulator's test app.
+<img src="docs/public/media/player-captures-20261121/ipad-field-combat.gif" alt="The player sets a waypoint and moves a mech between ponds while fighting tanks in the portrait iPad view." width="378">
 
-![White Mountain Boss 05 in combat beside the Snow Pass portal](docs/public/media/gameplay-20261121/snow-boss.png)
+The iPhone screenshot shows a waypoint on the road near the Skyway Base portal, with the HUD along the bottom.
 
-[iPad portrait footage, iPhone shop, Galaxy play and installed PWA captures](docs/public/gameplay-gallery.md)
+![The Skyway Base portal, a waypoint on the road, and the iPhone landscape HUD](docs/public/media/player-captures-20261121/iphone-skyway-base.png)
+
+[More combat footage, iPhone command and shop screens, a White Mountain boss, Galaxy and PWA gameplay](docs/public/gameplay-gallery.md)
 
 ## Verified behavior and remaining work
 
