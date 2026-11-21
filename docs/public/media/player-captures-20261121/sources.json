@@ -1,0 +1,111 @@
+{
+  "ipad-field-combat.gif": {
+    "source": "ScreenRecording_11-12-2026 11.MP4",
+    "source_sha256": "187b4bf70c19371419198f6af0013bc3adc1ed07e0b45c31788422302cedc292",
+    "environment": "iPad portrait gameplay, 2026-11-12",
+    "processing": "Continuous segment 69.6–77.6 s, source rotation applied, proportional downscale at 12 fps, normal speed; GIF compression using gifsicle",
+    "sha256": "4fb747d31db49ab257815591182fba86963210c9d5fdc8c2cd540b24fce96d6d",
+    "bytes": 5872276,
+    "format": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "gif",
+          "width": 420,
+          "height": 560,
+          "nb_read_frames": "96"
+        }
+      ],
+      "format": {
+        "duration": "8.000000"
+      }
+    }
+  },
+  "ipad-combat-route.gif": {
+    "source": "ScreenRecording_11-12-2026 12.MP4",
+    "source_sha256": "7b8cc9ec7f980f223be0d9ee7e3b2ae2b70bad2d6f1e7d5f4c29272ddb55e18a",
+    "environment": "iPad portrait gameplay, 2026-11-12",
+    "processing": "Continuous segment 11.3–19.3 s, source rotation applied, proportional downscale at 12 fps, normal speed; GIF compression using gifsicle",
+    "sha256": "b48a75495813d490689a759c6fffc4ad9f8aca636708c0866597099d8484c557",
+    "bytes": 5915040,
+    "format": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "gif",
+          "width": 420,
+          "height": 560,
+          "nb_read_frames": "96"
+        }
+      ],
+      "format": {
+        "duration": "8.000000"
+      }
+    }
+  },
+  "iphone-command.png": {
+    "source": "Screenshot PaleMirror 11-14-2026 at 8.35.09 AM.png",
+    "source_sha256": "180c60d97b81ccfed615b352217e648434b9e72f02e97f720e86523e97672e9b",
+    "environment": "iPhone landscape, command, 2026-11-14",
+    "processing": "Full frame, proportionally downscaled, file metadata stripped",
+    "sha256": "d8fa9853fc01ec1299f194738fc670d56811fdfdcd57aa2449023fed58f871d3",
+    "bytes": 547912,
+    "format": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "png",
+          "width": 1440,
+          "height": 663,
+          "nb_read_frames": "1"
+        }
+      ],
+      "format": {}
+    }
+  },
+  "iphone-skyway-base.png": {
+    "source": "Screenshot PaleMirror 11-14-2026 at 8.36.47 AM.png",
+    "source_sha256": "f6602da76a26a02745d2abfa1d74c08f0fd4d131f1f4de00f05608d96d74bb47",
+    "environment": "iPhone landscape, field near the Skyway Base portal, 2026-11-14",
+    "processing": "Full frame, proportionally downscaled, file metadata stripped",
+    "sha256": "38186dc9eab33552ecf1252f9ca099d2fbca49ee98b5434005ab7418f93c86f1",
+    "bytes": 1437357,
+    "format": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "png",
+          "width": 1440,
+          "height": 663,
+          "nb_read_frames": "1"
+        }
+      ],
+      "format": {}
+    }
+  },
+  "iphone-system-menu.png": {
+    "source": "Screenshot PaleMirror 11-14-2026 at 8.39.29 AM.png",
+    "source_sha256": "2febd354390a2eae729a779aabf47b05d3f0b8f7e65395f36f3d77d1f4720bff",
+    "environment": "iPhone landscape, in-game system menu, 2026-11-14",
+    "processing": "Full frame, proportionally downscaled, file metadata stripped",
+    "sha256": "3d243a39286d618299e180600e56f76ea1d713aa249f28af5d0586e26ba3f3a1",
+    "bytes": 1658225,
+    "format": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "png",
+          "width": 1440,
+          "height": 663,
+          "nb_read_frames": "1"
+        }
+      ],
+      "format": {}
+    }
+  }
+}

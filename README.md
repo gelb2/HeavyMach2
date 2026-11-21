@@ -68,13 +68,15 @@ Xcode에서 `HeavyMach2Source`와 iPhone 또는 iPad 시뮬레이터를 선택�
 
 ## 플레이 화면과 영상
 
-Ruin Field에서 이동 경로를 다시 지정하는 iPhone Air 시뮬레이터 녹화다. [MP4 · 6.1초](docs/public/media/gameplay-20261121/iphone-route.mp4)
+iPad 세로 화면에서 플레이어가 연못 사이로 메크를 이동시키며 주변 전차와 교전한다. 바탕화면에 있던 플레이 녹화에서 연속 8초를 발췌했다.
 
-SnowBasin의 Boss 05가 사격하는 장면이다. iPhone 시뮬레이터의 치트 앱으로 보스 의뢰를 검사하는 동안 찍었다.
+<img src="docs/public/media/player-captures-20261121/ipad-field-combat.gif" alt="iPad 세로 전장에서 이동 지점을 지정한 메크가 연못 사이를 지나 전차와 교전한다." width="378">
 
-![화이트마운틴 Boss 05 교전과 Snow Pass 포털](docs/public/media/gameplay-20261121/snow-boss.png)
+아래는 Skyway Base 포털 주변의 iPhone 가로 화면이다. 도로 위 이동 목표와 화면 하단 HUD가 보인다.
 
-[iPad 세로 전장 영상, iPhone 상점, 갤럭시 정식판, 설치형 PWA 캡처](docs/public/gameplay-gallery.md)
+![Skyway Base 포털 주변의 도로와 이동 목표, iPhone 가로 HUD](docs/public/media/player-captures-20261121/iphone-skyway-base.png)
+
+[다른 전투 GIF, iPhone 사령부와 상점, 설원 보스, 갤럭시와 PWA 갤러리](docs/public/gameplay-gallery.md)
 
 ## 확인한 동작과 남은 과제
 
