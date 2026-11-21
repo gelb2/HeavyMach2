@@ -1,6 +1,6 @@
 # 개발자의 변
 
-**초안**
+[이전 시리즈 복원 회고](series-restoration-background.md) · [이전 회고의 영문 발췌](en/RESTORATION.md)
 
 ## 헤비멕을 다시 만든 이유
 
