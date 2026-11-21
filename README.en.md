@@ -106,6 +106,16 @@ Firing does not create a file/database write or a new audio context for each sho
 
 Byun Hae-jun developed the original game, and Park Jae-cheol created its artwork. New restoration code uses the [MIT License](LICENSE). Original artwork, audio and data, and third-party code have separate terms. [License scope](LICENSE-SCOPE.en.md) · [Credits and third-party notices](CREDITS.md)
 
-## An additional statement clarifying the purpose of this project
+## An Additional Statement Clarifying the Purpose of This Project
 
-I have no intention of making money from this restoration. After HeavyMach 1 and MachDefense, I restored HeavyMach 2 so the original creators’ work could be played again on today’s devices. [Developer’s statement in Korean](docs/RESTORATION.md#내가-이-복원으로-남기려는-것)
+Before restoring HeavyMach 2, I briefly examined the public activity of a visitor to the MachDefense repository and traced their activity in other repositories. I felt I needed to make the purpose of HeavyMach, MachDefense, and HeavyMach 2 clear. That is why I am leaving this statement.
+
+I have screenshots and an analysis of that activity. An ordinary person, or someone who has only lived in societies where law and morality hold, might dismiss my thinking as circumstantial or speculative.
+
+But I consider what I observed at the time to be, in CIA terminology, actionable intelligence. That is why I am leaving this statement.
+
+I have no intention of making money from this.
+
+I ask that you do not port this restoration for sale on the App Store or Steam, sell courses claiming you restored it, or pass it on to third-party sales channels. The [license scope](LICENSE-SCOPE.en.md) explains the terms for new restoration code and original material.
+
+[Developer’s statement in Korean](docs/RESTORATION.md#내가-이-복원으로-남기려는-것)
