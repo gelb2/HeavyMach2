@@ -2,7 +2,7 @@
 
 [한국어](README.md) | [English](README.en.md)
 
-[Play](docs/public/quick-play.md) · [Installation](#play-and-install) · [Features](#restored-from-the-original) · [Developer's statement](docs/RESTORATION.md) · [Documentation](docs/README.md)
+[Play](docs/public/quick-play.md) · [Build and install](docs/en/public/build-and-install.md) · [Features](#restored-from-the-original) · [Developer's statement](docs/RESTORATION.md) · [Documentation](docs/README.md)
 
 ## Why I am restoring HeavyMach 2
 
@@ -31,32 +31,28 @@ In HeavyMach 2, you assemble a mech, draw a route across the battlefield and fig
 | PWA | Both Mac Chrome editions reopened offline and retained their saves. The iPhone simulator launched the installed editions from the Home Screen. Extended checks across physical mobile devices are pending. [Build and run the PWA locally](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [Device checks](docs/pwa-device-validation-20261120.md) |
 | Tauri Mac | Separate regular and test bundles passed local signature verification. Earlier builds launched in an 820 × 900 pt portrait window, and the regular edition passed a save round trip. [Build the Mac app](docs/public/build-and-install.md#tauri-mac-빌드) · [Portrait window check](docs/pwa-device-validation-20261120.md#tauri-mac-세로-창) |
 
-Building from source requires local copies of the original game packages. Recovery codes, the PWA and Tauri Mac are included in `v0.1`. The regular and test editions share the core and original title artwork and keep separate saves. Test controls differ by platform. [Verification status](docs/todo.md#현재-체크--2026-11-21) · [Test editions](docs/validation-build.md#플랫폼별-치트-실행) · [Reference app](Compatibility/README.md)
+The regular and test editions share the core and original title artwork and keep separate saves. Test controls differ by platform. [Verification status](docs/todo.md#현재-체크--2026-11-21) · [Test editions](docs/validation-build.md#플랫폼별-치트-실행) · [Reference app](Compatibility/README.md)
 
 ## Preparing from source
 
-Use an Apple Silicon Mac, Xcode, Python 3.11 or later, CMake 3.20 or later, and XcodeGen. Local copies of HD 1.0.3, HD 1.0.0, and iPhone 2.0.1 are required.
+On an Apple Silicon Mac, install Xcode and Python 3.11 or later. Clone the project and prepare its campaign resources.
 
 ```sh
 git clone https://github.com/gelb2/HeavyMach2.git
 cd HeavyMach2
-git lfs install --local
-git config core.hooksPath .githooks
+python3 tools/prepare_build_resources.py
 ```
 
-Check the local path and SHA-256 in the [source manifest](docs/source-provenance.json), then prepare the resources, icons and OpenAL library for the selected SDK.
+The preparation command downloads and verifies the resources from a pinned public PWA build. For iPhone and iPad simulators, build OpenAL with CMake and open the Xcode project.
 
 ```sh
-python3 tools/prepare_hd_assets.py
-python3 tools/prepare_phone_menu_assets.py
-python3 tools/prepare_campaign_assets.py
-python3 tools/prepare_app_icons.py
 python3 tools/build_openal.py --sdk iphonesimulator
-xcodegen generate --spec Apple/iOS/project.yml
 open Apple/iOS/HeavyMach2.xcodeproj
 ```
 
-In Xcode, select `HeavyMach2Source` and an iPad simulator to run it. For a physical iPhone or iPad, prepare OpenAL for `iphoneos` and configure the development team, signing and device connection. Back up the current app's data container before updating. [Simulator commands, device installation and troubleshooting](docs/public/build-and-install.md)
+In Xcode, select `HeavyMach2Source` and an iPhone or iPad simulator. [iOS build and signing](docs/en/public/build-and-install.md#iphone-and-ipad) · [Android](docs/en/public/build-and-install.md#android) · [PWA](docs/en/public/build-and-install.md#build-and-run-the-pwa) · [Mac](docs/en/public/build-and-install.md#build-the-mac-app)
+
+The MIT License covers new code written for the restoration. Original assets and third-party code have separate terms. [MIT License](LICENSE) · [License scope](LICENSE-SCOPE.en.md)
 
 ## Restored from the original
 
@@ -110,7 +106,7 @@ These detailed records are currently in Korean.
 
 ## Repository and resources
 
-This repository remains private. HeavyMach 1 and MachDefense are read-only references for procedures and evidence; this project does not write source, build output or saves into those repositories. Work branches merge through `develop` into `main`.
+This repository is public. HeavyMach 1 and MachDefense are read-only references for procedures and evidence. Work branches merge through `develop` into `main`.
 
 Original IPAs, executables, user saves and signing material are neither committed nor sent to external services. Prepared original resources and builds stay in ignored local storage. Code licensing does not grant rights to the original artwork, audio or game data. See the [reuse notices](docs/source-reuse.md) and the individual `ThirdParty` sources for external-code terms. Sound provenance and rights research remain in the [TODO](docs/todo.md).
 

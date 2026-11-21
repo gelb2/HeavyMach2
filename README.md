@@ -31,32 +31,28 @@ HeavyMach 2는 메크를 조립하고 전장에서 이동 경로를 그어 싸�
 | PWA | Mac Chrome 설치 앱의 오프라인 재실행과 저장 유지, iPhone 시뮬레이터의 홈 화면 실행을 확인했다. 실제 휴대폰·태블릿의 기종별 장시간 검증은 남아 있다. [Wasm 빌드와 로컬 PWA](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [기기별 확인](docs/pwa-device-validation-20261120.md) |
 | Tauri Mac | 정식·치트 번들을 각각 빌드하고 로컬 서명을 확인했다. 이전 빌드의 820×900pt 세로 창 시작과 정식판 저장 왕복을 확인했다. [Mac 앱 빌드](docs/public/build-and-install.md#tauri-mac-빌드) · [세로 창 검사](docs/pwa-device-validation-20261120.md#tauri-mac-세로-창) |
 
-소스 빌드에는 로컬 원본이 필요하다. `v0.1`에는 복구코드·PWA·Tauri 구현이 들어 있다. 정식판과 치트판은 공통 코어와 원본 탭투스타트 그림을 사용하고 저장은 분리한다. 치트판은 플랫폼마다 실행 방식이 다르다. 원본 실행을 비교할 때는 별도 포팅판을 쓴다. [검증 현황](docs/todo.md#현재-체크--2026-11-21) · [치트 앱 실행](docs/validation-build.md#플랫폼별-치트-실행) · [원작 비교용 포팅판](Compatibility/README.md)
+정식판과 치트판은 공통 코어와 원본 탭투스타트 그림을 사용하고 저장은 분리한다. 치트판은 플랫폼마다 실행 방식이 다르다. 원본 실행을 비교할 때는 별도 포팅판을 쓴다. [검증 현황](docs/todo.md#현재-체크--2026-11-21) · [치트 앱 실행](docs/validation-build.md#플랫폼별-치트-실행) · [원작 비교용 포팅판](Compatibility/README.md)
 
 ## 소스에서 준비하기
 
-Apple Silicon Mac, Xcode, Python 3.11 이상, CMake 3.20 이상, XcodeGen을 사용한다. 로컬 HD 1.0.3·HD 1.0.0·iPhone 일반판 2.0.1 원본이 필요하다.
+Apple Silicon Mac에서 Xcode와 Python 3.11 이상을 설치한 뒤 소스와 캠페인 자원을 받는다.
 
 ```sh
 git clone https://github.com/gelb2/HeavyMach2.git
 cd HeavyMach2
-git lfs install --local
-git config core.hooksPath .githooks
+python3 tools/prepare_build_resources.py
 ```
 
-[원본 명세](docs/source-provenance.json)의 경로와 SHA-256을 확인한 뒤 자원·아이콘·선택한 SDK의 OpenAL을 준비한다.
+준비 명령은 공개 PWA의 고정 버전에서 게임 자원을 받아 검증한다. iPhone·iPad 시뮬레이터는 CMake로 OpenAL을 빌드한 뒤 Xcode 프로젝트를 연다.
 
 ```sh
-python3 tools/prepare_hd_assets.py
-python3 tools/prepare_phone_menu_assets.py
-python3 tools/prepare_campaign_assets.py
-python3 tools/prepare_app_icons.py
 python3 tools/build_openal.py --sdk iphonesimulator
-xcodegen generate --spec Apple/iOS/project.yml
 open Apple/iOS/HeavyMach2.xcodeproj
 ```
 
-Xcode에서 `HeavyMach2Source`와 iPad 시뮬레이터를 선택해 실행한다. 실제 iPhone·iPad에 설치할 때는 `iphoneos`용 OpenAL을 준비하고 개발 팀·서명·기기 연결을 설정한다. 갱신 전에는 현재 앱의 데이터 컨테이너를 백업한다. [시뮬레이터 명령·실기기 설치·오류 해결](docs/public/build-and-install.md)
+Xcode에서 `HeavyMach2Source`와 iPhone 또는 iPad 시뮬레이터를 선택해 실행한다. [iOS 빌드와 기기 서명](docs/public/build-and-install.md#iphoneipad-시뮬레이터-빌드) · [Android](docs/public/build-and-install.md#android-빌드와-설치) · [PWA](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [Mac](docs/public/build-and-install.md#tauri-mac-빌드)
+
+새로 작성한 복원 코드는 MIT를 적용한다. 원작 자원과 외부 코드에는 별도 조건이 적용된다. [MIT 라이선스](LICENSE) · [적용 범위](LICENSE-SCOPE.md)
 
 ## 원작에서 복원한 것
 

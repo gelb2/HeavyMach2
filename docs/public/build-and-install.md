@@ -1,6 +1,6 @@
 # HeavyMach 2 빌드와 설치
 
-[README](../../README.md) · [플레이 방법](quick-play.md) · [확인한 범위](validation.md)
+[English](../en/public/build-and-install.md) · [README](../../README.md) · [플레이 방법](quick-play.md) · [확인한 범위](validation.md)
 
 | 플랫폼 | 설치·실행 | 소스에서 빌드 |
 | --- | --- | --- |
@@ -44,10 +44,9 @@ Apple Silicon Mac과 macOS 14 이상용이다. GitHub Release에서 `HeavyMach2-
 
 ## 준비물
 
-- Git과 Git LFS.
+- Git과 Python 3.11 이상. 처음 빌드 자원을 준비할 때는 약 88 MiB를 내려받는다.
 - 공통 자원 준비에는 Python 3.11 이상과 C++ 컴파일러가 필요하다. 공통 코어와 웹을 빌드할 때는 CMake 3.20 이상을 사용한다.
 - iPhone·iPad는 Apple Silicon Mac, iOS SDK와 시뮬레이터 런타임을 설치한 Xcode, XcodeGen이 필요하다. Android·PWA·Tauri의 도구는 아래 플랫폼별 빌드 절에 적었다.
-- [원본 명세](../source-provenance.json)에 등록된 HD 1.0.3, HD 1.0.0, 일반판 2.0.1 원본을 로컬에 보유한 환경.
 - 실기기 설치에는 본인의 Apple 개발 팀, 연결된 iPhone 또는 iPad와 개발자 모드.
 
 2026년 11월 13일 문서 확인 환경은 Xcode 27.1, XcodeGen 2.45.4, CMake 4.4.4, Python 3.14.6이다. 앱 설정의 최소 OS는 iOS/iPadOS 15.0이며, Apple 자동검사 타깃은 17.0이다. 최소 OS별 실제 플레이 검증은 남아 있다. 현재 Apple 빌드는 arm64를 대상으로 한다.
@@ -57,15 +56,20 @@ Apple Silicon Mac과 macOS 14 이상용이다. GitHub Release에서 `HeavyMach2-
 ```sh
 git clone https://github.com/gelb2/HeavyMach2.git
 cd HeavyMach2
-git lfs install --local
-git config core.hooksPath .githooks
+python3 tools/prepare_build_resources.py
 ```
 
-현재 배포와 같은 소스로 빌드하려면 저장소 루트에서 `git switch --detach v0.1`을 실행한다. 기본 브랜치 `main`의 최신 변경도 clone으로 가져올 수 있다. [버전과 배포 기준](release-policy.md)
+공개 클론에서 바로 빌드하려면 기본 브랜치 `main`을 사용한다. 다운로드용 Mac·Android 앱은 `v0.1`, 설치형 PWA는 `v0.2`에 있다. [버전과 배포 기준](release-policy.md)
+
+## 공개 빌드에서 자원 준비
+
+`prepare_build_resources.py`는 이미 공개한 `v0.2` PWA의 고정 버전에서 `game.js`와 `game.data`를 내려받는다. 두 파일의 크기와 SHA-256을 검사해 캠페인 파일 1,576개를 `.local/prepared/Campaign/HD/`에 준비한다. iOS와 웹에 필요한 정식·치트 아이콘은 캠페인의 타이틀 그림으로 만든다. Android만 빌드할 때는 `python3 tools/prepare_build_resources.py --campaign-only`를 사용하면 Apple 아이콘 도구가 필요 없다.
+
+소스에서 실제 플레이 빌드를 만드는 데 필요한 원작 자원은 이 경로로 준비할 수 있다. 같은 명령을 다시 실행하면 받은 파일을 다시 검사해 재사용한다. 다른 준비 자원이 이미 들어 있는 클론이라면 기존 파일을 확인하고, 공개 빌드와 대조할 때는 새 클론을 사용한다. [코드와 원작 자원의 라이선스 범위](../../LICENSE-SCOPE.md)
 
 ## 원본 자원 준비
 
-소스만 내려받은 상태에는 게임 그림·음원·맵이 없다. [source-provenance.json](../source-provenance.json)의 `source_root`와 `relative_path`로 원본 파일 위치를 확인한다. 다른 Mac에서는 보유한 원본 경로에 맞게 `source_root`를 로컬에서 설정한다. 원본 해시와 판본은 바꾸지 않는다.
+다음 절차는 원작과 대조하거나 콘텐츠를 다시 준비할 때 사용한다. 일반 빌드는 위의 공개 자원 준비 절차를 따른다. [source-provenance.json](../source-provenance.json)의 `source_root`와 `relative_path`로 원본 파일 위치를 확인한다. 다른 Mac에서는 보유한 원본 경로에 맞게 `source_root`를 로컬에서 설정한다. 원본 해시와 판본은 바꾸지 않는다.
 
 도구가 고정한 HD 1.0.3 IPA의 SHA-256은 다음과 같다.
 
@@ -92,7 +96,7 @@ python3 tools/prepare_app_icons.py
 
 ## iPhone·iPad 시뮬레이터 빌드
 
-시뮬레이터용 OpenAL을 준비한 뒤 프로젝트를 생성한다. 원본 자원·아이콘 준비가 먼저다.
+캠페인 자원과 아이콘을 준비한 뒤 시뮬레이터용 OpenAL을 빌드한다. Xcode 프로젝트는 저장소에 포함돼 있다. XcodeGen 명령은 `project.yml`을 바꿨거나 Xcode 프로젝트를 다시 생성할 때 실행한다.
 
 ```sh
 python3 tools/build_openal.py --sdk iphonesimulator
@@ -125,7 +129,7 @@ xcrun simctl launch "$HM2_SIM_ID" com.gelb2.heavymach2.restored
 ## 실제 iPhone·iPad에 설치
 
 1. 기존 앱이 있으면 Xcode **Window → Devices and Simulators**에서 기기와 HM2 Source를 선택해 **Download Container**로 데이터를 백업한다. 사용자 저장은 `Library/Application Support/HeavyMach2/HeavyMach2.sav`다.
-2. [자원과 아이콘](#원본-자원-준비)을 준비한 뒤 저장소 루트에서 `python3 tools/build_openal.py --sdk iphoneos`와 `xcodegen generate --spec Apple/iOS/project.yml`을 차례로 실행한다.
+2. [자원과 아이콘](#공개-빌드에서-자원-준비)을 준비한 뒤 저장소 루트에서 `python3 tools/build_openal.py --sdk iphoneos`를 실행한다. Xcode 프로젝트를 다시 생성할 때는 `xcodegen generate --spec Apple/iOS/project.yml`을 실행한다.
 3. `open Apple/iOS/HeavyMach2.xcodeproj`로 프로젝트를 연다.
 4. 앱 타깃의 **Signing & Capabilities**에서 본인의 개발 팀을 지정한다. 앱 ID 등록이 충돌하면 본인 팀에서 쓸 고유 ID를 정한다. ID가 달라지면 별도 앱과 저장 공간이 된다.
 5. `HeavyMach2Source` scheme의 **Edit Scheme → Run → Build Configuration**을 `Release`로 선택한다. 실행 대상을 연결한 기기로 설정한다.
@@ -171,13 +175,15 @@ sdkmanager "platform-tools" "platforms;android-36" "build-tools;35.0.0" \
 sdkmanager --licenses
 ```
 
-[공통 자원](#원본-자원-준비)을 준비하고 저장소 루트에서 다음 명령을 실행한다. 정식판 Release를 설치하려면 먼저 [로컬 서명 키를 설정](../../Android/README.md#정식판-서명)한다. 개인 개발용으로 일반 앱을 실행할 때는 `assembleNormalDebug`를 선택할 수 있다.
+[공통 자원](#공개-빌드에서-자원-준비)을 준비하고 저장소 루트에서 다음 명령을 실행한다. macOS에서는 JDK 17이 설치된 상태에서 `export JAVA_HOME="$(/usr/libexec/java_home -v 17)"`로 활성화할 수 있다. SDK 도구의 `platform-tools`와 `cmdline-tools/latest/bin`을 `PATH`에 넣는다.
 
 ```sh
 cd Android
-./gradlew :app:assembleNormalRelease :app:assembleCheatDebug
+./gradlew :app:assembleNormalDebug :app:assembleCheatDebug
 adb devices -l
 ```
+
+배포용 정식판은 [로컬 서명 키를 설정](../../Android/README.md#정식판-서명)한 뒤 `:app:assembleNormalRelease`로 빌드한다.
 
 | 앱 | APK 경로 — `Android/` 기준 |
 | --- | --- |
@@ -189,7 +195,7 @@ adb devices -l
 
 ```sh
 HM2_ANDROID_SERIAL='ANDROID_SERIAL'
-adb -s "$HM2_ANDROID_SERIAL" install -r app/build/outputs/apk/normal/release/app-normal-release.apk
+adb -s "$HM2_ANDROID_SERIAL" install -r app/build/outputs/apk/normal/debug/app-normal-debug.apk
 adb -s "$HM2_ANDROID_SERIAL" install -r app/build/outputs/apk/cheat/debug/app-cheat-debug.apk
 ```
 
@@ -197,7 +203,7 @@ adb -s "$HM2_ANDROID_SERIAL" install -r app/build/outputs/apk/cheat/debug/app-ch
 
 ## PWA 빌드와 로컬 실행
 
-Emscripten SDK를 활성화하고 [공통 자원과 아이콘](#원본-자원-준비)을 준비한다. 기존 검증에는 Emscripten 6.0.13을 사용했다. 저장소 루트에서 빌드한다. [Emscripten 설치 안내](https://emscripten.org/docs/getting_started/downloads.html) · [웹 빌드 세부 사항](../../Web/README.md)
+Emscripten SDK를 활성화하고 [공통 자원과 아이콘](#공개-빌드에서-자원-준비)을 준비한다. 기존 검증에는 Emscripten 6.0.13을 사용했다. 저장소 루트에서 빌드한다. [Emscripten 설치 안내](https://emscripten.org/docs/getting_started/downloads.html) · [웹 빌드 세부 사항](../../Web/README.md)
 
 ```sh
 export EM_CACHE="$PWD/.local/emscripten-cache-hm2"
@@ -266,6 +272,7 @@ ctest --test-dir build/core-original --output-on-failure \
 | 증상 | 확인할 항목 |
 | --- | --- |
 | clone에서 `Repository not found` | 저장소 주소가 `https://github.com/gelb2/HeavyMach2.git`인지 확인한다. |
+| 공개 자원의 다운로드·해시 검사 오류 | 연결을 확인하고 `prepare_build_resources.py`를 다시 실행한다. 이미 검증한 다운로드는 재사용한다. |
 | 원본 파일을 찾을 수 없음 | `source-provenance.json`의 로컬 기준 경로와 상대 경로를 확인한다. |
 | `HD source IPA SHA-256 mismatch` | 명세에 등록된 HD 1.0.3 원본인지 확인한다. 검사 해시를 바꿔 통과시키지 않는다. |
 | XcodeGen이 `.local/prepared` 경로를 찾지 못함 | 자원과 아이콘 준비를 먼저 실행한 뒤 프로젝트를 생성한다. |
