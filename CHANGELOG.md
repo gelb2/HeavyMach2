@@ -2,6 +2,10 @@
 
 [GitHub Releases](https://github.com/gelb2/HeavyMach2/releases) · [버전과 배포](docs/public/release-policy.md) · [빌드와 설치](docs/public/build-and-install.md)
 
+## v0.4 · Android 저장 이동
+
+Android 정식 APK의 슬롯 화면에 **저장 이동**을 제공한다. **코드 입력**으로 두 공개 복구코드의 슬롯 세 개를 옮길 수 있다. 기존 정식 앱 위에 설치하면 현재 저장을 이어서 쓴다. [Android 정식 APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.4) · [복구코드 사용법](docs/save-transfer.md)
+
 ## 공개 소스와 문서
 
 - 공개 클론에서 고정된 PWA의 검증된 자원으로 네 플랫폼을 빌드하는 절차를 추가했다. 복원 코드는 MIT를 적용한다. [공개 클론 검사](docs/public/validation.md#공개-클론에서-빌드와-실행) · [적용 범위](LICENSE-SCOPE.md)
