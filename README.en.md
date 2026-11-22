@@ -8,7 +8,7 @@
 [![Technology stack C++20, Objective-C++, Kotlin, JavaScript, Rust](docs/public/media/badges/code.svg)](docs/en/public/architecture.md)
 [![Code license MIT](docs/public/media/badges/license.svg)](LICENSE-SCOPE.en.md)
 
-[Quick Play](docs/en/public/quick-play.md) · [Quick Play](#quick-play) · [Features](#restored-from-the-original) · [Developer's statement](docs/RESTORATION.md) · [Documentation](docs/en/public/index.md)
+[Quick Play](docs/en/public/quick-play.md) · [Quick Play](#quick-play) · [Features](#restored-from-the-original) · [Developer’s statement](docs/en/heavymach2-restoration.md) · [Documentation](docs/en/public/index.md)
 
 ## Why I am restoring HeavyMach 2
 
@@ -22,7 +22,7 @@ I have no intention of making money from this restoration. I also want to record
 
 If a stakeholder contacts me, I will take this project down.
 
-**[HeavyMach 2 developer's statement in Korean](docs/RESTORATION.md)** · [Earlier series statement in Korean](docs/series-restoration-background.md) · [English excerpts on the earlier restorations](docs/en/RESTORATION.md)
+**[HeavyMach 2 developer’s statement](docs/en/heavymach2-restoration.md)** · [Korean original](docs/RESTORATION.md) · [Earlier series statement in Korean](docs/series-restoration-background.md) · [English excerpts on the earlier restorations](docs/en/RESTORATION.md)
 
 ## Reflections After Restoring the Trilogy. I Have Fulfilled My Duty to the Two Creators.
 

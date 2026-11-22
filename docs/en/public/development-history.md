@@ -1,6 +1,6 @@
 # How HeavyMach 2 was restored
 
-[한국어](../../public/development-history.md) · [Restored and added features](features.md) · [Developer’s statement in Korean](../../RESTORATION.md) · [Troubleshooting](troubleshooting.md) · [Testing method](testing-method.md) · [Documentation](index.md)
+[한국어](../../public/development-history.md) · [Restored and added features](features.md) · [Developer’s statement](../heavymach2-restoration.md) · [Troubleshooting](troubleshooting.md) · [Testing method](testing-method.md) · [Documentation](index.md)
 
 ## Comparing the regular and HD editions
 

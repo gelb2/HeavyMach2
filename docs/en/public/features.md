@@ -1,6 +1,6 @@
 # What HeavyMach 2 restores and adds
 
-[한국어](../../public/features.md) · [Project overview](../../../README.en.md) · [Developer’s statement in Korean](../../RESTORATION.md) · [Development history](development-history.md)
+[한국어](../../public/features.md) · [Project overview](../../../README.en.md) · [Developer’s statement](../heavymach2-restoration.md) · [Development history](development-history.md)
 
 In HeavyMach 2, you assemble a mech and draw paths for it to follow on the battlefield. You fight enemies for items, change equipment, travel between bases, and take missions from the Command Center. The restoration shares the data and behavior of iPad HD 1.0.3 across platforms. The iPhone display and controls were also checked against regular edition 2.0.1. [Differences between the regular and HD editions](../../original-phone-hd-separation.md)
 
@@ -24,7 +24,7 @@ The game reads the original WAV effects as PCM and loads them into OpenAL buffer
 
 ## My contributions
 
-I set the scope of the original-game investigation, chose which content to connect, and recorded problems I saw on physical devices. I worked with Codex on the implementation, tools, and automated checks. [Developer’s statement in Korean](../../RESTORATION.md)
+I set the scope of the original-game investigation, chose which content to connect, and recorded problems I saw on physical devices. I worked with Codex on the implementation, tools, and automated checks. [Developer’s statement](../heavymach2-restoration.md)
 
 ### Opening White Mountain to players
 
