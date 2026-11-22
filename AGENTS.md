@@ -2,6 +2,8 @@
 
 이 저장소는 HeavyMach 2 전용 공개 저장소다. [정본과 작업 위치](docs/canonical.md)에서 업무별 문서·소비 코드·검사를 고른다. [작업 정책](.agents/policy.md), [사용자 결정 이력](.agents/project.md), [TODO](docs/todo.md)를 함께 읽는다.
 
+문서·보고서·게임 UI·번역·대화 답변을 작성하거나 고칠 때 [헤비멕2 글쓰기 스킬](.agents/skills/write-project-text/SKILL.md)을 읽고 적용한다. 독자에게 필요한 동작·결과·근거를 쓰고, 메타카피·컴플라이언스 문체·자기합리화를 걷어 낸다. 사용자 원문과 인용을 대조한다.
+
 1. HeavyMach 2의 모든 새 소스·도구·검사·파생 파일과 빌드 출력은 이 저장소 또는 이 저장소 전용 외부 작업 공간에 둔다.
 2. HeavyMach 1·MachDefense·분리 전 ProjectGameDev의 파일을 수정하지 않는다. 해당 폴더에 HeavyMach 2 코드를 만들지 않는다. 다른 게임의 소스나 출력 디렉터리를 쓰기 대상으로 연결하지 않는다.
 3. 원본 IPA는 절대로 커밋하지 않는다. `.ipa` 확장자 변경, 압축, 분할, LFS 저장, 릴리스/CI artifact 첨부, 사이트/외부 서비스 전송도 금지한다. 원본은 저장소 밖에서 로컬 읽기만 한다.
