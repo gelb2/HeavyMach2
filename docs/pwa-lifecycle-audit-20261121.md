@@ -41,4 +41,8 @@ Safari 주소창을 포함한 874×338 모의 탭에서는 기지 Shop과 Exit�
 | iPad Pro 13인치, iPadOS 26.5 시뮬레이터 | Safari 홈 화면에서 상태바 뒤까지 타이틀이 그려졌다. 기기 높이는 1,376 CSS 픽셀이었고 Safari 표시 영역은 1,344였다. 아래 32픽셀은 앱 표시 영역 밖에 남았다. |
 | Mac Chrome의 Android 휴대폰 모의 | 설치 앱을 전체 화면으로 열어 타이틀, 슬롯, 기지, 상점, 사령부, 전장, 입력과 크기 변경을 확인했다. 별도 복귀 검사에서 양쪽 가로와 같은 배경음의 재개를 확인했다. |
 
-갤럭시 실기기의 이번 전체 화면 수정판은 연결 후 검사할 항목으로 남아 있다.
+## 갤럭시 v0.3 설치 앱 확인
+
+갤럭시에서 방금 설치한 앱의 등록값은 `standalone`이었다. 같은 시점에 Chrome은 공개 매니페스트에서 `fullscreen`과 `landscape`를 읽었다. 갱신 전에는 홈 아이콘으로 열 때 상태바와 탐색 버튼이 남아 표시 영역이 755×354 CSS 픽셀이었다. **게임 시작**을 누르면 Chrome의 전체 화면 API가 832×384로 넓혔다.
+
+Chrome에 설치 항목 갱신을 요청했다. 설치 버전이 1에서 2로 올라간 뒤 홈 아이콘으로 다시 열었다. 시작 버튼을 누르기 전부터 832×384였고, 상태바와 탐색 버튼은 숨겨졌다. 게임 시작과 홈 화면 복귀 뒤에도 같은 크기를 유지했다. 검사는 이 갤럭시의 90도 가로에서 수행했다. [Chrome의 설치 앱 갱신 방식](https://chromium.googlesource.com/chromium/src/+/HEAD/components/webapps/docs/android_architecture.md) · [공개 v0.3](https://github.com/gelb2/HeavyMach2/releases/tag/v0.3)
