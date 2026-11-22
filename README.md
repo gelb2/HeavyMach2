@@ -8,7 +8,7 @@
 [![기술 스택 C++20, Objective-C++, Kotlin, JavaScript, Rust](docs/public/media/badges/code.svg)](docs/public/architecture.md)
 [![코드 라이선스 MIT](docs/public/media/badges/license.svg)](LICENSE-SCOPE.md)
 
-[플레이 방법](docs/public/quick-play.md) · [플랫폼별 설치](#플레이와-설치) · [기능과 추가 작업](docs/public/features.md) · [개발자의 변](docs/RESTORATION.md) · [전체 문서](docs/README.md)
+[플레이 방법](docs/public/quick-play.md) · [Quick Play](#quick-play) · [기능과 추가 작업](docs/public/features.md) · [개발자의 변](docs/RESTORATION.md) · [전체 문서](docs/README.md)
 
 ## HeavyMach 2를 다시 만드는 이유
 
@@ -32,17 +32,35 @@ HeavyMach 1을 복원한 뒤, 개발자 변해준과 일러스트레이터 박�
 
 HeavyMach 2는 메크를 조립하고 전장에서 이동 경로를 그어 싸우는 게임이다. 기지의 사령부에서 임무를 받고 전리품과 보상으로 장비를 바꾼다. 원본 실행 기록과 데이터에서 이 동작을 복원했다. C++ 공통 코어를 iPhone·iPad, Android, 설치형 PWA와 Tauri Mac에서 사용한다. [플레이와 조작](docs/public/quick-play.md) · [현행 정본](docs/canonical.md)
 
-## 플레이와 설치
+<a id="플레이와-설치"></a>
 
-**[PWA 실행·설치](https://gelb2.github.io/HeavyMach2/)** · **[Android 정식 APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.4)** · **[Tauri Mac 다운로드](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)** · [플랫폼별 빌드 명령](docs/public/build-and-install.md)
+## Quick Play
 
-휴대폰과 iPad에서는 [홈 화면에 PWA를 설치](docs/public/build-and-install.md#pwa-설치)한다. Mac ZIP을 받은 뒤 [응용 프로그램 폴더로 옮겨 실행](docs/public/build-and-install.md#tauri-mac-앱-받기)한다. [버전과 배포 기준](docs/public/release-policy.md)
+### 웹·PWA
+
+[웹에서 바로 플레이](https://gelb2.github.io/HeavyMach2/)하거나 앱으로 설치한다. iPhone·iPad에서는 Safari의 **공유 → 홈 화면에 추가**를 사용한다. 설치한 아이콘으로 열고 첫 자원 다운로드가 끝나면 플레이한다. [기기별 설치](docs/public/build-and-install.md#pwa-설치) · [소스에서 PWA 빌드](docs/public/build-and-install.md#pwa-빌드와-로컬-실행)
+
+### iPhone·iPad
+
+Xcode에서 `HeavyMach2Source`를 선택해 iPhone·iPad 시뮬레이터에서 실행한다. 실제 기기에 설치할 때는 본인의 Apple 개발 팀으로 서명한다. [Xcode 빌드](docs/public/build-and-install.md#iphoneipad-시뮬레이터-빌드) · [실기기 설치](docs/public/build-and-install.md#실제-iphoneipad에-설치)
+
+### Android
+
+[정식 APK v0.4](https://github.com/gelb2/HeavyMach2/releases/tag/v0.4)를 설치해 **HeavyMach 2**를 연다. [치트 APK v0.1](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)은 별도 앱이다. [APK 설치와 Gradle 빌드](docs/public/build-and-install.md#android-빌드와-설치)
+
+### Mac
+
+[Apple Silicon용 Mac ZIP v0.1](https://github.com/gelb2/HeavyMach2/releases/download/v0.1/HeavyMach2-Tauri-Mac-v0.1-arm64.zip)을 풀고 **HeavyMach 2 Desktop.app**을 응용 프로그램 폴더에 옮겨 실행한다. macOS 14 이상이 필요하다. [앱 설치와 첫 실행](docs/public/build-and-install.md#tauri-mac-앱-받기) · [소스에서 Tauri 빌드](docs/public/build-and-install.md#tauri-mac-빌드)
+
+[버전과 배포 기준](docs/public/release-policy.md)
+
+### 플랫폼별 검증
 
 | 플랫폼 | 설치와 현재 확인한 범위 |
 | --- | --- |
+| PWA | Mac Chrome 설치 앱의 오프라인 재실행과 저장 유지를 확인했다. 갤럭시의 공개 v0.2 설치 앱은 홈 복귀 뒤 가로 화면과 배경음을 이어갔다. [로컬 빌드](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [갤럭시 검사](docs/pwa-lifecycle-audit-20261121.md) |
 | iPhone·iPad | iPhone 가로·iPad 세로. 두 실기기에 정식판과 기지 방문 저장을 넣었다. 내가 iPhone에서 화이트마운틴 진입을 확인했다. 포털 14방향은 시뮬레이터와 호스트에서 확인했다. [빌드와 설치](docs/public/build-and-install.md) · [실기기 기록](docs/white-mountain-dual-release-20261120.md) |
 | Android | 갤럭시 정식·치트판에 같은 iPad 저장을 적용했다. 상점·사령부·전장과 짧은 실제 플레이를 확인했다. Android 포팅은 `develop`에 병합됐다. [APK 빌드와 설치](docs/public/build-and-install.md#android-빌드와-설치) · [기기 기록](Android/검증-20261120.md) |
-| PWA | Mac Chrome 설치 앱의 오프라인 재실행과 저장 유지를 확인했다. 갤럭시의 공개 v0.2 설치 앱은 홈 복귀 뒤 가로 화면과 배경음을 이어갔다. [로컬 빌드](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [갤럭시 검사](docs/pwa-lifecycle-audit-20261121.md) |
 | Tauri Mac | 공개 클론에서 정식·치트 번들의 서명을 확인했다. 정식판에서 기지와 전장으로 들어가 이동하고 게임을 다시 열어 같은 슬롯을 확인했다. [Mac 앱 빌드](docs/public/build-and-install.md#tauri-mac-빌드) · [클론 실행 검사](docs/public/validation.md#공개-클론에서-빌드와-실행) |
 
 정식판과 치트판은 공통 코어와 원본 탭투스타트 그림을 사용하고 저장은 분리한다. 치트판은 플랫폼마다 실행 방식이 다르다. 원본 실행을 비교할 때는 별도 포팅판을 쓴다. [검증 현황](docs/todo.md#현재-체크--2026-11-21) · [치트 앱 실행](docs/validation-build.md#플랫폼별-치트-실행) · [원작 비교용 포팅판](Compatibility/README.md)

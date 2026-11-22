@@ -8,7 +8,7 @@
 [![Technology stack C++20, Objective-C++, Kotlin, JavaScript, Rust](docs/public/media/badges/code.svg)](docs/public/architecture.md)
 [![Code license MIT](docs/public/media/badges/license.svg)](LICENSE-SCOPE.en.md)
 
-[Quick Play](docs/en/public/quick-play.md) · [Build and install](docs/en/public/build-and-install.md) · [Features](#restored-from-the-original) · [Developer's statement](docs/RESTORATION.md) · [Documentation](docs/en/public/index.md)
+[Quick Play](docs/en/public/quick-play.md) · [Quick Play](#quick-play) · [Features](#restored-from-the-original) · [Developer's statement](docs/RESTORATION.md) · [Documentation](docs/en/public/index.md)
 
 ## Why I am restoring HeavyMach 2
 
@@ -32,17 +32,35 @@ This has nothing to do with what I felt while restoring the trilogy, but I’ve 
 
 In HeavyMach 2, you assemble a mech, draw a route across the battlefield and fight along it. You can take missions at the command center and change equipment using loot and rewards. The restoration follows the original data and observed behavior. A shared C++ core runs on iPhone and iPad, Android, the installed PWA, and the Tauri Mac app. [How to play](docs/en/public/quick-play.md) · [Project documentation](docs/en/public/index.md)
 
-## Play and install
+<a id="play-and-install"></a>
 
-**[Open the PWA](https://gelb2.github.io/HeavyMach2/)** · **[Android regular APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.4)** · **[Mac app](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)** · [Build and installation instructions](docs/en/public/build-and-install.md)
+## Quick Play
 
-[Install the PWA from the Home Screen](docs/public/build-and-install.md#pwa-설치) or [extract and open the Tauri Mac app](docs/public/build-and-install.md#tauri-mac-앱-받기). [Version and release policy](docs/public/release-policy.md)
+### Web and PWA
+
+[Play in the browser](https://gelb2.github.io/HeavyMach2/) or install the game as an app. In Safari on iPhone or iPad, choose **Share → Add to Home Screen**. Open the installed icon and wait for the first resource download. [Installation by device](docs/en/public/build-and-install.md#play-the-published-builds) · [Build the PWA from source](docs/en/public/build-and-install.md#build-and-run-the-pwa)
+
+### iPhone and iPad
+
+Select `HeavyMach2Source` in Xcode and run it in an iPhone or iPad simulator. To install on a physical device, sign the build with your own Apple developer team. [Xcode build and device installation](docs/en/public/build-and-install.md#iphone-and-ipad)
+
+### Android
+
+Install the [v0.4 regular APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.4) and open **HeavyMach 2**. The [v0.1 test APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1) installs as a separate app. [APK installation and Gradle build](docs/en/public/build-and-install.md#android)
+
+### Mac
+
+Extract the [v0.1 ZIP for Apple Silicon](https://github.com/gelb2/HeavyMach2/releases/download/v0.1/HeavyMach2-Tauri-Mac-v0.1-arm64.zip), move **HeavyMach 2 Desktop.app** to Applications, and open it. The app requires macOS 14 or later. [Installation](docs/en/public/build-and-install.md#play-the-published-builds) · [Build the Tauri app from source](docs/en/public/build-and-install.md#build-the-mac-app)
+
+[Versions and releases](docs/public/release-policy.md)
+
+### Verification by platform
 
 | Platform | Installation and verification |
 | --- | --- |
+| PWA | Mac Chrome reopened both installed editions offline with saves intact. On a Galaxy, the public v0.2 installed app returned from the Home Screen in landscape and resumed background music. [Build the PWA](docs/en/public/build-and-install.md#build-and-run-the-pwa) · [Galaxy checks](docs/pwa-lifecycle-audit-20261121.md) |
 | iPhone and iPad | Landscape on iPhone and portrait on iPad. Both physical devices received the regular app and the save recording base visits. I entered White Mountain on the iPhone. All 14 portal directions were checked in simulators and host tests. [Build and install](docs/public/build-and-install.md) · [Device record](docs/white-mountain-dual-release-20261120.md) |
 | Android | Both Galaxy editions used the same iPad save. The shop, command, battle and a short play session were checked. The Android port is in `develop`. [Build and install](docs/public/build-and-install.md#android-빌드와-설치) · [Device record](Android/검증-20261120.md) |
-| PWA | Mac Chrome reopened both installed editions offline with saves intact. On a Galaxy, the public v0.2 installed app returned from the Home Screen in landscape and resumed background music. [Build the PWA](docs/en/public/build-and-install.md#build-and-run-the-pwa) · [Galaxy checks](docs/pwa-lifecycle-audit-20261121.md) |
 | Tauri Mac | Both bundles from a fresh clone passed signature verification. The regular app entered the base and field, moved the mech, and retained its slot after relaunch. [Build the Mac app](docs/en/public/build-and-install.md#build-the-mac-app) · [Clean-clone checks](docs/en/public/validation.md#public-source-build) |
 
 The regular and test editions share the core and original title artwork and keep separate saves. Test controls differ by platform. [Verification status](docs/todo.md#현재-체크--2026-11-21) · [Test editions](docs/validation-build.md#플랫폼별-치트-실행) · [Reference app](Compatibility/README.md)
