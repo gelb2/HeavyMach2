@@ -40,7 +40,7 @@
 - [x] **한·영 README에 원본 빌드 출처 추가.** 복원 동기 다음에 Internet Archive에서 받은 일반판·HD판을 바탕으로 복원을 시작한 경위와 두 기준 판본의 역할을 적었다. 헤비멕1 README와 맥디펜스 개발자의 변을 참고했다. [Internet Archive의 HeavyMach 시리즈 모음](https://archive.org/details/heavy-mach-archive_202406) · [원본 판본 명세](source-provenance.json)
 - [x] **헤비멕2 프로젝트를 내리는 조건 명시.** 헤비멕1과 맥디펜스의 국문 문장과 영문 번역을 참고해 한·영 README와 국문 개발자의 변에 넣었다. [국문 README](../README.md) · [영문 README](../README.en.md) · [국문 개발자의 변](RESTORATION.md)
 - [x] **한·영 Quick Play 실행·빌드 순서.** 웹·PWA → iPhone·iPad → Android → Mac 순으로 첫 실행과 소스 빌드 경로를 연결했다. [국문 Quick Play](../README.md#quick-play) · [영문 Quick Play](../README.en.md#quick-play)
-- [x] **상점·iPhone 이동·Skyway의 설명 위치.** 한·영 README에서 사용자 제보 문단을 문제 해결로 옮겼다. 기능 소개에서도 해당 수정은 트러블슈팅으로 연결하고, 상점 배경·버튼 비교 근거를 그쪽에 두었다. [트러블슈팅](public/troubleshooting.md)
+- [x] **상점·iPhone 이동·Skyway의 설명 위치.** 한·영 README의 트러블슈팅에서 코덱스가 구현한 부분의 결함을 내가 지적했다고 명시했다. 기능 소개에서도 해당 수정은 트러블슈팅으로 연결하고, 상점 배경·버튼 비교 근거를 그쪽에 두었다. [트러블슈팅](public/troubleshooting.md)
 - [x] **헤비멕2 GitHub 문서 정리 계획.** 헤비멕1·맥디펜스의 목차·기능 소개·갤러리·검증 문서를 대조해 한·영 목차, 이미지, 최신 상태, 번역을 정리할 순서와 확인 방법을 정했다. [정리 계획](github-documentation-cleanup-plan.md)
 - [ ] **화이트마운틴·미등장 무기·맵의 인게임 이미지 증빙 공개.** 공개 갤러리에는 Boss 05 전투 캡처가 있다. 기존 실행 증빙에서 쓸 수 있는 화면을 고르고, 부족한 장면은 실제 앱에서 캡처한다. 설원 진입과 포털, 적·보스 출현, 무기 입수·장착·발사, 레이저 공습과 수집형 BOT의 동작을 기능 설명 옆과 갤러리에 연결한다. 캡션에 판본·기기·맵·조건을 적고 공개 main에서 확인한다. [캡처 계획](white-mountain-public-documentation-plan.md) · [기존 증빙 기록](report-site.md#화이트마운틴-구현과-치트-검증--2026-11-20)
 - [x] **GitHub 문서 정리.** HeavyMach 1 문서 구성을 참고해 한·영 README와 [문서 목록](README.md)을 정리했다. [원작에서 복원한 것과 내가 한 일](public/features.md), [개발 과정](public/development-history.md), 설치와 검증 안내를 연결했다.
