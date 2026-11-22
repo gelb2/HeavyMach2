@@ -1,5 +1,5 @@
 {
-  "version": "ee2005c12077937371acb21c",
+  "version": "41c0b41fd8b620c59a41c6b7",
   "validation": false,
   "files": [
     {
@@ -49,8 +49,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 2952,
-      "sha256": "4b6748b97fae52a386232b0af8f9695cde52f6abbba016100cba7aa13b54453f"
+      "bytes": 2870,
+      "sha256": "856023dc8b27039b740d857b2673a4ac94718551273b5f374ee00ebdde7339bd"
     },
     {
       "path": "install.js",
@@ -85,7 +85,7 @@
     {
       "path": "sw.js",
       "bytes": 6767,
-      "sha256": "d85a340cb8c9e1686eddf0ffcc955d7d8ea2e7824823299d88f1412cb20d9320"
+      "sha256": "bcd774a296edb14587f270eea755eb3f6648456bdb23277f779a63d15cc0283f"
     }
   ]
 }
