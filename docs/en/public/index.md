@@ -32,4 +32,5 @@
 - [Display and art in Korean](../../design-and-asset-rules.md) · [Technology and assets in Korean](../../technology-and-assets.md) · [Timing, saves, and audio in Korean](../../runtime-contract.md) · [Code reuse and attribution in Korean](../../source-reuse.md)
 - [Changelog](../../../CHANGELOG.md) · [Versions and releases in Korean](../../public/release-policy.md) · [Credits](../../../CREDITS.md) · [MIT license scope](../../../LICENSE-SCOPE.en.md)
 - [Original asset terms](../../../ASSET-LICENSES.en.md) · [Third-party notices](../../../THIRD_PARTY_NOTICES.en.md)
+- [Sass writing and media handoff in Korean, with English copy and captions](../../editorial/sass-publication-guide.md)
 - [Contributing in Korean](../../../CONTRIBUTING.md) · [Repository instructions in Korean](../../../AGENTS.md)
