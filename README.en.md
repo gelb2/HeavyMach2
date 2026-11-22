@@ -146,9 +146,9 @@ Each iPhone and iPad simulator test run covered 126 scenarios over 2,100 frames.
 
 ## Implementation and restoration rules
 
-The C++20 core shares the original-format readers, part assembly, game rules and UI. The Apple host uses Objective-C++; game graphics use OpenGL ES, effects use OpenAL Soft, and BGM uses AudioQueue. The original source code has not been obtained. New source is written from evidence in the executable, data and observed behavior.
+The C++20 core follows the original executable, game data, and observed gameplay. It reads the original data and assembles both existing and added mech parts through the same code. Each platform draws the assembled mechs and the battlefield.
 
-Firing does not create a file/database write or a new audio context for each shot. Original and new parts follow the shared data, assembly and rendering paths. Ads are neither displayed nor requested.
+Sound effects reuse prepared OpenAL sources and buffers. Each platform writes progress when the game requests a save. On iPhone and iPad, OpenGL ES draws the game and AudioQueue plays the music.
 
 [Technology and asset procedures](docs/technology-and-assets.md) · [Runtime, saves and audio](docs/runtime-contract.md) · [Reused code sources](docs/source-reuse.md)
 

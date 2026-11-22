@@ -26,4 +26,4 @@ A fresh public clone prepared 1,576 campaign files after verifying the pinned pa
 
 ## What still needs a device check
 
-The real iPad White Mountain command and portal checks, extended phone play, the opposite landscape rotation on Galaxy, and installed Safari offline restart remain open. The original HD comparison still needs a final pass over the campaign. [The remaining checks](../../public/validation.md#남은-검증) · [Feature evidence](../../feature-verification.md)
+The real iPad White Mountain command and portal checks, extended phone play, the opposite landscape rotation on Galaxy, and installed Safari offline restart remain open. The final campaign comparison will run the original HD port and both restoration editions on the same iPad. [The remaining checks](../../public/validation.md#남은-검증) · [Feature evidence](../../feature-verification.md)

@@ -129,7 +129,7 @@ xcrun simctl install "$HM2_SIM_ID" build/ios-simulator/Build/Products/Release-ip
 xcrun simctl launch "$HM2_SIM_ID" com.gelb2.heavymach2.restored
 ```
 
-현재 HD 기준 검증에는 iPad를 사용한다. iPhone을 HD 비교 대상으로 대신 사용하지 않는다. iPhone은 가로, iPad는 세로로 타이틀·슬롯·기지·전장을 연다. [조작 안내](quick-play.md)
+iPhone은 가로, iPad는 세로로 타이틀·슬롯·기지·전장을 연다. 원작 HD와 비교할 때는 iPad를 쓴다. [조작 안내](quick-play.md)
 
 ## 실제 iPhone·iPad에 설치
 
@@ -139,13 +139,13 @@ xcrun simctl launch "$HM2_SIM_ID" com.gelb2.heavymach2.restored
 4. 앱 타깃의 **Signing & Capabilities**에서 본인의 개발 팀을 지정한다. 앱 ID 등록이 충돌하면 본인 팀에서 쓸 고유 ID를 정한다. ID가 달라지면 별도 앱과 저장 공간이 된다.
 5. `HeavyMach2Source` scheme의 **Edit Scheme → Run → Build Configuration**을 `Release`로 선택한다. 실행 대상을 연결한 기기로 설정한다.
 6. 기기에서 Mac 신뢰·개발자 모드를 확인하고 잠금을 푼 뒤 Xcode에서 Run한다. 무선 실행은 최초 연결·페어링이 된 기기를 같은 네트워크에서 사용한다.
-7. 설치 후 타이틀과 기존 슬롯을 확인하고 저장한 진행을 이어서 연다. 앱을 지워 재설치하는 방법은 저장을 보존하는 갱신 절차로 사용하지 않는다.
+7. 기존 앱 위에 설치한다. 새 빌드에서 타이틀과 저장 슬롯을 확인하고, 저장한 진행을 이어서 연다.
 
-현재 정식 앱 ID는 `com.gelb2.heavymach2.restored`, 표시 이름은 **HM2 Source**다. 2026년 11월 12일 실제 iPad 갱신에서는 기존 28,204바이트 저장의 설치 전후 일치를 확인했다. 이는 당시 설치의 결과이며 앞으로의 모든 갱신을 보장하는 수치가 아니다. [설치 기록](../ipad-release-installation-20261111.md) · [2026-11-12 아이콘 확인](../evidence/title-illustration-icons-20261112.json) · [두 실기기 화이트마운틴 Release](../white-mountain-dual-release-20261120.md)
+현재 정식 앱 ID는 `com.gelb2.heavymach2.restored`, 표시 이름은 **HM2 Source**다. 2026년 11월 12일 실제 iPad 갱신에서는 기존 28,204바이트 저장의 설치 전후 일치를 확인했다. [설치 기록](../ipad-release-installation-20261111.md) · [2026-11-12 아이콘 확인](../evidence/title-illustration-icons-20261112.json) · [두 실기기 화이트마운틴 Release](../white-mountain-dual-release-20261120.md)
 
 ## 치트 앱 실행과 결과
 
-`HeavyMach2Validation`을 빌드해 일반 앱과 별도로 설치한다. 앱 ID는 `com.gelb2.heavymach2.validation`, 이름은 **HM2 Validation**, 아이콘에는 `TEST`가 있다. 실제 iPad의 치트 앱 설치·검증은 최신 기록에서 완료하지 않았으며, 현재 확인된 자동 실행 대상은 iPad 시뮬레이터다.
+`HeavyMach2Validation`을 빌드해 일반 앱과 별도로 설치한다. 앱 ID는 `com.gelb2.heavymach2.validation`, 이름은 **HM2 Validation**, 아이콘에는 `TEST`가 있다. 아래 자동 실행 절차는 iPad 시뮬레이터에서 확인했다.
 
 화이트마운틴 전용 검사는 같은 치트 앱의 실행 모드를 고른다. 시뮬레이터의 기존 검증 앱을 종료한 뒤 다음 명령에서 모드 값을 바꾼다. 값 1은 전장·포털, 2는 보스·의뢰, 3은 무기·공습·BOT, 4는 공습 피해 보정을 실행한다. [공습 검사 기록](../campaign-and-ipad-followup-20261120.md#공습-레벨-보정)
 
@@ -160,13 +160,13 @@ xcrun simctl install "$HM2_SIM_ID" build/ios-simulator/Build/Products/Release-ip
 xcrun simctl launch "$HM2_SIM_ID" com.gelb2.heavymach2.validation
 ```
 
-기기 표시에 연결된 기본 치트 실행은 126조건과 2,100프레임을 사용한다. 마지막 화면을 그린 뒤 검사를 멈춘다. [양 기기 실행 기록](../iphone-module-audit-20261118.md) 앱이 자동 종료되는 것으로 기다리지 않는다. 결과는 치트 앱 컨테이너의 `Documents/ConcurrentValidation/<실행 UUID>/report.json`에 저장한다. 다음 명령으로 컨테이너 위치를 확인한다.
+기본 치트 검사는 126조건을 2,100프레임 동안 실행한다. 마지막 화면에서 멈추면 치트 앱 컨테이너의 `Documents/ConcurrentValidation/<실행 UUID>/report.json`을 확인한다. 아래 명령으로 컨테이너를 찾는다. [iPhone·iPad 실행 기록](../iphone-module-audit-20261118.md)
 
 ```sh
 xcrun simctl get_app_container "$HM2_SIM_ID" com.gelb2.heavymach2.validation data
 ```
 
-현재 치트 앱에는 자유 조작용 조건 선택 화면이 없다. 재실행은 새 UUID 아래 새 검사 결과를 만든다. 일반 앱의 사용자 저장은 사용하지 않는다. 전체 게임 검사 완료 여부와 남은 조건은 [검증 범위](validation.md), 검사 구조는 [치트 앱 문서](../validation-build.md)를 따른다.
+치트 앱을 다시 실행하면 별도 앱 컨테이너에 새 UUID로 결과를 저장한다. [실행한 조건과 남은 검사](validation.md) · [검사 구조](../validation-build.md)
 
 ## Android 빌드와 설치
 
@@ -237,8 +237,6 @@ open src-tauri/target/release/bundle/macos
 
 ## 코드·저장소 검사
 
-문서·패키징 도구 검사는 원본 앱을 실행하지 않는다.
-
 ```sh
 python3 -m unittest discover -s tests -p 'test_*.py'
 python3 tools/check_no_ipa.py --all
@@ -274,10 +272,10 @@ ctest --test-dir build/core-original --output-on-failure \
 | clone에서 `Repository not found` | 저장소 주소가 `https://github.com/gelb2/HeavyMach2.git`인지 확인한다. |
 | 공개 자원의 다운로드·해시 검사 오류 | 연결을 확인하고 `prepare_build_resources.py`를 다시 실행한다. 이미 검증한 다운로드는 재사용한다. |
 | 원본 파일을 찾을 수 없음 | `source-provenance.json`의 로컬 기준 경로와 상대 경로를 확인한다. |
-| `HD source IPA SHA-256 mismatch` | 명세에 등록된 HD 1.0.3 원본인지 확인한다. 검사 해시를 바꿔 통과시키지 않는다. |
+| `HD source IPA SHA-256 mismatch` | 입력 파일을 [원본 해시](#원본-자원-준비)와 대조하고 일치하는 HD 1.0.3 원본을 선택한다. |
 | XcodeGen이 `.local/prepared` 경로를 찾지 못함 | 자원과 아이콘 준비를 먼저 실행한 뒤 프로젝트를 생성한다. |
 | `-lopenal` 링크 실패·다른 플랫폼용 라이브러리 오류 | 선택한 SDK의 `build_openal.py`를 실행했는지 확인한다. |
-| 서명 오류·`errSecInternalComponent` | Xcode의 로그인 계정·팀·인증서·키체인 접근과 실제 오류를 확인한다. 같은 오류를 소스 빌드 실패로 취급하지 않는다. |
+| 서명 오류·`errSecInternalComponent` | Xcode의 로그인 계정·팀·인증서·키체인 접근과 서명 로그를 확인한다. |
 | 무료 개발 앱 설치 한도 | 설치된 개발 앱을 확인한다. 다른 앱을 지우기 전 해당 저장을 백업하고 제거 대상을 정한다. |
 | 치트 앱 화면이 멈춤 | 기본 2,100프레임 또는 선택한 시나리오의 완료 여부와 `report.json`을 확인한다. 완료 뒤 display 갱신을 멈추는 현재 동작과 크래시를 구분한다. |
 
