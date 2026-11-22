@@ -59,7 +59,7 @@ cd HeavyMach2
 python3 tools/prepare_build_resources.py
 ```
 
-공개 클론에서 바로 빌드하려면 기본 브랜치 `main`을 사용한다. 다운로드용 Mac·Android 앱은 `v0.1`, 설치형 PWA는 `v0.2`에 있다. [버전과 배포 기준](release-policy.md)
+공개 클론에서 바로 빌드하려면 기본 브랜치 `main`을 사용한다. 다운로드용 Mac·Android 앱은 `v0.1`, 설치형 PWA는 `v0.3`에 있다. [버전과 배포 기준](release-policy.md)
 
 ## 공개 빌드에서 자원 준비
 
