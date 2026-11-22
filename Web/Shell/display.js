@@ -1,3 +1,5 @@
+export const installedDisplayQuery = '(display-mode: standalone), (display-mode: fullscreen)';
+
 // Take a stable device class once. Rotation, split screen and resizing change
 // only the viewport and safe insets; a narrow Mac window stays desktop.
 export function screenProfile(navigator, screen, coarse, desktopHost) {

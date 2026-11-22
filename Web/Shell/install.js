@@ -1,3 +1,5 @@
+import {installedDisplayQuery} from './display.js';
+
 function installInstructions() {
   const ua = navigator.userAgent;
   if (/iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1)) {
@@ -13,12 +15,12 @@ function installInstructions() {
 }
 
 export function offerInstall({button, help, play, desktop}) {
-  const standalone = matchMedia('(display-mode: standalone)');
+  const installedDisplay = matchMedia(installedDisplayQuery);
   let request;
   let installed = false;
 
   function update() {
-    const app = desktop || standalone.matches || navigator.standalone === true;
+    const app = desktop || installedDisplay.matches || navigator.standalone === true;
     button.hidden = Boolean(app || installed);
     help.hidden = Boolean(app);
     button.textContent = request ? '게임 설치' : '설치 방법';
@@ -31,8 +33,8 @@ export function offerInstall({button, help, play, desktop}) {
   update();
   if (desktop) return;
 
-  if (standalone.addEventListener) standalone.addEventListener('change', update);
-  else standalone.addListener(update);
+  if (installedDisplay.addEventListener) installedDisplay.addEventListener('change', update);
+  else installedDisplay.addListener(update);
   window.addEventListener('beforeinstallprompt', event => {
     event.preventDefault();
     request = event;
