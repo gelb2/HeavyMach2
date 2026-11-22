@@ -30,6 +30,7 @@
 - [개발자의 변](RESTORATION.md) · [이전 시리즈 복원 회고](series-restoration-background.md) · [이전 회고의 영문 발췌](en/RESTORATION.md)
 - [개발 과정](public/development-history.md) · [공통 코어와 플랫폼 호스트](public/architecture.md) · [현행 정본과 소비 코드](canonical.md)
 - [화면과 그림](design-and-asset-rules.md) · [기술 스택과 에셋](technology-and-assets.md) · [시간·저장·음향](runtime-contract.md) · [코드 재사용과 고지](source-reuse.md)
-- [변경 이력](../CHANGELOG.md) · [버전과 배포](public/release-policy.md) · [제작자와 외부 코드](../CREDITS.md) · [코드 라이선스 범위](../LICENSE-SCOPE.md)
+- [변경 이력](../CHANGELOG.md) · [버전과 배포](public/release-policy.md) · [제작자](../CREDITS.md) · [코드 라이선스 범위](../LICENSE-SCOPE.md)
+- [원작 자원 이용 조건](../ASSET-LICENSES.md) · [외부 코드 고지](../THIRD_PARTY_NOTICES.md)
 - [영문 공개 문서 목차](en/public/index.md)
 - [기여 안내](../CONTRIBUTING.md) · [저장소 작업 지침](../AGENTS.md)
