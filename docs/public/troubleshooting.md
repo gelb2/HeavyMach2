@@ -1,5 +1,7 @@
 # HeavyMach 2 트러블슈팅
 
+[English](../en/public/troubleshooting.md)
+
 직접 플레이하며 제보한 증상과 코덱스가 재현한 조건, 원인, 수정 결과를 기록했다. 정식판 실기기, 치트 앱, 시뮬레이터, 호스트의 결과를 각 사례에 적었다. [개발 과정](development-history.md) · [현재 확인 범위](../canonical.md#플랫폼과-검증-현황)
 
 ## 1. iPhone에서 경로를 바꾼 뒤 점프가 안 됨

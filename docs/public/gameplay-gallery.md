@@ -1,5 +1,7 @@
 # HeavyMach 2 플레이 화면과 영상
 
+[English](../en/public/gameplay-gallery.md)
+
 [플레이 방법](quick-play.md) · [원작 복원과 추가 작업](features.md)
 
 ## iPad 플레이 녹화

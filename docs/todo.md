@@ -42,6 +42,7 @@
 - [x] **한·영 Quick Play 실행·빌드 순서.** 웹·PWA → iPhone·iPad → Android → Mac 순으로 첫 실행과 소스 빌드 경로를 연결했다. [국문 Quick Play](../README.md#quick-play) · [영문 Quick Play](../README.en.md#quick-play)
 - [x] **상점·iPhone 이동·Skyway의 설명 위치.** 한·영 README의 트러블슈팅에서 코덱스가 구현한 부분의 결함을 내가 지적했다고 명시했다. 기능 소개에서도 해당 수정은 트러블슈팅으로 연결하고, 상점 배경·버튼 비교 근거를 그쪽에 두었다. [트러블슈팅](public/troubleshooting.md)
 - [x] **헤비멕2 GitHub 문서 정리 계획.** 헤비멕1·맥디펜스의 목차·기능 소개·갤러리·검증 문서를 대조해 한·영 목차, 이미지, 최신 상태, 번역을 정리할 순서와 확인 방법을 정했다. [정리 계획](github-documentation-cleanup-plan.md)
+- [x] **공개 문서 6편 영문판.** 기능 소개, 갤러리, 코드 구조, 트러블슈팅, 개발 과정, 테스트 방법의 영문판을 추가했다. 두 언어 목차·본문을 연결했다. [영문 문서 목차](en/public/index.md)
 - [x] **공개판 버전과 플랫폼 확인 범위 대조.** 한·영 README, 공개 검증 문서와 TODO의 현재 배포 버전을 맞췄다. 갤럭시 PWA v0.2의 배경음 재개와 v0.3의 전체 화면 확인, Android 정식 v0.4의 실기기와 에뮬레이터 저장 확인을 각각 기록했다. [국문 검증](public/validation.md#공개-배포판과-기기-검사) · [영문 검증](en/public/validation.md#public-releases-and-device-checks)
 - [x] **한·영 문서 목차 재편.** 플레이, 설치·빌드, 조작·저장, 기능·갤러리, 검증·트러블슈팅, 개발·출처 순으로 맞췄다. [국문 목차](README.md) · [영문 목차](en/public/index.md)
 - [x] **화이트마운틴·미등장 무기·맵의 인게임 이미지 공개.** 시뮬레이터 치트판의 14장을 공개했다. 설원 진입과 기지 출구, Snow Fort, 보스 의뢰·전투·보고, Sn-IGn 진열과 무기 2종 발사, 레이저 공습 구매·등록·사용, Picker D의 전달 직후를 기능 소개와 갤러리에 연결했다. [기능 소개](public/features.md) · [갤러리](public/gameplay-gallery.md#화이트마운틴-기지와-설원)
