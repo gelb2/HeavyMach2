@@ -1,0 +1,20 @@
+{
+  "pairs": {
+    "ASSET-LICENSES.md": "ASSET-LICENSES.en.md",
+    "LICENSE-SCOPE.md": "LICENSE-SCOPE.en.md",
+    "README.md": "README.en.md",
+    "THIRD_PARTY_NOTICES.md": "THIRD_PARTY_NOTICES.en.md",
+    "docs/README.md": "docs/en/public/index.md",
+    "docs/RESTORATION.md": "docs/en/heavymach2-restoration.md",
+    "docs/public/architecture.md": "docs/en/public/architecture.md",
+    "docs/public/build-and-install.md": "docs/en/public/build-and-install.md",
+    "docs/public/development-history.md": "docs/en/public/development-history.md",
+    "docs/public/features.md": "docs/en/public/features.md",
+    "docs/public/gameplay-gallery.md": "docs/en/public/gameplay-gallery.md",
+    "docs/public/quick-play.md": "docs/en/public/quick-play.md",
+    "docs/public/testing-method.md": "docs/en/public/testing-method.md",
+    "docs/public/troubleshooting.md": "docs/en/public/troubleshooting.md",
+    "docs/public/validation.md": "docs/en/public/validation.md"
+  },
+  "excerpts": ["docs/en/RESTORATION.md"]
+}
