@@ -33,7 +33,7 @@
 
 ## GitHub 문서와 개발자의 변 — 2026-11-20
 
-- [ ] **GitHub 저장소·PWA 대표 이미지.** 두 곳에 iPad의 탭 투 플레이 화면 이미지를 사용한다.
+- [x] **GitHub 저장소·PWA 대표 이미지.** 두 곳에 iPad의 탭 투 플레이 화면을 등록했다. 공개 이미지의 SHA-256이 일치한다. [GitHub 공유 이미지](https://repository-images.githubusercontent.com/1450893300/909eb034-227a-40d9-8335-d4559a70395f) · [PWA 공유 이미지](https://gelb2.github.io/HeavyMach2/social-preview.jpg)
 - [x] **GitHub 문서 정리.** HeavyMach 1 문서 구성을 참고해 한·영 README와 [문서 목록](README.md)을 정리했다. [원작에서 복원한 것과 내가 한 일](public/features.md), [개발 과정](public/development-history.md), 설치와 검증 안내를 연결했다.
 - [x] **HeavyMach 1 문서와 재대조.** [비교표](github-documentation-review-20261121.md)를 작성했다. [실제 플레이 PNG 5장·MP4 2편](public/gameplay-gallery.md)와 HUD 편집·작업 지시·검증 방법을 연결했다.
 - [x] **개발자의 변 초안과 GitHub·Sass 자료.** HeavyMach 1·MachDefense의 글과 2026-11-20 사용자 원문을 대조해 [한글 초안](RESTORATION.md)과 [글감·근거 목록](developer-background.md)을 작성했다. 원문은 로컬 `.local/writing/heavymach2-developer-note-20261120.md`에 있다.
@@ -42,6 +42,10 @@
 - [x] **사용자 플레이 자료 추가.** 바탕화면의 iPad 녹화로 전투 GIF 2개를 만들고 iPhone 캡처 3장을 추가했다. [플레이 갤러리](public/gameplay-gallery.md)
 - [x] **글감 일곱 건 원고 반영.** 개인 경험과 지정한 마지막 두 문단은 [개발자의 변](RESTORATION.md)에 반영했다. 약식 하네스와 안드로이드 지시, 미완성 기능에 관한 괄호 메모는 [개발 과정](public/development-history.md)에 두었다. 타우리 화면 문제 등 7건은 [트러블슈팅](public/troubleshooting.md)에 증상·원인·수정·확인 범위를 적었다.
 - [x] **코드와 문서, 문서 간 정본·참조 대조.** 31건을 기록하고 29건을 반영했다. 남은 두 건은 아래의 iPad 세로 PWA 기지 제목 잘림과 Phone 메뉴 미사용 분기다. [발견 목록](code-document-audit-20261121.md) · [수정 결과](code-document-fixes-20261121.md#수정-결과)
+
+### 3부작 복원 소회 — 사용자 원문
+
+> 내가 3부작을 복원하며 느낀 것과 상관없는 것이다만, 내가 요즘것들, 그러니까 제대로 착실하게 인의를 다하는 사회인 말고 그렇지 않은 것들을 만나고 느낀게 있다. 사람은 순식간에 죽는다는 사실을 망각해서 뇌가 썩어가고 있다는 것이다. 나는 필리핀 앙헬레스에서 죽음은 예고없이, 가장 오만한 사람의 목을 친다는걸 배웠고, 누가 수확당하냐는 선악과 상관 없다는 것도 배웠다. 그리고, 이제 내 차례라는, 내 예상보다 시간이 더 부족하다는걸 느꼈다. 그렇기에 나는 헤비멕 시리즈 3부작을 복원하기로 했다. 내가 조금이라도 제정신일때 내 수명을 연장해준 소프트웨어를 복원하는 것. 그리고 오늘, 헤비멕2를 마지막으로 헤비멕1, 맥디펜스, 헤비멕2 3개 소프트웨어는 윈도우를 제외한 모든 플랫폼에서 동작하며, 유지보수 가능한 수준으로 올라왔다. 나는, 나에게 창조주조차 추가할당을 거부한 추가 수명을 할당해 준 변해준 개발자와 박재철 일러스트레이터에 대한 의무를 다했다고 생각한다.
 
 ## 공유 복구코드와 웹·Mac 후속 작업 — 2026-11-20
 
