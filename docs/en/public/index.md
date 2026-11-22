@@ -18,17 +18,17 @@
 
 ## Added features and gameplay
 
-- [Original features and additions](../../../README.en.md#restored-from-the-original) · [Gameplay gallery with Korean captions](../../public/gameplay-gallery.md)
+- [Restored and added features](features.md) · [Gameplay screenshots and clips](gameplay-gallery.md)
 
 ## Verification and troubleshooting
 
 - [Platforms and current checks in Korean](../../canonical.md#플랫폼과-검증-현황) · [Evidence by feature in Korean](../../feature-verification.md) · [Verified behavior and remaining checks](validation.md)
-- [Reported issues, causes, and fixes in Korean](../../public/troubleshooting.md) · [Testing method in Korean](../../public/testing-method.md) · [Current TODO in Korean](../../todo.md#현재-체크--2026-11-21)
+- [Reported issues, causes, and fixes](troubleshooting.md) · [Testing method](testing-method.md) · [Current TODO in Korean](../../todo.md#현재-체크--2026-11-21)
 
 ## Development and sources
 
 - [HeavyMach 2 developer's statement in Korean](../../RESTORATION.md) · [Earlier series statement in Korean](../../series-restoration-background.md) · [English excerpts about the earlier restorations](../RESTORATION.md)
-- [Development history in Korean](../../public/development-history.md) · [Shared core and platform hosts in Korean](../../public/architecture.md) · [Project requirements and source entry points in Korean](../../canonical.md)
+- [Development history](development-history.md) · [Shared core and platform hosts](architecture.md) · [Project requirements and source entry points in Korean](../../canonical.md)
 - [Display and art in Korean](../../design-and-asset-rules.md) · [Technology and assets in Korean](../../technology-and-assets.md) · [Timing, saves, and audio in Korean](../../runtime-contract.md) · [Code reuse and attribution in Korean](../../source-reuse.md)
 - [Changelog](../../../CHANGELOG.md) · [Versions and releases in Korean](../../public/release-policy.md) · [Credits](../../../CREDITS.md) · [MIT license scope](../../../LICENSE-SCOPE.en.md)
 - [Contributing in Korean](../../../CONTRIBUTING.md) · [Repository instructions in Korean](../../../AGENTS.md)

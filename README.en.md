@@ -4,8 +4,8 @@
 
 [![Public releases Android regular v0.4, PWA v0.3, Mac v0.1](docs/public/media/badges/version.svg)](docs/public/release-policy.md)
 [![Platforms iOS, iPadOS, macOS, Android, Web/PWA](docs/public/media/badges/platforms.svg)](docs/en/public/build-and-install.md)
-[![Architecture arm64, x86_64, wasm32](docs/public/media/badges/arch.svg)](docs/public/architecture.md)
-[![Technology stack C++20, Objective-C++, Kotlin, JavaScript, Rust](docs/public/media/badges/code.svg)](docs/public/architecture.md)
+[![Architecture arm64, x86_64, wasm32](docs/public/media/badges/arch.svg)](docs/en/public/architecture.md)
+[![Technology stack C++20, Objective-C++, Kotlin, JavaScript, Rust](docs/public/media/badges/code.svg)](docs/en/public/architecture.md)
 [![Code license MIT](docs/public/media/badges/license.svg)](LICENSE-SCOPE.en.md)
 
 [Quick Play](docs/en/public/quick-play.md) · [Quick Play](#quick-play) · [Features](#restored-from-the-original) · [Developer's statement](docs/RESTORATION.md) · [Documentation](docs/en/public/index.md)
@@ -92,17 +92,17 @@ In Xcode, select `HeavyMach2Source` and an iPhone or iPad simulator. [iOS build 
 
 ## Restored from the original
 
-Tap the ground to move, draw a path, or double-tap to dash using booster power. The original data supplies the attachment points for the body, lower body and weapons. Combat, BOTs, equipment, purchases, missions and rewards follow the HD rules. The standard iPhone edition is also a reference for phone menu coordinates and artwork. [Original features and evidence](docs/public/features.md#원작에서-복원한-것)
+Tap the ground to move, draw a path, or double-tap to dash using booster power. The original data supplies the attachment points for the body, lower body and weapons. Combat, BOTs, equipment, purchases, missions and rewards follow the HD rules. The standard iPhone edition is also a reference for phone menu coordinates and artwork. [Original features and evidence](docs/en/public/features.md#restored-from-the-original)
 
 The game uses the original base, battlefield and equipment art and reuses prepared textures for the parts and their shadows. The original WAV samples play through OpenAL. [Graphics and audio restoration](docs/graphics-audio-fidelity-20261110.md)
 
 ## My contributions
 
-**White Mountain.** I asked for a campaign that uses the six unused snow illustrations and the existing base artwork. I specified that bosses should be away from portals and asked for more varied enemy groups. I also directed the work to give 25 existing weapons an acquisition path and to make the laser air strike and collector BOTs usable in normal play. [White Mountain and unused content](docs/public/features.md#화이트마운틴에-실제로-들어갈-수-있게-만들었다)
+**White Mountain.** I asked for a campaign that uses the six unused snow illustrations and the existing base artwork. I specified that bosses should be away from portals and asked for more varied enemy groups. I also directed the work to give 25 existing weapons an acquisition path and to make the laser air strike and collector BOTs usable in normal play. [White Mountain and unused content](docs/en/public/features.md#opening-white-mountain-to-players)
 
-**Android, PWA and Mac.** I asked the Android app to import the shared modules while preserving the files used by Apple apps. Each platform handles its system connections. The new recovery code transfers progress and equipment across all three save slots. I set the scope and reported defects, and worked with Codex on implementation and automated checks. [Platform development](docs/public/development-history.md#android웹mac과-저장-이동) · [Transfer saves](docs/save-transfer.md)
+**Android, PWA and Mac.** I asked the Android app to import the shared modules while preserving the files used by Apple apps. Each platform handles its system connections. The new recovery code transfers progress and equipment across all three save slots. I set the scope and reported defects, and worked with Codex on implementation and automated checks. [Platform development](docs/en/public/development-history.md#android-web-mac-and-save-transfer) · [Transfer saves](docs/save-transfer.md)
 
-Take the White Mountain portal in Desert 01, then choose **Snow Pass** at the base. The screenshot shows arrival in Snow Pass in the cheat build on an iPhone simulator. [Base entry, bosses, and equipment in play](docs/public/gameplay-gallery.md#화이트마운틴-기지와-설원)
+Take the White Mountain portal in Desert 01, then choose **Snow Pass** at the base. The screenshot shows arrival in Snow Pass in the cheat build on an iPhone simulator. [Base entry, bosses, and equipment in play](docs/en/public/gameplay-gallery.md#white-mountain-base-and-snowfields)
 
 <img src="docs/public/media/white-mountain-gameplay/snow-pass.webp" alt="The mech arrives in Snow Pass with the Desert 01 return portal on the left" width="700">
 
@@ -118,7 +118,7 @@ The iPhone screenshot shows a waypoint on the road near the Skyway Base portal, 
 
 ![The Skyway Base portal, a waypoint on the road, and the iPhone landscape HUD](docs/public/media/player-captures-20261121/iphone-skyway-base.png)
 
-[More combat footage, iPhone command and shop screens, a White Mountain boss, Galaxy and PWA gameplay](docs/public/gameplay-gallery.md)
+[More combat footage, iPhone command and shop screens, a White Mountain boss, Galaxy and PWA gameplay](docs/en/public/gameplay-gallery.md)
 
 ## Verified behavior and remaining work
 
@@ -134,17 +134,17 @@ Firing does not create a file/database write or a new audio context for each sho
 
 ## Troubleshooting
 
-**Shop and iPhone movement.** I reported problems in the shop and movement code that Codex implemented for the restoration. I asked to measure the original shop's controls, slots and item details again. I reported failed jumps after drawing a new route, Skyway layer jitter, apparent empty inventory slots, and a missing laser air strike in the iPad shop. [Fixes and tests](docs/public/troubleshooting.md)
+**Shop and iPhone movement.** I reported problems in the shop and movement code that Codex implemented for the restoration. I asked to measure the original shop's controls, slots and item details again. I reported failed jumps after drawing a new route, Skyway layer jitter, apparent empty inventory slots, and a missing laser air strike in the iPad shop. [Fixes and tests](docs/en/public/troubleshooting.md)
 
-[Troubleshooting in Korean](docs/public/troubleshooting.md) · [Development history in Korean](docs/public/development-history.md)
+[Troubleshooting in Korean](docs/en/public/troubleshooting.md) · [Development history in Korean](docs/en/public/development-history.md)
 
 ## How I directed and tested the work
 
-[How I directed the work](docs/public/development-history.md#내가-일을-시키고-테스트한-방법) · [Testing method in Korean](docs/public/testing-method.md)
+[How I directed the work](docs/en/public/development-history.md#how-i-directed-the-work-and-tested-it) · [Testing method](docs/en/public/testing-method.md)
 
 ## Code structure and versions
 
-[Code structure in Korean](docs/public/architecture.md) · [Validation](docs/en/public/validation.md) · [Changelog](CHANGELOG.md) · [Release policy](docs/public/release-policy.md)
+[Code structure in Korean](docs/en/public/architecture.md) · [Validation](docs/en/public/validation.md) · [Changelog](CHANGELOG.md) · [Release policy](docs/public/release-policy.md)
 
 ## Licenses and resources
 

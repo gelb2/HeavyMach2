@@ -1,5 +1,7 @@
 # HeavyMach 2 개발 과정
 
+[English](../en/public/development-history.md)
+
 [원작 복원과 추가 작업](features.md) · [개발자의 변](../RESTORATION.md) · [트러블슈팅](troubleshooting.md) · [테스트 방법](testing-method.md) · [문서 목록](../README.md)
 
 ## 일반판과 HD판의 비교
