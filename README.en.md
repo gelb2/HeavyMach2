@@ -2,6 +2,9 @@
 
 [한국어](README.md) | [English](README.en.md)
 
+[![Public releases Android regular v0.4, PWA v0.3, Mac v0.1](docs/public/media/badges/version.svg)](docs/public/release-policy.md)
+[![Platforms iOS, iPadOS, macOS, Android, Web/PWA](docs/public/media/badges/platforms.svg)](docs/en/public/build-and-install.md)
+[![Architecture arm64, x86_64, wasm32](docs/public/media/badges/arch.svg)](docs/public/architecture.md)
 [![Technology stack C++20, Objective-C++, Kotlin, JavaScript, Rust](docs/public/media/badges/code.svg)](docs/public/architecture.md)
 [![Code license MIT](docs/public/media/badges/license.svg)](LICENSE-SCOPE.en.md)
 
