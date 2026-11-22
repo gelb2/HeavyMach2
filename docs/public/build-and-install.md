@@ -4,9 +4,9 @@
 
 | 플랫폼 | 설치·실행 | 소스에서 빌드 |
 | --- | --- | --- |
+| PWA | [홈 화면·앱 목록에 설치](#pwa-설치) | [Wasm 빌드와 로컬 실행](#pwa-빌드와-로컬-실행) |
 | iPhone·iPad | [Xcode에서 실제 기기에 설치](#실제-iphoneipad에-설치) | [정식판·치트판과 시뮬레이터](#iphoneipad-시뮬레이터-빌드) |
 | Android | [갤럭시에 APK 설치](#android-빌드와-설치) | [SDK·Gradle·APK 경로](#android-빌드와-설치) |
-| PWA | [홈 화면·앱 목록에 설치](#pwa-설치) | [Wasm 빌드와 로컬 실행](#pwa-빌드와-로컬-실행) |
 | Tauri Mac | [기존 맥 앱 가져와 실행](#tauri-mac-앱-받기) | [웹 파일로 Mac 앱 빌드](#tauri-mac-빌드) |
 
 ## PWA 설치
@@ -26,21 +26,6 @@ iPhone·iPad·갤럭시·Mac에서 공개 HTTPS 설치 주소를 연다. 빌드�
 3. 첫 실행에는 네트워크를 유지하고 에셋 다운로드와 검증이 끝날 때까지 기다린다. 진행 막대는 검증을 마친 용량을 표시한다. 실패하면 **다시 시도**를 누른다. 오프라인 실행과 저장 유지는 Mac Chrome 설치판에서 확인했다. [iPhone Safari](https://support.apple.com/guide/iphone/open-as-web-app-iphea86e5236/ios) · [Android Chrome](https://support.google.com/chrome/answer/9658361?co=GENIE.Platform%3DAndroid) · [Mac Safari](https://support.apple.com/104996) · [설치 확인 기록](../pwa-device-validation-20261120.md)
 
 진행을 옮기려면 슬롯 화면의 **저장 이동**에서 원래 앱의 복구코드를 만들고 설치한 앱에 붙여넣는다. 복원하면 받을 앱의 슬롯 세 개가 교체된다. [복구코드와 백업 방법](../save-transfer.md)
-
-## Tauri Mac 앱 받기
-
-Apple Silicon Mac과 macOS 14 이상용이다. GitHub Release에서 `HeavyMach2-Tauri-Mac-v0.1-arm64.zip`을 받는다. `SHA256SUMS.txt`로 파일을 확인하고 ZIP을 푼 뒤 **HeavyMach 2 Desktop.app**을 응용 프로그램 폴더로 옮긴다. [Mac 앱 ZIP 다운로드](https://github.com/gelb2/HeavyMach2/releases/download/v0.1/HeavyMach2-Tauri-Mac-v0.1-arm64.zip) · [릴리스와 SHA-256 목록](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)
-
-[소스에서 Tauri 앱을 빌드](#tauri-mac-빌드)한 경우 아래 경로에서 앱을 찾는다.
-
-1. 빌드한 맥에서 아래 명령으로 Finder의 앱 폴더를 연다. 저장소 루트에서 실행한다.
-
-   ```sh
-   open Desktop/Tauri/src-tauri/target/release/bundle/macos
-   ```
-
-2. **HeavyMach 2 Desktop.app**을 응용 프로그램 폴더에 복사하고 연다. 치트판용 **HeavyMach 2 Desktop QA.app**은 별도 앱과 저장 공간을 쓴다.
-3. 다른 맥으로 옮길 때는 Finder에서 해당 `.app`을 압축해 ZIP을 전달한다. 받는 맥에서 ZIP을 풀어 앱을 응용 프로그램 폴더로 옮긴다. 현재 번들은 임시 서명본이다. 자신이 빌드했거나 출처를 확인한 앱의 첫 실행이 차단되면 **시스템 설정 → 개인정보 보호 및 보안 → 확인 없이 열기**를 사용한다. [Apple 첫 실행 안내](https://support.apple.com/102445)
 
 ## 준비물
 
@@ -93,6 +78,26 @@ python3 tools/prepare_app_icons.py
 마지막 명령은 탭투스타트의 `Main_BG.png`로 `.local/prepared/AppIcons.xcassets/`를 만든다. 일반 아이콘은 원본 일러스트의 중앙 정사각형 영역을 사용하고 치트 아이콘에는 `TEST`를 표시한다. [아이콘 생성 방식](../app-icons.md)
 
 준비 자원과 아이콘은 Git 추적에서 제외한 `.local/` 아래에 둔다. 원본 IPA와 원작 포함 앱은 로컬에 보관한다. 준비 도구가 `Existing prepared resource differs`로 중단하면 기존 파일과 해시 차이의 원인을 확인하고, 보존한 자원을 임의로 덮어쓰지 않는다.
+
+## PWA 빌드와 로컬 실행
+
+Emscripten SDK를 활성화하고 [공통 자원과 아이콘](#공개-빌드에서-자원-준비)을 준비한다. 기존 검증에는 Emscripten 6.0.13을 사용했다. 저장소 루트에서 빌드한다. [Emscripten 설치 안내](https://emscripten.org/docs/getting_started/downloads.html) · [웹 빌드 세부 사항](../../Web/README.md)
+
+```sh
+export EM_CACHE="$PWD/.local/emscripten-cache-hm2"
+emcmake cmake -S Web -B build/web-normal -DCMAKE_BUILD_TYPE=Release
+cmake --build build/web-normal --parallel 6
+emcmake cmake -S Web -B build/web-validation -DCMAKE_BUILD_TYPE=Release -DHM2_WEB_VALIDATION=ON
+cmake --build build/web-validation --parallel 6
+```
+
+PWA를 이 맥에서 설치해 실행할 때는 서버를 시작한다.
+
+```sh
+python3 -m http.server 8773 --bind 127.0.0.1 --directory build
+```
+
+브라우저에서 [정식판](http://127.0.0.1:8773/web-normal/dist/) 또는 [치트판](http://127.0.0.1:8773/web-validation/dist/)을 연다. 산출물은 각 빌드 폴더의 `dist/` 전체다. [이 맥의 기존 웹 빌드 열기](../../Web/README.md#이-맥의-기존-웹-빌드-열기) · [실기기용 HTTPS 주소 준비](../../Web/README.md#실기기-설치-주소)
 
 ## iPhone·iPad 시뮬레이터 빌드
 
@@ -201,25 +206,20 @@ adb -s "$HM2_ANDROID_SERIAL" install -r app/build/outputs/apk/cheat/debug/app-ch
 
 앱 목록에서 **HeavyMach 2** 또는 **HeavyMach 2 Test**를 연다. 두 앱의 저장 공간은 분리돼 있다. [갤럭시 실행과 검증](../../Android/검증-20261120.md)
 
-## PWA 빌드와 로컬 실행
+## Tauri Mac 앱 받기
 
-Emscripten SDK를 활성화하고 [공통 자원과 아이콘](#공개-빌드에서-자원-준비)을 준비한다. 기존 검증에는 Emscripten 6.0.13을 사용했다. 저장소 루트에서 빌드한다. [Emscripten 설치 안내](https://emscripten.org/docs/getting_started/downloads.html) · [웹 빌드 세부 사항](../../Web/README.md)
+Apple Silicon Mac과 macOS 14 이상용이다. GitHub Release에서 `HeavyMach2-Tauri-Mac-v0.1-arm64.zip`을 받는다. `SHA256SUMS.txt`로 파일을 확인하고 ZIP을 푼 뒤 **HeavyMach 2 Desktop.app**을 응용 프로그램 폴더로 옮긴다. [Mac 앱 ZIP 다운로드](https://github.com/gelb2/HeavyMach2/releases/download/v0.1/HeavyMach2-Tauri-Mac-v0.1-arm64.zip) · [릴리스와 SHA-256 목록](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)
 
-```sh
-export EM_CACHE="$PWD/.local/emscripten-cache-hm2"
-emcmake cmake -S Web -B build/web-normal -DCMAKE_BUILD_TYPE=Release
-cmake --build build/web-normal --parallel 6
-emcmake cmake -S Web -B build/web-validation -DCMAKE_BUILD_TYPE=Release -DHM2_WEB_VALIDATION=ON
-cmake --build build/web-validation --parallel 6
-```
+[소스에서 Tauri 앱을 빌드](#tauri-mac-빌드)한 경우 아래 경로에서 앱을 찾는다.
 
-PWA를 이 맥에서 설치해 실행할 때는 서버를 시작한다.
+1. 빌드한 맥에서 아래 명령으로 Finder의 앱 폴더를 연다. 저장소 루트에서 실행한다.
 
-```sh
-python3 -m http.server 8773 --bind 127.0.0.1 --directory build
-```
+   ```sh
+   open Desktop/Tauri/src-tauri/target/release/bundle/macos
+   ```
 
-브라우저에서 [정식판](http://127.0.0.1:8773/web-normal/dist/) 또는 [치트판](http://127.0.0.1:8773/web-validation/dist/)을 연다. 산출물은 각 빌드 폴더의 `dist/` 전체다. [이 맥의 기존 웹 빌드 열기](../../Web/README.md#이-맥의-기존-웹-빌드-열기) · [실기기용 HTTPS 주소 준비](../../Web/README.md#실기기-설치-주소)
+2. **HeavyMach 2 Desktop.app**을 응용 프로그램 폴더에 복사하고 연다. 치트판용 **HeavyMach 2 Desktop QA.app**은 별도 앱과 저장 공간을 쓴다.
+3. 다른 맥으로 옮길 때는 Finder에서 해당 `.app`을 압축해 ZIP을 전달한다. 받는 맥에서 ZIP을 풀어 앱을 응용 프로그램 폴더로 옮긴다. 현재 번들은 임시 서명본이다. 자신이 빌드했거나 출처를 확인한 앱의 첫 실행이 차단되면 **시스템 설정 → 개인정보 보호 및 보안 → 확인 없이 열기**를 사용한다. [Apple 첫 실행 안내](https://support.apple.com/102445)
 
 ## Tauri Mac 빌드
 
