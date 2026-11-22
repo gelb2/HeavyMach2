@@ -74,7 +74,7 @@ iPhone 17 Pro 시뮬레이터의 치트 앱에서 SnowBasin 보스 의뢰를 수
 
 ## 저격총과 LS 무기
 
-iPad 시뮬레이터 치트판에서 Sn-IGn(10501)가 진열된 상점과, Ruin Field에서 Sn-IGn와 LS 계열 10311을 각각 장착해 발사한 화면이다. 이 치트 검사는 장착·발사·피해를 재현했다. 일반 플레이의 Sn-IGn 상점·Boss 05 드롭과 10311의 Tank_L02 드롭 조건은 데이터에서 확인할 수 있다. [상점·드롭 데이터](../../Resources/Campaign/items.json) · [무기 검사](../white-mountain-implementation-20261119.md#단계별-실행-결과)
+iPad 시뮬레이터 치트판에서 Sn-IGn(10501)가 진열된 상점과, Ruin Field에서 Sn-IGn와 LS 계열 10311을 각각 장착해 발사한 화면이다. 이 치트 검사는 장착·발사·피해를 재현했다. 일반 플레이에서 Sn-IGn은 판매 레벨에 맞는 상점에 나오며, Boss 05의 전리품으로는 표시 레벨 35부터 나온다. LS-D(10311)는 Tank_L02 드롭 그룹에서 얻을 수 있다. [상점·드롭 데이터](../../Resources/Campaign/items.json) · [무기 검사](../white-mountain-implementation-20261119.md#단계별-실행-결과)
 
 <img src="media/white-mountain-gameplay/sniper-shop.webp" alt="상점에서 Sn-IGn가 선택돼 있다." width="245"> <img src="media/white-mountain-gameplay/sniper-combat.webp" alt="Ruin Field에서 Sn-IGn를 장착하고 사격한다." width="245"> <img src="media/white-mountain-gameplay/ls-combat.webp" alt="같은 전장에서 LS 10311을 장착하고 사격한다." width="245">
 
