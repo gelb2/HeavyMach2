@@ -22,7 +22,7 @@ HeavyMach 1을 복원한 뒤, 개발자 변해준과 일러스트레이터 박�
 
 이해관계자가 연락하면 이 프로젝트는 내릴 것이다.
 
-**[개발자의 변](docs/RESTORATION.md)** · [이전 시리즈 복원 회고](docs/series-restoration-background.md)
+**[개발자의 변](docs/RESTORATION.md)** · [헤비멕1 개발자의 변](https://github.com/gelb2/HeavyMach/blob/main/docs/RESTORATION.md) · [맥디펜스 개발자의 변](https://github.com/gelb2/MachDefense/blob/main/docs/RESTORATION.md)
 
 ## 3부작 복원 후의 소회. 나는 두 제작자에게 의무를 다 했다.
 

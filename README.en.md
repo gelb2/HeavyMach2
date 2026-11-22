@@ -22,7 +22,7 @@ I have no intention of making money from this restoration. I also want to record
 
 If a stakeholder contacts me, I will take this project down.
 
-**[HeavyMach 2 developer’s statement](docs/en/heavymach2-restoration.md)** · [Korean original](docs/RESTORATION.md) · [Earlier series statement in Korean](docs/series-restoration-background.md) · [English excerpts on the earlier restorations](docs/en/RESTORATION.md)
+**[HeavyMach 2 developer’s statement](docs/en/heavymach2-restoration.md)** · [Korean original](docs/RESTORATION.md) · [HeavyMach 1 developer’s statement](https://github.com/gelb2/HeavyMach/blob/main/docs/en/RESTORATION.md) · [MachDefense developer’s statement](https://github.com/gelb2/MachDefense/blob/main/docs/en/RESTORATION.md)
 
 ## Reflections After Restoring the Trilogy. I Have Fulfilled My Duty to the Two Creators.
 

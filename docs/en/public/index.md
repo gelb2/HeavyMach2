@@ -27,7 +27,7 @@
 
 ## Development and sources
 
-- [HeavyMach 2 developer’s statement](../heavymach2-restoration.md) · [Korean original](../../RESTORATION.md) · [Earlier series statement in Korean](../../series-restoration-background.md) · [English excerpts about the earlier restorations](../RESTORATION.md)
+- [HeavyMach 2 developer’s statement](../heavymach2-restoration.md) · [Korean original](../../RESTORATION.md) · [HeavyMach 1 developer’s statement](https://github.com/gelb2/HeavyMach/blob/main/docs/en/RESTORATION.md) · [MachDefense developer’s statement](https://github.com/gelb2/MachDefense/blob/main/docs/en/RESTORATION.md)
 - [Development history](development-history.md) · [Shared core and platform hosts](architecture.md) · [Project requirements and source entry points in Korean](../../canonical.md)
 - [Display and art in Korean](../../design-and-asset-rules.md) · [Technology and assets in Korean](../../technology-and-assets.md) · [Timing, saves, and audio in Korean](../../runtime-contract.md) · [Code reuse and attribution in Korean](../../source-reuse.md)
 - [Changelog](../../../CHANGELOG.md) · [Versions and releases in Korean](../../public/release-policy.md) · [Credits](../../../CREDITS.md) · [MIT license scope](../../../LICENSE-SCOPE.en.md)
