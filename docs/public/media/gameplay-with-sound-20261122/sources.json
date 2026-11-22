@@ -1,0 +1,38 @@
+{
+  "mac-mini-ruin-field.mp4": {
+    "recorded": "2026-11-22",
+    "environment": "Physical Apple silicon Mac mini (Mac16,11), macOS 27.0.1, Google Chrome 158, regular PWA in a browser tab",
+    "url": "https://gelb2.github.io/HeavyMach2/",
+    "scene": "Ruin Field, movement path and nearby enemy tanks, fresh level 1 save",
+    "source": {
+      "file": "ruin-field-02.webm",
+      "sha256": "d14fcc7654ca15c3e17925d6e33922667aa588845d7b29a21111829713ae8678",
+      "bytes": 4527397
+    },
+    "processing": "One continuous capture of the game canvas and the browser game audio mix at normal speed. Video transcoded to H.264 and game audio to stereo AAC; no external audio added.",
+    "sha256": "823bfe42a45c9cdb5390dc102744b9b576c31ac9647c39c57edefeacf5c5eeb2",
+    "bytes": 3824478,
+    "format": {
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 1280,
+          "height": 800
+        },
+        {
+          "codec_name": "aac",
+          "sample_rate": "48000",
+          "channels": 2
+        }
+      ],
+      "duration_seconds": 10.013333
+    }
+  },
+  "mac-mini-ruin-field.webp": {
+    "source": "mac-mini-ruin-field.mp4",
+    "source_time_seconds": 4.5,
+    "processing": "Full frame proportionally downscaled to 960 × 600.",
+    "sha256": "1d4a93a42e6a8bc0fd7b8b37a3fb52b09b9b5ef6595a177ab1183952334b70ce",
+    "bytes": 121188
+  }
+}
