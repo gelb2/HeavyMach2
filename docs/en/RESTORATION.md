@@ -1,8 +1,8 @@
 # A developer's statement — HeavyMach series background
 
-[HeavyMach 2 한국어 초안](../RESTORATION.md) | English excerpts
+[HeavyMach 2 한국어 원문](../RESTORATION.md) · [HeavyMach 2 developer’s statement in English](heavymach2-restoration.md)
 
-The excerpts below cover the earlier HeavyMach series restoration, my career history, and the project's aims. The [HeavyMach 2 draft in Korean](../RESTORATION.md) continues the story with White Mountain and the Android, PWA and Mac work.
+The excerpts below cover the earlier HeavyMach series restoration, my career history, and the project's aims. The [HeavyMach 2 developer’s statement](heavymach2-restoration.md) continues the story with the Android, PWA, and Mac work.
 
 Someone named [mesabloo](https://github.com/Mesabloo/hm-defense) worked on a similar project. He obtained HeavyMach Defense assets and wrote its source code from scratch. He appears to have stopped while implementing combat between units. My starting point was better than his, since he had to write the source code from scratch.
 
