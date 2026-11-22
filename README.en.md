@@ -152,7 +152,7 @@ Firing does not create a file/database write or a new audio context for each sho
 
 ## Licenses and resources
 
-Byun Hae-jun developed the original game, and Park Jae-cheol created its artwork. New restoration code uses the [MIT License](LICENSE). Original artwork, audio and data, and third-party code have separate terms. [License scope](LICENSE-SCOPE.en.md) · [Credits and third-party notices](CREDITS.md)
+Byun Hae-jun developed the original game, and Park Jae-cheol created its artwork. New restoration code uses the [MIT License](LICENSE). Original artwork, audio and data, and third-party code have separate terms. [License scope](LICENSE-SCOPE.en.md) · [Credits](CREDITS.md) · [Original asset terms](ASSET-LICENSES.en.md) · [Third-party notices](THIRD_PARTY_NOTICES.en.md)
 
 ## An Additional Statement Clarifying the Purpose of This Project
 
