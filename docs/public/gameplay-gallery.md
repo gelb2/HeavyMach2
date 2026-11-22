@@ -4,14 +4,6 @@
 
 [플레이 방법](quick-play.md) · [원작 복원과 추가 작업](features.md)
 
-## 음향이 담긴 실기기 영상
-
-Mac mini의 Chrome에서 [공개 정식 PWA](https://gelb2.github.io/HeavyMach2/)를 실행했다. Ruin Field에서 메크의 이동 경로를 그리며 적 전차와 교전하는 장면이다. 게임 화면과 Chrome이 출력한 게임 소리를 함께 녹화했다.
-
-[소리와 함께 재생하기 · MP4](https://raw.githubusercontent.com/gelb2/HeavyMach2/main/docs/public/media/gameplay-with-sound-20261122/mac-mini-ruin-field.mp4) · [녹화 조건과 해시](media/gameplay-with-sound-20261122/sources.json)
-
-![Ruin Field에서 메크의 이동 경로와 주변 적 전차가 보인다.](media/gameplay-with-sound-20261122/mac-mini-ruin-field.webp)
-
 ## iPad 플레이 녹화
 
 첫 GIF는 연못 사이에서 이동 목표를 정하고 주변 전차와 교전하는 장면이다. 두 번째 GIF는 해안가에서 이동 경로를 그리며 적과 포탄을 주고받는 장면이다. 2026년 11월 12일 사용자 녹화에서 각각 연속 8초를 발췌했다. [영상 구간과 해시](media/player-captures-20261121/sources.json)

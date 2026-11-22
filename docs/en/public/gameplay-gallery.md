@@ -2,14 +2,6 @@
 
 [한국어](../../public/gameplay-gallery.md) · [How to play](quick-play.md) · [What the restoration adds](features.md)
 
-## Gameplay on physical hardware with sound
-
-The [public regular PWA](https://gelb2.github.io/HeavyMach2/) ran in Chrome on a Mac mini. In Ruin Field, the player draws a movement path for the mech while fighting enemy tanks. The clip captures the game view and the game audio sent to Chrome’s output.
-
-[Play with sound, MP4](https://raw.githubusercontent.com/gelb2/HeavyMach2/main/docs/public/media/gameplay-with-sound-20261122/mac-mini-ruin-field.mp4) · [Capture details and hashes](../../public/media/gameplay-with-sound-20261122/sources.json)
-
-![A movement path and nearby enemy tanks around the mech in Ruin Field](../../public/media/gameplay-with-sound-20261122/mac-mini-ruin-field.webp)
-
 ## iPad gameplay recordings
 
 In the first GIF, the player sets a destination between ponds and fights nearby tanks. In the second, the player draws a path along the coast and trades fire with enemies. Each is an uninterrupted eight seconds from the player's November 12, 2026 recording. [Timestamps and hashes](../../public/media/player-captures-20261121/sources.json)

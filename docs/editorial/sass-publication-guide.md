@@ -41,12 +41,11 @@ Assemble a mech, draw a route across the battlefield, and engage enemy units. Ac
 
 ## 미디어 인계 목록
 
-대표 이미지로 iPad 타이틀을 쓴다. 소리가 필요한 장면은 Mac mini의 Ruin Field MP4를 쓴다. 기기별 동작과 화이트마운틴 설명에는 아래 장면을 선택한다. 갤러리의 시뮬레이터 캡처를 인용할 때도 기기와 판본을 표시한다.
+대표 이미지로 iPad 타이틀을 쓴다. 기기별 동작과 화이트마운틴 설명에는 아래 장면을 선택한다. 갤러리의 시뮬레이터 캡처를 인용할 때도 기기와 판본을 표시한다.
 
 | 파일과 장면 | 한국어 캡션 | English caption | 촬영·검사 근거 |
 | --- | --- | --- | --- |
 | [iPad 타이틀 JPG](../../Web/Shell/social-preview.jpg) | iPad의 헤비멕2 타이틀에 TAP TO START GAME이 표시된다. | HeavyMach 2’s iPad title screen shows TAP TO START GAME. | [타이틀과 아이콘](../app-icons.md) · [README의 소개 이미지](../../README.md#플레이-화면과-영상) |
-| [Ruin Field MP4](../public/media/gameplay-with-sound-20261122/mac-mini-ruin-field.mp4) · [대표 프레임](../public/media/gameplay-with-sound-20261122/mac-mini-ruin-field.webp) | Mac mini에서 메크가 이동 경로를 따라가며 적 전차와 교전한다. 게임 소리가 들린다. | On a Mac mini, the mech follows a movement path and fights enemy tanks. Game audio is included. | 11월 22일, Apple silicon Mac mini, Chrome의 공개 정식 PWA. 10초, 1280×800, H.264와 스테레오 AAC. [녹화·해시](../public/media/gameplay-with-sound-20261122/sources.json) |
 | [iPad 연못 교전 GIF](../public/media/player-captures-20261121/ipad-field-combat.gif) · [해안 교전 GIF](../public/media/player-captures-20261121/ipad-combat-route.gif) | iPad 세로 화면에서 메크가 연못 사이를 이동하고, 해안 전장에서는 이동 경로를 그으며 싸운다. | In the iPad portrait view, the mech moves between ponds and fights along a route drawn across the coastal battlefield. | 11월 12일 사용자 녹화. 연못 69.6–77.6초, 해안 11.3–19.3초. 각 8초, 무음. [구간·해시](../public/media/player-captures-20261121/sources.json) |
 | [iPhone 사령부](../public/media/player-captures-20261121/iphone-command.png) · [Skyway Base](../public/media/player-captures-20261121/iphone-skyway-base.png) | iPhone 가로 화면에 진행 중인 의뢰와 Skyway Base 포털 주변 전장이 보인다. | The iPhone landscape screens show active missions and the battlefield near the Skyway Base portal. | 11월 14일 사용자 캡처. [출처와 해시](../public/media/player-captures-20261121/sources.json) |
 | [갤럭시 Ruin Field](../public/media/gameplay-20261121/galaxy-field.png) | 갤럭시 정식판에서 메크 앞에 이동 목표가 표시된다. | The regular Galaxy build shows a waypoint in front of the mech. | 갤럭시 정식판 새 슬롯. [검사](../../Android/검증-20261120.md) · [캡처 근거](../public/media/gameplay-20261121/sources.json) |
