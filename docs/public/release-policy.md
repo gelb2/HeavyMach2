@@ -10,7 +10,7 @@
 
 첫 버전은 `v0.1`이다. Mac은 Apple Silicon용 정식 앱 ZIP을, Android는 정식·치트 APK를 분리해 제공한다. iPhone·iPad는 소스에서 빌드하고 본인의 개발 팀으로 서명한다. [v0.1 다운로드와 변경 사항](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)
 
-`v0.2`는 휴대폰 PWA의 가로 방향과 홈 복귀 배경음을 수정했다. `main` 병합 커밋 `18319f5`에 태그를 붙이고 `gh-pages`의 `2eea699`로 배포했다. Mac과 Android 다운로드는 `v0.1`에 있다. [v0.2 릴리스](https://github.com/gelb2/HeavyMach2/releases/tag/v0.2) · [갤럭시 설치 검사](../pwa-lifecycle-audit-20261121.md)
+`v0.2`는 휴대폰 PWA의 가로 방향과 홈 복귀 배경음을 수정했다. `main` 병합 커밋 `18319f5`에 태그를 붙이고 `gh-pages`의 `2eea699`로 배포했다. v0.2 배포 당시 Mac과 Android 다운로드는 `v0.1`을 사용했다. [v0.2 릴리스](https://github.com/gelb2/HeavyMach2/releases/tag/v0.2) · [갤럭시 설치 검사](../pwa-lifecycle-audit-20261121.md)
 
 `v0.3`은 휴대폰 PWA의 전체 화면과 Safari 홈 화면의 상태바 영역을 수정했다. `main` 병합 커밋 `bc7ab55`에 태그를 붙이고 `gh-pages`의 `e40314f`로 배포했다. 공개 HTTPS 파일 16개의 크기와 SHA-256을 대조했다. [v0.3 릴리스](https://github.com/gelb2/HeavyMach2/releases/tag/v0.3) · [전체 화면 검사](../pwa-lifecycle-audit-20261121.md#홈-화면-전체-화면-개선)
 
@@ -34,6 +34,8 @@
 | Tauri Mac | 공개 ZIP을 다시 받아 SHA-256과 압축을 푼 앱의 서명을 확인했다. 맥미니의 820×900pt 창에서 새 슬롯을 만들고 Ruin Field Base와 상점을 왕복했다. 검증용 홈 폴더에 저장을 생성했다. [Mac ZIP](https://github.com/gelb2/HeavyMach2/releases/download/v0.1/HeavyMach2-Tauri-Mac-v0.1-arm64.zip) |
 | Android | Gradle에서 정식·치트 APK와 일반 앱 단위 검사를 통과했다. GitHub에서 두 APK를 다시 내려받아 로컬 서명 검사본과 대조했다. [정식·치트 APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1) |
 
-위 표는 v0.1 배포 당시의 결과다. 이후 갤럭시에서 공개 v0.2 설치 앱의 홈 복귀와 음악을 확인했다. Android 공개 APK 재설치, Mac 앱의 음향과 사령부는 후속 확인 범위다. [갤럭시 v0.2](../pwa-lifecycle-audit-20261121.md) · [현재 TODO](../todo.md#현재-체크--2026-11-21) · [변경 이력](../../CHANGELOG.md)
+위 표는 v0.1 배포 당시의 결과다. 이후 갤럭시에 공개 Android 정식 APK v0.4를 설치해 기존 슬롯과 **저장 이동 → 코드 입력** 화면을 확인했다. 정식 에뮬레이터에서는 복구코드 적용, 복원 전 백업, 재실행을 확인했다. 실제 갤럭시의 시험용 슬롯 교체와 Mac 정식 앱의 음향·사령부 검사는 남아 있다. [저장 이동의 기기별 확인 범위](../save-transfer.md#호스트별-확인-범위) · [현재 TODO](../todo.md#현재-체크--2026-11-21) · [변경 이력](../../CHANGELOG.md)
+
+갤럭시 설치형 PWA v0.2에서 홈 화면을 다녀온 뒤 배경음 재개를 확인했다. v0.3에서는 홈 화면 아이콘으로 열 때와 홈 화면을 다녀온 뒤 모두 게임이 전체 화면으로 표시됐다. [갤럭시 v0.2 검사](../pwa-lifecycle-audit-20261121.md#갤럭시-설치-앱) · [갤럭시 v0.3 검사](../pwa-lifecycle-audit-20261121.md#갤럭시-v03-설치-앱-확인)
 
 레퍼런스 프로젝트의 버전 기록. [HeavyMach 1 Releases](https://github.com/gelb2/HeavyMach/releases) · [MachDefense Releases](https://github.com/gelb2/MachDefense/releases)
