@@ -16,6 +16,8 @@ HeavyMach influenced my decision to become a developer. I encountered it on an i
 
 After restoring HeavyMach 1, I am continuing with HeavyMach 2, another work in the series by developer Byun Hae-jun and illustrator Park Jae-cheol. This project aims to preserve the original game and illustrations and make them playable on current devices.
 
+I began the restoration with the original standard and HD builds of HeavyMach 2 that I downloaded from the [HeavyMach series collection on the Internet Archive](https://archive.org/details/heavy-mach-archive_202406). I used HD 1.0.3 as the reference for the game’s behavior and data, and compared the iPhone display and touch controls with standard edition 2.0.1.
+
 I have no intention of making money from this restoration. I also want to record how the game was restored and what was fixed.
 
 **[HeavyMach 2 developer's statement in Korean](docs/RESTORATION.md)** · [Earlier series statement in Korean](docs/series-restoration-background.md) · [English excerpts on the earlier restorations](docs/en/RESTORATION.md)
