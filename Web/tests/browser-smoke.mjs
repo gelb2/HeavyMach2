@@ -73,6 +73,7 @@ async function openChromeApp(context, cdp, manifestId, url, touch=false, viewpor
     await page.setViewportSize(viewport);
     await page.reload({waitUntil:'domcontentloaded'});
   }
+  await page.bringToFront();
   await page.locator('#play').filter({hasText:'게임 시작'}).waitFor();
   assert(await page.locator('#install').isHidden());
   await playGame(page,touch);
@@ -910,7 +911,7 @@ async function smoke(normalManifest, qaManifest) {
   ]) {
     const context = await browser.newContext({viewport:fixture.viewport,userAgent:fixture.userAgent,hasTouch:true});
     try {
-      const device = await start(context,'validation');
+      const device = await start(context,'validation',false,true);
       assert.equal(await device.evaluate(() => HM2Validation.profile), fixture.name);
       await titleToSlots(device, true);
       await touchTransfer(device);

@@ -12,6 +12,7 @@ const desktop = window.HM2Desktop;
 const detectedProfile = screenProfile(navigator, screen, matchMedia('(pointer: coarse)').matches, desktop);
 const profile = detectedProfile ?? 'desktop';
 const profileId = {phone: 0, tablet: 1, desktop: 2}[profile];
+const ipadHomeScreen = profile === 'tablet' && navigator.standalone === true;
 $('install-manifest').href = profile === 'phone' ? './manifest.webmanifest' : './manifest-flexible.webmanifest';
 const landscape = matchMedia('(orientation: landscape)');
 const installedDisplay = matchMedia(installedDisplayQuery);
@@ -70,11 +71,13 @@ function lockInstalledPhone() {
   screen.orientation?.lock?.('landscape').catch(() => {});
 }
 function enterInstalledFullscreen() {
-  if (profile === 'desktop' || !installed() || document.hidden || phoneHeld() ||
-      fullscreenDisplay.matches || document.fullscreenElement || document.webkitFullscreenElement) return;
+  // On Apple Home Screen apps, use the window configured by the Safari meta tags.
+  // On iPad, element fullscreen can add black system bands to that window.
+  if (profile === 'desktop' || navigator.standalone === true || !installed() ||
+      document.hidden || phoneHeld() || fullscreenDisplay.matches || document.fullscreenElement) return;
   const root = document.documentElement;
   // Older installs can still have standalone in their cached Android manifest.
-  // Use the existing play gesture, while Safari can fall back to its Home Screen viewport.
+  // Use the existing play gesture.
   try {
     if (document.fullscreenEnabled && root.requestFullscreen) {
       root.requestFullscreen({navigationUI:'hide'}).catch(() => {});
@@ -228,7 +231,10 @@ async function resize() {
   const width = Math.max(1, rect.width), height = Math.max(1, rect.height);
   const main = getComputedStyle(document.querySelector('main'));
   const pad = direction => Math.max(0, parseFloat(main['padding' + direction]) || 0);
-  const left = pad('Left'), bottom = pad('Bottom'), right = pad('Right'), top = pad('Top');
+  // The iPad Home Screen window overlays its status and gesture areas.
+  // Its HD game layout uses the whole WebKit viewport. Keep those insets for DOM controls.
+  const left = pad('Left'), right = pad('Right');
+  const bottom = ipadHomeScreen ? 0 : pad('Bottom'), top = ipadHomeScreen ? 0 : pad('Top');
   const safe = left + right < width && top + bottom < height ? [left, bottom, right, top] : [0, 0, 0, 0];
   const pixelRatio = Math.min(devicePixelRatio || 1, 2, 4096 / width, 4096 / height);
   const pixelWidth = Math.max(1, Math.round(width * pixelRatio));
