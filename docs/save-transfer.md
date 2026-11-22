@@ -33,6 +33,17 @@ PWA 저장은 브라우저 오리진의 IndexedDB에 있다. 스킴·호스트·
 
 재실행 뒤 게임에서 만든 복구코드는 예시 코드와 일치했다. 1번 슬롯을 열어 Ruin Field Base로 들어갔다. 공통 코어의 `OriginalHDSaveEnvelope`와 `OriginalSessionTransitions` 검사도 통과했다.
 
+## iPhone·iPad 실기기 복구코드
+
+2026년 11월 22일에 iPhone과 iPad 정식 앱에서 저장을 읽었다. 아래에서 한 기기의 코드를 열어 한 줄 전체를 복사한다. 코드를 적용하면 현재 앱의 세 슬롯을 교체한다.
+
+| 기기 | 레벨 | 경험치 | 크레딧 | 복구코드 |
+| --- | ---: | ---: | ---: | --- |
+| iPhone | 22 | 406,150 | 20,511 | [iPhone 코드](public/saves/iphone-native-20261122.txt) |
+| iPad | 22 | 366,785 | 38,417 | [iPad 코드](public/saves/ipad-native-20261122.txt) |
+
+Mac Chrome에 설치한 정식 PWA v0.3에서 두 코드를 각각 가져왔다. 기존 저장을 백업했고, 오프라인에서 다시 연 뒤 경험치와 내보낸 코드가 원본과 같은지 확인했다.
+
 ## 개발과 확인
 
 [RecoveryCode.cpp](../Sources/Core/Data/RecoveryCode.cpp)는 저장 전체를 인코딩하고, [GameSession.cpp](../Sources/Core/Session/GameSession.cpp)는 코드 검사 → 기존 기록 백업 → 저장 교체 → 세션 갱신을 담당한다. Apple·Android는 OS 입력과 앱 전용 파일을 연결한다. 웹은 [store](../Web/Shell/storage.js)의 트랜잭션을 기다리고, Mac은 [Tauri 저장 어댑터](../Desktop/Tauri/src-tauri/src/storage.rs)의 교체 결과를 기다린다.
