@@ -76,17 +76,15 @@
 - [x] **글감 보존·게재와 원문 위치**. 회고 원문과 후속 글감을 보존했고, 현재 공개 원고·트러블슈팅·개발 과정에 반영한 범위를 기록했다. [글감 목록](developer-background.md) · [삼부작 소회 반영 `b9efa0b`](https://github.com/gelb2/HeavyMach2/commit/b9efa0b) · [원문과 항목별 대조](todo-audit-20261122.md)
 - [x] **문서·코드 대조 29건 반영**. 31건 조사 중 제목 잘림과 미사용 Phone 분기는 3차에서 각각 처리한다. [대조표](code-document-audit-20261121.md) · [반영 근거](code-document-fixes-20261121.md)
 - [x] **기본 전투·성장·저장·메뉴 연결**. 공통 코어의 무기·전투·BOT·퀵아이템·저장, 도움말·완료 임무·게임오버·랭킹 이용 불가 안내는 각 소비 코드와 실행을 확인했다. 작성 당시 미연결로 남은 기록은 [기능별 근거](feature-verification.md)와 [항목별 대조](todo-audit-20261122.md)에 연결했다.
+- [x] **한·영 README에서 플레이 영상과 GIF 바로 보기**. 공개 GitHub의 두 README 본문에서 Chrome으로 MP4 3편 재생과 GIF 2편의 움직임을 확인했다. Mac mini 영상에는 게임 음향이 들어 있다. 공개 첨부 3개는 저장소의 MP4와 해시가 일치한다. [공개 PR #144](https://github.com/gelb2/HeavyMach2/pull/144) · [갤러리](public/gameplay-gallery.md)
+- [x] **한·영 공개 문서 문체 정리**. README의 사격·파츠·광고 문단과 플레이·설치·검증·개발 과정 등 17개 파일을 고쳤다. 개발자의 변과 인용은 기존 원문과 대조했다. [공개 PR #146](https://github.com/gelb2/HeavyMach2/pull/146)
+- [x] **헤비멕2 글쓰기 지침 연결**. 헤비멕1·맥디펜스의 지침을 바탕으로 로컬 스킬과 참고 문서를 추가하고 `AGENTS.md`에서 연결했다. [글쓰기 스킬](../.agents/skills/write-project-text/SKILL.md) · [공개 PR #148](https://github.com/gelb2/HeavyMach2/pull/148)
+- [x] **문서 검사에서 반복 문구 차단**. 기존 GitHub `documentation` 검사에서 한·영 공개 글의 사격·파츠·광고 정책 문구와 검증 면책 문구를 잡는다. 정리 전 문서에서 9건을 찾았고 수정본과 인용은 검사를 통과했다. [검사 사용법](../CONTRIBUTING.md#문서-변경-확인) · [공개 PR #150](https://github.com/gelb2/HeavyMach2/pull/150)
 
 <a id="현재-남은-일--2026-11-16-검토"></a>
 <a id="남은-수정조사검사"></a>
 
 ## 남은 작업 순서
-
-- [ ] **한·영 README에서 플레이 영상과 GIF 바로 보기**. 두 README의 플레이 섹션에서 플레이 영상과 GIF를 본문에 표시한다. 공개 GitHub에서 영상 재생, 소리가 있는 영상의 음향, GIF의 움직임을 확인한다. [한국어 README](../README.md#플레이-화면과-영상) · [English README](../README.en.md#gameplay-screenshots-and-clips) · [공개 영상과 GIF](public/gameplay-gallery.md)
-
-- [ ] **한·영 공개 문서의 문체 전수 수정**. README·개발자의 변·기술 문서·작업 내역을 문단별로 읽는다. 메타카피, 내부 규칙을 옮긴 문장, 자기합리화와 방어적 설명을 걷어 낸다. 독자에게 필요한 기술 설명은 실제 동작과 확인 근거로 다시 쓴다. 대상 예시는 README 구현 절의 사격·파츠·광고 문단이다. 기술상 제약은 [실행·저장·음향 계약](runtime-contract.md)과 [디자인·에셋 정본](design-and-asset-rules.md)에 둔다. 사용자가 쓴 원문과 직접 인용은 보존한다. [한국어 README](../README.md#구현과-복원-기준) · [English README](../README.en.md#implementation-and-restoration-rules)
-- [ ] **헤비멕2 작업 시작점에 글쓰기 지침 연결**. 공통 `write-project-text`와 필요한 참고 문서를 헤비멕2 저장소에서도 열 수 있게 하고 `AGENTS.md`에서 문서·보고·UI 문구 작업에 연결한다. 공개 글의 메타카피·컴플라이언스 문체·자기합리화 금지와 원문 보존을 명시한다. [헤비멕1 지침](https://github.com/gelb2/HeavyMach/blob/main/AGENTS.md) · [맥디펜스 지침](https://github.com/gelb2/MachDefense/blob/main/AGENTS.md)
-- [ ] **문서 검사에서 같은 문체의 재발 차단**. 한·영 공개 문서에 새로 들어간 문장에서 이미 확인한 반복 문구를 검사한다. 인용·코드·내부 기술 규칙을 구분한다. 의미 판별이 필요한 문장은 실제 기능·근거와 대조해 문단 단위로 검토한다. 기존 `documentation` 검사에 연결하고 재발 사례와 정상 기술 설명을 각각 시험한다. [현행 문서 검사](../CONTRIBUTING.md#문서-변경-확인)
 
 ### 1. 지금 있는 빌드로 Mac에서 먼저 확인
 
