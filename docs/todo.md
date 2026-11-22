@@ -34,6 +34,7 @@
 ## GitHub 문서와 개발자의 변 — 2026-11-20
 
 - [x] **GitHub 저장소·PWA 대표 이미지.** 두 곳에 iPad의 탭 투 플레이 화면을 등록했다. 공개 이미지의 SHA-256이 일치한다. [GitHub 공유 이미지](https://repository-images.githubusercontent.com/1450893300/909eb034-227a-40d9-8335-d4559a70395f) · [PWA 공유 이미지](https://gelb2.github.io/HeavyMach2/social-preview.jpg)
+- [ ] **한·영 README 상단 배지.** 헤비멕1·맥디펜스의 형식에 맞춰 공개 버전, 지원 플랫폼, 아키텍처, 기술 스택, 코드 라이선스를 표시한다. 플랫폼별 배포 버전은 현재 릴리스·설치 안내와 대조하고, 배지에서 관련 안내로 연결한다.
 - [x] **GitHub 문서 정리.** HeavyMach 1 문서 구성을 참고해 한·영 README와 [문서 목록](README.md)을 정리했다. [원작에서 복원한 것과 내가 한 일](public/features.md), [개발 과정](public/development-history.md), 설치와 검증 안내를 연결했다.
 - [x] **HeavyMach 1 문서와 재대조.** [비교표](github-documentation-review-20261121.md)를 작성했다. [실제 플레이 PNG 5장·MP4 2편](public/gameplay-gallery.md)와 HUD 편집·작업 지시·검증 방법을 연결했다.
 - [x] **개발자의 변 초안과 GitHub·Sass 자료.** HeavyMach 1·MachDefense의 글과 2026-11-20 사용자 원문을 대조해 [한글 초안](RESTORATION.md)과 [글감·근거 목록](developer-background.md)을 작성했다. 원문은 로컬 `.local/writing/heavymach2-developer-note-20261120.md`에 있다.
