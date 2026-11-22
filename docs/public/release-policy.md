@@ -36,6 +36,6 @@
 
 위 표는 v0.1 배포 당시의 결과다. 이후 갤럭시에 공개 Android 정식 APK v0.4를 설치해 기존 슬롯과 **저장 이동 → 코드 입력** 화면을 확인했다. 정식 에뮬레이터에서는 복구코드 적용, 복원 전 백업, 재실행을 확인했다. 실제 갤럭시의 시험용 슬롯 교체와 Mac 정식 앱의 음향·사령부 검사는 남아 있다. [저장 이동의 기기별 확인 범위](../save-transfer.md#호스트별-확인-범위) · [현재 TODO](../todo.md#현재-체크--2026-11-21) · [변경 이력](../../CHANGELOG.md)
 
-갤럭시 설치형 PWA에서는 v0.2의 홈 복귀 뒤 배경음 재개와 v0.3의 홈 화면 전체 화면 복귀를 각각 확인했다. [갤럭시 v0.2 검사](../pwa-lifecycle-audit-20261121.md#갤럭시-설치-앱) · [갤럭시 v0.3 검사](../pwa-lifecycle-audit-20261121.md#갤럭시-v03-설치-앱-확인)
+갤럭시 설치형 PWA v0.2에서 홈 화면을 다녀온 뒤 배경음 재개를 확인했다. v0.3에서는 홈 화면 아이콘으로 열 때와 홈 화면을 다녀온 뒤 모두 게임이 전체 화면으로 표시됐다. [갤럭시 v0.2 검사](../pwa-lifecycle-audit-20261121.md#갤럭시-설치-앱) · [갤럭시 v0.3 검사](../pwa-lifecycle-audit-20261121.md#갤럭시-v03-설치-앱-확인)
 
 레퍼런스 프로젝트의 버전 기록. [HeavyMach 1 Releases](https://github.com/gelb2/HeavyMach/releases) · [MachDefense Releases](https://github.com/gelb2/MachDefense/releases)
