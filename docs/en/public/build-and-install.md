@@ -5,6 +5,7 @@
 ## Play the published builds
 
 - **PWA:** Open the public game. In Safari on iPhone or iPad, choose **Share → Add to Home Screen** and turn on **Open as Web App**. In Android Chrome, choose **Install game** or the browser’s app installation command. In Mac Safari, choose **File → Add to Dock**. Open the app icon and wait for the first download to finish before playing offline. Play in landscape on a phone and in portrait on iPad. [Open the PWA](https://gelb2.github.io/HeavyMach2/)
+- **iPhone and iPad:** Build in Xcode and sign with your own development team to install on your device. [Build and install on iPhone or iPad](#iphone-and-ipad)
 - **Android:** Install the v0.4 regular APK over the existing regular app. On the slot screen, open Save Transfer (저장 이동), then Enter Code (코드 입력). The test APK uses a separate app. [Regular APK and SHA-256](https://github.com/gelb2/HeavyMach2/releases/tag/v0.4) · [Test APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)
 - **Mac:** Download the `v0.1` ZIP for Apple Silicon, check `SHA256SUMS.txt`, and move the extracted app to Applications. The app requires macOS 14 or later. [Mac ZIP](https://github.com/gelb2/HeavyMach2/releases/download/v0.1/HeavyMach2-Tauri-Mac-v0.1-arm64.zip) · [First launch on macOS](https://support.apple.com/102445)
 
@@ -21,6 +22,20 @@ python3 tools/prepare_build_resources.py
 ```
 
 The script downloads about 88 MiB from the pinned public PWA build, verifies the two files by SHA-256, and prepares the campaign, maps, images, sound, and app icons. The playable build does not require an original IPA, a private path, or a Git LFS download. For Android-only builds use `python3 tools/prepare_build_resources.py --campaign-only` to skip Apple icon tooling. Original-package comparison and resource regeneration use a separate workflow. [Build inputs](../../public/build-and-install.md#공개-빌드에서-자원-준비) · [Code and asset license scope](../../../LICENSE-SCOPE.en.md)
+
+## Build and run the PWA
+
+Activate the [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html) on macOS. Use CMake 3.20 or later and run these commands from the repository root:
+
+```sh
+emcmake cmake -S Web -B build/web-normal -DCMAKE_BUILD_TYPE=Release
+cmake --build build/web-normal --parallel 6
+emcmake cmake -S Web -B build/web-validation -DCMAKE_BUILD_TYPE=Release -DHM2_WEB_VALIDATION=ON
+cmake --build build/web-validation --parallel 6
+python3 -m http.server 8773 --bind 127.0.0.1 --directory build
+```
+
+Open the [local regular build](http://127.0.0.1:8773/web-normal/dist/) or the [local test build](http://127.0.0.1:8773/web-validation/dist/). Install from Chrome or Safari, then open the app icon. The loopback address works on the build Mac. Use HTTPS for installation on another device. [Web build and verification](../../../Web/README.md)
 
 ## iPhone and iPad
 
@@ -46,20 +61,6 @@ adb -s DEVICE_SERIAL install -r app/build/outputs/apk/cheat/debug/app-cheat-debu
 ```
 
 Replace `DEVICE_SERIAL` with the emulator or device ID. Open **HeavyMach 2** or **HeavyMach 2 Test**. The apps use separate saves. For a signed distribution build use `:app:assembleNormalRelease` with your own signing key. [Android build and signing details](../../../Android/README.md)
-
-## Build and run the PWA
-
-Activate the [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html) on macOS. Use CMake 3.20 or later and run these commands from the repository root:
-
-```sh
-emcmake cmake -S Web -B build/web-normal -DCMAKE_BUILD_TYPE=Release
-cmake --build build/web-normal --parallel 6
-emcmake cmake -S Web -B build/web-validation -DCMAKE_BUILD_TYPE=Release -DHM2_WEB_VALIDATION=ON
-cmake --build build/web-validation --parallel 6
-python3 -m http.server 8773 --bind 127.0.0.1 --directory build
-```
-
-Open the [local regular build](http://127.0.0.1:8773/web-normal/dist/) or the [local test build](http://127.0.0.1:8773/web-validation/dist/). Install from Chrome or Safari, then open the app icon. The loopback address works on the build Mac. Use HTTPS for installation on another device. [Web build and verification](../../../Web/README.md)
 
 ## Build the Mac app
 
