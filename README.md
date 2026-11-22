@@ -16,6 +16,8 @@ HeavyMach는 내가 개발자로 직업을 바꾸는 데 영향을 준 게임이
 
 HeavyMach 1을 복원한 뒤, 개발자 변해준과 일러스트레이터 박재철의 연작인 HeavyMach 2의 복원을 이어가고 있다. 원작자의 게임과 일러스트를 보존하고, 현재 기기에서 다시 플레이할 수 있게 만드는 것이 이 프로젝트의 목적이다.
 
+나는 Internet Archive의 [HeavyMach 시리즈 모음](https://archive.org/details/heavy-mach-archive_202406)에서 헤비멕2 일반판과 HD판의 원본 빌드를 받아 복원을 시작했다. 게임 동작과 데이터는 HD 1.0.3을 기준으로 삼았고, iPhone의 화면과 터치 조작은 일반판 2.0.1과 비교했다.
+
 나는 이 복원판으로 돈을 벌 생각이 없다. 이 게임을 어떻게 복원했고 무엇을 고쳤는지도 기록으로 남기려 한다.
 
 **[개발자의 변](docs/RESTORATION.md)** · [이전 시리즈 복원 회고](docs/series-restoration-background.md)
