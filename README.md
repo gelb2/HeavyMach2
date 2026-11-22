@@ -116,7 +116,7 @@ Desert 01의 화이트마운틴 포털로 들어가 기지의 **Snow Pass** 출�
 
 Chrome에서 공개 정식 PWA를 열어 Ruin Field의 이동과 교전을 녹화했다. 영상은 10초다. [촬영 조건과 해시](docs/public/media/gameplay-with-sound-20261122/sources.json)
 
-[Mac mini 전투 MP4](docs/public/media/gameplay-with-sound-20261122/mac-mini-ruin-field.mp4)
+https://github.com/user-attachments/assets/9f1230c0-e936-4db9-a44b-2e737d0961f5
 
 ### iPad 전투 GIF
 
@@ -128,11 +128,11 @@ iPad 실기기에서 연못 사이를 이동하며 교전하고, 해안 전장�
 
 iPhone Air 시뮬레이터에서 Ruin Field의 이동 경로를 다시 그렸다. 6.1초, 무음.
 
-[iPhone 이동 MP4](docs/public/media/gameplay-20261121/iphone-route.mp4)
+https://github.com/user-attachments/assets/ab72946d-a178-427f-804d-1f9b88e0f9f3
 
 iPad Pro 11형 시뮬레이터에서 Ruin Field의 세로 시야와 HUD를 녹화했다. 12초, 무음.
 
-[iPad 세로 전장 MP4](docs/public/media/gameplay-20261121/ipad-field.mp4)
+https://github.com/user-attachments/assets/a43eb307-db17-47ac-a4d3-a3d7f3e9a8b0
 
 아래는 iPhone 가로 화면의 Skyway Base 포털과 이동 목표다.
 

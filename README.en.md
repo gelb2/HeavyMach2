@@ -116,7 +116,7 @@ Take the White Mountain portal in Desert 01, then choose **Snow Pass** at the ba
 
 Ruin Field movement and combat recorded in the public regular PWA in Chrome. The clip runs for 10 seconds. [Capture details and hashes](docs/public/media/gameplay-with-sound-20261122/sources.json)
 
-[Mac mini combat MP4](docs/public/media/gameplay-with-sound-20261122/mac-mini-ruin-field.mp4)
+https://github.com/user-attachments/assets/9f1230c0-e936-4db9-a44b-2e737d0961f5
 
 ### iPad combat GIFs
 
@@ -128,11 +128,11 @@ On a physical iPad, the mech moves between ponds during combat and redraws its r
 
 The player redraws a route in Ruin Field on an iPhone Air simulator. 6.1 seconds, silent.
 
-[iPhone movement MP4](docs/public/media/gameplay-20261121/iphone-route.mp4)
+https://github.com/user-attachments/assets/ab72946d-a178-427f-804d-1f9b88e0f9f3
 
 An 11-inch iPad Pro simulator shows the Ruin Field portrait view and HUD. 12 seconds, silent.
 
-[iPad portrait combat MP4](docs/public/media/gameplay-20261121/ipad-field.mp4)
+https://github.com/user-attachments/assets/a43eb307-db17-47ac-a4d3-a3d7f3e9a8b0
 
 The iPhone screenshot shows the Skyway Base portal and a waypoint in landscape.
 
