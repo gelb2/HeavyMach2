@@ -46,7 +46,7 @@
 - [x] **공개판 버전과 플랫폼 확인 범위 대조.** 한·영 README, 공개 검증 문서와 TODO의 현재 배포 버전을 맞췄다. 갤럭시 PWA v0.2의 배경음 재개와 v0.3의 전체 화면 확인, Android 정식 v0.4의 실기기와 에뮬레이터 저장 확인을 각각 기록했다. [국문 검증](public/validation.md#공개-배포판과-기기-검사) · [영문 검증](en/public/validation.md#public-releases-and-device-checks)
 - [x] **한·영 문서 목차 재편.** 플레이, 설치·빌드, 조작·저장, 기능·갤러리, 검증·트러블슈팅, 개발·출처 순으로 맞췄다. [국문 목차](README.md) · [영문 목차](en/public/index.md)
 - [x] **화이트마운틴·미등장 무기·맵의 인게임 이미지 공개.** 시뮬레이터 치트판의 14장을 공개했다. 설원 진입과 기지 출구, Snow Fort, 보스 의뢰·전투·보고, Sn-IGn 진열과 무기 2종 발사, 레이저 공습 구매·등록·사용, Picker D의 전달 직후를 기능 소개와 갤러리에 연결했다. [기능 소개](public/features.md) · [갤러리](public/gameplay-gallery.md#화이트마운틴-기지와-설원)
-- [ ] **화이트마운틴과 미등장 콘텐츠의 추가 인게임 사진.** 일반 비행체 발사, LS 10311 일반 드롭, Picker D 장착과 접근·전달 전후 인벤토리를 이어서 보여 주는 캡처가 남았다. [캡처 계획](white-mountain-public-documentation-plan.md)
+- [x] **설원 여섯 곳과 미등장 콘텐츠의 추가 인게임 사진.** 설원 세 곳을 더 실어 여섯 곳 모두 보여 준다. iPad 시뮬레이터 치트판에서 Snow Pass의 일반 비행체 첫 사격, LS-D 드롭과 획득, Picker D 장착·접근·전달과 잔액 변화를 찍었다. LS-D 희귀 드롭은 난수 시드를 고정해 재현했다. [국문 갤러리](public/gameplay-gallery.md#화이트마운틴-기지와-설원) · [영문 갤러리](en/public/gameplay-gallery.md#white-mountain-base-and-snowfields)
 - [x] **GitHub 문서 정리.** HeavyMach 1 문서 구성을 참고해 한·영 README와 [문서 목록](README.md)을 정리했다. [원작에서 복원한 것과 내가 한 일](public/features.md), [개발 과정](public/development-history.md), 설치와 검증 안내를 연결했다.
 - [x] **HeavyMach 1 문서와 재대조.** [비교표](github-documentation-review-20261121.md)를 작성했다. [실제 플레이 PNG 5장·MP4 2편](public/gameplay-gallery.md)와 HUD 편집·작업 지시·검증 방법을 연결했다.
 - [x] **개발자의 변 초안과 GitHub·Sass 자료.** HeavyMach 1·MachDefense의 글과 2026-11-20 사용자 원문을 대조해 [한글 초안](RESTORATION.md)과 [글감·근거 목록](developer-background.md)을 작성했다. 원문은 로컬 `.local/writing/heavymach2-developer-note-20261120.md`에 있다.
