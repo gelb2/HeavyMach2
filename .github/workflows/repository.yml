@@ -12,6 +12,24 @@ jobs:
           persist-credentials: false
       - run: python3 tools/check_no_ipa.py --all
       - run: python3 -m unittest discover -s tests -p 'test_*.py'
+  documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check Markdown and Korean/English pairs
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PUSH_BASE: ${{ github.event.before }}
+        run: |
+          base="${PR_BASE:-$PUSH_BASE}"
+          if [[ -n "$base" && "$base" != 0000000000000000000000000000000000000000 ]]; then
+            python3 tools/check_docs.py --base "$base"
+          else
+            python3 tools/check_docs.py
+          fi
   develop-only:
     if: github.event_name == 'pull_request' && github.base_ref == 'main'
     runs-on: ubuntu-latest
