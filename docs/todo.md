@@ -81,14 +81,15 @@
 - [x] **헤비멕2 글쓰기 지침 연결**. 헤비멕1·맥디펜스의 지침을 바탕으로 로컬 스킬과 참고 문서를 추가하고 `AGENTS.md`에서 연결했다. [글쓰기 스킬](../.agents/skills/write-project-text/SKILL.md) · [공개 PR #148](https://github.com/gelb2/HeavyMach2/pull/148)
 - [x] **문서 검사에서 반복 문구 차단**. 기존 GitHub `documentation` 검사에서 한·영 공개 글의 사격·파츠·광고 정책 문구와 검증 면책 문구를 잡는다. 정리 전 문서에서 9건을 찾았고 수정본과 인용은 검사를 통과했다. [검사 사용법](../CONTRIBUTING.md#문서-변경-확인) · [공개 PR #150](https://github.com/gelb2/HeavyMach2/pull/150)
 - [x] **이전 시리즈 복원 회고 연결**. 헤비멕2에 있던 한·영 회고 사본을 삭제하고, README·문서 목차·개발자의 변·Sass 자료에서 각 작품의 원문으로 연결했다. [헤비멕1 개발자의 변](https://github.com/gelb2/HeavyMach/blob/main/docs/RESTORATION.md) · [맥디펜스 개발자의 변](https://github.com/gelb2/MachDefense/blob/main/docs/RESTORATION.md)
+- [x] **헤비멕1에서 다른 작품의 개발자의 변 연결**. 공개 한·영 README, 개발자의 변, 문서 목차에서 맥디펜스·헤비멕2의 해당 언어 원문으로 연결되는지 확인했다. [배포 PR #127](https://github.com/gelb2/HeavyMach/pull/127)
+- [x] **맥디펜스에서 다른 작품의 개발자의 변 연결**. 공개 한·영 README, 개발자의 변, 문서 목차에서 헤비멕1·헤비멕2의 해당 언어 원문으로 연결되는지 확인했다. [배포 PR #7](https://github.com/gelb2/MachDefense/pull/7)
 
 <a id="현재-남은-일--2026-11-16-검토"></a>
 <a id="남은-수정조사검사"></a>
 
 ## 남은 작업 순서
 
-- [ ] **헤비멕1에서 다른 작품의 개발자의 변 연결**. 한·영 README, 문서 목차와 개발자의 변에서 맥디펜스와 헤비멕2의 해당 언어 원문을 각 저장소에서 열 수 있게 한다. 배포 후 공개 링크를 확인한다. [헤비멕1 저장소](https://github.com/gelb2/HeavyMach)
-- [ ] **맥디펜스에서 다른 작품의 개발자의 변 연결**. 한·영 README, 문서 목차와 개발자의 변에서 헤비멕1과 헤비멕2의 해당 언어 원문을 각 저장소에서 열 수 있게 한다. 배포 후 공개 링크를 확인한다. [맥디펜스 저장소](https://github.com/gelb2/MachDefense)
+- [ ] **Mac mini 전투 영상 하단의 검은 여백 수정**. 1280×800 녹화 원본과 공개 MP4의 하단 HUD 양옆에서 같은 73픽셀 여백을 확인했다. 정식 PWA의 데스크톱 카메라가 허용하는 HD 하단 이동 범위는 이 화면에서 약 73픽셀이다. 하단까지 전장이 보이는 조건을 확인하고, HUD와 게임 소리를 담은 전투 장면을 다시 녹화한다. 한·영 README 플레이어, 갤러리, Sass 인계와 출처·해시를 새 영상에 맞추고 공개본을 재생해 확인한다. [영상과 촬영 기록](public/gameplay-gallery.md#음향이-담긴-실기기-영상) · [전장 카메라](../Sources/Core/Simulation/CombatScene.cpp)
 
 ### 1. 지금 있는 빌드로 Mac에서 먼저 확인
 
