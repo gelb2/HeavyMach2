@@ -2,6 +2,9 @@
 
 [한국어](README.md) | [English](README.en.md)
 
+[![공개 배포판 Android 정식 v0.4, PWA v0.3, Mac v0.1](docs/public/media/badges/version.svg)](docs/public/release-policy.md)
+[![지원 플랫폼 iOS, iPadOS, macOS, Android, Web/PWA](docs/public/media/badges/platforms.svg)](docs/public/build-and-install.md)
+[![아키텍처 arm64, x86_64, wasm32](docs/public/media/badges/arch.svg)](docs/public/architecture.md)
 [![기술 스택 C++20, Objective-C++, Kotlin, JavaScript, Rust](docs/public/media/badges/code.svg)](docs/public/architecture.md)
 [![코드 라이선스 MIT](docs/public/media/badges/license.svg)](LICENSE-SCOPE.md)
 
