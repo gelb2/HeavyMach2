@@ -110,6 +110,8 @@ Take the White Mountain portal in Desert 01, then choose **Snow Pass** at the ba
 
 ## Gameplay screenshots and clips
 
+[Combat recorded on a Mac mini with game audio](docs/en/public/gameplay-gallery.md#gameplay-on-physical-hardware-with-sound)
+
 <img src="Web/Shell/social-preview.jpg" alt="Heavy Mach 2 Tap to Start screen on iPad" width="378">
 
 Eight continuous seconds from the iPad recording show the player moving a mech between ponds while fighting nearby tanks.
