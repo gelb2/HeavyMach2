@@ -2,25 +2,33 @@
 
 [한국어](../../README.md) · [Game overview](../../../README.en.md)
 
-## Play and install
+## Play
 
-| What you need | Where to start |
-| --- | --- |
-| Start a game, draw a route, equip weapons, and move saves | [Quick Play](quick-play.md) · [Detailed save transfer guide in Korean](../../save-transfer.md) |
-| Install the PWA or download an Android or Mac build | [Build and install](build-and-install.md#play-the-published-builds) · [GitHub Releases](https://github.com/gelb2/HeavyMach2/releases) |
-| Build from a fresh clone | [Prepare resources and build for iOS, Android, PWA, or Mac](build-and-install.md#clone-and-prepare-the-resources) |
-| See the game before installing | [iPad combat GIFs and iPhone, Galaxy and PWA captures with Korean captions](../../public/gameplay-gallery.md) |
+- [Quick Play](../../../README.en.md#quick-play) lists how to start on Web and PWA, iPhone and iPad, Android, and Mac.
+- [Play in the browser](https://gelb2.github.io/HeavyMach2/) or [install the PWA on your device](build-and-install.md#play-the-published-builds).
 
-## Restoration and development
+## Install and build
 
-- [Restored features and additions](../../../README.en.md#restored-from-the-original) lead to the original mechanics and the White Mountain work.
-- [Architecture and source entry points in Korean](../../public/architecture.md) cover the shared core and platform hosts.
-- [Development history in Korean](../../public/development-history.md) covers the original comparison, the platform ports and the author's decisions.
-- [Testing method](../../public/testing-method.md) and [troubleshooting](../../public/troubleshooting.md) trace specific checks and fixes in Korean.
-- [What has been verified](validation.md) distinguishes the source builds, device play and remaining tests.
+- [Install, run, and build the regular and test editions](build-and-install.md) in Web and PWA, iPhone and iPad, Android, and Mac order.
+- [Prepare the common resources from a public clone](build-and-install.md#clone-and-prepare-the-resources) · [Local reference resources and SHA-256 checks in Korean](../../public/build-and-install.md#원본-자원-준비)
 
-## Releases and credits
+## Controls and saves
 
-[Changelog](../../../CHANGELOG.md) · [Release policy in Korean](../../public/release-policy.md) · [MIT license scope](../../../LICENSE-SCOPE.en.md) · [Credits](../../../CREDITS.md) · [Contributing in Korean](../../../CONTRIBUTING.md)
+- [Movement, combat, bases, and equipment](quick-play.md) · [Recovery codes and backups in Korean](../../save-transfer.md)
 
-[HeavyMach 2 developer's statement in Korean](../../RESTORATION.md) · [English excerpts about the earlier restorations](../RESTORATION.md)
+## Added features and gameplay
+
+- [Original features and additions](../../../README.en.md#restored-from-the-original) · [Gameplay gallery with Korean captions](../../public/gameplay-gallery.md)
+
+## Verification and troubleshooting
+
+- [Platforms and current checks in Korean](../../canonical.md#플랫폼과-검증-현황) · [Evidence by feature in Korean](../../feature-verification.md) · [Verified behavior and remaining checks](validation.md)
+- [Reported issues, causes, and fixes in Korean](../../public/troubleshooting.md) · [Testing method in Korean](../../public/testing-method.md) · [Current TODO in Korean](../../todo.md#현재-체크--2026-11-21)
+
+## Development and sources
+
+- [HeavyMach 2 developer's statement in Korean](../../RESTORATION.md) · [Earlier series statement in Korean](../../series-restoration-background.md) · [English excerpts about the earlier restorations](../RESTORATION.md)
+- [Development history in Korean](../../public/development-history.md) · [Shared core and platform hosts in Korean](../../public/architecture.md) · [Project requirements and source entry points in Korean](../../canonical.md)
+- [Display and art in Korean](../../design-and-asset-rules.md) · [Technology and assets in Korean](../../technology-and-assets.md) · [Timing, saves, and audio in Korean](../../runtime-contract.md) · [Code reuse and attribution in Korean](../../source-reuse.md)
+- [Changelog](../../../CHANGELOG.md) · [Versions and releases in Korean](../../public/release-policy.md) · [Credits](../../../CREDITS.md) · [MIT license scope](../../../LICENSE-SCOPE.en.md)
+- [Contributing in Korean](../../../CONTRIBUTING.md) · [Repository instructions in Korean](../../../AGENTS.md)
