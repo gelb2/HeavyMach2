@@ -74,6 +74,8 @@ The game uses the original base, battlefield and equipment art and reuses prepar
 
 ## Gameplay screenshots and clips
 
+<img src="Web/Shell/social-preview.jpg" alt="Heavy Mach 2 Tap to Start screen on iPad" width="378">
+
 Eight continuous seconds from the iPad recording show the player moving a mech between ponds while fighting nearby tanks.
 
 <img src="docs/public/media/player-captures-20261121/ipad-field-combat.gif" alt="The player sets a waypoint and moves a mech between ponds while fighting tanks in the portrait iPad view." width="378">

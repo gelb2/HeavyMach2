@@ -74,6 +74,8 @@ Xcode에서 `HeavyMach2Source`와 iPhone 또는 iPad 시뮬레이터를 선택�
 
 ## 플레이 화면과 영상
 
+<img src="Web/Shell/social-preview.jpg" alt="헤비멕2 iPad 탭 투 플레이 화면" width="378">
+
 iPad 세로 화면에서 플레이어가 연못 사이로 메크를 이동시키며 주변 전차와 교전한다. 바탕화면에 있던 플레이 녹화에서 연속 8초를 발췌했다.
 
 <img src="docs/public/media/player-captures-20261121/ipad-field-combat.gif" alt="iPad 세로 전장에서 이동 지점을 지정한 메크가 연못 사이를 지나 전차와 교전한다." width="378">
