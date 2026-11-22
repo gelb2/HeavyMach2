@@ -11,7 +11,8 @@ edition = sys.argv[3]
 if edition not in {"normal", "validation"}:
     raise ValueError("Unknown web edition")
 validation = edition == "validation"
-static = ("index.html", "app.js", "storage.js", "audio.js", "display.js", "install.js", "download.js", "style.css")
+static = ("index.html", "app.js", "storage.js", "audio.js", "display.js", "install.js", "download.js", "style.css",
+          "social-preview.jpg")
 icon_sizes = (192, 512)
 required = ("game.js", "game.wasm", "game.data")
 if any(not (dist / name).is_file() for name in required):
