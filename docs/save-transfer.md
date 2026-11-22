@@ -13,6 +13,26 @@ PWA 저장은 브라우저 오리진의 IndexedDB에 있다. 스킴·호스트·
 
 공통 형식은 `HM2-1-`이다. 다른 형식, 잘린 코드와 현재 앱에 없는 맵은 교체 전에 거부한다. 현재 내장 캠페인과 호환되는 빌드를 사용한다. 슬롯 메뉴가 없다면 기존 앱의 저장을 유지하며 기능이 들어간 빌드로 갱신한다.
 
+## 복구코드로 레벨 22부터 시작하기
+
+[레벨 22 복구코드](public/saves/level-22.txt)는 초반 레벨업을 건너뛰고 플레이하려는 사람을 위한 예시다. 1번 슬롯의 이름은 `XP SAMPLE`이다. 경험치 **366,785 EXP**, 레벨 **22**, 크레딧 **38,417 Cr**로 Ruin Field Base에서 시작한다. 초기 장비를 갖추고 있으며 임무 진척도는 0%다. 2번과 3번 슬롯은 비어 있다.
+
+1. 슬롯 화면의 **저장 이동**을 열고 현재 앱의 복구코드를 복사해 앱 밖에 보관한다. 예시를 적용하면 기존 슬롯 세 개가 모두 교체된다.
+2. 예시 파일에서 `HM2-1-`로 시작하는 한 줄 전체를 복사해 같은 메뉴에 붙여넣는다. PWA와 Tauri에서는 **코드 확인 → 슬롯 교체**를 누른다. iPhone·iPad·Android에서는 **코드 입력** 뒤 확인한다.
+3. 1번 슬롯의 `XP SAMPLE`을 선택하고 **OK**를 누른다.
+
+### 경험치 복원 검사
+
+정식 PWA v0.2의 [공개 배포 파일](https://github.com/gelb2/HeavyMach2/blob/2eea699b1b030222fe2f3f26860179bb4d0ce467/build.json)을 로컬에서 제공하고, 별도 Mac Chrome 프로필에 설치했다. 새 슬롯을 만든 뒤 이 예시를 **저장 이동**으로 적용했다. 게임 저장을 읽어 1번 슬롯의 값을 대조했다.
+
+| 확인 시점 | 레벨 | 경험치 | 크레딧 |
+| --- | ---: | ---: | ---: |
+| 복구 전과 복구 전 백업 | 1 | 0 EXP | 500 Cr |
+| 예시 코드 적용 직후 | 22 | 366,785 EXP | 38,417 Cr |
+| 오프라인 종료·재실행 후 | 22 | 366,785 EXP | 38,417 Cr |
+
+재실행 뒤 게임에서 만든 복구코드는 예시 코드와 일치했다. 1번 슬롯을 열어 Ruin Field Base로 들어갔다. 공통 코어의 `OriginalHDSaveEnvelope`와 `OriginalSessionTransitions` 검사도 통과했다.
+
 ## 개발과 확인
 
 [RecoveryCode.cpp](../Sources/Core/Data/RecoveryCode.cpp)는 저장 전체를 인코딩하고, [GameSession.cpp](../Sources/Core/Session/GameSession.cpp)는 코드 검사 → 기존 기록 백업 → 저장 교체 → 세션 갱신을 담당한다. Apple·Android는 OS 입력과 앱 전용 파일을 연결한다. 웹은 [store](../Web/Shell/storage.js)의 트랜잭션을 기다리고, Mac은 [Tauri 저장 어댑터](../Desktop/Tauri/src-tauri/src/storage.rs)의 교체 결과를 기다린다.

@@ -2,6 +2,16 @@
 
 HeavyMach 1의 공개 `main` 커밋 `ca75b1b6`을 기준으로 두 프로젝트의 README, 문서 목록, 조작·설치, 원작과 추가 작업, 코드 구조, 테스트, 트러블슈팅, 갤러리, 변경 이력과 권리 고지를 대조했다. 기술 설명을 현재 코드, 공개 배포와 검증 기록에 연결했다. [HeavyMach 1 README](https://github.com/gelb2/HeavyMach/blob/ca75b1b66174686503ab0aebccc4577ae9dd866e/README.md) · [HeavyMach 1 문서 목록](https://github.com/gelb2/HeavyMach/blob/ca75b1b66174686503ab0aebccc4577ae9dd866e/docs/public/index.md)
 
+## README 구성과 어조
+
+1. 복원 동기와 제작자 소개 뒤에 플레이·설치 링크를 둔다. 복구코드와 저장 백업 절차는 플레이 안내에 붙인다.
+2. 원작에서 복원한 기능과 새로 추가한 기능을 각각 설명한다. 스크린샷과 영상은 해당 기능 옆에 두고, 캡션에 기기와 화면에서 보이는 동작을 적는다.
+3. 플랫폼별 설치·빌드는 필요한 명령을 바로 찾게 하고, 상세 절차는 한·영 안내에 연결한다. 코드 구조, 검증, 트러블슈팅, 변경 이력, 권리 고지는 문서 목록에서 주제별로 찾을 수 있게 한다.
+
+복원 동기와 작업 지시는 작성자의 1인칭을 살린다. 조작과 설치는 게임 화면의 버튼 이름과 짧은 동사로 적는다. 시험 결과에는 확인한 빌드와 조건을 붙인다. 트러블슈팅은 증상, 원인, 수정, 재검증 순서로 적는다. 한·영 README는 같은 순서와 자료를 쓴다. [HeavyMach 1 영문 README](https://github.com/gelb2/HeavyMach/blob/ca75b1b66174686503ab0aebccc4577ae9dd866e/README.en.md) · [HeavyMach 1 복구코드 안내](https://github.com/gelb2/HeavyMach/blob/ca75b1b66174686503ab0aebccc4577ae9dd866e/docs/public/quick-play.md)
+
+## 주제별 비교
+
 | 읽는 목적 | HeavyMach 2에 반영한 내용 | 아직 남은 차이 |
 | --- | --- | --- |
 | 플레이와 설치 | 첫 실행·이동·장비·복구코드를 한·영 안내에 연결했다. PWA와 Mac·Android 다운로드, iPhone·iPad Xcode 빌드와 공개 클론의 자원 준비를 확인했다. [플레이](quick-play.md) · [설치·빌드](build-and-install.md) | 실기기 Safari 설치판의 오프라인 재실행과 갤럭시의 반대쪽 가로 회전은 추가 확인 범위다. |

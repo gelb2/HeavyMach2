@@ -33,6 +33,12 @@ In HeavyMach 2, you assemble a mech, draw a route across the battlefield and fig
 
 The regular and test editions share the core and original title artwork and keep separate saves. Test controls differ by platform. [Verification status](docs/todo.md#현재-체크--2026-11-21) · [Test editions](docs/validation-build.md#플랫폼별-치트-실행) · [Reference app](Compatibility/README.md)
 
+### Start at level 22 with a recovery code
+
+Use the [level 22 recovery code](docs/public/saves/level-22.txt) to start with **366,785 EXP** and **38,417 Cr** in slot 1. Base and mission progress start from the beginning. The code replaces all three slots, so open the save transfer menu on the slot screen and copy your current code first. [How to restore the code and what was tested](docs/en/public/quick-play.md#start-at-level-22-with-a-recovery-code)
+
+In the regular v0.2 PWA installed through Chrome on Mac, slot 1 kept **level 22 and 366,785 EXP** after an offline relaunch. The restored slot opened at Ruin Field Base.
+
 ## Preparing from source
 
 On an Apple Silicon Mac, install Xcode and Python 3.11 or later. Clone the project and prepare its campaign resources.
