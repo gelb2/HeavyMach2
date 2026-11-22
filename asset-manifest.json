@@ -1,5 +1,5 @@
 {
-  "version": "b39d435b4c95066fbe883f0f",
+  "version": "ee2005c12077937371acb21c",
   "validation": false,
   "files": [
     {
@@ -49,8 +49,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 2318,
-      "sha256": "747100223d77f676e879f5d2eef8297df4d49e79c12417bd4a402babb6ecbc5e"
+      "bytes": 2952,
+      "sha256": "4b6748b97fae52a386232b0af8f9695cde52f6abbba016100cba7aa13b54453f"
     },
     {
       "path": "install.js",
@@ -68,6 +68,11 @@
       "sha256": "6b0f6b14e3b6c99af938b37d0aa732aca1673857d9251c27dc88ba2b9a147a6c"
     },
     {
+      "path": "social-preview.jpg",
+      "bytes": 252423,
+      "sha256": "7f412a1d890e71deeb143ed9fd226f278ca874a66ed1493d3e473f05243016d5"
+    },
+    {
       "path": "storage.js",
       "bytes": 3063,
       "sha256": "8d06e7fea402578e604b6a997e058e9da22ac1b86562f7cba95c6f86bbfb0336"
@@ -79,8 +84,8 @@
     },
     {
       "path": "sw.js",
-      "bytes": 6640,
-      "sha256": "44213a109120dbec0a8ec6c6fcc25fbccff8c02e224f031e659791cf51fe760f"
+      "bytes": 6767,
+      "sha256": "d85a340cb8c9e1686eddf0ffcc955d7d8ea2e7824823299d88f1412cb20d9320"
     }
   ]
 }
