@@ -1,5 +1,7 @@
 # HeavyMach 2의 원작 복원과 추가 작업
 
+[English](../en/public/features.md)
+
 [프로젝트 소개](../../README.md) · [개발자의 변](../RESTORATION.md) · [개발 과정](development-history.md)
 
 HeavyMach 2에서는 메크를 조립하고 전장에서 그은 경로를 따라 움직인다. 적을 공격해 얻은 아이템으로 장비를 바꾸면서 기지 사이를 오가고, 사령부에서 받은 임무를 수행한다. 복원판은 iPad용 HD 1.0.3의 데이터와 동작을 공통으로 사용한다. iPhone의 화면과 조작은 일반판 2.0.1도 함께 대조했다. [일반판과 HD판의 차이](../original-phone-hd-separation.md)
@@ -58,7 +60,7 @@ Desert 01의 포털에서 White Mt. Base로 들어간다. 아래 기지 화면�
 
 ### Android·PWA·Mac과 복구코드를 만들었다
 
-Android는 iOS·iPadOS가 쓰는 파일을 바꾸지 않고 기존 C++ 모듈을 가져다 쓰도록 했다. 새 플랫폼은 화면·터치·음향 장치·저장 연결을 담당한다. 웹은 같은 게임 코어와 메뉴를 Wasm으로 빌드하고, Tauri는 해당 웹 빌드를 Mac 앱에 묶는다. HeavyMach 1의 첫 [Wasm PR #24](https://github.com/gelb2/HeavyMach/pull/24)와 MachDefense의 포팅을 기술 참고로 삼았다. Android 포팅은 `develop`에 들어갔고, 복구코드·PWA·Tauri 구현은 작업 브랜치에서 확인할 수 있다. [Android 구현](../../Android/README.md) · [HeavyMach 1과의 웹 소스 대조](../pwa-wasm-audit-20261120.md) · [Mac 빌드](../../Desktop/Tauri/README.md)
+Android는 iOS·iPadOS가 쓰는 파일을 바꾸지 않고 기존 C++ 모듈을 가져다 쓰도록 했다. 새 플랫폼은 화면·터치·음향 장치·저장 연결을 담당한다. 웹은 같은 게임 코어와 메뉴를 Wasm으로 빌드하고, Tauri는 해당 웹 빌드를 Mac 앱에 묶는다. HeavyMach 1의 첫 [Wasm PR #24](https://github.com/gelb2/HeavyMach/pull/24)와 MachDefense의 포팅을 기술 참고로 삼았다. Android·복구코드·PWA·Tauri의 구현은 공개 저장소에 들어갔다. 배포 버전은 기기별로 다르다. [버전과 배포](release-policy.md) [Android 구현](../../Android/README.md) · [HeavyMach 1과의 웹 소스 대조](../pwa-wasm-audit-20261120.md) · [Mac 빌드](../../Desktop/Tauri/README.md)
 
 진행·아이템·경험치를 기기 사이에서 함께 옮기도록 복구코드를 추가했다. 슬롯 세 개 전체를 내보내고 가져오며, 교체 전에 받는 앱의 기존 저장을 백업한다. Android 정식판과 치트판에서는 iPad의 기존 슬롯 세 개를 적용해 사령부와 상점을 확인했다. 복구코드 입력을 통한 왕복은 Apple 시뮬레이터 런타임, Android 에뮬레이터, PWA와 Mac의 기록에 따로 있다. [복구코드 사용법과 기기별 확인 범위](../save-transfer.md) · [갤럭시 사용자 저장 확인](../../Android/검증-20261120.md#ipad-사용자-저장과-갤럭시-플레이)
 

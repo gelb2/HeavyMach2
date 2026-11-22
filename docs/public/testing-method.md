@@ -1,5 +1,7 @@
 # HeavyMach 2를 테스트한 방법
 
+[English](../en/public/testing-method.md)
+
 [개발 과정](development-history.md) · [검증 결과](validation.md) · [트러블슈팅](troubleshooting.md)
 
 ## 원본 동작과 비교

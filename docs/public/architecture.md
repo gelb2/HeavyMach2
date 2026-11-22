@@ -1,5 +1,7 @@
 # HeavyMach 2 코드 구조
 
+[English](../en/public/architecture.md)
+
 [문서 목록](../README.md) · [개발 과정](development-history.md) · [빌드와 설치](build-and-install.md)
 
 게임 규칙과 화면 배치는 C++20 공통 코어에 둔다. iPhone·iPad는 Xcode 프로젝트에서, Android는 Gradle과 NDK에서 같은 코어를 빌드한다. 웹은 그 코어를 Wasm으로 컴파일한다. Tauri Mac은 웹 빌드 파일과 Rust 호스트를 앱에 묶는다.
