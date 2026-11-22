@@ -13,3 +13,5 @@
 `python3 tools/check_docs.py`는 Git에 등록된 프로젝트 Markdown의 상대 링크와 제목·앵커를 확인한다. 한국어와 영어 문서의 대응 파일과 언어 전환 링크도 확인한다. 새 번역 문서는 두 파일을 Git에 추가하고 [번역 문서 목록](docs/translations/pairs.json)에 등록한다. 이전 시리즈 회고의 영문 발췌는 발췌본으로 등록했다.
 
 `python3 tools/check_docs.py --base origin/develop`로 PR에 넣을 변경도 확인한다. GitHub의 `documentation` 작업은 PR의 기준 브랜치 및 기존 브랜치에 올리기 전 커밋과 대조한다. 등록한 본문을 수정할 때는 두 언어를 함께 검토하고 같은 PR에서 갱신한다. 사실·수치와 번역의 의미는 원문을 대조해 확인한다.
+
+공개 소개·설치·검증 문서에는 실제 동작과 확인한 결과를 쓴다. `check_docs.py`는 한·영 공개 글에서 다시 나온 사격·파츠·광고 정책 문구와 검증 면책 문구에 파일 및 줄 번호를 표시한다. 인용·코드·작성자 원문과 내부 규칙의 범위는 [글쓰기 스킬](.agents/skills/write-project-text/SKILL.md)을 따른다. 새 문장의 의미와 근거는 문단 전체를 읽어 확인한다.
