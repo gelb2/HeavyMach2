@@ -34,8 +34,8 @@ android {
         applicationId = "com.gelb2.heavymach2.restored"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1"
+        versionCode = 2
+        versionName = "0.4"
         ndk { abiFilters += providers.gradleProperty("hm2Abis").orElse("arm64-v8a,x86_64").get().split(",") }
         externalNativeBuild { cmake {
             arguments += "-DANDROID_STL=c++_static"

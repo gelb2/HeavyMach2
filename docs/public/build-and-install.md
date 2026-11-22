@@ -59,7 +59,7 @@ cd HeavyMach2
 python3 tools/prepare_build_resources.py
 ```
 
-공개 클론에서 바로 빌드하려면 기본 브랜치 `main`을 사용한다. 다운로드용 Mac·Android 앱은 `v0.1`, 설치형 PWA는 `v0.3`에 있다. [버전과 배포 기준](release-policy.md)
+공개 클론에서 바로 빌드하려면 기본 브랜치 `main`을 사용한다. Android 정식 APK는 `v0.4`, Mac ZIP과 Android 치트 APK는 `v0.1`, 설치형 PWA는 `v0.3`에 있다. [버전과 배포 기준](release-policy.md)
 
 ## 공개 빌드에서 자원 준비
 
@@ -165,7 +165,7 @@ xcrun simctl get_app_container "$HM2_SIM_ID" com.gelb2.heavymach2.validation dat
 
 ## Android 빌드와 설치
 
-직접 빌드하기 전에 기존 패키지가 필요하면 [정식·치트 APK와 SHA-256 목록](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)을 받는다.
+갤럭시에서는 [v0.4 정식 APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.4)를 기존 정식 앱 위에 설치한다. 설치 후 슬롯 화면에서 **저장 이동 → 코드 입력**을 열 수 있다. [v0.1 치트 APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)는 별도 앱이다. 각 릴리스의 `SHA256SUMS.txt`에서 파일 해시를 확인할 수 있다.
 
 JDK 17, Android SDK 36, NDK 28.2.13676358, CMake 3.22.1과 호스트의 C++ 컴파일러가 필요하다. Android Studio의 SDK Manager나 아래 명령으로 SDK를 준비한 뒤 `ANDROID_HOME`을 SDK 디렉터리로 설정한다. 앱은 Android 8.0(API 26) 이상과 ARM64·x86-64를 대상으로 한다. [Gradle 구성과 검증](../../Android/README.md) · [AGP 8.13 도구 버전](https://developer.android.com/build/releases/agp-8-13-0-release-notes)
 
