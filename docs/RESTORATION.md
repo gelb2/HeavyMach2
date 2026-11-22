@@ -1,6 +1,6 @@
 # 개발자의 변
 
-[English](en/heavymach2-restoration.md) · [이전 시리즈 복원 회고](series-restoration-background.md) · [이전 회고의 영문 발췌](en/RESTORATION.md)
+[English](en/heavymach2-restoration.md) · [헤비멕1 개발자의 변](https://github.com/gelb2/HeavyMach/blob/main/docs/RESTORATION.md) · [맥디펜스 개발자의 변](https://github.com/gelb2/MachDefense/blob/main/docs/RESTORATION.md)
 
 ## 헤비멕을 다시 만든 이유
 
