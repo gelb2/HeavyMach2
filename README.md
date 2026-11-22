@@ -40,6 +40,8 @@ HeavyMach 2는 메크를 조립하고 전장에서 이동 경로를 그어 싸�
 
 [웹에서 바로 플레이](https://gelb2.github.io/HeavyMach2/)하거나 앱으로 설치한다. iPhone·iPad에서는 Safari의 **공유 → 홈 화면에 추가**를 사용한다. 설치한 아이콘으로 열고 첫 자원 다운로드가 끝나면 플레이한다. [기기별 설치](docs/public/build-and-install.md#pwa-설치) · [소스에서 PWA 빌드](docs/public/build-and-install.md#pwa-빌드와-로컬-실행)
 
+헤비멕1 웹판을 기여한 fastutlego에게 감사드린다. PR #24의 WebAssembly 실행부와 WebGL 2 렌더링, 입력·음향·저장 연결을 헤비멕2의 PWA와 Tauri Mac 이식에 참고했다. [기여자 fastutlego](https://github.com/fastutlego) · [헤비멕1 PR #24](https://github.com/gelb2/HeavyMach/pull/24) · [헤비멕2 웹 구현 대조](docs/pwa-wasm-audit-20261120.md)
+
 ### iPhone·iPad
 
 Xcode에서 `HeavyMach2Source`를 선택해 iPhone·iPad 시뮬레이터에서 실행한다. 실제 기기에 설치할 때는 본인의 Apple 개발 팀으로 서명한다. [Xcode 빌드](docs/public/build-and-install.md#iphoneipad-시뮬레이터-빌드) · [실기기 설치](docs/public/build-and-install.md#실제-iphoneipad에-설치)

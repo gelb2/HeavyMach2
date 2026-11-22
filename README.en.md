@@ -40,6 +40,8 @@ In HeavyMach 2, you assemble a mech, draw a route across the battlefield and fig
 
 [Play in the browser](https://gelb2.github.io/HeavyMach2/) or install the game as an app. In Safari on iPhone or iPad, choose **Share → Add to Home Screen**. Open the installed icon and wait for the first resource download. [Installation by device](docs/en/public/build-and-install.md#play-the-published-builds) · [Build the PWA from source](docs/en/public/build-and-install.md#build-and-run-the-pwa)
 
+Thank you to fastutlego for contributing the HeavyMach 1 web port. Its WebAssembly host, WebGL 2 rendering, input, audio, and save integration provided a reference for HeavyMach 2’s PWA and Tauri Mac ports. [Contributor fastutlego](https://github.com/fastutlego) · [HeavyMach 1 PR #24](https://github.com/gelb2/HeavyMach/pull/24) · [HeavyMach 2 web implementation comparison](docs/pwa-wasm-audit-20261120.md)
+
 ### iPhone and iPad
 
 Select `HeavyMach2Source` in Xcode and run it in an iPhone or iPad simulator. To install on a physical device, sign the build with your own Apple developer team. [Xcode build and device installation](docs/en/public/build-and-install.md#iphone-and-ipad)
