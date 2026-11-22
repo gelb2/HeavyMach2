@@ -110,19 +110,35 @@ Desert 01의 화이트마운틴 포털로 들어가 기지의 **Snow Pass** 출�
 
 ## 플레이 화면과 영상
 
-[Mac mini 실기기 전투 영상 · 게임 음향 포함](docs/public/gameplay-gallery.md#음향이-담긴-실기기-영상)
-
 <img src="Web/Shell/social-preview.jpg" alt="헤비멕2 iPad 탭 투 플레이 화면" width="378">
 
-iPad 세로 화면에서 플레이어가 연못 사이로 메크를 이동시키며 주변 전차와 교전한다. 바탕화면에 있던 플레이 녹화에서 연속 8초를 발췌했다.
+### Mac mini에서 녹화한 전투 · 게임 음향
 
-<img src="docs/public/media/player-captures-20261121/ipad-field-combat.gif" alt="iPad 세로 전장에서 이동 지점을 지정한 메크가 연못 사이를 지나 전차와 교전한다." width="378">
+Chrome에서 공개 정식 PWA를 열어 Ruin Field의 이동과 교전을 녹화했다. 영상은 10초다. [촬영 조건과 해시](docs/public/media/gameplay-with-sound-20261122/sources.json)
 
-아래는 Skyway Base 포털 주변의 iPhone 가로 화면이다. 도로 위 이동 목표와 화면 하단 HUD가 보인다.
+https://github.com/user-attachments/assets/9f1230c0-e936-4db9-a44b-2e737d0961f5
+
+### iPad 전투 GIF
+
+iPad 실기기에서 연못 사이를 이동하며 교전하고, 해안 전장에서 이동 경로를 다시 그린다. 두 GIF는 각각 8초다.
+
+<img src="docs/public/media/player-captures-20261121/ipad-field-combat.gif" alt="iPad 세로 전장에서 메크가 연못 사이를 이동하며 전차와 교전한다." width="378"> <img src="docs/public/media/player-captures-20261121/ipad-combat-route.gif" alt="iPad 해안 전장에서 메크의 초록색 이동 경로와 적의 사격이 보인다." width="378">
+
+### iPhone 이동 경로와 iPad 세로 전장
+
+iPhone Air 시뮬레이터에서 Ruin Field의 이동 경로를 다시 그렸다. 6.1초, 무음.
+
+https://github.com/user-attachments/assets/ab72946d-a178-427f-804d-1f9b88e0f9f3
+
+iPad Pro 11형 시뮬레이터에서 Ruin Field의 세로 시야와 HUD를 녹화했다. 12초, 무음.
+
+https://github.com/user-attachments/assets/a43eb307-db17-47ac-a4d3-a3d7f3e9a8b0
+
+아래는 iPhone 가로 화면의 Skyway Base 포털과 이동 목표다.
 
 ![Skyway Base 포털 주변의 도로와 이동 목표, iPhone 가로 HUD](docs/public/media/player-captures-20261121/iphone-skyway-base.png)
 
-[다른 전투 GIF, iPhone 사령부와 상점, 설원 보스, 갤럭시와 PWA 갤러리](docs/public/gameplay-gallery.md)
+[기기별 갤러리와 영상 파일](docs/public/gameplay-gallery.md)
 
 ## 확인한 동작과 남은 과제
 
