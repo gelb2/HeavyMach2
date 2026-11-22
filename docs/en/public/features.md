@@ -38,7 +38,7 @@ The portal in Desert 01 leads to White Mt. Base. Tap **Snow Pass** once to selec
 
 ![The Desert 01 and Snow Pass exits at White Mt. Base](../../public/media/white-mountain-gameplay/white-mountain-base.webp)
 
-Complete the original Boss 04 mission to unlock the Boss 05 mission at the Command Center. Boss 05 spawns when you approach within 240 game units of its position inside Snow Basin. Defeat it and report back to receive 300,000 Cr and 300,000 XP. The screenshot shows combat in the test build on an iPad simulator. The gallery shows all six snowfields, a regular aircraft firing in Snow Pass, and the Boss 05 acceptance and reward screens. [Boss and reward conditions](../../white-mountain-implementation-20261119.md#2단계-보스와-무장) · [Boss mission screenshots](gameplay-gallery.md#white-mountain-boss-fight)
+Complete the original Boss 04 mission and reach displayed level 28 to unlock the Boss 05 mission at the White Mt. Base Command Center. Boss 05 spawns when you approach within 240 game units of its position inside Snow Basin. Defeat it and report back to receive 300,000 Cr and 300,000 XP. The screenshot shows combat in the test build on an iPad simulator. The gallery shows all six snowfields, a regular aircraft firing in Snow Pass, and the Boss 05 acceptance and reward screens. [Boss and reward conditions](../../white-mountain-implementation-20261119.md#2단계-보스와-무장) · [Boss mission screenshots](gameplay-gallery.md#white-mountain-boss-fight)
 
 <img src="../../public/media/white-mountain-gameplay/boss-05-combat.webp" alt="The Boss 05 health bar and turrets firing at the player in Snow Basin" width="385">
 
@@ -48,7 +48,7 @@ I had four unused sniper rifles and 21 LS-series weapons brought into normal pro
 
 I asked that air strikes defeat the main enemy tanks in one or two hits at the level you would normally reach a field. The original prices are 20 Cr for bombs, 40 Cr for missiles, 30 Cr for lasers, and 100 Cr for nukes. Damage scales using linear interpolation between HP values by level. In 32 shared combat checks, a single strike aimed at the center defeated the target tank. [Air-strike scaling and test conditions](../../campaign-and-ipad-followup-20261120.md#공습-레벨-보정)
 
-The Sn-IGn sniper rifle (10501) is stocked by shops at the appropriate level and can drop from Boss 05. LS-D (10311) is a rare drop from the Tank_L02 loot group. The test build on an iPad simulator checked the Sn-IGn listing, then equipped and fired both weapons and checked damage. A separate run used a fixed random seed to capture LS-D dropping from a defeated E_Tank_02 and entering the inventory. [Shop and drop data](../../../Resources/Campaign/items.json) · [Shop, drop, and combat screenshots](gameplay-gallery.md#sniper-rifles-and-ls-weapons)
+The Sn-IGn sniper rifle (10501) is stocked by shops at the appropriate level. It can drop from Boss 05 once the player reaches displayed level 35. LS-D (10311) is a rare drop from the Tank_L02 loot group. The test build on an iPad simulator checked the Sn-IGn listing, then equipped and fired both weapons and checked damage. A separate run used a fixed random seed to capture LS-D dropping from a defeated E_Tank_02 and entering the inventory. [Shop and drop data](../../../Resources/Campaign/items.json) · [Shop, drop, and combat screenshots](gameplay-gallery.md#sniper-rifles-and-ls-weapons)
 
 <img src="../../public/media/white-mountain-gameplay/sniper-shop.webp" alt="The Sn-IGn rifle selected in the iPad shop" width="385">
 

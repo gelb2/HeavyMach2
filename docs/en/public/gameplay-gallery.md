@@ -72,7 +72,7 @@ The next three screenshots came from the test build on an iPad simulator. Accept
 
 ## Sniper rifles and LS weapons
 
-The test build on an iPad simulator shows the Sn-IGn rifle (10501) in the shop, then Sn-IGn and LS-series weapon 10311 equipped and firing in separate Ruin Field runs. The runs checked equipment, firing, and damage. The data records the Sn-IGn shop listing and Boss 05 drop, and the Tank_L02 drop for 10311 in regular play. [Shop and drop data](../../../Resources/Campaign/items.json) · [Weapon checks](../../white-mountain-implementation-20261119.md#단계별-실행-결과)
+The test build on an iPad simulator shows the Sn-IGn rifle (10501) in the shop, then Sn-IGn and LS-series weapon 10311 equipped and firing in separate Ruin Field runs. The runs checked equipment, firing, and damage. In regular play, shops stock Sn-IGn at the appropriate level, and Boss 05 can drop it from displayed level 35 onward. The Tank_L02 loot group can drop LS-D (10311). [Shop and drop data](../../../Resources/Campaign/items.json) · [Weapon checks](../../white-mountain-implementation-20261119.md#단계별-실행-결과)
 
 <img src="../../public/media/white-mountain-gameplay/sniper-shop.webp" alt="Sn-IGn selected in the shop" width="245"> <img src="../../public/media/white-mountain-gameplay/sniper-combat.webp" alt="Firing the equipped Sn-IGn in Ruin Field" width="245"> <img src="../../public/media/white-mountain-gameplay/ls-combat.webp" alt="Firing the equipped LS 10311 in Ruin Field" width="245">
 
