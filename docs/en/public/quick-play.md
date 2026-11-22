@@ -26,7 +26,7 @@ In a field, open **MENU** to save and exit or see help. HUD placement is availab
 
 ## Move progress to another device
 
-Open the save-transfer menu on the slot screen and copy the full recovery code. If the receiving app already has progress, back it up with its own code first. Open its save-transfer menu, paste the code, and confirm the replacement. The code transfers all three slots, including missions, equipment and experience. HUD placement stays with the app that stored it.
+Select **TRANSFER** (**저장 이동** in Korean) on the slot screen and copy the full recovery code. If the receiving app already has progress, back it up with its own code first. Open its save-transfer menu, paste the code, and confirm the replacement. The code transfers all three slots, including missions, equipment and experience. HUD placement stays with the app that stored it.
 
 Browser saves are tied to the site address. Copy a code from the old address before moving to another one. [Recovery formats and device checks](../../save-transfer.md)
 
@@ -34,7 +34,7 @@ Browser saves are tied to the site address. Copy a code from the old address bef
 
 The [level 22 recovery code](../../public/saves/level-22.txt) starts you at Ruin Field Base in slot 1, `XP SAMPLE`, with **366,785 EXP**, **38,417 Cr**, and starting equipment. Mission progress is 0%. Slots 2 and 3 are empty.
 
-1. Open the save transfer menu on the slot screen and copy your current code somewhere outside the game. Importing the sample replaces all three slots.
+1. Select **TRANSFER** (**저장 이동** in Korean) on the slot screen and copy your current code somewhere outside the game. Importing the sample replaces all three slots.
 2. Copy the entire line from the sample file, starting with `HM2-1-`, and paste it into the save transfer menu. Check the code and confirm the slot replacement.
 3. Select `XP SAMPLE` in slot 1 and press **OK**.
 

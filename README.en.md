@@ -136,7 +136,7 @@ Firing does not create a file/database write or a new audio context for each sho
 
 **Shop and iPhone movement.** I reported problems in the shop and movement code that Codex implemented for the restoration. I asked to measure the original shop's controls, slots and item details again. I reported failed jumps after drawing a new route, Skyway layer jitter, apparent empty inventory slots, and a missing laser air strike in the iPad shop. [Fixes and tests](docs/en/public/troubleshooting.md)
 
-[Troubleshooting in Korean](docs/en/public/troubleshooting.md) · [Development history in Korean](docs/en/public/development-history.md)
+[Troubleshooting](docs/en/public/troubleshooting.md) · [Development history](docs/en/public/development-history.md)
 
 ## How I directed and tested the work
 
@@ -144,7 +144,7 @@ Firing does not create a file/database write or a new audio context for each sho
 
 ## Code structure and versions
 
-[Code structure in Korean](docs/en/public/architecture.md) · [Validation](docs/en/public/validation.md) · [Changelog](CHANGELOG.md) · [Release policy](docs/public/release-policy.md)
+[Code structure](docs/en/public/architecture.md) · [Validation](docs/en/public/validation.md) · [Changelog](CHANGELOG.md) · [Release policy](docs/public/release-policy.md)
 
 ## Licenses and resources
 
