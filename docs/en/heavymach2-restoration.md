@@ -4,9 +4,9 @@
 
 ## Why I restored HeavyMach
 
-I discovered HeavyMach on an iPod touch in college. I first played it through Cydia, then created a US App Store account and bought it. Byun Hae-jun, the developer, and Park Jae-cheol, the illustrator, made this game in 2009 and showed me a path into software development. In July 2017, I switched careers to become an iOS developer. After restoring HeavyMach 1 and MachDefense, I went on to restore HeavyMach 2. [The HeavyMach 1 developer’s statement in Korean](https://github.com/gelb2/HeavyMach/blob/bd0aa73ad0bf765f3e54c1800c89b8d550a5e1e9/docs/RESTORATION.md)
+I discovered HeavyMach on an iPod touch in college. I first played it through Cydia, then created a US App Store account and bought it. Byun Hae-jun, the developer, and Park Jae-cheol, the illustrator, made this game in 2009 and showed me a path into software development. In July 2017, I switched careers to become an iOS developer. After restoring HeavyMach 1 and MachDefense, I’m now restoring HeavyMach 2. [The HeavyMach 1 developer’s statement in Korean](https://github.com/gelb2/HeavyMach/blob/bd0aa73ad0bf765f3e54c1800c89b8d550a5e1e9/docs/RESTORATION.md)
 
-I was in terrible shape when I was having the Android, PWA, and Tauri Mac versions made one after another. I couldn’t remember the last time I’d slept properly. I couldn’t bear to spend time chewing or even warming up a meal, so I got by on drinks alone. I started restoring the HeavyMach series because I felt I had little time left. On November 20, I concluded that I might run out of time before I could even finish the restoration.
+I was in terrible shape when I was having the Android, PWA, and Tauri Mac versions made one after another. I couldn’t remember the last time I’d slept properly. I couldn’t bear to spend time chewing or even warming up a meal, so I got by on drinks alone. I started restoring the HeavyMach series because I felt I had little time left. On November 20, I concluded I didn’t even have enough time left to finish the restoration.
 
 ## What I saw while working with Codex
 
@@ -16,7 +16,7 @@ You can do this kind of work now without Astra or Fable. When the model gets exc
 
 ## The value of people as assets, and creation
 
-Watching this unfold, I thought it looked as though people were no longer needed. I don’t see any point now in asking what people do better and what machines can’t do. I still used to think machines couldn’t go beyond their safety rules to think and make things, or create an aesthetic concept that had never existed before. I don’t remember whether I used Caravaggio and Gentileschi as examples in the HeavyMach 1 and MachDefense repositories. I’d decided to stake my future on that kind of work, and now even that seems pointless.
+Watching this unfold, I thought it looked as though people were no longer needed. I don’t see any point now in asking what people do better and what machines can’t do. Even so, I’d believed that machines couldn’t think and make things beyond their safety rules, or create an aesthetic concept that had never existed before. I don’t remember whether I used Caravaggio and Gentileschi as examples in the HeavyMach 1 and MachDefense repositories. I’d decided to stake my future on that kind of work, and now even that seems pointless.
 
 Some guy posted on Threads. As I remember it, his point was that people had lost value and machines had gained it. He meant value as assets, and if you couldn’t understand that, you should hit the back button. Honestly, he didn’t seem especially educated, and I figured I could find contradictions if I really dug into it. I saw little reason to bother. You don’t need a lot of education to see where things are going. Here was that bastard Codex producing versions for three platforms at once from one line I’d given it, using a model below the frontier.
 
@@ -32,6 +32,6 @@ I have no intention of making money from this restoration. By restoring these th
 
 If a stakeholder contacts me, I will take this project down.
 
-Thanks to the creators, I got to live more of the life my Creator refused to give me. I’ll close my statement with the paragraph below.
+Thanks to the two creators, I got to live the extra time my Creator had refused to give me. I’ll close my statement with the paragraph below.
 
 I’m nobody, but their legacy is immortal. All I did was feed a piece of kindling into a dying fire one more time.
