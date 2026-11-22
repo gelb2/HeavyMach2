@@ -22,6 +22,7 @@
 
 ## Verification and troubleshooting
 
+- [PWA battlefield border investigation and verification plan in Korean](../../pwa-gameplay-verification-plan-20261123.md)
 - [Platforms and current checks in Korean](../../canonical.md#플랫폼과-검증-현황) · [Evidence by feature in Korean](../../feature-verification.md) · [Verified behavior and remaining checks](validation.md)
 - [Reported issues, causes, and fixes](troubleshooting.md) · [Testing method](testing-method.md) · [Current TODO in Korean](../../todo.md#현재-체크--2026-11-21)
 
