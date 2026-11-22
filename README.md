@@ -110,6 +110,8 @@ Desert 01의 화이트마운틴 포털로 들어가 기지의 **Snow Pass** 출�
 
 ## 플레이 화면과 영상
 
+[Mac mini 실기기 전투 영상 · 게임 음향 포함](docs/public/gameplay-gallery.md#음향이-담긴-실기기-영상)
+
 <img src="Web/Shell/social-preview.jpg" alt="헤비멕2 iPad 탭 투 플레이 화면" width="378">
 
 iPad 세로 화면에서 플레이어가 연못 사이로 메크를 이동시키며 주변 전차와 교전한다. 바탕화면에 있던 플레이 녹화에서 연속 8초를 발췌했다.
