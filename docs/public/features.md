@@ -34,11 +34,27 @@ HD 1.0.3에서 기지 5곳과 전장 38곳, 포털 레코드 90개를 확인했�
 
 SnowPass·SnowBasin 등 설원 지역명과 포털 안내에는 기존 스테이지의 글꼴 경로를 썼다. 기지 출구의 그림과 선택 상태, 두 번 선택하는 버튼 동작도 원작 방식에 맞췄다. 두 Apple 실기기에 정식판과 iPad 진행을 넣었고, 나는 iPhone에서 화이트마운틴이 열린 것을 확인했다. 포털 14방향과 사령부의 개별 검사는 시뮬레이터와 호스트에서 진행했다. [출구·글꼴·실기기 설치 기록](../white-mountain-dual-release-20261120.md)
 
+Desert 01의 포털에서 White Mt. Base로 들어간다. 아래 기지 화면에서 **Desert 01**은 사막 복귀, **Snow Pass**는 설원 진입이다. 출구를 한 번 눌러 고른 뒤 같은 버튼을 다시 눌러 이동한다. iPhone 시뮬레이터 치트판에서 찍었다. [사막 포털과 나머지 전장 화면](gameplay-gallery.md#화이트마운틴-기지와-설원)
+
+![White Mt. Base에서 Desert 01과 Snow Pass 출구가 보인다.](media/white-mountain-gameplay/white-mountain-base.webp)
+
+원작 Boss 04 의뢰를 마치면 사령부에서 Boss 05 의뢰를 받을 수 있다. Snow Basin 안쪽에서 지정 위치 240단위 이내로 접근하면 Boss 05가 나타난다. 격파 뒤 사령부에 보고하면 300,000 Cr과 300,000 XP를 받는다. 아래는 iPad 시뮬레이터 치트판의 Snow Basin 전투다. Snow Fort의 전차·포탑과 Boss 05의 수락·보고 화면도 함께 실었다. [보스 등장과 보상 조건](../white-mountain-implementation-20261119.md#2단계-보스와-무장) · [보스 의뢰 화면](gameplay-gallery.md#화이트마운틴-보스전)
+
+<img src="media/white-mountain-gameplay/boss-05-combat.webp" alt="Snow Basin에서 Boss 05의 체력 표시와 플레이어를 공격하는 포탑" width="385">
+
 ### 남아 있던 무기·적·BOT을 플레이 경로에 연결했다
 
 남아 있던 저격총 4종과 LS 계열 21종의 장착 레벨·발사 정의·그림·음을 살리고, 일반 진행에서 상점과 드롭으로 얻는 방법을 정하도록 했다. 보스 의뢰 4건과 일반 적 5종을 설원에 연결했고, 무장이 빠진 비행기에는 기존 무기 유형을 이용해 발사 위치와 피해를 설정했다. 레이저 공습과 수집형 BOT 3종도 사용할 수 있게 했다. 기존 데이터에 남은 수치·아트와 새로 정한 입수·등장·의뢰 조건은 아래 자료에서 확인할 수 있다. 두 Apple 시뮬레이터의 치트판은 새 무기의 실제 발사·피해·음향과 수집 BOT의 아이템 전달을 검사했다. [무기·적·BOT 연결](../white-mountain-implementation-20261119.md#2단계-보스와-무장) · [실행 결과](../white-mountain-implementation-20261119.md#최종-앱-확인)
 
 공습은 그 전장에 도달할 레벨에서 주요 적 탱크를 1~2회로 격파할 수 있게 요청했다. 폭탄 20 Cr, 미사일 40 Cr, 레이저 30 Cr, 핵 100 Cr의 기존 가격을 사용한다. 레벨별 보정 HP를 선형 보간해 피해에 반영했고, 공통 전투 32건에서 주요 전차를 중앙 조준 한 번으로 격파했다. [공습 산식과 조건](../campaign-and-ipad-followup-20261120.md#공습-레벨-보정)
+
+예를 들어 저격총 Sn-IGn(10501)는 판매 레벨에 맞는 상점에서 고르거나 Boss 05의 전리품으로 얻을 수 있다. LS 계열 10311은 기존 Tank_L02 드롭 그룹에 희귀 전리품으로 넣었다. iPad 시뮬레이터 치트판에서 Sn-IGn 진열과 두 무기의 장착 후 발사·피해를 확인했다. [입수 데이터](../../Resources/Campaign/items.json) · [상점과 발사 화면](gameplay-gallery.md#저격총과-ls-무기)
+
+<img src="media/white-mountain-gameplay/sniper-shop.webp" alt="iPad 상점에서 Sn-IGn를 고른 상태" width="385">
+
+마지막 상점 검사에서는 표시 레벨 22에서 **Laser Air-Strike** 한 개를 30 Cr에 샀다. 전장 인벤토리에서 퀵 슬롯에 끌어 놓고 슬롯과 표적을 차례로 눌렀다. Item Picker D~F는 Picker C의 수집 동작을 사용해 격파 후 전리품을 찾아 플레이어에게 가져온다. 아래는 iPad 시뮬레이터 치트판에서 Item Picker D가 전리품 한 개를 전달한 직후다. [공습 구매·등록·발동 화면과 BOT 수집](gameplay-gallery.md#레이저-공습과-수집-bot) · [레벨-22 상점 검사](../campaign-and-ipad-followup-20261120.md)
+
+<img src="media/white-mountain-gameplay/picker-d-collection.webp" alt="Ruin Field에서 Item Picker D가 전리품 한 개를 전달한 직후의 전장" width="385">
 
 ### Android·PWA·Mac과 복구코드를 만들었다
 
