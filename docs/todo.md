@@ -40,7 +40,7 @@
 - [x] **한·영 README에 원본 빌드 출처 추가.** 복원 동기 다음에 Internet Archive에서 받은 일반판·HD판을 바탕으로 복원을 시작한 경위와 두 기준 판본의 역할을 적었다. 헤비멕1 README와 맥디펜스 개발자의 변을 참고했다. [Internet Archive의 HeavyMach 시리즈 모음](https://archive.org/details/heavy-mach-archive_202406) · [원본 판본 명세](source-provenance.json)
 - [x] **헤비멕2 프로젝트를 내리는 조건 명시.** 헤비멕1과 맥디펜스의 국문 문장과 영문 번역을 참고해 한·영 README와 국문 개발자의 변에 넣었다. [국문 README](../README.md) · [영문 README](../README.en.md) · [국문 개발자의 변](RESTORATION.md)
 - [x] **한·영 Quick Play 실행·빌드 순서.** 웹·PWA → iPhone·iPad → Android → Mac 순으로 첫 실행과 소스 빌드 경로를 연결했다. [국문 Quick Play](../README.md#quick-play) · [영문 Quick Play](../README.en.md#quick-play)
-- [ ] **상점·iPhone 이동·Skyway의 설명 위치.** 사용자 제보를 보존하고, 상점·경로 변경 뒤 점프·Skyway 떨림 수정은 기획·추가 기능에서 트러블슈팅으로 옮긴다. 한·영 README와 [기능 소개](public/features.md)를 대조한다. [트러블슈팅](public/troubleshooting.md)
+- [x] **상점·iPhone 이동·Skyway의 설명 위치.** 한·영 README에서 사용자 제보 문단을 문제 해결로 옮겼다. 기능 소개에서도 해당 수정은 트러블슈팅으로 연결하고, 상점 배경·버튼 비교 근거를 그쪽에 두었다. [트러블슈팅](public/troubleshooting.md)
 - [x] **GitHub 문서 정리.** HeavyMach 1 문서 구성을 참고해 한·영 README와 [문서 목록](README.md)을 정리했다. [원작에서 복원한 것과 내가 한 일](public/features.md), [개발 과정](public/development-history.md), 설치와 검증 안내를 연결했다.
 - [x] **HeavyMach 1 문서와 재대조.** [비교표](github-documentation-review-20261121.md)를 작성했다. [실제 플레이 PNG 5장·MP4 2편](public/gameplay-gallery.md)와 HUD 편집·작업 지시·검증 방법을 연결했다.
 - [x] **개발자의 변 초안과 GitHub·Sass 자료.** HeavyMach 1·MachDefense의 글과 2026-11-20 사용자 원문을 대조해 [한글 초안](RESTORATION.md)과 [글감·근거 목록](developer-background.md)을 작성했다. 원문은 로컬 `.local/writing/heavymach2-developer-note-20261120.md`에 있다.
