@@ -112,12 +112,6 @@ Desert 01의 화이트마운틴 포털로 들어가 기지의 **Snow Pass** 출�
 
 <img src="Web/Shell/social-preview.jpg" alt="헤비멕2 iPad 탭 투 플레이 화면" width="378">
 
-### Mac mini에서 녹화한 전투 · 게임 음향
-
-Chrome에서 공개 정식 PWA를 열어 Ruin Field의 이동과 교전을 녹화했다. 영상은 10초다. [촬영 조건과 해시](docs/public/media/gameplay-with-sound-20261122/sources.json)
-
-https://github.com/user-attachments/assets/9f1230c0-e936-4db9-a44b-2e737d0961f5
-
 ### iPad 전투 GIF
 
 iPad 실기기에서 연못 사이를 이동하며 교전하고, 해안 전장에서 이동 경로를 다시 그린다. 두 GIF는 각각 8초다.

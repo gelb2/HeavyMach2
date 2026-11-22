@@ -112,12 +112,6 @@ Take the White Mountain portal in Desert 01, then choose **Snow Pass** at the ba
 
 <img src="Web/Shell/social-preview.jpg" alt="HeavyMach 2 Tap to Start screen on iPad" width="378">
 
-### Mac mini combat with game audio
-
-Ruin Field movement and combat recorded in the public regular PWA in Chrome. The clip runs for 10 seconds. [Capture details and hashes](docs/public/media/gameplay-with-sound-20261122/sources.json)
-
-https://github.com/user-attachments/assets/9f1230c0-e936-4db9-a44b-2e737d0961f5
-
 ### iPad combat GIFs
 
 On a physical iPad, the mech moves between ponds during combat and redraws its route along the coast. Each GIF runs for eight seconds.

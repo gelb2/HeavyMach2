@@ -76,7 +76,7 @@
 - [x] **글감 보존·게재와 원문 위치**. 회고 원문과 후속 글감을 보존했고, 현재 공개 원고·트러블슈팅·개발 과정에 반영한 범위를 기록했다. [글감 목록](developer-background.md) · [삼부작 소회 반영 `b9efa0b`](https://github.com/gelb2/HeavyMach2/commit/b9efa0b) · [원문과 항목별 대조](todo-audit-20261122.md)
 - [x] **문서·코드 대조 29건 반영**. 31건 조사 중 제목 잘림과 미사용 Phone 분기는 3차에서 각각 처리한다. [대조표](code-document-audit-20261121.md) · [반영 근거](code-document-fixes-20261121.md)
 - [x] **기본 전투·성장·저장·메뉴 연결**. 공통 코어의 무기·전투·BOT·퀵아이템·저장, 도움말·완료 임무·게임오버·랭킹 이용 불가 안내는 각 소비 코드와 실행을 확인했다. 작성 당시 미연결로 남은 기록은 [기능별 근거](feature-verification.md)와 [항목별 대조](todo-audit-20261122.md)에 연결했다.
-- [x] **한·영 README에서 플레이 영상과 GIF 바로 보기**. 공개 GitHub의 두 README 본문에서 Chrome으로 MP4 3편 재생과 GIF 2편의 움직임을 확인했다. Mac mini 영상에는 게임 음향이 들어 있다. 공개 첨부 3개는 저장소의 MP4와 해시가 일치한다. [공개 PR #144](https://github.com/gelb2/HeavyMach2/pull/144) · [갤러리](public/gameplay-gallery.md)
+- [x] **한·영 README에서 플레이 영상과 GIF 바로 보기**. 공개 GitHub의 두 README 본문에서 시뮬레이터 MP4 2편과 GIF 2편을 볼 수 있다. Mac mini 전투 영상은 하단의 검은 여백 때문에 공개 목록에서 내렸다. [공개 PR #144](https://github.com/gelb2/HeavyMach2/pull/144) · [갤러리](public/gameplay-gallery.md)
 - [x] **한·영 공개 문서 문체 정리**. README의 사격·파츠·광고 문단과 플레이·설치·검증·개발 과정 등 17개 파일을 고쳤다. 개발자의 변과 인용은 기존 원문과 대조했다. [공개 PR #146](https://github.com/gelb2/HeavyMach2/pull/146)
 - [x] **헤비멕2 글쓰기 지침 연결**. 헤비멕1·맥디펜스의 지침을 바탕으로 로컬 스킬과 참고 문서를 추가하고 `AGENTS.md`에서 연결했다. [글쓰기 스킬](../.agents/skills/write-project-text/SKILL.md) · [공개 PR #148](https://github.com/gelb2/HeavyMach2/pull/148)
 - [x] **문서 검사에서 반복 문구 차단**. 기존 GitHub `documentation` 검사에서 한·영 공개 글의 사격·파츠·광고 정책 문구와 검증 면책 문구를 잡는다. 정리 전 문서에서 9건을 찾았고 수정본과 인용은 검사를 통과했다. [검사 사용법](../CONTRIBUTING.md#문서-변경-확인) · [공개 PR #150](https://github.com/gelb2/HeavyMach2/pull/150)
@@ -89,7 +89,7 @@
 
 ## 남은 작업 순서
 
-- [ ] **Mac mini 전투 영상 하단의 검은 여백 수정**. 1280×800 녹화 원본과 공개 MP4의 하단 HUD 양옆에서 같은 73픽셀 여백을 확인했다. 정식 PWA의 데스크톱 카메라가 허용하는 HD 하단 이동 범위는 이 화면에서 약 73픽셀이다. 하단까지 전장이 보이는 조건을 확인하고, HUD와 게임 소리를 담은 전투 장면을 다시 녹화한다. 한·영 README 플레이어, 갤러리, Sass 인계와 출처·해시를 새 영상에 맞추고 공개본을 재생해 확인한다. [영상과 촬영 기록](public/gameplay-gallery.md#음향이-담긴-실기기-영상) · [전장 카메라](../Sources/Core/Simulation/CombatScene.cpp)
+- [ ] **Mac mini 전투 영상 하단의 검은 여백 수정**. 1280×800 녹화 원본과 공개 MP4의 하단 HUD 양옆에서 같은 73픽셀 여백을 확인했다. 정식 PWA의 데스크톱 카메라가 허용하는 HD 하단 이동 범위는 이 화면에서 약 73픽셀이다. 하단까지 전장이 보이는 조건을 확인하고, HUD와 게임 소리를 담은 전투 장면을 다시 녹화한다. 한·영 README 플레이어, 갤러리, Sass 인계와 출처·해시를 새 영상에 맞추고 공개본을 재생해 확인한다. [영상과 촬영 기록](public/gameplay-gallery.md) · [전장 카메라](../Sources/Core/Simulation/CombatScene.cpp)
 
 ### 1. 지금 있는 빌드로 Mac에서 먼저 확인
 
