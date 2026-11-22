@@ -82,6 +82,8 @@
 
 ## 남은 작업 순서
 
+- [ ] **한·영 README에서 플레이 영상과 GIF 바로 보기**. 두 README의 플레이 섹션에서 소리 있는 영상은 본문에서 재생하고, 플레이 GIF는 본문에서 바로 움직이도록 표시한다. 공개 GitHub에서 영상·음향 재생과 GIF 표시를 확인한다. [한국어 README](../README.md#플레이-화면과-영상) · [English README](../README.en.md#gameplay-screenshots-and-clips) · [공개 영상과 GIF](public/gameplay-gallery.md)
+
 ### 1. 지금 있는 빌드로 Mac에서 먼저 확인
 
 예상 각 15~45분. 공개 파일의 버전·해시와 로컬 후보의 커밋을 먼저 기록한다. 저장을 바꾸는 검사는 공개 코드나 별도 테스트 슬롯을 쓴다.
