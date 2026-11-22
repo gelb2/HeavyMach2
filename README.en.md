@@ -102,6 +102,10 @@ The game uses the original base, battlefield and equipment art and reuses prepar
 
 **Android, PWA and Mac.** I asked the Android app to import the shared modules while preserving the files used by Apple apps. Each platform handles its system connections. The new recovery code transfers progress and equipment across all three save slots. I set the scope and reported defects, and worked with Codex on implementation and automated checks. [Platform development](docs/public/development-history.md#android웹mac과-저장-이동) · [Transfer saves](docs/save-transfer.md)
 
+Take the White Mountain portal in Desert 01, then choose **Snow Pass** at the base. The screenshot shows arrival in Snow Pass in the cheat build on an iPhone simulator. [Base entry, bosses, and equipment in play](docs/public/gameplay-gallery.md#화이트마운틴-기지와-설원)
+
+<img src="docs/public/media/white-mountain-gameplay/snow-pass.webp" alt="The mech arrives in Snow Pass with the Desert 01 return portal on the left" width="700">
+
 ## Gameplay screenshots and clips
 
 <img src="Web/Shell/social-preview.jpg" alt="Heavy Mach 2 Tap to Start screen on iPad" width="378">

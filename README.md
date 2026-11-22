@@ -102,6 +102,10 @@ Xcode에서 `HeavyMach2Source`와 iPhone 또는 iPad 시뮬레이터를 선택�
 
 **Android·PWA·Mac.** Android는 Apple 앱이 쓰는 파일을 수정하지 않고 공통 모듈을 가져다 쓰도록 했다. 터치·음향 장치 같은 연결은 해당 플랫폼에 뒀다. 복구코드를 추가해 세 슬롯의 진행과 장비를 함께 옮길 수 있게 했다. 나는 작업 범위와 결함을 정리했고, Codex와 구현과 자동 검사를 만들었다. [플랫폼 확장](docs/public/development-history.md#android웹mac과-저장-이동) · [복구코드 사용법](docs/save-transfer.md)
 
+Desert 01의 화이트마운틴 포털로 들어가 기지의 **Snow Pass** 출구를 선택한다. 아래는 iPhone 시뮬레이터의 치트판에서 Snow Pass에 도착한 장면이다. [기지 진입부터 보스·장비까지](docs/public/gameplay-gallery.md#화이트마운틴-기지와-설원)
+
+<img src="docs/public/media/white-mountain-gameplay/snow-pass.webp" alt="Snow Pass에 도착한 메크와 왼쪽의 Desert 01 복귀 포털" width="700">
+
 ## 플레이 화면과 영상
 
 <img src="Web/Shell/social-preview.jpg" alt="헤비멕2 iPad 탭 투 플레이 화면" width="378">
