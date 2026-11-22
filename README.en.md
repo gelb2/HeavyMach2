@@ -20,7 +20,7 @@ In HeavyMach 2, you assemble a mech, draw a route across the battlefield and fig
 
 ## Play and install
 
-**[Open the PWA](https://gelb2.github.io/HeavyMach2/)** · **[Download the Mac app or Android APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)** · [Build and installation instructions](docs/en/public/build-and-install.md)
+**[Open the PWA](https://gelb2.github.io/HeavyMach2/)** · **[Android regular APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.4)** · **[Mac app](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)** · [Build and installation instructions](docs/en/public/build-and-install.md)
 
 [Install the PWA from the Home Screen](docs/public/build-and-install.md#pwa-설치) or [extract and open the Tauri Mac app](docs/public/build-and-install.md#tauri-mac-앱-받기). [Version and release policy](docs/public/release-policy.md)
 

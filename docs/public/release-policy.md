@@ -14,6 +14,10 @@
 
 `v0.3`은 휴대폰 PWA의 전체 화면과 Safari 홈 화면의 상태바 영역을 수정했다. `main` 병합 커밋 `bc7ab55`에 태그를 붙이고 `gh-pages`의 `e40314f`로 배포했다. 공개 HTTPS 파일 16개의 크기와 SHA-256을 대조했다. [v0.3 릴리스](https://github.com/gelb2/HeavyMach2/releases/tag/v0.3) · [전체 화면 검사](../pwa-lifecycle-audit-20261121.md#홈-화면-전체-화면-개선)
 
+`v0.3`은 갤럭시의 설치형 PWA를 전체 화면으로 연다. [v0.3 PWA 릴리스](https://github.com/gelb2/HeavyMach2/releases/tag/v0.3)
+
+`v0.4`는 Android 정식판의 저장 이동 메뉴를 배포한다. 기존 정식판과 같은 앱 ID와 서명을 사용한다. iPhone·iPad는 본인의 개발 팀으로 `v0.4` 소스를 빌드한다. Mac ZIP과 Android 치트판은 `v0.1`, 설치형 PWA는 `v0.3`에서 받는다. [v0.4 Android 정식 APK와 SHA-256](https://github.com/gelb2/HeavyMach2/releases/tag/v0.4) · [복구코드 검증](../save-transfer.md#호스트별-확인-범위)
+
 ## PWA와 Mac 산출물
 
 - HeavyMach 1·MachDefense와 같이 GitHub Pages는 별도 `gh-pages` 브랜치의 루트에서 서비스한다. 정식 웹 빌드의 `dist/` 전체와 `.nojekyll`을 배포한다. 버전과 소스 커밋은 `build.json`에 기록한다. 앱 실행 시 파일별 길이와 SHA-256을 확인한다.

@@ -20,7 +20,7 @@ HeavyMach 2는 메크를 조립하고 전장에서 이동 경로를 그어 싸�
 
 ## 플레이와 설치
 
-**[PWA 실행·설치](https://gelb2.github.io/HeavyMach2/)** · **[Tauri Mac과 Android 다운로드](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)** · [플랫폼별 빌드 명령](docs/public/build-and-install.md)
+**[PWA 실행·설치](https://gelb2.github.io/HeavyMach2/)** · **[Android 정식 APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.4)** · **[Tauri Mac 다운로드](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)** · [플랫폼별 빌드 명령](docs/public/build-and-install.md)
 
 휴대폰과 iPad에서는 [홈 화면에 PWA를 설치](docs/public/build-and-install.md#pwa-설치)한다. Mac ZIP을 받은 뒤 [응용 프로그램 폴더로 옮겨 실행](docs/public/build-and-install.md#tauri-mac-앱-받기)한다. [버전과 배포 기준](docs/public/release-policy.md)
 
