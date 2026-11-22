@@ -20,6 +20,8 @@ I began the restoration with the original standard and HD builds of HeavyMach 2 
 
 I have no intention of making money from this restoration. I also want to record how the game was restored and what was fixed.
 
+If a stakeholder contacts me, I will take this project down.
+
 **[HeavyMach 2 developer's statement in Korean](docs/RESTORATION.md)** · [Earlier series statement in Korean](docs/series-restoration-background.md) · [English excerpts on the earlier restorations](docs/en/RESTORATION.md)
 
 ## Reflections After Restoring the Trilogy. I Have Fulfilled My Duty to the Two Creators.
