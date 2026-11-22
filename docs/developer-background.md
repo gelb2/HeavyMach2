@@ -15,8 +15,9 @@
 | --- | --- | --- |
 | 내가 세 작품을 다시 만든 이유 | iPod touch에서의 경험, 변해준 개발자와 박재철 일러스트레이터에게 받은 시간, 11월 20일의 신체 상태와 판단. | 이전 회고와 [한글 초안](RESTORATION.md#헤비멕을-다시-만든-이유) |
 | 원작을 복원한 범위 | 원작 그림·폰트·조작·데이터에 맞추고 에셋 사용과 기기별 부작용을 확인하라는 요청. | [원작에서 복원한 것](public/features.md#원작에서-복원한-것) · [기능별 확인](feature-verification.md) |
-| 내가 정한 확장 | 화이트마운틴 포털·스테이지·보스·드롭, 공습의 격파 기준, 실제 기기에서 발견한 상점과 이동 문제. | [내가 한 일](public/features.md#내가-한-일) · [화이트마운틴 원본 조사](original-unused-content-20261119.md) · [설계와 검사](white-mountain-implementation-20261119.md) |
-| 모듈 경계와 AI 작업 | 사용자 지시로 Apple 파일을 보존하고 공통 모듈을 가져다 쓰는 Android 포팅. PWA와 Tauri, 모델이 크게 헤맸던 경험과 당시의 Tauri 화면 문제. | [Android로 이어진 경로](public/development-history.md#android웹mac과-저장-이동) · [타우리 화면 증상과 검증](public/troubleshooting.md#7-tauri-mac-화면이-검거나-깨져-보임) |
+| 내가 정한 확장 | 화이트마운틴 포털과 전장, 적·보스 배치와 의뢰, 무기 입수 경로, 공습의 격파 기준. | [내가 한 일](public/features.md#내가-한-일) · [화이트마운틴 원본 조사](original-unused-content-20261119.md) · [설계와 검사](white-mountain-implementation-20261119.md) |
+| 모듈 경계와 AI 작업 | 사용자 지시에 따라 Apple 파일을 보존하고 공통 모듈을 가져다 쓰는 Android 포팅. PWA와 Tauri 작업에 대한 회고. | [Android로 이어진 경로](public/development-history.md#android웹mac과-저장-이동) · [코덱스와 일하며 본 것](RESTORATION.md#코덱스와-일하며-본-것) |
+| 트러블슈팅 | 코덱스가 구현한 부분을 사용자가 직접 시험하며 iPhone 상점·점프·Skyway, iPad 레이저 공습 진열, Tauri 화면 문제를 제보했다. | [트러블슈팅](public/troubleshooting.md) · [타우리 화면 증상과 검증](public/troubleshooting.md#7-tauri-mac-화면이-검거나-깨져-보임) |
 | 자산가치·창작·안전규약 | Threads에서 기억한 글의 취지, 정크본드·부실채권 비유, 즉자·대자, 카라바지오·젠틸레스키, 게임 효과를 만들 때 경고가 날 것이라는 가정. | [한글 초안의 해당 부분](RESTORATION.md#인간의-자산가치와-창작) · [근접공격·화염방사기 원본 자료](original-unused-content-20261119.md#무기와-입수-경로) |
 
 Threads 글의 게시자와 주소는 기록에 없다. 작성자가 기억한 취지를 사용한다. 글에 적힌 약 80%와 창작을 원할 사람 수는 작성자의 비유와 생각이다. 근접공격·화염방사기 구현 때 경고가 날 것이라는 대목도 작성자가 제기한 가정이다. 원본의 아이콘과 주석 행을 확인했고, 아머드코어 영향은 작성자 추측이다.
