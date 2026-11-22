@@ -38,9 +38,9 @@ iPad Pro 11형 시뮬레이터에서 새 프로필로 기지·사령부·전장�
 
 ## 화이트마운틴 기지와 설원
 
-iPhone 시뮬레이터의 치트판에서 Desert 01의 진입 포털, White Mt. Base의 출구 메뉴, Snow Pass 도착 순서로 찍었다. 기지의 **Desert 01**은 사막으로 돌아가는 선택이고 **Snow Pass**는 첫 설원으로 나가는 선택이다. [포털 14방향과 실기기 설치 기록](../white-mountain-dual-release-20261120.md)
+Desert 01 화면 오른쪽 위의 **White Mt. Base** 포털이 기지 입구다. 이 장면은 iPad Pro 13형(M4) 시뮬레이터 치트판에서 찍었다. 기지 출구와 Snow Pass 도착은 iPhone 시뮬레이터 치트판의 화면이다. 기지의 **Desert 01**은 사막으로 돌아가는 선택이고 **Snow Pass**는 첫 설원으로 나가는 선택이다. [포털 14방향과 실기기 설치 기록](../white-mountain-dual-release-20261120.md)
 
-![Desert 01의 전차와 화이트마운틴 진입 포털](media/white-mountain-gameplay/desert-01-portal.webp)
+<img src="media/white-mountain-gameplay/desert-01-portal.webp" alt="Desert 01 화면 오른쪽 위의 White Mt. Base 진입 포털" width="450">
 
 ![White Mt. Base 출구 메뉴의 Desert 01과 Snow Pass 버튼](media/white-mountain-gameplay/white-mountain-base.webp)
 
@@ -49,6 +49,18 @@ iPhone 시뮬레이터의 치트판에서 Desert 01의 진입 포털, White Mt. 
 같은 실행의 Snow Fort 도착 화면이다. 새로 배치한 전차와 포탑이 있으며, 바위에는 충돌 경계를 만들었다. 맵 데이터에서 비행체 위치를, 공통 코어 기록에서 비행체 발사와 플레이어 피격을 확인할 수 있다. [설원 적 배치](../campaign-and-ipad-followup-20261120.md#설원-적-배치-결과) · [사격·피격 검사](../white-mountain-implementation-20261119.md#단계별-실행-결과)
 
 ![Snow Fort의 요새와 바위, 플레이어 메크와 주변 적](media/white-mountain-gameplay/snow-fort.webp)
+
+아래는 같은 iPhone 시뮬레이터 치트판에서 Snow Field, Snow Ridge, Snow Valley에 도착한 모습이다. Snow Basin은 다음 보스전에서 볼 수 있다.
+
+![Snow Field 도착 지점과 설원에 배치된 전차](media/white-mountain-gameplay/snow-field.webp)
+
+![Snow Ridge 도착 지점과 능선 전장](media/white-mountain-gameplay/snow-ridge.webp)
+
+![Snow Valley 도착 지점과 골짜기 전장](media/white-mountain-gameplay/snow-valley.webp)
+
+iPad Pro 13형(M4) 시뮬레이터 치트판에서 Snow Pass의 비행체 E_Plane_01에 접근했다. 아래는 비행체의 첫 발사 시점이다. 화면 중앙 오른쪽의 주황색 비행체에 발사 섬광이 보인다.
+
+<img src="media/white-mountain-gameplay/snow-pass-aircraft-fire.webp" alt="Snow Pass에서 주황색 비행체 E_Plane_01이 첫 발을 쏘는 순간" width="450">
 
 ## 화이트마운틴 보스전
 
@@ -66,15 +78,21 @@ iPad 시뮬레이터 치트판에서 Sn-IGn(10501)가 진열된 상점과, Ruin 
 
 <img src="media/white-mountain-gameplay/sniper-shop.webp" alt="상점에서 Sn-IGn가 선택돼 있다." width="245"> <img src="media/white-mountain-gameplay/sniper-combat.webp" alt="Ruin Field에서 Sn-IGn를 장착하고 사격한다." width="245"> <img src="media/white-mountain-gameplay/ls-combat.webp" alt="같은 전장에서 LS 10311을 장착하고 사격한다." width="245">
 
+별도 iPad Pro 13형(M4) 시뮬레이터 치트판에서 Ruin Field의 E_Tank_02를 실제 전투로 격파했다. 난수 시드를 고정해 공개 드롭 표의 희귀 결과를 재현했다. 아래는 LS-D(10311)가 떨어진 순간과 획득한 무기를 인벤토리에서 고른 모습이다.
+
+<img src="media/white-mountain-gameplay/ls-10311-drop.webp" alt="Ruin Field에서 E_Tank_02가 격파돼 LS-D가 전리품으로 떨어진 순간" width="360"> <img src="media/white-mountain-gameplay/ls-10311-inventory.webp" alt="전리품으로 얻은 LS-D가 인벤토리에서 선택돼 있다." width="360">
+
 ## 레이저 공습과 수집 BOT
 
 iPad 시뮬레이터 치트판에서 레벨 22 상점의 특수공격 목록에 진열된 **Laser Air-Strike**를 30 Cr에 샀다. Ruin Field에서 퀵 슬롯에 등록한 화면과, 슬롯에서 한 개를 써 공습이 시작된 화면이 이어진다. [레벨별 공습 조정과 구매 검사](../campaign-and-ipad-followup-20261120.md#공습-레벨-보정)
 
 <img src="media/white-mountain-gameplay/laser-airstrike-buy.webp" alt="Laser Air-Strike 거래창에 한 개의 가격 30 Cr이 표시된다." width="245"> <img src="media/white-mountain-gameplay/laser-airstrike-quick-slot.webp" alt="Ruin Field의 퀵 슬롯에 레이저 공습이 등록돼 있다." width="245"> <img src="media/white-mountain-gameplay/laser-airstrike-active.webp" alt="퀵 슬롯에서 레이저 공습을 사용해 전장에 공습이 시작된다." width="245">
 
-별도 Ruin Field 검사에서 Item Picker D가 적의 전리품 한 개를 찾아 플레이어에게 전달했다. 아래는 전달 직후 장면이다. 같은 검사에서 Picker E와 F도 각각 한 개를 전달했다. [수집형 BOT 실행 기록](../white-mountain-implementation-20261119.md#단계별-실행-결과)
+iPad Pro 13형(M4) 시뮬레이터 치트판의 같은 Ruin Field 실행에서 네 장을 찍었다. 첫 BOT 칸에 장착한 Item Picker D, BOT이 전리품에 접근한 순간, 전달 직후 전장, 전달 후 인벤토리 순이다. 전달 뒤 인벤토리의 잔액은 3 Cr 늘었다. 앞선 별도 검사에서는 Picker E와 F도 각각 전리품 한 개를 전달했다. [수집형 BOT 실행 기록](../white-mountain-implementation-20261119.md#단계별-실행-결과)
 
-<img src="media/white-mountain-gameplay/picker-d-collection.webp" alt="Item Picker D가 전리품을 전달한 직후의 Ruin Field" width="245">
+<img src="media/white-mountain-gameplay/picker-d-equipped.webp" alt="첫 BOT 칸에 Item Picker D를 장착한 인벤토리" width="360"> <img src="media/white-mountain-gameplay/picker-d-approach.webp" alt="Ruin Field에서 Item Picker D가 적 전리품에 접근한다." width="360">
+
+<img src="media/white-mountain-gameplay/picker-d-collection.webp" alt="Item Picker D가 전리품을 전달한 직후의 Ruin Field" width="360"> <img src="media/white-mountain-gameplay/picker-d-inventory-after.webp" alt="전리품 전달 뒤 인벤토리에 3 Cr 늘어난 잔액이 표시된다." width="360">
 
 ## 갤럭시 정식판과 Mac 설치형 PWA
 

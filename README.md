@@ -104,7 +104,7 @@ Xcode에서 `HeavyMach2Source`와 iPhone 또는 iPad 시뮬레이터를 선택�
 
 Desert 01의 화이트마운틴 포털로 들어가 기지의 **Snow Pass** 출구를 선택한다. 아래는 iPhone 시뮬레이터의 치트판에서 Snow Pass에 도착한 장면이다. [기지 진입부터 보스·장비까지](docs/public/gameplay-gallery.md#화이트마운틴-기지와-설원)
 
-<img src="docs/public/media/white-mountain-gameplay/snow-pass.webp" alt="Snow Pass에 도착한 메크와 왼쪽의 Desert 01 복귀 포털" width="700">
+<img src="docs/public/media/white-mountain-gameplay/snow-pass.webp" alt="Snow Pass에 도착한 메크와 왼쪽의 White Mt. Base 복귀 포털" width="700">
 
 ## 플레이 화면과 영상
 

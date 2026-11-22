@@ -104,7 +104,7 @@ The game uses the original base, battlefield and equipment art and reuses prepar
 
 Take the White Mountain portal in Desert 01, then choose **Snow Pass** at the base. The screenshot shows arrival in Snow Pass in the cheat build on an iPhone simulator. [Base entry, bosses, and equipment in play](docs/en/public/gameplay-gallery.md#white-mountain-base-and-snowfields)
 
-<img src="docs/public/media/white-mountain-gameplay/snow-pass.webp" alt="The mech arrives in Snow Pass with the Desert 01 return portal on the left" width="700">
+<img src="docs/public/media/white-mountain-gameplay/snow-pass.webp" alt="The mech arrives in Snow Pass with the White Mt. Base return portal on the left" width="700">
 
 ## Gameplay screenshots and clips
 

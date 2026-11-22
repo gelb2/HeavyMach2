@@ -36,9 +36,9 @@ The regular app was checked on an 11-inch iPad Pro simulator using a new profile
 
 ## White Mountain base and snowfields
 
-These screenshots show the entry portal in Desert 01, the exits at White Mt. Base, and arrival at Snow Pass in the test build on an iPhone simulator. At the base, **Desert 01** returns to the desert and **Snow Pass** leads into the first snowfield. [Portal and physical-device record](../../white-mountain-dual-release-20261120.md)
+The **White Mt. Base** portal is in the upper-right corner of the Desert 01 screenshot from the test build on a 13-inch iPad Pro (M4) simulator. The base exit menu and Snow Pass arrival come from the test build on an iPhone simulator. At the base, **Desert 01** returns to the desert and **Snow Pass** leads into the first snowfield. [Portal and physical-device record](../../white-mountain-dual-release-20261120.md)
 
-![Tanks and the White Mountain entry portal in Desert 01](../../public/media/white-mountain-gameplay/desert-01-portal.webp)
+<img src="../../public/media/white-mountain-gameplay/desert-01-portal.webp" alt="The White Mt. Base entry portal at upper right in Desert 01" width="450">
 
 ![The Desert 01 and Snow Pass buttons at White Mt. Base](../../public/media/white-mountain-gameplay/white-mountain-base.webp)
 
@@ -47,6 +47,18 @@ These screenshots show the entry portal in Desert 01, the exits at White Mt. Bas
 Snow Fort has newly placed tanks and turrets and collision boundaries around the rocks. The map data records aircraft placement. The shared-core tests checked aircraft fire and player damage. [Snowfield enemy placement](../../campaign-and-ipad-followup-20261120.md#설원-적-배치-결과) · [Weapon fire and damage checks](../../white-mountain-implementation-20261119.md#단계별-실행-결과)
 
 ![The fortress, rocks, player mech, and nearby enemies in Snow Fort](../../public/media/white-mountain-gameplay/snow-fort.webp)
+
+The same iPhone simulator test run captured arrival in Snow Field, Snow Ridge, and Snow Valley. Snow Basin appears in the boss fight below.
+
+![The Snow Field arrival point and tanks deployed on the field](../../public/media/white-mountain-gameplay/snow-field.webp)
+
+![The Snow Ridge arrival point and ridge battlefield](../../public/media/white-mountain-gameplay/snow-ridge.webp)
+
+![The Snow Valley arrival point and valley battlefield](../../public/media/white-mountain-gameplay/snow-valley.webp)
+
+In the test build on a 13-inch iPad Pro (M4) simulator, the player approached E_Plane_01 in Snow Pass. The orange aircraft just to the right of center flashes as it fires its first shot.
+
+<img src="../../public/media/white-mountain-gameplay/snow-pass-aircraft-fire.webp" alt="The orange E_Plane_01 aircraft fires its first shot in Snow Pass" width="450">
 
 ## White Mountain boss fight
 
@@ -64,15 +76,21 @@ The test build on an iPad simulator shows the Sn-IGn rifle (10501) in the shop, 
 
 <img src="../../public/media/white-mountain-gameplay/sniper-shop.webp" alt="Sn-IGn selected in the shop" width="245"> <img src="../../public/media/white-mountain-gameplay/sniper-combat.webp" alt="Firing the equipped Sn-IGn in Ruin Field" width="245"> <img src="../../public/media/white-mountain-gameplay/ls-combat.webp" alt="Firing the equipped LS 10311 in Ruin Field" width="245">
 
+In a separate test run on a 13-inch iPad Pro (M4) simulator, the player defeated E_Tank_02 in combat in Ruin Field. The test used a fixed random seed to reproduce a rare result from the public drop table. The two frames show LS-D (10311) dropping and the acquired weapon selected in the inventory.
+
+<img src="../../public/media/white-mountain-gameplay/ls-10311-drop.webp" alt="LS-D drops as loot when E_Tank_02 is defeated in Ruin Field" width="360"> <img src="../../public/media/white-mountain-gameplay/ls-10311-inventory.webp" alt="The acquired LS-D is selected in the inventory" width="360">
+
 ## Laser air strike and Item Picker BOTs
 
 In the test build on an iPad simulator, the level 22 shop sold **Laser Air-Strike** for 30 Cr in the special attacks tab. The next two screenshots show it assigned to a quick slot and used on a target in Ruin Field. [Air-strike scaling and purchase check](../../campaign-and-ipad-followup-20261120.md#공습-레벨-보정)
 
 <img src="../../public/media/white-mountain-gameplay/laser-airstrike-buy.webp" alt="The Laser Air-Strike purchase dialog lists 30 Cr for one strike" width="245"> <img src="../../public/media/white-mountain-gameplay/laser-airstrike-quick-slot.webp" alt="Laser Air-Strike assigned to a Ruin Field quick slot" width="245"> <img src="../../public/media/white-mountain-gameplay/laser-airstrike-active.webp" alt="The laser air strike begins after being used from the quick slot" width="245">
 
-A separate Ruin Field run checked Item Picker D finding loot from a defeated enemy and delivering it to the player. The screenshot was taken just after delivery. Picker E and F each delivered one item in their runs. [Item Picker runtime record](../../white-mountain-implementation-20261119.md#단계별-실행-결과)
+All four frames come from one Ruin Field run in the test build on a 13-inch iPad Pro (M4) simulator. They show Item Picker D equipped in the first BOT slot, the BOT approaching enemy loot, the field just after delivery, and the inventory after delivery. The inventory balance increased by 3 Cr. In earlier runs, Picker E and F also delivered one item each. [Item Picker runtime record](../../white-mountain-implementation-20261119.md#단계별-실행-결과)
 
-<img src="../../public/media/white-mountain-gameplay/picker-d-collection.webp" alt="Ruin Field just after Item Picker D delivered an item" width="245">
+<img src="../../public/media/white-mountain-gameplay/picker-d-equipped.webp" alt="Item Picker D equipped in the first BOT slot" width="360"> <img src="../../public/media/white-mountain-gameplay/picker-d-approach.webp" alt="Item Picker D approaches enemy loot in Ruin Field" width="360">
+
+<img src="../../public/media/white-mountain-gameplay/picker-d-collection.webp" alt="Ruin Field just after Item Picker D delivered the loot" width="360"> <img src="../../public/media/white-mountain-gameplay/picker-d-inventory-after.webp" alt="The inventory shows the balance increased by 3 Cr after delivery" width="360">
 
 ## Regular Galaxy app and the installed Mac PWA
 
