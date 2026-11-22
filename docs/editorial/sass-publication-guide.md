@@ -34,7 +34,7 @@ Assemble a mech, draw a route across the battlefield, and engage enemy units. Ac
 | --- | --- |
 | 헤비멕2를 다시 만든 이유 | [README 도입](../../README.md#heavymach-2를-다시-만드는-이유) · [Why I am restoring HeavyMach 2](../../README.en.md#why-i-am-restoring-heavymach-2) |
 | 3부작을 마친 소회와 두 제작자 | [3부작 복원 후의 소회](../../README.md#3부작-복원-후의-소회-나는-두-제작자에게-의무를-다-했다) · [Reflections after restoring the trilogy](../../README.en.md#reflections-after-restoring-the-trilogy-i-have-fulfilled-my-duty-to-the-two-creators) |
-| 헤비멕이 개발자 전업과 게임 제작에 미친 영향 | [개발자의 변](../RESTORATION.md) · [Developer’s statement](../en/heavymach2-restoration.md) · [앞선 연작 회고](../series-restoration-background.md) · [Earlier excerpts](../en/RESTORATION.md) |
+| 헤비멕이 개발자 전업과 게임 제작에 미친 영향 | [개발자의 변](../RESTORATION.md) · [Developer’s statement](../en/heavymach2-restoration.md) · [헤비멕1 개발자의 변](https://github.com/gelb2/HeavyMach/blob/main/docs/RESTORATION.md) · [맥디펜스 개발자의 변](https://github.com/gelb2/MachDefense/blob/main/docs/RESTORATION.md) · [HeavyMach 1 developer’s statement](https://github.com/gelb2/HeavyMach/blob/main/docs/en/RESTORATION.md) · [MachDefense developer’s statement](https://github.com/gelb2/MachDefense/blob/main/docs/en/RESTORATION.md) |
 | 사용자가 정한 기획과 직접 확인한 플레이 | [개발 과정](../public/development-history.md) · [Development history](../en/public/development-history.md) · [검사 방법](../public/testing-method.md) · [Testing method](../en/public/testing-method.md) |
 
 3부작 회고를 인용할 때는 위 README의 독립 소제목과 본문을 한 벌로 사용한다. 사용자에게 선택·지시·플레이를, Codex에게 조사·구현·자동 검사에서 실제로 맡은 일을 표시한다. 기술 범위나 릴리스 확인이 필요하면 개발자의 변 옆에 해당 증거를 붙인다.

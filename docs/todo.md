@@ -80,6 +80,7 @@
 - [x] **한·영 공개 문서 문체 정리**. README의 사격·파츠·광고 문단과 플레이·설치·검증·개발 과정 등 17개 파일을 고쳤다. 개발자의 변과 인용은 기존 원문과 대조했다. [공개 PR #146](https://github.com/gelb2/HeavyMach2/pull/146)
 - [x] **헤비멕2 글쓰기 지침 연결**. 헤비멕1·맥디펜스의 지침을 바탕으로 로컬 스킬과 참고 문서를 추가하고 `AGENTS.md`에서 연결했다. [글쓰기 스킬](../.agents/skills/write-project-text/SKILL.md) · [공개 PR #148](https://github.com/gelb2/HeavyMach2/pull/148)
 - [x] **문서 검사에서 반복 문구 차단**. 기존 GitHub `documentation` 검사에서 한·영 공개 글의 사격·파츠·광고 정책 문구와 검증 면책 문구를 잡는다. 정리 전 문서에서 9건을 찾았고 수정본과 인용은 검사를 통과했다. [검사 사용법](../CONTRIBUTING.md#문서-변경-확인) · [공개 PR #150](https://github.com/gelb2/HeavyMach2/pull/150)
+- [x] **이전 시리즈 복원 회고 연결**. 헤비멕2에 있던 한·영 회고 사본을 삭제하고, README·문서 목차·개발자의 변·Sass 자료에서 각 작품의 원문으로 연결했다. [헤비멕1 개발자의 변](https://github.com/gelb2/HeavyMach/blob/main/docs/RESTORATION.md) · [맥디펜스 개발자의 변](https://github.com/gelb2/MachDefense/blob/main/docs/RESTORATION.md)
 
 <a id="현재-남은-일--2026-11-16-검토"></a>
 <a id="남은-수정조사검사"></a>

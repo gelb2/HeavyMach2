@@ -1,6 +1,6 @@
 # HeavyMach 2 Developer’s Statement
 
-[한국어 원문](../RESTORATION.md) · [Earlier series reflections](RESTORATION.md)
+[한국어 원문](../RESTORATION.md) · [HeavyMach 1 developer’s statement](https://github.com/gelb2/HeavyMach/blob/main/docs/en/RESTORATION.md) · [MachDefense developer’s statement](https://github.com/gelb2/MachDefense/blob/main/docs/en/RESTORATION.md)
 
 ## Why I restored HeavyMach
 
