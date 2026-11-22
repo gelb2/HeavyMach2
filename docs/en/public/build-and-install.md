@@ -6,10 +6,10 @@
 
 - **PWA:** Open the public game. In Safari on iPhone or iPad, choose **Share → Add to Home Screen** and turn on **Open as Web App**. In Android Chrome, choose **Install game** or the browser’s app installation command. In Mac Safari, choose **File → Add to Dock**. Open the app icon and wait for the first download to finish before playing offline. Play in landscape on a phone and in portrait on iPad. [Open the PWA](https://gelb2.github.io/HeavyMach2/)
 - **iPhone and iPad:** Build in Xcode and sign with your own development team to install on your device. [Build and install on iPhone or iPad](#iphone-and-ipad)
-- **Android:** Install the v0.4 regular APK over the existing regular app. On the slot screen, open Save Transfer (저장 이동), then Enter Code (코드 입력). The test APK uses a separate app. [Regular APK and SHA-256](https://github.com/gelb2/HeavyMach2/releases/tag/v0.4) · [Test APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)
+- **Android:** Install the v0.4 regular APK over the existing regular app. On the slot screen, select **TRANSFER** (**저장 이동** in Korean), then choose **코드 입력** (Enter Code). The test APK uses a separate app. [Regular APK and SHA-256](https://github.com/gelb2/HeavyMach2/releases/tag/v0.4) · [Test APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1)
 - **Mac:** Download the `v0.1` ZIP for Apple Silicon, check `SHA256SUMS.txt`, and move the extracted app to Applications. The app requires macOS 14 or later. [Mac ZIP](https://github.com/gelb2/HeavyMach2/releases/download/v0.1/HeavyMach2-Tauri-Mac-v0.1-arm64.zip) · [First launch on macOS](https://support.apple.com/102445)
 
-To move progress between platforms, use the **Transfer Save** button on the slot screen. Importing a code replaces the receiving app’s three slots after confirmation. [Save transfer instructions](../../save-transfer.md)
+To move progress between platforms, select **TRANSFER** (**저장 이동** in Korean) on the slot screen. Importing a code replaces the receiving app’s three slots after confirmation. [Save transfer instructions](../../save-transfer.md)
 
 ## Clone and prepare the resources
 
