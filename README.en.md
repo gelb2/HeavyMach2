@@ -108,14 +108,19 @@ Byun Hae-jun developed the original game, and Park Jae-cheol created its artwork
 
 ## An Additional Statement Clarifying the Purpose of This Project
 
-Before restoring HeavyMach 2, I briefly examined the public activity of a visitor to the MachDefense repository and traced their activity in other repositories. I felt I needed to make the purpose of HeavyMach, MachDefense, and HeavyMach 2 clear. That is why I am leaving this statement.
+After briefly examining the public activity of a recent visitor to the MachDefense repository and tracing their activity in other repositories, I felt I needed to make the purpose of these repositories clear: HeavyMach, MachDefense, and—if I am still alive to restore it—HeavyMach2. That is why I am leaving this statement.
 
-I have screenshots and an analysis of that activity. An ordinary person, or someone who has only lived in societies where law and morality hold, might dismiss my thinking as circumstantial or speculative.
+I have screenshots and an analysis of that activity. An ordinary person, or someone who has only lived in societies where law and morality hold, might dismiss my thinking as circumstantial or speculative. 
 
-But I consider what I observed at the time to be, in CIA terminology, actionable intelligence. That is why I am leaving this statement.
+But I consider what has just happened to me to be, in CIA terminology, actionable intelligence. That is why I am leaving this statement.
 
 I have no intention of making money from this.
 
-I ask that you do not port this restoration for sale on the App Store or Steam, sell courses claiming you restored it, or pass it on to third-party sales channels. The [license scope](LICENSE-SCOPE.en.md) explains the terms for new restoration code and original material.
+But if you are reading this repository with the intention of doing more than porting it for your own enjoyment—if you intend to put it on the App Store or Steam, sell courses while pretending that you restored it, or hand it over to a third-party sales channel—then I have something to say to you.
 
-[Developer’s statement in Korean](docs/RESTORATION.md#내가-이-복원으로-남기려는-것)
+I am not good at predicting favorable turns in my own future or finances. But I am better at recognizing bad omens than you might think. Those events include two declarations of martial law in South Korea and the war between Ukraine and Russia in Europe.
+
+If you put this on an official marketplace or hand it over to a third-party sales channel, the consequences that follow will be difficult for one individual to bear.
+
+I do not have much time left to live. I do not know how much time you have left, but do not let greed hasten your own death. Even if it is not me, someone else might shorten your life.
+
