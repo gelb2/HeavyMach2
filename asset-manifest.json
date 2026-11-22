@@ -1,11 +1,11 @@
 {
-  "version": "60bb924ef3667cfc5eb13075",
+  "version": "b39d435b4c95066fbe883f0f",
   "validation": false,
   "files": [
     {
       "path": "app.js",
-      "bytes": 16943,
-      "sha256": "64ae73e8d84250167806ee2f4928c73ea74a60b947ce4b7a8499e4802f72c635"
+      "bytes": 18818,
+      "sha256": "f0913699184a1350504113f50a6b0a025c31dc039d6d7a2ba71c6c1b381ece9f"
     },
     {
       "path": "audio.js",
@@ -14,8 +14,8 @@
     },
     {
       "path": "display.js",
-      "bytes": 921,
-      "sha256": "9c69c1cef25a47ad8ede735e308559bd81c9588729fdca88def7ecb79a1c2c6b"
+      "bytes": 1017,
+      "sha256": "14544b7878aebf2064c8870e7fe7564cab18b6342923f72638f5ff8f73451154"
     },
     {
       "path": "download.js",
@@ -49,13 +49,13 @@
     },
     {
       "path": "index.html",
-      "bytes": 2177,
-      "sha256": "1cc25834348d96012a9d5c7b0b3abb61e67d3f983ad0df412f4c4fd0dba0f2fd"
+      "bytes": 2318,
+      "sha256": "747100223d77f676e879f5d2eef8297df4d49e79c12417bd4a402babb6ecbc5e"
     },
     {
       "path": "install.js",
-      "bytes": 2710,
-      "sha256": "d29830abc8b3057c7e09189758c7006df637c3fd0b31048c8e5256d1047e96d7"
+      "bytes": 2786,
+      "sha256": "e25154e41dd971afe40c07dba34a93d50f7846c3399720e76e529cbcd7cf75d4"
     },
     {
       "path": "manifest-flexible.webmanifest",
@@ -65,7 +65,7 @@
     {
       "path": "manifest.webmanifest",
       "bytes": 440,
-      "sha256": "9aee8a080f696eb6f5c73144256a31e603cf9bb9901df2971074039a5cbc74b4"
+      "sha256": "6b0f6b14e3b6c99af938b37d0aa732aca1673857d9251c27dc88ba2b9a147a6c"
     },
     {
       "path": "storage.js",
@@ -79,8 +79,8 @@
     },
     {
       "path": "sw.js",
-      "bytes": 6639,
-      "sha256": "3d7d6f9e63d7b88895047c45b889384975abb98c39c15d64696a859acb4c1f9c"
+      "bytes": 6640,
+      "sha256": "44213a109120dbec0a8ec6c6fcc25fbccff8c02e224f031e659791cf51fe760f"
     }
   ]
 }

@@ -4,7 +4,7 @@
   "short_name": "HeavyMach 2",
   "start_url": "./",
   "scope": "./",
-  "display": "standalone",
+  "display": "fullscreen",
   "theme_color": "#101b20",
   "background_color": "#101b20",
   "icons": [
