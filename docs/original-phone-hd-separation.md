@@ -1,10 +1,10 @@
 # 일반판·HD판 분리의 기술적 배경
 
-2026-11-10. 확인된 패키지 차이와 당시 플랫폼 환경에서 가능한 이유를 구분한다. 원작자의 분리 결정에 관한 인터뷰·설계 문서·원본 소스는 확보하지 않았다.
+2026-11-10. 일반판 2.0.1과 HD 1.0.3의 패키지와 실행 화면을 대조했다. 두 앱을 따로 출시한 이유는 확인되지 않았다.
 
 ## 확인된 사실
 
-- Apple은 2010-01-27 iPad 발표 당시부터 iPhone·iPad·iPod touch에서 실행할 유니버설 앱 제작을 지원한다고 설명했다. 따라서 당시 기술이 두 앱 출시를 강제했다고 설명할 수 없다. [Apple 발표](https://www.apple.com/ie/newsroom/2010/01/27Apple-Launches-iPad/), [당시 SDK 안내](https://developer.apple.com/news/?id=01272010a).
+- Apple은 2010-01-27 iPad 발표 당시부터 iPhone·iPad·iPod touch에서 실행할 유니버설 앱 제작을 지원한다고 설명했다. [Apple 발표](https://www.apple.com/ie/newsroom/2010/01/27Apple-Launches-iPad/), [당시 SDK 안내](https://developer.apple.com/news/?id=01272010a).
 - 확보한 일반판 2.0.1의 bundle ID는 `kr.indieapps.HeavyMach2`, 기기 family는 1이다. HD 1.0.3은 `kr.indieapps.HvM2HD`, family는 2다. 별도 앱 제품임은 패키지에서 확인했다.
 - 일반판 실행파일에는 ARMv6·ARMv7 slice가 있고 HD에는 ARMv7 하나가 있다. 일반판은 더 오래된 CPU를 포함하는 빌드 구성이며, HD는 다른 지원 범위로 빌드됐다. 정확한 최소 OS와 모든 지원 모델은 이 사실만으로 확정하지 않는다.
 - 포팅판에서 일반판 게임 화면은 480×320 가로, HD는 768×1024 세로로 관측했다. 화면 총 픽셀 수는 5.12배이고 방향·종횡비도 다르다. HD HUD는 별도 배치다. 출시 당시 모든 판본·기기의 방향 지원까지 확인한 것은 아니다.
@@ -19,7 +19,7 @@
 
 각 이유는 한 앱 안에서도 기기별 자원 로딩·레이아웃·지원 설정으로 해결할 수 있다. Apple의 번들 문서도 유니버설 앱의 iPhone/iPad별 자원 선택을 설명한다. 다만 HM2의 자체 PNG·MCB reader가 UIKit의 자원 선택을 자동으로 사용했다고 가정하지 않는다. [기기별 자원 선택](https://developer.apple.com/library/archive/documentation/CoreFoundation/Conceptual/CFBundles/AccessingaBundlesContents/AccessingaBundlesContents.html).
 
-별도 HD 가격·재구매·판매 전략도 앱 분리의 가능한 사업적 요인이지만, 이 프로젝트의 실제 가격 이력과 개발자 설명을 확보하지 않았으므로 분리 원인으로 단정하지 않는다.
+HD의 별도 가격이나 판매 전략도 가능한 설명이다. 당시 가격 이력과 개발자 설명은 확인되지 않았다.
 
 ## 이번 복원에 적용할 결론
 

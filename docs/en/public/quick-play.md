@@ -22,7 +22,9 @@ At the base, tap a facility to see its description. Tap it again to enter. In th
 | Tap a left or right weapon icon | Open its weapon selection list. |
 | Tap a quick-slot item | Use it according to its rules. Tap a target in the field if the item requires one. |
 
-In a field, open **MENU** to save and exit or see help. HUD placement is available from the field menu. Drag pieces to new positions and apply the layout. Choose the default layout and apply it to restore the original positions. [HUD and gameplay captures](../../public/gameplay-gallery.md)
+To save your progress and quit, open **MENU** on the battlefield and choose the save-and-exit option. HUD placement is available from the field menu. Drag pieces to new positions and apply the layout. Choose the default layout and apply it to restore the original positions. [HUD and gameplay captures](../../public/gameplay-gallery.md)
+
+If `OUT OF RANGE` stays on screen, check your selected target and the equipped weapon’s range. A [player report](../../todo.md) describes the warning staying visible within range.
 
 ## Move progress to another device
 

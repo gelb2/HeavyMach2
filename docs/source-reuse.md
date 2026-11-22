@@ -1,6 +1,6 @@
 # 기존 복원 코드 재사용
 
-2026-11-10. 소스는 HM2 저장소 안에서 빌드한다. 다른 게임 checkout을 빌드 입력이나 출력 경로로 연결하지 않는다.
+2026-11-10에 가져온 소스와 HeavyMach 2에서 바꾼 부분이다.
 
 | 새 소비 파일 | 고정 출처 | 변경점 |
 |---|---|---|
@@ -8,8 +8,8 @@
 | `Sources/Core/Data/DarwinRandom.hpp` | 같은 MD 커밋, `Sources/Core/Contracts/DarwinRandom.hpp` | hm2 namespace. EncTbl 준비용 지역 난수 상태. macOS libc의5개 seed×5000회와 대조. 게임/저장 난수 소유권 복원 완료가 아님 |
 | `ThirdParty/stb/stb_image.h`·`Sources/Assets/Image.cpp` | 같은 MD 커밋의 `Modules/ThirdParty/stb/stb_image.h`. HM1 main `bd0aa73a`의 `vendor/stb/stb_image.h`와 동일 Git blob `d4fd2fc7e6668273f3c9a986111b59631404f770` | stb2.28 원문·내장 MIT/public-domain 허가 보존. PNG/JPEG 메모리 decode, CgBI→RGBA, unpremultiply·float premultiply 준비. 같은 decoder를 공통 C++에서 사용하며 ImageIO는 독립 픽셀 검사의 oracle에만 사용 |
 
-위 코드의 저작권·MIT 허가문은 [원문 고지](../ThirdParty/MachDefense/LICENSE)에 보존한다. 이 고지는 원작 게임 데이터·그림·음원·바이너리의 라이선스를 바꾸지 않는다.
+가져온 코드에는 [MachDefense의 MIT 고지](../ThirdParty/MachDefense/LICENSE)를 적용한다. [원작 자원 이용 조건](../ASSET-LICENSES.md)
 
-`Models`·`DataTable`은 HM2 HD 실행파일과 원본 데이터에서 확인한 계약으로 작성했다. MD의 소켓 정수화·TileList 매핑·조립 보정·엄격한 TSV 열 수 검사는 복사하지 않았다. 근거 주소와 검사 연결은 [첫 구현 기록](initial-source-restoration-20261110.md)에 있다.
+`Models`·`DataTable`은 HM2 HD 실행파일과 원본 데이터에서 확인한 계약으로 작성했다. 근거 주소와 검사 연결은 [첫 구현 기록](initial-source-restoration-20261110.md)에 있다.
 
 Apple 호스트·일반/검증 타깃·GPU 출력은 기존 두 작품의 구성을 참고했다. [초기 정적 조립](initial-source-restoration-20261110.md)은 개별 Tile2D를 출력했다. 현재 공통 전장 프레임은 [atlas 배치](../Sources/Core/Presentation/VisualLayer.hpp)와 [그림자 준비](../Sources/Core/Presentation/PreparedTiles.cpp)를 쓴다. Apple·Android의 OpenGL ES와 웹·Tauri의 WebGL2가 같은 프레임을 소비한다. [후속 그래픽·음향 대조](graphics-audio-fidelity-20261110.md)에 직접 출력과 배치, 그림자와 원작 동등성의 확인 범위를 구분했다.

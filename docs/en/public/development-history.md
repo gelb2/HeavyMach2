@@ -4,7 +4,7 @@
 
 ## Comparing the regular and HD editions
 
-We compared package hashes, game data, weapons, parts, missions, layouts, and artwork across four regular and two HD releases. We used both a compatibility port that runs the original app and the restoration built from new C++ source. The restoration core uses HD 1.0.3 for its game data, while the iPhone menus also reference regular edition 2.0.1. Behavior observed in those releases provided references for each device. [Original version audit](../../ipa-version-audit.md) · [Compatibility port](../../../Compatibility/README.md) · [Original HD functions](../../hd-original-function-audit-20261111.md)
+We compared package hashes, game data, weapons, parts, missions, layouts, and artwork across four regular and two HD releases. We used both a compatibility port that runs the original app and the restoration built from new C++ source. The restoration core uses HD 1.0.3 for its game data, while the iPhone menus also reference regular edition 2.0.1. [Original version audit](../../ipa-version-audit.md) · [Compatibility port](../../../Compatibility/README.md) · [Original HD functions](../../hd-original-function-audit-20261111.md)
 
 ## Restoring continuous play on iPad
 

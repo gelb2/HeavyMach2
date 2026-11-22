@@ -21,7 +21,7 @@ cd HeavyMach2
 python3 tools/prepare_build_resources.py
 ```
 
-The script downloads about 88 MiB from the pinned public PWA build, verifies the two files by SHA-256, and prepares the campaign, maps, images, sound, and app icons. The playable build does not require an original IPA, a private path, or a Git LFS download. For Android-only builds use `python3 tools/prepare_build_resources.py --campaign-only` to skip Apple icon tooling. Original-package comparison and resource regeneration use a separate workflow. [Build inputs](../../public/build-and-install.md#공개-빌드에서-자원-준비) · [Code and asset license scope](../../../LICENSE-SCOPE.en.md)
+The script downloads about 88 MiB from the pinned public PWA build, verifies the two files by SHA-256, and prepares the campaign, maps, images, sound, and app icons. A fresh clone can build and run the game with these prepared resources. For Android-only builds use `python3 tools/prepare_build_resources.py --campaign-only` to skip Apple icon tooling. Original-package comparison and resource regeneration use a separate workflow. [Build inputs](../../public/build-and-install.md#공개-빌드에서-자원-준비) · [Code and asset license scope](../../../LICENSE-SCOPE.en.md)
 
 ## Build and run the PWA
 
