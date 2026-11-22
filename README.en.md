@@ -2,6 +2,9 @@
 
 [한국어](README.md) | [English](README.en.md)
 
+[![Technology stack C++20, Objective-C++, Kotlin, JavaScript, Rust](docs/public/media/badges/code.svg)](docs/public/architecture.md)
+[![Code license MIT](docs/public/media/badges/license.svg)](LICENSE-SCOPE.en.md)
+
 [Quick Play](docs/en/public/quick-play.md) · [Build and install](docs/en/public/build-and-install.md) · [Features](#restored-from-the-original) · [Developer's statement](docs/RESTORATION.md) · [Documentation](docs/en/public/index.md)
 
 ## Why I am restoring HeavyMach 2

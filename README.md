@@ -2,6 +2,9 @@
 
 [한국어](README.md) | [English](README.en.md)
 
+[![기술 스택 C++20, Objective-C++, Kotlin, JavaScript, Rust](docs/public/media/badges/code.svg)](docs/public/architecture.md)
+[![코드 라이선스 MIT](docs/public/media/badges/license.svg)](LICENSE-SCOPE.md)
+
 [플레이 방법](docs/public/quick-play.md) · [플랫폼별 설치](#플레이와-설치) · [기능과 추가 작업](docs/public/features.md) · [개발자의 변](docs/RESTORATION.md) · [전체 문서](docs/README.md)
 
 ## HeavyMach 2를 다시 만드는 이유
