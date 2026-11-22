@@ -22,6 +22,7 @@
 
 ## 검증과 트러블슈팅
 
+- [PWA 전장 하단 여백과 검증 개선 계획](pwa-gameplay-verification-plan-20261123.md)
 - [플랫폼과 검증 현황](canonical.md#플랫폼과-검증-현황) · [기능별 검사 근거](feature-verification.md) · [확인한 범위와 남은 문제](public/validation.md)
 - [제보·재현·원인·수정](public/troubleshooting.md) · [테스트 방법](public/testing-method.md) · [현재 TODO](todo.md#현재-체크--2026-11-21)
 
