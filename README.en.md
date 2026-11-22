@@ -110,19 +110,35 @@ Take the White Mountain portal in Desert 01, then choose **Snow Pass** at the ba
 
 ## Gameplay screenshots and clips
 
-[Combat recorded on a Mac mini with game audio](docs/en/public/gameplay-gallery.md#gameplay-on-physical-hardware-with-sound)
+<img src="Web/Shell/social-preview.jpg" alt="HeavyMach 2 Tap to Start screen on iPad" width="378">
 
-<img src="Web/Shell/social-preview.jpg" alt="Heavy Mach 2 Tap to Start screen on iPad" width="378">
+### Mac mini combat with game audio
 
-Eight continuous seconds from the iPad recording show the player moving a mech between ponds while fighting nearby tanks.
+Ruin Field movement and combat recorded in the public regular PWA in Chrome. The clip runs for 10 seconds. [Capture details and hashes](docs/public/media/gameplay-with-sound-20261122/sources.json)
 
-<img src="docs/public/media/player-captures-20261121/ipad-field-combat.gif" alt="The player sets a waypoint and moves a mech between ponds while fighting tanks in the portrait iPad view." width="378">
+[Mac mini combat MP4](docs/public/media/gameplay-with-sound-20261122/mac-mini-ruin-field.mp4)
 
-The iPhone screenshot shows a waypoint on the road near the Skyway Base portal, with the HUD along the bottom.
+### iPad combat GIFs
 
-![The Skyway Base portal, a waypoint on the road, and the iPhone landscape HUD](docs/public/media/player-captures-20261121/iphone-skyway-base.png)
+On a physical iPad, the mech moves between ponds during combat and redraws its route along the coast. Each GIF runs for eight seconds.
 
-[More combat footage, iPhone command and shop screens, a White Mountain boss, Galaxy and PWA gameplay](docs/en/public/gameplay-gallery.md)
+<img src="docs/public/media/player-captures-20261121/ipad-field-combat.gif" alt="In the portrait iPad view, the mech moves between ponds and fights tanks." width="378"> <img src="docs/public/media/player-captures-20261121/ipad-combat-route.gif" alt="A green movement path and incoming fire on a coastal battlefield on iPad." width="378">
+
+### iPhone movement path and iPad portrait combat
+
+The player redraws a route in Ruin Field on an iPhone Air simulator. 6.1 seconds, silent.
+
+[iPhone movement MP4](docs/public/media/gameplay-20261121/iphone-route.mp4)
+
+An 11-inch iPad Pro simulator shows the Ruin Field portrait view and HUD. 12 seconds, silent.
+
+[iPad portrait combat MP4](docs/public/media/gameplay-20261121/ipad-field.mp4)
+
+The iPhone screenshot shows the Skyway Base portal and a waypoint in landscape.
+
+![The Skyway Base portal, a road waypoint, and the iPhone landscape HUD](docs/public/media/player-captures-20261121/iphone-skyway-base.png)
+
+[Gameplay gallery and video files](docs/en/public/gameplay-gallery.md)
 
 ## Verified behavior and remaining work
 
