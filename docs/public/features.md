@@ -40,7 +40,7 @@ Desert 01의 포털에서 White Mt. Base로 들어간다. 아래 기지 화면�
 
 ![White Mt. Base에서 Desert 01과 Snow Pass 출구가 보인다.](media/white-mountain-gameplay/white-mountain-base.webp)
 
-원작 Boss 04 의뢰를 마치면 사령부에서 Boss 05 의뢰를 받을 수 있다. Snow Basin 안쪽에서 지정 위치 240단위 이내로 접근하면 Boss 05가 나타난다. 격파 뒤 사령부에 보고하면 300,000 Cr과 300,000 XP를 받는다. 아래는 iPad 시뮬레이터 치트판의 Snow Basin 전투다. 갤러리에서 설원 여섯 곳, Snow Pass 일반 비행체의 사격, Boss 05의 수락·보고 화면을 볼 수 있다. [보스 등장과 보상 조건](../white-mountain-implementation-20261119.md#2단계-보스와-무장) · [보스 의뢰 화면](gameplay-gallery.md#화이트마운틴-보스전)
+원작 Boss 04 의뢰를 완료하고 표시 레벨 28에 도달하면 White Mt. Base 사령부에서 Boss 05 의뢰를 받을 수 있다. Snow Basin 안쪽에서 지정 위치 240단위 이내로 접근하면 Boss 05가 나타난다. 격파 뒤 사령부에 보고하면 300,000 Cr과 300,000 XP를 받는다. 아래는 iPad 시뮬레이터 치트판의 Snow Basin 전투다. 갤러리에서 설원 여섯 곳, Snow Pass 일반 비행체의 사격, Boss 05의 수락·보고 화면을 볼 수 있다. [보스 등장과 보상 조건](../white-mountain-implementation-20261119.md#2단계-보스와-무장) · [보스 의뢰 화면](gameplay-gallery.md#화이트마운틴-보스전)
 
 <img src="media/white-mountain-gameplay/boss-05-combat.webp" alt="Snow Basin에서 Boss 05의 체력 표시와 플레이어를 공격하는 포탑" width="385">
 
@@ -50,7 +50,7 @@ Desert 01의 포털에서 White Mt. Base로 들어간다. 아래 기지 화면�
 
 공습은 그 전장에 도달할 레벨에서 주요 적 탱크를 1~2회로 격파할 수 있게 요청했다. 폭탄 20 Cr, 미사일 40 Cr, 레이저 30 Cr, 핵 100 Cr의 기존 가격을 사용한다. 레벨별 보정 HP를 선형 보간해 피해에 반영했고, 공통 전투 32건에서 주요 전차를 중앙 조준 한 번으로 격파했다. [공습 산식과 조건](../campaign-and-ipad-followup-20261120.md#공습-레벨-보정)
 
-예를 들어 저격총 Sn-IGn(10501)는 판매 레벨에 맞는 상점에서 고르거나 Boss 05의 전리품으로 얻을 수 있다. LS-D(10311)는 기존 Tank_L02 드롭 그룹에 희귀 전리품으로 넣었다. iPad 시뮬레이터 치트판에서 Sn-IGn 진열과 두 무기의 장착 후 발사·피해를 확인했다. 별도 실행에서는 난수 시드를 고정해 E_Tank_02 격파 시 LS-D가 떨어져 인벤토리에 들어가는 장면을 찍었다. [입수 데이터](../../Resources/Campaign/items.json) · [상점·드롭·발사 화면](gameplay-gallery.md#저격총과-ls-무기)
+예를 들어 저격총 Sn-IGn(10501)는 판매 레벨에 맞는 상점에서 고를 수 있다. Boss 05의 전리품으로는 표시 레벨 35부터 나온다. LS-D(10311)는 기존 Tank_L02 드롭 그룹에 희귀 전리품으로 넣었다. iPad 시뮬레이터 치트판에서 Sn-IGn 진열과 두 무기의 장착 후 발사·피해를 확인했다. 별도 실행에서는 난수 시드를 고정해 E_Tank_02 격파 시 LS-D가 떨어져 인벤토리에 들어가는 장면을 찍었다. [입수 데이터](../../Resources/Campaign/items.json) · [상점·드롭·발사 화면](gameplay-gallery.md#저격총과-ls-무기)
 
 <img src="media/white-mountain-gameplay/sniper-shop.webp" alt="iPad 상점에서 Sn-IGn를 고른 상태" width="385">
 
