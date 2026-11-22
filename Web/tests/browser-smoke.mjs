@@ -472,7 +472,8 @@ async function verifyPhoneLifecycle() {
     await page.waitForFunction(() => document.querySelector('link[rel=manifest]').hasAttribute('href'));
     const manifest = await page.locator('link[rel=manifest]').getAttribute('href');
     assert.equal(manifest,'./manifest.webmanifest');
-    assert.equal(await page.evaluate(async href => (await fetch(href).then(r => r.json())).orientation,manifest),'landscape');
+    const {display,orientation} = await page.evaluate(async href => fetch(href).then(r => r.json()),manifest);
+    assert.deepEqual({display,orientation},{display:'fullscreen',orientation:'landscape'});
     await playGame(page);
     await waitScreen(page,1);
     await page.waitForFunction(() => window.musicStarts > 0);
@@ -670,6 +671,14 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
         manifestId = await installChromeApp(cdp,url);
         await cdp.send('PWA.changeAppUserSettings',{manifestId,displayMode:'standalone'});
         page = await openChromeApp(context,cdp,manifestId,url,options.hasTouch,options.viewport);
+        const fullscreen = () => matchMedia('(display-mode: fullscreen)').matches ||
+          document.fullscreenElement === document.documentElement;
+        if (expected !== 'desktop') {
+          await page.waitForFunction(fullscreen, null, {timeout:8000});
+          assert.equal(await page.locator('#play').textContent(),'게임 시작');
+        }
+        results.fullscreen = await page.evaluate(fullscreen);
+        assert.equal(results.fullscreen, expected !== 'desktop');
       } else {
         page = await start(context,'validation',false,options.hasTouch);
       }
@@ -759,7 +768,10 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
           window:[innerWidth,innerHeight],
           visual:[visualViewport?.width,visualViewport?.height],
           main:[document.querySelector('main')?.clientWidth,document.querySelector('main')?.clientHeight],
-          canvas:[document.getElementById('game')?.clientWidth,document.getElementById('game')?.clientHeight]
+          canvas:[document.getElementById('game')?.clientWidth,document.getElementById('game')?.clientHeight],
+          standalone:matchMedia('(display-mode: standalone)').matches,
+          fullscreen:matchMedia('(display-mode: fullscreen)').matches,
+          fullscreenEnabled:document.fullscreenEnabled
         }));
       }
     } finally {

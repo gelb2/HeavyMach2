@@ -48,7 +48,8 @@ manifest = {"id": f"./{edition}", "name": "HeavyMach 2 QA" if validation else "H
             "background_color": "#101b20",
             "icons": icons}
 # Keep the existing manifest URL and app ID for phones already installed.
-(dist / "manifest.webmanifest").write_text(json.dumps({**manifest, "orientation": "landscape"}, indent=2) + "\n")
+phone_manifest = {**manifest, "display": "fullscreen", "orientation": "landscape"}
+(dist / "manifest.webmanifest").write_text(json.dumps(phone_manifest, indent=2) + "\n")
 (dist / "manifest-flexible.webmanifest").write_text(json.dumps(manifest, indent=2) + "\n")
 names = sorted((*required, *static, *(icon["src"] for icon in icons),
                 "manifest.webmanifest", "manifest-flexible.webmanifest"))

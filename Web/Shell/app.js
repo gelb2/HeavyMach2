@@ -1,6 +1,6 @@
 import {prepareOffline} from './download.js';
 import {createMusic} from './audio.js';
-import {screenProfile} from './display.js';
+import {installedDisplayQuery, screenProfile} from './display.js';
 import {offerInstall} from './install.js';
 import {openStorage, storeKeys} from './storage.js';
 
@@ -14,15 +14,17 @@ const profile = detectedProfile ?? 'desktop';
 const profileId = {phone: 0, tablet: 1, desktop: 2}[profile];
 $('install-manifest').href = profile === 'phone' ? './manifest.webmanifest' : './manifest-flexible.webmanifest';
 const landscape = matchMedia('(orientation: landscape)');
-const standalone = matchMedia('(display-mode: standalone)');
+const installedDisplay = matchMedia(installedDisplayQuery);
+const fullscreenDisplay = matchMedia('(display-mode: fullscreen)');
 const phoneHeld = () => profile === 'phone' && !landscape.matches;
-const installed = () => standalone.matches || navigator.standalone === true;
+const installed = () => installedDisplay.matches || navigator.standalone === true;
 document.documentElement.dataset.profile = profile;
 document.documentElement.dataset.profileDetected = String(detectedProfile !== null);
 const cache = new Map();
 const held = new Map();
 let wasm, audio, storage, metrics, prompt;
 let live = false, starting = false, lost = false, playRequested = false;
+let restoreFullscreenOnTouch = false;
 let pending = Promise.resolve();
 let previous, remainder = 59, warningTimeout;
 
@@ -67,12 +69,32 @@ function lockInstalledPhone() {
   if (profile !== 'phone' || !installed() || document.hidden) return;
   screen.orientation?.lock?.('landscape').catch(() => {});
 }
-landscape.addEventListener('change', updateOrientation);
-standalone.addEventListener('change', updateOrientation);
-window.addEventListener('pageshow', () => {
+function enterInstalledFullscreen() {
+  if (profile === 'desktop' || !installed() || document.hidden || phoneHeld() ||
+      fullscreenDisplay.matches || document.fullscreenElement || document.webkitFullscreenElement) return;
+  const root = document.documentElement;
+  // Older installs can still have standalone in their cached Android manifest.
+  // Use the existing play gesture, while Safari can fall back to its Home Screen viewport.
+  try {
+    if (document.fullscreenEnabled && root.requestFullscreen) {
+      root.requestFullscreen({navigationUI:'hide'}).catch(() => {});
+    } else if (document.webkitFullscreenEnabled && root.webkitRequestFullscreen) {
+      root.webkitRequestFullscreen()?.catch(() => {});
+    }
+  } catch {
+    // Keep the game running in the space the browser provides.
+  }
+}
+function displayChanged() {
   lockInstalledPhone();
   updateOrientation();
-});
+}
+landscape.addEventListener('change', updateOrientation);
+installedDisplay.addEventListener('change', updateOrientation);
+window.addEventListener('pageshow', displayChanged);
+document.addEventListener('fullscreenchange', displayChanged);
+document.addEventListener('webkitfullscreenchange', displayChanged);
+screen.orientation?.addEventListener?.('change', updateOrientation);
 updateOrientation();
 
 const tape = document.createElement('canvas');
@@ -272,6 +294,10 @@ for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
     held.delete(event.pointerId);
     const location = type === 'pointerup' ? [event.clientX,event.clientY] : last;
     sendPointer(type === 'pointerup' ? 2 : 3,...location,event.pointerId);
+    if (restoreFullscreenOnTouch && type === 'pointerup' && event.pointerType !== 'mouse' && event.isTrusted) {
+      restoreFullscreenOnTouch = false;
+      enterInstalledFullscreen();
+    }
   });
 }
 // Keep native selection and long-press actions off the game surface only.
@@ -299,6 +325,7 @@ document.addEventListener('visibilitychange', () => {
   if (!starting && !live) return;
   const active = !document.hidden;
   if (!live) return;
+  restoreFullscreenOnTouch = active && profile !== 'desktop' && installed();
   held.clear();
   resetClock();
   queue(async () => {
@@ -387,6 +414,7 @@ $('play').addEventListener('click', async () => {
   starting = true;
   try {
     audio.unlock();
+    enterInstalledFullscreen();
     // The installation page can stay open while the installed app plays.
     storage = await openStorage(validation, desktop);
     for (const key of storeKeys) cache.set(key, await storage.read(key));
