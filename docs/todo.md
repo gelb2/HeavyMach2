@@ -6,7 +6,7 @@
 
 ## 현재 체크 — 2026-11-21
 
-공개 배포 기준은 `main` 병합 커밋 `29a4e30`에 붙인 `v0.1`이다. 확인 환경과 빌드는 각 실행 기록을 따른다. [공개 배포 검증](public/release-policy.md#v01-공개-배포-확인)
+현재 공개 배포는 Android 정식 APK v0.4, 갤럭시 등에서 설치하는 PWA v0.3, Apple Silicon Mac ZIP과 Android 치트 APK v0.1이다. iPhone·iPad는 v0.4 소스를 자체 서명해 빌드한다. [버전과 다운로드](public/release-policy.md) · [공개판 기기 검증](public/validation.md#공개-배포판과-기기-검사)
 
 | 항목 | 완료 또는 확인 | 미완료 또는 보류 |
 | --- | --- | --- |
@@ -17,7 +17,7 @@
 | iPad HUD | Air 13형·mini·기본형 9세대·Pro 11형 시뮬레이터에서 기본 세로 HUD, 이동과 메뉴 조작을 확인했다. 9.7인치 크기는 별도로 모의했다. | 11조각·두 무기 패널과 클래식 전환을 포함한 ExperimentalHUD는 롤백 뒤 미구현이다. [기종별 검사](campaign-and-ipad-followup-20261120.md#ipad-모델별-hud) · [ExperimentalHUD 요구](experimental-hud-plan-20261114.md) |
 | Android 네이티브 | 갤럭시 정식·치트판에 iPad 저장의 슬롯 3개를 적용했다. 설원·구매·공습 27/27과 동시 검사 126조건·2,100틱 기록이 있다. 사용자는 짧게 플레이해 레이저 무기·스킬·일반 전투를 확인했다. | 갤럭시 장시간 플레이와 최신 복구코드 UI, 세로 Android 태블릿의 시설명 잘림, iPhone과 공통으로 보인 휴대폰 상점 첫 도움말. [단말 근거](../Android/검증-20261120.md) |
 | 저장 이동 | iPhone·iPad·갤럭시 정식판 설치와 재실행. Android 정식 에뮬레이터에서 두 공개 코드 복원·재실행과 백업 확인. 공개 코드와 사용법은 [복구코드 안내](save-transfer.md)에 있다. | 최신 iPad 시뮬레이터 복원과 Apple 시스템 복구창 전체 검사. [완료 기준](#네이티브-정식판-복구코드와-설치--2026-11-22) |
-| 설치형 PWA | 공개 Pages의 정식판을 맥미니 Chrome에 설치하고 독립 창에서 실행했다. 새 슬롯 생성, 오프라인 재실행, 저장 유지를 확인했다. 이전 로컬 검증에서 iPhone 17 Pro 시뮬레이터의 정식·치트 홈 화면 실행을 확인했다. 갤럭시에서는 공개 v0.2 설치 앱을 갱신하고 홈 복귀 뒤 가로 화면과 배경음 재생 위치를 확인했다. [갤럭시 검사](pwa-lifecycle-audit-20261121.md) | iPhone·iPad 실물에서 공개 주소 설치와 플레이, 갤럭시 반대 방향 회전, 실기기 복구코드 왕복, 설치형 Safari의 오프라인 재실행, 접이식·분할 화면 검증. [공개 PWA](https://gelb2.github.io/HeavyMach2/) · [검증 기록](public/release-policy.md#v01-공개-배포-확인) |
+| 설치형 PWA | 공개 Pages의 정식판을 맥미니 Chrome에 설치하고 독립 창에서 실행했다. 새 슬롯 생성, 오프라인 재실행, 저장 유지를 확인했다. 이전 로컬 검증에서 iPhone 17 Pro 시뮬레이터의 정식·치트 홈 화면 실행을 확인했다. 갤럭시의 공개 v0.2에서 홈 복귀 뒤 가로 화면과 배경음 재생 위치를, 공개 v0.3에서 홈 아이콘 실행과 홈 복귀 뒤 전체 화면 유지를 확인했다. [갤럭시 v0.2](pwa-lifecycle-audit-20261121.md#갤럭시-설치-앱) · [갤럭시 v0.3](pwa-lifecycle-audit-20261121.md#갤럭시-v03-설치-앱-확인) | iPhone·iPad 실물에서 공개 주소 설치와 플레이, 갤럭시 반대 방향 회전, 실기기 복구코드 왕복, 설치형 Safari의 오프라인 재실행, 접이식·분할 화면 검증. [공개 PWA](https://gelb2.github.io/HeavyMach2/) · [검증 기록](public/release-policy.md#v01-공개-배포-확인) |
 | PWA 화면 결함 | 설치형 iPhone 시뮬레이터에서 첫 기지의 상점과 나가기 입력을 확인했다. | 설치형 iPad 모의 세로 기지 제목 잘림과 Phone 메뉴 미사용 분기가 남았다. 두 수정 위치는 모바일 공통 파일에 있다. Safari 탭 874×338의 Shop·Exit 겹침과 iPad Safari 전장 복귀 포털은 별도 재현 항목이다. 태블릿 가로는 후속으로 보류했다. [두 미수정 항목](code-document-fixes-20261121.md#수정-결과) · [Wasm 조사](pwa-wasm-audit-20261120.md) |
 | Tauri Mac | 공개 ZIP을 받아 SHA-256과 앱 서명을 대조했다. Apple Silicon 맥미니에서 실제 820×900pt 세로 창을 열어 새 슬롯과 저장, 첫 기지·상점 왕복을 확인했다. | 정식판 사령부와 실제 음향, 치트판 세로 창에서 상점·사령부와 저장을 추가 확인한다. [공개 Mac 배포본](https://github.com/gelb2/HeavyMach2/releases/tag/v0.1) · [실행 확인](public/release-policy.md#v01-공개-배포-확인) |
 | 사운드·그래픽 | 세 작품의 에셋 소비 경로를 대조했다. HeavyMach 2의 PWA·Tauri 효과음은 공통 OpenAL로 전환했다. 정식·치트 웹의 그림 1,359개·음원 58개가 모바일 번들과 일치했다. 설치형 Chrome 치트판의 교전 효과음을 출력 버퍼에서 확인했다. | 휴대폰·태블릿·데스크톱의 허브·상점·사령부 전수 화면 대조, 세 작품의 장면별 비교, 실기기 음향, 음원 출처와 라이선스. [에셋 근거](code-document-fixes-20261121.md) · [출처 TODO](#세-작품-사운드-출처라이선스-조사--2026-11-12-사용자-요청) |
@@ -42,6 +42,7 @@
 - [x] **한·영 Quick Play 실행·빌드 순서.** 웹·PWA → iPhone·iPad → Android → Mac 순으로 첫 실행과 소스 빌드 경로를 연결했다. [국문 Quick Play](../README.md#quick-play) · [영문 Quick Play](../README.en.md#quick-play)
 - [x] **상점·iPhone 이동·Skyway의 설명 위치.** 한·영 README의 트러블슈팅에서 코덱스가 구현한 부분의 결함을 내가 지적했다고 명시했다. 기능 소개에서도 해당 수정은 트러블슈팅으로 연결하고, 상점 배경·버튼 비교 근거를 그쪽에 두었다. [트러블슈팅](public/troubleshooting.md)
 - [x] **헤비멕2 GitHub 문서 정리 계획.** 헤비멕1·맥디펜스의 목차·기능 소개·갤러리·검증 문서를 대조해 한·영 목차, 이미지, 최신 상태, 번역을 정리할 순서와 확인 방법을 정했다. [정리 계획](github-documentation-cleanup-plan.md)
+- [x] **공개판 버전과 플랫폼 확인 범위 대조.** 한·영 README, 공개 검증 문서와 TODO의 현재 배포 버전을 맞췄다. 갤럭시 PWA v0.2의 배경음 재개와 v0.3의 전체 화면 확인, Android 정식 v0.4의 실기기와 에뮬레이터 저장 확인을 각각 기록했다. [국문 검증](public/validation.md#공개-배포판과-기기-검사) · [영문 검증](en/public/validation.md#public-releases-and-device-checks)
 - [x] **한·영 문서 목차 재편.** 플레이, 설치·빌드, 조작·저장, 기능·갤러리, 검증·트러블슈팅, 개발·출처 순으로 맞췄다. [국문 목차](README.md) · [영문 목차](en/public/index.md)
 - [x] **화이트마운틴·미등장 무기·맵의 인게임 이미지 공개.** 시뮬레이터 치트판의 14장을 공개했다. 설원 진입과 기지 출구, Snow Fort, 보스 의뢰·전투·보고, Sn-IGn 진열과 무기 2종 발사, 레이저 공습 구매·등록·사용, Picker D의 전달 직후를 기능 소개와 갤러리에 연결했다. [기능 소개](public/features.md) · [갤러리](public/gameplay-gallery.md#화이트마운틴-기지와-설원)
 - [ ] **화이트마운틴과 미등장 콘텐츠의 추가 인게임 사진.** 일반 비행체 발사, LS 10311 일반 드롭, Picker D 장착과 접근·전달 전후 인벤토리를 이어서 보여 주는 캡처가 남았다. [캡처 계획](white-mountain-public-documentation-plan.md)

@@ -4,6 +4,15 @@
 
 [English](../en/public/validation.md) · [README](../../README.md) · [플레이 방법](quick-play.md) · [설치](build-and-install.md) · [상세 TODO](../todo.md)
 
+## 공개 배포판과 기기 검사
+
+| 환경 | 현재 배포와 확인 범위 |
+| --- | --- |
+| iPhone·iPad | v0.4 소스를 사용자 개발 팀으로 빌드·서명한다. iPhone Air·iPad Air에 정식 앱을 설치·재실행하고 저장 파일을 대조했다. 실물 iPhone의 화이트마운틴 진입은 사용자가 확인했다. [설치와 저장](../save-transfer.md#호스트별-확인-범위) · [설원 실기기 기록](../white-mountain-dual-release-20261120.md) |
+| Android | 정식 APK는 v0.4, 치트 APK는 v0.1이다. 갤럭시 정식판에서 갱신 뒤 기존 슬롯과 복구코드 입력창을 확인했다. 에뮬레이터 정식판에서 코드 적용, 기존 저장 백업, 재실행을 확인했다. [정식 APK](https://github.com/gelb2/HeavyMach2/releases/tag/v0.4) · [검사 범위](../save-transfer.md#호스트별-확인-범위) |
+| PWA | 공개판은 v0.3이다. 갤럭시 v0.2의 홈 복귀 뒤 가로 화면·배경음 재개는 2026-11-21 확인했다. v0.3에서 홈 아이콘으로 실행한 전체 화면과 홈 복귀 뒤 전체 화면 유지는 11-22 확인했다. Mac Chrome 설치판은 오프라인 재실행과 저장 유지도 확인했다. [v0.2 기록](../pwa-lifecycle-audit-20261121.md#갤럭시-설치-앱) · [v0.3 기록](../pwa-lifecycle-audit-20261121.md#갤럭시-v03-설치-앱-확인) |
+| Mac | 공개 v0.1 ZIP을 Apple Silicon 맥미니에서 열어 서명, 세로 창, 새 슬롯과 기지·상점 왕복을 확인했다. [공개 앱 검사](release-policy.md#v01-공개-배포-확인) |
+
 ## 공개 클론에서 빌드와 실행
 
 새 클론에서 공통 코어 검사 29개를 통과했다. 공개 PWA에서 내려받은 파일의 SHA-256을 검증하고 캠페인 자원 1,576개를 준비했다. 기존 배포 준비 자원과 비교한 결과 모든 파일의 바이트가 일치했다. 같은 클론에서 iOS·Android·PWA·Mac을 빌드했다. [재현 명령](build-and-install.md#소스-받기)

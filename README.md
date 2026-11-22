@@ -58,10 +58,10 @@ Xcode에서 `HeavyMach2Source`를 선택해 iPhone·iPad 시뮬레이터에서 �
 
 | 플랫폼 | 설치와 현재 확인한 범위 |
 | --- | --- |
-| PWA | Mac Chrome 설치 앱의 오프라인 재실행과 저장 유지를 확인했다. 갤럭시의 공개 v0.2 설치 앱은 홈 복귀 뒤 가로 화면과 배경음을 이어갔다. [로컬 빌드](docs/public/build-and-install.md#pwa-빌드와-로컬-실행) · [갤럭시 검사](docs/pwa-lifecycle-audit-20261121.md) |
-| iPhone·iPad | iPhone 가로·iPad 세로. 두 실기기에 정식판과 기지 방문 저장을 넣었다. 내가 iPhone에서 화이트마운틴 진입을 확인했다. 포털 14방향은 시뮬레이터와 호스트에서 확인했다. [빌드와 설치](docs/public/build-and-install.md) · [실기기 기록](docs/white-mountain-dual-release-20261120.md) |
-| Android | 갤럭시 정식·치트판에 같은 iPad 저장을 적용했다. 상점·사령부·전장과 짧은 실제 플레이를 확인했다. Android 포팅은 `develop`에 병합됐다. [APK 빌드와 설치](docs/public/build-and-install.md#android-빌드와-설치) · [기기 기록](Android/검증-20261120.md) |
-| Tauri Mac | 공개 클론에서 정식·치트 번들의 서명을 확인했다. 정식판에서 기지와 전장으로 들어가 이동하고 게임을 다시 열어 같은 슬롯을 확인했다. [Mac 앱 빌드](docs/public/build-and-install.md#tauri-mac-빌드) · [클론 실행 검사](docs/public/validation.md#공개-클론에서-빌드와-실행) |
+| PWA | 공개판은 v0.3이다. 갤럭시에서 2026-11-21 v0.2의 홈 복귀와 배경음 재개를, 11-22 v0.3의 홈 아이콘 전체 화면 실행과 홈 복귀 뒤 전체 화면 유지를 확인했다. Mac Chrome에 설치한 정식·치트판에서 오프라인 재실행과 저장 유지도 확인했다. [v0.2 검사](docs/pwa-lifecycle-audit-20261121.md#갤럭시-설치-앱) · [v0.3 검사](docs/pwa-lifecycle-audit-20261121.md#갤럭시-v03-설치-앱-확인) |
+| iPhone·iPad | v0.4 소스를 빌드해 본인의 개발 팀으로 서명한다. iPhone Air와 iPad Air에 정식판을 설치·재실행하고 기존 저장이 유지됨을 확인했다. 내가 실물 iPhone에서 화이트마운틴에 들어갔다. 포털 14방향은 시뮬레이터와 호스트에서 검사했다. [빌드와 설치](docs/public/build-and-install.md) · [기기 기록](docs/white-mountain-dual-release-20261120.md) · [저장 확인](docs/save-transfer.md#호스트별-확인-범위) |
+| Android | 정식 APK는 v0.4, 치트 APK는 v0.1이다. 갤럭시에 두 앱을 설치해 iPad 저장으로 상점·사령부·전장을 확인했다. 정식 v0.4에서는 갱신 뒤 기존 저장과 코드 입력 화면을 확인했다. 코드 적용과 재실행은 정식 에뮬레이터에서 확인했다. [갤럭시 플레이](Android/검증-20261120.md) · [저장 확인](docs/save-transfer.md#호스트별-확인-범위) |
+| Tauri Mac | 공개판은 Apple Silicon용 v0.1 ZIP이다. 맥미니에서 공개 앱의 서명과 세로 창에서 새 슬롯·기지·상점 왕복을 확인했다. 공개 소스에서 빌드한 정식판은 전장 이동과 재실행 뒤 저장을 확인했다. [공개 앱 검사](docs/public/release-policy.md#v01-공개-배포-확인) · [소스 빌드 검사](docs/public/validation.md#공개-클론에서-빌드와-실행) |
 
 정식판과 치트판은 공통 코어와 원본 탭투스타트 그림을 사용하고 저장은 분리한다. 치트판은 플랫폼마다 실행 방식이 다르다. 원본 실행을 비교할 때는 별도 포팅판을 쓴다. [검증 현황](docs/todo.md#현재-체크--2026-11-21) · [치트 앱 실행](docs/validation-build.md#플랫폼별-치트-실행) · [원작 비교용 포팅판](Compatibility/README.md)
 
