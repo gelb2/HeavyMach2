@@ -125,8 +125,8 @@ output { display: block; }
   background: var(--panel);
   font-weight: 700;
 }
-:root[data-phone-hold="true"] dialog { visibility: hidden; }
-:root[data-phone-hold="true"] dialog::backdrop { background: transparent; }
+:root[data-rotation-hold="true"] dialog { visibility: hidden; }
+:root[data-rotation-hold="true"] dialog::backdrop { background: transparent; }
 
 @media (max-height: 440px) {
   #launcher, dialog { padding: .75rem 1rem; }

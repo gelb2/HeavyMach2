@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {screenProfile} from '../Shell/display.js';
+import {requiresRotation, screenProfile} from '../Shell/display.js';
 
 test('touch desktop-site iPads use their tablet presentation', () => {
   assert.equal(screenProfile({userAgent: 'Macintosh', maxTouchPoints: 5}, {width: 810, height: 1080}, true), 'tablet');
@@ -30,4 +30,15 @@ test('unknown devices and invalid Android screen dimensions remain unclassified'
   assert.equal(screenProfile({userAgent:'Unknown', maxTouchPoints:0}, {width:900,height:600}, false), null);
   assert.equal(screenProfile({userAgent:'Android', maxTouchPoints:5}, {width:0,height:950}, true), null);
   assert.equal(screenProfile({userAgent:'X11; Linux x86_64', maxTouchPoints:0}, {width:900,height:600}, false), 'desktop');
+});
+
+
+test('tablet and installed desktop games use portrait and phones use landscape', () => {
+  for (const landscape of [false, true]) {
+    assert.equal(requiresRotation('phone',landscape,false,true),!landscape);
+    assert.equal(requiresRotation('tablet',landscape,false,true),landscape);
+    assert.equal(requiresRotation('desktop',landscape,false,true),landscape);
+    assert.equal(requiresRotation('desktop',landscape,false,false),false);
+    assert.equal(requiresRotation('desktop',landscape,true,true),false);
+  }
 });
