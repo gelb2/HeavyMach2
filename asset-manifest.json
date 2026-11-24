@@ -1,11 +1,11 @@
 {
-  "version": "da4c665d94d2b47c40a11545",
+  "version": "45105f58bba4f4ffd507f043",
   "validation": false,
   "files": [
     {
       "path": "app.js",
-      "bytes": 18832,
-      "sha256": "a92216242ce2027b9a9767e5b04c9e460a9f7c092c0947aef453ff0c8aa9cadb"
+      "bytes": 19746,
+      "sha256": "1712103c4f49a834cac563ac1a3426d6ba06650d45fba8e0ebf5cd6605e52072"
     },
     {
       "path": "audio.js",
@@ -14,13 +14,13 @@
     },
     {
       "path": "display.js",
-      "bytes": 1017,
-      "sha256": "14544b7878aebf2064c8870e7fe7564cab18b6342923f72638f5ff8f73451154"
+      "bytes": 1400,
+      "sha256": "e0c31f3a9901cdf1ab323b68bcf7512d95df45759f62d6da7b06090d3ae6ee36"
     },
     {
       "path": "download.js",
-      "bytes": 2413,
-      "sha256": "1b675ccc208dd45327276b5c8c53459f2823dd944e4751b8ca533e57d0cfb91b"
+      "bytes": 2688,
+      "sha256": "d8a10b01ff5805b7d5bcf05021b89925c0982153acc7e416ffb290a2af53d1dc"
     },
     {
       "path": "game.data",
@@ -30,12 +30,12 @@
     {
       "path": "game.js",
       "bytes": 259690,
-      "sha256": "6da906d39693afef9f233839bd62f912532af78a816e026edb25218236b3822a"
+      "sha256": "92a47fae0990aa682cea45911a7e83541b7cb37082f21d39984f135864bba8dc"
     },
     {
       "path": "game.wasm",
-      "bytes": 1721644,
-      "sha256": "13ea03d7ebb607fc832129e900a8ef6e99bf7c325b829fcb4a26ba897215cb17"
+      "bytes": 1723200,
+      "sha256": "e440104eff9f434aef99a0d1990ee139c7eed49dd8270fa39f067ae973c41ea5"
     },
     {
       "path": "icon-192.png",
@@ -79,13 +79,13 @@
     },
     {
       "path": "style.css",
-      "bytes": 4429,
-      "sha256": "cd375a244404ce404111e1487f9ae4ba62f32ceef7aaea4223c0bace5de773fc"
+      "bytes": 4435,
+      "sha256": "2ee481ebaebcc2c2b98a4cd807d3d72caade20c0f578a8b2fd2c5a37c0ebffb7"
     },
     {
       "path": "sw.js",
-      "bytes": 7504,
-      "sha256": "e34b9b877569a2305fcf484d8df4a664e488d03720fc518e07c15c307633ac1e"
+      "bytes": 9681,
+      "sha256": "784a3360fd984de2e971668bd0fd1665fa7e15e93d883618b908d03d5345dfd1"
     }
   ]
 }

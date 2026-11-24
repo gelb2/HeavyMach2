@@ -1,6 +1,6 @@
 import {prepareOffline} from './download.js';
 import {createMusic} from './audio.js';
-import {installedDisplayQuery, screenProfile} from './display.js';
+import {installedDisplayQuery, requiresRotation, screenProfile} from './display.js';
 import {offerInstall} from './install.js';
 import {openStorage, storeKeys} from './storage.js';
 
@@ -17,8 +17,11 @@ $('install-manifest').href = profile === 'phone' ? './manifest.webmanifest' : '.
 const landscape = matchMedia('(orientation: landscape)');
 const installedDisplay = matchMedia(installedDisplayQuery);
 const fullscreenDisplay = matchMedia('(display-mode: fullscreen)');
-const phoneHeld = () => profile === 'phone' && !landscape.matches;
 const installed = () => installedDisplay.matches || navigator.standalone === true;
+const rotationRequired = (isLandscape = landscape.matches) =>
+  requiresRotation(profile, isLandscape, desktop, installed());
+$('rotate').textContent = profile === 'phone' ? '휴대폰을 가로로 돌려 주세요.'
+  : profile === 'tablet' ? '태블릿을 세로로 돌려 주세요.' : '게임 창을 세로로 맞춰 주세요.';
 document.documentElement.dataset.profile = profile;
 document.documentElement.dataset.profileDetected = String(detectedProfile !== null);
 const cache = new Map();
@@ -28,6 +31,18 @@ let live = false, starting = false, lost = false, playRequested = false;
 let restoreFullscreenOnTouch = false;
 let pending = Promise.resolve();
 let previous, remainder = 59, warningTimeout;
+
+if (!desktop && navigator.serviceWorker) {
+  let controller = navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    const newController = navigator.serviceWorker.controller;
+    if (controller && newController && controller !== newController && !starting && !live) {
+      $('play').disabled = true;
+      location.reload();
+    }
+    controller = newController;
+  });
+}
 
 function warning(text, node = modal.open ? $('dialog-status') : $('warning')) {
   node.textContent = text;
@@ -55,26 +70,26 @@ function queue(work) {
 }
 function resetClock() { previous = undefined; remainder = 59; }
 function updateOrientation() {
-  const hold = phoneHeld() && (installed() || playRequested);
+  const hold = rotationRequired() && (installed() || playRequested);
   $('rotate').hidden = !hold;
-  document.documentElement.dataset.phoneHold = String(hold);
-  if (phoneHeld()) {
+  document.documentElement.dataset.rotationHold = String(hold);
+  if (rotationRequired()) {
     for (const [id, point] of held) sendPointer(3, ...point, id);
     held.clear();
   }
-  audio?.activity(!document.hidden && !phoneHeld());
+  audio?.activity(!document.hidden && !rotationRequired());
   resetClock();
   if (live) queue(resize).catch(fatal);
 }
-function lockInstalledPhone() {
-  if (profile !== 'phone' || !installed() || document.hidden) return;
-  screen.orientation?.lock?.('landscape').catch(() => {});
+function lockInstalledOrientation() {
+  if (desktop || !installed() || document.hidden) return;
+  screen.orientation?.lock?.(profile === 'phone' ? 'landscape' : 'portrait').catch(() => {});
 }
 function enterInstalledFullscreen() {
   // On Apple Home Screen apps, use the window configured by the Safari meta tags.
   // On iPad, element fullscreen can add black system bands to that window.
-  if (profile === 'desktop' || navigator.standalone === true || !installed() ||
-      document.hidden || phoneHeld() || fullscreenDisplay.matches || document.fullscreenElement) return;
+  if (profile !== 'phone' || navigator.standalone === true || !installed() ||
+      document.hidden || rotationRequired() || fullscreenDisplay.matches || document.fullscreenElement) return;
   const root = document.documentElement;
   // Older installs can still have standalone in their cached Android manifest.
   // Use the existing play gesture.
@@ -89,7 +104,7 @@ function enterInstalledFullscreen() {
   }
 }
 function displayChanged() {
-  lockInstalledPhone();
+  lockInstalledOrientation();
   updateOrientation();
 }
 landscape.addEventListener('change', updateOrientation);
@@ -226,9 +241,10 @@ async function drawFrame(ticks) {
 }
 
 async function resize() {
-  if (!live || phoneHeld()) return;
+  if (!live || rotationRequired()) return;
   const rect = canvas.getBoundingClientRect();
   const width = Math.max(1, rect.width), height = Math.max(1, rect.height);
+  if (rotationRequired(width > height)) return;
   const main = getComputedStyle(document.querySelector('main'));
   const pad = direction => Math.max(0, parseFloat(main['padding' + direction]) || 0);
   // The iPad Home Screen window overlays its status and gesture areas.
@@ -257,7 +273,7 @@ async function resize() {
 function frame(now) {
   if (!live) return;
   queue(async () => {
-    if (document.hidden || phoneHeld() || lost || modal.open) { resetClock(); return; }
+    if (document.hidden || rotationRequired() || lost || modal.open) { resetClock(); return; }
     const stamp = Math.floor(now * 1e6);
     const elapsed = previous === undefined ? 0 : Math.min(100_000_000, Math.max(0, stamp - previous));
     previous = stamp;
@@ -273,14 +289,14 @@ function point(x, y) {
 }
 function sendPointer(phase, x, y, id) {
   return queue(() => {
-    if (!live || !metrics || lost || (phase < 2 && (phoneHeld() || modal.open))) return;
+    if (!live || !metrics || lost || (phase < 2 && (rotationRequired() || modal.open))) return;
     // Pointer Events can start at zero. The common input code reserves zero
     // for no active pointer, so shift browser IDs before crossing the boundary.
     return call('input','number',['number','number','number','number'],[phase,...point(x,y),id + 1]);
   });
 }
 canvas.addEventListener('pointerdown', event => {
-  if (event.button !== 0 || phoneHeld() || held.has(event.pointerId)) return;
+  if (event.button !== 0 || rotationRequired() || held.has(event.pointerId)) return;
   audio?.unlock();
   event.preventDefault();
   if (document.activeElement !== canvas) canvas.focus({preventScroll:true});
@@ -311,7 +327,7 @@ for (const type of ['contextmenu', 'selectstart', 'dragstart', 'copy']) {
   canvas.addEventListener(type, event => event.preventDefault());
 }
 canvas.addEventListener('keydown', event => {
-  if (event.repeat || !['Enter',' '].includes(event.key)) return;
+  if (rotationRequired() || event.repeat || !['Enter',' '].includes(event.key)) return;
   const rect = canvas.getBoundingClientRect();
   const position = [rect.left+rect.width/2,rect.top+rect.height/2,0x7fffffff];
   sendPointer(0,...position);
@@ -326,17 +342,17 @@ async function setRuntimeActive(active) {
     throw Error('게임을 다시 표시하지 못했습니다.');
 }
 document.addEventListener('visibilitychange', () => {
-  lockInstalledPhone();
+  lockInstalledOrientation();
   updateOrientation();
   if (!starting && !live) return;
   const active = !document.hidden;
   if (!live) return;
-  restoreFullscreenOnTouch = active && profile !== 'desktop' && installed();
+  restoreFullscreenOnTouch = active && profile === 'phone' && installed();
   held.clear();
   resetClock();
   queue(async () => {
     await setRuntimeActive(active);
-    if (active && !phoneHeld() && !lost) await drawFrame(0);
+    if (active && !rotationRequired() && !lost) await drawFrame(0);
   }).catch(fatal);
 });
 canvas.addEventListener('webglcontextlost', event => {
@@ -352,7 +368,7 @@ canvas.addEventListener('webglcontextrestored', () => {
       throw Error('게임 화면을 복원하지 못했습니다.');
     lost = false;
     resetClock();
-    if (!document.hidden && !phoneHeld()) await drawFrame(0);
+    if (!document.hidden && !rotationRequired()) await drawFrame(0);
   }).catch(fatal);
 });
 
@@ -399,7 +415,7 @@ async function boot() {
     hm2Raster: raster
   });
   audio = createMusic(wasm, warning);
-  audio.activity(!document.hidden && !phoneHeld());
+  audio.activity(!document.hidden && !rotationRequired());
   $('status').textContent = offline ? '오프라인에서 게임을 시작할 수 있습니다.' : '게임을 시작할 수 있습니다.';
   $('play').disabled = false;
   if (validation) window.HM2Validation = Object.freeze({
@@ -410,8 +426,8 @@ async function boot() {
 }
 $('play').addEventListener('click', async () => {
   playRequested = true;
-  lockInstalledPhone();
-  if (phoneHeld()) { updateOrientation(); return; }
+  lockInstalledOrientation();
+  if (rotationRequired()) { updateOrientation(); return; }
   if (!wasm) {
     location.reload();
     return;
