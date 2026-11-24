@@ -659,7 +659,7 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
     {name:'ipad-desktop-site', device:'iPad Pro 11', expected:'tablet',
       userAgent:'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15',
       resize:{width:504,height:834}},
-    {name:'android-tablet', device:'Galaxy Tab S9', expected:'tablet', resize:{width:1024,height:640}},
+    {name:'android-tablet', device:'Galaxy Tab S9', expected:'tablet', resize:{width:768,height:1024}},
     {name:'android-tablet-portrait', device:'Galaxy Tab S9', expected:'tablet', resize:{width:768,height:1024}},
     {name:'desktop', expected:'desktop', resize:{width:820,height:540}},
     {name:'desktop-portrait', expected:'desktop', viewport:{width:900,height:1200}, resize:{width:850,height:975}},
@@ -707,12 +707,12 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
         page = await openChromeApp(context,cdp,manifestId,url,options.hasTouch,options.viewport);
         const fullscreen = () => matchMedia('(display-mode: fullscreen)').matches ||
           document.fullscreenElement === document.documentElement;
-        if (expected !== 'desktop') {
+        if (expected === 'phone') {
           await page.waitForFunction(fullscreen, null, {timeout:8000});
           assert.equal(await page.locator('#play').textContent(),'게임 시작');
         }
         results.fullscreen = await page.evaluate(fullscreen);
-        assert.equal(results.fullscreen, expected !== 'desktop');
+        assert.equal(results.fullscreen, expected === 'phone');
       } else {
         page = await start(context,'validation',false,options.hasTouch);
       }
@@ -733,6 +733,11 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
         results.screens.push(screen);
         if (checkFieldBottom && screen === 'resized-field') {
           results.fieldBottom = await measureFieldBottom(page,pixels,resize.height);
+          const field = await page.evaluate(() => HM2Validation.status());
+          const x = id => field.buttons.find(([key]) => key === id)[2];
+          results.hudScale = Math.abs(x(1026) - x(1021))/59;
+          assert(Math.abs(results.hudScale-Math.min(resize.width/768,resize.height/1024)) < 0.0001,
+            'Tablet and desktop fields must use the native regular HD HUD scale');
         }
       };
       const verify = (state, viewport) => {
@@ -818,6 +823,22 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
         await waitStatus(page, ({canvas}) => canvas[0] === options.viewport.width &&
           canvas[1] === options.viewport.height, 'restored portrait surface');
         await capture('restored-portrait-field');
+        if (process.argv.includes('--check-portrait-rotation') && (expected === 'tablet' || installed)) {
+          await page.setViewportSize({width:options.viewport.height,height:options.viewport.width});
+          await page.locator('#rotate').waitFor({state:'visible'});
+          const before = await page.evaluate(() => HM2Validation.status());
+          await capture('landscape-orientation-notice');
+          await settle(250);
+          const after = await page.evaluate(() => HM2Validation.status());
+          assert.equal(after.ticks,before.ticks);
+          assert.deepEqual(after.canvas,[options.viewport.width,options.viewport.height]);
+          await page.setViewportSize(options.viewport);
+          await page.locator('#rotate').waitFor({state:'hidden'});
+          await waitStatus(page, state => state.screen === before.screen && state.ticks > after.ticks,
+            'same field resumes in portrait');
+          await capture('portrait-after-rotation');
+          results.portraitOnly = true;
+        }
       }
     } catch (error) {
       results.failure = error.message;
@@ -847,7 +868,7 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
   assert.deepEqual(errors, []);
   assert.deepEqual(report.cases.filter(result => result.failure).map(({name}) => name), []);
   if (checkFieldBottom) {
-    const exposed = report.cases.filter(({fieldBottom}) => fieldBottom.cssRows.every(rows => rows >= 2));
+    const exposed = report.cases.filter(({fieldBottom}) => fieldBottom.physicalRows.some(rows => rows !== 0));
     assert.deepEqual(exposed.map(({name, fieldBottom}) => ({name, ...fieldBottom})), [],
       'Terrain must reach the bottom of both columns outside the HUD');
   }

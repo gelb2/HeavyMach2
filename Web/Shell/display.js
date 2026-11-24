@@ -15,3 +15,12 @@ export function screenProfile(navigator, screen, coarse, desktopHost) {
   if (/macintosh|cros|x11|linux (?:x86_64|aarch64)/i.test(ua)) return 'desktop';
   return null;
 }
+
+
+// The browser can ignore the manifest orientation. Never start or resize the
+// game in that orientation. Native macOS and the desktop browser preview
+// keep their own window policies.
+export function requiresRotation(profile, landscape, desktop, installed) {
+  if (profile === 'phone') return !landscape;
+  return landscape && !desktop && (profile === 'tablet' || installed);
+}
