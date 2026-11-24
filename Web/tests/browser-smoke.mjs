@@ -237,12 +237,13 @@ async function store(page, edition, key) {
 async function launchInstalled(normalManifest, qaManifest) {
   assert.equal(browserEngine, 'chromium', 'Use Chrome for the installed window check');
   const profile = await mkdtemp(join(tmpdir(), 'hm2-installed-check-'));
+  const portrait = {width:834,height:1194};
   let context;
   const installed = [];
   const report = [];
   try {
     context = await playwright.chromium.launchPersistentContext(profile, {
-      channel:'chrome', headless:false, viewport:rect
+      channel:'chrome', headless:false, viewport:portrait
     });
     const installer = context.pages()[0];
     const cdp = await context.newCDPSession(installer);
@@ -257,13 +258,16 @@ async function launchInstalled(normalManifest, qaManifest) {
       assert(!installed.includes(manifestId));
       installed.push(manifestId);
       await cdp.send('PWA.changeAppUserSettings',{manifestId,displayMode:'standalone'});
-      const launch = () => openChromeApp(context,cdp,manifestId,url);
+      const launch = () => openChromeApp(context,cdp,manifestId,url,false,portrait);
       let page = await launch();
       await titleToSlots(page, edition === 'validation');
       await screenshot(page, edition + '-installed-slots');
       if (edition === 'normal') {
-        await page.mouse.click(...normalSlot);
-        if (!(await page.locator('#entry').isVisible())) await page.mouse.click(824,830);
+        const scale = portrait.width/768;
+        await page.mouse.click(portrait.width/2,portrait.height/2-(760-512)*scale);
+        if (!(await page.locator('#entry').isVisible())) {
+          await page.mouse.click(portrait.width/2+(544-384)*scale,portrait.height-80*scale);
+        }
         await page.locator('#entry').fill('PWA QA');
         await page.locator('#confirm').click();
         await settle(500);
