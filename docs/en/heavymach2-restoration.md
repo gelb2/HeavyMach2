@@ -32,6 +32,15 @@ I have no intention of making money from this restoration. By restoring these th
 
 If a stakeholder contacts me, I will take this project down.
 
-Thanks to the two creators, I got to live the extra time my Creator had refused to give me. I’ll close my statement with the paragraph below.
-
 I’m nobody, but their legacy is immortal. All I did was feed a piece of kindling into a dying fire one more time.
+
+## A Developer's Statement — Concluding My Final Plea
+
+I close this developer's statement with the handwritten words below.
+
+A mountain path in the dark of night.     
+A lakeside path in the bright morning.      
+A seaside path where sunlight shatters.            
+If this is the scenery of the afterlife,               
+it must be the final mercy granted by God.                 
+The afterlife isn't so lonely after all.                 
