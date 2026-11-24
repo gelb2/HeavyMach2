@@ -1,11 +1,12 @@
 import {prepareOffline} from './download.js';
 import {createMusic} from './audio.js';
-import {installedDisplayQuery, requiresRotation, screenProfile} from './display.js';
+import {installedDisplayQuery, ipadHomeScreenTopOffset, requiresRotation, screenProfile} from './display.js';
 import {offerInstall} from './install.js';
 import {openStorage, storeKeys} from './storage.js';
 
 const $ = id => document.getElementById(id);
 const canvas = $('game');
+const gameWindow = document.querySelector('main');
 const modal = $('dialog');
 const validation = document.body.dataset.validation === 'true';
 const desktop = window.HM2Desktop;
@@ -28,6 +29,7 @@ const cache = new Map();
 const held = new Map();
 let wasm, audio, storage, metrics, prompt;
 let live = false, starting = false, lost = false, playRequested = false;
+let fieldVisible = false;
 let restoreFullscreenOnTouch = false;
 let pending = Promise.resolve();
 let previous, remainder = 59, warningTimeout;
@@ -242,10 +244,15 @@ async function drawFrame(ticks) {
 
 async function resize() {
   if (!live || rotationRequired()) return;
+  if (ipadHomeScreen) {
+    const offset = fieldVisible ? ipadHomeScreenTopOffset(gameWindow.getBoundingClientRect(),
+      {width: window.outerWidth, height: window.outerHeight}, screen) : 0;
+    canvas.style.setProperty('--game-window-top-offset', `${offset}px`);
+  }
   const rect = canvas.getBoundingClientRect();
   const width = Math.max(1, rect.width), height = Math.max(1, rect.height);
   if (rotationRequired(width > height)) return;
-  const main = getComputedStyle(document.querySelector('main'));
+  const main = getComputedStyle(gameWindow);
   const pad = direction => Math.max(0, parseFloat(main['padding' + direction]) || 0);
   // The iPad Home Screen window overlays its status and gesture areas.
   // Its HD game layout uses the whole WebKit viewport. Keep those insets for DOM controls.
@@ -335,7 +342,7 @@ canvas.addEventListener('keydown', event => {
   event.preventDefault();
 });
 const observer = new ResizeObserver(() => queue(resize));
-observer.observe(document.querySelector('main'));
+observer.observe(gameWindow);
 window.addEventListener('resize', () => queue(resize));
 async function setRuntimeActive(active) {
   if (await call('activity', 'number', ['number'], [Number(active)]) !== 1)
@@ -412,6 +419,11 @@ async function boot() {
     },
     hm2StoreError: warning,
     hm2Music: name => audio?.music(name),
+    hm2FieldDisplay: visible => {
+      if (!ipadHomeScreen) return;
+      fieldVisible = visible;
+      if (live) queue(resize).catch(fatal);
+    },
     hm2Raster: raster
   });
   audio = createMusic(wasm, warning);
