@@ -20,4 +20,13 @@
 | iPad Pro 13 시뮬레이터 네이티브 치트판 | Release로 빌드해 실제 실행했다. 126개 조건에서 2,100프레임을 그렸다. HUD와 전투가 동시에 실행된 프레임은 7개, 이동과 전투가 함께 실행된 프레임은 2,063개였다. |
 | Mac Chrome 설치형 정식·치트판 | 두 판을 각각 설치하고 저장을 만들었다. 오프라인에서 같은 아이콘으로 열었을 때 각 판의 저장이 동일했다. |
 
-iPadOS 홈 화면 갱신 시험은 기존 v0.6 아이콘의 시작 동작과 홈 화면 재탐색에서 실패했다. 해당 실행은 갱신 통과로 세지 않는다. iPad 네이티브 정식판의 별도 UI 테스트도 Ruin Field 진입 조건을 통과하지 못했다. HD HUD 비교에는 같은 크기로 실행한 네이티브 프레임과 PWA 프레임을 사용했다. 물리 iPad의 후보 확인은 위 결과에 포함하지 않는다. 보호된 Apple·Android·공통 소스와 에셋의 Git 차이는 0이다. 실행 로그, 캡처와 판본 명세는 로컬 `.local/evidence/ipad-pwa-hotfix.BdRMxq/v07-verification/`에 있다.
+첫 iPadOS 홈 화면 시험은 기존 v0.6 아이콘의 시작 동작과 홈 화면 재탐색에서 실패했다. 후속 시험은 맥 재시작 전 시뮬레이터 연결이 끊겨 종료됐다. iPad 네이티브 정식판의 별도 UI 테스트도 Ruin Field 진입 조건을 통과하지 못했다. HD HUD 비교에는 같은 크기로 실행한 네이티브 프레임과 PWA 프레임을 사용했다. 물리 iPad의 후보 확인은 위 결과에 포함하지 않는다. 보호된 Apple·Android·공통 소스와 에셋의 Git 차이는 0이다. 실행 로그, 캡처와 판본 명세는 로컬 `.local/evidence/ipad-pwa-hotfix.BdRMxq/v07-verification/`에 있다.
+
+
+## 공개 배포와 재부팅 후 확인
+
+GitHub Pages `aa9fe50`에서 정식 v0.7을 제공한다. 공개 파일 17개의 크기와 SHA-256이 빌드 `45105f58bba4f4ffd507f043`과 일치했다. 공개 주소에서 새 WebKit 프로필로 게임을 시작하고 iPad의 세로 복귀 안내를 확인했다. [공개 빌드 정보](https://gelb2.github.io/HeavyMach2/build.json) · [v0.7 릴리스](https://github.com/gelb2/HeavyMach2/releases/tag/v0.7)
+
+재부팅 후 iPad Pro 11 시뮬레이터에서 v0.6으로 추가해 둔 기존 홈 화면 아이콘을 열었다. 같은 시험 주소에서 공개 정식 v0.7과 같은 파일을 제공했다. 가로 안내가 나타났고, 세로로 돌아와 게임을 시작했다. 재설치는 한 번도 하지 않았다. 첫 XCTest에서 타이틀과 회전 안내를 캡처했다. 두 번째 XCTest에서 Ruin Field에 들어가 가로 안내와 같은 전장의 세로 복귀를 확인했다. 인벤토리·임무·시스템 메뉴도 열었다. 두 검사 모두 통과했다. 이 검사는 물리 iPad의 동일 동작을 포함하지 않는다. 로컬 기록은 `ipad-existing-v07-resumed.log`, `ipad-existing-v07-title.png`, `ipad-existing-v07-rotate.png`, `ipad-existing-v07-ruin-field.png`, `ipad-existing-v07-panels-preview.png`, `public-v07-files.json`이다.
+
+Chromium에서는 v0.6에서 만든 검증용 저장을 두고 같은 버전 교체를 실행했다. 서버 응답을 끈 상태에서 v0.7을 다시 연 뒤 28,204바이트 저장을 읽었다. 갱신 전후 SHA-256이 일치했다. 로컬 기록은 `update-v07-save.log`다.
