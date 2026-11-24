@@ -83,7 +83,7 @@ public:
     }
 };
 enum class Dialog {notice,name,deleteSlot,gameOver,recovery};
-enum class ScreenLayout {standard,fittedMenu,compactField};
+enum class ScreenLayout {standard,fittedMenu};
 struct Touch { Vec2 previous; bool world=false; };
 
 class Runtime final : public SessionHost,public ui::ScreensHost {
@@ -99,6 +99,7 @@ class Runtime final : public SessionHost,public ui::ScreensHost {
     std::unique_ptr<GameSession> game_;
     std::unique_ptr<ui::Screens> screens_;
     DisplayConfiguration display_;
+    DisplayTransform worldProjection_;
     ScreenLayout screenLayout_=ScreenLayout::standard;
     std::uint64_t revision_=0,resourcesRevision_=0,screensGeneration_=0,textNumber_=0,ticks_=0;
     CombatScene* scene_=nullptr;
@@ -137,10 +138,21 @@ class Runtime final : public SessionHost,public ui::ScreensHost {
     }
 
     void updateScreenDisplay(ui::ScreenId screen,bool resized=false) {
-        const auto field=screen==ui::ScreenId::field ? portraitFieldDisplay() : std::nullopt;
-        if(field) {
-            if(auto* battle=game_->battle(); battle&&!battle->cameraPresentation().fillSurface)
+        auto field=screen==ui::ScreenId::field ? portraitFieldDisplay() : std::nullopt;
+        worldProjection_={};
+        if(auto* battle=game_->battle(); field&&battle) {
+            // Keep the compact camera's field-to-HUD proportion at the regular
+            // HD HUD size. The world uses one uniform scale and the inverse
+            // pointer transform below; no texture or HUD coordinates are changed.
+            const float regular=DisplayLayout(display_).ui(DisplayRegion::bottom).scale;
+            const float compact=DisplayLayout(*field).ui(DisplayRegion::bottom).scale;
+            worldProjection_.scale=regular/compact;
+            if(!battle->cameraPresentation().fillSurface) {
+                field->canvas={field->canvas.width/worldProjection_.scale,
+                               field->canvas.height/worldProjection_.scale};
+                field->insets={};
                 battle->setDisplay(*field);
+            }
         }
         constexpr auto hd=DisplayConfiguration{}.canvas;
         // The HD exit button is centered at y=52 and its 64-unit frame starts at y=20.
@@ -148,16 +160,26 @@ class Runtime final : public SessionHost,public ui::ScreensHost {
         const bool cropsExit=display_.canvas.height*hd.width<display_.canvas.width*(hd.height-2*exitBottom);
         const bool fit=display_.device==DisplayDevice::tablet&&cropsExit&&
             (screen==ui::ScreenId::base||screen==ui::ScreenId::shop||screen==ui::ScreenId::command);
-        const auto layout=field ? ScreenLayout::compactField : fit ? ScreenLayout::fittedMenu : ScreenLayout::standard;
+        const auto layout=fit ? ScreenLayout::fittedMenu : ScreenLayout::standard;
         if(!resized&&layout==screenLayout_) return;
         screenLayout_=layout;
-        auto screens=field.value_or(display_);
+        auto screens=display_;
         // Reuse the existing fit policy for both HD artwork and inverse hit testing.
         if(fit) {
             screens.device=DisplayDevice::desktop;
             screens.compact=false;
         }
         screens_->setDisplay(screens);
+    }
+
+    Frame drawWorld() {
+        if(worldProjection_.identity()) return game_->drawWorld();
+        auto& battle=*game_->battle();
+        auto frame=battle.drawFrame();
+        const auto camera=battle.cameraPresentation().worldToCanvas;
+        const DisplayTransform projection{camera.scale*worldProjection_.scale,worldProjection_.map(camera.offset)};
+        transformFrame(frame,projection,display_.canvas,DisplayLayout(display_).clip(DisplayRegion::world));
+        return frame;
     }
 
     void synchronize(bool force=false) {
@@ -284,7 +306,7 @@ public:
     }
     void cancel() {
         for(const auto& [id,touch]:touches_)
-            if(touch.world) game_->inputWorld(PointerPhase::cancel,touch.previous,id);
+            if(touch.world) game_->inputWorld(PointerPhase::cancel,worldProjection_.inverse(touch.previous),id);
         touches_.clear();
         screens_->discardInputs();
     }
@@ -311,11 +333,11 @@ public:
         touch.previous=point;
         const bool ui=game_->inputOverlay(phase,point,id)||screens_->input(phase,point,id,game_->renderTime());
         if(!ui&&!sameMove) {
-            const auto captured=game_->inputWorld(phase,point,id);
+            const auto captured=game_->inputWorld(phase,worldProjection_.inverse(point),id);
             if(phase==PointerPhase::begin) touch.world=captured;
         }
         if(phase==PointerPhase::end||phase==PointerPhase::cancel) {
-            if(ui&&touch.world) game_->inputWorld(PointerPhase::cancel,point,id);
+            if(ui&&touch.world) game_->inputWorld(PointerPhase::cancel,worldProjection_.inverse(point),id);
             touches_.erase(found);
         }
         synchronize();
@@ -330,7 +352,7 @@ public:
             synchronize();
             ++ticks_;
         }
-        Frame frame=game_->drawWorld();
+        Frame frame=drawWorld();
         const auto worldEnd=frame.sprites.size();
         screens_->append(frame,game_->renderTime());
         const bool desktop=display_.device==DisplayDevice::desktop;
@@ -398,9 +420,9 @@ public:
             const auto player=battle->player().position;
             for(const auto& portal:battle->gates()) {
                 const auto& gate=portal.definition;
-                auto point=game_->worldCanvasPoint(
+                const auto point=worldProjection_.map(game_->worldCanvasPoint(
                     battle->camera().toScreen({gate.position.x+(player.x-gate.position.x)*.24f,
-                                               gate.position.y+(player.y-gate.position.y)*.24f}));
+                                               gate.position.y+(player.y-gate.position.y)*.24f})));
                 if(point.x<0||point.x>display_.canvas.width||point.y<0||point.y>display_.canvas.height) continue;
                 if(!first) out<<',';
                 first=false;

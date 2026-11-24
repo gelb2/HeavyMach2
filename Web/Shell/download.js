@@ -53,6 +53,12 @@ export async function prepareOffline(onProgress, onUnavailable) {
     const serviceWorkers = navigator.serviceWorker;
     if (!serviceWorkers) return false;
     const registration = await serviceWorkers.register('./sw.js', {updateViaCache:'none'});
+    const checkForUpdate = () => {
+      if (!document.hidden && navigator.onLine) registration.update().catch(() => {});
+    };
+    window.addEventListener('pageshow', checkForUpdate);
+    document.addEventListener('visibilitychange', checkForUpdate);
+    checkForUpdate();
     worker = await waitForController(serviceWorkers, registration);
   } catch (error) {
     onUnavailable(error);

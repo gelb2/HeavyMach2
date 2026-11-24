@@ -27,6 +27,7 @@
 ## 기록을 갱신하는 위치
 
 - [GitHub 문서 목록](README.md)에서 게임 소개, 원작과 확장의 기능, 개발자의 변, 개발 과정으로 이동할 수 있다.
+- [작업 자아비판문](development-self-review.md)과 [자아비판 사례](development-self-review-cases.md)에 착수 및 실패 재검사 절차를 둔다.
 - [작업 정책](../.agents/policy.md)과 [사용자 결정 이력](../.agents/project.md)은 도구, 보존, 작업 범위를 설명한다.
 - [복원 계획](restoration-plan.md), [초기 방향 계획](hd-landscape-plan.md), [이전 체크포인트](restoration-checkpoint-20261111.md)는 날짜별 기록이다. 현행 화면 요구는 위 표의 화면 정본을 따른다.
 - [Android 초기 계획](android-port-plan-20261120.md)의 후속 구현은 Android 빌드·검증 문서에서 확인한다.
