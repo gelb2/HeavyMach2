@@ -16,6 +16,16 @@ export function screenProfile(navigator, screen, coarse, desktopHost) {
   return null;
 }
 
+// In a full-width iPad Home Screen app, WebKit reports the full window in
+// outerHeight and takes 32 CSS pixels from the top of the document for the
+// system status bar. Keep the game in window coordinates, anchored below at
+// the same bottom edge. Other window sizes use their drawable bounds.
+export function ipadHomeScreenTopOffset(viewport, outer, screen) {
+  const statusBarHeight = 32;
+  if (outer.width !== screen.width || outer.height !== screen.height ||
+      viewport.width !== outer.width || viewport.height <= viewport.width) return 0;
+  return outer.height - viewport.height === statusBarHeight ? statusBarHeight : 0;
+}
 
 // The browser can ignore the manifest orientation. Never start or resize the
 // game in that orientation. Native macOS and the desktop browser preview
