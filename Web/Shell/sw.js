@@ -114,7 +114,9 @@ self.addEventListener('install', event => {
       if (offlineEdition) await prepare(cache, offlineEdition);
       else for (const file of files.filter(file => !isGameFile(file))) await storeVerified(cache, file);
       // Activate after verification even when an old Safari tab is still open.
-      // Existing documents keep their own version of every subresource.
+      // Record old documents before skipWaiting. WebKit can start their
+      // controllerchange navigation while activation is still in progress.
+      await stageClientRoutes(cache, older);
       await self.skipWaiting();
     } catch (error) {
       await caches.delete(editionCache);
@@ -132,32 +134,36 @@ async function clientEdition(clientId) {
   return (await routes)[clientId] ?? editionCache;
 }
 
+async function stageClientRoutes(cache, older) {
+  // Old releases kept their active cache first. New ones record their routes.
+  let previous = older[0];
+  for (const key of older) {
+    if (await (await caches.open(key)).match(clientRoutes)) previous = key;
+  }
+  const keep = new Set([previous]);
+  const assignments = {};
+  if (previous) {
+    const previousRoutes = await readRoutes(await caches.open(previous));
+    for (const client of await self.clients.matchAll({type:'window',includeUncontrolled:true})) {
+      if (!client.url.startsWith(scope)) continue;
+      const version = previousRoutes[client.id] ?? previous;
+      assignments[client.id] = version;
+      keep.add(version);
+    }
+  }
+  await cache.put(clientRoutes, new Response(JSON.stringify(assignments)));
+  routes = Promise.resolve(assignments);
+  for (const key of older) {
+    if (!keep.has(key)) await caches.delete(key);
+  }
+}
+
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
-    const older = (await caches.keys()).filter(key => key.startsWith(prefix) && key !== editionCache);
-    // The previous active edition has an activation record. Older workers
-    // always kept their active cache first and had no activation record.
-    let previous = older[0];
-    for (const key of older) {
-      if (await (await caches.open(key)).match(clientRoutes)) previous = key;
-    }
-    const keep = new Set([editionCache]);
-    const assignments = {};
-    if (previous) {
-      const previousRoutes = await readRoutes(await caches.open(previous));
-      for (const client of await self.clients.matchAll({type:'window'})) {
-        const version = previousRoutes[client.id] ?? previous;
-        assignments[client.id] = version;
-        keep.add(version);
-      }
-    }
-    const cache = await caches.open(editionCache);
-    await cache.put(clientRoutes, new Response(JSON.stringify(assignments)));
-    routes = Promise.resolve(assignments);
-    for (const key of older) {
-      if (!keep.has(key)) await caches.delete(key);
-    }
-    await self.clients.claim();
+    // First launch needs an active controller in its initially open document.
+    // On upgrades the browser updates the controller of existing documents.
+    const upgrading = (await caches.keys()).some(key => key.startsWith(prefix) && key !== editionCache);
+    if (!upgrading) await self.clients.claim();
   })());
 });
 self.addEventListener('fetch', event => {

@@ -26,9 +26,10 @@ main {
 #game {
   position: absolute;
   inset: 0;
+  top: calc(-1 * var(--game-window-top-offset, 0px));
   display: block;
   width: 100%;
-  height: 100%;
+  height: calc(100% + var(--game-window-top-offset, 0px));
   touch-action: none;
   -webkit-touch-callout: none;
   -webkit-user-select: none;

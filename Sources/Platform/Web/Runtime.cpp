@@ -23,6 +23,7 @@ EM_JS(void, dialog,(int kind,int argument,const char* title,const char* body),{
     Module.hm2Dialog(kind,argument,UTF8ToString(title),UTF8ToString(body));
 });
 EM_JS(void, musicFile,(const char* name),{ Module.hm2Music(UTF8ToString(name)); });
+EM_JS(void, fieldDisplay,(int visible),{ Module.hm2FieldDisplay(visible !== 0); });
 EM_JS(int, load,(const char* key,std::uint8_t* bytes,int capacity),{
     const value=Module.hm2Read(UTF8ToString(key));
     if(!value) return 0;
@@ -104,6 +105,7 @@ class Runtime final : public SessionHost,public ui::ScreensHost {
     std::uint64_t revision_=0,resourcesRevision_=0,screensGeneration_=0,textNumber_=0,ticks_=0;
     CombatScene* scene_=nullptr;
     bool active_=true,graphics_=true,desktopHost_=false;
+    bool fieldVisible_=false;
 
     static void show(Dialog kind,int argument,std::string_view title,std::string_view body) {
         dialog(int(kind),argument,std::string(title).c_str(),std::string(body).c_str());
@@ -138,7 +140,12 @@ class Runtime final : public SessionHost,public ui::ScreensHost {
     }
 
     void updateScreenDisplay(ui::ScreenId screen,bool resized=false) {
-        auto field=screen==ui::ScreenId::field ? portraitFieldDisplay() : std::nullopt;
+        const bool fieldVisible=screen==ui::ScreenId::field;
+        if(fieldVisible_!=fieldVisible) {
+            fieldVisible_=fieldVisible;
+            fieldDisplay(fieldVisible);
+        }
+        auto field=fieldVisible ? portraitFieldDisplay() : std::nullopt;
         worldProjection_={};
         if(auto* battle=game_->battle(); field&&battle) {
             // Keep the compact camera's field-to-HUD proportion at the regular

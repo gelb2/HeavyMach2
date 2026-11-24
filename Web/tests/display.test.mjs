@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {requiresRotation, screenProfile} from '../Shell/display.js';
+import {ipadHomeScreenTopOffset, requiresRotation, screenProfile} from '../Shell/display.js';
 
 test('touch desktop-site iPads use their tablet presentation', () => {
   assert.equal(screenProfile({userAgent: 'Macintosh', maxTouchPoints: 5}, {width: 810, height: 1080}, true), 'tablet');
@@ -41,4 +41,15 @@ test('tablet and installed desktop games use portrait and phones use landscape',
     assert.equal(requiresRotation('desktop',landscape,false,false),false);
     assert.equal(requiresRotation('desktop',landscape,true,true),false);
   }
+});
+
+test('only full-width portrait iPad windows restore the measured status-bar height', () => {
+  const screen = {width: 1024, height: 1366};
+  assert.equal(ipadHomeScreenTopOffset({width: 1024, height: 1334}, screen, screen), 32);
+  assert.equal(ipadHomeScreenTopOffset(screen, screen, screen), 0);
+  assert.equal(ipadHomeScreenTopOffset({width: 900, height: 1334}, {width: 900, height: 1366}, screen), 0);
+  assert.equal(ipadHomeScreenTopOffset({width: 1024, height: 1068}, {width: 1024, height: 1100}, screen), 0);
+  assert.equal(ipadHomeScreenTopOffset({width: 1024, height: 1190}, screen, screen), 0);
+  const landscape = {width: 1366, height: 1024};
+  assert.equal(ipadHomeScreenTopOffset({width: 1366, height: 992}, landscape, landscape), 0);
 });
