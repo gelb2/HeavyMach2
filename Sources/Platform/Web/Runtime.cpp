@@ -83,6 +83,7 @@ public:
     }
 };
 enum class Dialog {notice,name,deleteSlot,gameOver,recovery};
+enum class ScreenLayout {standard,fittedMenu,compactField};
 struct Touch { Vec2 previous; bool world=false; };
 
 class Runtime final : public SessionHost,public ui::ScreensHost {
@@ -98,9 +99,10 @@ class Runtime final : public SessionHost,public ui::ScreensHost {
     std::unique_ptr<GameSession> game_;
     std::unique_ptr<ui::Screens> screens_;
     DisplayConfiguration display_;
+    ScreenLayout screenLayout_=ScreenLayout::standard;
     std::uint64_t revision_=0,resourcesRevision_=0,screensGeneration_=0,textNumber_=0,ticks_=0;
     CombatScene* scene_=nullptr;
-    bool active_=true,graphics_=true;
+    bool active_=true,graphics_=true,desktopHost_=false;
 
     static void show(Dialog kind,int argument,std::string_view title,std::string_view body) {
         dialog(int(kind),argument,std::string(title).c_str(),std::string(body).c_str());
@@ -121,8 +123,46 @@ class Runtime final : public SessionHost,public ui::ScreensHost {
         return "hud/"+std::string(profile);
     }
 
+    std::optional<DisplayConfiguration> portraitFieldDisplay() const {
+        constexpr auto hd=DisplayConfiguration{}.canvas;
+        if(desktopHost_||display_.device==DisplayDevice::phone||display_.compact||
+           display_.canvas.width>display_.canvas.height||
+           display_.canvas.height*hd.width>=display_.canvas.width*hd.height) return {};
+        // A short portrait surface can expose the map margin beside the HUD. Select
+        // the shared map-bound camera without enabling its distance zoom.
+        auto field=display_;
+        field.compact=true;
+        field.focusZoom=false;
+        return field;
+    }
+
+    void updateScreenDisplay(ui::ScreenId screen,bool resized=false) {
+        const auto field=screen==ui::ScreenId::field ? portraitFieldDisplay() : std::nullopt;
+        if(field) {
+            if(auto* battle=game_->battle(); battle&&!battle->cameraPresentation().fillSurface)
+                battle->setDisplay(*field);
+        }
+        constexpr auto hd=DisplayConfiguration{}.canvas;
+        // The HD exit button is centered at y=52 and its 64-unit frame starts at y=20.
+        constexpr float exitBottom=20;
+        const bool cropsExit=display_.canvas.height*hd.width<display_.canvas.width*(hd.height-2*exitBottom);
+        const bool fit=display_.device==DisplayDevice::tablet&&cropsExit&&
+            (screen==ui::ScreenId::base||screen==ui::ScreenId::shop||screen==ui::ScreenId::command);
+        const auto layout=field ? ScreenLayout::compactField : fit ? ScreenLayout::fittedMenu : ScreenLayout::standard;
+        if(!resized&&layout==screenLayout_) return;
+        screenLayout_=layout;
+        auto screens=field.value_or(display_);
+        // Reuse the existing fit policy for both HD artwork and inverse hit testing.
+        if(fit) {
+            screens.device=DisplayDevice::desktop;
+            screens.compact=false;
+        }
+        screens_->setDisplay(screens);
+    }
+
     void synchronize(bool force=false) {
         const auto& state=game_->state();
+        updateScreenDisplay(state.screen);
         const bool rebuild=revision_!=game_->presentationRevision();
         if(rebuild) {
             screens_->refresh(state,game_->renderTime());
@@ -233,12 +273,13 @@ public:
     void resize(float width,float height,float left,float bottom,float right,float top,int kind) {
         auto configuration=DisplayConfiguration::surface({width,height},{left,bottom,right,top});
         configuration.device=kind==0?DisplayDevice::phone:kind==1?DisplayDevice::tablet:DisplayDevice::desktop;
+        desktopHost_=kind==3;
         // Desktop shares the large-surface layout even in a reduced-size window.
-        if(kind==2) configuration.compact=configuration.focusZoom=false;
+        if(configuration.device==DisplayDevice::desktop) configuration.compact=configuration.focusZoom=false;
         cancel();
         display_=configuration;
         game_->setDisplay(display_);
-        screens_->setDisplay(display_);
+        updateScreenDisplay(game_->state().screen,true);
         synchronize(true);
     }
     void cancel() {
@@ -298,7 +339,8 @@ public:
         int width=0,height=0;
         emscripten_get_canvas_element_size("#game",&width,&height);
         auto artwork=MenuArtwork::native;
-        if(desktop) artwork=game_->state().screen==ui::ScreenId::maintenance?
+        if(screenLayout_==ScreenLayout::fittedMenu) artwork=MenuArtwork::desktop;
+        else if(desktop) artwork=game_->state().screen==ui::ScreenId::maintenance?
             MenuArtwork::desktopBackdrop:MenuArtwork::desktop;
         renderer_.draw(frame,width,height,artwork,help);
     }

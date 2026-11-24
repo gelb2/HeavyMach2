@@ -81,7 +81,7 @@ async function openChromeApp(context, cdp, manifestId, url, touch=false, viewpor
 }
 async function screenshot(page, name, checkBackdrop=false) {
   const capture = await page.screenshot({path:resolve(evidence, browserEngine + '-' + name + '.png')});
-  if (!checkBackdrop) return;
+  if (!checkBackdrop) return capture;
   const edges = await page.evaluate(async png => {
     const bytes = Uint8Array.from(atob(png), c => c.charCodeAt(0));
     const image = await createImageBitmap(new Blob([bytes], {type:'image/png'}));
@@ -97,6 +97,27 @@ async function screenshot(page, name, checkBackdrop=false) {
       new Set(colors.map(pixel => pixel.join(','))).size >= 3,
     name + ' artwork should reach both side edges');
   }
+}
+async function measureFieldBottom(page, capture, viewportHeight) {
+  return page.evaluate(async ({png, viewportHeight}) => {
+    const bytes = Uint8Array.from(atob(png), byte => byte.charCodeAt(0));
+    const image = await createImageBitmap(new Blob([bytes], {type:'image/png'}));
+    const context = new OffscreenCanvas(image.width,image.height).getContext('2d');
+    context.drawImage(image,0,0);
+    // The bottom corners sit outside the wide-window HUD. Sample both sides
+    // so the normal shadow beneath one actor cannot represent the whole field.
+    const physicalRows = [.05,.95].map(fraction => {
+      const x = Math.floor(image.width*fraction);
+      const {data} = context.getImageData(x,0,1,image.height);
+      let rows = 0;
+      for (let offset = data.length-4; offset >= 0; offset -= 4) {
+        if (Math.max(data[offset],data[offset+1],data[offset+2]) > 8) break;
+        rows++;
+      }
+      return rows;
+    });
+    return {physicalRows, cssRows:physicalRows.map(rows => rows*viewportHeight/image.height)};
+  }, {png:capture.toString('base64'), viewportHeight});
 }
 async function position(page, id, data=0) {
   const screen = await page.evaluate(() => HM2Validation.status());
@@ -419,10 +440,13 @@ async function verifyMovementDrag(page, context, touch) {
 async function verifyCampaign() {
   const mapList = JSON.parse(await readFile(process.env.HM2_WEB_TEST_MAP_LIST,'utf8'));
   assert(mapList.length > 0 && new Set(mapList).size === mapList.length);
-  const context = await browser.newContext(globalSettings);
+  const ipad = process.argv.includes('--ipad-campaign');
+  const {defaultBrowserType, ...device} = playwright.devices['iPad Pro 11'];
+  const context = await browser.newContext(ipad ? device : globalSettings);
   const results = [];
   try {
-    const page = await start(context,'validation');
+    const page = await start(context,'validation',false,ipad);
+    assert.equal(await page.evaluate(() => HM2Validation.profile),ipad ? 'tablet' : 'desktop');
     await titleToSlots(page,true);
     await clickButton(page,1009);
     await clickButton(page,1001);
@@ -618,6 +642,7 @@ async function verifyAssetUse() {
 async function deviceMatrix(normalManifest, qaManifest, installed=false) {
   if (installed) assert.equal(browserEngine,'chromium','Use Chrome to install the PWA');
   const gestures = process.argv.includes('--game-gestures');
+  const checkFieldBottom = process.argv.includes('--check-tablet-field-bottom');
   const cases = [
     {name:'iphone', device:'iPhone 15 landscape', expected:'phone', resize:{width:852,height:393}},
     {name:'iphone-short', device:'iPhone 15 landscape', expected:'phone',
@@ -625,24 +650,32 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
     {name:'iphone-full', device:'iPhone 15 landscape', expected:'phone',
       viewport:{width:874,height:402}, screen:{width:874,height:402}, resize:{width:874,height:390}},
     {name:'android-phone', device:'Pixel 7 landscape', expected:'phone', resize:{width:915,height:412}},
-    {name:'ipad', device:'iPad Pro 11', expected:'tablet', resize:{width:1194,height:834}},
+    {name:'ipad', device:'iPad Pro 11', expected:'tablet', resize:{width:768,height:1024}},
+    {name:'ipad-windowed', device:'iPad Pro 11', expected:'tablet', resize:{width:850,height:975}},
     {name:'ipad-safari', device:'iPad Pro 11', expected:'tablet',
-      viewport:{width:834,height:1124}, resize:{width:834,height:1194}},
+      viewport:{width:834,height:1124}, resize:{width:834,height:1194},
+      // WebKit's emulated visual viewport keeps its previous height when only height changes.
+      webkitResize:{width:833,height:1194}},
     {name:'ipad-desktop-site', device:'iPad Pro 11', expected:'tablet',
       userAgent:'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15',
       resize:{width:504,height:834}},
     {name:'android-tablet', device:'Galaxy Tab S9', expected:'tablet', resize:{width:1024,height:640}},
     {name:'android-tablet-portrait', device:'Galaxy Tab S9', expected:'tablet', resize:{width:768,height:1024}},
     {name:'desktop', expected:'desktop', resize:{width:820,height:540}},
+    {name:'desktop-portrait', expected:'desktop', viewport:{width:900,height:1200}, resize:{width:850,height:975}},
     {name:'touch-desktop', expected:'desktop', hasTouch:true, resize:{width:820,height:540},
       userAgent:'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36'},
   ];
-  const selected = process.env.HM2_WEB_TEST_DEVICES?.split(',') ?? cases.map(({name}) => name);
+  const portraitFieldCases = ['ipad','ipad-windowed','desktop-portrait'];
+  const selected = process.env.HM2_WEB_TEST_DEVICES?.split(',') ??
+    (checkFieldBottom ? portraitFieldCases : cases.map(({name}) => name));
   assert(selected.length && selected.every(name => cases.some(fixture => fixture.name === name)));
+  if (checkFieldBottom) assert(selected.every(name => portraitFieldCases.includes(name)));
   const report = {browser:browserEngine, browserVersion:browser.version(), normal:normalManifest.version,
     validation:qaManifest.version, installed, cases:[]};
   for (const fixture of cases.filter(({name}) => selected.includes(name))) {
-    const {name, expected, resize} = fixture;
+    const {name, expected} = fixture;
+    const resize = (browserEngine === 'webkit' && fixture.webkitResize) || fixture.resize;
     const {defaultBrowserType, ...device} = playwright.devices[fixture.device] ?? {};
     const options = {...globalSettings,...device,
       viewport:fixture.viewport ?? device.viewport ?? rect,
@@ -696,8 +729,11 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
         };
       });
       const capture = async screen => {
-        await screenshot(page, name + '-' + screen);
+        const pixels = await screenshot(page, name + '-' + screen);
         results.screens.push(screen);
+        if (checkFieldBottom && screen === 'resized-field') {
+          results.fieldBottom = await measureFieldBottom(page,pixels,resize.height);
+        }
       };
       const verify = (state, viewport) => {
         assert.equal(state.profile, expected, JSON.stringify(state));
@@ -718,8 +754,20 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
         await button(2100);
         await waitScreen(page,3);
       };
+      const returnToBase = async () => {
+        const field = await page.evaluate(() => HM2Validation.status());
+        const home = field.portalTargets.find(([, ,leadsToBase]) => leadsToBase);
+        assert(home, 'The return portal must be visible on this field');
+        await tap(home[0],field.canvas[1]-home[1]);
+        await waitScreen(page,3);
+      };
       results.initial = await snapshot();
       verify(results.initial, options.viewport);
+      const orientation = await page.evaluate(async () => {
+        const manifest = await fetch(document.querySelector('#install-manifest').href);
+        return (await manifest.json()).orientation;
+      });
+      assert.equal(orientation, expected === 'phone' ? 'landscape' : 'portrait');
       await waitScreen(page,1);
       await capture('title');
       for (let attempt=0; attempt<4; attempt++) {
@@ -747,11 +795,7 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
         await verifyMovementDrag(page,context,options.hasTouch);
         results.movementDrag = true;
       }
-      const field = await page.evaluate(() => HM2Validation.status());
-      const home = field.portalTargets.find(([, ,leadsToBase]) => leadsToBase);
-      assert(home, 'The return portal must be visible on this field');
-      await tap(home[0],field.canvas[1]-home[1]);
-      await waitScreen(page,3);
+      await returnToBase();
       await capture('portal-return');
 
       await page.setViewportSize(resize);
@@ -761,6 +805,20 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
       await capture('resized-base');
       await enter(2002,6,'resized-shop');
       await back();
+      if (portraitFieldCases.includes(name)) {
+        await enter(2001,4,'resized-command');
+        await back();
+        await enter(2005,7,'resized-field');
+        assert.equal((await snapshot()).runtimeDevice,expected === 'tablet' ? 2 : 3);
+        if (gestures) await verifyMovementDrag(page,context,options.hasTouch);
+        await returnToBase();
+        await capture('resized-portal-return');
+        await enter(2005,7,'resized-field-reentry');
+        await page.setViewportSize(options.viewport);
+        await waitStatus(page, ({canvas}) => canvas[0] === options.viewport.width &&
+          canvas[1] === options.viewport.height, 'restored portrait surface');
+        await capture('restored-portrait-field');
+      }
     } catch (error) {
       results.failure = error.message;
       if (page) {
@@ -783,11 +841,16 @@ async function deviceMatrix(normalManifest, qaManifest, installed=false) {
         if (userData) await rm(userData,{recursive:true,force:true});
       }
     }
-    console.log(JSON.stringify({name, screens:results.screens, failure:results.failure}));
+    console.log(JSON.stringify({name, screens:results.screens, fieldBottom:results.fieldBottom, failure:results.failure}));
   }
   await writeFile(join(evidence, browserEngine + '-devices.json'), JSON.stringify(report,null,2) + '\n');
   assert.deepEqual(errors, []);
   assert.deepEqual(report.cases.filter(result => result.failure).map(({name}) => name), []);
+  if (checkFieldBottom) {
+    const exposed = report.cases.filter(({fieldBottom}) => fieldBottom.cssRows.every(rows => rows >= 2));
+    assert.deepEqual(exposed.map(({name, fieldBottom}) => ({name, ...fieldBottom})), [],
+      'Terrain must reach the bottom of both columns outside the HUD');
+  }
 }
 
 try {
@@ -801,7 +864,7 @@ try {
   else if (process.argv.includes('--install-ui')) await installInterface();
   else if (process.argv.includes('--host-startup')) await verifyHostStartup();
   else if (process.argv.includes('--phone-lifecycle')) await verifyPhoneLifecycle();
-  else if (process.argv.includes('--campaign')) await verifyCampaign();
+  else if (process.argv.includes('--campaign') || process.argv.includes('--ipad-campaign')) await verifyCampaign();
   else if (process.argv.includes('--asset-use')) await verifyAssetUse();
   else if (process.argv.includes('--installed')) await launchInstalled(normalManifest, qaManifest);
   else await smoke(normalManifest, qaManifest);

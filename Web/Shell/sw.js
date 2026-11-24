@@ -1,6 +1,7 @@
 const scope = self.registration.scope;
 const prefix = `hm2-%EDITION%:${scope}:`;
 const editionCache = prefix + '%VERSION%';
+const compatibleCaches = new Set(%COMPATIBLE_VERSIONS%.map(version => prefix + version));
 const files = %FILES%;
 const url = path => new URL(path, scope).href;
 const assets = new Set(files.map(file => url(file.path)));
@@ -83,13 +84,24 @@ self.addEventListener('install', event => {
       // An installation needs only the launcher. A new version of an
       // offline-ready game must also be playable before it replaces that game.
       const older = (await caches.keys()).filter(key => key.startsWith(prefix) && key !== editionCache);
+      const compatible = older.length > 0 && older.every(key => compatibleCaches.has(key));
+      let offlineReady = false;
       for (const key of older) {
-        if (await (await caches.open(key)).match(marker)) {
-          await prepare(cache);
-          return;
+        const previous = await caches.open(key);
+        offlineReady ||= Boolean(await previous.match(marker));
+        if (!compatible) continue;
+        // The packager checked that previously verified files have the same hashes.
+        for (const file of files) {
+          if (file.path === 'index.html') continue;
+          const address = url(file.path);
+          const cached = await previous.match(address);
+          if (cached) await cache.put(address, cached);
         }
       }
-      for (const file of files.filter(file => !isGameFile(file))) await storeVerified(cache, file);
+      if (offlineReady) await prepare(cache);
+      else for (const file of files.filter(file => !isGameFile(file))) await storeVerified(cache, file);
+      // Open clients remain compatible with all files served by this worker.
+      if (compatible) await self.skipWaiting();
     } catch (error) {
       await caches.delete(editionCache);
       throw error;
