@@ -18,6 +18,8 @@
 
 `v0.4`는 Android 정식판의 저장 이동 메뉴를 배포한다. 기존 정식판과 같은 앱 ID와 서명을 사용한다. iPhone·iPad는 본인의 개발 팀으로 `v0.4` 소스를 빌드한다. Mac ZIP과 Android 치트판은 `v0.1`, 설치형 PWA는 `v0.3`에서 받는다. [v0.4 Android 정식 APK와 SHA-256](https://github.com/gelb2/HeavyMach2/releases/tag/v0.4) · [복구코드 검증](../save-transfer.md#호스트별-확인-범위)
 
+`v0.7`은 iPad PWA의 HD HUD, 세로 플레이와 기존 설치 갱신을 수정했다. `main`의 `d593cba`에 태그를 붙이고 `gh-pages`의 `aa9fe50`으로 배포했다. 공개 파일 17개의 해시가 검증한 정식판과 일치했다. iPad Pro 11 시뮬레이터에서 이전 판의 홈 화면 아이콘을 열고 가로 안내와 Ruin Field의 세로 복귀를 확인했다. [v0.7 릴리스](https://github.com/gelb2/HeavyMach2/releases/tag/v0.7) · [실행 기록](../pwa-ipad-hud-update-20261124.md#공개-배포와-재부팅-후-확인)
+
 ## PWA와 Mac 산출물
 
 - HeavyMach 1·MachDefense와 같이 GitHub Pages는 별도 `gh-pages` 브랜치의 루트에서 서비스한다. 정식 웹 빌드의 `dist/` 전체와 `.nojekyll`을 배포한다. 버전과 소스 커밋은 `build.json`에 기록한다. 앱 실행 시 파일별 길이와 SHA-256을 확인한다.
