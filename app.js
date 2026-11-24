@@ -11,7 +11,7 @@ const validation = document.body.dataset.validation === 'true';
 const desktop = window.HM2Desktop;
 const detectedProfile = screenProfile(navigator, screen, matchMedia('(pointer: coarse)').matches, desktop);
 const profile = detectedProfile ?? 'desktop';
-const profileId = {phone: 0, tablet: 1, desktop: 2}[profile];
+const profileId = desktop ? 3 : {phone: 0, tablet: 1, desktop: 2}[profile];
 const ipadHomeScreen = profile === 'tablet' && navigator.standalone === true;
 $('install-manifest').href = profile === 'phone' ? './manifest.webmanifest' : './manifest-flexible.webmanifest';
 const landscape = matchMedia('(orientation: landscape)');

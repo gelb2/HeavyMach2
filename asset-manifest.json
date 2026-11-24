@@ -1,11 +1,11 @@
 {
-  "version": "41c0b41fd8b620c59a41c6b7",
+  "version": "da4c665d94d2b47c40a11545",
   "validation": false,
   "files": [
     {
       "path": "app.js",
-      "bytes": 18818,
-      "sha256": "f0913699184a1350504113f50a6b0a025c31dc039d6d7a2ba71c6c1b381ece9f"
+      "bytes": 18832,
+      "sha256": "a92216242ce2027b9a9767e5b04c9e460a9f7c092c0947aef453ff0c8aa9cadb"
     },
     {
       "path": "audio.js",
@@ -34,8 +34,8 @@
     },
     {
       "path": "game.wasm",
-      "bytes": 1720888,
-      "sha256": "1c70320e1f293927931b1daf5f0442b5f4d024dc4a0e6e40e539f55eca5d7fd4"
+      "bytes": 1721644,
+      "sha256": "13ea03d7ebb607fc832129e900a8ef6e99bf7c325b829fcb4a26ba897215cb17"
     },
     {
       "path": "icon-192.png",
@@ -59,8 +59,8 @@
     },
     {
       "path": "manifest-flexible.webmanifest",
-      "bytes": 410,
-      "sha256": "0538cf45f706ec2eb1dd94295496b3c0482fa8787ebbb720075d338db261fb49"
+      "bytes": 439,
+      "sha256": "4e95804a034c739583675f818cb61749c86a4ed0672b8148476cf316bd6430ce"
     },
     {
       "path": "manifest.webmanifest",
@@ -84,8 +84,8 @@
     },
     {
       "path": "sw.js",
-      "bytes": 6767,
-      "sha256": "bcd774a296edb14587f270eea755eb3f6648456bdb23277f779a63d15cc0283f"
+      "bytes": 7504,
+      "sha256": "e34b9b877569a2305fcf484d8df4a664e488d03720fc518e07c15c307633ac1e"
     }
   ]
 }
