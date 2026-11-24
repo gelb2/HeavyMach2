@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
 """Finalize a local web build and give its cache a reproducible edition-specific identity."""
+import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 import subprocess
-import sys
 
-shell, dist = map(Path, sys.argv[1:3])
-edition = sys.argv[3]
-if edition not in {"normal", "validation"}:
-    raise ValueError("Unknown web edition")
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("shell", type=Path)
+parser.add_argument("dist", type=Path)
+parser.add_argument("edition", choices=("normal", "validation"))
+parser.add_argument("--compatible-with", action="append", type=Path, default=[],
+                    help="previous asset manifest with identical runtime files")
+options = parser.parse_args()
+shell, dist, edition = options.shell, options.dist, options.edition
 validation = edition == "validation"
 static = ("index.html", "app.js", "storage.js", "audio.js", "display.js", "install.js", "download.js", "style.css",
           "social-preview.jpg")
@@ -51,11 +56,26 @@ manifest = {"id": f"./{edition}", "name": "HeavyMach 2 QA" if validation else "H
 # Keep the existing manifest URL and app ID for phones already installed.
 phone_manifest = {**manifest, "display": "fullscreen", "orientation": "landscape"}
 (dist / "manifest.webmanifest").write_text(json.dumps(phone_manifest, indent=2) + "\n")
-(dist / "manifest-flexible.webmanifest").write_text(json.dumps(manifest, indent=2) + "\n")
+# Preserve the installed app ID and URL on portrait devices.
+portrait_manifest = {**manifest, "orientation": "portrait"}
+(dist / "manifest-flexible.webmanifest").write_text(json.dumps(portrait_manifest, indent=2) + "\n")
 names = sorted((*required, *static, *(icon["src"] for icon in icons),
                 "manifest.webmanifest", "manifest-flexible.webmanifest"))
 description = [describe(dist / name) for name in names]
+def runtime_files(records):
+    return {file["path"]: file for file in records if file["path"] not in {"index.html", "sw.js"}}
+
+compatible_versions = set()
+for path in options.compatible_with:
+    previous = json.loads(path.read_text())
+    if (previous["validation"] != validation or
+            runtime_files(previous["files"]) != runtime_files(description) or
+            not re.fullmatch(r"[a-f0-9]{24}", previous["version"])):
+        parser.error(f"{path} is not a compatible web package")
+    compatible_versions.add(previous["version"])
+
 worker = (shell / "sw.js").read_text()
+worker = worker.replace("%COMPATIBLE_VERSIONS%", json.dumps(sorted(compatible_versions)))
 version = hashlib.sha256(json.dumps([edition, description, worker], sort_keys=True).encode()).hexdigest()[:24]
 worker = worker.replace("%EDITION%", edition).replace("%VERSION%", version)
 worker = worker.replace("%FILES%", json.dumps(description))
