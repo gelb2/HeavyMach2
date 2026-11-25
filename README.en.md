@@ -118,11 +118,7 @@ On a physical iPad, the mech moves between ponds during combat and redraws its r
 
 <img src="docs/public/media/player-captures-20261121/ipad-field-combat.gif" alt="In the portrait iPad view, the mech moves between ponds and fights tanks." width="378"> <img src="docs/public/media/player-captures-20261121/ipad-combat-route.gif" alt="A green movement path and incoming fire on a coastal battlefield on iPad." width="378">
 
-### iPhone movement path and iPad portrait combat
-
-The player redraws a route in Ruin Field on an iPhone Air simulator. 6.1 seconds, silent.
-
-https://github.com/user-attachments/assets/ab72946d-a178-427f-804d-1f9b88e0f9f3
+### iPad portrait gameplay and iPhone screenshot
 
 An 11-inch iPad Pro simulator shows the Ruin Field portrait view and HUD. 12 seconds, silent.
 

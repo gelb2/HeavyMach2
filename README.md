@@ -118,11 +118,7 @@ iPad 실기기에서 연못 사이를 이동하며 교전하고, 해안 전장�
 
 <img src="docs/public/media/player-captures-20261121/ipad-field-combat.gif" alt="iPad 세로 전장에서 메크가 연못 사이를 이동하며 전차와 교전한다." width="378"> <img src="docs/public/media/player-captures-20261121/ipad-combat-route.gif" alt="iPad 해안 전장에서 메크의 초록색 이동 경로와 적의 사격이 보인다." width="378">
 
-### iPhone 이동 경로와 iPad 세로 전장
-
-iPhone Air 시뮬레이터에서 Ruin Field의 이동 경로를 다시 그렸다. 6.1초, 무음.
-
-https://github.com/user-attachments/assets/ab72946d-a178-427f-804d-1f9b88e0f9f3
+### iPad 세로 전장과 iPhone 전장 화면
 
 iPad Pro 11형 시뮬레이터에서 Ruin Field의 세로 시야와 HUD를 녹화했다. 12초, 무음.
 
