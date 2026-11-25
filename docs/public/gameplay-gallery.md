@@ -22,9 +22,7 @@
 
 ![iPhone 시스템 메뉴에 기지 귀환과 저장 후 종료가 표시된다.](media/player-captures-20261121/iphone-system-menu.png)
 
-## iPhone의 이동 경로와 상점
-
-Ruin Field에서 이동 경로를 다시 지정하는 장면이다. 초록색 점과 선이 이동 경로를 표시한다. iPhone Air 시뮬레이터에서 실제 OS 입력으로 조작한 Source 앱의 녹화다. 원본 녹화의 36.8~42.9초를 가로 방향으로 돌려 사용했다. [MP4 · 6.1초](media/gameplay-20261121/iphone-route.mp4) · [입력 재현과 수정 기록](../iphone-module-audit-20261118.md)
+## iPhone 상점
 
 아래는 Wasteland 상점의 상품 목록·인벤토리·페이지 버튼이 보이는 iPhone 시뮬레이터 캡처다. [상점 원본 좌표 대조](../iphone-shop-reference-coordinates-20261119.md)
 
@@ -32,7 +30,9 @@ Ruin Field에서 이동 경로를 다시 지정하는 장면이다. 초록색 �
 
 ## iPad 세로 전장
 
-iPad Pro 11형 시뮬레이터에서 새 프로필로 기지·사령부·전장을 오가는 일반 앱 검사를 했다. 영상은 Ruin Field의 세로 시야와 기본 HUD가 보이는 연속 구간이다. [MP4 · 12초](media/gameplay-20261121/ipad-field.mp4) · [기종별 HUD와 조작 검사](../campaign-and-ipad-followup-20261120.md#ipad-모델별-hud)
+iPad Pro 11형 시뮬레이터에서 새 프로필로 기지·사령부·전장을 오가는 일반 앱 검사를 했다. 영상은 Ruin Field의 세로 시야와 기본 HUD가 보이는 연속 구간이다. [기종별 HUD와 조작 검사](../campaign-and-ipad-followup-20261120.md#ipad-모델별-hud)
+
+https://github.com/user-attachments/assets/a43eb307-db17-47ac-a4d3-a3d7f3e9a8b0
 
 <img src="media/gameplay-20261121/ipad-field.png" alt="iPad 세로 전장에서 긴 다리와 적 전차가 보이고 화면 하단에 기본 HUD가 표시된다." width="475">
 
