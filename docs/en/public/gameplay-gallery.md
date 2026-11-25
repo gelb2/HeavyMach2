@@ -20,9 +20,7 @@ The player captured these screens on an iPhone in landscape on November 14, 2026
 
 ![The iPhone system menu offers a return to base and save and quit](../../public/media/player-captures-20261121/iphone-system-menu.png)
 
-## Movement paths and the shop on iPhone
-
-The player changes the movement path in Ruin Field. Green dots and lines mark the new route. The Source app was recorded on an iPhone Air simulator using OS touch input. The clip uses seconds 36.8 to 42.9, rotated to landscape. [MP4, 6.1 seconds](../../public/media/gameplay-20261121/iphone-route.mp4) · [Input reproduction and fix](../../iphone-module-audit-20261118.md)
+## iPhone shop
 
 The iPhone simulator screenshot below shows goods, inventory, and page buttons in the Wasteland shop. [Comparison with original shop coordinates](../../iphone-shop-reference-coordinates-20261119.md)
 
@@ -30,7 +28,9 @@ The iPhone simulator screenshot below shows goods, inventory, and page buttons i
 
 ## Portrait combat on iPad
 
-The regular app was checked on an 11-inch iPad Pro simulator using a new profile, with trips between the base, Command Center, and field. The clip shows the portrait view and standard HUD in Ruin Field. [MP4, 12 seconds](../../public/media/gameplay-20261121/ipad-field.mp4) · [HUD and input checks by model](../../campaign-and-ipad-followup-20261120.md#ipad-모델별-hud)
+The regular app was checked on an 11-inch iPad Pro simulator using a new profile, with trips between the base, Command Center, and field. The clip shows the portrait view and standard HUD in Ruin Field. [HUD and input checks by model](../../campaign-and-ipad-followup-20261120.md#ipad-모델별-hud)
+
+https://github.com/user-attachments/assets/a43eb307-db17-47ac-a4d3-a3d7f3e9a8b0
 
 <img src="../../public/media/gameplay-20261121/ipad-field.png" alt="A long bridge, tanks, and the standard HUD in portrait on an iPad" width="475">
 

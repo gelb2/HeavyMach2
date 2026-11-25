@@ -76,7 +76,7 @@
 - [x] **글감 보존·게재와 원문 위치**. 회고 원문과 후속 글감을 보존했고, 현재 공개 원고·트러블슈팅·개발 과정에 반영한 범위를 기록했다. [글감 목록](developer-background.md) · [삼부작 소회 반영 `b9efa0b`](https://github.com/gelb2/HeavyMach2/commit/b9efa0b) · [원문과 항목별 대조](todo-audit-20261122.md)
 - [x] **문서·코드 대조 29건 반영**. 31건 조사 중 제목 잘림과 미사용 Phone 분기는 3차에서 각각 처리한다. [대조표](code-document-audit-20261121.md) · [반영 근거](code-document-fixes-20261121.md)
 - [x] **기본 전투·성장·저장·메뉴 연결**. 공통 코어의 무기·전투·BOT·퀵아이템·저장, 도움말·완료 임무·게임오버·랭킹 이용 불가 안내는 각 소비 코드와 실행을 확인했다. 작성 당시 미연결로 남은 기록은 [기능별 근거](feature-verification.md)와 [항목별 대조](todo-audit-20261122.md)에 연결했다.
-- [x] **한·영 README에서 플레이 영상과 GIF 바로 보기**. 공개 GitHub의 두 README 본문에서 시뮬레이터 MP4 2편과 GIF 2편을 볼 수 있다. Mac mini 전투 영상은 하단의 검은 여백 때문에 공개 목록에서 내렸다. [공개 PR #144](https://github.com/gelb2/HeavyMach2/pull/144) · [갤러리](public/gameplay-gallery.md)
+- [x] **한·영 README에서 플레이 영상과 GIF 바로 보기**. 한·영 README는 iPad MP4 1편과 GIF 2편을 보여 준다. Mac mini 전투 영상은 하단 검은 여백 때문에, iPhone 이동 영상은 녹화에 포함된 검은 영역과 깜박임 때문에 공개 문서에서 내렸다. [공개 PR #144](https://github.com/gelb2/HeavyMach2/pull/144) · [갤러리](public/gameplay-gallery.md)
 - [x] **한·영 공개 문서 문체 정리**. README의 사격·파츠·광고 문단과 플레이·설치·검증·개발 과정 등 17개 파일을 고쳤다. 개발자의 변과 인용은 기존 원문과 대조했다. [공개 PR #146](https://github.com/gelb2/HeavyMach2/pull/146)
 - [x] **헤비멕2 글쓰기 지침 연결**. 헤비멕1·맥디펜스의 지침을 바탕으로 로컬 스킬과 참고 문서를 추가하고 `AGENTS.md`에서 연결했다. [글쓰기 스킬](../.agents/skills/write-project-text/SKILL.md) · [공개 PR #148](https://github.com/gelb2/HeavyMach2/pull/148)
 - [x] **문서 검사에서 반복 문구 차단**. 기존 GitHub `documentation` 검사에서 한·영 공개 글의 사격·파츠·광고 정책 문구와 검증 면책 문구를 잡는다. 정리 전 문서에서 9건을 찾았고 수정본과 인용은 검사를 통과했다. [검사 사용법](../CONTRIBUTING.md#문서-변경-확인) · [공개 PR #150](https://github.com/gelb2/HeavyMach2/pull/150)
@@ -88,6 +88,8 @@
 <a id="남은-수정조사검사"></a>
 
 ## 남은 작업 순서
+
+- [ ] **Windows Tauri 세로 안내에서 진행 중단**. 사용자 제보에서 게임 창을 세로로 맞추라는 안내 뒤로 진행할 수 없다. Windows에서 창의 너비와 높이, 안내가 표시되는 조건을 기록하고 게임 시작과 창 크기 변경 뒤 진입을 확인한다.
 
 - [ ] **PWA 전장 가장자리 검사와 카메라 수정**. 공개판과 치트 후보의 실패를 기준으로 실제 브라우저 경로에 검사를 추가한다. 카메라 하단 경계, 원본 비율과 HUD·입력을 대조해 수정한 뒤 같은 조건에서 다시 실행한다. [재현과 검증 계획](pwa-gameplay-verification-plan-20261123.md)
 
