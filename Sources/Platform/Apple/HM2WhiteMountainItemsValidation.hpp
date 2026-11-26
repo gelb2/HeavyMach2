@@ -2,6 +2,8 @@
 #include "Platform/Apple/HM2NativeValidation.hpp"
 #include "Platform/Apple/HM2Resources.hpp"
 #include "Core/Progression/Progression.hpp"
+#include "Core/Presentation/MenuArtwork.hpp"
+#include "Core/Presentation/MenuGridLayout.hpp"
 #include "Core/Simulation/DarwinWorldRandom.hpp"
 #include <array>
 #include <limits>
@@ -199,10 +201,11 @@ class WhiteMountainItemsValidation final : public NativeValidationScenario {
         const auto item=std::find_if(initial.begin(),initial.end(),[&](const auto& value){return value.dataId==id;});
         if(item==initial.end())return false;
         const auto index=unsigned(item-initial.begin());
-        const int desired=int(index/24);
+        const auto capacity=menu::shopStockPageSize(menu::phone(runtime_->session().display()));
+        const int desired=int(index/capacity);
         for(unsigned attempt=0;attempt<20;++attempt){
             const auto current=runtime_->session().state().shopPage;
-            if(current==desired)return press(2200+index%24,id);
+            if(current==desired)return press(2200+index%capacity,id);
             if(!press(current<desired?2106:2105))return false;
         }
         return false;
