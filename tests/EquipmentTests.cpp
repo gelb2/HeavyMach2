@@ -75,7 +75,14 @@ void stockAndTrading(Data& d){
     assert(!f.equipment.sell(bolt,2).complete&&f.slot.credit()==9);
     f.slot.level(21);const auto stock=f.equipment.shopItems(1);auto contains=[&](auto id){return std::any_of(stock.begin(),stock.end(),[&](auto* item){return item->code==id;});};assert(!contains("11002")&&contains("11003")&&contains("11016")&&!contains("11017"));
     const auto pos=[&](auto id){return std::find_if(stock.begin(),stock.end(),[&](auto* item){return item->code==id;})-stock.begin();};assert(pos("11013")<pos("11010")); // Original rows, not code sorting.
-    f.slot.level(17);assert(f.equipment.shopItems(1).size()==24&&f.equipment.shopPageCount(1)==2);f.slot.level(29);assert(f.equipment.shopItems(0).size()==48&&f.equipment.shopPageCount(0)==3);f.slot.level(99);assert(f.equipment.shopItems(0).empty()&&f.equipment.shopPageCount(0)==1);
+    f.slot.level(17);
+    assert(f.equipment.shopItems(1).size()==24&&f.equipment.shopPageCount(1)==2);
+    f.slot.level(21);
+    assert(f.equipment.shopItems(0).size()==48&&f.equipment.shopPageCount(0)==3);
+    f.slot.level(99);
+    const auto highLevelWeapons=f.equipment.shopItems(0);
+    assert(highLevelWeapons.size()==1&&highLevelWeapons.front()->code=="10504");
+    assert(f.equipment.shopPageCount(0)==1);
     Fixture partial(d);partial.progress.inventory.pages(1);for(int i=0;i<25;++i)partial.progress.inventory.setItem(i,i<24?d.defs.findItem("10011"):nullptr,i<24?1:0);partial.slot.credit(1000);
     result=partial.equipment.buy("11002",2);assert(!result.complete&&result.failure==EquipmentFailure::inventoryFull&&result.itemDelta==1&&result.creditDelta==0&&partial.slot.credit()==1000&&partial.progress.inventory.count(*d.defs.findItem("11002"))==1);
     std::cout<<"Original stock range/order, balances/prices, rejected/partial purchase and sales PASS\n";

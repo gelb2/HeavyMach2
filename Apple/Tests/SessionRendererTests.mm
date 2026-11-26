@@ -435,7 +435,7 @@ UIImage* image(NSData* rgba,CGSize size){
                 const auto buttons=stockIDs();
                 capture([NSString stringWithFormat:@"live-wasteland-category-%d-page-%02u",category,captures+1]);
                 for(const unsigned id:buttons){
-                    const auto index=std::size_t(page)*24+id-2200;
+                    const auto index=std::size_t(page)*hm2::menu::shopStockPageSize(true)+id-2200;
                     if(index>=count)continue;
                     seen.insert(index);
                     if(!capturedMLK3&&runtime.session().state().shopItems[index].name=="ML-K3"){
@@ -457,6 +457,7 @@ UIImage* image(NSData* rgba,CGSize size){
                 if(runtime.session().state().shopPage<page)break;
             }
             XCTAssertLessThan(captures,20u);XCTAssertEqual(seen.size(),count);
+            XCTAssertEqual(captures+1,hm2::menu::pageWindows(count,16));
             NSLog(@"HM2_WASTELAND_SHOP category=%d items=%zu pages=%u",category,count,captures+1);
         }
         XCTAssertTrue(capturedMLK3);
