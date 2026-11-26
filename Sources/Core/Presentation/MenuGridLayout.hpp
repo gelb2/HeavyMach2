@@ -5,7 +5,7 @@
 #include <cmath>
 namespace hm2::menu {
 // Phone201 original menu positions, expressed in HD-skin UI units (x1.5).
-// HD item/page indices and the game callbacks remain unchanged.
+// Stock page sizes follow the phone or HD shop while retaining the original button callbacks.
 inline constexpr Vec2 inventoryGrid{400.5f,330},stockGrid{82.5f,330};
 inline constexpr Vec2 equipmentRoot{139.5f,316.5f},botRoot{291,318};
 inline constexpr std::array<Vec2,6> equipmentOffsets{{{0,0},{0,-84},{-55.5f,-7.5f},{55.5f,-7.5f},{55.5f,-84},{-55.5f,-84}}};
@@ -17,6 +17,20 @@ inline constexpr float categoryY=402,pagerHitHeight=27,categoryHitHeight=60;
 inline constexpr unsigned phoneShopRows=4;
 inline std::size_t pageWindows(std::size_t count,std::size_t visible){
     return count==0?1:1+(count-1)/visible;
+}
+inline constexpr unsigned shopStockPageSize(bool phone){
+    return phone?phoneShopRows*4:24u;
+}
+struct ShopStockPage {
+    std::size_t index,pages,first,last;
+};
+inline ShopStockPage shopStockPage(bool phone,std::size_t itemCount,int requestedPage){
+    const auto capacity=shopStockPageSize(phone);
+    // HD retains GuiShop's original terminal page at exact multiples of 24.
+    const auto pages=phone?pageWindows(itemCount,capacity):itemCount/capacity+1;
+    const auto index=std::min(std::size_t(std::max(0,requestedPage)),pages-1);
+    const auto first=index*capacity;
+    return {index,pages,first,first+std::min(itemCount-first,std::size_t(capacity))};
 }
 inline constexpr float equipmentFooterY=76.5f,disarmY=124.5f;
 inline float phoneReferenceScale(const DisplayConfiguration& c){

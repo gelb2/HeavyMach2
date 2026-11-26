@@ -127,7 +127,7 @@ struct Screens::Impl {
     Region region=Region::content;
     float verticalPan=0,verticalOrigin=0;Vec2 verticalStart;std::uintptr_t verticalPointer=0;bool verticalDragging=false;
     float shopPan=0,panOrigin=0;Vec2 panStart;std::uintptr_t panPointer=0;
-    bool phoneEquipment=false;unsigned stockWindow=0,inventoryWindow=0,commandWindow=0;bool pageRebuild=false;
+    bool phoneEquipment=false;unsigned inventoryWindow=0,commandWindow=0;bool pageRebuild=false;
     float listTop=1024,listBottom=0;
     std::map<const Button*,Region> buttonRegions;
     struct RegionScope {Impl& self;Region before;RegionScope(Impl& p,Region value):self(p),before(p.region){p.region=value;}~RegionScope(){self.region=before;}};
@@ -165,7 +165,6 @@ struct Screens::Impl {
         if(node.region==Region::top)node.hudGroup=-1;
         nodes.push_back(std::move(node));
     }
-    static constexpr unsigned stockCells(){return menu::phoneShopRows*4;}
     static constexpr unsigned inventoryCells(){return menu::phoneShopRows*5;}
     std::pair<unsigned,unsigned> phoneInventoryRange()const{
         const auto begin=std::min(25u,inventoryWindow*inventoryCells());
@@ -248,7 +247,7 @@ struct Screens::Impl {
     Impl(ResourceAccess& r,PreparedTiles& t,ScreensHost& h,const ScreensState& s,float time,std::shared_ptr<Impl> old,DisplayConfiguration display,std::shared_ptr<HUDState> hudState,std::shared_ptr<PreparedTiles> ownerTiles,std::shared_ptr<std::uint64_t> generation)
         :resourceGeneration(std::move(generation)),resources(r),tiles(t),tileOwner(std::move(ownerTiles)),host(h),state(s),layout(display),hud(std::move(hudState)),previous(std::move(old)),now(time){
         ++*resourceGeneration;
-        if(previous&&previous->state.screen==s.screen){if(menu::phone(previous->layout.configuration())==menu::phone(display))title=previous->title;else{const auto art=menu::title(display);title.bigX=art.bigStart;title.bgPosition=art.bgStart;title.start=time;}commandWindow=previous->commandWindow;phoneEquipment=previous->phoneEquipment;stockWindow=previous->state.shopCategory==s.shopCategory?previous->stockWindow:0;inventoryWindow=previous->inventoryWindow;message=previous->message;layers=previous->layers;shopPan=phoneMenu()?0.f:std::min(previous->shopPan,layout.shopPanLimit());if(previous->state.weaponChoiceType==s.weaponChoiceType&&previous->state.missionVisible==s.missionVisible)verticalPan=std::min(previous->verticalPan,verticalLimit());}
+        if(previous&&previous->state.screen==s.screen){if(menu::phone(previous->layout.configuration())==menu::phone(display))title=previous->title;else{const auto art=menu::title(display);title.bigX=art.bigStart;title.bgPosition=art.bgStart;title.start=time;}commandWindow=previous->commandWindow;phoneEquipment=previous->phoneEquipment;inventoryWindow=previous->inventoryWindow;message=previous->message;layers=previous->layers;shopPan=phoneMenu()?0.f:std::min(previous->shopPan,layout.shopPanLimit());if(previous->state.weaponChoiceType==s.weaponChoiceType&&previous->state.missionVisible==s.missionVisible)verticalPan=std::min(previous->verticalPan,verticalLimit());}
         else{const auto art=menu::title(display);title.bigX=art.bigStart;title.bgPosition=art.bgStart;title.start=time;layers=std::make_shared<std::array<VisualLayer,14>>();}
         if(phoneMenu()&&s.screen==ScreenId::maintenance)phoneEquipment=true;
         if(previous){
@@ -260,12 +259,6 @@ struct Screens::Impl {
         }
         // accept5004 only invalidates Command.curState. Keep its existing rows
         // until the following Command tick actually refreshes the list.
-        if(phoneMenu()){
-            const auto offset=std::size_t(std::max(0,state.shopPage))*24;
-            const auto remaining=state.shopItems.size()-std::min(offset,state.shopItems.size());
-            const auto count=unsigned(std::min<std::size_t>(24,remaining));
-            stockWindow=std::min(stockWindow,count?(count-1)/stockCells():0u);
-        }
         if(previous&&s.screen==ScreenId::command&&previous->state.screen==s.screen&&s.commandListRevision&&s.commandListRevision==previous->state.commandListRevision){
             state.availableMissions=previous->state.availableMissions;state.acceptedMissions=previous->state.acceptedMissions;
             state.selectedMission=-1;
@@ -685,7 +678,7 @@ void Screens::Impl::buildDetail(DetailKind kind,const ItemView& entry,Vec2 origi
         else{const int cell=absolute%25;d.up=cell>9;d.descPos={108,float(61-(cell/5)*40+(d.up?20:-21))};}
     }
     if(phone){
-        const int cell=kind==DetailKind::shop?absolute%int(stockCells()):absolute%25%int(inventoryCells());
+        const int cell=kind==DetailKind::shop?absolute:absolute%25%int(inventoryCells());
         const int row=cell/(kind==DetailKind::shop?4:5);
         d.up=row>=2;
         d.descPos={(kind==DetailKind::shop?-136.f:106.f)*1.5f,(60-40.f*row+(d.up?20.f:-21.f))*1.5f};
@@ -917,30 +910,37 @@ void Screens::Impl::phoneShop(bool maintenance){
     {RegionScope equipment(*this,Region::phoneEquipment);equip(menu::equipmentRoot,9,true);bots(menu::botRoot,true);
         if(state.selectedBot>=0)addButton(Panel::root,6310,menu::phoneAsset("Btn_Disarm.png"),{288,menu::disarmY},2,1,0,1,Size{72,61.5f},0,{}, {1,1},true,9,false);
         addButton(Panel::root,9205,"",{97.5f,34.5f},1,1,0,0,Size{150,60});}
+    const auto page=menu::shopStockPage(true,state.shopItems.size(),state.shopPage);
     if(!maintenance){
         {RegionScope header(*this,Region::phoneCategoryHeader);image(menu::phoneAsset("ShopCategory.png"),{172.5f,menu::categoryY},1,8,unsigned(std::clamp(state.shopCategory,0,4)));
             addButton(Panel::root,2104,menu::phoneAsset("Btn_ShopLeft.png"),{75,menu::categoryY},2,1,0,1,Size{120,menu::categoryHitHeight},(state.shopCategory+4)%5,{}, {1,1},true,9,false);
             addButton(Panel::root,2104,menu::phoneAsset("Btn_ShopRight.png"),{270,menu::categoryY},2,1,0,1,Size{120,menu::categoryHitHeight},(state.shopCategory+1)%5,{}, {1,1},true,9,false);
             addButton(Panel::root,9204,"",{250.5f,34.5f},1,1,0,0,Size{150,60});
             RegionScope pagesRegion(*this,Region::phoneStockHeader);
-            const auto count=state.shopItems.size();
-            const auto windows=menu::pageWindows(24,stockCells());
-            const auto pages=count/24*windows+menu::pageWindows(count%24,stockCells());
-            const auto selected=std::size_t(std::max(0,state.shopPage))*windows+stockWindow;
-            phonePageDots({menu::stockGrid.x+90.f,menu::stockGrid.y-231.f},pages,selected);
-            if(pages>1){
+            phonePageDots({menu::stockGrid.x+90.f,menu::stockGrid.y-231.f},page.pages,page.index);
+            if(page.pages>1){
                 addButton(Panel::root,2105,menu::phoneAsset("Btn_InvenPage.png"),{menu::stockGrid.x-7.5f,menu::pagerY},2,1,0,0,Size{120,menu::pagerHitHeight},0,{}, {1,1},true,9,false);
                 addButton(Panel::root,2106,menu::phoneAsset("Btn_InvenPage.png"),{menu::stockGrid.x+186,menu::pagerY},2,1,1,1,Size{120,menu::pagerHitHeight},0,{}, {1,1},true,9,false);
             }
         }
-        {RegionScope stock(*this,Region::phoneStock);for(unsigned i=stockWindow*stockCells();i<std::min(24u,(stockWindow+1)*stockCells());++i){const auto index=std::size_t(std::max(0,state.shopPage))*24+i;if(index>=state.shopItems.size())break;const auto& entry=state.shopItems[index];const auto at=plus(menu::stockGrid,{60.f*float(i%4),-60.f*float((i%stockCells())/4)});addButton(Panel::root,2200+i,entry.icon,at,entry.iconColumns,entry.iconRows,entry.iconTile,entry.iconTile,Size{60,60},0,entry.dataId,{1,1},entry.enabled);if(state.selectedShop==int(i))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.8f);}}
+        {
+            RegionScope stock(*this,Region::phoneStock);
+            for(auto index=page.first;index<page.last;++index){
+                const auto cell=unsigned(index-page.first);
+                const auto& entry=state.shopItems[index];
+                const auto at=plus(menu::stockGrid,{60.f*float(cell%4),-60.f*float(cell/4)});
+                addButton(Panel::root,2200+cell,entry.icon,at,entry.iconColumns,entry.iconRows,entry.iconTile,entry.iconTile,Size{60,60},0,entry.dataId,{1,1},entry.enabled);
+                if(state.selectedShop==int(cell))image("Inven_Sel.png",at,1,1,0,{1,1},false,2,.8f);
+            }
+        }
     }
     {RegionScope controls(*this,Region::phoneFooter);
         number(menu::phoneAsset("NumTile04.png"),state.credits,{486,48},0,1);
         addButton(Panel::root,6093,menu::phoneAsset("Btn_ArrangeItem.png"),{615,405},1,1,0,0,Size{90,42},0,{}, {1,1},true,9,false);
         addButton(Panel::root,2100,menu::phoneAsset("Btn_ShopExit.png"),{630,34.5f},2,1,0,1,Size{138,60},0,{}, {1,1},true,9,false);
     }
-    if(state.shopDetailVisible&&state.selectedShop>=0&&!maintenance){const auto index=std::size_t(std::max(0,state.shopPage))*24+std::size_t(state.selectedShop);if(index<state.shopItems.size())buildDetail(DetailKind::shop,state.shopItems[index],{360,240},state.selectedShop);}
+    if(!maintenance&&state.shopDetailVisible&&state.selectedShop>=0&&std::size_t(state.selectedShop)<page.last-page.first)
+        buildDetail(DetailKind::shop,state.shopItems[page.first+std::size_t(state.selectedShop)],{360,240},state.selectedShop);
     if(state.tradeVisible&&!state.buyMode)dismissedSaleDetail=state.detailRevision;
     else if(previous&&previous->state.screen==state.screen&&previous->dismissedSaleDetail==state.detailRevision)
         dismissedSaleDetail=state.detailRevision;
@@ -1004,7 +1004,8 @@ void Screens::Impl::shop(){
         categoryX+=selected?126:96;
     }
     const Vec2 grid=plus(root,{-256,334});
-    for(unsigned i=0;i<24;++i){const auto index=std::size_t(std::max(0,state.shopPage))*24+i;if(index>=state.shopItems.size())break;
+    const auto stock=menu::shopStockPage(false,state.shopItems.size(),state.shopPage);
+    for(auto index=stock.first;index<stock.last;++index){const auto i=unsigned(index-stock.first);
         const auto& entry=state.shopItems[index];const Vec2 at=plus(grid,{60.f*float(i%6),-60.f*float(i/6)});
         image("ItemBox.png",at,1,1,0,{1,1},false,0,1,3);
         addButton(Panel::root,2200+i,entry.icon,at,entry.iconColumns,entry.iconRows,entry.iconTile,entry.iconTile,
@@ -1013,14 +1014,15 @@ void Screens::Impl::shop(){
     }
     // GuiShop.refreshShopItem0x30260 deliberately keeps one extra page at
     // exact multiples of24, including the empty category's first page.
-    const auto pages=state.shopItems.size()/24+1;
+    const auto pages=stock.pages;
     for(std::size_t page=0;page<pages;++page){
         float x=float(pages)*-.5f;x=float(page)+x;x*=12.f;x+=66.f;
-        image("InvenPage.png",plus(grid,{x,-234.f}),2,1,page==std::size_t(state.shopPage)?1u:0u,{1,1},false,0,1,3);
+        image("InvenPage.png",plus(grid,{x,-234.f}),2,1,page==stock.index?1u:0u,{1,1},false,0,1,3);
     }
     addButton(Panel::root,2105,"Btn_InvenPage.png",plus(grid,{-5,-234}),2,1,0,0,Size{80,40},0,{}, {1,1},true,3);
     addButton(Panel::root,2106,"Btn_InvenPage.png",plus(grid,{124,-234}),2,1,1,1,Size{80,40},0,{}, {1,1},true,3);
-    if(state.shopDetailVisible&&state.selectedShop>=0){const auto index=std::size_t(std::max(0,state.shopPage))*24+std::size_t(state.selectedShop);if(index<state.shopItems.size())buildDetail(DetailKind::shop,state.shopItems[index],root);}
+    if(state.shopDetailVisible&&state.selectedShop>=0&&std::size_t(state.selectedShop)<stock.last-stock.first)
+        buildDetail(DetailKind::shop,state.shopItems[stock.first+std::size_t(state.selectedShop)],root);
     // viewItemInfo creates this receiver after the existing shop controls.
     // Keep that dynamic registration order when reconstructing a snapshot:
     // the layer13 popup must precede older root buttons in reverse hit testing.
@@ -1329,17 +1331,23 @@ void Screens::Impl::build(){
         }
         if(phoneMenu()&&(id==2105||id==2106||id==6090||id==6091)&&!state.tradeVisible){
             if(event.type!=ButtonEventType::pop)return;
-            auto& window=id<6000?stockWindow:inventoryWindow;const bool next=id==2106||id==6091;
-            const auto count=id<6000?state.shopItems.size():state.inventory.size();const int page=id<6000?state.shopPage:state.inventoryPage;const unsigned capacity=id<6000?24:25,visible=id<6000?stockCells():inventoryCells();
-            const auto pages=id<6000?count/24+1:std::size_t(std::max(1,state.inventoryPages));
-            const auto targetPage=std::size_t(std::clamp(page+(next?0:-1),0,int(pages)-1));
-            const unsigned targetCount=id<6000?unsigned(count>targetPage*capacity?std::min<std::size_t>(capacity,count-targetPage*capacity):0):capacity;
-            if((next&&(window+1)*visible<targetCount)||(!next&&window>0)){window=next?window+1:window-1;dispatcher.discardAll();pageRebuild=true;
-                if(state.shopDetailVisible||state.detailInventory>=0){auto close=event;close.type=ButtonEventType::push;close.key={owner(state.screen,state.screen==ScreenId::maintenance?Panel::root:Panel::inventory),2112,0,{}};host.action({state.screen,state.screen==ScreenId::maintenance?Panel::root:Panel::inventory,close});}host.sfx(0);return;}
-            // The session clamps boundary presses. Keep the current strip
-            // when pressing Next on the last page.
-            const bool changesPage=next?std::size_t(page)+1<pages:page>0;
-            if(changesPage)window=!next&&targetCount?(targetCount-1)/visible:0;
+            if(id==6090||id==6091){
+                const bool next=id==6091;
+                const auto lastWindow=(25u-1)/inventoryCells();
+                if((next&&inventoryWindow<lastWindow)||(!next&&inventoryWindow>0)){
+                    inventoryWindow=next?inventoryWindow+1:inventoryWindow-1;
+                    dispatcher.discardAll();pageRebuild=true;
+                    if(state.shopDetailVisible||state.detailInventory>=0){
+                        auto close=event;close.type=ButtonEventType::push;
+                        close.key={owner(state.screen,state.screen==ScreenId::maintenance?Panel::root:Panel::inventory),2112,0,{}};
+                        host.action({state.screen,state.screen==ScreenId::maintenance?Panel::root:Panel::inventory,close});
+                    }
+                    host.sfx(0);return;
+                }
+                const auto pages=std::max(1,state.inventoryPages);
+                if(next?state.inventoryPage+1<pages:state.inventoryPage>0)
+                    inventoryWindow=next?0:lastWindow;
+            }
             auto advance=event;advance.type=ButtonEventType::push;host.action({screen,panel,advance});return;
         }
         if(phoneMenu()&&screen==ScreenId::shop&&(id==9204||id==9205)){
@@ -1733,10 +1741,9 @@ namespace hm2::ui {
 void Screens::revealButton(ButtonKey key){
     if(!impl_||!display_.enabled||impl_->state.tradeVisible)return;
     if(impl_->phoneMenu()){
-        const bool stock=key.id>=2200&&key.id<2224,inventory=key.id>=6000&&key.id<6025;
-        if(stock||inventory){const unsigned desired=(key.id-(stock?2200:6000))/(stock?impl_->stockCells():impl_->inventoryCells());
-            for(unsigned attempt=0;attempt<5;++attempt){const unsigned current=stock?impl_->stockWindow:impl_->inventoryWindow;if(current==desired)break;
-                const unsigned page=stock?(current<desired?2106:2105):(current<desired?6091:6090);
+        if(key.id>=6000&&key.id<6025){const unsigned desired=(key.id-6000)/impl_->inventoryCells();
+            for(unsigned attempt=0;attempt<5;++attempt){const unsigned current=impl_->inventoryWindow;if(current==desired)break;
+                const unsigned page=current<desired?6091:6090;
                 for(const auto target:buttons())if(target.id==page){const auto p=buttonScreenPosition(target);const auto time=impl_->now;input(PointerPhase::begin,p,0x50414745,time);input(PointerPhase::end,p,0x50414745,time);break;}
             }
         }

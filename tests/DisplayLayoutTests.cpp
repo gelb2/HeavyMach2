@@ -230,9 +230,9 @@ void phoneMenuGrids(Files& files){
  const auto tap=[&](unsigned id){auto k=key(id);ui.revealButton(k);const auto p=ui.buttonScreenPosition(k);ui.input(PointerPhase::begin,p,900+id,1);ui.input(PointerPhase::end,p,900+id,1.1f);};
  unsigned inv=0,stock=0;for(auto k:ui.buttons()){inv+=k.id>=6000&&k.id<6025;stock+=k.id>=2200&&k.id<2224;}assert(inv==(menu::phone(config)?menu::phoneShopRows*5:25)&&stock==(menu::phone(config)?menu::phoneShopRows*4:24));
  Frame f;ui.append(f,0);unsigned backgrounds=0;bool skin=false;for(const auto& s:f.sprites){backgrounds+=s.image=="PhoneShopPanel.png";assert(s.image!="ShopBG.png"&&s.image!="MaintenanceBG.png"&&s.image!="InvenBG.png"&&s.image!="ItemBox.png");if(s.image=="Icon10011.png"&&s.strip.empty())skin|=near(s.size.width,32*std::min(config.canvas.width/480,config.canvas.height/320));}assert(backgrounds==1&&skin);
- for(unsigned i=1;i<(24+menu::phoneShopRows*4-1)/(menu::phoneShopRows*4);++i)tap(2106);for(unsigned i=1;i<(25+menu::phoneShopRows*5-1)/(menu::phoneShopRows*5);++i)tap(6091);const auto lastStock=ui.buttonScreenPosition(key(2223)),lastInventory=ui.buttonScreenPosition(key(6024));const DisplayLayout layout(config);const auto shopClip=layout.clip(DisplayRegion::phoneStock).value(),invClip=layout.clip(DisplayRegion::phoneInventory).value();assert(lastStock.y>=shopClip.y&&lastStock.y<=shopClip.y+shopClip.height&&lastInventory.y>=invClip.y&&lastInventory.y<=invClip.y+invClip.height);
+ tap(2106);state.shopPage=1;ui.refresh(state,1);for(unsigned i=1;i<(25+menu::phoneShopRows*5-1)/(menu::phoneShopRows*5);++i)tap(6091);const auto lastStock=ui.buttonScreenPosition(key(2207)),lastInventory=ui.buttonScreenPosition(key(6024));const DisplayLayout layout(config);const auto shopClip=layout.clip(DisplayRegion::phoneStock).value(),invClip=layout.clip(DisplayRegion::phoneInventory).value();assert(lastStock.y>=shopClip.y&&lastStock.y<=shopClip.y+shopClip.height&&lastInventory.y>=invClip.y&&lastInventory.y<=invClip.y+invClip.height);
  host.events.clear();const auto begin=ui.buttonScreenPosition(key(6024)),destination=ui.buttonScreenPosition(key(6020));ui.input(PointerPhase::begin,begin,999,2);ui.input(PointerPhase::move,destination,999,2.1f);ui.input(PointerPhase::end,destination,999,2.2f);bool mapped=false;for(const auto& e:host.events)if(e.button.type==ui::ButtonEventType::move&&e.dropCoordinates){assert(near(e.dropCoordinates->inventory.x,408)&&near(e.dropCoordinates->inventory.y,192));mapped=true;}assert(mapped);
- tap(9204);assert(ui.button(key(6100))->visible&&!ui.button(key(2223))->visible);f={};ui.append(f,2);
+ tap(9204);assert(ui.button(key(6100))->visible&&!ui.button(key(2207))->visible);f={};ui.append(f,2);
  std::vector<ClipRect> equipSlices;
  for(const auto& sprite:f.sprites){
   assert(sprite.image!="PhoneShopPanel.png"&&sprite.image!="MaintenanceBG.png"&&sprite.image!="InvenBG.png"&&sprite.image!="ItemBox.png");
@@ -247,10 +247,28 @@ void phoneMenuGrids(Files& files){
  }
  assert(equipSlices.size()==4);
  for(const auto pair:{std::pair{6100u,Vec2{188,388}},std::pair{6302u,Vec2{326,270}}}){const auto from=ui.buttonScreenPosition(key(6024)),to=ui.buttonScreenPosition(key(pair.first));host.events.clear();ui.input(PointerPhase::begin,from,1001,3);ui.input(PointerPhase::move,to,1001,3.1f);ui.input(PointerPhase::end,to,1001,3.2f);mapped=false;for(const auto& e:host.events)if(e.button.type==ui::ButtonEventType::move&&e.dropCoordinates){assert(near(e.dropCoordinates->inventory.x,pair.second.x)&&near(e.dropCoordinates->inventory.y,pair.second.y));mapped=true;}assert(mapped);}
- tap(9205);assert(ui.button(key(2223))->visible&&!ui.button(key(6100))->visible);
- std::cout<<"PHONE_MENU_GRIDS separatedPanels/HD24and25/noDuplicatePanels/buttonPages/equipmentTab/HDdragInverse PASS\n";
+ tap(9205);assert(ui.button(key(2207))->visible&&!ui.button(key(6100))->visible);
+ std::cout<<"PHONE_MENU_GRIDS separatedPanels/phone16and25/noDuplicatePanels/buttonPages/equipmentTab/HDdragInverse PASS\n";
+}
+void phoneStockPageBoundaries(){
+ const std::vector<std::vector<unsigned>> pageSizes={{0},{15},{16},{16,1},{16,8},{16,16},{16,16,16}};
+ for(const auto& sizes:pageSizes){
+  std::size_t total=0,begin=0;
+  for(const auto length:sizes)total+=length;
+  for(std::size_t i=0;i<sizes.size();++i){
+   const auto page=menu::shopStockPage(true,total,int(i));
+   assert(page.index==i&&page.pages==sizes.size()&&page.first==begin&&page.last==begin+sizes[i]);
+   begin+=sizes[i];
+  }
+  assert(menu::shopStockPage(true,total,-1).index==0);
+  const auto boundary=menu::shopStockPage(true,total,int(sizes.size()));
+  assert(boundary.index+1==sizes.size()&&boundary.last==total);
+ }
+ const auto hd=menu::shopStockPage(false,48,2);
+ assert(hd.index==2&&hd.pages==3&&hd.first==48&&hd.last==48);
 }
 void phoneButtonPages(Files& files){
+ phoneStockPageBoundaries();
  for(const auto extent:{Size{667,375},Size{912,420},Size{1280,360}}){
   const auto config=DisplayConfiguration::surface(extent);Host host;PreparedTiles tiles("phone-button-pages");ui::Screens ui(files,tiles,host);ui.setDisplay(config);ui::ScreensState state;state.screen=ui::ScreenId::shop;state.inventoryVisible=true;state.inventoryPages=1;
   for(unsigned i=0;i<25;++i){ui::ItemView item;item.dataId=std::to_string(i);item.icon="Icon10011.png";item.count=1;state.inventory.push_back(item);if(i<24)state.shopItems.push_back(item);}ui.refresh(state,0);
@@ -266,19 +284,29 @@ void phoneButtonPages(Files& files){
    std::sort(dots.begin(),dots.end());
    return dots;
   };
-  const auto firstStockDots=pagerDots(true),firstInventoryDots=pagerDots(false);
-  assert(firstStockDots.size()==3&&firstInventoryDots.size()==2);
+   const auto firstStockDots=pagerDots(true),firstInventoryDots=pagerDots(false);
+  assert(firstStockDots.size()==2&&firstInventoryDots.size()==2);
   press(2106);press(6091);
+  assert(std::any_of(host.events.begin(),host.events.end(),[](const auto& event){
+   return event.button.key.id==2106&&event.button.type==ui::ButtonEventType::push;
+  }));
+  state.shopPage=1;ui.refresh(state,1);
   const auto secondStockDots=pagerDots(true),secondInventoryDots=pagerDots(false);
   assert(firstStockDots[0].second==secondStockDots[1].second&&firstStockDots[0].second!=secondStockDots[0].second);
   assert(firstInventoryDots[0].second==secondInventoryDots[1].second&&firstInventoryDots[0].second!=secondInventoryDots[0].second);
-  press(2105);press(6090);
-  std::set<unsigned> stock,inventory;
-  for(unsigned page=0;page<7;++page){for(auto k:ui.buttons()){if(k.id>=2200&&k.id<2224)stock.insert(k.id);if(k.id>=6000&&k.id<6025)inventory.insert(k.id);}if((page+1)*menu::phoneShopRows*4<24)press(2106);if((page+1)*menu::phoneShopRows*5<25)press(6091);}
+  std::set<std::string> stock;
+  std::set<unsigned> inventory;
+  for(const auto& key:ui.buttons()){
+   if(key.id>=2200&&key.id<2224)stock.insert(key.dataId);
+   if(key.id>=6000&&key.id<6025)inventory.insert(key.id);
+  }
+  assert(stock.size()==8&&stock.contains("16")&&stock.contains("23")&&inventory.size()==5);
+  press(2105);press(6090);state.shopPage=0;ui.refresh(state,2);
+  for(const auto& key:ui.buttons()){
+   if(key.id>=2200&&key.id<2224)stock.insert(key.dataId);
+   if(key.id>=6000&&key.id<6025)inventory.insert(key.id);
+  }
   assert(stock.size()==24&&inventory.size()==25);
-  // HD retains its original empty trailing page for an exact24-item count.
-  // Repeated NEXT at that boundary must not create empty local subpages.
-  state.shopPage=1;ui.refresh(state,1);press(2106);host.events.clear();press(2106);bool forwarded=false;for(const auto& event:host.events)forwarded|=event.button.key.id==2106&&event.button.type==ui::ButtonEventType::push;assert(forwarded);
 
   for(const auto end:{Vec2{extent.width-5,extent.height*.5f},Vec2{5,extent.height-5},Vec2{5,5}}){std::vector<Vec2> before;for(auto k:ui.buttons())before.push_back(ui.buttonScreenPosition(k));ui.input(PointerPhase::begin,{5,extent.height*.5f},331,2);ui.input(PointerPhase::move,end,331,2.1f);ui.input(PointerPhase::end,end,331,2.2f);unsigned i=0;for(auto k:ui.buttons()){auto p=ui.buttonScreenPosition(k);assert(near(p.x,before[i].x)&&near(p.y,before[i].y));++i;}assert((ui.menuScrollOffsets()==std::array<float,2>{}));}
   state.shopItems.resize(5);state.shopCategory=1;state.shopPage=0;ui.refresh(state,3);
@@ -344,17 +372,18 @@ void phoneMenuResize(Files& files){
  assert(near(firstInventory.x,reference.map(menu::inventoryGrid).x));
  assert(near(firstInventory.y-nextInventoryRow.y,40*menu::phoneReferenceScale(shortPhone)));
  press(2106);press(6091);
- expectCells(2200,24,16,6);
+ state.shopPage=2;screens.refresh(state,1.5f);
+ expectCells(2200,24,0,14);
  expectCells(6000,25,20,5);
  screens.setDisplay(tallPhone);
- expectCells(2200,24,16,6);
+ expectCells(2200,24,0,14);
  expectCells(6000,25,20,5);
- state.selectedShop=21;
+ state.selectedShop=13;
  state.shopDetailVisible=true;
  screens.refresh(state,2);
  screens.setDisplay(shortPhone);
- expectCells(2200,24,16,6);
- assert(key(2221).dataId=="stock45"&&screens.button(key(2102))->visible);
+ expectCells(2200,24,0,14);
+ assert(key(2213).dataId=="stock45"&&screens.button(key(2102))->visible);
  state.selectedShop=-1;
  state.shopDetailVisible=false;
  screens.refresh(state,3);
@@ -389,7 +418,7 @@ void phoneMenuResize(Files& files){
  expectCells(2200,24,0,0);
  state.shopItems=std::move(stock);
  screens.refresh(state,7);
- expectCells(2200,24,0,16);
+ expectCells(2200,24,0,14);
 
  state.screen=ui::ScreenId::maintenance;
  state.inventory.clear();
@@ -411,10 +440,10 @@ void phoneMenuResize(Files& files){
   assert(detail.center.x+menu::detailHitSize.width*.5f<=menu::tradeAction.x-menu::tradeActionSize.width*.5f+.001f);
   assert(near(detail.center.y,firstDetail.y));
  }
- std::cout<<"PHONE_MENU_RESIZE original four rows / HD page 2 / partial and empty / detail and drop PASS\n";
+ std::cout<<"PHONE_MENU_RESIZE original four rows / phone page 3 / partial and empty / detail and drop PASS\n";
 }
 void phoneLiveMenuSession(Files& files){
- Host host;DarwinWorldRandom random(1);SaveData saved;saved.initializeSlot(0,"Menus","kr",1794268800);progression::SlotView slot(saved.slot(0));slot.string(0x2d,16,"Base001");slot.u32(0x1b5c,5);slot.credit(500000);slot.string(0x8c+8*6,6,"01001");slot.byte(0x53c+8,3);
+ Host host;DarwinWorldRandom random(1);SaveData saved;saved.initializeSlot(0,"Menus","kr",1794268800);progression::SlotView slot(saved.slot(0));slot.string(0x2d,16,"Base001");slot.level(21);slot.u32(0x1b5c,5);slot.credit(500000);slot.string(0x8c+8*6,6,"01001");slot.byte(0x53c+8,3);
  GameSession game(files,host,random,std::move(saved));PreparedTiles tiles("live-phone-menu");ui::Screens ui(files,tiles,host);host.game=&game;host.screens=&ui;const auto phone=DisplayConfiguration::surface({912,420},{68,20,68,0});game.setDisplay(phone);ui.setDisplay(phone);assert(game.selectSlot(0));game.enterBase();
  const auto settle=[&]{for(unsigned n=0;game.screenTransition().phase!=8&&n<250;++n){game.tick();(void)game.drawWorld();}assert(game.screenTransition().phase==8);ui.refresh(game.state(),game.renderTime());};settle();
  const auto key=[&](unsigned id){for(const auto& k:ui.buttons())if(k.id==id)return k;throw std::runtime_error("Missing live phone menu button "+std::to_string(id));};
@@ -472,7 +501,7 @@ void phoneLiveMenuSession(Files& files){
   assert(near(action->width,32*reference)&&near(action->height,57*reference));
   const auto referenceUI=menu::phoneReferenceUI(phone);
   const auto originalAction=referenceUI.map(menu::tradeAction);
-  if(actionID==2102){
+  if(actionID==2102&&game.state().selectedShop==0){
    const auto position=ui.buttonScreenPosition(key(2112));
    const auto originalDetail=referenceUI.map({154.5f,205.5f});
    assert(near(position.x,originalDetail.x)&&near(position.y,originalDetail.y));
@@ -492,6 +521,16 @@ void phoneLiveMenuSession(Files& files){
  assert(game.state().inventory[0].equipped&&!game.state().inventory[0].enabled);
  tapVisible(6000);assert(game.state().detailInventory==0&&!has(2103));
  tapVisible(2200);assert(game.state().shopDetailVisible&&game.state().selectedShop==0);verifyDetail(2102);
+ assert(game.state().shopItems.size()>32);
+ const auto firstOnPageTwo=game.state().shopItems[16].dataId;
+ const auto lastOnPageTwo=game.state().shopItems[31].dataId;
+ tapVisible(2106);assert(game.state().shopPage==1&&!game.state().shopDetailVisible);
+ assert(key(2200).dataId==firstOnPageTwo&&key(2215).dataId==lastOnPageTwo);
+ tapVisible(2215);assert(game.state().selectedShop==15);verifyDetail(2102);
+ tapVisible(2102);assert(game.state().tradeVisible&&game.state().tradeItemId==lastOnPageTwo);
+ tapVisible(2107);assert(!game.state().tradeVisible);
+ tapVisible(2105);assert(game.state().shopPage==0);
+ tapVisible(2200);
  tapVisible(9204);assert(!game.state().shopDetailVisible&&game.state().selectedShop==-1&&game.state().detailInventory==-1&&!has(2102));
  const auto reference=menu::phoneReferenceUI(phone);
  const auto equipmentCorner=reference.map({0,menu::equipmentFooterY});

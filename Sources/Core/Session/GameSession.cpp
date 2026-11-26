@@ -5,6 +5,7 @@
 #include "Core/Data/Descriptions.hpp"
 #include "Core/Progression/QuickItems.hpp"
 #include "Core/Presentation/MenuArtwork.hpp"
+#include "Core/Presentation/MenuGridLayout.hpp"
 #include "Core/Presentation/PartSprites.hpp"
 #include "Core/Presentation/Visibility.hpp"
 #include "Core/Presentation/SharedAssetPreparation.hpp"
@@ -504,7 +505,12 @@ struct GameSession::Impl:progression::Events,progression::EquipmentEvents,Combat
     bool shopAction(const ui::ScreenAction&);
     void trade(bool buying){
         tradePosition=buying?-1:inventoryPosition(view.selectedInventory);tradeItem=nullptr;
-        if(buying){const auto list=equipment->shopItems(unsigned(view.shopCategory));const auto position=view.shopPage*24+view.selectedShop;if(position>=0&&position<int(list.size()))tradeItem=list[std::size_t(position)];}
+        if(buying){
+            const auto list=equipment->shopItems(unsigned(view.shopCategory));
+            const auto page=menu::shopStockPage(menu::phone(display),list.size(),view.shopPage);
+            if(view.selectedShop>=0&&std::size_t(view.selectedShop)<page.last-page.first)
+                tradeItem=list[page.first+std::size_t(view.selectedShop)];
+        }
         else if(const auto* entry=progress->inventory.entry(tradePosition);entry&&entry->item&&entry->count>0&&!entry->flags&&entry->item->sell)tradeItem=entry->item;
         if(!tradeItem)return;
         hideShopDetail();view.tradeVisible=true;view.buyMode=buying;view.tradeItemId=tradeItem->code;
@@ -620,9 +626,23 @@ bool GameSession::Impl::shopAction(const ui::ScreenAction& a){
     }
     if(phase==ui::ButtonEventType::push){
         if(id==2104){const int category=a.button.key.intData;if(category<0||category>4)return true;view.shopCategory=category;view.shopPage=0;view.selectedShop=-1;hideShopDetail();dirty=true;uiSound(0);return true;}
-        if(id==2105||id==2106){view.shopPage=std::clamp(view.shopPage+(id==2105?-1:1),0,std::max(0,equipment->shopPageCount(unsigned(view.shopCategory))-1));view.selectedShop=-1;hideShopDetail();dirty=true;uiSound(0);return true;}
-        if(id>=2200&&id<=2223){const auto items=equipment->shopItems(unsigned(view.shopCategory));const int cell=int(id)-2200,index=view.shopPage*24+cell;
-            if(index<int(items.size())&&validIdentity(a.button.key,items[std::size_t(index)])){view.selectedShop=cell;view.selectedInventory=-1;setDetailInventory(-1);view.shopDetailVisible=true;++view.detailRevision;dirty=true;uiSound(0);}return true;}
+        if(id==2105||id==2106){
+            const bool phone=menu::phone(display);
+            const auto count=equipment->shopItems(unsigned(view.shopCategory)).size();
+            const auto page=menu::shopStockPage(phone,count,view.shopPage+(id==2105?-1:1));
+            if(phone&&page.index!=std::size_t(view.shopPage))setDetailInventory(-1);
+            view.shopPage=int(page.index);view.selectedShop=-1;hideShopDetail();dirty=true;uiSound(0);return true;
+        }
+        if(id>=2200&&id<=2223){
+            const auto items=equipment->shopItems(unsigned(view.shopCategory));
+            const auto page=menu::shopStockPage(menu::phone(display),items.size(),view.shopPage);
+            const auto cell=id-2200;
+            if(cell<page.last-page.first&&validIdentity(a.button.key,items[page.first+cell])){
+                view.selectedShop=int(cell);view.selectedInventory=-1;setDetailInventory(-1);
+                view.shopDetailVisible=true;++view.detailRevision;dirty=true;uiSound(0);
+            }
+            return true;
+        }
     }
     if(phase==ui::ButtonEventType::pop&&(id==2102||id==2103)){trade(id==2102);uiSound(0);return true;}
     return false;
@@ -852,7 +872,20 @@ std::vector<FieldItemSnapshot> GameSession::fieldItems()const{
     for(const auto& drop:impl_->drops){const auto& item=drop.item;result.push_back({item.item?item.item->code:"",item.item?item.item->type:-1,item.value,item.position,item.removed,drop.pickupPlayer});}return result;
 }
 Frame GameSession::drawWorld(){auto& p=*impl_;Frame frame=p.scene?p.scene->drawFrame():Frame{};if(p.display.enabled){DisplayLayout layout(p.display);transformFrame(frame,p.scene?p.scene->cameraPresentation().worldToCanvas:layout.worldAtScale(1),p.display.canvas,layout.clip(DisplayRegion::world));}return frame;}
-void GameSession::setDisplay(DisplayConfiguration display){(void)display.content();impl_->display=display;if(impl_->scene)impl_->scene->setDisplay(display);if(impl_->help)impl_->help->setDisplay(display);}
+void GameSession::setDisplay(DisplayConfiguration display){
+    (void)display.content();
+    auto& p=*impl_;
+    const bool wasPhone=menu::phone(p.display),phone=menu::phone(display);
+    if(p.view.screen==ui::ScreenId::shop&&wasPhone!=phone){
+        const auto count=p.view.shopItems.size();
+        const auto previous=menu::shopStockPage(wasPhone,count,p.view.shopPage);
+        const auto page=menu::shopStockPage(phone,count,int(previous.first/menu::shopStockPageSize(phone)));
+        p.view.shopPage=int(page.index);p.view.selectedShop=-1;p.hideShopDetail();p.dirty=true;
+    }
+    p.display=display;
+    if(p.scene)p.scene->setDisplay(display);
+    if(p.help)p.help->setDisplay(display);
+}
 const DisplayConfiguration& GameSession::display()const{return impl_->display;}
 Vec2 GameSession::worldCanvasPoint(Vec2 logical)const{return (impl_->scene?impl_->scene->cameraPresentation().worldToCanvas:DisplayLayout(impl_->display).worldAtScale(1)).map(logical);}
 bool GameSession::inputWorld(PointerPhase phase,Vec2 point,std::uintptr_t id){auto& p=*impl_;if(!p.active||!p.scene||!id)return false;

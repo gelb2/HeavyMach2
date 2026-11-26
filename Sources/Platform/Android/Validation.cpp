@@ -4,6 +4,7 @@
 #include "Core/Simulation/DarwinWorldRandom.hpp"
 #include <cmath>
 #include "Core/Presentation/MenuArtwork.hpp"
+#include "Core/Presentation/MenuGridLayout.hpp"
 #include "Core/Validation/HUDLayoutExercise.hpp"
 #include "Core/Validation/SessionFixtures.hpp"
 #include <algorithm>
@@ -180,7 +181,8 @@ struct Validation::Impl final : validation::ValidationHost {
             const bool stock=id>=2200&&id<2224,inventory=id>=6000&&id<6025;
             if(stock||inventory) {
                 const auto& items=stock?state.shopItems:state.inventory;
-                const auto index=std::size_t(std::max(0,stock?state.shopPage:state.inventoryPage))*(stock?24:25)+id-(stock?2200:6000);
+                const auto page=menu::shopStockPage(true,state.shopItems.size(),state.shopPage);
+                const auto index=stock?page.first+id-2200:std::size_t(std::max(0,state.inventoryPage))*25+id-6000;
                 const auto panel=stock?ui::Panel::root:ui::Panel::inventory;
                 c.screens->revealButton({(ui::Owner(state.screen)<<16)|ui::Owner(panel),id,data,index<items.size()?items[index].dataId:""});
             }
@@ -481,8 +483,9 @@ struct Campaign::Impl {
             auto it=std::find_if(state.shopItems.begin(),state.shopItems.end(),[](const auto& item){return item.dataId=="02006";});
             check(it!=state.shopItems.end(),"Laser absent from level-22 attack stock");
             unsigned at=unsigned(it-state.shopItems.begin());
-            if(int(at/24)!=state.shopPage){check(press(*runtime,2106),"Missing stock page");return;}
-            const auto cell=2200+at%24;
+            const auto capacity=menu::shopStockPageSize(menu::phone(game.display()));
+            if(int(at/capacity)!=state.shopPage){check(press(*runtime,2106),"Missing stock page");return;}
+            const auto cell=2200+at%capacity;
             const ui::ButtonKey key{(ui::Owner(state.screen)<<16)|ui::Owner(ui::Panel::root),cell,it->position,"02006"};
             runtime->testScreens().revealButton(key);
             const auto keys=runtime->testScreens().buttons();
