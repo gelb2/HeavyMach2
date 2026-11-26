@@ -1,5 +1,5 @@
 {
-  "version": "b869d1bc5fc3f6d1a050cb92",
+  "version": "9237c405657eeecfa340bf1e",
   "validation": false,
   "files": [
     {
@@ -34,8 +34,8 @@
     },
     {
       "path": "game.wasm",
-      "bytes": 1723224,
-      "sha256": "9b6908ebdca4a9f24632d19bc3a80670afbd187db91484c0aa75e04655c39bb8"
+      "bytes": 1723635,
+      "sha256": "377c37d609469d4988104833040d4c5a0157b5414f654a2e59459388ccc9d144"
     },
     {
       "path": "icon-192.png",
@@ -85,7 +85,7 @@
     {
       "path": "sw.js",
       "bytes": 9941,
-      "sha256": "3dd7387f2b17aec62e91f8dbe6ea4d5147179a670922418c88a78154d7a627b8"
+      "sha256": "b4cf6470b1241b700d1e7caa2c74bf8d1d13ec5512ed3898bd31f21adbe05ae5"
     }
   ]
 }
